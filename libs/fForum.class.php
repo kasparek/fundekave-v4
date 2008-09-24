@@ -282,31 +282,39 @@ class fForum {
         $fItems->setOrder("i.dateCreated DESC");
         
         fItems::setQueryTool(&$fItems);
-        $total = $fItems->getCount();
+        
+        $manualCurrentPage = 0;
+        if($user->currentItemId > 0 || $itemIdInside > 0) {
+            if($user->currentItemId > 0) $itemIdInside = $user->currentItemId;
+            //---find a page of this item to have link to it
+            if($itemIdInside > 0) $manualCurrentPage = fForum::getItemPage($itemIdInside,$user->currentPageId,$perpage);
+        }
+        
+        if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
+        $pager = fSystem::initPager(0,$perpage,$arrPagerExtraVars,array(),array('noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+        $from = ($pager->getCurrentPageID()-1) * $perpage;
+        
+        $fItems->setLimit($from,$perpage+1);
+        $fItems->getData();
+        
+        $total = count($fItems->arrData);
+        
+        $maybeMore = false;
+        if($total > $perpage) $maybeMore = true;
+        
+        if($from > 0) {
+            $total += $from;
+        }
+        
+        
+        unset($fItems->arrData[(count($fItems->arrData)-1)]);
         
         if($total > 0) {
-            if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
-        	$od=0;
-        	if($total > $perpage) {
-        	    $manualCurrentPage = 0;
-        	    if($user->currentItemId > 0 || $itemIdInside > 0) {
-        	        if($user->currentItemId > 0) $itemIdInside = $user->currentItemId;
-        	        //---find a page of this item to have link to it
-        	        if($itemIdInside > 0) $manualCurrentPage = fForum::getItemPage($itemIdInside,$user->currentPageId,$perpage);
-        	    }
-        	    
-        	    $pager = fSystem::initPager($total,$perpage,$arrPagerExtraVars,array(),array('bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
-        		$od = ($pager->getCurrentPageID()-1) * $perpage;
-        		
-        	}
-        	$fItems->setLimit($od,$perpage);
-        	$fItems->getData();
-        	
         	/*.........zacina vypis prispevku.........*/
+        	$pager->totalItems = $total;
+        	$pager->maybeMore = $maybeMore;
+        	$pager->getPager();
         	if ($total > $perpage) {
-        	 //$tpl->setVariable('FROM',$od);
-        	 //$tpl->setVariable('TO',$od+$perpage);
-        	 $tpl->setVariable('TOTAL',$total);
         	 $tpl->setVariable('TOPPAGER',$pager->links);
         	 $tpl->setVariable('BOTTOMPAGER',$pager->links);
           }
