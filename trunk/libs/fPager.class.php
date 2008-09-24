@@ -1,6 +1,7 @@
 <?php
 class fPager {
     var $totalItems = 0;
+    var $maybeMore = false;
     var $currentPage = 1;
     var $manualCurrentPage = 0;
     var $perPage = 20;
@@ -23,7 +24,13 @@ class fPager {
         }
         if(!empty($this->itemData)) $this->totalItems = count($this->itemData);
         
-        $this->getPager();
+        if(isset($_GET[$this->urlVar])) $this->currentPage = $_GET[$this->urlVar] * 1;
+        
+        if($this->manualCurrentPage!=0) $this->currentPage = $this->manualCurrentPage;
+        
+        if(!isset($conf['noAutoparse'])) {
+            $this->getPager();
+        }
     }
     function getCurrentPageID() {
         return $this->currentPage;
@@ -35,14 +42,6 @@ class fPager {
     //function to return the pagination string
     function getPager()
     {
-        $extraVarsStr = '';
-        if(!empty($this->extraVars)) {
-            foreach ($this->extraVars as $k=>$v) $extraVarsStr .= $k.'='.$v.'&';
-        }
-        
-        if(isset($_GET[$this->urlVar])) $this->currentPage = $_GET[$this->urlVar] * 1;
-        
-        if($this->manualCurrentPage!=0) $this->currentPage = $this->manualCurrentPage;
         //---check page validity
         if($this->currentPage < 1 || $this->currentPage > ceil($this->totalItems / $this->perPage)) $this->currentPage = 1;
         //defaults
@@ -51,6 +50,11 @@ class fPager {
         $adjacents = $this->adjacents;
         $limit = $this->perPage;
         $targetpage = "";
+        
+        $extraVarsStr = '';
+        if(!empty($this->extraVars)) {
+            foreach ($this->extraVars as $k=>$v) $extraVarsStr .= $k.'='.$v.'&';
+        }
         $pagestring = '?' . $extraVarsStr . $this->urlVar."=";
 
         //other vars
@@ -127,6 +131,7 @@ class fPager {
             }
 
             //next button
+            if($this->maybeMore==true) $pagination .= ' ... ';
             if ($page < $counter - 1) $pagination .= '<a href="' . $targetpage . $pagestring . $next . '">'.$this->nextText.'</a>';
             else $pagination .= '<span class="disabled">'.$this->nextText.'</span>';
             $pagination .= "</div>\n";
@@ -134,5 +139,3 @@ class fPager {
         return $this->links = $pagination;
     }
 }
-
-?>

@@ -1,3 +1,6 @@
+tag_weight
+ - kontrolovat ze se to pri vypisu z klubu bere z cache .. mam pocit ze ne
+
 NEJ
  - v klubu - ti co sleduji tenhle klub sleduji take
  - v pratelich - pratele taky sleduji
