@@ -13,7 +13,7 @@ if(isset($_POST['nav'])) {
 		$xml->personal[0]->www = fSystem::textins($_POST['infowww'],0,0);
 		$xml->personal[0]->place = fSystem::textins($_POST['infomisto'],0,0);
 		$xml->personal[0]->food = fSystem::textins($_POST['infojidlo'],0,0);
-		$xml->personal[0]->hobby = fSystem::textins($_POST['infohoby']);
+		$xml->personal[0]->hobby = fSystem::textins($_POST['infohoby'],0,0);
 		$xml->personal[0]->motto = fSystem::textins($_POST['infomotto'],0,0);
 		$xml->personal[0]->about = fSystem::textins($_POST['infoabout']);
 		$homePageId = fSystem::textins($_POST['homepageid'],0,0);
@@ -90,8 +90,9 @@ $tpl->setVariable("USERWWW",$personal->www);
 $tpl->setVariable("USERMOTTO",$personal->motto);
 $tpl->setVariable("USERMISTO",$personal->place);
 $tpl->setVariable("USERJIDLO",$personal->food);
-$tpl->setVariable("USERHOBBY",fSystem::textToTextarea($personal->hobby));
+$tpl->setVariable("USERHOBBY",$personal->hobby);
 $tpl->setVariable("USERABOUT",fSystem::textToTextarea($personal->about));
+$tpl->addTextareaToolbox('USERABOUTTOOLBOX','userabout');
 
 if($user->zbanner == 1) $tpl->touchBlock('zbanner');
 if($user->zaudico == 1) $tpl->touchBlock('zaudico');

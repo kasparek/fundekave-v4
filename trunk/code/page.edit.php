@@ -149,10 +149,13 @@ if(!$pageDesc = fUserDraft::get($user->currentPageId.'desc')) $pageDesc = $pageD
 if(!$pageCont = fUserDraft::get($user->currentPageId.'cont')) $pageCont = $pageData['content'];
 
 $tpl->setVariable('PAGEDESCRIPTIONID',$user->currentPageId.'desc');
-$tpl->setVariable('PAGECONTENTID',$user->currentPageId.'cont');
-
 $tpl->setVariable('PAGEDESCRIPTION',fSystem::textToTextarea($pageDesc));
+$tpl->addTextareaToolbox('PAGEDESCRIPTIONTOOLBOX',$user->currentPageId.'desc');
+
+$tpl->setVariable('PAGECONTENTID',$user->currentPageId.'cont');
 $tpl->setVariable('PAGECONTENT',fSystem::textToTextarea($pageCont));
+$tpl->addTextareaToolbox('PAGEDESCRIPTIONTOOLBOX',$user->currentPageId.'cont');
+
 if(!empty($pageData['pageIco'])) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageData['pageIco']);
 $tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm($user->currentPageId));
 
@@ -169,6 +172,7 @@ if($pageData['typeId']=='forum' || $pageData['typeId']=='blog') {
 	}
 	$tpl->setVariable('CONTENT',$home);
 	$tpl->setVariable('HOMEID',$user->currentPageId.'home');
+	$tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$user->currentPageId.'home');
 }
 //---if pageParam = sa - more options to edit on page
 //--- nameShort,template,menuSecondaryGroup,leftpanelGroup,categoryId,dateContent,locked,authorContent

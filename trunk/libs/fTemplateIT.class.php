@@ -91,4 +91,13 @@ class fTemplateIT extends fHTML_Template_IT {
       $this->touchBlock('domtabclose');
     }
   }
+  function addTextareaToolbox($key,$textareaId) {
+      global $user;
+      if($user->idkontrol) {
+          $ftpl = new fTemplateIT('textarea.toolbox.tpl.html');
+          $ftpl->setVariable('TEXTAREAID',$textareaId);
+          $this->setVariable($key,$ftpl->get());
+          unset($ftpl);
+      }
+  }
 }

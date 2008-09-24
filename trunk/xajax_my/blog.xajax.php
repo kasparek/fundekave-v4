@@ -14,6 +14,9 @@ function blog_blogEdit($messageId = 0,$currentPageId=0) {
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
 	$objResponse->assign('editnew', 'innerHTML', $data);
+	$objResponse->call('draftSetEventListeners');
+  $objResponse->call('initInsertToTextarea');
+
 	return $objResponse;
 }
 
