@@ -17,12 +17,14 @@ function gup( name , url ) {
 var activeTextareaId = '';
 function initInsertToTextarea() {
   var arr = elmsByClass('clickDaTag'); var length = arr.length;
-  if(length > 0) {  for(var z=0;z<length;z++) { arr[z].onclick = function() { insert2Area(gup('tag',this.href)); return false; }; } }
+  if(length > 0) {  for(var z=0;z<length;z++) { arr[z].onclick = function() { insert2Area(this.href); return false; }; } }
   var arr = elmsByClass('draftable'); var length = arr.length;
   if(length > 0) {  for(var z=0;z<length;z++) { arr[z].onclick = function() { activeTextareaId = this.id; }; } }
 }
 function insert2Area(what) {
-  if(activeTextareaId) insertAtCursor(document.getElementById(activeTextareaId), what);
+  var activeTextareaIdFromHref = gup('textid',what);
+  if(activeTextareaIdFromHref) activeTextareaId = elm(gup('textid',what)).id;
+  if(activeTextareaId) insertAtCursor(elm(activeTextareaId), gup('tag',what));
 }
 function setCsr(elem, caretPos) {
   if(elem.createTextRange) {

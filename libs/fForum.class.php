@@ -259,6 +259,7 @@ class fForum {
         		
         	}
         	$tpl->setVariable('TEXTAREAID','forum'.$user->currentPageId);
+        	$tpl->addTextareaToolbox('TEXTAREATOOLBOX','forum'.$user->currentPageId);
        	
         	$tpl->setVariable('TEXTAREACONTENT',(($filterTxt = $user->filterGet($user->currentPageId,'text'))?($filterTxt):($zprava)));
 

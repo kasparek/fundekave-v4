@@ -100,6 +100,8 @@ if(isset($arrd)) {
     if($draftText) $tpl->setVariable('DTEXT',$draftText);
 }
 
+$tpl->addTextareaToolbox('DTEXTTOOLBOX','addftext');
+
 $reminderOptions='';
 foreach ($DIARYREMINDER as $k=>$v) {
 	$reminderOptions.='<option value="'.$k.'"'.(($k==$arrd[4])?(' selected="selected"'):('')).'>'.$v.'</option>';

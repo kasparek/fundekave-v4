@@ -143,6 +143,7 @@ if($recipientId>0) {
 $tpl->setVariable('RECIPIENTS',$recipients);
 $tpl->setVariable('RECIPIENTSONCHANGE',$reqSetRecipientFromInput->getScript());
 $tpl->setVariable('MESSAGE',$zprava);
+$tpl->addTextareaToolbox('MESSAGETOOLBOX','postText');
 $tpl->setVariable('HIDDENWHO',$user->whoIs);
 $tpl->setVariable('PERPAGE',$perpage);
 

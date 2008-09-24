@@ -180,7 +180,11 @@ foreach ($arrkat as $kat)
 	$options.='<option value="'.$kat[0].'"'.(($kat[0]==$arr['categoryId'])?(' selected="selected"'):('')).'>'.$kat[1].'</option>';
 $tpl->setVariable('CATEGORYOPTIONS',$options);
 $tpl->setVariable('GNAME',$arr['name']);
+
+$tpl->setVariable('GDESCID',$user->currentPageId.'desc');
 $tpl->setVariable('GDESC',fSystem::textToTextarea($arr['description']));
+$tpl->addTextareaToolbox('GDESCTOOLBOX',$user->currentPageId.'desc');
+
 $tpl->setVariable('GDATE',$arr['dateContent']);
 $tpl->setVariable('GDIR',$arr['galeryDir']);
 ///---xmlparams

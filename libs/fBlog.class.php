@@ -65,7 +65,10 @@ class fBlog extends fQueryTool  {
         	$tpl->setVariable('EDITDATE',Date("Y-m-d"));
         	if($draft = fUserDraft::get('b'.$user->currentPageId)) $tpl->setVariable('EDITTEXT',$draft);	
         }
-        $tpl->setVariable('TACTION',fUserDraft::getAction());
+        $tpl->setVariable('TEXTID','b'.$user->currentPageId);
+        $tpl->addTextareaToolbox('TEXTTOOLBOX','b'.$user->currentPageId);
+        //---have to be called js functions: draftSetEventListeners, initInsertToTextarea
+        
         return $tpl->get();
 	}
 	function listAll($itemId=0) {

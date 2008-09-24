@@ -13,17 +13,8 @@
   <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
   <input type="text" name="pcaptcha" value="" /><br />
   <!-- END usernotlogged -->
-  <label>Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea><br />
+  <label>Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea>{TEXTAREATOOLBOX}<br />
   
-  <a href="#" class="supernote-hover-styles2text">Vlozit styl</a>
-  <div id="supernote-note-styles2text" class="snp-triggeroffset notemenu">
-  <ul>
-  <li><a class="clickDaTag" href="?tag=[b]-cursor-[/b]">Tucne</a></li>
-  <li><a class="clickDaTag" href="?tag=[img]-cursor-[/img]">Obrazek</a></li>
-  <li><a class="clickDaTag" href="?tag=[url]-cursor-[/url]">Odkaz</a></li>
-  <ul>
-  </div>
-
   <label>URL</label><input id="frompocketid" title="[bude vlozeno jako odkaz, url obrazku se automaticky zobrazi]" type="text" name="objekt" value="" class="long" />
   <a href="#" id="frompocketthumb" class="hidden">Z kapsy</a><br />
   <label>&nbsp;</label><input type="submit" name="send" value="Odeslat" class="button">

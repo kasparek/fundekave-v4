@@ -139,6 +139,7 @@ $tpl->setVariable('TIMESTART',$arr['timeStart']);
 $tpl->setVariable('DATEEND',$arr['dateEnd']);
 $tpl->setVariable('TIMEEND',$arr['timeEnd']);
 $tpl->setVariable('DESCRIPTION',fSystem::textToTextarea($arr['description']));
+$tpl->addTextareaToolbox('DESCRIPTIONTOOLBOX','event');
 if($user->currentItemId > 0)
     $tpl->touchBlock('delakce');
 
