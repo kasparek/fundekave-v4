@@ -1,0 +1,18 @@
+<!-- BEGIN message -->
+<div id="{ITEMID}" class="hentry">
+<a name="{ITEMID}"></a>
+  <!-- BEGIN forumlink --><h3><a href="{ENTRYLINK}" class="bookmark">{ENTRYTITLE}</a></h3><!-- END forumlink -->
+  <div class="header">
+    <!-- BEGIN useravatar --><div class="avatar">{AVATAR}</div><!-- END useravatar -->
+    <span class="author vcard"><!-- BEGIN uinfolink --><a href="{USERINFOLINK}" class="url"><!-- END uinfolink --><span class="fn">{USERNAME}</span><!-- BEGIN uinfolinkclose --></a><!-- END uinfolinkclose --></span>
+    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" class="authorlocation">{USERLOCATION}</a><!-- END useronlinelocation -->
+    <!-- BEGIN posttag -->{TAGLINK}<!-- END posttag -->
+    <!-- BEGIN postdeletecheckbox --><input type="checkbox" name="del[]" value="{POSTDELETEID}" class="deleteCheckbox" /></a><!-- END postdeletecheckbox -->
+    <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+  </div>
+  <p class="entry-content">
+    {TEXT}
+    <!-- BEGIN enclosure --><div class="enclosure">{ENCLOSURE}</div><!-- END enclosure -->
+  </p>
+</div>
+<!-- END message -->

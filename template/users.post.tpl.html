@@ -1,0 +1,80 @@
+<form action="{FORMACTION}" method="post" >
+<fieldset>
+<div id="recipientavatarbox">
+<!-- BEGIN friendscombo -->
+  <select id="prokoho_book" name="prokoho_book" onchange='{FRIENDSCOMBOONCHANGE}'>
+  	<option value="">-- Adresát --</option>
+    <!-- BEGIN friendscombovalue -->	
+  	<option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option>
+    <!-- END friendscombovalue -->
+  </select><br />
+<!-- END friendscombo -->
+<!-- BEGIN selectedfriend -->
+  <div id="recipientavatar">
+  	{SELECTEDFRIENDAVATAR}<br />
+    {SELECTEDFRIENDNAME}
+  	<!-- BEGIN selectedfriendbook -->
+    <br /><input id="switchFriendButt" type="button" onClick="{XAJAXDOFRIENDS}" value="Do přátel" class="button" title="Přidat / odebrat kamarada" />
+    <!-- END selectedfriendbook -->
+  </div>
+</div>
+<!-- END selectedfriend -->
+<input type="text" id="prokoho" name="prokoho" value="{RECIPIENTS}" onchange='{RECIPIENTSONCHANGE}' class="long"><br />
+<textarea name="zprava" id="postText" class="draftable">{MESSAGE}</textarea><br />
+<!-- BEGIN hiddenwho -->
+<input type="hidden" NAME="who" VALUE="{HIDDENWHO}" />
+<!-- END hiddenwho -->
+<input type="submit" name="send" value="Odeslat" class="button">&nbsp;&nbsp;
+<input type="submit" name="filtr" value="Filtr" class="button">&nbsp;&nbsp;
+<input type="submit" name="delo" value="Smaž" class="button">&nbsp;&nbsp;
+<input type="submit" name="delbe" value="Smaž mezi" class="button">&nbsp;&nbsp; 
+Na stránku: <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short">
+</fieldset>
+
+<!-- BEGIN searchfilters -->
+<label>Výsledky hledání:</label><div>
+<!-- BEGIN searchusername --><strong>Jméno:</strong> {FILTERUSERNAME} <!-- END searchusername -->
+<!-- BEGIN searchtext --><strong>Text:</strong> {FILTERTEXT}<!-- END searchtext --> 
+<a href="?k=fpost&filtr=cancel">Zrušit filtr</a></div>
+<!-- END searchfilters -->
+
+<!-- BEGIN toppager -->
+<div class="pager cleaner">{TOPPAGER}</div>
+<p class="pagernums">Celkem: <strong>{TOTAL}</strong></p>
+<!-- END toppager -->
+
+<!-- BEGIN message -->
+<div class="postmess">
+		<div class="postmess_content">
+  		<!-- BEGIN messageavatar -->
+      <div class="postmess_ico">{MESSAGEAVATAR}</div>
+      <!-- END messageavatar -->
+      <div class="postmess_head {READEDCLASS}">
+		    <div class="postmess_unread">
+		    <!-- BEGIN readedmessage -->
+        nepřečtená<br />{READEDMESSAGEFAKEVAR}
+        <!-- END readedmessage -->
+		    Smazat <input type="checkbox" name="del[]" value="{DELMESSAGEID}" class="checkbox" />
+        </div>
+		    <div class="postmess_date">{DATE}<br />
+		    <!-- BEGIN sent -->
+		    Odeslaná: <strong><a href="{SENTLINK}">{SENTNAME}</a></strong>
+		    <!-- END sent -->
+		    <!-- BEGIN received -->
+		    Přijatá: <strong><a href="{RECEIVEDLINK}">{RECEIVEDNAME}</a></strong>
+		      <!-- BEGIN receivedbook -->
+			    <a href="{RECEIVETOFRIEND}" title="přidat do přátel">&nbsp;do přátel&nbsp;</a>	
+          <!-- END receivedbook -->	
+		    <!-- END received -->
+		    </div>
+		  </div>
+		  <div class="postmess_text">{MESSAGETEXT}</div>
+		</div>
+</div>
+<!-- END message -->
+
+<!-- BEGIN bottompager -->
+<div class="pager cleaner">{BOTTOMPAGER}</div>
+<!-- END bottompager -->
+
+</form>

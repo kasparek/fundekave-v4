@@ -1,0 +1,22 @@
+<!-- BEGIN events -->
+<!-- BEGIN eventsearch -->
+<form method="post"><fieldset>
+  <legend>Vyhledavani</legend>
+    <select name="adruh"><option value="0">-- druh --</option>{CATEGORYOPTIONS}</select> 
+    <input type="text" name="filtr" value="{FILTRVALUE}" /> 
+    <input type="submit" name="nav" value="Hledat" />
+  </fieldset>
+</form>
+<!-- END eventsearch -->
+<div class="hfeed">
+{ITEMS}
+</div>
+
+<!-- BEGIN pager -->
+<div class="pager">{PAGER}</div>
+<div class="pagernums">Celkem: <strong>{LISTTOTAL}</strong></div>
+<!-- END pager -->
+<!-- END events -->
+<!-- BEGIN notanyevents -->
+<p>Nejsou žádné akce</p>
+<!-- END notanyevents -->

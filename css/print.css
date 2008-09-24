@@ -1,0 +1,31 @@
+/* IMPORTANT */
+/* css fundekave, http://www.fundekave.net/ */
+/* css released under Creative Commons License - http://creativecommons.org/licenses/by-nc-sa/1.0/  */
+/* All associated graphics copyright (c) 2008, filip mares */
+/* Created: Jul. 18th, 2008 */
+
+/* BASIC ELEMENTS */
+
+@media print {
+
+h1 {
+	line-height: 1.2em;
+	}
+
+h2 {
+	padding-top: 1cm;
+	line-height: 1.2em;
+	}
+
+h2 a, h2 a:link, h2 a:visited {
+	color: black;
+	text-decoration: none;
+	}
+
+/* NON DISPLAYED CONTENT */	
+
+hr, #navlink, #navigation, #menubar, #langselector, #botmenu, #searchbox, #screenlogo {
+	display: none;
+	}
+
+}

@@ -1,0 +1,86 @@
+<form action="{FORMACTION}" method="post" enctype="multipart/form-data" id="upfoto">
+<p class="buttonbar">
+<label>&nbsp;</label>
+<input type="hidden" name="gid" value="{GPAGEID}" />
+<input type="submit" name="savegal" value="Uložit" class="button" />
+<!-- BEGIN gdelete -->
+<input type="submit" name="deletegal" value="Smazat galerii" onClick="if(confirm('Opravdu chcete vymazat tuto galerii?')) return(true); else return(false);" class="button" />{DUMMYDELETE}
+<!-- END gdelete -->
+</p>
+
+<script type="text/javascript" src="./js/domtab.js"></script>
+
+<div class="domtab">
+  <ul class="domtabs">
+    <li><a href="#ft1">Nastaveni</a></li>
+    <li><a href="#ft2">Prava</a></li>
+    <li><a href="#ft3">Spratelene stranky</a></li>
+    <li><a href="#ft4">Fotografie</a></li>
+    <li><a href="#ft5">Upload</a></li>
+  </ul>
+  
+<div>
+<h3><a name="ft1" id="ft1">Nastaveni galerie</a></h3>
+<p>
+<label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br />
+<label>Kategorie</label><select name="arr[categoryId]">{CATEGORYOPTIONS}</select><br />
+<label>Název</label><input type="text" name="arr[name]" value="{GNAME}" class="long" /><br />
+<label>Popis</label><textarea name="arr[description]" id="galery" class="draftable">{GDESC}</textarea><br />
+<label>Datum</label><input type="text" name="arr[dateContent]" value="{GDATE}" /><br />
+<label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" /><br />
+<label>Náhledy</label><input type="text" name="xwidth" value="{GWIDTH}" class="small" /> x 
+<input type="text" name="xheight" VALUE="{GHEIGHT}" class="small" /> [pocet na šířku x výšku]<br />
+<!-- BEGIN enhancendgalery -->
+<label>Velikos náhledu v px</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="short" /> x 
+<input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="short" /> - Šířka x vyska (pouze pokud nejsou fyzicky náhledy)<br />
+<label>Styl nahledu</label><select name="xthumbstyle">{THUMSTYLEOPTIONS}</select><br />
+<!-- END enhancendgalery -->
+<!-- BEGIN galerylinks --> 
+	<label>Interní</label><span>{GINTERNALLINK}</span><br />
+	<label>Samostatná</label><span>{GSTANDALONELINK}</span><br />
+	<label>HTML adresa</label><span>{GEXTURL}</span><br />
+<!-- END galerylinks -->
+</p>
+</div>
+<div>
+  <h3><a name="ft2" id="ft2">Pristupova prava</a></h3>
+  <p>
+    {PERMISSSIONSFORM}
+  </p>
+</div>
+<div>
+  <h3><a name="ft3" id="ft3">Spratelene stranky</a></h3>
+  <p>
+    {RELATIONSFORM}
+  </p>
+</div>
+<div>
+<h3><a name="ft4" id="ft4">Seznam fotografii</a></h3>
+<p>
+<label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
+<label>Řadit:</label><select name="galeryorder">
+<option value="0">Podle jména</option>
+<option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
+</select>
+<table>
+<!-- BEGIN gfoto -->
+  <tr>
+  <td align="center"><img src="{FTHUMBURL}" title="{FNAME}" alt="{FNAME}"></td>
+  <td><textarea name="fot[{FID}][comm]" id="galfoto{FID}" class="draftable">{FCOMMENT}</textarea><br />
+  <label>Datum fotky:</label><input type="text" name="fot[{FID}][date]" value="{FDATE}" /><br />
+  <label>Smazat:</label><input type="checkbox" name="delfoto[]" value="{FID}" class="checkbox" /></td>
+</tr>
+<!-- END gfoto -->
+</table>
+</p>
+</div>
+<div>
+<h3><a name="ft5" id="ft5">Nahrat fotografie</a></h3>
+<p>
+<!-- BEGIN uploadinput -->
+<label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br />
+<!-- END uploadinput -->
+</p>
+</div>
+</div>
+</form>

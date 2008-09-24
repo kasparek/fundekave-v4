@@ -1,0 +1,18 @@
+<!-- BEGIN item -->
+<div id="{ITEMIDHTML}" class="hentry">
+	<!-- BEGIN heading --><h2 class="entry-title summary"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
+	<div class="entry-content">{TEXT}</div>
+	<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span> 
+  <span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span> 
+  <!-- BEGIN toolbar -->
+  <ul>
+  <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
+  <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
+  <!-- BEGIN commentlink --><li><a href="{COMMENTLINK}" class="commentsLink">Diskuze [<!-- BEGIN registered --><span class="newposts">NOVÉ _ {ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></li><!-- END commentlink -->
+  <!-- BEGIN edit --><li><a href="#" class="editLink" onclick='xajax_blog_blogEdit("{EDITID}");'>Upravit</a></li><!-- END edit -->
+  </ul>
+  <!-- BEGIN toolbar -->
+</div>
+<!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
+<!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
+<!-- END item -->

@@ -1,0 +1,4 @@
+rewriteEngine on
+rewriteCond %{HTTP_HOST} ^(.+)\.xspace\.cz [NC]
+rewriteCond %{HTTP_HOST) !^www\.
+rewriteRule .* /%1/ [L] 

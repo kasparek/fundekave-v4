@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="{CHARSET}"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
+<head>
+  <title>{TITLE}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+	<meta http-equiv="Content-language" content="cs" />
+  <meta name="description" content="{DESCRIPTION}" />
+  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+  <link rel="alternate" type="application/rss+xml" title="RSS 2.0 : fundekave.net : {TITLE}" href="http://www.fundekave.net/frss.php?k={PAGEID}" />
+  <link rel="stylesheet" type="text/css" href="css/fdk.css" media="all" title="fundekave" />
+  <style type="text/css" media="screen"><!--
+		@import "css/fPager.css";
+		@import "css/supernote.css";
+		@import "{CSSSKIN}/screen.css";
+  --></style>
+  <!--[if lt IE 8.0]><link type="text/css" rel="stylesheet" href="{CSSSKIN}/ie7-styles.css" /><![endif]-->
+  <!--[if lt IE 7.0]><link type="text/css" rel="stylesheet" href="{CSSSKIN}/ie6-styles.css" /><![endif]-->
+  <script src="{WRAPPEDJS}"></script>
+</head>
+<body{BODYACTION}>
+<div id="pageholder"<!-- BEGIN hasMainBanner --> class="hasMainBanner"<!-- END hasMainBanner -->>
+
+	<div id="header">
+	  <!-- BEGIN menu -->
+	  <ul id="menu">
+		<!-- BEGIN topmenuitem -->
+		<li <!-- BEGIN topmenuactivelink --> class="active"<!-- END topmenuactivelink -->><a href="{LINK}">{TEXT}</a></li>
+		<!-- END topmenuitem -->
+	  </ul>
+	  <!-- END menu -->
+	</div>
+
+  <div id="pagebar">
+
+	<div id="logo"><img src="./obr/fundekave-logo-print.gif" alt="FunDeKave.net" /></div>
+    <div id="mainbar">
+      <!-- BEGIN secondary-menu -->
+      <div id="menu-secondary-holder">
+        <ul id="menu-secondary">
+          <!-- BEGIN secondary-menu-item -->
+          <li<!-- BEGIN secondary-menu-oppositebutton --> class="opposite"<!-- END secondary-menu-oppositebutton -->>
+            <a href="{LOLINK}"<!-- BEGIN secondary-menu-ItemAction --> onClick="{LOCLICK}"<!-- END secondary-menu-ItemAction --><!-- BEGIN secondary-menu-activelink --> class="current"<!-- END secondary-menu-activelink --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a>
+          </li>
+          <!-- END secondary-menu-item -->
+        </ul>
+      </div>
+      <!-- END secondary-menu -->
+
+      <!-- BEGIN errormsg --><div class="errormsg">{ERRORMSG}</div><!-- END errormsg -->
+
+      <!-- BEGIN pageheading --><h1>{PAGEHEAD}</h1><!-- END pageheading -->
+
+      <div id="thumbToolbar"></div>
+
+      <!-- BEGIN domtab -->
+      <script type="text/javascript" src="./js/domtab.js"></script>
+      <div class="domtab">
+        <ul class="domtabs">
+          <!-- BEGIN domtabmenuitem -->
+          <li><a href="#{TABMENUID}">{TABMENUNAME}</a></li>
+          <!-- END domtabmenuitem -->
+        </ul>
+      <!-- END domtab -->
+        <!-- BEGIN maincontent-recurrent -->
+  		  <div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
+  		  <!-- BEGIN contentheading --><h2><!-- BEGIN tabid --><a name="{TABID}" id="{TABID}"><!-- END tabid -->{MAINHEAD}<!-- BEGIN tabidclose --></a><!-- END tabidclose --></h2><!-- END contentheading -->
+  			{MAINDATA}
+  		  </div>
+  	    <!-- END maincontent-recurrent -->
+	    <!-- BEGIN domtabclose -->
+	    </div>
+	    <!-- END domtabclose -->
+
+      <!-- BEGIN maincontent-raw -->
+      {RAWDATA}
+      <!-- END maincontent-raw -->
+    </div>
+
+    <!-- BEGIN sidebar -->
+    <div id="sidebar">
+    	<!-- BEGIN sidebar-block -->
+    	<div class="sidebar-block">
+    	<!-- BEGIN sidebar-heading --><h2>{SIDEBARHEAD}</h2><!-- END sidebar-heading -->
+    	{SIDEBARDATA}
+    	</div>
+    	<!-- END sidebar-block -->
+    </div>
+    <!-- END sidebar -->
+  </div>
+  <!-- BEGIN footer -->
+  <p id="footer"><span>deSIGNed by <a href="http://www.filip-mares.co.uk/">nakashi</a> &amp; <a href="http://fundekave.net">fundekave.net</a> - <a href="http://frantisek-kaspar.co.uk" title="php web developer">kasparek</a></span> Pages:: {COUNTER}</p>
+  <!-- END footer -->
+</div>
+<!-- BEGIN banner -->
+<div id="banner">
+ 	<div class="banner-content">{BANNER}</div>
+</div>
+<!-- END banner -->
+<!-- BEGIN users-floating-tooltips -->{USERTOOLTIPS}<!-- END users-floating-tooltips -->
+<!--
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-515522-22");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+-->
+</body>
+</html>

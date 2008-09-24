@@ -1,0 +1,58 @@
+<!-- BEGIN whois -->
+<h2>Pratele uzivatele: {WHOISNAME}</h2>
+<div id="recipientavatar">
+  	{SELECTEDFRIENDAVATAR}<br />
+    {SELECTEDFRIENDNAME}
+  	<!-- BEGIN selectedfriendbook -->
+    <br /><input id="switchFriendButt" type="button" onClick="{XAJAXDOFRIENDS}" value="{XAJAXDOFRIENDSLABEL}" class="button" title="Přidat / odebrat kamarada" />
+    <!-- END selectedfriendbook -->
+</div>
+<!-- END whois -->
+<!-- BEGIN friendstable -->
+<table style="width: 90%">
+<tr>
+<td style="width: 50%;">
+<h3>Pratele</h3>
+<!-- BEGIN friends -->
+<table class="list">
+<!-- BEGIN friendsrow -->
+<tr>
+  <td>
+    {FRIENDSAVATAR}<br />
+    {FRIENDSNAME}
+  </td>
+  <td>
+  <a href="?k=frien&who={FUSERID}">Jeho přátelé</a><br />
+	<a href="?k=fpost&who={FUSERID}">Napsat kamaradovi</a><br />
+	<a href="?k=booke&who={FUSERID}">Oblibene kluby</a><br />
+	Posledni prihlaseni: {FLAST}
+  <!-- BEGIN fcomment -->
+  <br />Komentar: {FCOMMENT}
+  <!-- END fcomment -->
+  </td>
+</tr>
+<!-- END friendsrow -->
+</table>
+<!-- END friends -->
+</td>
+<td>
+<h3>On-Line pratele</h3>
+<!-- BEGIN friendsonline -->
+<table class="list">
+<!-- BEGIN friendsonlinerow -->
+<tr>
+  <td>
+    {ONLINEFRIENDAVATAR}<br />
+    {ONLINEFRIENDNAME}
+  </td>
+  <td><a href="?k={ONLINECURRENTPAGELINK}">{ONLINECURRENTPAGE}</a><br />
+  Přihlášen: {ONLINELOGIN}<br />
+  Poslední aktivita: {ONLINELAST}</td>
+</tr>
+<!-- END friendsonlinerow -->
+</table>
+<!-- END friendsonline -->
+</td>
+</tr>
+</table>
+<!-- END friendstable -->

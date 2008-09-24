@@ -1,0 +1,19 @@
+<p>
+<label>Majitel</label><a href="{OWNERLINK}">{OWNERNAME}</a><br />
+<label>Založen</label>{DATECREATED}<br />
+<label>Příspěvků</label>{MESSAGESCOUNT}
+</p>
+<table>
+<tr class="head"><th>&nbsp;</th><th>id</th><th>Příspěvků</th><th>Nepřečtených</th><th>Návštěv</th><th>Sleduje</th></tr>
+<!-- BEGIN userstat -->
+<tr<!-- BEGIN oddrowclass --> {DUMMYODD}class="head"<!-- END oddrowclass -->>
+	<td>{USERNUMBER}.</td>
+	<td><!-- BEGIN notregistered -->nepřihlášnení{DUMMYNOTREG}<!-- END notregistered -->
+	<!-- BEGIN registered --><a href="{USERLINK}">{USERNAME}</a><!-- END registered -->
+  </td>
+	<td class="center">{OWN}</td>
+	<td class="center">{UNREADED}</td>
+	<td class="center">{VISITS}</td>
+	<td>{BOOKED}</td></tr>
+<!-- END userstat -->
+</table>

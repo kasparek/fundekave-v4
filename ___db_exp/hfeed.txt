@@ -1,0 +1,112 @@
+<div class="hfeed">
+mandatory - entry-title, updated, published, author
+optional - entry-summary, entry-content, bookmark
+  <div class="hentry">
+  <h1 class="entry-title">It takes years of training to think simply</h1>
+  <abbr class="updated published" title="20070413T13:07:00">April 13, 2007</abbr>
+  <div class="entry-content">
+  sdfsdfsd
+  </div>
+  <a class="author"
+  href="http://en.wikipedia.org/wiki/Alfred_North_Whitehead">Alfred North Whithead</a>
+  </div>
+
+
+</div>
+
+<div class="hentry" id="blo140286">
+	<h2 class="entry-title"><a href="index.php?k=maina&amp;i=140286-FUNdeSHUTDOWN-II." class="bookmark">FUNdeSHUTDOWN II.</a></h2>
+	<p class="entry-content">Ponekud se nam zkomplikovala situace s nasim soucasnym webhostingem, kde ... blablablabla</p>
+	<abbr class="updated published" title="2008-04-23">23.04.2008</abbr> 
+  <a href="index.php?k=finfo&amp;who=1" class="author">kasparek</a> 
+  <a href="index.php?k=maina&amp;i=140286-FUNdeSHUTDOWN-II." class="commentsLink">Diskuze [0]</a> 
+</div>
+
+
+hCalendar
+mandatory 
+- dtstart - date/time start of event
+- summary - short desc/title
+optional
+- dtend - date/time end
+- duration - length of event
+- category - may be repeated
+- location
+- url
+- description
+- last-modified
+- status - tentative, confirmed, cancelled
+- class - public, private, confidential
+- uid - a globally unique identifier; typically a URL is used
+- dtstamp - date/time when document was created
+
+   <... class="vcalendar">
+   <... class="vevent">
+   -- info about event 1 --
+   </...>
+   <... class="vevent">
+   -- info about event 2 --
+   </...>
+   <... class="vevent">
+   -- info about event 3 --
+  </...>
+  </...>
+  
+  Datetimes are specified as an ISO8601 datetime
+  The ISO8601 format is:
+
+    * YYYY-MM-DDThh:mm:ss.sss
+    * YYYY-MM-DDThh:mm:ss.sssZ
+    * YYYY-MM-DDThh:mm:ss.sss+hh (or -hh)
+All date/time values should be expressed using the <abbr> element, e.g.,
+    * <abbr class="dtstart" title="2007-05-10T14:00:00">2 o'clock</abbr>
+
+    * The duration property is specified as period (P) of time (see section 4.3.6 of RFC2445)
+    * The duration format is (fill in ___ with digit(s)):
+          o P___D (P15D means 15 days)
+          o P___DT___H (P15DT10H means 15 days, 10 hours)
+          o P___DT___H___M (P15DT10H20M means 15 days, 10 hours, 20 minutes)
+          o P___DT___H___M___S (P15DT10H20M12S means 15 days, 10 hours, 20 minutes, 12 seconds)
+          o P___W (P7W means 7 weeks)
+          o PT___H (PT5H means 5 hours)
+          o PT___H___M (PT5H3M means 5 hours, 3 minutes)
+          o PT___H___M___S (PT5H3M59S means 5 hours, 3 minutes, 59 seconds)
+    *  <abbr class="duration" title="PT1H">1 hour</abbr>
+    * <abbr class="duration" title="PT15M">15 minutes</abbr>
+
+<p class="vevent">Registration is now open for 
+           <a class="url uid summary" href="http://www.web2expo.com/">Web 2.0 <span class="category">Expo</span></a>, 
+           <span class="description">the first event specifically designed to help teach 
+           Web 2.0 techniques and best practices to people in the trenches directly 
+           involved in the design, development, engineering, marketing, and business of 
+           second-generation internet technology.</span> 
+           <a href="http://www.web2expo.com/pub/w/53/register.html">Register now</a> and save 
+           up to $200 on registration fees. Web 2.0 Expo happens 
+          <abbr class="dtstart" title="2007-04-15">April 15</abbr>-
+          <abbr class="dtend" title="2007-04-19">18</abbr> 
+          at <span class="location">Moscone West in San Francisco, CA</span>.
+        </p>
+
+combinantion of vevent and vcard
+http://www.xfront.com/microformats/examples/hCalendar/example01/web2-expo-plus-hCard.html
+
+hcalendar generator
+http://microformats.org/code/hcalendar/creator
+
+hcalednar recurrence - <abbr class="rrule" title="freq=yearly">yearly</abbr>
+
+iso-time http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+
+microformat tutorials
+http://www.xfront.com/microformats/index.html
+        
+iso date from php Date("c")
+2004-02-12T15:19:21
+
+date %Y-%m-%d
+date_iso %d.%m.%Y
+date_local %Y-%m-%d
+time %T
+datetime_iso %Y-%m-%d %T
+datetime_iso %Y-%m-%dT%T
+datetime_local %T %d.%m.%Y

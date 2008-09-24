@@ -1,0 +1,57 @@
+<!-- BEGIN kateg -->
+<div class="pager">{PAGER}</div>
+<form action="{FORMACTION}" method="post" name="kateg">
+<fieldset>
+<input type="submit" name="save" value="Uložit" class="button" />
+</fieldset>
+<div><table class="category">
+<thead><tr><!-- BEGIN kateghead -->	<th>{COLUMN}</th><!-- END kateghead --></tr></thead>
+<tbody>
+<!-- BEGIN arrkateg -->
+<tr>
+
+<!-- BEGIN kategformelement -->
+<td>
+	<!-- BEGIN kateginput -->
+	<input type="{INPUTTYPE}" name="kat{INPUTKATEG}[{INPUTID}][{INPUTCOL}]" value="{INPUTVALUE}" class="{INPUTCLASS}" />
+	<!-- END kateginput -->
+	<!-- BEGIN kategselect -->
+	<select name="kat{SELECTKATEG}[{SELECTID}][{SELECTNAME}]" class="select">
+		<!-- BEGIN arrselect -->
+		<option value="{OPTIONVALUE}"{OPTIONSELECTED}>{OPTIONTEXT}</option>
+		<!-- END arrselect -->
+	</select>
+	<!-- END kategselect -->
+	<!-- BEGIN kategedit -->
+	<a href="?kam={EDITKAM}&kid={EDITID}">EDIT</a>
+	<!-- END kategedit -->	
+</td>
+<!-- END kategformelement -->
+
+<td><input type="checkbox" name="del{KATEG}[]" value="{ID}" class="checkbox"/></td>
+
+</tr>
+<!-- END arrkateg -->
+<tr><td colspan="{COLS}"><label>Nová kategorie</label></td></tr>
+<tr>
+<!-- BEGIN kategformelementnew -->
+<td>
+<!-- BEGIN kateginputnew -->
+<input type="{INPUTTYPE}" name="kat{INPUTKATEG}[0][{INPUTCOL}]" value="" class="{INPUTCLASS}" />
+<!-- END kateginputnew -->
+<!-- BEGIN kategselectnew -->
+<select name="kat{SELECTKATEG}[0][{SELECTNAME}]" class="select">
+	<!-- BEGIN arrselectnew -->
+	<option value="{OPTIONVALUE}">{OPTIONTEXT}</option>
+	<!-- END arrselectnew -->
+</select>
+<!-- END kategselectnew -->
+</td>
+<!-- END kategformelementnew -->
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</form>
+<!-- END kateg -->

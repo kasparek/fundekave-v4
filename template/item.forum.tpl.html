@@ -1,0 +1,20 @@
+<!-- BEGIN item -->
+<div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
+<a name="{ITEMIDHTML}"></a>
+  <!-- BEGIN pagelink --><h2 class="entry-title"><a href="{PAGELINK}" class="bookmark">{PAGENAME}</a></h2><!-- END pagelink -->
+  <div class="header">
+    <!-- BEGIN useravatar --><div class="avatar">{AVATAR}</div><!-- END useravatar -->
+    <span class="author vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span>
+    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" class="authorlocation">{USERLOCATION}</a><!-- END useronlinelocation -->
+    <!-- BEGIN tag -->{TAG} <!-- END tag -->
+    <!-- BEGIN pocket -->{POCKET} <!-- END pocket -->
+    <!-- BEGIN postdeletecheckbox --><input type="checkbox" name="del[]" value="{EDITID}" class="deleteCheckbox" /><!-- END postdeletecheckbox -->
+    <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+  </div>
+  <div class="entry-content">
+    {TEXT}
+    <!-- BEGIN enclosure --><div class="enclosure">{ENCLOSURE}</div><!-- END enclosure -->
+  </div>
+</div>
+<!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
+<!-- END item -->

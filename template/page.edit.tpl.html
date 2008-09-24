@@ -1,0 +1,70 @@
+<form action="{FORMACTION}" method="post" enctype="multipart/form-data">
+<p class="buttonbar">
+<label>&nbsp;</label><input type="submit" name="save" value="Uložit" class="button" />
+<!-- BEGIN delpage -->
+<input type="submit" name="del" value="Smazat stránku" onClick="if(confirm('Opravdu chcete mazat?')) return(true); else return(false);" class="button" />
+<!-- END delpage -->
+</p>
+
+<script type="text/javascript" src="./js/domtab.js"></script>
+
+<div class="domtab">
+  <ul class="domtabs">
+    <li><a href="#ft1">Nastaveni</a></li>
+    <li><a href="#ft2">Prava</a></li>
+    <li><a href="#ft3">Spratelene stranky</a></li>
+    <!-- BEGIN forumspecifictab --><li><a href="#ft4">Nastenka</a></li><!-- END forumspecifictab -->
+  </ul>
+<div>
+<h3><a name="ft1" id="ft1">Nastaveni</a></h3>
+<p>
+<!-- BEGIN pageowner -->
+    <label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br />
+<!-- END pageowner -->
+    <label>Název stranky</label>
+    <input type="text" name="name" value="{PAGENAME}" class="long"><br />
+    <!-- BEGIN sadmi -->
+    <label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
+    <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}" class="long"><br />
+    <label>Autor stranky</label><input type="text" name="authorcontent" value="{PAGEAUTHOR}" class="long"><br />
+    <label>Datum obsahu</label><input type="text" name="datecontent" value="{DATECONTENT}" class="long"><br />
+    <label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="long"><br />
+    <!-- BEGIN categories -->
+    <label>Kategorie</label><select name="category">{CATEGORYOPTIONS}</select><br />
+    <!-- END categories -->
+    <label>Skupina lokalniho menu</label><select name="menusec">{MENUSECOPTIONS}</select><br />
+    <label>Skupina levyho panelu</label><select name="leftpanel">{LEFTPANELOPTIONS}</select><br />
+    <!-- END sadmi -->
+    <!-- BEGIN pageavatarupload -->
+    <label>Ikona (60x25px)</label>
+    <input type="file" name="audico" /><br />
+    <!-- END pageavatarupload -->
+    <!-- BEGIN pageavatar -->
+    <label>&nbsp;</label><img src="{PAGEICOLINK}">&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
+    <!-- END pageavatar -->
+    <label>Popis</label>
+    <textarea id="{PAGEDESCRIPTIONID}" class="draftable largetextarea" name="description">{PAGEDESCRIPTION}</textarea><br />
+    <label>Obsah / U klubů zahlaví</label>
+    <textarea id="{PAGECONTENTID}" class="draftable largetextarea" name="content">{PAGECONTENT}</textarea>
+</p>
+</div>
+<div>
+<h3><a name="ft2" id="ft2">Pristupova prava</a></h3>
+<p>
+    {PAGEPERMISIONSFORM}
+ </p>
+ </div>  
+ <div>
+<h3><a name="ft2" id="ft3">Spratelene stranky</a></h3>
+    {RELATIONSFORM}
+    </p>
+ </div>
+    <!-- BEGIN forumspecific -->
+    <div>
+    <h3><a name="ft4" id="ft4">Nastenka klubu</a></h3>
+    <textarea id="{HOMEID}" name="forumhome" class="draftable largetextarea">{CONTENT}</textarea>
+    </div>
+    <!-- END forumspecific -->
+    
+</div>
+</form>

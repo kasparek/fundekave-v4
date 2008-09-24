@@ -1,0 +1,45 @@
+<p>
+Celkem uživatelu: <strong>{TOTALITEMS}</strong>
+</p>
+<form action="" method="post">
+<fieldset>
+<legend>Filtrovat</legend>
+<select name="usrfilter">
+<option value="0"<!-- BEGIN filter0 --> selected="selected"<!-- END filter0 -->>Všichni</option>
+<option value="4"<!-- BEGIN filter4 --> selected="selected"<!-- END filter4 -->>Aktivní</option>
+<option value="5"<!-- BEGIN filter5 --> selected="selected"<!-- END filter5 -->>Vypnuté</option>
+<option value="1"<!-- BEGIN filter1 --> selected="selected"<!-- END filter1 -->>Nikdy neprihlaseni</option>
+<option value="2"<!-- BEGIN filter2 --> selected="selected"<!-- END filter2 -->>Aspon jednou prihlášení</option>
+<option value="3"<!-- BEGIN filter3 --> selected="selected"<!-- END filter3 -->>Online</option>
+</select> 
+<input type="submit" name="nav" value="Nastavit" />
+</fieldset>
+
+<table>
+<tr>
+<th>ID</th>
+<th>Username</th>
+<th>Registrace</th>
+<th>Posledni</th>
+<th>Gen.str.</th>
+<th>Zablokovat</th>
+<th>Online</th>
+</tr>
+  <!-- BEGIN user -->
+  <tr>
+	<td>{ID}</td>
+	<td><a href="{URL}">{NAME}</td>
+	<td>{CREATED}</td>
+	<td>{UPDATED}</td>
+	<td>{HIT}</td>
+	<td><select name="usersstat[{ID}]">
+	<option value="0"<!-- BEGIN userlocked0 --> selected="selected"<!-- END userlocked0 -->>Aktivní</option>
+	<option value="1"<!-- BEGIN userlocked1 --> selected="selected"<!-- END userlocked1 -->>Vypnutý</option>
+	</select>
+	</td>
+	<td><!-- BEGIN online --><a href="{DISCONNECTURL}">Odstrelit</a> - {IP}<!-- END online --></td>
+	</tr>
+  <!-- END user -->
+</table>
+</form>
+<!-- BEGIN pager --><div class="pager">{PAGER}</div><!-- END pager -->

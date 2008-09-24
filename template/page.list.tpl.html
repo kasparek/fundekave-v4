@@ -1,0 +1,25 @@
+<!-- BEGIN results -->
+
+<!-- BEGIN toppager -->
+<div class="pagernums">Zobrazené: <strong>{FROM} - {TO}</strong> Celkem článků: <strong>{TOTAL}</strong></div>
+<div class="pager">{TOPPAGER}</div>
+<!-- END toppager -->
+
+<!-- BEGIN result -->
+<div>
+	<p style="float: right; text-align: center;">{LINKAUTOR}</p>
+    <h2><a href="{PAGELINK}">{PAGENAME}</a></h2>
+    <div>{PAGEDATE} | {PAGEAUTOR}</div>
+    <!-- BEGIN rdesc --><p>{DESCRIPTION}</p><!-- END rdesc -->
+    <div class="cleaner"></div>
+</div>
+<!-- END result -->
+
+<!-- BEGIN bottompager -->
+<div class="pager">{PAGER}</div>
+<!-- END bottompager -->
+<!-- END results -->
+
+<!-- BEGIN noresults -->
+<p>Žádné články v kategorii</p>{DUMMYNORESULTS}
+<!-- END noresults -->
