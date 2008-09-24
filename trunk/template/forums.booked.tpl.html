@@ -1,0 +1,89 @@
+<!-- BEGIN forumdel -->
+<p>Opravdu chcete smazat klub: <strong>{DELFORUMNAME}</strong></p>
+<form action="{DELFORMACTION}" method="POST" name="mazani"><p>
+<input type="submit" name="delnow" value="Odstranit" class="button" />
+&nbsp;&nbsp;&nbsp;<input type="submit" name="nodel" value="Ponechat" class="button" />
+<input type="Hidden" name="del" value="{DELFORUMID}">
+</p></form>
+<!-- END forumdel -->
+<div id="bookedContent">
+<!-- BEGIN bookedcontent -->
+<!-- BEGIN friendavatar -->
+<div id="usersBook"><h2>Oblibene uzivatele</h2>
+{AVATAR}</div>
+<!-- END friendavatar -->
+<!-- BEGIN ownerforums -->
+<p>
+<h2>Vlastní</h2>
+<table class="auditlist">
+  <!-- BEGIN owner -->
+  <tr>
+    <!-- BEGIN oauditico -->
+    <td class="auditico">
+      <!-- BEGIN oauditicopic -->
+      <a href="?k={OWNERICOKAM}"><img src="{OWNERFORUMICO}" alt="{OWNERFORUMICOALT}" title="Ikona klubu {OWNERFORUMICONAME}" /></a>
+      <!-- END oauditicopic -->
+      <!-- BEGIN oauditicoempty -->
+      {OWNERICOEMPTY}
+      <!-- END oauditicoempty -->
+    </td>
+    <!-- END oauditico -->
+  <td class="kllink"><a href="?k={OWNERKAM}">{OWNERFORUMNAME}</a></td>
+  <td class="klcis"><div class="{OWNERNEWCLASS}">{OWNERNEWCNT}</div></td>
+  <td class="klcisall"><div class="head">{OWNERCNT}</div></td>
+  <td class="kldell"><a href="{OWNERDELLINK}">Odstranit</a></td>
+  </tr>
+  <!-- END owner -->
+</table>
+</p>
+<!-- END ownerforums -->
+<!-- BEGIN bookedforums -->
+<p>
+<h2>Oblibene</h2>
+<table class="auditlist">
+  <!-- BEGIN booked -->
+  <tr>
+      <!-- BEGIN bauditico -->
+      <td class="auditico">
+        <!-- BEGIN bauditicopic -->
+        <a href="?k={BOOKEDICOKAM}"><img src="{BOOKEDFORUMICO}" alt="{BOOKEDFORUMICOALT}" title="Ikona klubu {BOOKEDFORUMICONAME}" /></a>
+        <!-- END bauditicopic -->
+        <!-- BEGIN bauditicoempty -->
+        {BOOKEDICOEMPTY}
+        <!-- END bauditicoempty -->
+    </td>
+    <!-- END bauditico -->
+  <td class="kllink"><a href="?k={BOOKEDKAM}">{BOOKEDFORUMNAME}</a></td>
+  <td class="klcis"><div class="{BOOKEDNEWCLASS}">{BOOKEDNEWCNT}</div></td>
+  <td class="klcisall"><div class="head">{BOOKEDCNT}</div></td>
+  </tr>
+  <!-- END booked -->
+</table>
+</p>
+<!-- END bookedforums -->
+<!-- BEGIN newforums -->
+<p>
+<h2>Nove</h2>
+<table class="auditlist">
+  <!-- BEGIN new -->
+  <tr>
+    <!-- BEGIN nauditico -->
+    <td class="auditico">
+      <!-- BEGIN nauditicopic -->
+      <a href="?k={NEWICOKAM}"><img src="{NEWFORUMICO}" alt="{NEWFORUMICOALT}" title="Ikona klubu {NEWFORUMICONAME}" /></a>
+      <!-- END nauditicopic -->
+      <!-- BEGIN nauditicoempty -->
+      {NEWICOEMPTY}
+      <!-- END nauditicoempty -->
+    </td>
+    <!-- END nauditico -->
+  <td class="kllink"><a href="?k={NEWKAM}">{NEWFORUMNAME}</a></td>
+  <td class="klcis"><div class="{NEWNEWCLASS}">{NEWNEWCNT}</div></td>
+  <td class="klcisall"><div class="head">{NEWCNT}</div></td>
+  </tr>
+  <!-- END new -->
+</table>
+</p>
+<!-- END newforums -->
+<!-- END bookedcontent -->
+</div>

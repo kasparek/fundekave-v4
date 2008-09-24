@@ -1,0 +1,27 @@
+<form action="{FORMACTION}" method="post">
+<fieldset>
+  <legend>Filtrovat</legend>
+  <select name="svcem">{WHEREOPTIONS}</select>
+  <input type="text" name="filtr" value="{SEARCHTEXT}" />
+  <label for="perpage">Na stránku</label><input type="text" id="perpage" name="perpage" value="{PERPAGE}" class="small" />
+  <input type="submit" name="subsearch" value="Vybrat" />
+</fieldset>
+</form>
+<!-- BEGIN results -->
+	<!-- BEGIN toppager -->
+	<div class="pager">{TOPPAGER}</div>
+	<!-- END toppager -->
+	<p class="pagernums">Zobrazené: <strong>{FROM}-{TO}</strong> Celkem nalezeno: <strong>{TOTAL}</strong></p>
+    <div class="hfeed">
+    	{RESULTS}
+    </div>
+	<!-- BEGIN bottompager -->
+	<div class="pager">{BOTTOMPAGER}</div>
+	<!-- END bottompager -->
+<!-- END results -->
+<!-- BEGIN noresults -->
+<p>Bohužel při hledání se nic nenašlo</p>
+<!-- END noresults -->
+<!-- BEGIN nosearchconditions -->
+<p>Zadejte podmínku pro vyhledávání</p>
+<!-- END nosearchconditions -->

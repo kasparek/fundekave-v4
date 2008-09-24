@@ -1,0 +1,28 @@
+<!-- BEGIN item -->
+<div class="vevent">
+	<!-- BEGIN flyer -->
+	<div class="flyer"><a href="{BIGFLYERLINK}" class="popupLink">
+  <img src="{FLYERTHUMBURL}" title="Leták {IMGEVENTTITLE}" alt="{IMGEVENTALT}" /></a></div>
+	<!-- END flyer -->
+	<div class="description">
+	   <div class="category">{CATEGORY}</div>
+	   <!-- BEGIN heading --><h2 class="entry-title summary"><a href="{BLOGLINK}">{BLOGTITLE}</a></h2><!-- END heading -->
+		 <p>Kdy <span class="abbr" title="{STARTDATETIMEISO}"><abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr></span></p>
+		 <!-- BEGIN eventend -->- <span class="abbr" title="{ENDDATETIMEISO}"><abbr class="dtend" title="{ENDDATETIMEISO}">{ENDDATETIMELOCAL}</abbr></span><!-- END eventend -->
+		 <p>Kde <span class="location">{LOCATION}</span></p>
+		<!-- BEGIN desc --><p class="description">{TEXT}</p><!-- END desc -->
+		<!-- BEGIN toolbar -->
+			<ul>
+			<li><span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span></li> 
+      <li><span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span></li>
+      <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
+      <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
+      <!-- BEGIN commentlink --><li><a href="{COMMENTLINK}" class="commentsLink">Diskuze [<!-- BEGIN registered --><span class="newposts">NOVÉ _ {ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></li><!-- END commentlink -->
+      <!-- BEGIN edit --><li><a href="{EDITLINK}" class="editLink">Upravit</a></li><!-- END edit -->
+      </ul>
+    <!-- END toolbar -->
+	</div>
+</div>
+<!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
+<!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
+<!-- END item -->

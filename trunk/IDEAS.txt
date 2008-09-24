@@ -1,0 +1,41 @@
+OBLIBENE
+  - radit podle neprectenych sestupne
+
+ZALOZENI
+  - promyslet system preneseni prispevku do jinyho - komentar fotky v klubu
+
+PROPOJENI
+  - blogpost - galerie
+  - galerie - blogpost
+  - blogpost - fotka
+  - fotka - blogpost
+  - fotka - forumpost
+  - galerie - forumpost
+  - galerie - blogpost
+obecne
+  - item -> page
+  - page -> item
+  - item -> item
+  - page -> page - to uz mam
+
+
+PALCE
+ - lista na palce zapinaci pres tlacitko - ajax
+ 
+WEBCAM
+  - moznost aktivovat webcam swf
+  - stranka s online webcam
+  - nastaveni prav pro prohlizeni, pro seznam uzivatelu, pro pratele, vsechny ...
+
+USER HOMEPAGE
+  - mod_rewrite kasparek.fundekave.net -> fundekave.net?u=kasparek
+//--------------------------------------- not IMPORTANT
+OSTATNI
+  - simple popup na ajax errory a login window pokud ho to odhlasi
+  - lidi co sleduji tenhle klub sleduji tak tyhle kluby :]]
+  - GALERY .. random slideshow
+
+RELATIONS
+  - na lefthand spratelene stranky odkaz na mapu 
+  - AJAX - popup s flashem - roamer - bud zavrit nebo se prejde na jinou stranku
+  - prvni jednodusi verze - stranka s mapou kam se preda id aktivni stranky .. od ni se zacina navigovat .. pokud neni id jede to od prvni

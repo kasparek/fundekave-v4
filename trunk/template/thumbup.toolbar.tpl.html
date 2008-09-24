@@ -1,0 +1,23 @@
+<form action="{FORMACTION}" method="post" id="thumbuptoolbar">
+<fieldset>
+<legend>Palce</legend>
+<select id="thumbuporder" name="tuorder">
+  <option value="0"> --- Radit podle --- </option>
+  <option<!-- BEGIN tuodesc --> selected="selected"<!-- END tuodesc --> value="1">Podle palcu</option>
+  <!-- BEGIN hits -->
+  <option<!-- BEGIN hitdesc --> selected="selected"<!-- END hitdesc --> value="3">Podle poctu zobrazeni</option>
+  <option<!-- BEGIN hitdescreg --> selected="selected"<!-- END hitdescreg --> value="4">Zobrazeni od registrovanych</option>
+  <!-- END hits -->
+</select>
+<select id="thumbupfilter" name="tufilter">
+  <option value="0"> --- Vybrat vse --- </option>
+  <option<!-- BEGIN tufall --> selected="selected"<!-- END tufall --> value="1">Jen palce</option>
+  <option<!-- BEGIN tufmy --> selected="selected"<!-- END tufmy --> value="2">Jen moje palce</option>
+</select>
+<select id="thumbupdate" name="tumonth"><option value="0"> --- Za mesic --- </option>{TUMONTH}</select> 
+<select name="tuyear"><option value="0"> --- Za rok --- </option>{TUYEAR}</select>
+<label for="tuusers">Uzivatel</label>&nbsp;<input type="text" name="tuusers" title="Filtrovani podle uzivatelu; uzivatelska jmena oddelena carkou" value="{TUUSERNAME}" />
+<input type="submit" name="thumbupset" value="Nastavit" /> 
+<input type="submit" name="thumbupreset" value="Zrusit"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
+</fieldset>
+</form>

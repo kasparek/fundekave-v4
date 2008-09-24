@@ -1,0 +1,60 @@
+<form enctype="multipart/form-data" action="{FORMACTION}" method="post">
+<p class="buttonbar">
+<label>&nbsp;</label><input type="submit" name="sava" value="Uložit" class="button" />
+</p>
+<p>
+<label>Uživatel</label>
+<div class="fakeinput">{USERNAME}</div>
+<label>Nové heslo</label>
+<input type="password" name="pwdreg1" value="" /><br />
+<label>Heslo znovu</label>
+<input type="password" name="pwdreg2" value="" /><br />
+<label>Avatar</label>
+<input type="file" name="idfoto" />
+<div class="fakeinput smalltext">obrázek musí být menší než 20kb; může být .gif nebo .jpg; ideální rozměry 40x50pix nebo podobný poměr</div>
+<label>Skin</label><select name="skin">{SKINOPTIONS}</select><br />
+<label>FDK Homepage</label><select name="homepageid">
+<option value=""></option>
+{HOMEPAGEOPTIONS}</select><br />
+<label>Icq</label>
+<input type="text" name="infoicq" value="{USERICQ}" /><br />
+<label>E-mail</label>
+<input type="text" name="infoemajl" value="{USEREMAIL}" class="long" /><br />
+<label>WWW</label>
+<input type="text" name="infowww" value="{USERWWW}" class="long" /><br />
+<label>Motto</label>
+<input type="text" name="infomotto" value="{USERMOTTO}" class="long" /><br />
+<label>Místo výskytu</label>
+<input type="text" name="infomisto" value="{USERMISTO}" class="long" /><br />
+<label>Oblíbené jídlo</label>
+<input type="text" name="infojidlo" value="{USERJIDLO}" class="long" /><br />
+<label>Hobby - koníčci</label>
+<textarea name="infohoby" id="hobby" class="draftable" />{USERHOBBY}</textarea><br />
+<label>O všem</label>
+<textarea name="infoabout" id="hobby" class="draftable" />{USERABOUT}</textarea><br />
+<label>Bannery</label>
+<select name="zbanner">
+<option value="0">Nezobrazovat</option>
+<option value="1"<!-- BEGIN zbanner --> selected="selected"<!-- END zbanner -->>Zobrazovat</option>
+</select>
+<br />
+<label>Ikony klubů</label>
+<select name="zaudico">
+<option value="0">Nezobrazovat</option>
+<option value="1"<!-- BEGIN zaudico --> selected="selected"<!-- END zaudico -->>Zobrazovat</option>
+</select>
+<br />
+<label>Ikony uživ.</label>
+<select name="zidico">
+<option value="0">Nezobrazovat</option>
+<option value="1"<!-- BEGIN zidico --> selected="selected"<!-- END zidico -->>Zobrazovat</option>
+</select>
+<br />
+<label>Styl galerie</label>
+<select name="galtype">
+<option value="0">Fotky se otvirají do stejného okna</option>
+<option value="1"<!-- BEGIN galtype --> selected="selected"<!-- END galtype -->>Do nového okna</option>
+</select>
+<input type="hidden" name="nav" value="infosave">
+</p>
+</form>

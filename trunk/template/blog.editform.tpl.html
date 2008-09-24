@@ -1,0 +1,16 @@
+<form action="javascript:void(null);" onsubmit="submitBloged();" method="post" name="bloged" id="bloged">
+  <div>
+  	<label>Nadpis</label><input name="nadpis" value="{EDITADDON}" type="text"><br>  
+  	<label>Datum</label><input name="datum" value="{EDITDATE}" type="text"><br>
+    <label>Text</label><textarea name="textclanku" id="b{PAGEID}" {TACTION} class="draftable">{EDITTEXT}</textarea><br>
+    <label>Podpis</label><input name="autor" value="{EDITAUTOR}" type="text"><br>
+    <label>&nbsp;</label><input name="save" id="submitButtonSave" value="Uložit" class="button" type="submit">  
+    <!-- BEGIN newdelete -->
+    {DELETEFAKE}<input type="hidden" name="del" id="bdel" value="0" /><input name="delete" id="submitButtonDelete"  value="Smazat" class="button" onclick="if(confirm('Opravdu chcete vymazat tento clánek ?')) {document.getElementById('bdel').value=1; this.submit();} return(false);" type="submit">
+    <!-- END newdelete -->
+    <!-- BEGIN newedit -->
+    <input name="nid" value="{EDITID}" type="hidden">
+    <!-- END newedit -->
+    <input name="pageid" value="{PAGEID}" type="hidden">
+  </div>
+</form>
