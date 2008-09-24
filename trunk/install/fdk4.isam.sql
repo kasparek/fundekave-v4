@@ -171,6 +171,7 @@ CREATE TABLE sys_pages_items (
      , itemIdBottom mediumint unsigned default NULL
      , typeId VARCHAR(10) DEFAULT null
      , pageId varchar(5) NOT NULL
+     , pageIdBottom varchar(5) default NULL
      , categoryId SMALLINT unsigned DEFAULT null
      , userId MEDIUMINT unsigned default null
      , name VARCHAR(15) not null

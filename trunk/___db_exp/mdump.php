@@ -220,16 +220,16 @@ array('t'=>'ankklik','n'=>'sys_poll_answers_users','s'=>'ankid,odpid,usr'),
 
 
 array('t'=>'audit','conv'=>array('position'=>3,'file'=>'sys_audit'),'n'=>'sys_pages_items'
-,'s'=>'id,"null","null","forum",id_aud,"null",id_usr,jmeno,"null","null",datum,text,http,"null","null","null","null",0,"null"'),
+,'s'=>'id,"null","null","forum",id_aud,"null","null",id_usr,jmeno,"null","null",datum,text,http,"null","null","null","null",0,"null"'),
 
 array('t'=>'novinky','n'=>'sys_pages_items','f'=>140000
-,'s'=>'id,"null","null","blog","maina","null",usr,autor,datum,"null",datum,text,"null",nadpis,"null","null","null",0,"null"'),
+,'s'=>'id,"null","null","blog","maina","null","null",usr,autor,datum,"null",datum,text,"null",nadpis,"null","null","null",0,"null"'),
 
 array('t'=>'galfoto','conv'=>array('position'=>3,'file'=>'galerie'),'n'=>'sys_pages_items','f'=>150000
-,'q'=>'SELECT gf.id,"null","null","galery",gf.galerie,"null",f.autor,u.jmeno,"null","null",f.datum,gf.popis,gf.detail,gf.nahled,"null","null",h.hit,0,"null" from galfoto as gf join galerie as f on f.id=gf.galerie left join sys_id as u on u.id=f.autor left join galfotohit as h on h.id=gf.id'),
+,'q'=>'SELECT gf.id,"null","null","galery",gf.galerie,"null","null",f.autor,u.jmeno,"null","null",f.datum,gf.popis,gf.detail,gf.nahled,"null","null",h.hit,0,"null" from galfoto as gf join galerie as f on f.id=gf.galerie left join sys_id as u on u.id=f.autor left join galfotohit as h on h.id=gf.id'),
 
 array('t'=>'akce','n'=>'sys_pages_items','f'=>145000
-,'q'=>'select a.id,"null","null","event","event",ac.id+400
+,'q'=>'select a.id,"null","null","event","event","null",ac.id+400
 ,a.idusr,u.jmeno,a.datum,"null",a.datumins
 ,a.popis,a.letak,a.nazev,"null","null","null"
 ,0,concat(a.misto," ",m.nazev) from akce as a left join akcekateg as ac on ac.id=a.druhid join sys_id as u on a.idusr=u.id left join akcemisto as m on m.id=a.mistoid'
