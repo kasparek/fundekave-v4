@@ -46,10 +46,14 @@ define('ERROR_POLL_QUESTION','Nezadali jste otazku');
 define('LABEL_STATS','Statistiky');
 define('LABEL_HOME','Nastenka');
 define('LABEL_DELETE','Smazat');
-define('LABEL_TAG_IS_1','Palec');
-define('LABEL_TAG_IS_2_4','Palce');
-define('LABEL_TAG_IS_X','Palcu');
-define('LABEL_TAG_ME','Palec nahoru');
+
+$TAGLABELS = array(
+'forum'=>array('Palec nahoru','Palec','Palce','Palcu'),
+'blog'=>array('Palec nahoru','Palec','Palce','Palcu'),
+'galery'=>array('Palec nahoru','Palec','Palce','Palcu'),
+'event'=>array('Přijdu','přijde','přijdou','přijde'),
+);
+
 define('LABEL_TAG_PAGE','Popisuj fotky');
 define('LABEL_RULES_ACCESS','Pristup');
 define('LABEL_RULES_HELP','Napoveda');
@@ -145,4 +149,3 @@ $MONTHS=array("01"=>"Leden","02"=>"Únor","03"=>"Brezen","04"=>"Duben","05"=>"Kv
 $DIARYREMINDER=array(0=>"Nepripomínat",1=>"Den akce",2=>"Den predem",3=>"2 dny pred",4=>"3 dny pred",5=>"4 dny pred",6=>"5 dní pred",7=>"6 dní pred",8=>"7 dní pred",9=>"8 dní pred");
 $DIARYREPEATER=array(0=>"Neopakovat",1=>"Každý rok",2=>"Každý mesíc");
 $TYPEID = array('galery'=>'Galerie','forum'=>'Klub','blog'=>'Blog');
-?>

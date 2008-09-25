@@ -91,8 +91,6 @@ class fPocket extends fQueryTool {
             	   $tpl->setVariable('ITEMTITLE',fSystem::textins($item[$index],0,0));
             	   $tpl->setVariable('ITEMID',$item[3]);
             	   $tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
-            	   
-            	   
             	}
             	$tpl->parseCurrentBlock();
             	if(!empty($item[3])) {

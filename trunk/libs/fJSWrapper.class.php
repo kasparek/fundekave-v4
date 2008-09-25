@@ -17,7 +17,7 @@ class fJSWrapper {
     }
     function generateFilename() {
         global $user;
-        $this->targetFilename = $this->webRelCacheDir.$user->currentPageId.($user->idkontrol*1).'.js';
+        $this->targetFilename = $this->webRelCacheDir.$user->currentPage['typeId'].($user->idkontrol*1).'.js';
     }
     function cleanCache() {
         //---delete all from cache directory
