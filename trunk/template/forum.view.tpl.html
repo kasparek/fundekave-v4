@@ -4,9 +4,7 @@
  <form action="{FORMACTION}" method="post" name="audit">
   <!-- BEGIN form -->
   <p class="auditForm">
-  <!-- BEGIN userlogged -->
-  <input type="hidden" name="jmeno" value="{USERNAMELOGGED}" />
-  <!-- END userlogged -->
+  
   <!-- BEGIN usernotlogged -->
   <label>Jméno</label><input type="text" name="jmeno" value="{USERNAMENOTLOGGED}" /><br />
   <label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
@@ -14,14 +12,16 @@
   <input type="text" name="pcaptcha" value="" /><br />
   <!-- END usernotlogged -->
   <label>Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea>{TEXTAREATOOLBOX}<br />
-  
+  <!-- BEGIN userlogged -->
+  <input type="hidden" name="jmeno" value="{USERNAMELOGGED}" />
   <label>URL</label><input id="frompocketid" title="[bude vlozeno jako odkaz, url obrazku se automaticky zobrazi]" type="text" name="objekt" value="" class="long" />
   <a href="#" id="frompocketthumb" class="hidden">Z kapsy</a><br />
+  <!-- END userlogged -->
   <label>&nbsp;</label><input type="submit" name="send" value="Odeslat" class="button">
   <!-- BEGIN userlogged2 -->
   <input type="submit" name="filtr" value="Filtr" class="button">
+  Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short" />
   <!-- END userlogged2 -->
-   Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short" /><br />
   </p>
   <!-- END form -->
 <!-- BEGIN noform -->
