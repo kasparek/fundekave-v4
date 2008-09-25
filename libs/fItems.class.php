@@ -90,7 +90,7 @@ class fItems extends fQueryTool {
     private $fQuerySelectDefault = array('itemId'=>'i.itemId','userId'=>'i.userId','pageId'=>'i.pageId',
         'text'=>'i.text',
         'enclosure'=>'i.enclosure','tag_weight'=>'i.tag_weight',
-        'itemIdBottom'=>'i.itemIdBottom'
+        'pageIdBottom'=>'i.pageIdBottom','itemIdBottom'=>'i.itemIdBottom'
         );
     private $fQuerySelectType = array(
         'galery'=>array('galeryDir'=>'p.galeryDir', 
@@ -265,6 +265,7 @@ class fItems extends fQueryTool {
     public $currentHeader = '';
     public $itemIdInside = 0;
     public $showBottomItem = true;
+    public $enableEdit = true;
     
     function pop() {
         if($this->arrData) return array_shift($this->arrData);
@@ -296,7 +297,7 @@ class fItems extends fQueryTool {
   	$tpl->setVariable('DATEISO',$arr['dateIso']);
   	if(isset($arr['name'])) $tpl->setVariable('AUTHOR',$arr['name']);
   	if(!empty($arr['unread'])) $tpl->touchBlock('unread');
-  	if(isset($arr['editItemId']) && $user->currentPageId==$arr['pageId']) $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
+  	if($this->enableEdit==true) if(isset($arr['editItemId']) && $user->currentPageId==$arr['pageId']) $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
   	if($this->showText==true) $tpl->setVariable('TEXT',$arr['text']);
   	//---event only
   	if($arr['typeId']=='event') {
@@ -437,6 +438,8 @@ class fItems extends fQueryTool {
     if($this->showBottomItem) {
         if($arr['itemIdBottom']>0) {
             $fItem = new fItems();
+            $fItem->enableEdit = false;
+            $fItem->showPageLabel = true;
             $fItem->initData('',$user->gid);
             $fItem->getItem($arr['itemIdBottom']);
             $fItem->getData();
@@ -446,6 +449,12 @@ class fItems extends fQueryTool {
                 unset($fItem);
             }
         }
+        if(!empty($arr['pageIdBottom'])) {
+            if(fRules::get($user->gid,$arr['pageIdBottom'],1)) {
+                $tpl->setVariable('ITEMBOTTOM','<h3><a href="?k='.$arr['pageIdBottom'].'">'.fPages::pageAttribute($arr['pageIdBottom']).'</a></h3>');
+            }
+        }
+        
     }
     $tpl->parseCurrentBlock();
     

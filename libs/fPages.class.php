@@ -19,7 +19,7 @@ class fPages extends fQueryTool {
 		parent::__construct();
 		$this->primaryCol = $this->pagesPrimaryCol;
 		
-    $this->getListPages();
+        $this->getListPages();
 	}
 	static function newPageId($delka=5) {
 		Global $db;
@@ -34,13 +34,17 @@ class fPages extends fQueryTool {
 		return($lo);
 	}
 	static function page_exist($col,$val) {
-    global $db;
-    return $db->getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
-  }
-  static function pageOwner($pageId) {
-    global $db;
-    return $db->getOne("SELECT userIdOwner FROM sys_pages WHERE pageId= '".$pageId."'");
-  } 
+        global $db;
+        return $db->getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
+    }
+    static function pageOwner($pageId) {
+        global $db;
+        return $db->getOne("SELECT userIdOwner FROM sys_pages WHERE pageId= '".$pageId."'");
+    }
+    static function pageAttribute($pageId,$attribute='name') {
+        global $db;
+        return $db->getOne("SELECT ".$attribute." FROM sys_pages WHERE pageId= '".$pageId."'");
+    }
 	function getListPages() {
 		if($this->permission == 1) {
 		    if($this->sa === true) {
