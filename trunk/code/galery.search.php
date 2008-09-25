@@ -63,7 +63,7 @@ $galGood = unserialize($sessGallSearchCache['data']);
 if(!empty($galGood)) {
 	//--pagination
 	$celkem = count($galGood);
-	$pager = fSystem::initPager($celkem,$sessGallSearchCache['perpage'],array(),$galGood);
+	$pager = fSystem::initPager($celkem,$sessGallSearchCache['perpage'],array('itemData'=>$galGood));
 
 	$arrgal = $pager->getPageData();
 	//--sql query

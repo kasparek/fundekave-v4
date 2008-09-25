@@ -311,7 +311,7 @@ class fForum {
         }
         
         if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
-        $pager = fSystem::initPager(0,$perpage,$arrPagerExtraVars,array(),array('noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+        $pager = fSystem::initPager(0,$perpage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
         $from = ($pager->getCurrentPageID()-1) * $perpage;
         
         $fItems->setLimit($from,$perpage+1);

@@ -25,9 +25,13 @@ class fItems extends fQueryTool {
         ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,0,0)."'"):('null')).",'".($weight*1)."',now())");
     }
     static function removeTag($itemId,$userId) {
-        global $db;
-        $db->query('update sys_pages_items set tag_weight=tag_weight-1 where itemId="'.$itemId.'"');
-        return $db->query("delete from sys_pages_items where itemId='".$itemId."' and userId='".$userId."'");
+        global $db,$user;
+        if($db->getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
+            $db->query('update sys_pages_items set tag_weight=tag_weight-1 where itemId="'.$itemId.'"');
+            $user->resetGroupTimeCache('itemTags');
+            unset($user->arrUsers['mytags']);
+            return $db->query("delete from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'");
+        }
     }
     static function isTagged($itemId,$userId) {
         global $db,$user;
@@ -52,8 +56,9 @@ class fItems extends fQueryTool {
     static function initTagXajax() {
         fXajax::register('user_tag');
     }
-    static function tagLabel($itemId,$typeId='forum') {
-        global $TAGLABELS;
+    static function tagLabel($itemId,$typeId='') {
+        global $TAGLABELS,$db;
+        if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         $totalTags = fItems::totalTags($itemId);
         $tagLabel = '';
         if($totalTags == 1) $tagLabel = '1 '.$TAGLABELS[$typeId][1];
@@ -61,19 +66,18 @@ class fItems extends fQueryTool {
         elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][3];
         return $tagLabel;
     }
-    static function getTagLink($itemId,$userId,$typeId='') {
-        global $db;
+    static function getTagLink($itemId,$userId,$typeId='',$removable=false) {
+        global $db,$user,$TAGLABELS;
         if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         if(fItems::isTagged($itemId,$userId)) {
-            return '<span class="tagIs">'.fItems::tagLabel($itemId,$typeId).'</span>';
+            return '<span class="tagIs">'.fItems::tagLabel($itemId,$typeId).(($removable==true)?(' <a href="'.$user->getUri('rt='.$itemId).'">'.$TAGLABELS[$typeId][4].'</a>'):('')).'</span>';
         } else {
-            global $user,$TAGLABELS;
             return '<span id="tag'.$itemId.'" class="tagMe"><a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'.$TAGLABELS[$typeId][0].'</a> '.fItems::tagLabel($itemId).'</span>';
         }
     }
     static function getItemTagList($itemId) {
         global $db;
-        $arr = $db->getAll("select userId,tag,weight from sys_pages_items where itemId='".$itemId."'");
+        $arr = $db->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='".$itemId."'");
         return $arr;
     }
     /** 
@@ -320,20 +324,24 @@ class fItems extends fQueryTool {
                 ,array('quality'=>$conf['events']['thumb_quality']
                 ,'width'=>$conf['events']['thumb_width'],'height'=>0));
             }
-  	        $arrSize = getimagesize($flyerFilename);
-      	    $tpl->setVariable('BIGFLYERLINK',$flyerFilename.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20));
-      	    $tpl->setVariable('FLYERTHUMBURL',$flyerFilenameThumb);
-      	    $tpl->setVariable('IMGEVENTTITLE',$arr['addon']);
-      	    $tpl->setVariable('IMGEVENTALT',$arr['addon']);
+            if(file_exists($flyerFilename)) {
+      	        $arrSize = getimagesize($flyerFilename);
+          	    $tpl->setVariable('BIGFLYERLINK',$flyerFilename.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20));
+          	    $tpl->setVariable('FLYERTHUMBURL',$flyerFilenameThumb);
+          	    $tpl->setVariable('IMGEVENTTITLE',$arr['addon']);
+          	    $tpl->setVariable('IMGEVENTALT',$arr['addon']);
+            }
   	    }
   	    if($this->showComments == true) {
+  	     
   	     if($arr['tag_weight'] > 0) {
+  	     
   	         $arrTags = fItems::getItemTagList($arr['itemId']);
+  	     
   	         foreach ($arrTags as $tag) {
   	             $tpl->setCurrentBlock('participant');
-  	             $tpl->setVariable('PARTICIPANTAVATAR',$user->showAvatar($tag[0]));
-  	             if($tag[0]==$user->gid) 
-  	             $tpl->parseCurrentBlock('PARTICIPANTREMOVELINK',$user->getUri('rt='.$arr['itemId']));
+  	             $tpl->setVariable('PARTICIPANTAVATAR',$user->showAvatar($tag[0],array('showName'=>1)));
+  	             $tpl->parseCurrentBlock();
   	         }
   	     }
   	    }
@@ -356,7 +364,9 @@ class fItems extends fQueryTool {
   	 if($this->showTag==true) {
         fItems::initTagXajax();
         if(false === $user->getTimeCache('itemTags',$arr['itemId'],60)) $user->saveTimeCache($arr['tag_weight']);
-        $tpl->setVariable('TAG',fItems::getTagLink($arr['itemId'],$user->gid,$arr['typeId']));
+        $removableTag = false;
+        if($arr['typeId']=='event') $removableTag = true;
+        $tpl->setVariable('TAG',fItems::getTagLink($arr['itemId'],$user->gid,$arr['typeId'],$removableTag));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
