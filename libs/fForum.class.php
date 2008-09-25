@@ -153,13 +153,31 @@ class fForum {
         	    
         	    if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
                 
-                if(isset($_POST["objekt"])) $objekt = trim($_POST["objekt"]);
-                
-                if(preg_match("/^link:([0-9a-zA-Z]*)$/" , $objekt)) {
-                    $itemIdBottom = str_replace('link:','',$objekt);
-                    $objekt = '';
+                if(isset($_POST["objekt"]))
+                {
+                  $objekt = trim($_POST["objekt"]);
+                  
+                  if(preg_match("/^link:([0-9a-zA-Z]*)$/" , $objekt)) {
+                      $itemIdBottom = str_replace('link:','',$objekt);
+                      $objekt = '';
+                      //check $itemIdBottom
+                      $pageIdBottom = '';
+                      if(strlen($itemIdBottom)==5) {
+                        //check if it is page
+                        if(fPages::page_exist('pageId',$itemIdBottom)) {
+                          $pageIdBottom  = $itemIdBottom;
+                          $itemIdBottom = '';
+                        }
+                      }
+                      if($pageIdBottom=='') {
+                        //check if it is item
+                        if(!fItems::itemExists($itemIdBottom)) {
+                          $itemIdBottom = '';
+                        }
+                      }
+                      
+                  }
                 }
-                
         		if((!empty($zprava) || !empty($objekt))) {
         			if(empty($jmeno)){
         				fError::addError("Nezadali jste jmeno");
@@ -176,7 +194,8 @@ class fForum {
             		
             		//---insert
             		    $arrSave = array('pageId'=>$user->currentPageId,'userId'=>$user->gid,'name'=>$jmeno,'text'=>$zprava,'enclosure'=>$objekt);
-            		    if(isset($itemIdBottom)) $arrSave['itemIdBottom'] = $itemIdBottom;
+            		    if(!empty($itemIdBottom)) $arrSave['itemIdBottom'] = $itemIdBottom;
+            		    if(!empty($pageIdBottom)) $arrSave['pageIdBottom'] = $pageIdBottom;
             		    if($itemId > 0) $arrSave['itemIdTop'] = $itemId;
             		    
                         fForum::messWrite($arrSave);
@@ -264,9 +283,10 @@ class fForum {
         	$tpl->setVariable('TEXTAREACONTENT',(($filterTxt = $user->filterGet($user->currentPageId,'text'))?($filterTxt):($zprava)));
 
         	if ($user->idkontrol) {
+            $tpl->touchBlock('userlogged');
         	    $tpl->touchBlock('userlogged2');
+        	    $tpl->setVariable('PERPAGE',$perpage);
         	}
-        	$tpl->setVariable('PERPAGE',$perpage);
         } elseif($publicWrite==false) $tpl->setVariable('READONLY',MESSAGE_FORUM_REGISTEREDONLY);
         else $tpl->setVariable('READONLY',MESSAGE_FORUM_READONLY);
         //---END FORM
