@@ -24,6 +24,11 @@ class fItems extends fQueryTool {
         return $db->query("insert into sys_pages_items_tag values 
         ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,0,0)."'"):('null')).",'".($weight*1)."',now())");
     }
+    static function removeTag($itemId,$userId) {
+        global $db;
+        $db->query('update sys_pages_items set tag_weight=tag_weight-1 where itemId="'.$itemId.'"');
+        return $db->query("delete from sys_pages_items where itemId='".$itemId."' and userId='".$userId."'");
+    }
     static function isTagged($itemId,$userId) {
         global $db,$user;
         if($itemId>0 && $userId>0) {
@@ -47,21 +52,29 @@ class fItems extends fQueryTool {
     static function initTagXajax() {
         fXajax::register('user_tag');
     }
-    static function tagLabel($itemId) {
+    static function tagLabel($itemId,$typeId='forum') {
+        global $TAGLABELS;
         $totalTags = fItems::totalTags($itemId);
         $tagLabel = '';
-        if($totalTags == 1) $tagLabel = '1 '.LABEL_TAG_IS_1;
-        elseif ($totalTags > 1 && $totalTags < 5) $tagLabel = $totalTags.' '.LABEL_TAG_IS_2_4;
-        elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.LABEL_TAG_IS_X;
+        if($totalTags == 1) $tagLabel = '1 '.$TAGLABELS[$typeId][1];
+        elseif ($totalTags > 1 && $totalTags < 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][2];
+        elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][3];
         return $tagLabel;
     }
-    static function getTagLink($itemId,$userId) {
+    static function getTagLink($itemId,$userId,$typeId='') {
+        global $db;
+        if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         if(fItems::isTagged($itemId,$userId)) {
-            return '<span class="tagIs">'.fItems::tagLabel($itemId).'</span>';
+            return '<span class="tagIs">'.fItems::tagLabel($itemId,$typeId).'</span>';
         } else {
-        global $user;
-            return '<span id="tag'.$itemId.'" class="tagMe"><a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'.LABEL_TAG_ME.'</a> '.fItems::tagLabel($itemId).'</span>';
+            global $user,$TAGLABELS;
+            return '<span id="tag'.$itemId.'" class="tagMe"><a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'.$TAGLABELS[$typeId][0].'</a> '.fItems::tagLabel($itemId).'</span>';
         }
+    }
+    static function getItemTagList($itemId) {
+        global $db;
+        $arr = $db->getAll("select userId,tag,weight from sys_pages_items where itemId='".$itemId."'");
+        return $arr;
     }
     /** 
      * item print functions
@@ -313,7 +326,17 @@ class fItems extends fQueryTool {
       	    $tpl->setVariable('IMGEVENTTITLE',$arr['addon']);
       	    $tpl->setVariable('IMGEVENTALT',$arr['addon']);
   	    }
-  	    
+  	    if($this->showComments == true) {
+  	     if($arr['tag_weight'] > 0) {
+  	         $arrTags = fItems::getItemTagList($arr['itemId']);
+  	         foreach ($arrTags as $tag) {
+  	             $tpl->setCurrentBlock('participant');
+  	             $tpl->setVariable('PARTICIPANTAVATAR',$user->showAvatar($tag[0]));
+  	             if($tag[0]==$user->gid) 
+  	             $tpl->parseCurrentBlock('PARTICIPANTREMOVELINK',$user->getUri('rt='.$arr['itemId']));
+  	         }
+  	     }
+  	    }
   	    if($this->showFooter) $tpl->setVariable('EDITLINK','?k=evente&i='.$arr['itemId']);
   	}
   	//---forum only
@@ -333,7 +356,7 @@ class fItems extends fQueryTool {
   	 if($this->showTag==true) {
         fItems::initTagXajax();
         if(false === $user->getTimeCache('itemTags',$arr['itemId'],60)) $user->saveTimeCache($arr['tag_weight']);
-        $tpl->setVariable('TAG',fItems::getTagLink($arr['itemId'],$user->gid));
+        $tpl->setVariable('TAG',fItems::getTagLink($arr['itemId'],$user->gid,$arr['typeId']));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
