@@ -48,10 +48,10 @@ define('LABEL_HOME','Nastenka');
 define('LABEL_DELETE','Smazat');
 
 $TAGLABELS = array(
-'forum'=>array('Palec nahoru','Palec','Palce','Palcu'),
-'blog'=>array('Palec nahoru','Palec','Palce','Palcu'),
-'galery'=>array('Palec nahoru','Palec','Palce','Palcu'),
-'event'=>array('Přijdu','přijde','přijdou','přijde'),
+'forum'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
+'blog'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
+'galery'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
+'event'=>array('Přijdu','přijde','přijdou','přijde','Nepřijdu'),
 );
 
 define('LABEL_TAG_PAGE','Popisuj fotky');

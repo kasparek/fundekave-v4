@@ -76,7 +76,8 @@ update sys_pages_items set pageId='mainb' where pageId = 'maina'
     - update counter
       update sys_pages_counter as pc set pc.typeId = (select p.typeId from sys_pages as p where p.pageId=pc.pageId)
     ---- item tag_weight
-    update `sys_pages_items` as i set i.tag_weight = (select sum(t.weight) from sys_pages_items_tag as t where t.itemId = i.itemId)
+    update `sys_pages_items` as i set i.tag_weight = (select sum(t.weight) from sys_pages_items_tag as t where t.itemId = i.itemId);
+update `sys_pages_items` as i set i.tag_weight = 0 where i.tag_weight is null
     
     update `sys_pages_items` set typeId='event' where typeId='top'
     

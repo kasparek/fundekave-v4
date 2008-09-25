@@ -55,6 +55,7 @@ class fPager {
         if(!empty($this->extraVars)) {
             foreach ($this->extraVars as $k=>$v) $extraVarsStr .= $k.'='.$v.'&';
         }
+        
         $pagestring = '?' . $extraVarsStr . $this->urlVar."=";
 
         //other vars

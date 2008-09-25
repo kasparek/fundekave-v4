@@ -1,15 +1,13 @@
 <?php
 class fSystem {
-    static function &initPager($totalItems=0,$perPage=20,$extraVars=array(),$itemData=array(),$otherConfArray=array()) {
+    static function &initPager($totalItems=0,$perPage=20,$inputParams=array()) {
         global $conf;
         $params = $conf['pager'];
 		$params['prevImg'] = PAGER_PREVIOUS;
 		$params['nextImg'] = PAGER_NEXT;
 		$params['totalItems'] = $totalItems;
 		$params['perPage'] = $perPage;
-		$params['itemData'] = $itemData;
-		$params['extraVars'] = $extraVars;
-		if(!empty($otherConfArray)) $params = array_merge($params,$otherConfArray);
+		if(!empty($inputParams)) $params = array_merge($params,$inputParams);
 		$pager =& new fPager($params);
 		return $pager;
     }

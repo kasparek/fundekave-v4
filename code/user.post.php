@@ -98,7 +98,7 @@ if(!empty($user->whoIs)) $pagerExtraVars['who']=$user->whoIs;
 
 $od = 0;
 if($totalItems > $perpage) {
-	$pager = fSystem::initPager($totalItems,$perpage,$pagerExtraVars);
+	$pager = fSystem::initPager($totalItems,$perpage,array('extraVars'=>$pagerExtraVars));
 	$od=($pager->getCurrentPageID()-1) * $perpage;
 }
 

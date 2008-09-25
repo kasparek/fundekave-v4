@@ -67,7 +67,7 @@ if($search_text != "") {
 	$celkem = $newdata['count'];
 	if($celkem > 0) {
 		//--listovani
-		$pager = fSystem::initPager(0,$perpage,array(),$newdata['priz']);
+		$pager = fSystem::initPager(0,$perpage,array('itemData'=>$newdata['priz']));
 		$od = ($pager->getCurrentPageID()-1) * $perpage;
 		$arr = $pager->getPageData();
 		if($celkem > $perpage) {
