@@ -75,6 +75,7 @@ class fPocket extends fQueryTool {
             	$substr_name = (strlen($item[5])>$nameLength)?(mb_substr($item[5],0,$nameLength).'...'):($item[5]);
             	$tpl->setVariable('PAGENAME',$substr_name);
             	$tpl->setVariable('PAGETITLE',$item[5]);
+            	
             	if(!empty($item[3])) {
             	    //---item - typeId - index 6
             	    //--- typeId - blog - name=addon - ind 7
@@ -90,9 +91,13 @@ class fPocket extends fQueryTool {
             	   $tpl->setVariable('ITEMNAME',$substr_name);
             	   $tpl->setVariable('ITEMTITLE',fSystem::textins($item[$index],0,0));
             	   $tpl->setVariable('ITEMID',$item[3]);
-            	   $tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
             	}
+            	
+            	$tpl->setVariable('USE',$user->getUri('p=u&pi='.((empty($item[3]))?($item[2]):($item[3]))));
+            	$tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
+            	
             	$tpl->parseCurrentBlock();
+            	
             	if(!empty($item[3])) {
             	 $tpl->setCurrentBlock('pocketitemtooltip');
             	 $tpl->setVariable('ITEMIDTOOLTIP',$item[3]);
@@ -104,6 +109,7 @@ class fPocket extends fQueryTool {
             	 $fItems->showRating = false;
             	 $fItems->showHentryClass = false;
             	 $fItems->showFooter = false;
+            	 $fItems->showHeading = true;
             	 //$fItems->initData($item[6],$user->gid,true);
             	 $fItems->initData('',$user->gid);
             	 $fItems->initDetail($item[3]);

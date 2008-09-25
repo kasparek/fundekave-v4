@@ -11,13 +11,10 @@ $TOPTPL->addTab(array("MAINDATA"=>$category->getList('galery')));
 if(isset($_REQUEST['kat'])) $kat = $_REQUEST['kat']*1; else $kat=0;
 
 $fPages = new fPages('galery',$user->gid,$db);
-
 if($kat > 0) $fPages->addWhere("p.categoryId='".$kat."'");
 
 $celkem = $fPages->getCount();
 $od = 0;
-
-$user->currentPage['cnt'] = $db->getOne('select count(1) from sys_pages_items as i join sys_pages as p on p.pageId=i.pageId where p.typeId="galery"');
 
 $tpl = new fTemplateIT('galery.list.tpl.html');
 
@@ -25,9 +22,7 @@ if($celkem > GALERY_PERPAGE) {
 	$pager = fSystem::initPager($celkem,GALERY_PERPAGE);
 	$od=($pager->getCurrentPageID()-1) * GALERY_PERPAGE;
 	$do = $od + GALERY_PERPAGE;
-	
-	//$tpl->setVariable("FROM",$od+1);
-	//$tpl->setVariable("TO",$do);
+
 	$tpl->setVariable("TOTAL",$celkem);
 	//$tpl->setVariable("TOPPAGER",$pager->links);
 	$tpl->setVariable("PAGER",$pager->links);
@@ -42,8 +37,8 @@ $arrgal = $fPages->getContent();
 
 if(!empty($arrgal)) {
   $fItems = new fItems();
-  $fItems->initData('galery');
-  $fItems->setOrder('rand()');
+  $fItems->initData('galery',$user->gid,true);
+  $fItems->setOrder('i.hit desc');
   $fItems->setLimit(0,1);
   $fItems->showTooltip = false;
   $fItems->showText = false;
@@ -79,4 +74,3 @@ if(!empty($arrgal)) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

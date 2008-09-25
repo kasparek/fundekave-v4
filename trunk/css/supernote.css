@@ -51,6 +51,10 @@ div#mainbar .snp-mouseoffset,div#mainbar .snp-triggeroffset,div#mainbar .snp-mou
 .fallback {
  display: none;
 }
+/* --- just for testing .. move to global */
 .hidden {
   display: none;
+}
+.commentedItem {
+  background-color: #ddd;
 }

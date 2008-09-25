@@ -1,10 +1,21 @@
 <div id="pocket">
 <script type="text/javascript">
-function frompocket(link){
- var hiddenId = elm('frompocketid');
- hiddenId.value = "link:" + gup('i',link.href);
- elm('frompocketthumb').className = gup('class',link.href);
+function userFromPocket(link){
+ var inputId = elm('frompocketid');
+ if(!inputId) {
+  alert('Nelze pouzit');
+ } else {
+   var itemId = gup('pi',link.href);
+   inputId.value = "link:" + itemId;
+   elm('frompocketthumb').className = 'supernote-hover-' + itemId;
+ }
  return false;
+}
+function removeFromPocket() {
+  if(confirm('Opravdu to chcete vyhodit z kapsy?')) { 
+    xajax_pocket_action(gup('p',this.href),gup('pi',this.href));
+    return false; 
+  } else return false;
 }
 </script>
 <!-- BEGIN pocket -->
@@ -13,7 +24,8 @@ function frompocket(link){
     <!-- BEGIN pocketitem -->
     <li><a href="{PAGELINK}" title="{PAGETITLE}">{PAGENAME}</a>
     <!-- BEGIN pocketpageitem --> <a href="{ITEMLINK}" title="{ITEMTITLE}" class="supernote-hover-{ITEMID}">{ITEMNAME}</a><!-- END pocketpageitem --><br />
-    <a href="?i={ITEMID}&class=supernote-hover-{ITEMID}" onClick="frompocket(this);return false;">Pouzit</a> <a href="{REMOVE}" onClick="if(confirm('Opravdu to chcete vyhodit z kapsy?')) { xajax_pocket_action(gup('p',this.href),gup('pi',this.href));return(false); } else return(false);" >Odstranit</a></li>
+    <a href="{USE}" onClick="return userFromPocket(this);">Pouzit</a> 
+    <a href="{REMOVE}" onClick="return removeFromPocket(this);" >Odstranit</a></li>
     <!-- END pocketitem -->
   <ul>
   <!-- END pocketContent -->
