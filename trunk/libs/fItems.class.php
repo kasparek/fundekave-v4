@@ -488,8 +488,7 @@ class fItems extends fQueryTool {
       
       if(!isset($arr['order'])) $arr['order'] = 0;
       if(!isset($arr['filter'])) $arr['filter'] = 0;
-      if(!isset($arr['month'])) $arr['month'] = 0;
-      if(!isset($arr['year'])) $arr['year'] = 0;
+      if(!isset($arr['date'])) $arr['date'] = 0;
       if(!isset($arr['users'])) $arr['users'] = '';
       if(!isset($arr['usersId'])) $arr['usersId'] = '';
       
@@ -513,20 +512,20 @@ class fItems extends fQueryTool {
             }
         }
     }
-    static function getTagToolbar($showHits=true) {
+    static function getTagToolbar($showHits=true,$params=array('usersFilter'=>0)) {
       global $user;
       $toolbarData = &fItems::getTagToolbarData();
       $tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
       if($showHits==true) $tpl->touchBlock('hits');
       switch ($toolbarData['order']) {
         case 1:
-          $tpl->touchBlock('tuodesc');
+          $tpl->touchBlock('thumbdesc');
           break;
         case 2:
-          $tpl->touchBlock('tuoasc');
+          $tpl->touchBlock('hit');
           break;
         case 3:
-          $tpl->touchBlock('hitdesc');
+          $tpl->touchBlock('hitreg');
           break;
       }
       switch ($toolbarData['filter']) {
@@ -541,21 +540,23 @@ class fItems extends fQueryTool {
       $tpl->setVariable('FORMACTION',$user->getUri());
       
       global $MONTHS;
+      $currentMonth = Date('n');
+      $currentYear  = Date('Y');
+      $lowestYear = '2005';
       $options = '';
-      foreach ($MONTHS as $k=>$v) {
-      	$options .= '<option value="'.$k.'"'.(($k==$toolbarData['month'])?(' selected="selected"'):('')).'>'.$v.'</option>';
+      for($year=$currentYear;$year>=$lowestYear;$year--) {
+          for ($month=$currentMonth;$month>=1;$month--) {
+            $monthStr = sprintf("%02d", $month);
+          	$options .= '<option value="'.$year.'-'.$monthStr.'"'.(($year.'-'.$monthStr==$toolbarData['date'])?(' selected="selected"'):('')).'>'.$MONTHS[$monthStr].' '.$year.'</option>';
+          }
+          $currentMonth = 12;
       }
-      $tpl->setVariable('TUMONTH',$options);
-      
-      $tpl->setVariable('TUUSERNAME',$toolbarData['users']);
-      
-      $options = '';
-      $endYear = 2000;
-      $startYear = Date("Y");
-      for ($x = $startYear;$x >= $endYear; $x--) {
-      	$options .= '<option value="'.$x.'"'.(($x==$toolbarData['year'])?(' selected="selected"'):('')).'>'.$x.'</option>';
+      $tpl->setVariable('TUDATE',$options);
+      if($params['usersFilter']==1) {
+        $tpl->setVariable('TUUSERNAME',$toolbarData['users']);
+        $tpl->touchBlock('userfilter');
       }
-      $tpl->setVariable('TUYEAR',$options);
+      
       return $tpl->get();
     }
     static function setTagToolbar() {
