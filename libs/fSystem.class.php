@@ -137,8 +137,9 @@ class fSystem {
      * @param boolean $wrap - wrap long words 
      */
     function textins($text,$option = 1,$endOfLine = 1,$wrap = true) {
+      global $user;
         $text = trim($text);
-        if($option==0) $text = strip_tags($text);
+        if($option==0 || !$user->idkontrol) $text = strip_tags($text);
         if($option==1) {
             require_once('HTML/BBCodeParser.php'); 
             $config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);

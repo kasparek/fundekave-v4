@@ -492,7 +492,7 @@ class fItems extends fQueryTool {
       if(!isset($arr['users'])) $arr['users'] = '';
       if(!isset($arr['usersId'])) $arr['usersId'] = '';
       
-      if($arr['order']==0  && $arr['filter']==0  && $arr['month']==0  && $arr['year']==0 && $arr['usersId']=='') {
+      if($arr['order']==0  && $arr['filter']==0  && $arr['date']==0 && $arr['usersId']=='') {
           $arr['enabled'] = 0;
       } else {
           $arr['enabled'] = 1;
@@ -539,19 +539,7 @@ class fItems extends fQueryTool {
       if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
       $tpl->setVariable('FORMACTION',$user->getUri());
       
-      global $MONTHS;
-      $currentMonth = Date('n');
-      $currentYear  = Date('Y');
-      $lowestYear = '2005';
-      $options = '';
-      for($year=$currentYear;$year>=$lowestYear;$year--) {
-          for ($month=$currentMonth;$month>=1;$month--) {
-            $monthStr = sprintf("%02d", $month);
-          	$options .= '<option value="'.$year.'-'.$monthStr.'"'.(($year.'-'.$monthStr==$toolbarData['date'])?(' selected="selected"'):('')).'>'.$MONTHS[$monthStr].' '.$year.'</option>';
-          }
-          $currentMonth = 12;
-      }
-      $tpl->setVariable('TUDATE',$options);
+
       if($params['usersFilter']==1) {
         $tpl->setVariable('TUUSERNAME',$toolbarData['users']);
         $tpl->touchBlock('userfilter');
