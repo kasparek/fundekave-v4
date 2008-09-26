@@ -103,7 +103,7 @@ class fForum {
 			if(!empty($arrIds)){
 				if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess']=array();
 				foreach ($arrIds as $messId) if(!in_array($messId,$_SESSION['aNotReadedMess']))$arrTmp[]=$messId;
-				fForum::setUnreadedMess($arrTmp);
+				if(!empty($arrTmp)) fForum::setUnreadedMess($arrTmp);
 			}
 		}
 		return $unreadedCnt;
