@@ -3,10 +3,10 @@
 <legend>Palce</legend>
 <select id="thumbuporder" name="tuorder">
   <option value="0"> --- Radit podle --- </option>
-  <option<!-- BEGIN tuodesc --> selected="selected"<!-- END tuodesc --> value="1">Podle palcu</option>
+  <option<!-- BEGIN thumbdesc --> selected="selected"<!-- END thumbdesc --> value="1">Podle palcu</option>
   <!-- BEGIN hits -->
-  <option<!-- BEGIN hitdesc --> selected="selected"<!-- END hitdesc --> value="3">Podle poctu zobrazeni</option>
-  <option<!-- BEGIN hitdescreg --> selected="selected"<!-- END hitdescreg --> value="4">Zobrazeni od registrovanych</option>
+  <option<!-- BEGIN hit --> selected="selected"<!-- END hit --> value="3">Podle poctu zobrazeni</option>
+  <option<!-- BEGIN hitreg --> selected="selected"<!-- END hitreg --> value="4">Zobrazeni od registrovanych</option>
   <!-- END hits -->
 </select>
 <select id="thumbupfilter" name="tufilter">
@@ -14,9 +14,19 @@
   <option<!-- BEGIN tufall --> selected="selected"<!-- END tufall --> value="1">Jen palce</option>
   <option<!-- BEGIN tufmy --> selected="selected"<!-- END tufmy --> value="2">Jen moje palce</option>
 </select>
-<select id="thumbupdate" name="tumonth"><option value="0"> --- Za mesic --- </option>{TUMONTH}</select> 
-<select name="tuyear"><option value="0"> --- Za rok --- </option>{TUYEAR}</select>
-<label for="tuusers">Uzivatel</label>&nbsp;<input type="text" name="tuusers" title="Filtrovani podle uzivatelu; uzivatelska jmena oddelena carkou" value="{TUUSERNAME}" />
+<br />
+<!-- BEGIN linkprevious --><a href="{INTPREVIOUSLINK}">Predchozi</a> <!-- END linkprevious --> 
+<select id="thumbupdate" name="tumonth">
+<option<!-- BEGIN dateinttotal --> selected="selected"<!-- END dateinttotal --> value="1">Celkove</option>
+<option<!-- BEGIN dateintyear --> selected="selected"<!-- END dateintyear --> value="2">Rok</option>
+<option<!-- BEGIN dateintmonth --> selected="selected"<!-- END dateintmonth --> value="3">Mesic</option>
+<option<!-- BEGIN dateintweek --> selected="selected"<!-- END dateintweek --> value="4">Tyden</option>
+<option<!-- BEGIN dateintday --> selected="selected"<!-- END dateintday --> value="5">Den</option>
+</select><!-- BEGIN currentint --> <span id="currentInterval">datum{CURRENTINTERVAL}</span><!-- END currentint -->
+<!-- BEGIN linknext --> <a href="{INTNEXTLINK}">Dalsi</a><!-- END linknext -->
+
+<br />
+<!-- BEGIN userfilter --><label for="tuusers">Uzivatel</label>&nbsp;<input type="text" name="tuusers" title="Filtrovani podle uzivatelu; uzivatelska jmena oddelena carkou" value="{TUUSERNAME}" /><!-- END userfilter -->
 <input type="submit" name="thumbupset" value="Nastavit" /> 
 <input type="submit" name="thumbupreset" value="Zrusit"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
 </fieldset>
