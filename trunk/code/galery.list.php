@@ -3,7 +3,10 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     fSystem::secondaryMenuAddItem($user->getUri('','galed'),LABEL_ADD);
 }
 fSystem::secondaryMenuAddItem($user->getUri('','taggi'),LABEL_TAG_PAGE);
-
+fSystem::secondaryMenuAddItem($user->getUri('','','t'),'top');
+if($user->currentPageParam=='t') {
+  require('items.tags.php');
+} else {
 //category list
 $category = new fCategory('sys_pages_category','categoryId');
 $TOPTPL->addTab(array("MAINDATA"=>$category->getList('galery')));
@@ -74,3 +77,4 @@ if(!empty($arrgal)) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
+}

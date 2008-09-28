@@ -1,29 +1,25 @@
 <form action="{FORMACTION}" name="thumbToolbar" method="post" id="thumbuptoolbar">
     <fieldset>
         <legend>Palce</legend>
-        <select id="thumbuporder" name="tuorder">
+        <select id="thumbuporder" name="tuorder" onchange="thumbToolbar.submit();">
           <option value="0"> --- Radit podle --- </option>
           <option<!-- BEGIN thumbdesc --> selected="selected"<!-- END thumbdesc --> value="1">Podle palcu</option>
+          <option<!-- BEGIN thumbmydesc --> selected="selected"<!-- END thumbmydesc --> value="2">Podle mych palcu</option>
           <!-- BEGIN hits -->
           <option<!-- BEGIN hit --> selected="selected"<!-- END hit --> value="3">Podle poctu zobrazeni</option>
           <option<!-- BEGIN hitreg --> selected="selected"<!-- END hitreg --> value="4">Zobrazeni od registrovanych</option>
           <!-- END hits -->
-        </select>
-        <select id="thumbupfilter" name="tufilter">
-          <option value="0"> --- Vybrat vse --- </option>
-          <option<!-- BEGIN tufall --> selected="selected"<!-- END tufall --> value="1">Jen palce</option>
-          <option<!-- BEGIN tufmy --> selected="selected"<!-- END tufmy --> value="2">Jen moje palce</option>
-        </select>
-        <input type="submit" name="thumbupset" value="Vybrat" /> 
-        <input type="submit" name="thumbupreset" value="Zrusit"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
-        <br />
-        <!-- BEGIN linkprevious --><a href="{PREVIOUSLINK}">{PREVIOUSTEXT}</a> <!-- END linkprevious --> 
+        </select> 
         <select id="thumbupdate" name="tuint" onchange="thumbToolbar.submit();">
-        <option<!-- BEGIN dateinttotal --> selected="selected"<!-- END dateinttotal --> value="1">Vse</option>
+        <option value="1">-- Vybrat za --</option>
         <option<!-- BEGIN dateintyear --> selected="selected"<!-- END dateintyear --> value="2">Rok</option>
         <option<!-- BEGIN dateintmonth --> selected="selected"<!-- END dateintmonth --> value="3">Mesic</option>
-        <option<!-- BEGIN dateintday --> selected="selected"<!-- END dateintday --> value="4">Den</option>
-        </select>
+        <option<!-- BEGIN dateintweek --> selected="selected"<!-- END dateintweek --> value="4">Tyden</option>
+        <option<!-- BEGIN dateintday --> selected="selected"<!-- END dateintday --> value="5">Den</option>
+        </select> 
+        <input type="submit" name="thumbupreset" value="Zrusit vyber"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
+        <br />
+        <!-- BEGIN linkprevious --><a href="{PREVIOUSLINK}">{PREVIOUSTEXT}</a> <!-- END linkprevious --> 
         <!-- BEGIN current --> <span id="currentFilterDate">{CURRENTDATE}</span><!-- END current -->
         <!-- BEGIN linknext --> <a href="{NEXTLINK}">{NEXTTEXT}</a><!-- END linknext -->
     </fieldset>

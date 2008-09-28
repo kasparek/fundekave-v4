@@ -485,10 +485,9 @@ class fItems extends fQueryTool {
       global $user;
       $arr = & $user->arrTagItems[$user->currentPageId];
       if(!isset($arr['order'])) $arr['order'] = 0;
-      if(!isset($arr['filter'])) $arr['filter'] = 0;
       if(!isset($arr['date'])) $arr['date'] = 0;
-      if(!isset($arr['interval'])) $arr['interval'] = 3;
-      if($arr['order'] == 0  && $arr['filter'] == 0 && $arr['interval'] == 1) {
+      if(!isset($arr['interval'])) $arr['interval'] = 1;
+      if($arr['order'] == 0 && $arr['interval'] == 1) {
           $arr['enabled'] = 0;
       } else {
           $arr['enabled'] = 1;
@@ -509,51 +508,24 @@ class fItems extends fQueryTool {
     }
     static function getIntervalConf($par) {
         $arr = array(
-        2=>(array('m'=>'1 year','f'=>'Y','p'=>'Y')),
-        3=>(array('m'=>'1 month','f'=>'Y-m','p'=>'Y m')),
-        4=>(array('m'=>'1 day','f'=>'Y-m-d','p'=>'d.m.Y'))
+        2=>(array('m'=>'12 month','f'=>'Y','p'=>'Y','db'=>'%Y')),
+        3=>(array('m'=>'1 month','f'=>'Y-m','p'=>'Y m','db'=>'%Y-%m')),
+        4=>(array('m'=>'1 week','f'=>'Y-W','p'=>'Y W','db'=>'%Y-%U')),
+        5=>(array('m'=>'1 day','f'=>'Y-m-d','p'=>'d.m.Y','db'=>'%Y-%m-%d'))
         );
         return $arr[$par];
     }
-    
-    static function getTagToolbar($showHits=true,$params=array('usersFilter'=>0)) {
+        
+    static function getTagToolbar($showHits=true,$params=array()) {
       global $user;
       $toolbarData = &fItems::getTagToolbarData();
       $tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
       if($showHits==true) $tpl->touchBlock('hits');
-      switch ($toolbarData['order']) {
-        case 1:
-          $tpl->touchBlock('thumbdesc');
-          break;
-        case 2:
-          $tpl->touchBlock('hit');
-          break;
-        case 3:
-          $tpl->touchBlock('hitreg');
-          break;
-      }
-      switch ($toolbarData['filter']) {
-        case 1:
-          $tpl->touchBlock('tufall');
-          break;
-        case 2:
-          $tpl->touchBlock('tufmy');
-          break;
-      }
-      switch ($toolbarData['interval']) {
-        case 1:
-          $tpl->touchBlock('dateinttotal');
-          break;
-        case 2:
-          $tpl->touchBlock('dateintyear');
-          break;
-        case 3:
-          $tpl->touchBlock('dateintmonth');
-          break;
-        case 4:
-          $tpl->touchBlock('dateintday');
-          break;
-      }
+      $orderBlocksArr = array(1=>'thumbdesc',2=>'thumbmydesc',3=>'hit',4=>'hitreg');
+      $intervalBlocksArr = array(2=>'dateintyear',3=>'dateintmonth',4=>'dateintweek',5=>'dateintday');
+      if($toolbarData['order']>0) $tpl->touchBlock($orderBlocksArr[$toolbarData['order']]);
+      if($toolbarData['interval']>1) $tpl->touchBlock($intervalBlocksArr[$toolbarData['interval']]);
+      
       if($toolbarData['interval'] > 1) {
           $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
           if(empty($toolbarData['date'])) {
@@ -563,12 +535,21 @@ class fItems extends fQueryTool {
           global $MONTHS;
           $modify = $intConfArr['m'];
           $format = $intConfArr['p'];
+          if($toolbarData['interval'] == 4) {
+            $date = str_replace('-','-W',$toolbarData['date']);
+          }
+          else $date = $toolbarData['date'];
           
-          $dateNext = new DateTime($toolbarData['date']);
+          $dateNext = new DateTime($date);
+          
           $current = $dateNext->format($format);
           if($toolbarData['interval'] == 3) {
               list($year,$month) = explode(" ",$current);
               $current = $year . ' ' . $MONTHS[$month];
+          } elseif ($toolbarData['interval'] == 4) {
+            $weekStart = new DateTime($date.'-1');
+            $weekEnd = new DateTime($date.'-7');
+            $current = $weekStart->format('d.m.Y').' - '.$weekEnd->format('d.m.Y');
           }
           $dateNext->modify("+".$modify);
           if($dateNext->format("Ymd")<=date("Ymd")) {
@@ -576,26 +557,30 @@ class fItems extends fQueryTool {
               if($toolbarData['interval'] == 3) {
                   list($year,$month) = explode(" ",$next);
                   $next = $year . ' ' . $MONTHS[$month];
+              } elseif ($toolbarData['interval'] == 4) {
+                $next = '';
               }
           }
-          $datePrev = new DateTime($toolbarData['date']);
+          
+          $datePrev = new DateTime($date);
           $datePrev->modify("-".$modify);
           if($datePrev->format("Ymd")>'19800101') {
               $previous = $datePrev->format($format);
               if($toolbarData['interval'] == 3) {
                   list($year,$month) = explode(" ",$previous);
                   $previous = $year . ' ' . $MONTHS[$month];
+              } elseif ($toolbarData['interval'] == 4) {
+                $previous = '';
               }
           }
-          
           if(isset($previous)) {
-              $tpl->setVariable('PREVIOUSLINK',$user->getUri('thumbupset=1&date=prev'));
-              $tpl->setVariable('PREVIOUSTEXT',PAGER_PREVIOUS . ' ' .$previous);
+              $tpl->setVariable('PREVIOUSLINK',$user->getUri('tuda=prev'));
+              $tpl->setVariable('PREVIOUSTEXT',PAGER_PREVIOUS . (($previous!='')?(' ' .$previous):('')));
           }
           if(isset($current)) $tpl->setVariable('CURRENTDATE',$current);
           if(isset($next)) {
-              $tpl->setVariable('NEXTLINK',$user->getUri('thumbupset=1&date=next'));
-              $tpl->setVariable('NEXTTEXT',$next .' '. PAGER_NEXT);
+              $tpl->setVariable('NEXTLINK',$user->getUri('tuda=next'));
+              $tpl->setVariable('NEXTTEXT',(($next!='')?($next .' '):('')). PAGER_NEXT);
           }
       }
       if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
@@ -607,103 +592,83 @@ class fItems extends fQueryTool {
     static function setTagToolbar() {
       $toolbarData = &fItems::getTagToolbarData();
       if(isset($_POST['thumbupreset'])) $toolbarData = array();
-      if(isset($_REQUEST['thumbupset'])) {
-          if(isset($_POST['tuorder'])) $toolbarData['order'] = (int) $_POST['tuorder'];
-          if(isset($_POST['tufilter'])) $toolbarData['filter'] = (int) $_POST['tufilter'];
-          $oldInterval = $toolbarData['interval'];
-          if(isset($_POST['tuint'])) $toolbarData['interval'] = (int) $_POST['tuint'];
-          //---create next,prev links, show current date
-          $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
-          if(empty($toolbarData['date']) || $oldInterval!=$toolbarData['interval']) {
+      else {
+        if(isset($_POST['tuorder'])) $toolbarData['order'] = (int) $_POST['tuorder'];
+        if(isset($toolbarData['interval'])) $oldInterval = $toolbarData['interval']; else $oldInterval = -1;
+        if(isset($_POST['tuint'])) $toolbarData['interval'] = (int) $_POST['tuint'];
+        //---create next,prev links, show current date
+        if(isset($toolbarData['interval'])) {
+          if($toolbarData['interval']>1 && (empty($toolbarData['date']) || $oldInterval!=$toolbarData['interval'])) {
               //---create default - current date
-              $toolbarData['date'] = Date($intConfArr['f']);
-          }
-          if(isset($_GET['date'])) {
-              if($_GET['date']=='next') $modifyCourse = '+';
-              if($_GET['date']=='prev') $modifyCourse = '-';
-              if(isset($modifyCourse)) {
-                  $date = new DateTime($toolbarData['date']);
-                  $date->modify($modifyCourse.$intConfArr['m']);
-                  $toolbarData['date'] = $date->format($intConfArr['f']);
-              }
-          }
+              $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
+              if(!empty($toolbarData['date'])) {
+                if($oldInterval==4) $date = str_replace('-','-W',$toolbarData['date']);
+                else $date = $toolbarData['date'];
+              } else $date='';
+              $date = new DateTime($date);
+              $toolbarData['date'] = $date->format($intConfArr['f']);
+          
+          } elseif ($toolbarData['interval']<2) unset($toolbarData['date']);
+        }
+        if(isset($_GET['tuda']) && $toolbarData['interval']>1) {
+            $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
+            if($_GET['tuda']=='next') $modifyCourse = '+';
+            if($_GET['tuda']=='prev') $modifyCourse = '-';
+            if(isset($modifyCourse)) {
+                if($toolbarData['interval']==4) $dateStr = str_replace('-','-W',$toolbarData['date']);
+                else $dateStr = $toolbarData['date'];
+                $date = new DateTime($dateStr);
+                $date->modify($modifyCourse.$intConfArr['m']);
+                $toolbarData['date'] = $date->format($intConfArr['f']);
+            }
+        }
       }
     }
     static function setQueryTool(&$fQuery) {
-      global $user;
-      $thumbupData = &fItems::getTagToolbarData();
-      
-      $addHitJoin = false;
-      if($thumbupData['enabled']==1) {
-        if ($thumbupData['order'] > 2) $fQuery->setOrder('i.hit desc');
-        if ($thumbupData['order'] == 4) {
-            $addHitJoin = true;
-            $fQuery->addWhere('ih.userId > 0');
-        }
-        if($thumbupData['filter']>0 || $thumbupData['order']==1 || $thumbupData['order']==2) {
-    	    if($thumbupData['filter'] > 0) $join = 'join'; else $join = 'left join';
-    	    
-            if ($thumbupData['order']==1) $fQuery->setOrder('thumbs desc');
-            elseif ($thumbupData['order']==2) $fQuery->setOrder('thumbs');
-    	    
-    	    if($thumbupData['filter'] == 0) {
-    	        $join = 'left join';
-    	    } else {
-    	        $join = 'join';
-    	    }
-    	    
-    	    if($thumbupData['filter'] < 2) {
-    	       $fQuery->setGroup('it.itemId');
-    	       $fQuery->selectCount = 'count(1),sum(it.weight) as thumbs';
-    	       $fQuery->addSelect('sum(it.weight) as thumbs');
-    	    }
-    	    
-    	    if($thumbupData['filter'] == 2) {
-    	        $fQuery->addWhere('it.userId="'.$user->gid.'"');
-    	        $fQuery->addSelect('1 as thumbs');
-    	    }
-    	    
-    	    $fQuery->addJoin($join.' sys_pages_items_tag as it on it.itemId=i.itemId');
-        }
+        global $user;
+        $thumbupData = &fItems::getTagToolbarData();
+        if($thumbupData['enabled']==1) {
+            if ($thumbupData['order'] > 2) {
+                if($thumbupData['interval']>1) {
+                    $fQuery->setOrder('hitsum desc');
+                    $fQuery->replaceSelect('i.hit','ihistory.valueSum as hitsum');
+                    $fQuery->addWhere('ihistory.historyType = '.$thumbupData['order']);
+                } else $fQuery->setOrder('i.hit desc');
+            } elseif ($thumbupData['order'] > 0) {
+                $fQuery->setOrder('thumbs desc');
+                if($thumbupData['interval']>1) {
+                    $fQuery->replaceSelect('i.tag_weight','ihistory.valueSum as thumbs');
+                    $fQuery->addWhere('ihistory.historyType = 1');
+                } else $fQuery->replaceSelect('i.tag_weight','i.tag_weight as thumbs');
+                if(isset($thumbupData['filter']))
+                if($thumbupData['filter'] == 2) {
+                    $fQuery->addWhere('it.userId="'.$user->gid.'"');
+                    $fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=i.itemId');
+                } 
+            }
+            //-----------------------------
             //---by date
             if(!empty($thumbupData['date'])) {
-                $dateformat = '';
-                $date = $thumbupData['date'];
-                
-                switch ($thumbupData['interval']) {
-                case 2:
-                  $dateformat = '%Y';
-                  break;
-                case 3:
-                  $dateformat .= '%Y-%m';
-                  break;
-                case 4:
-                  $dateformat .= '%Y-%m-%d';
-                  break;
+              $intConfArr = fItems::getIntervalConf($thumbupData['interval']);
+              $dateformat = $intConfArr['db'];
+              $date = $thumbupData['date'];
+              
+              if($thumbupData['interval']==4) {
+                list($year,$week) = explode("-",$date);
+                $week--;
               }
-                
-                $byItemDate = true;
-                $byTagDate = false;
-                $byHitDate = false;
-                
-                if($thumbupData['filter']>0 || $thumbupData['order']==1 || $thumbupData['order']==2) {
-                  $byTagDate = true;
-                  $byItemDate = false;
-                }
-                if($thumbupData['order']==3 || $thumbupData['order']==3) {
-                   $byItemDate = false;
-                    $byHitDate = true; 
-                    $addHitJoin = true;
-                }
-                
-                if($byItemDate) $fQuery->addWhere("date_format( i.dateCreated, '".$dateformat."' ) = '".$date."'");
-                if($byTagDate) $fQuery->addWhere("date_format( it.dateCreated, '".$dateformat."' ) = '".$date."'");
-                if($byHitDate) $fQuery->addWhere("date_format( ih.dateCreated, '".$dateformat."' ) = '".$date."'");
-            }
 
-            if($addHitJoin == true) $fQuery->addJoin('join sys_pages_items_hit as ih on ih.itemId=i.itemId');
+              if($thumbupData['order']==0) {
+                if($thumbupData['interval']==4) $date = sprintf("%04d-%02d",$year,$week);
+                $fQuery->addWhere("date_format( i.dateCreated, '".$dateformat."' ) = '".$date."'");
+              } else {
+                if($thumbupData['interval']==4) $date = sprintf("%04d-W%02d",$year,$week);
+                $fQuery->addWhere("ihistory.dateInt = '".$date."'");
+              }
+            }
+            if($thumbupData['order']>0 && $thumbupData['interval']>1)
+              $fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
         }
-      
     }
     function getItem($itemId) {
         $this->setWhere("i.itemId='".$itemId."'");

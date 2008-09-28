@@ -205,9 +205,18 @@ CREATE TABLE sys_pages_items_hit (
   itemId mediumint unsigned NOT NULL,
   userId MEDIUMINT unsigned default NULL,
   dateCreated datetime NOT NULL default '0000-00-00 00:00:00'
-)  ;
+);
 CREATE INDEX `itemhit-user` ON sys_pages_items_hit (userId);
 CREATE INDEX `itemhit-foto` ON sys_pages_items_hit (itemId);
+
+CREATE TABLE `sys_pages_items_history` (
+  `dateInt` varchar(10) NOT NULL,
+  `itemId` mediumint(8) unsigned NOT NULL,
+  `historyType` tinyint(3) unsigned NOT NULL default '0',
+  `valueSum` mediumint(8) unsigned NOT NULL,
+  UNIQUE KEY `dateInt` (`dateInt`,`itemId`,`historyType`),
+  KEY `dateInt_2` (`dateInt`,`historyType`)
+);
 
 CREATE TABLE sys_pages_items_tag (
        itemId mediumint unsigned NOT NULL
