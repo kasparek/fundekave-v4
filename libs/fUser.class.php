@@ -18,6 +18,7 @@ class fUser {
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
 	'p'=>1, //anketa nastaveni
+	't'=>1, //top zebricky
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
 	var $currentPage;
@@ -782,10 +783,11 @@ class fUser {
 		if(!empty($this->arrRulez[$usr][$page][$type])) return $this->arrRulez[$usr][$page][$type];
 		else return false;
 	}
-	function getUri($otherParams='',$pageId='') {
+	function getUri($otherParams='',$pageId='',$pageParam='') {
+	   $pageParam = (empty($pageParam))?($this->currentPageParam):($pageParam);
 	    if(empty($pageId) && $this->currentItemId>0) $params[] = 'i='.$this->currentItemId;
-	    if(!empty($pageId)) $params[] = 'k='.$pageId;
-	    elseif(!empty($this->currentPageId)) $params[] = 'k='.$this->currentPageId.$this->currentPageParam;
+	    if(!empty($pageId)) $params[] = 'k='.$pageId.$pageParam;
+	    elseif(!empty($this->currentPageId)) $params[] = 'k='.$this->currentPageId.$pageParam;
 	    if($otherParams!='') $params[] = $otherParams;
 	    $parStr = implode("&",$params);
 		return BASESCRIPTNAME.(strlen($parStr)>0)?('?'.$parStr):('');

@@ -1,4 +1,6 @@
 <?php
+define('LABEL_WEEK','Tyden');
+
 define('LABEL_FORUMS','Kluby');
 define('LABEL_BLOGS','Blogy');
 define('LABEL_GALERIES','Galerie');

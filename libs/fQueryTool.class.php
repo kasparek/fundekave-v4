@@ -95,6 +95,9 @@ class fQueryTool  {
     	function addSelect($what='*') {
         	$this->_select .= ((!empty($this->_select))?(','):('')).$what;
     	}
+    	function replaceSelect($what,$with) {
+        	$this->_select = str_replace($what,$with,$this->_select);
+    	}
     	function getSelect() {
     		return $this->_select;
     	}

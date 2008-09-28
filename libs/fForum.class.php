@@ -320,14 +320,14 @@ class fForum {
         $total = count($fItems->arrData);
         
         $maybeMore = false;
-        if($total > $perpage) $maybeMore = true;
+        if($total > $perpage) {
+            $maybeMore = true;
+            unset($fItems->arrData[(count($fItems->arrData)-1)]);
+        }
         
         if($from > 0) {
             $total += $from;
         }
-        
-        
-        unset($fItems->arrData[(count($fItems->arrData)-1)]);
         
         if($total > 0) {
         	/*.........zacina vypis prispevku.........*/
