@@ -1,8 +1,6 @@
 <?php
-if(!isset($_SESSION['thumbsDefsSet'][$user->currentPageId])){
-    fItems::setTagToolbarDefaults(array('order'=>3,'interval'=>2));
-    $_SESSION['thumbsDefsSet'][$user->currentPageId] = 1;
-}
+fItems::setTagToolbarDefaults(array('enabled'=>1,'order'=>3,'interval'=>3));
+
 
 $TOPTPL->addTab(array("MAINDATA"=>fItems::getTagToolbar()));
 

@@ -508,7 +508,7 @@ class fItems extends fQueryTool {
     }
     static function getIntervalConf($par) {
         $arr = array(
-        2=>(array('m'=>'12 month','f'=>'Y','p'=>'Y','db'=>'%Y')),
+        2=>(array('m'=>'1 year','f'=>'Y','p'=>'Y','db'=>'%Y')),
         3=>(array('m'=>'1 month','f'=>'Y-m','p'=>'Y m','db'=>'%Y-%m')),
         4=>(array('m'=>'1 week','f'=>'Y-W','p'=>'Y W','db'=>'%Y-%U')),
         5=>(array('m'=>'1 day','f'=>'Y-m-d','p'=>'d.m.Y','db'=>'%Y-%m-%d'))
@@ -520,6 +520,10 @@ class fItems extends fQueryTool {
       global $user;
       $toolbarData = &fItems::getTagToolbarData();
       $tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
+      if(isset($toolbarData['search'])) $tpl->touchBlock('search');
+      if(isset($toolbarData['searchStr'])) $tpl->setVariable('searchStr',$toolbarData['searchStr']);
+      if(isset($toolbarData['searchWho'])) $tpl->setVariable('searchWho',$toolbarData['searchWho']);
+      
       if($showHits==true) $tpl->touchBlock('hits');
       $orderBlocksArr = array(1=>'thumbdesc',2=>'thumbmydesc',3=>'hit',4=>'hitreg');
       $intervalBlocksArr = array(2=>'dateintyear',3=>'dateintmonth',4=>'dateintweek',5=>'dateintday');
@@ -535,9 +539,8 @@ class fItems extends fQueryTool {
           global $MONTHS;
           $modify = $intConfArr['m'];
           $format = $intConfArr['p'];
-          if($toolbarData['interval'] == 4) {
-            $date = str_replace('-','-W',$toolbarData['date']);
-          }
+          if($toolbarData['interval'] == 4) $date = str_replace('-','-W',$toolbarData['date']);
+          elseif ($toolbarData['interval'] == 2) $date = $toolbarData['date'].'01-01';
           else $date = $toolbarData['date'];
           
           $dateNext = new DateTime($date);
@@ -561,7 +564,6 @@ class fItems extends fQueryTool {
                 $next = '';
               }
           }
-          
           $datePrev = new DateTime($date);
           $datePrev->modify("-".$modify);
           if($datePrev->format("Ymd")>'19800101') {
@@ -616,6 +618,7 @@ class fItems extends fQueryTool {
             if($_GET['tuda']=='prev') $modifyCourse = '-';
             if(isset($modifyCourse)) {
                 if($toolbarData['interval']==4) $dateStr = str_replace('-','-W',$toolbarData['date']);
+                elseif($toolbarData['interval']==2) $dateStr = $toolbarData['date'].'01-01';
                 else $dateStr = $toolbarData['date'];
                 $date = new DateTime($dateStr);
                 $date->modify($modifyCourse.$intConfArr['m']);

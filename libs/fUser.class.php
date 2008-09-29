@@ -17,6 +17,8 @@ class fUser {
 	'a'=>2, //add (galery,forum,kultura,klub,event)
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
+	'v'=>1, //vyhledavani ve strankach
+	'w'=>1, //vyhledavani v prispevcich
 	'p'=>1, //anketa nastaveni
 	't'=>1, //top zebricky
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
@@ -76,6 +78,9 @@ class fUser {
     var $arrCacheOnTime = array();
     var $arrCacheTimeKeeper = array();
     var $pointerCacheTimeValue;
+    //---cache search in pages
+    var $pagesSearch = array();
+    var $itemsSearch = array();
 
     //---additional user information XML structure
 	var $userXml = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal></user>";

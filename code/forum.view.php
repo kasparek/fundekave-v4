@@ -44,8 +44,8 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
 
 if($user->currentPageParam == 'e') {
     require(ROOT.ROOT_CODE.'page.edit.php');
-} elseif($user->currentPageParam == 'p') require(ROOT.ROOT_CODE.'forum.poll.php');
-elseif($user->currentPageParam == 's') require(ROOT.ROOT_CODE.'forum.stat.php');
+} elseif($user->currentPageParam == 'p') require(ROOT.ROOT_CODE.'page.poll.php');
+elseif($user->currentPageParam == 's') require(ROOT.ROOT_CODE.'page.stat.php');
 elseif($user->currentPageParam == 'h') {
     $tmptext = '';
     if(!empty($user->currentPage['pageParams'])) {

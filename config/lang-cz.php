@@ -1,6 +1,7 @@
 <?php
+define('LABEL_PAGES_LIVE','Živě');
 define('LABEL_WEEK','Tyden');
-
+define('LABEL_TOP','Nej');
 define('LABEL_FORUMS','Kluby');
 define('LABEL_BLOGS','Blogy');
 define('LABEL_GALERIES','Galerie');
@@ -115,6 +116,10 @@ define('ERROR_GALERY_DIREMPTY','Nezadali jste adresar');
 define('ERROR_GALERY_DIRWRONG',"Zadali jste neplatne jmeno adresar, jsou povolene znaky pouze / - _ 0-9 a-z A-Z");
 define('ERROR_GALERY_NOFOTO',"Bohuzel galerie zatim neobsahuje fotografie");
 
+define('LABEL_SEARCH','Vyhledavani');
+define('LABEL_SEARCH_ITEMS_FORUMS','Hledani v prispevcich');
+define('LABEL_SEARCH_ITEMS_BLOGS','Hledani v clancich');
+define('LABEL_SEARCH_ITEMS_EVENTS','Hledani v tipech');
 define('ERROR_SEARCH_TOSHORT','Zadaný řetězec pro vyhledávání je příliš krátký');
 define('LABEL_FOUND','Nalezeno');
 define('LABEL_SEARCH_RESULTS_JUSTLISTED','Zobrazeno bude pouze');
