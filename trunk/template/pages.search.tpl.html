@@ -8,11 +8,10 @@
 </fieldset>
 </form>
 <!-- BEGIN results -->
-<!-- BEGIN toppager -->
-	<div class="pager">{PAGER}</div>
-<!-- END toppager -->
-  <div class="pagernums">Celkem: <strong>{TOTAL}</strong></div>
-<p>
+<!-- BEGIN toppager -->{PAGER}<!-- END toppager -->
+<div class="pagernums">Celkem: <strong>{TOTAL}</strong></div>
+<!-- BEGIN maybemore --><p align="center">Zobrazeno pouze prvnich 100 nalezenych vysledku hledani</p><!-- END maybemore -->
+
 <table cellspacing=0 cellpadding=2 width=90% align="center">
 	<!-- BEGIN result -->
 		<TR<!-- BEGIN oddclass --> class="head"{DUMMYODDCLASS}<!-- END oddclass -->>
@@ -22,9 +21,7 @@
     </tr>
 	<!-- END result -->
 </TABLE>
-</p>
+
 <!-- END results -->
 
-<!-- BEGIN noresults -->
-<p align="center">Nenalezena žádná galerie vyhovující podmínkám</p>{DUMMYEMPTY}
-<!-- END noresults -->
+<!-- BEGIN noresults --><p align="center">Nenalezena žádná galerie vyhovující podmínkám</p><!-- END noresults -->

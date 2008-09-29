@@ -1,14 +1,14 @@
 <?php
 $typeId = $user->currentPage['typeIdChild'];
 
+fItems::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
 
-$perpage =& $_SESSION['search_perpage'];
-$search_text =& $_SESSION['search_text'];
-$search_in =& $_SESSION['search_in'];
+$itemsSearchCache = & $user->itemsSearch;
+if(empty($itemsSearchCache)) $itemsSearchCache = array('perpage'=>SEARCH_PERPAGE,'filtrStr'=>'','action'=>1,'data'=>array(),'maybemore'=>false);
 
-if(!empty($_REQUEST["perpage"])) $perpage = $_REQUEST["perpage"]*1;
+if(!empty($_REQUEST["perpage"])) $perpage = (int) $_REQUEST["perpage"];
 elseif(empty($perpage)) $perpage = SEARCH_PERPAGE;
-if($perpage<3 || $perpage>900) $perpage = SEARCH_PERPAGE;
+if($perpage<3 || $perpage>100) $perpage = SEARCH_PERPAGE;
 
 if(isset($_POST['subsearch']) && !empty($_REQUEST["filtr"])) {
 	
@@ -53,7 +53,7 @@ if(isset($_POST['subsearch']) && !empty($_REQUEST["filtr"])) {
 	fHTTP::redirect($user->getUri());
 }
 //---show part
-$tpl = new fTemplateIT('forums.search.tpl.html');
+$tpl = new fTemplateIT('items.search.tpl.html');
 $tpl->setVariable('FORMACTION',$user->getUri());
 $options='';
 foreach ($ARRWHERESEARCHLABELS as $k=>$v)
@@ -75,9 +75,7 @@ if($search_text != "") {
 			$tpl->setVariable('BOTTOMPAGER',$pager->links);
 		}
 		$tpl->setVariable('FROM',$od);
-		$tpl->setVariable('TO',($od+$perpage));
-		$tpl->setVariable('TOTAL',$celkem);
-		
+				
 		$fItems = new fItems();
 		$fItems->showPageLabel = true;
 		$fItems->arrData = $arr;
@@ -88,4 +86,3 @@ if($search_text != "") {
 } else $tpl->touchBlock('nosearchconditions');
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>
