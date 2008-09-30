@@ -2,7 +2,6 @@ truncate sys_pages;
 INSERT INTO `sys_pages` VALUES ('maina', null, 'top', null, null, null, 1, 'bloged.main.php', '', 'Úvod', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('frien', null, 'top', null, null, 3, 3, 'user.friends.php', 'Přátelé - Informace o uživatelích', 'Přátelé', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'forum', null, null, 2, 'pages.booked.php', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, null, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('galer', null, 'top', 'galery', null, 4, 2, 'galery.list.php', 'Galerie - Fotografie a jiné obrázky', 'Galerie', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galed', null, 'top', 'galery', null, 4, 2, 'galery.edit.php', 'Nové a úpravy Galerie', 'EditGal', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -23,6 +22,8 @@ INSERT INTO `sys_pages` VALUES ('fsurf', null, 'top', null, null, 3, 3, 'user.su
 INSERT INTO `sys_pages` VALUES ('fdiar', null, 'top', null, null, 3, 3, 'user.diary.php', 'Osobní diář', 'Diář', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('ffall', null, 'top', null, null, 3, 3, 'user.friends.all.php', 'Seznam všech registrovaných uživatelů', 'VšechnyID', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', null, null, 3, 3, 'user.settings.php', 'Nastavení osobních údajů', 'Osobní', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+
+INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, null, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('sadmi', null, 'admin', null, null, 9, null, 'sys.edit.php', 'Tam jsou lvi', 'admin', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 9, null, 'sys.edit.users.banns.php', 'Kontrola nad uživateli - blokování', 'Banány', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;

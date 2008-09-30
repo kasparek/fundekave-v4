@@ -56,9 +56,9 @@ if(isset($_POST['bid'])) {
 if(isset($_GET['ebd'])) {
 	$bannerId = $_GET['ebd'] * 1;
 	if($bannerId>0) {
-  	$db->query("delete from sys_banner where bannerId=".$idbann);
-  	fError::addError(LABEL_DELETED_OK);
-  	fHTTP::redirect($user->getUri());
+      	$db->query("delete from sys_banner where bannerId=".$bannerId);
+      	fError::addError(LABEL_DELETED_OK);
+      	fHTTP::redirect($user->getUri());
 	}
 }
 
@@ -180,4 +180,3 @@ while($arrFiles) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

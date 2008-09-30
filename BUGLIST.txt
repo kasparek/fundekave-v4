@@ -6,38 +6,21 @@ NEJ
  - v pratelich - pratele taky sleduji
 
 dodelat
-  - ZEBRICKY - galerie, blogy, kluby - zadny globalni nebudou
   - KAPSA - odkazy u veci, pouziti
  
-  - UPRAVIT TITLEs pro items
-  - UPRAVIT URL
-
 GALERY DETAIL
-  - pri pridani do prispevku diskuze smazat cache
+  - zobrazit u fotky pocet reakci / pocet neprectenych
+  - zobrazit to celkove u galerie
+  - nastaveni diskuze - pouze pro cteni, zapis pouze pro spravce, prihlasene, majitele
   
 ANKETA
   - style sloupce
-
-GALERIE
-  - seznam fotek - pridat odkaz "do zalozek"
-  - detail fotky
-    - palec nahoru - vymazat cache
-    - pridat odkaz "do zalozek" - moznost pouzit v klubu
-
-FORUM/BLOG
-  - resize page ikonek
-
-TEXTAREY - vsude draftable
 
 sys_user_perm_cache
   - jeste se nad tim zamyslet .. zatim se to nikde nepouziva
   - pri zmene pravidel smazat
   - pri loginu pokud neni nic v cache .. vytvorit
 
-XAJAX operace - mozna se na to vyprdnout
-    - !!! mozna - nekdy to nekde ted nevim kde hlasi stranka neexistuje
- - nenacitat data stranky
- - nepocitat generovanou stranku
 
 ////////////////////////////////////////////////////////
 --------------------------------------------------------
