@@ -277,7 +277,7 @@ class fUser {
 		return($this->idkontrol);
 	}
 	
-	function kde() {
+	function kde($xajax=false) {
 		global $db;
 		$this->arrCachePerLoad = array();
 		$this->arrTooltips = array();
@@ -299,7 +299,7 @@ class fUser {
             }  
 		}
 		
-		//---try load current pakde
+		//---try load current page
 		$this->loadPage();
 		
 		//---if page not exists redirect to error
@@ -336,7 +336,7 @@ class fUser {
 			
 			$db->query("update sys_users set dateUpdated = now(),hit=hit+1 where userId='".$this->gid."'");
 			
-			$db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
+			if($xajax==false) $db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
 		  }
 		}
@@ -788,8 +788,8 @@ class fUser {
 		if(!empty($this->arrRulez[$usr][$page][$type])) return $this->arrRulez[$usr][$page][$type];
 		else return false;
 	}
-	function getUri($otherParams='',$pageId='',$pageParam='') {
-	   $pageParam = (empty($pageParam))?($this->currentPageParam):($pageParam);
+	function getUri($otherParams='',$pageId='',$pageParam=false) {
+	   $pageParam = ($pageParam===false)?($this->currentPageParam):($pageParam);
 	    if(empty($pageId) && $this->currentItemId>0) $params[] = 'i='.$this->currentItemId;
 	    if(!empty($pageId)) $params[] = 'k='.$pageId.$pageParam;
 	    elseif(!empty($this->currentPageId)) $params[] = 'k='.$this->currentPageId.$pageParam;

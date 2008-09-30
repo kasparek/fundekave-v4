@@ -32,6 +32,7 @@ if($user->idkontrol) {
   fXajax::register('forum_fotoDetail');
   fXajax::register('pocket_add');
   fXajax::register('pocket_action');
+  fXajax::register('forum_booked');
   fItems::setTagToolbar();
 }
 

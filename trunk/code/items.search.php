@@ -3,86 +3,46 @@ $typeId = $user->currentPage['typeIdChild'];
 
 fItems::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
 
-$itemsSearchCache = & $user->itemsSearch;
-if(empty($itemsSearchCache)) $itemsSearchCache = array('perpage'=>SEARCH_PERPAGE,'filtrStr'=>'','action'=>1,'data'=>array(),'maybemore'=>false);
+$TOPTPL->addTab(array("MAINDATA"=>fItems::getTagToolbar()));
 
-if(!empty($_REQUEST["perpage"])) $perpage = (int) $_REQUEST["perpage"];
-elseif(empty($perpage)) $perpage = SEARCH_PERPAGE;
-if($perpage<3 || $perpage>100) $perpage = SEARCH_PERPAGE;
+$fItems = new fItems();
+$fItems->cacheResults = true;
+$fItems->showPageLabel = true;
+$fItems->initData($user->currentPage['typeIdChild'],$user->gid,true);
+//$fItems->setOrder('i.dateCreated desc');
+$fItems->addWhere('i.itemIdTop is null');
+fItems::setQueryTool(&$fItems);
 
-if(isset($_POST['subsearch']) && !empty($_REQUEST["filtr"])) {
-	
-	if(strlen($_POST["filtr"])<2) {
-		fError::addError(ERROR_SEARCH_TOSHORT);
-		fHTTP::redirect($user->getUri());
-	} else {
-		$search_text = trim($_POST["filtr"]);
-		$search_in = $_POST['svcem'];
-	}
-	
-	
-	$fItems = new fItems();
-	$fItems->showPageLabel = true;
-	$fItems->initData($typeId,$user->gid,true);
-	
-	if($search_in==0 || $search_in==2) {
-	    $arrWhereSearch[]='i.text';
-	    $arrWhereSearch[]='i.enclosure';
-	}
-	if($search_in==0 || $search_in==1) {
-	    $arrWhereSearch[]='i.name';
-	}
-	if($search_in==0 || $search_in==3) {
-	    $arrWhereSearch[]='i.dateCreated';
-	}
-	$fItems->addWhereSearch($arrWhereSearch,$search_text,'OR','AND');
-	
-	$limit = 100;
-	
-	$fItems->setOrder("i.dateCreated",true);
-	$fItems->setLimit(0,$limit);
-		
-	$total = $fItems->getCount();
-	
-	$fItems->getData();
-	
-	if($total > $limit) fError::addError(LABEL_FOUND.' '.$total.'. '.LABEL_SEARCH_RESULTS_JUSTLISTED.' '.$limit.'.');
-	
-	$_SESSION['search_audit_data'] = array('priz'=>$fItems->arrData,'count'=>count($fItems->arrData));
-	
-	fHTTP::redirect($user->getUri());
+$pager = fSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
+$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;
+$fItems->setLimit($from,SEARCH_PERPAGE+1);
+
+$fItems->getData();
+$totalItems = count($fItems->arrData);
+
+$maybeMore = false;
+if($totalItems > SEARCH_PERPAGE) {
+    $maybeMore = true;
+    unset($fItems->arrData[(count($fItems->arrData)-1)]);
 }
-//---show part
-$tpl = new fTemplateIT('items.search.tpl.html');
-$tpl->setVariable('FORMACTION',$user->getUri());
-$options='';
-foreach ($ARRWHERESEARCHLABELS as $k=>$v)
-	$options.='<option value="'.$k.'"'.(($search_in==$k)?(' selected="selected"'):('')).'>'.$v.'</option>';
-$tpl->setVariable('WHEREOPTIONS',$options);
-$tpl->setVariable('SEARCHTEXT',$search_text);
-$tpl->setVariable('PERPAGE',$perpage);
+if($from > 0) $totalItems += $from;
 
-if($search_text != "") {
-	$newdata = $_SESSION['search_audit_data'];
-	$celkem = $newdata['count'];
-	if($celkem > 0) {
-		//--listovani
-		$pager = fSystem::initPager(0,$perpage,array('itemData'=>$newdata['priz']));
-		$od = ($pager->getCurrentPageID()-1) * $perpage;
-		$arr = $pager->getPageData();
-		if($celkem > $perpage) {
-			$tpl->setVariable('TOPPAGER',$pager->links);
-			$tpl->setVariable('BOTTOMPAGER',$pager->links);
-		}
-		$tpl->setVariable('FROM',$od);
-				
-		$fItems = new fItems();
-		$fItems->showPageLabel = true;
-		$fItems->arrData = $arr;
-		
-		while($fItems->arrData) $fItems->parse();
-		$tpl->setVariable('RESULTS',$fItems->show());
-	} else $tpl->touchBlock('noresults');
-} else $tpl->touchBlock('nosearchconditions');
+$tpl = new fTemplateIT('items.list.tpl.html');
+
+if($totalItems > 0) {
+    
+    $pager->totalItems = $totalItems;
+	$pager->maybeMore = $maybeMore;
+	$pager->getPager();
+	$tpl->setVariable("PAGER",$pager->links);
+    
+	while ($fItems->arrData) {
+        $fItems->parse();    
+	}
+	$tpl->setVariable("RESULTS",$fItems->show());
+} else {
+  $tpl->touchBlock('noitems');
+}
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
+/**/

@@ -1,6 +1,6 @@
 <?php
 if(fRules::get($user->gid,$user->currentPageId,2)) {
-    if($user->currentPageParam == 'e') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId),BUTTON_PAGE_BACK);
+    if($user->currentPageParam == 'e') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
     else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'e'),LABEL_SETTINGS);
 }
 if($user->idkontrol) {

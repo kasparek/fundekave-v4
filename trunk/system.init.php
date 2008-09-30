@@ -100,5 +100,5 @@ if(!$nonUserInit) {
 	}
 	$user->whoIs = 0;
 	if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
-	$user->kde(); //---check user / load info / load page content / chechk page exist
+	$user->kde($xajax); //---check user / load info / load page content / chechk page exist
 }

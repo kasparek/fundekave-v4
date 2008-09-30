@@ -1,7 +1,11 @@
 <?php
 if ($user->idkontrol) {
     fSystem::secondaryMenuAddItem($user->getUri('','','v'),LABEL_SEARCH);
-    fSystem::secondaryMenuAddItem($user->getUri('','','w'),LABEL_SEARCH_ITEMS);
+
+    $typeId = $user->currentPage['typeIdChild'];
+    if($typeId=='forum') fSystem::secondaryMenuAddItem($user->getUri('','','w'),LABEL_SEARCH_ITEMS_FORUMS);
+    elseif($typeId=='blog') fSystem::secondaryMenuAddItem($user->getUri('','','w'),LABEL_SEARCH_ITEMS_BLOGS);
+    
     fSystem::secondaryMenuAddItem($user->getUri('','','t'),LABEL_TOP);
     fSystem::secondaryMenuAddItem($user->getUri('','','l'),LABEL_PAGES_LIVE);
 }
@@ -20,5 +24,5 @@ if($user->currentPageParam=='t') {
     }
     $fPages = new fPages('',$user->gid,&$db);
     $tmptext = $fPages->printCategoryList();
+    $TOPTPL->addTab(array("MAINDATA"=>$tmptext));
 }
-$TOPTPL->addTab(array("MAINDATA"=>$tmptext));
