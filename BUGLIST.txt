@@ -1,3 +1,6 @@
+popis klubu / blogu - pouze plain text
+- pouziv v nahledu kapsa
+
 tag_weight
  - kontrolovat ze se to pri vypisu z klubu bere z cache .. mam pocit ze ne
 
@@ -7,7 +10,11 @@ NEJ
 
 dodelat
   - KAPSA - odkazy u veci, pouziti
+
+GALERIE EDIT
+ - checkovat jmeno adresare na nebezpecny znaky
  
+
 GALERY DETAIL
   - zobrazit u fotky pocet reakci / pocet neprectenych
   - zobrazit to celkove u galerie

@@ -91,15 +91,18 @@ class fPocket extends fQueryTool {
             	   $tpl->setVariable('ITEMNAME',$substr_name);
             	   $tpl->setVariable('ITEMTITLE',fSystem::textins($item[$index],0,0));
             	   $tpl->setVariable('ITEMID',$item[3]);
+            	} else {
+            	    $tpl->setVariable('PAGEIDTOOLTIP',$item[2]);
             	}
-            	
             	$tpl->setVariable('USE',$user->getUri('p=u&pi='.((empty($item[3]))?($item[2]):($item[3]))));
             	$tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
             	
             	$tpl->parseCurrentBlock();
             	
-            	if(!empty($item[3])) {
+            	
             	 $tpl->setCurrentBlock('pocketitemtooltip');
+            	 if(!empty($item[3])) {
+            	     
             	 $tpl->setVariable('ITEMIDTOOLTIP',$item[3]);
             	 $fItems = new fItems();
             	 $fItems->showTag = false;
@@ -117,8 +120,19 @@ class fPocket extends fQueryTool {
             	 $fItems->parse();
             	 $parsed = $fItems->show();
             	 $tpl->setVariable('ITEMASTOOLTIP',$parsed);
-            	 $tpl->parseCurrentBlock();
+            	 
+            	} else {
+            	    
+            	    
+            	    $tpl->setVariable('ITEMIDTOOLTIP',$item[2]);
+            	    $tpl->setVariable('PAGENAMECOMPLETE',$item[5]);
+            	    $tpl->setVariable('PAGELINKTOOLTIP','?k='.$item[2]);
+                	$tpl->setVariable('PAGEDESC',$item[4]);
+                	
+                	
             	}
+            	$tpl->parseCurrentBlock();
+
             }
             
             //print_r($arr);
