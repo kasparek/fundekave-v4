@@ -29,7 +29,7 @@ if (isset($_POST['savegal'])) {
 	}
 	$arr['pageParams'] = $newParams;
 	
-	$arr['name'] = fSystem::textins($arr['name'],0,0);
+	$arr['name'] = fSystem::textins($arr['name'],array('plainText'=>1));
     if(empty($arr['name'])) fError::addError(ERROR_GALERY_NAMEEMPTY);
 	if(empty($arr['pageId'])) {
 	   if(fPages::page_exist('name',$arr['name']))	fError::addError(ERROR_GALERY_NAMEEXISTS.': '.$arr['name']);
@@ -45,7 +45,7 @@ if (isset($_POST['savegal'])) {
 	elseif($user->currentPageParam=='e' && $user->currentPage['galeryDir'] != $arr['galeryDir']) {
 	    $deleteThumbs = true;
 	}
-	$arr['description'] = fSystem::textins($arr['description']);
+	$arr['description'] = fSystem::textins($arr['description'],array('plainText'=>1));
 	
 	if(!fError::isError()) {
 	    if($deleteThumbs) {
@@ -90,7 +90,7 @@ if (isset($_POST['savegal'])) {
     	if(isset($_POST['fot'])) {
     	    foreach ($_POST['fot'] as $k=>$v) {
     	        $changed = false;
-    	        $newDesc = fSystem::textins($v['comm']);
+    	        $newDesc = fSystem::textins($v['comm'],array('plainText'=>1));
     	        $galery->getFoto($k);
     	        $oldDesc = $galery->get('fComment');
     	        $oldDate = $galery->get('fDate');
@@ -238,6 +238,3 @@ if($user->currentPageParam=='e') {
 /**/
 
 $TOPTPL->addRaw($tpl->get());
-
-/**/
-?>

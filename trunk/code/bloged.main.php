@@ -47,7 +47,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
         $row = array_shift($arr);
         $tpl->setCurrentBlock('newpage');
         $tpl->setVariable('NEWPAGEURL','?k='.$row[0]);
-        $tpl->setVariable('NEWPAGETITLE',fSystem::textins($row[3],0,0));
+        $tpl->setVariable('NEWPAGETITLE',fSystem::textins($row[3],array('plainText'=>1)));
         $tpl->setVariable('NEWPAGETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
         $tpl->parseCurrentBlock();
     }
@@ -67,7 +67,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostvisitedpage');
             $tpl->setVariable('MOSTVISITEDEURL','?k='.$row[0]);
-            $tpl->setVariable('MOSTVISITEDTITLE',fSystem::textins($row[3],0,0));
+            $tpl->setVariable('MOSTVISITEDTITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
         }
@@ -89,7 +89,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostactivepage');
             $tpl->setVariable('MOSTACTIVEURL','?k='.$row[0]);
-            $tpl->setVariable('MOSTACTIVETITLE',fSystem::textins($row[3],0,0));
+            $tpl->setVariable('MOSTACTIVETITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
         }
@@ -112,7 +112,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostfavouritepage');
             $tpl->setVariable('MOSTFAVOURITEURL','?k='.$row[0]);
-            $tpl->setVariable('MOSTFAVOURITETITLE',fSystem::textins($row[3],0,0));
+            $tpl->setVariable('MOSTFAVOURITETITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
         }

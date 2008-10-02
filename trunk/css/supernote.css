@@ -11,11 +11,11 @@
 div#sidebar .notemenu {
   width: 20em;
 }
-.notemenu ul {
+div.notemenu ul {
   padding: 0;
   margin: 0;
 }
-.notemenu li {
+div.notemenu li {
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -44,9 +44,10 @@ div#sidebar .snp-mouseoffset,div#sidebar .snp-triggeroffset,div#sidebar .snp-mou
  margin-top: 0px;
 }
 div#mainbar .snp-mouseoffset,div#mainbar .snp-triggeroffset,div#mainbar .snp-mousetrack {
- margin-left: -200px;
+ margin-left: -270px;
  margin-top: 0px;
 }
+
 /* "fallback" links for non-CSS supporting browsers. */
 .fallback {
  display: none;

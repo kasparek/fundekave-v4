@@ -20,7 +20,7 @@ if (isset($_POST["perpage"]) && $_POST["perpage"] != $user->postPerPage) {
 
 if (isset($_REQUEST["filtr"])) {
 	$user->filterSet($user->currentPageId,'text',fSystem::textins($_REQUEST["zprava"]));
-	$user->filterSet($user->currentPageId,'username',fSystem::textins($_REQUEST["prokoho"],0,0));
+	$user->filterSet($user->currentPageId,'username',fSystem::textins($_REQUEST["prokoho"],array('plainText'=>1)));
 	$redir = true;
 }
 
@@ -200,4 +200,3 @@ if(!empty($arrpost)) {
 	}
 }
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

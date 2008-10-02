@@ -21,7 +21,7 @@ if(isset($_POST['kat'])) {
 }
 if(isset($_POST['filtr'])) {
 	if($_POST['filtr'] !== $pageSearchCache['filtrStr']) {
-		$pageSearchCache['filtrStr'] = fSystem::textins($_POST['filtr'],0,0);
+		$pageSearchCache['filtrStr'] = fSystem::textins($_POST['filtr'],array('plainText'=>1));
 		$pageSearchCache['action']=1;
 		$redir = true;
 	}

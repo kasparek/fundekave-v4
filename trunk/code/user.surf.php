@@ -9,8 +9,8 @@ if(isset($_POST["insert"]) && $user->idkontrol) {
 	else {
 		$sLinx = new fSqlSaveTool('sys_surfinie','surfId');
 		$sLinx->addCol('userId',$user->gid);
-		$sLinx->addCol('url',fSystem::textins($url,0,0));
-		$sLinx->addCol('name',fSystem::textins($_POST["surfdesc"],0,0));
+		$sLinx->addCol('url',fSystem::textins($url,array('plainText'=>1)));
+		$sLinx->addCol('name',fSystem::textins($_POST["surfdesc"],array('plainText'=>1)));
 		$sLinx->addCol('public',($_POST["surfpublic"]*1));
 		$sLinx->addCol('categoryId',($_POST['selcat']*1));
 		$sLinx->addCol('dateCreated','NOW()',false);
@@ -90,5 +90,3 @@ if($total>0) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-
-?>

@@ -13,16 +13,16 @@ if($user->currentPageParam=='a') $typeForSaveTool = $user->currentPage['typeIdCh
 $sPage = new fPagesSaveTool($typeForSaveTool);  
 
   $notQuoted = array();
-	$arr['name'] = fSystem::textins($_POST['name'],0,0);
+	$arr['name'] = fSystem::textins($_POST['name'],array('plainText'=>1));
 	if(empty($arr['name'])) fError::addError(ERROR_PAGE_ADD_NONAME);
-	$arr['description']=fSystem::textins($_POST['description']);
+	$arr['description']=fSystem::textins($_POST['description'],array('plainText'=>1));
 	$arr['content']=fSystem::textins($_POST['content']);
 	
 
 	if($user->currentPageParam=='sa') {
-	    $arr['nameShort'] = fSystem::textins($_POST['nameshort'],0,0);
-	    $arr['authorContent'] = fSystem::textins($_POST['authorcontent'],0,0);
-	    $arr['template'] = fSystem::textins($_POST['template'],0,0);
+	    $arr['nameShort'] = fSystem::textins($_POST['nameshort'],array('plainText'=>1));
+	    $arr['authorContent'] = fSystem::textins($_POST['authorcontent'],array('plainText'=>1));
+	    $arr['template'] = fSystem::textins($_POST['template'],array('plainText'=>1));
 	    $dateContent = $_POST['datecontent'];
 	    if(!empty($dateContent)) if(fSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
 	    

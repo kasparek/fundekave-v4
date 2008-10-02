@@ -22,7 +22,7 @@ class fItems extends fQueryTool {
         $user->arrUsers['mytags'] = array();
         $db->query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');
         return $db->query("insert into sys_pages_items_tag values 
-        ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,0,0)."'"):('null')).",'".($weight*1)."',now())");
+        ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
     }
     static function removeTag($itemId,$userId) {
         global $db,$user;
@@ -600,10 +600,10 @@ class fItems extends fQueryTool {
       else {
         if(isset($_POST['searchText'])) {
             //---add for fullsearch
-            $toolbarData['searchStr'] = fSystem::textins($_POST['searchText'],0,0);
+            $toolbarData['searchStr'] = fSystem::textins($_POST['searchText'],array('plainText'=>1));
         }
         if(isset($_POST['searchUser'])) {
-            $toolbarData['usersWho'] = fSystem::textins($_POST['searchUser'],0,0);
+            $toolbarData['usersWho'] = fSystem::textins($_POST['searchUser'],array('plainText'=>1));
         }
         if(isset($_POST['tuorder'])) $toolbarData['order'] = (int) $_POST['tuorder'];
         if(isset($toolbarData['interval'])) $oldInterval = $toolbarData['interval']; else $oldInterval = -1;

@@ -16,7 +16,7 @@ if(empty($_REQUEST['ddate']) || !checkdate($dmesic,$dden,$drok)) {
 
 if (isset($_POST['save'])){
 	$arrd['recurrence'] = $_POST['drepeat'] * 1;
-	$arrd['name'] = fSystem::textins($_POST['dzkratka'],0,0);
+	$arrd['name'] = fSystem::textins($_POST['dzkratka'],array('plainText'=>1));
 	$arrd['text'] = fSystem::textins($_POST['dtext']);
 	
 	list($nden,$nmesic,$nrok)=explode(".",$_POST['addfdate']);
@@ -223,4 +223,3 @@ if(count($arr)>0) {
 }
 //----------------konec vypis udalosti
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

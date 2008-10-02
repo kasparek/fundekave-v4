@@ -7,7 +7,7 @@ function userFromPocket(link){
  } else {
    var itemId = gup('pi',link.href);
    inputId.value = "link:" + itemId;
-   elm('frompocketthumb').className = 'supernote-hover-' + itemId;
+   elm('frompocketthumb').className = 'supernote-hover-pocket' + itemId;
  }
  return false;
 }
@@ -21,10 +21,7 @@ function removeFromPocket() {
 <!-- BEGIN pocket -->
   <!-- BEGIN pocketContent -->
   <ul id="pocketItems">
-    <!-- BEGIN pocketitem -->
-    <li><a href="{PAGELINK}" title="{PAGETITLE}"<!-- BEGIN pagehovertooltip --> class="supernote-hover-{PAGEIDTOOLTIP}"<!-- END pagehovertooltip -->>{PAGENAME}</a>
-    <!-- BEGIN pocketpageitem --> <a href="{ITEMLINK}" title="{ITEMTITLE}" class="supernote-hover-{ITEMID}">{ITEMNAME}</a><!-- END pocketpageitem --><br />
-    <!-- END pocketitem -->
+    <!-- BEGIN pocketitem --><li><a href="{POCKETLINK}" title="{POCKETTITLE}" class="{POCKETTYPE} supernote-hover-{POCKETITEMID}">{POCKETNAME}</a></li><!-- END pocketitem -->
   <ul>
   <!-- END pocketContent -->
   <!-- BEGIN pocketEmpty -->

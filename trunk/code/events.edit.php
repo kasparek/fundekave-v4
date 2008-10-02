@@ -25,17 +25,17 @@ if(isset($_POST["nav"])){
 	if(fSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
 	$timeEndTmp = trim($_POST['timestart']);
 	if(fSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
-	$dateStart = textins($_POST['datestart'],0,0);
+	$dateStart = textins($_POST['datestart'],array('plainText'=>1));
 	$dateStart = fSystem::switchDate($dateStart);
 	if(fSystem::isDate($dateStart)) $dateStart .= $timeStart;
 	else fError::addError(ERROR_DATE_FORMAT);
 	
-	$dateEnd = textins($_POST['dateend'],0,0);
+	$dateEnd = textins($_POST['dateend'],array('plainText'=>1));
 	$dateEnd = fSystem::switchDate($dateEnd);
 	if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
 	
-	$arrSave = array('location'=>fSystem::textins($_POST['place'],0,0)
-	,'addon'=>fSystem::textins($_POST['name'],0,0)
+	$arrSave = array('location'=>fSystem::textins($_POST['place'],array('plainText'=>1))
+	,'addon'=>fSystem::textins($_POST['name'],array('plainText'=>1))
 	,'dateStart'=>$dateStart
 	,'text'=>fSystem::textins($_POST['description'])
 	

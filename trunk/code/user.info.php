@@ -3,7 +3,7 @@ if(!$who = $user->whoIs) $who = $user->gid;
 
 if(isset($_REQUEST["save"])) {
 	if(!$user->pritel($who)) $user->addpritel($who);
-	$koment=fSystem::textins($_POST["koment"],0,0);
+	$koment=fSystem::textins($_POST["koment"],array('plainText'=>1));
 	$dot = "UPDATE sys_users_friends SET comment='".$koment."' WHERE userId='".$user->gid."' AND userIdFriend='".$who."'";
 	
 	$db->query($dot);
@@ -69,4 +69,3 @@ foreach ($arr as $kom) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>
