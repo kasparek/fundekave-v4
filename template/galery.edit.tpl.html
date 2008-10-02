@@ -3,9 +3,7 @@
 <label>&nbsp;</label>
 <input type="hidden" name="gid" value="{GPAGEID}" />
 <input type="submit" name="savegal" value="Uložit" class="button" />
-<!-- BEGIN gdelete -->
-<input type="submit" name="deletegal" value="Smazat galerii" onClick="if(confirm('Opravdu chcete vymazat tuto galerii?')) return(true); else return(false);" class="button" />{DUMMYDELETE}
-<!-- END gdelete -->
+<!-- BEGIN gdelete --><input type="submit" name="deletegal" value="Smazat galerii" onClick="if(confirm('Opravdu chcete vymazat tuto galerii?')) return(true); else return(false);" class="button" /><!-- END gdelete -->
 </p>
 
 <script type="text/javascript" src="./js/domtab.js"></script>
@@ -25,7 +23,8 @@
 <label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br />
 <label>Kategorie</label><select name="arr[categoryId]">{CATEGORYOPTIONS}</select><br />
 <label>Název</label><input type="text" name="arr[name]" value="{GNAME}" class="long" /><br />
-<label>Popis</label><textarea name="arr[description]" id="{GDESCID}" class="draftable">{GDESC}</textarea>{GDESCTOOLBOX}<br />
+<label>Popis</label><textarea name="arr[description]" id="{GDESCID}" class="draftable">{GDESC}</textarea><br />
+<label>Zahlavi</label><textarea name="arr[content]" id="{GCONTID}" class="draftable">{GCONT}</textarea>{GCONTTOOLBOX}<br />
 <label>Datum</label><input type="text" name="arr[dateContent]" value="{GDATE}" /><br />
 <label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" /><br />
 <label>Náhledy</label><input type="text" name="xwidth" value="{GWIDTH}" class="small" /> x 
@@ -58,6 +57,11 @@
 <h3><a name="ft4" id="ft4">Seznam fotografii</a></h3>
 <p>
 <label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
+<label>Diskuze u foto:</label><select name="fotoforum">
+<option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce na fotky</option>
+<option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
+<option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
+</select>
 <label>Řadit:</label><select name="galeryorder">
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>

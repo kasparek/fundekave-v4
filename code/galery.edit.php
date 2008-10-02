@@ -23,6 +23,7 @@ if (isset($_POST['savegal'])) {
 	$xml->enhancedsettings[0]->heightpx = $xheightpx;
 	$xml->enhancedsettings[0]->thumbnailstyle = $xthumbstyle;
 	$xml->enhancedsettings[0]->orderitems = $_POST['galeryorder'] * 1;
+	$xml->enhancedsettings[0]->fotoforum = $_POST['fotoforum'] * 1;
 	$newParams = $xml->asXML();
 	if($user->currentPage['pageParams'] != $newParams && $user->currentPageParam=='e') {
 	    $deleteThumbs = true;
@@ -46,6 +47,7 @@ if (isset($_POST['savegal'])) {
 	    $deleteThumbs = true;
 	}
 	$arr['description'] = fSystem::textins($arr['description'],array('plainText'=>1));
+	$arr['content'] = fSystem::textins($arr['content']);
 	
 	if(!fError::isError()) {
 	    if($deleteThumbs) {
@@ -144,6 +146,7 @@ if($user->currentPageParam=='e') {
     $arr['xwidthpx'] = $enhancedSettings->widthpx;
     $arr['xheightpx'] = $enhancedSettings->heightpx;
     $arr['xthumbstyle'] = $enhancedSettings->thumbnailstyle;
+    $arr['fotoforum'] = $enhancedSettings->fotoforum;
 	if($arr['galeryDir'] != '') {
 	    $galery->refreshImgToDb($user->currentPageId);
 	}
@@ -152,13 +155,13 @@ if($user->currentPageParam=='e') {
 	unset($_SESSION['galerie_arr']);
 } else {
 	$arr=array("categoryId"=>'1',
-	"dateContent"=>Date("Y-m-d"),"name"=>'',"description"=>'',
+	"dateContent"=>Date("Y-m-d"),"name"=>'',"description"=>'',"content"=>'',
 	'userIdOwner'=>$user->gid,'galeryDir'=>'',
 	'xwidth'=>$galery->get('thumbNumWidth'),
 	'xheight'=>$galery->get('thumbNumHeight'),
 	'xwidthpx'=>$galery->get('widthThumb'),
 	'xheightpx'=>$galery->get('heightThumb'),
-	'xthumbstyle'=>'0');
+	'xthumbstyle'=>'0','fotoforum'=>1);
 }
 
 $tpl = new fTemplateIT('galery.edit.tpl.html');
@@ -182,8 +185,10 @@ $tpl->setVariable('CATEGORYOPTIONS',$options);
 $tpl->setVariable('GNAME',$arr['name']);
 
 $tpl->setVariable('GDESCID',$user->currentPageId.'desc');
+$tpl->setVariable('GCONTID',$user->currentPageId.'cont');
 $tpl->setVariable('GDESC',fSystem::textToTextarea($arr['description']));
-$tpl->addTextareaToolbox('GDESCTOOLBOX',$user->currentPageId.'desc');
+$tpl->setVariable('GCONT',fSystem::textToTextarea($arr['content']));
+$tpl->addTextareaToolbox('GCONTTOOLBOX',$user->currentPageId.'cont');
 
 $tpl->setVariable('GDATE',$arr['dateContent']);
 $tpl->setVariable('GDIR',$arr['galeryDir']);
@@ -202,7 +207,7 @@ if($user->currentPageParam=='e') {
     //$tpl->setVariable('GINTERNALLINK',htmlspecialchars('<a href="'.BASESCRIPTNAME.'?k='.$user->currentPageId.'">'.$arr['name'].'</a>'));
     //$tpl->setVariable('GSTANDALONELINK',htmlspecialchars('<a href="'.BASESCRIPTNAME.'?k='.$user->currentPageId.'">'.$arr['name'].'</a>'));
     //$tpl->setVariable('GEXTURL',htmlspecialchars('<a href="http://fundekave.net/gdk/?id='.$user->currentPageId.'">'.$arr['name'].'</a>'));
-    $tpl->setVariable('DUMMYDELETE',' ');
+    $tpl->touchBlock('gdelete');
   
   $galery->getGaleryData($user->currentPageId);
   $galery->getFoto($user->currentPageId,true,(($galery->gOrderItems==1)?('i.dateCreated desc'):('i.enclosure')));
@@ -210,18 +215,31 @@ if($user->currentPageParam=='e') {
 	$tpl->setVariable('FOTOTOTAL',count($galery->arrData));
 	
 	if($galery->gOrderItems) $tpl->touchBlock('gorddate');
+	$tpl->touchBlock('fforum'.$arr['fotoforum']);
 	
 	if(!empty($galery->arrData)) {
     	foreach ($galery->arrData as $foto){
-    	    $tpl->setCurrentBlock('gfoto');
+    	    list($date,$time) = explode('T',$foto['dateIso']);
+    	    if($date=='0000-00-00') $date='';
+    	    $exif = exif_read_data(ROOT.ROOT_WEB.$foto['detailUrl']);
+    	    if($exif!==false) {
+        	    //print_r($exif);
+        	    
+        	    if(empty($date)) $date = date("Y-m-d",$exif['FileDateTime']);
+        	    
+    	    }
+            
+            $tpl->setCurrentBlock('gfoto');
     	    $tpl->setVariable('FID',$foto['itemId']);
     	    $tpl->setVariable('FNAME',$foto['enclosure']);
     	    $tpl->setVariable('FTHUMBURL',$foto['thumbUrl']);
     	    $tpl->setVariable('FCOMMENT',$foto['text']);
-    	    $arrDate = explode('T',$foto['dateIso']);
-    	    if($arrDate[0]!='0000-00-00') {
-    	       $tpl->setVariable('FDATE',$arrDate[0]);
+    	    
+    	    if($date!='0000-00-00') {
+    	       $tpl->setVariable('FDATE',$date);
     	    }
+    	    
+    	    
     	    $tpl->parseCurrentBlock();
     	}
     	
