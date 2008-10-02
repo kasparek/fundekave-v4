@@ -24,8 +24,6 @@ function removeFromPocket() {
     <!-- BEGIN pocketitem -->
     <li><a href="{PAGELINK}" title="{PAGETITLE}"<!-- BEGIN pagehovertooltip --> class="supernote-hover-{PAGEIDTOOLTIP}"<!-- END pagehovertooltip -->>{PAGENAME}</a>
     <!-- BEGIN pocketpageitem --> <a href="{ITEMLINK}" title="{ITEMTITLE}" class="supernote-hover-{ITEMID}">{ITEMNAME}</a><!-- END pocketpageitem --><br />
-    <a href="{USE}" onClick="return userFromPocket(this);">Pouzit</a> 
-    <a href="{REMOVE}" onClick="return removeFromPocket(this);" >Odstranit</a></li>
     <!-- END pocketitem -->
   <ul>
   <!-- END pocketContent -->
@@ -34,11 +32,11 @@ function removeFromPocket() {
   <!-- END pocketEmpty -->
   <!-- BEGIN pocketitemtooltip -->
   <div id="supernote-note-{ITEMIDTOOLTIP}" class="snp-triggeroffset notemenu">
-    {ITEMASTOOLTIP}
-    <!-- BEGIN pagetooltip -->
     <h4><a href="{PAGELINKTOOLTIP}">{PAGENAMECOMPLETE}</a></h4>
-    <p>{PAGEDESC}</p>
-    <!-- END pagetooltip -->
+    <a href="{USE}" onClick="return userFromPocket(this);">Pouzit</a> 
+    <a href="{REMOVE}" onClick="return removeFromPocket(this);" >Odstranit</a></li>
+    <!-- BEGIN pagedesc --><p>{PAGEDESC}</p><!-- END pagedesc -->
+    {ITEMASTOOLTIP}
   </div>
   <!-- END pocketitemtooltip -->
 <!-- END pocket -->
