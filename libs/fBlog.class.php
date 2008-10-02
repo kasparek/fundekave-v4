@@ -14,10 +14,10 @@ class fBlog extends fQueryTool  {
           	$fsave = new fSqlSaveTool('sys_pages_items','itemId');
           	if(!isset($aFormValues['del'])) $aFormValues['del'] = 0; 
           	if($aFormValues['del'] == 0) {
-          		$arrSave = array('addon'=>fSystem::textins($aFormValues['nadpis'],0,0),'text'=>fSystem::textins($aFormValues['textclanku'])); 
-          		$arrSave['name'] = fSystem::textins($aFormValues['autor'],0,0);
+          		$arrSave = array('addon'=>fSystem::textins($aFormValues['nadpis'],array('plainText'=>1)),'text'=>fSystem::textins($aFormValues['textclanku'])); 
+          		$arrSave['name'] = fSystem::textins($aFormValues['autor'],array('plainText'=>1));
           		if($arrSave['name']=='') $arrSave['name'] = $user->gidname;
-          		if(fSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = fSystem::textins($aFormValues['datum'],0,0);
+          		if(fSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = fSystem::textins($aFormValues['datum'],array('plainText'=>1));
           		if(isset($aFormValues['nid'])) $itemId = (int) $aFormValues['nid'];
           		else $itemId = 0;
           		if($itemId>0) {

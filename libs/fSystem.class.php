@@ -136,11 +136,19 @@ class fSystem {
      * @param numeric $endOfLine - if 1 replace \n - <br />\n, 0 - do nothing, 2 - replace <br />\n - \n
      * @param boolean $wrap - wrap long words 
      */
-    function textins($text,$option = 1,$endOfLine = 1,$wrap = true) {
+    function textins($text,$paramsArr=array()) {
+      $breakLong = 1;
+      $endOfLine = 1;
+      $formatOption = 1;
+      extract($paramsArr);
+      if(isset($plainText)) {
+          $option = 0;
+          $endOfLine = 0;
+      }
       global $user;
         $text = trim($text);
-        if($option==0 || !$user->idkontrol) $text = strip_tags($text);
-        if($option==1) {
+        if($formatOption==0 || !$user->idkontrol) $text = strip_tags($text);
+        if($formatOption==1) {
             require_once('HTML/BBCodeParser.php'); 
             $config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);
             $parser = new HTML_BBCodeParser($config['HTML_BBCodeParser']);
@@ -148,7 +156,7 @@ class fSystem {
             $parser->parse();
             $text = $parser->getParsed();
         }
-        if($option<2) {
+        if($formatOption<2) {
             require_once('PEAR.php');
             require_once('HTML/Safe.php');
             $safe = new HTML_Safe();
@@ -161,7 +169,14 @@ class fSystem {
           $text = nl2br($text);
         }
         elseif($endOfLine==2) $text = fSystem::textinsBr2nl($text);
-        if($wrap==true) $text = fSystem::wordWrap($text);
+        if($breakLong==1) $text = fSystem::wordWrap($text);
+        if(isset($lengthLimit)) {
+            if($lengthLimit>0) {
+                if(mb_strlen($text)>$lengthLimit) { $text = mb_substr($text,0,$lengthLimit);
+                    if(isset($lengthLimitAddOnEnd)) $text .= $lengthLimitAddOnEnd;
+                }
+            }
+        }
         return $text;
     }
     function wordWrap($strParam, $i=70, $wrap = "\n") {

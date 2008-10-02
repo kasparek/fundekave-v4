@@ -56,7 +56,7 @@ if(isset($_POST['saveank']) && !empty($_POST['arr'])){
 }
 if(isset($_POST['saveodp'])){
     
-	$otazka=fSystem::textins($_POST['otazka'],0,0);
+	$otazka=fSystem::textins($_POST['otazka'],array('plainText'=>1));
 	$votesperuser = $_POST['votesperuser']*1;
 	$publicResults = ((isset($_POST['publicresults']))?(1):(0));
 	if($otazka!='') {
@@ -67,7 +67,7 @@ if(isset($_POST['saveodp'])){
 	
 	if(!empty($_POST['arr'])){
 		foreach ($_POST['arr'] as $k=>$odp) {
-			$arr=array('pollId'=>$ankid,'answer'=>fSystem::textins($odp['odpoved'],0,0),'ord'=>$odp['poradi']*1);
+			$arr=array('pollId'=>$ankid,'answer'=>fSystem::textins($odp['odpoved'],array('plainText'=>1)),'ord'=>$odp['poradi']*1);
 			$sAnkOdp = new fSqlSaveTool('sys_poll_answers','pollAnswerId');
 			
 			if($k!=0) {
@@ -151,4 +151,3 @@ if(!empty($ankid)){
 	}
 }
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

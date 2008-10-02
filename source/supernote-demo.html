@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+ <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+ <title>SuperNote Demonstration</title>
+
+ <!--
+  To use this script, you need the SCRIPT and LINK tags in the HEAD of your
+  documents, the activation SCRIPT anywhere, and the notes themselves.
+ -->
+ 
+ 
+ <!-- SuperNote v1.0beta by Angus Turnbull htpp://www.twinhelix.com -->
+ <script type="text/javascript" src="supernote.js"></script>
+ <link rel="stylesheet" type="text/css" href="supernote.css" />
+
+</head>
+
+<body style="font: 13px/20px sans-serif; background-color: #FFF">
+
+
+<div style="text-align: center">
+ <h1 style="font: 32px/48px sans-serif">SuperNote v1.0beta2</h1>
+ by Angus Turnbull - <a href="http://www.twinhelix.com">http://www.twinhelix.com</a>.
+ Updated: 25 September 2006.
+ <hr />
+</div>
+
+<p>This is an accessible, CSS/JS based "popup tooltip" script that dynamically
+converts regular footnotes in a document into tooltips that appear next to their
+triggering elements.</p>
+
+
+<script type="text/javascript">
+
+// SuperNote setup: Declare a new SuperNote object and pass the name used to
+// identify notes in the document, and a config variable hash if you want to
+// override any default settings.
+
+var supernote = new SuperNote('supernote', {});
+
+// Available config options are:
+//allowNesting: true/false    // Whether to allow triggers within triggers.
+//cssProp: 'visibility'       // CSS property used to show/hide notes and values.
+//cssVis: 'inherit'
+//cssHid: 'hidden'
+//IESelectBoxFix: true/false  // Enables the IFRAME select-box-covering fix.
+//showDelay: 0                // Millisecond delays.
+//hideDelay: 500
+//animInSpeed: 0.1            // Animation speeds, from 0.0 to 1.0; 1.0 disables.
+//animOutSpeed: 0.1
+
+// You can pass several to your "new SuperNote()" command like so:
+//{ name: value, name2: value2, name3: value3 }
+
+
+// All the script from this point on is optional!
+
+// Optional animation setup: passed element and 0.0-1.0 animation progress.
+// You can have as many custom animations in a note object as you want.
+function animFade(ref, counter)
+{
+ //counter = Math.min(counter, 0.9); // Uncomment to make notes translucent.
+ var f = ref.filters, done = (counter == 1);
+ if (f)
+ {
+  if (!done && ref.style.filter.indexOf("alpha") == -1)
+   ref.style.filter += ' alpha(opacity=' + (counter * 100) + ')';
+  else if (f.length && f.alpha) with (f.alpha)
+  {
+   if (done) enabled = false;
+   else { opacity = (counter * 100); enabled=true }
+  }
+ }
+ else ref.style.opacity = ref.style.MozOpacity = counter*0.999;
+};
+supernote.animations[supernote.animations.length] = animFade;
+
+
+
+// Optional custom note "close" button handler extension used in this example.
+// This picks up click on CLASS="note-close" elements within CLASS="snb-pinned"
+// notes, and closes the note when they are clicked.
+// It can be deleted if you're not using it.
+addEvent(document, 'click', function(evt)
+{
+ var elm = evt.target || evt.srcElement, closeBtn, note;
+
+ while (elm)
+ {
+  if ((/note-close/).test(elm.className)) closeBtn = elm;
+  if ((/snb-pinned/).test(elm.className)) { note = elm; break }
+  elm = elm.parentNode;
+ }
+
+ if (closeBtn && note)
+ {
+  var noteData = note.id.match(/([a-z_\-0-9]+)-note-([a-z_\-0-9]+)/i);
+  for (var i = 0; i < SuperNote.instances.length; i++)
+   if (SuperNote.instances[i].myName == noteData[1])
+   {
+    setTimeout('SuperNote.instances[' + i + '].setVis("' + noteData[2] +
+     '", false, true)', 100);
+	cancelEvent(evt);
+   }
+ }
+});
+
+
+// Extending the script: you can capture mouse events on note show and hide.
+// To get a reference to a note, use 'this.notes[noteID]' within a function.
+// It has properties like 'ref' (the note element), 'trigRef' (its trigger),
+// 'click' (whether its shows on click or not), 'visible' and 'animating'.
+addEvent(supernote, 'show', function(noteID)
+{
+ // Do cool stuff here!
+});
+addEvent(supernote, 'hide', function(noteID)
+{
+ // Do cool stuff here!
+});
+
+
+// If you want draggable notes, feel free to download the "DragResize" script
+// from my website http://www.twinhelix.com -- it's a nice addition :).
+
+</script>
+
+
+<!--
+
+**************************   USAGE INSTRUCTIONS   **************************
+
+Notes are embedded in your document as normal HTML footnotes.
+
+To show a note, the triggering element must have a CLASS attribute
+of one of these forms:
+  OBJECTNAME-hover-NOTENAME
+  OBJECTNAME-click-NOTENAME
+"hover" type notes will appear on mouseover of their trigger,
+while "click" notes will appear when the trigger is clicked.
+
+This trigger must match a note which has an ID attribute of this form:
+  OBJECTNAME-note-NOTENAME
+
+In both these cases OBJECTNAME is the name of your SuperNote object,
+and NOTENAME is a unique name for a given note.
+
+If you want, your note can also have a CLASS attribute containing either
+or both a positional or behavioural "type" for your note, like so:
+  CLASS="snp-POSITIONTYPE"
+  CLASS="snb-BEHAVIOURTYPE"
+  CLASS="snp-POSITIONTYPE snb-BEHAVIOURTYPE"
+
+where the 'types' control how your note is hidden and positioned.
+Default POSITION types are:
+  * 'normal' does not adjust the note position via script at all.
+  * 'mouseoffset' will offset the note from the mouse position when shown.
+  * 'mousetrack' will make the note follow behind the mouse as it moves.
+  * 'triggeroffset' will offset the note from its trigger when shown.
+Default BEHAVIOUR types are:
+  * 'pinned' will show normally, but not hide until manually closed.
+
+You can define your own custom types in the core script; see its source for
+more details and instructions.
+
+In this example I have also used some "fallback" links with NAME="" and
+HREF="#NAME" attributes on the links, so non-JS/CSS supporting browsers can
+navigate to/from the notes easily.
+You can remove these if you want as they are entirely optional.
+
+-->
+
+<div style="background-color: #EEE; padding: 1em">
+
+<p>Here's an example of a paragraph with a
+<a href="#demo1" class="supernote-hover-demo1">SuperNote</a>.
+SuperNotes are like regular footnotes turbocharged with JavaScript, so they
+display as tooltips in modern browsers, and remain accessible elsewhere.</p>
+
+<p>This next note is shows on click and is <a href="#demo3"
+class="supernote-click-demo3">always pinned</a>.</p>
+
+<p>You can also position relative to <a href="#demo4"
+class="supernote-hover-demo4">triggering links</a>.</p>
+
+<div style="position: relative">
+ <p>Finally, here's a click note that's positioned <a href="#demoinline"
+ class="supernote-click-demoinline">inline</a>.</p>
+ <div id="supernote-note-demoinline" class="snp-normal notedefault" style="left: 30%; width: 400px;">
+  <a name="demoinline"></a>
+  This appears onclick, and remains visible until you click outside it.
+ </div>
+
+</div>
+
+</div>
+
+<!-- See the bottom of the document for the notes themselves! -->
+
+
+<h4>Features:</h4>
+<ul>
+ <li><strong>Pure CSS formatting</strong> allows infinitely customisable note appearance
+  using the standards-based technology you know.</li>
+ <li><strong>Accessible HTML elements</strong> used to construct the notes, so your site
+  maintains excellent search engine and screenreader compatibility.</li>
+
+ <li><strong>Fallback to regular footnotes</strong> give you excellent compatibility
+  with older browsers if you choose.</li>
+ <li><strong>Object-orientated JavaScript</strong> for separate note systems and easy
+  implementation; you don't have to know any JavaScript to use this!</li>
+ <li><strong>Hover and Click</strong> note types give you a choice of activation
+  method on a per-note basis.</li>
+ <li><strong>Nested notes</strong> inside other notes supported -- as many as you want!</li>
+
+ <li><strong>Powerful Behaviour and Position</strong> system lets you apply common
+  properties to notes you create with a minimum of fuss.</li>
+ <li>Notes are <strong>restrained by window edges</strong> for optimum display.</li>
+ <li><strong>Plugin animation framework</strong> allows you to easily implement and
+  customise animation effects for your notes.</li>
+ <li><strong>Customisable show/hide timers</strong> applied to notes mean that they
+  never feel "slippery".</li>
+
+ <li><strong>Tiny, fast script</strong> hand-coded for size and speed, so your
+  visitors won't be kept waiting.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<div style="border: 2px solid red; background: #FFF0F0; padding: 0pt 10pt 0pt 10pt">
+<h4>Script License Agreement</h4>
+<p>You may use this script only if you agree that:</p>
+<ol>
+ <li>You must EITHER:
+  <ol style="list-style-type: lower-alpha">
+
+   <li><strong>Donating Users:</strong> This script is "donation-ware". If you can
+    <strong><a href="http://www.twinhelix.com/donate/">make a donation</a></strong> to support
+    this script, it may be used on a website without a crediting link.
+    Please consider making a donation! I have spent a lot of time developing, debugging and
+    documenting scripts, and any support is welcome.
+    <a href="http://www.twinhelix.com/donate/">More info...</a></li>
+   <li><strong>Free Users:</strong> All websites using this script for free must contain somewhere
+    a <strong>visible crediting link</strong> to TwinHelix Designs, e.g.
+    '<a href="http://www.twinhelix.com">DHTML / JavaScript Tooltips by TwinHelix Designs</a>'.</li>
+
+  </ol>
+ </li>
+ <li>You must leave the "Script Name/Author/URL" comment in the source of the script file.</li>
+ <li>This script is provided on an "AS-IS" basis, without any warranties, and you use it entirely
+  at your own risk.</li>
+ <li>This script may not be redistributed, sold, rented, leased or sublicensed to third parties
+  without my prior consent.</li>
+</ol>
+<p>If you have another use for the script (for example, within a web application) or wish to
+ arrange alternate licensing terms, please
+ <a href="http://www.twinhelix.com/contact/">contact me</a> for more information.</p>
+
+</div>
+
+<p>&nbsp;</p>
+
+<h4>Usage Instructions:</h4>
+
+<p>Open this document inside a text editor like Windows Notepad; instructions are within.
+You don't need to edit the JS file itself, and you can leave the demo script unchanged.
+You will want to open the .CSS file and change the note formatting there though,
+and of course add your own notes to the BODY of the page ;).</p>
+
+<p><em>Good luck - Angus.</em></p>
+
+<p>&nbsp;</p>
+
+<h4>Script Help &amp; Hints</h4>
+
+<p>Since this is the first release, there aren't many Frequently Asked Questions yet :).
+If you have trouble, please post something to the Support Forums on my website.</p>
+
+
+
+<!-- The notes themselves are implemented as footnotes in a document -->
+
+<div id="supernote-note-demo1" class="snp-mouseoffset pinnable notedefault">
+ <a name="demo1"></a>
+ <h5>
+  <a href="#" class="note-close">X</a>
+  Hello!
+ </h5>
+
+ This is your note content. Notes can contain
+ <a href="#anchor-demo2" class="supernote-hover-demo2">embedded notes</a> too!
+</div>
+
+<div id="supernote-note-demo2" class="snp-mousetrack notedefault">
+ <a name="demo2"></a>
+ This is a nested note. You can nest as many levels deep as you want!
+</div>
+
+<div id="supernote-note-demo3" class="snp-mouseoffset snb-pinned notedefault">
+ <a name="demo3"></a>
+
+ <h5>
+  <a href="#" class="note-close">X</a>
+  Always Pinned
+ </h5>
+ This note must be manually closed.
+</div>
+
+<div id="supernote-note-demo4" class="snp-triggeroffset notedefault">
+ <a name="demo4"></a>
+ <h5>
+
+  Relative Note
+ </h5>
+ This always appears relative to its trigger, regardless of the mouse position.
+</div>
+
+</body>
+</html>

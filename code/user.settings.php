@@ -1,22 +1,21 @@
 <?php
-
 if(isset($_POST['nav'])) {
 	if($_POST['nav']=='infosave') {
 	    
 		$xml = new SimpleXMLElement($user->userXml);
 		//--setxml elements
-		$user->icq = str_replace("-","",fSystem::textins($_POST['infoicq'],0,0));
-		$user->email = fSystem::textins($_POST['infoemajl'],0,0);
+		$user->icq = str_replace("-","",fSystem::textins($_POST['infoicq'],array('plainText'=>1)));
+		$user->email = fSystem::textins($_POST['infoemajl'],array('plainText'=>1));
 		
 		if($_POST['skin'] > 0) $user->skin = $_POST['skin'] * 1;
 		
-		$xml->personal[0]->www = fSystem::textins($_POST['infowww'],0,0);
-		$xml->personal[0]->place = fSystem::textins($_POST['infomisto'],0,0);
-		$xml->personal[0]->food = fSystem::textins($_POST['infojidlo'],0,0);
-		$xml->personal[0]->hobby = fSystem::textins($_POST['infohoby'],0,0);
-		$xml->personal[0]->motto = fSystem::textins($_POST['infomotto'],0,0);
+		$xml->personal[0]->www = fSystem::textins($_POST['infowww'],array('plainText'=>1));
+		$xml->personal[0]->place = fSystem::textins($_POST['infomisto'],array('plainText'=>1));
+		$xml->personal[0]->food = fSystem::textins($_POST['infojidlo'],array('plainText'=>1));
+		$xml->personal[0]->hobby = fSystem::textins($_POST['infohoby'],array('plainText'=>1));
+		$xml->personal[0]->motto = fSystem::textins($_POST['infomotto'],array('plainText'=>1));
 		$xml->personal[0]->about = fSystem::textins($_POST['infoabout']);
-		$homePageId = fSystem::textins($_POST['homepageid'],0,0);
+		$homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
 		if(fPages::pageOwner($homePageId) == $user->gid) $xml->personal[0]->HomePageId = $homePageId;
 		$user->userXml = $xml->asXML();
 		
@@ -26,8 +25,8 @@ if(isset($_POST['nav'])) {
 		$user->galtype = (($_POST["galtype"]=='1')?(1):(0));
 		
 		//password
-		$pass1 = fSystem::textins($_POST["pwdreg1"],0,0);
-		$pass2 = fSystem::textins($_POST["pwdreg2"],0,0);
+		$pass1 = fSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
+		$pass2 = fSystem::textins($_POST["pwdreg2"],array('plainText'=>1));
 		if($pass1!=''){
 			if(strlen($pass1)<3) fError::addError(ERROR_REGISTER_PASSWORDTOSHORT);
 			if($pass1!=$pass2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
@@ -101,4 +100,3 @@ if($user->galtype == 1) $tpl->touchBlock('galtype');
 
 //konec editace infa
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

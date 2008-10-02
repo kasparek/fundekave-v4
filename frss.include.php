@@ -16,7 +16,7 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
       	if($params['text']!='' && $params['name']!='') {
       		$arr['pageId'] = $user->currentPageId;
       		$arr['text'] = fSystem::textins($params['text']);
-      		$arr['name'] = fSystem::textins($params['name'],0,0);
+      		$arr['name'] = fSystem::textins($params['name'],array('plainText'=>1));
       		if(fForum::messWrite($arr)) $processArr[] = 'I:insertOK';
       	}
   	}

@@ -1,5 +1,4 @@
 <?php
-
 if(isset($_POST['save'])) {
     if(!empty($_POST['item'])) {
         foreach ($_POST['item'] as $k=>$v) {
@@ -8,7 +7,7 @@ if(isset($_POST['save'])) {
         	    $arrV = explode(",",$v);
         	    $arrTestedTags = array();
         	    foreach ($arrV as $tag) {
-        	    	$tag = fSystem::textins($tag,0,0);
+        	    	$tag = fSystem::textins($tag,array('plainText'=>1));
         	    	if(!empty($tag)) $arrTestedTags[] = $tag;
         	    }
         	    if(!empty($arrTestedTags)) { $v = implode(",",$arrTestedTags);
@@ -61,4 +60,3 @@ if(!empty($fItems->arrData)) {
 }
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-?>

@@ -61,12 +61,12 @@ function SuperNote(myName, config)
   cssProp: 'visibility', // CSS property used to show/hide notes and values.
   cssVis: 'inherit',
   cssHid: 'hidden',
-  IESelectBoxFix: true,  // Enables the IFRAME select-box-covering fix.
-  showDelay: 0,          // Millisecond delays.
-  hideDelay: 500,
-  animInSpeed: 0.1,           // Animation speed, from 0.0 to 1.0; 1.0 disables.
-  animOutSpeed: 0.1,
-  animations: [],        // Array of animation plugins.
+  showDelay: 200,          // Millisecond delays.
+  hideDelay: 0,
+  hideOnMouseOut: true,   //hide note on mouse out of note
+  animInSpeed: 0.4,           // Animation speed, from 0.0 to 1.0; 1.0 disables.
+  animOutSpeed: 0.4,
+  animations: [animFade],        // Array of animation plugins.animFade
   mouseX: 0, mouseY: 0,  // Live mouse co-ords.
   notes: {},             // Store for note timers/references.
   rootElm: null,         // The outermost element, handles mouse events.
@@ -139,7 +139,6 @@ SuperNote.prototype.pTypes.mousetrack = function(obj, noteID, nextVis, nextAnim)
    'note.ref.style.left = checkWinX(mouseX, note) + "px";' +
    'note.ref.style.top = checkWinY(mouseY, note) + "px" }';
   eval(posString);
-  obj.IEFrameFix(noteID, 1);
   if (!note.trackTimer) note.trackTimer = setInterval(posString, 50);
  }
  else if (!nextVis && !nextAnim)
@@ -280,9 +279,9 @@ SuperNote.prototype.mouseHandler = function(evt, show) { with (this)
     // Add to our list of found notes on this loop up the DOM.
     // Don't "find" clicks on triggers; they're 'outside' clicks, hiding note.
     if (!note.click || (trigRef != srcElm)) foundNotes[noteID] = true;
-
+//if(show==0) alert('mousout');
     // Show/hide hover notes, and show onclick notes.
-    if (!note.click || (show == 2))
+    if (!note.click || (show == 2) || ( note.visible && this.hideOnMouseOut==true))
     {
      // If this is a trigger, record this as the note's current trigger.
      // Also record the trigger reference on the note DOM object for looping.
@@ -392,7 +391,6 @@ SuperNote.prototype.animate = function(noteID, show, now) { with (this)
   if (show && !animC)
   {
    if (onshow) this.onshow(noteID);
-   IEFrameFix(noteID, 1);
    ref.style[cssProp] = cssVis;
   }
 
@@ -404,7 +402,6 @@ SuperNote.prototype.animate = function(noteID, show, now) { with (this)
   if (!show && !animC)
   {
    if (onhide) this.onhide(noteID);
-   IEFrameFix(noteID, 0);
    ref.style[cssProp] = cssHid;
   }
 
@@ -421,35 +418,19 @@ SuperNote.prototype.animate = function(noteID, show, now) { with (this)
  }
 }};
 
-
-SuperNote.prototype.IEFrameFix = function(noteID, show) { with (this)
+function animFade(ref, counter)
 {
- // Positions a hidden IFRAME under a note to allow it to cross over <select>
- // boxes in MSIE.
-
-  if (!window.createPopup || !IESelectBoxFix) return;
-
-  var note = notes[noteID], ifr = note.iframe;
-  if (!ifr)
+ //counter = Math.min(counter, 0.9); // Uncomment to make notes translucent.
+ var f = ref.filters, done = (counter == 1);
+ if (f)
+ {
+  if (!done && ref.style.filter.indexOf("alpha") == -1)
+   ref.style.filter += ' alpha(opacity=' + (counter * 100) + ')';
+  else if (f.length && f.alpha) with (f.alpha)
   {
-   ifr = notes[noteID].iframe = document.createElement('iframe');
-   ifr.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(opacity=0)';
-   ifr.style.position = 'absolute';
-   ifr.style.borderWidth = '0';
-   note.ref.parentNode.insertBefore(ifr, note.ref.parentNode.firstChild);
+   if (done) enabled = false;
+   else { opacity = (counter * 100); enabled=true }
   }
-
-  if (show)
-  {
-   ifr.style.left = note.ref.offsetLeft + 'px';
-   ifr.style.top = note.ref.offsetTop + 'px';
-   ifr.style.width = note.ref.offsetWidth + 'px';
-   ifr.style.height = note.ref.offsetHeight + 'px';
-   ifr.style.visibility = 'inherit';
-  }
-  else
-  {
-   ifr.style.visibility = 'hidden';
-  }
-
-}};
+ }
+ else ref.style.opacity = ref.style.MozOpacity = counter*0.999;
+};
