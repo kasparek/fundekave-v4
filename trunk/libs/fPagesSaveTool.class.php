@@ -35,7 +35,7 @@ class fPagesSaveTool extends fSqlSaveTool {
       'nameshort'=>'GALERIE',
       'public'=>1,
       'locked'=>0,
-      'pageParams' => "<galery><enhancedsettings><orderitems>0</orderitems><width/><height/><widthpx/><heightpx/><thumbnailstyle/></enhancedsettings></galery>"
+      'pageParams' => "<galery><enhancedsettings><orderitems>0</orderitems><width/><height/><widthpx/><heightpx/><thumbnailstyle/><fotoforum>1</fotoforum></enhancedsettings></galery>"
     ),
     'culture'=>array(
       'typeId'=>'culture',
