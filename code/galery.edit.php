@@ -116,7 +116,7 @@ if (isset($_POST['savegal'])) {
 	 
 	} 
 	
-	fHTTP::redirect($user->getUri('',$pageId.'e'));
+	fHTTP::redirect($user->getUri('',$pageId));
 	
 }
 
@@ -223,10 +223,17 @@ if($user->currentPageParam=='e') {
     	    if($date=='0000-00-00') $date='';
     	    $exif = exif_read_data(ROOT.ROOT_WEB.$foto['detailUrl']);
     	    if($exif!==false) {
+    	       
         	    //print_r($exif);
         	    
-        	    if(empty($date)) $date = date("Y-m-d",$exif['FileDateTime']);
-        	    
+        	    if(empty($date)) {
+                    $date = date("Y-m-d",$exif['FileDateTime']);
+                    $da = new DateTime($exif['DateTimeOriginal']);
+                    $date = $da->format("Y-m-d");    
+                }
+                
+                
+        	    //die();
     	    }
             
             $tpl->setCurrentBlock('gfoto');

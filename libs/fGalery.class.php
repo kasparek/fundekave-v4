@@ -197,10 +197,12 @@ class fGalery {
 			else $this->_fotoId = $id;
 		}
 		$doLoad = true;
-		if($allGalery==false && !empty($this->arrData)) foreach($this->arrData as $item) if($item['itemId']==$id) {
-            $doLoad = false;
-            break;
-        }
+		if($allGalery==false && !empty($this->arrData)) 
+            foreach($this->arrData as $item) 
+                if($item['itemId']==$id) {
+                    $doLoad = false;
+                    break;
+                }
         
 		if($doLoad) {
             $fItems = new fItems();
@@ -215,28 +217,25 @@ class fGalery {
             
             if(count($this->arrData)>0) {
                 $this->getGaleryData($this->arrData[0]['pageId']);
-                
             	foreach ($this->arrData as $k=>$arr) {
             	  $this->arrData[$k] = $item = $this->prepare($arr);
             	}
-            	
             }
-            
         }
-        
-		$this->_fGaleryId = $item['pageId'];
-        $this->_fDir = $item['galeryDir'];
-        $this->_fGaleryName = $item['pageName'];
-        $this->_fId = $item['itemId'];
-        $this->_fDetail = $item['enclosure'];
-        $this->_fWidth = $item['width'];
-        $this->_fHeight = $item['height'];
-        $this->_fHits = $item['hit'];
-        $this->_fComment = $item['text'];
-        $this->_fDate = $item['dateLocal'];
-        $this->_fSize = $item['filesize'];
-		$this->_fThumbDir = $item['thumbUrl'];
-	   
+        if($allGalery==false) {
+    		$this->_fGaleryId = $item['pageId'];
+            $this->_fDir = $item['galeryDir'];
+            $this->_fGaleryName = $item['pageName'];
+            $this->_fId = $item['itemId'];
+            $this->_fDetail = $item['enclosure'];
+            $this->_fWidth = $item['width'];
+            $this->_fHeight = $item['height'];
+            $this->_fHits = $item['hit'];
+            $this->_fComment = $item['text'];
+            $this->_fDate = $item['dateLocal'];
+            $this->_fSize = $item['filesize'];
+    		$this->_fThumbDir = $item['thumbUrl'];
+	   }
 	}
 	
 	function getThumbCachePath($cacheDir='') {
@@ -394,6 +393,7 @@ class fGalery {
 		$this->gCountFotoNew = 0;
 		if(empty($galeryId)) $galeryId = $this->_fGaleryId;
 		$this->getFoto($galeryId,true);
+
 		$arrFotoDetail = array();
 		$arrNames = array();
 		if(!empty($this->arrData)) {
@@ -403,48 +403,48 @@ class fGalery {
     			$arrNames[$arr['enclosure']] = $arr['itemId'];
     		}
 		}
-		
 		$this->gCountFoto = count($arrFotoDetail);
 		
 		$galdir = $this->_rootImg . $this->gDir.'/';
 		$handle=opendir($galdir.'/');
-        
         while (false!==($file = readdir($handle))){
 	    	if (preg_match("/((.jpeg)|(.jpg)|(.gif)|(.JPEG)|(.JPG)|(.GIF)$)/",$file)) {
 	           $arrFiles[] = $file;
 	    	}
         }
-        $arrNotInDB = array_diff($arrFiles,$arrFotoDetail);
-        $arrItemIdsNotOnFtp = array_keys(array_diff($arrFotoDetail,$arrFiles));
-        if(!empty($arrItemIdsNotOnFtp)) foreach ($arrItemIdsNotOnFtp as $itemId) {
-        	$this->removeFoto($itemId);
-        }
-		
-		if(!empty($arrNotInDB)) {
-	    	foreach ($arrNotInDB as $file) {
-		        
-                $this->_fId = 0;
-                $this->_fGaleryId = $galeryId;
-                $this->_fDetail = $file;
-                $this->_fDate = 'now()';
-                $this->_fSize = filesize($galdir.$file);
-                $this->_fDir = $this->gDir;
-                $this->_fGaleryName = $this->gName;
-                $this->_fWidth = (empty($this->_widthMax))?($this->_widthThumb):($this->_widthMax);
-    			$this->_fHeight = (empty($this->_heightMax))?($this->_heightThumb):($this->_heightMax);
-    			$this->_fComment = '';
-    			$this->_fHits = 0;
-    			
-                if(file_exists($galdir.'/nahled/'.$file)) {
-                    $this->_fThumbDir = 'nahled/'.$file; 
-                } else $this->_fThumbDir = '';
-                $update = true;
-    			$this->gCountFotoNew++;
-    
-                $thumbPathArr = $this->getThumbPath();
-    			if(!fGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr); 
-    			$this->_fId = $this->updateFoto();
-		        
+        if(!empty($arrFiles) || !empty($arrFotoDetail)) {
+            $arrNotInDB = array_diff($arrFiles,$arrFotoDetail);
+            $arrItemIdsNotOnFtp = array_keys(array_diff($arrFotoDetail,$arrFiles));
+            if(!empty($arrItemIdsNotOnFtp)) foreach ($arrItemIdsNotOnFtp as $itemId) {
+            	$this->removeFoto($itemId);
+            }
+    		
+    		if(!empty($arrNotInDB)) {
+    	    	foreach ($arrNotInDB as $file) {
+    		        
+                    $this->_fId = 0;
+                    $this->_fGaleryId = $galeryId;
+                    $this->_fDetail = $file;
+                    $this->_fDate = 'now()';
+                    $this->_fSize = filesize($galdir.$file);
+                    $this->_fDir = $this->gDir;
+                    $this->_fGaleryName = $this->gName;
+                    $this->_fWidth = (empty($this->_widthMax))?($this->_widthThumb):($this->_widthMax);
+        			$this->_fHeight = (empty($this->_heightMax))?($this->_heightThumb):($this->_heightMax);
+        			$this->_fComment = '';
+        			$this->_fHits = 0;
+        			
+                    if(file_exists($galdir.'/nahled/'.$file)) {
+                        $this->_fThumbDir = 'nahled/'.$file; 
+                    } else $this->_fThumbDir = '';
+                    $update = true;
+        			$this->gCountFotoNew++;
+        
+                    $thumbPathArr = $this->getThumbPath();
+        			if(!fGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr); 
+        			$this->_fId = $this->updateFoto();
+    		        
+    	    	}
 	    	}
 		}
 		
