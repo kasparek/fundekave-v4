@@ -100,4 +100,10 @@ class fTemplateIT extends fHTML_Template_IT {
           unset($ftpl);
       }
   }
+  function moveBlock($blockName,$variableName) {
+    $tpl->parse($blockName);
+    $block = $tpl->get($blockName);
+    $tpl->setVariable($variableName,$block);
+    $tpl->blockdata[$blockName] = '';
+  }
 }
