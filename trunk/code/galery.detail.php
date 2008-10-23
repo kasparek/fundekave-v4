@@ -15,11 +15,11 @@ else {
 
 $galery = new fGalery();
 $galery->getGaleryData($user->currentPageId);
-
-if($user->gid == $user->currentPage['userIdOwner']) {
+if(fRules::get($user->gid,$user->currentPageId,2)) {
     //---run just wher owner access
     $galery->refreshImgToDb($user->currentPageId);
 }
+
 
   if($user->currentItemId==0) {
     

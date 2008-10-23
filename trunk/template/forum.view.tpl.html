@@ -1,20 +1,18 @@
-<!-- BEGIN pagedesc -->
-<p>{PAGEDESC}</p>
-<!-- END pagedesc -->
- <form action="{FORMACTION}" method="post" name="audit">
+<!-- BEGIN pagedesc --><div id="forumHead">{PAGEDESC}</div><!-- END pagedesc -->
+<form action="{FORMACTION}" method="post" name="audit">
+{POSTSONTOP}
   <!-- BEGIN form -->
-  <p class="auditForm">
-  
+  <fieldset>
   <!-- BEGIN usernotlogged -->
   <label>Jméno</label><input type="text" name="jmeno" value="{USERNAMENOTLOGGED}" /><br />
   <label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
   <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
   <input type="text" name="pcaptcha" value="" /><br />
   <!-- END usernotlogged -->
-  <label>Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea>{TEXTAREATOOLBOX}<br />
+  <label for="{TEXTAREAID}">Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea>{TEXTAREATOOLBOX}<br />
   <!-- BEGIN userlogged -->
   <input type="hidden" name="jmeno" value="{USERNAMELOGGED}" />
-  <label>URL</label><input id="frompocketid" title="[bude vlozeno jako odkaz, url obrazku se automaticky zobrazi]" type="text" name="objekt" value="" class="long" />
+  <label for="frompocketid">URL</label><input id="frompocketid" title="[bude vlozeno jako odkaz, url obrazku se automaticky zobrazi]" type="text" name="objekt" value="" class="long" />
   <a href="#" id="frompocketthumb" class="hidden">Z kapsy</a><br />
   <!-- END userlogged -->
   <label>&nbsp;</label><input type="submit" name="send" value="Odeslat" class="button">
@@ -22,24 +20,16 @@
   <input type="submit" name="filtr" value="Filtr" class="button">
   Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short" />
   <!-- END userlogged2 -->
-  </p>
+  </fieldset>
   <!-- END form -->
-<!-- BEGIN noform -->
-<p>{READONLY}</p>
-<!-- END noform -->
+<!-- BEGIN noform --><p>{READONLY}</p><!-- END noform -->
 
+<!-- BEGIN posts -->
 <!-- BEGIN messlist -->
-  <!-- BEGIN toppager -->
-  {TOPPAGER}
-  <!-- END toppager -->
-  <!-- BEGIN messages -->
-  {MESSAGES}
-  <!-- END messages -->
-  <!-- BEGIN bottompager -->
-  {BOTTOMPAGER}
-  <!-- END bottompager -->
+  <!-- BEGIN toppager -->{TOPPAGER}<!-- END toppager -->
+  <!-- BEGIN messages -->{MESSAGES}<!-- END messages -->
+  <!-- BEGIN bottompager -->{BOTTOMPAGER}<!-- END bottompager -->
 <!-- END messlist -->
-<!-- BEGIN messno -->
-<p>Žádné příspěvky</p>
-<!-- END messno -->
+<!-- BEGIN messno --><p>Žádné příspěvky</p><!-- END messno -->
+<!-- END posts -->
 </form>

@@ -237,9 +237,13 @@ class fForum {
 	/*
 	 * forum Print
 	 */
-	function show($itemId = 0,$publicWrite=true,$itemIdInside=0) {
+	function show($itemId = 0,$publicWrite=true,$itemIdInside=0,$paramsArr=array()) {
 	    global $user,$db;
 	    $zprava = '';
+	    //---available params
+	    $formAtEnd = false;
+	    $showHead = true;
+	    extract($paramsArr);
 	    
 	    if(!$user->idkontrol && $publicWrite==true) { $captcha = fCaptcha::init(); }
 	    
@@ -259,9 +263,10 @@ class fForum {
         /* ........ vypis nazvu auditka .........*/
         //--FORM
         $tpl = new fTemplateIT('forum.view.tpl.html');
-        
-        $desc = $user->currentPage['content'];
-        if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
+        if($showHead===true) {
+            $desc = $user->currentPage['content'];
+            if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
+        }
         if($user->currentPage['locked'] == 0 && $publicWrite==true) {
             $tpl->setVariable('FORMACTION',$user->getUri());
         	$name = "";
@@ -296,30 +301,23 @@ class fForum {
         $fItems = new fItems();  
         $fItems->initData('forum');
         $fItems->addWhere("i.pageId='".$user->currentPageId."'");
-        
         if(!empty($itemId)) $fItems->addWhere("i.itemIdTop='".$itemId."'");
-        
         if(!empty($filterTxt)) {
         	$fItems->addWhereSearch(array('i.name','i.text','i.enclosure','i.dateCreated'),$filterTxt,'or');
         }
         $fItems->setOrder("i.dateCreated DESC");
-        
         fItems::setQueryTool(&$fItems);
-        
         $manualCurrentPage = 0;
         if($user->currentItemId > 0 || $itemIdInside > 0) {
             if($user->currentItemId > 0) $itemIdInside = $user->currentItemId;
             //---find a page of this item to have link to it
             if($itemIdInside > 0) $manualCurrentPage = fForum::getItemPage($itemIdInside,$user->currentPageId,$perpage);
         }
-        
         if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
         $pager = fSystem::initPager(0,$perpage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
         $from = ($pager->getCurrentPageID()-1) * $perpage;
-        
         $fItems->setLimit($from,$perpage+1);
         $fItems->getData();
-        
         $total = count($fItems->arrData);
         
         $maybeMore = false;
@@ -328,9 +326,7 @@ class fForum {
             unset($fItems->arrData[(count($fItems->arrData)-1)]);
         }
         
-        if($from > 0) {
-            $total += $from;
-        }
+        if($from > 0) $total += $from;
         
         if($total > 0) {
         	/*.........zacina vypis prispevku.........*/
@@ -347,6 +343,11 @@ class fForum {
         	}
         	
         	$tpl->setVariable('MESSAGES',$fItems->show());
+        	if($formAtEnd===true) {
+        	    //---remove posts block and place it on POSTSONTOP
+        	    $tpl->moveBlock('posts','POSTSONTOP');
+        	    
+        	}
         	/*......aktualizace novych a prectenych......*/
         	if($itemId>0) fForum::updateReadedReactions($itemId,$user->gid);
         	else fForum::aFav($user->currentPageId,$user->gid,$user->currentPage['cnt']);

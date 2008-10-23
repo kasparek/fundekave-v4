@@ -1,0 +1,742 @@
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init();"  width="355" height="195"
+	 backgroundColor="0x444444" 
+	 horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	>
+  <mx:Script>
+    <![CDATA[
+    	import net.fundekave.palleteMap;
+    	import com.adobe.images.JPGEncoder;
+    	import net.fundekave.bitmapDataProcess;
+    	import mx.controls.SWFLoader;
+    	import mx.formatters.DateFormatter;
+    	import flash.utils.setTimeout;
+      import net.fundekave.WebCam;
+      import com.dynamicflash.util.Base64;
+      import mx.core.UIComponent;
+      
+      public static const PREVIEW_WIDTH:Number = 160;
+      public static const PREVIEW_HEIGHT:Number = 120;
+      public static const WAITING_TIMEOUT:Number = 200;
+      public static const STARTING_TIMEOUT:Number = 2000;
+      
+	[Embed(source='assets/run.png')]
+	[Bindable] public var runImg:Class;
+	[Embed(source='assets/stop.png')]
+	[Bindable] public var stopImg:Class;
+	[Embed(source='assets/shot.png')]
+	[Bindable] public var shotImg:Class;
+	[Embed(source='assets/upload.png')]
+	[Bindable] public var uploadImg:Class;
+	[Embed(source='assets/shotDis.png')]
+	[Bindable] public var shotImgDis:Class;
+	[Embed(source='assets/uploadDis.png')]
+	[Bindable] public var uploadImgDis:Class;
+	[Embed(source='assets/zoom_in.png')]
+	[Bindable] public var zoomIn:Class;
+      
+      [Bindable] private var conf_xml:XML;
+      [Bindable] private var conf:XML;
+      [Bindable] private var messages:XML;
+      [Bindable] private var lang:XML;
+      [Bindable] private var filterList:XMLList;
+      	
+      	private var jpegQuality:int = 25;
+      	private var imgWidth:int;
+      	private var imgHeight:int;
+      	
+      	[Bindable]private var run:Boolean = true;
+      	[Bindable]private var enableZoom:Boolean = false;
+      	[Bindable] private var zoomValue:int = 0; //0-100 value - percent of possible zoom
+      
+      private var webCam:WebCam;
+      private var jpgEnc:JPGEncoder;
+      private var jpgBytes:ByteArray;
+      private var base64encoded:String;
+      
+      private var firstAfterActivity:Boolean = true;
+      
+      private var statusColor:Object = {waiting:0xcc0000,process:0x00cc00,encode:0x00cc00,upload:0x00cc00,monitoring:0xcccc00,manual:0x000000};
+      
+      [Bindable] private var activityLevel:Number = 0;
+      public static const ACTIVITY : String = 'activity';
+      
+      private function init():void {
+      	//load config
+      	var loader:URLLoader = new URLLoader();               
+        loader.addEventListener(Event.COMPLETE, confHandler);
+        loader.addEventListener(IOErrorEvent.IO_ERROR,confFaultHandler);
+        loader.load(new URLRequest( 'config.xml?r='+Math.random()));
+      }
+      private function confFaultHandler(e:Event):void {
+      	statusLabel.text = 'Configuration Error [HTTP]';    
+      }
+      private function confHandler(e:Event):void {
+      	conf_xml = XML(e.target.data);
+      	conf = XML(conf_xml.conf[0]);
+      	lang = XML(conf_xml.lang[0]);
+      	messages = XML(conf_xml.messages[0]);
+      	filterList = conf_xml..filter.(@visible=='1');
+      	imgWidth = Number(conf.mode.width);
+      	imgHeight = Number(conf.mode.height);
+      	if(String(messages.error).length>0) {
+      		statusLabel.text = messages.error;
+      	} else {
+      		actionBtn.addEventListener(MouseEvent.CLICK,handleAction);
+	      	jpegQuality = conf.jpegquality;
+	      	jpegQualitySlide.value = jpegQuality;
+	        initWebcam();
+       }
+       //enable zoom
+       if(imgWidth > PREVIEW_WIDTH || imgHeight > PREVIEW_HEIGHT) enableZoom = true;
+       //---set initial status
+       setProgBarStatus('manual');
+      } 
+      private function addCamActivity():void {
+      	setProgBarStatus('monitor');
+      	activityTimer.start();
+      	addEventListener(fuvatar.ACTIVITY,handleCameraActivity);
+      }
+      private function removeCamActivity():void {
+      	if(status=='monitor') restoreStatus();
+      	activityTimer.stop();
+      	removeEventListener(fuvatar.ACTIVITY,handleCameraActivity);
+      }
+      private function handleCameraActivity(e:Event):void {
+      	//trace(webCam.camera.activityLevel);
+      	timerHandler();
+      }
+	
+      private function initWebcam():void {
+      	//---init video stream from webcam
+      	webCam = new WebCam(imgWidth,imgHeight);
+      	webCam.width=160;
+        webCam.height=120; 
+      	//---assign video stream to show
+      	previewUI.addChild(webCam);
+        //add event listener and wait for video start
+        webCam.addEventListener(WebCam.VIDEO_ATTACHED,videoAttachedHandler);
+      }
+      private var activityTimer:Timer;
+      [Bindable] private var takeBtnEnabled:Boolean = false; 
+      private function videoAttachedHandler(e:Event):void {
+      	webCam.removeEventListener(WebCam.VIDEO_ATTACHED,videoAttachedHandler);
+	     //---just for tracing activity 
+        if(conf.activity.monitor=='1') {
+        	activityTimer = new Timer(Number(conf.activity.timeout));
+			activityTimer.addEventListener(TimerEvent.TIMER, handleCameraActivitySetting);
+        }
+        //---prepare bitmapdata for snapshots
+        original = new BitmapData(imgWidth,imgHeight);
+		originalBackup = new BitmapData(imgWidth,imgHeight);
+		
+	//---init mask
+	previewMask = new UIComponent();
+  	previewMask.graphics.beginFill(0xffffff, 1);
+	previewMask.graphics.drawRect(0, 0, 160, 120);
+	previewMask.graphics.endFill();
+	previewMask.x = 0;
+	previewMask.y = 0;
+      	//---take first shot right on start - when video is started
+        if(conf.autorun=='1') setTimeout(timerHandler,STARTING_TIMEOUT);
+        else {
+        	run = false;
+        	takeBtnEnabled = true;
+        }
+      }
+      
+      private function handleCameraActivitySetting(e:Event):void { 
+      	//trace(webCam.camera.activityLevel);
+      	activityLevel = webCam.activityLevel;
+      	if(status == 'monitor') {
+      		progBar.setProgress(activityLevel,Number(conf.activity.level));
+      		progBar.label = ((lang.activitystatus)?(lang.activitystatus+' '):('')) + String(activityLevel)+'/'+conf.activity.level;
+      		if(activityLevel > conf.activity.level) {
+      			activityTimer.stop();
+      			dispatchEvent(new Event(fuvatar.ACTIVITY));
+      		}
+      	}
+      }
+      private function timerHandler():void {
+      	if(firstAfterActivity==true) {
+      		firstAfterActivity=false;
+	      	if(conf.activity.monitor=='1') removeCamActivity();
+	      	if(run==true) takeSnapshot();
+      	} else {
+      		//---add listener for activity on webcam - after timeout after upload
+      		firstAfterActivity = true;
+      		if(run==true) {
+	      		if(conf.activity.monitor=='1')  addCamActivity();
+	      		else  takeSnapshot();
+      		}
+      	}
+      }
+	
+private var loader:Loader;
+private var previewSwf:SWFLoader;
+private var previewMask:UIComponent;
+private function showImage(e:Event):void {
+	previewImg.removeAllChildren();
+	previewBmp = null;
+	previewSwf = null;
+	previewImg.addChild(previewMask);
+	previewImg.mask = previewMask;  
+      	previewSwf = new SWFLoader();
+      	previewSwf.source = loader;
+      	previewImg.addChild(previewSwf);
+      	//---center zoomed image
+      	previewSwf.width = PREVIEW_WIDTH;
+      	previewSwf.height = PREVIEW_HEIGHT;
+      	previewSwf.x = newPreviewX;
+      	previewSwf.y = newPreviewY;
+      	previewSwf.width = PREVIEW_WIDTH + (((imgWidth-PREVIEW_WIDTH)/100) * zoomValue);
+      	previewSwf.height = PREVIEW_HEIGHT + (((imgHeight-PREVIEW_HEIGHT)/100) * zoomValue);
+	
+}
+private var originalWidth:int;
+private var originalHeight:int;
+private var original:BitmapData;
+private var originalBackup:BitmapData;
+private function originalUndo():void {
+	original = originalBackup.clone();
+}
+private function getOriginal():void {
+	//---take snapshot from videostream
+	webCam.getSnapshotBitmapData(original);
+	originalBackup = original.clone();
+	//---jpeg encoding
+	originalWidth = Number(original.width);
+	originalHeight = Number(original.height);
+}
+
+private function takeSnapshot():void {
+	getOriginal();
+	asyncEncode(applyAllFilters());
+}
+private function originalClone():void {
+	for (var x:int = 0;x<imgWidth;x++) {
+		for (var y:int = 0;y<imgHeight;y++) {
+			original.setPixel(x,y,originalBackup.getPixel(x,y));
+		}
+	}
+}
+private function applyAllFilters():BitmapData {
+	originalClone();
+	var totalFiltersEnabled:Number = conf_xml..filter.(@enabled=='1').length()
+	if(totalFiltersEnabled>0) {
+		setProgBarStatus('process');
+		var x:int = 1;
+		for (var z:int = 0; z < filterList.length();z++) {
+			var filter:XML = filterList[z];
+			if(filter.@enabled == '1') {
+				//--aplly filter
+				progBar.setProgress(x,totalFiltersEnabled);
+				progBar.label = lang.processing+' '+filter.name;
+				x++;
+				xmlApplyFilter(filter,original);
+			}
+		}
+		restoreStatus();
+	}
+	return original;
+}
+
+private function xmlApplyFilter(filterXML:XML,bmp:BitmapData):void {
+	var filter:BitmapFilter;
+	var localFilterArr:Array = new Array();
+	var z:int;
+	
+	if (filterXML.@type == 'sequence') {
+		var localFilterList:XMLList = filterXML.filterid;
+		for(z = 0;z<localFilterList.length();z++) {
+			localFilterArr.push(conf_xml..filter.(@id==localFilterList[z])[0]);
+		}
+	} else {
+		localFilterArr.push(filterXML);
+	}
+	for(var x:int=0;x<localFilterArr.length;x++) {
+		filterXML = localFilterArr[x];
+		if(filterXML.@type == 'convol' || filterXML.@type == 'color') {
+			var matrix:Array;
+			if(filterXML.hasOwnProperty('matrix')) {
+				matrix = String(filterXML.matrix).split(',');
+				for (z = 0;z<matrix.length;z++) matrix[z] = Number(matrix[z]);
+			} else {
+				matrix = new Array();
+				for (z = 1;z<=Number(filterXML.matrixlength);z++) {
+					matrix.push(Number(filterXML['matrix'+z]));
+				}
+			}
+		}
+		if(filterXML.@type == 'convol') {
+			var squareSide:Number = Math.sqrt(matrix.length);
+			filter = new ConvolutionFilter(squareSide,squareSide,matrix,parseInt(String(filterXML.divisor)),parseInt(String(filterXML.bias)));
+		} else if (filterXML.@type == 'color') {
+			filter = new ColorMatrixFilter(matrix);
+		} else if (filterXML.@type == 'blur') {
+			filter = new BlurFilter(parseInt(String(filterXML.blurX)),parseInt(String(filterXML.blurY)),parseInt(String(filterXML.quality)));
+		} else if (filterXML.@type == 'fixedcolor') {
+			var  pallMap:palleteMap = new palleteMap(original,parseInt(String(filterXML.colors)),parseInt(String(filterXML.sample)));
+			pallMap.process();
+			original = pallMap.getConverted();
+		}
+		
+		if(filter) {
+			//trace('Filter on: '+String(filterXML.name));
+			bmp.applyFilter(bmp, new Rectangle(0,0, bmp.width, bmp.height), new Point(0, 0), filter);
+		}
+	}
+}
+
+private function asyncComplete(data:BitmapData):void {
+      	jpgEnc = new JPGEncoder(jpegQuality);
+      	jpgBytes = jpgEnc.encode(data);
+       restoreStatus(); 
+        //---display result jpg
+        if(jpgBytes.length > 0) {
+			loader = new Loader();
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, showImage);
+			loader.loadBytes(jpgBytes);
+		    //---status data
+			var df:DateFormatter = new DateFormatter();
+			df.formatString = "JJ:NN:SS";
+			statusLabel.text = df.format( new Date() )+' - ' + originalWidth.toString()+'x'+originalHeight.toString()+'px - '+ (jpgBytes.length/1024).toFixed(1)+'kB';
+        }
+        
+		if(run) uploadPhoto(jpgBytes);
+		else {
+			takeBtnEnabled = true;
+			uploadBtnEnabled = true;
+		}      
+      }
+[Bindable] private var uploadBtnEnabled:Boolean = false;  
+private function uploadPhoto(imageData:ByteArray,type:String='jpg'):void {
+	//show progress barr
+	setProgBarStatus('upload');
+	uploadBtnEnabled = false;
+	base64encoded = Base64.encodeByteArray(imageData);
+	var uploadUrl:String = conf.url+'?futy='+type;
+	
+	var vars:URLVariables = new URLVariables();
+     vars.futa = base64encoded;
+        
+	var request:URLRequest = new URLRequest(uploadUrl);
+	request.method = "POST";
+	request.data = vars;
+        
+        var loader:URLLoader = new URLLoader();               
+        loader.addEventListener(Event.COMPLETE, uploadPhotoHandler);
+        loader.addEventListener(IOErrorEvent.IO_ERROR, uploadServiceFaultHandler);
+        loader.load(request); 
+	
+}
+
+private function uploadServiceFaultHandler(e:Event):void {
+	var df:DateFormatter = new DateFormatter();
+	df.formatString = "JJ:NN:SS";
+	statusLabel.text = df.format( new Date() )+' '+lang.uploaderror;
+	uploadPhotoHandler(e);
+}
+private function onTick(e:TimerEvent):void {
+	if(run == false) {
+		e.target.stop();
+		restoreStatus();
+	} else {
+		progBar.setProgress(e.target.currentCount,e.target.repeatCount);
+	}
+}
+private function onTimerComplete(e:Event):void {
+	restoreStatus();
+	timerHandler();
+}
+private function timerWaitHandler():void {
+	if(run==true) {
+		var waitTimer:Timer = new Timer(WAITING_TIMEOUT,((Number(conf.timeout)*1000)/WAITING_TIMEOUT));
+		waitTimer.addEventListener(TimerEvent.TIMER, onTick);
+        waitTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
+		waitTimer.start();
+	}
+}
+private function uploadPhotoHandler(e:Event):void {
+	e.target.removeEventListener(Event.COMPLETE, uploadPhotoHandler);
+    e.target.removeEventListener(IOErrorEvent.IO_ERROR, uploadServiceFaultHandler);
+	restoreStatus();
+	if(run ==true) {
+		//---get the timeout in miliseconds
+		setProgBarStatus('waiting');
+		setTimeout(timerWaitHandler,WAITING_TIMEOUT);
+	} else {
+		uploadBtnEnabled = true;
+		takeBtnEnabled = true;
+	}
+}
+      
+      //HANDLE BUTTONS
+      private function handleAction(e:Event):void {
+      	if(run == true) {
+      		run =false;
+      		removeCamActivity();
+      		takeBtnEnabled = true;
+      		uploadBtnEnabled = true;
+      		restoreStatus();
+      	} else {
+      		run = true;
+      		takeBtnEnabled = false;
+      		uploadBtnEnabled = false;
+      		//---if on filters switch back to video
+      		showWebcam(false);
+      		timerHandler();
+      	}
+      }
+      private function handleTake(e:Event):void { takeSnapshot(); }
+      private function handleUpload(e:Event):void { uploadPhoto(jpgBytes); }
+      private function handleJpegQuality(e:Event):void { jpegQuality = e.target.value; asyncEncode(applyAllFilters()); }
+      
+      private function asyncEncode(data:BitmapData):void
+      {
+      	setProgBarStatus('encode');
+        setTimeout(asyncComplete,10,data);
+      }
+      private function updateProgress(event:ProgressEvent):void
+      {
+        progBar.setProgress(event.bytesLoaded, event.bytesTotal);
+        progBar.label = (event.bytesLoaded / event.bytesTotal * 100).toFixed() + "% " + lang.jpegencoding;
+      }
+      //---fitlers set handling
+      private function showWebcam(refreshPreview:Boolean=true):void {
+		if(refreshPreview==true) asyncEncode(applyAllFilters());      	
+      	webcamLblCan.setStyle('backgroundColor',0x000000);
+      	filtersLblCan.setStyle('backgroundColor',0x333333);
+      	preview.visible = true;
+      	filterListHolder.visible = false;
+      }
+      private function showFilters():void {
+      	if(run==false) {
+	      	refreshPreviewImg();
+	      	webcamLblCan.setStyle('backgroundColor',0x333333);
+	      	filtersLblCan.setStyle('backgroundColor',0x000000);
+	      	preview.visible = false;
+      		filterListHolder.visible = true;
+      	} else {
+      		statusLabel.text = lang.errorstop;
+      	}
+      }
+      private var previewBmp:Bitmap;
+      public function refreshPreviewImg():void {
+      	if(!original) getOriginal();
+      	previewImg.removeAllChildren();
+      	previewBmp = null;
+		previewSwf = null;
+      	//---uicomponent to hold bitmap
+      	var uiCom:UIComponent = new UIComponent();
+      	uiCom.width = 160;
+      	uiCom.height = 120;
+      	previewImg.addChild(uiCom);
+		uiCom.addChild(previewMask);
+		uiCom.mask = previewMask; 
+      	//---bitmpap to hold bitmapdata      	
+      	previewBmp = new Bitmap(applyAllFilters());
+      	uiCom.addChild(previewBmp);
+      	//---center zoomed image
+      	previewBmp.x = newPreviewX;
+      	previewBmp.y = newPreviewY;
+      	//---set scale of bitmap by zoomValue
+      	previewBmp.width = PREVIEW_WIDTH + (((imgWidth-PREVIEW_WIDTH)/100) * zoomValue);
+      	previewBmp.height = PREVIEW_HEIGHT + (((imgHeight-PREVIEW_HEIGHT)/100) * zoomValue);
+      }
+      private var oldX:int;
+      private var oldY:int;
+      private var newPreviewX:int = 0;
+      private var newPreviewY:int = 0;
+      private function moveHandler(e:MouseEvent):void {
+      		var localX:int = 0;
+      		var localY:int = 0;
+      		var localWidth:int = 0;
+      	 	var localHeight:int = 0;
+      	 	if(e) {
+	      	 	var delta:int = e.delta;
+	      	 	var localMouseX:int = previewImg.contentMouseX;
+	      	 	var localMouseY:int = previewImg.contentMouseY;
+      	 	}
+      		if(previewBmp) {
+      			//trace('BMP');
+      			localX = previewBmp.x;
+      			localY = previewBmp.y;
+      			localWidth = previewBmp.width;
+      			localHeight = previewBmp.height;
+      		} else if(previewSwf) {
+      			//trace('SWF');
+      			localX = previewSwf.x;
+      			localY = previewSwf.y;
+      			localWidth = previewSwf.width;
+      			localHeight = previewSwf.height;
+      		}
+      		
+      		//trace('Begin#---X:'+localMouseX+'-Y:'+localMouseY+'---oX:'+oldX+'-oY:'+oldY+'---delta:'+delta+'---iX:-'+localX+'iY:'+localY+'-iW:'+localWidth+'-iH:'+localHeight+'-');
+      		
+      		if(delta!=0) {
+      			zoomValue += delta;
+      			if (zoomValue<0) zoomValue = 0;
+      			if (zoomValue>100) zoomValue = 100;
+      		}
+      		var localWidthNew:int = PREVIEW_WIDTH + (((imgWidth-PREVIEW_WIDTH)/100) * zoomValue);
+      		var localHeightNew:int = PREVIEW_HEIGHT + (((imgHeight-PREVIEW_HEIGHT)/100) * zoomValue);
+      		
+	      	 if(localWidth!=localWidthNew && enableZoom==true) {
+	      	 	localX = localX + ((localWidth-localWidthNew)/2);
+	      	 	localY = localY + ((localHeight-localHeightNew)/2);
+	      	 	
+	      	 	localWidth = localWidthNew;
+	      	 	localHeight = localHeightNew;
+	      	 	//---check zoom boundaries
+	      	 	if(localWidth > imgWidth) localWidth =imgWidth;  
+	      	 	if(localHeight > imgHeight) localHeight =imgHeight;
+	      	 	if(localWidth < PREVIEW_WIDTH) localWidth =PREVIEW_WIDTH;  
+	      	 	if(localHeight < PREVIEW_HEIGHT) localHeight =PREVIEW_HEIGHT;
+	      	 	//---calculate zoomValue
+	      	 	var originalDiff:Number = imgWidth - localWidth;
+	      	 	var maxDiff:Number = imgWidth - PREVIEW_WIDTH;
+	      	 	//---originalDiff = 480 - 0% zoomval - originalDiff = 0 - 100% zoomval
+	      	 	//if(delta!=0) zoomValue =(originalDiff*100) /maxDiff; 
+	      	 }
+	      	 
+	      	var minX:Number =(localWidth - PREVIEW_WIDTH) * -1;
+      		var minY:Number =(localHeight - PREVIEW_HEIGHT) * -1;
+      		
+      		var shiftX:int = 0;
+      		var shiftY:int = 0;
+      		var maxShift:int = 10;
+      		if(oldX!=0 || oldY!=0) {
+      			shiftX = localMouseX - oldX;
+      			shiftY = localMouseY - oldY;
+      			if(Math.abs(shiftY) < maxShift && Math.abs(shiftX) < maxShift) {
+      				localX = localX + shiftX;
+      				localY = localY + shiftY;
+      			}
+      		}
+      		if(localX > 0) localX = 0;
+      		if(localY > 0) localY = 0;
+      		if(localX <minX) localX = minX;
+      		if(localY <minY) localY = minY;
+      		newPreviewX = localX;
+      		newPreviewY = localY;
+      		
+      		oldX = localMouseX;
+      		oldY = localMouseY;
+      		
+      		//trace('End#---X:'+localMouseX+'-Y:'+localMouseY+'---oX:'+oldX+'-oY:'+oldY+'---delta:'+delta+'---iX:-'+localX+'iY:'+localY+'-iW:'+localWidth+'-iH:'+localHeight+'-');
+      		
+      		if(previewBmp) {
+      			previewBmp.x = localX;
+      			previewBmp.y = localY;
+      			previewBmp.width = localWidth;
+      			previewBmp.height = localHeight;
+      		} else if(previewSwf) {
+      			previewSwf.x = localX;
+      			previewSwf.y = localY;
+      			previewSwf.width = localWidth;
+      			previewSwf.height = localHeight;
+      		}
+      	
+      }
+      private function moveSetHandler(e:Event):void {
+      	oldX = 0;
+      	oldY = 0;
+      	previewImg.addEventListener(MouseEvent.MOUSE_MOVE,moveHandler);
+      }
+      private function moveResetHandler(e:Event):void {
+      	oldX = 0;
+      	oldY = 0;
+      	previewImg.removeEventListener(MouseEvent.MOUSE_MOVE,moveHandler);
+      }
+   
+      //---HANDLE progressBar
+      private var status:String;
+      private var _oldStatusesArr:Array = new Array();
+      private function restoreStatus():void {
+      	if(_oldStatusesArr.length > 1) _oldStatusesArr.pop();
+      	setProgBarStatus(_oldStatusesArr[(_oldStatusesArr.length-1)],false);
+      }
+      private function setProgBarStatus(statusParam:String,saveStatus:Boolean=true):void
+      {
+      	if(saveStatus==true) _oldStatusesArr.push(statusParam);
+      	status = statusParam;
+      	progBar.setProgress(0,100);
+      	progBar.indeterminate =false;
+      	//waiting'
+      	if(status=='waiting') {
+	      	progBar.indeterminate = false
+	      	progBar.setStyle('barColor',statusColor.waiting);
+	      	progBar.label = lang.waiting;
+      	}
+      	//listening
+      	else if(status=='monitor') {
+      		progBar.setStyle('barColor',statusColor.monitoring);
+      	}
+      	//processing
+      	else if(status=='process') {
+      		progBar.setStyle('barColor',statusColor.process);
+      		takeBtnEnabled = false;
+			uploadBtnEnabled = false;
+      	}
+      	//encoding
+      	else if(status=='encode') {
+      		progBar.setStyle('barColor',statusColor.encode);
+      		progBar.label = lang.jpegencoding;
+      		progBar.indeterminate =true;
+      		takeBtnEnabled = false;
+			uploadBtnEnabled = false;
+      	}
+      	//uploading
+      	else if(status=='upload') {
+      		progBar.setStyle('barColor',statusColor.upload);
+      		progBar.indeterminate =true;
+			progBar.label = lang.uploading;
+			takeBtnEnabled = false;
+			uploadBtnEnabled = false;
+      	}
+      	//manual
+      	else if(status=='manual') {
+      		progBar.setStyle('barColor',statusColor.manual);
+      		progBar.label = lang.stopped;
+      		takeBtnEnabled = true;
+			uploadBtnEnabled = true;
+      	}
+      	if(run==true) {
+      		takeBtnEnabled = false;
+			uploadBtnEnabled = false;
+      	}
+      }
+      private function thumbDr(item:Number):void {
+      	zoomValue = item;
+      	moveHandler(null);
+      }
+      //----handle behind snapshot site settings
+      /*
+      private function showSite():void {
+      	if(run==false) {
+      		snapshotLblCan.setStyle('backgroundColor',0x333333);
+	      	siteLblCan.setStyle('backgroundColor',0x000000);
+	      	previewImg.visible = false;
+      		site.visible = true;
+      	} else {
+      		statusLabel.text = lang.errorstop;
+      	}
+      }
+      private function showSnapshot():void {
+      		snapshotLblCan.setStyle('backgroundColor',0x000000);
+	      	siteLblCan.setStyle('backgroundColor',0x333333);
+	      	previewImg.visible = true;
+      		site.visible = false;
+      }
+      */
+      
+    ]]>
+</mx:Script>
+
+<mx:Component id="filterRenderer">
+<mx:HBox creationComplete="{onShow(data)}" show="{onShow(data)}" horizontalScrollPolicy="off" verticalScrollPolicy="off" mouseChildren="true">
+<mx:Script>
+	<![CDATA[
+		import net.fundekave.ColorMatrix;
+		import mx.utils.ColorUtil;
+		private var sliderList:XMLList;
+		private function onClick(data:Object):void {
+			data.@enabled = (data.@enabled=='1')?('0'):('1');
+			outerDocument.refreshPreviewImg();
+		}
+		
+		private function onShow(data:Object):void {
+			slider.visible = false;
+			if(data) {
+				if(data.hasOwnProperty('slider')) {
+					slider.visible = true;
+					slider.minimum = Number(data.slider.@min);
+					slider.maximum = Number(data.slider.@max);
+					slider.stepSize = Number(data.slider.@tick);
+					slider.value = Number(data.slider.@current);
+					sliderList = data.slider.value;
+				}
+			}
+		}
+		private function onSliderChange(e:Event,data:Object):void {
+			data.slider.@current = slider.value;
+			if(sliderList) {
+				if(sliderList.length()>0) {
+					for each (var value:XML in sliderList) {
+						var key:String =value.toString();
+						if(value.hasOwnProperty('@ratio')) {
+							data[key] = Number(value.@ratio) * Number(data.slider.@current);
+						} else if(value.hasOwnProperty('@increment')) { //---has base and increment
+							var newValue:Number = Number(value.@base) + (Number(data.slider.@current) * Number(value.@increment));
+							data[key] = newValue;
+						} else if(value.hasOwnProperty('@action')) { 
+							//var arr:Array = String(data[key]).split(',');
+							var arr:Array = String('1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0').split(',');
+							var arrMat:ColorMatrix = new ColorMatrix(arr);
+							if(value.@action=='hue') arrMat.adjustHue(Number(data.slider.@current));
+							if(value.@action=='contrast') arrMat.adjustContrast(Number(data.slider.@current));
+							if(value.@action=='saturation') arrMat.adjustSaturation(Number(data.slider.@current));
+							if(value.@action=='brightness') arrMat.adjustBrightness(Number(data.slider.@current));
+							arr = arrMat.toArray();
+							data[key] = arr.join(',');
+						}
+					}
+				}
+			}
+			outerDocument.refreshPreviewImg();
+		}
+	]]>
+</mx:Script>	
+
+	<mx:Label paddingTop="0" paddingBottom="0" fontSize="9" click="onClick(data)" text="{data.name}" fontWeight="{(data.@enabled=='1')?('bold'):('normal')}" color="0xffffff" />
+	<mx:NumericStepper id="slider" visible="false" change="{onSliderChange(event,data)}" />
+	
+	</mx:HBox>
+</mx:Component>
+	
+<mx:Canvas width="166" height="126" id="preview" left="3" top="3" backgroundColor="0x000000">
+	<mx:UIComponent id="previewUI" width="160" height="120" horizontalCenter="0" verticalCenter="0" />
+</mx:Canvas>
+
+<mx:Canvas id="filterListHolder" visible="false" width="166" height="126" left="3" top="3" backgroundColor="0x000000">
+	<mx:List dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" variableRowHeight="true" 
+		 mouseChildren="true"     
+		dragComplete="{refreshPreviewImg()}" alpha="0.2" dataProvider="{filterList}"  itemRenderer="{filterRenderer}" 
+		top="3" left="3" right="3" bottom="3" />	
+</mx:Canvas>
+
+<mx:Canvas id="webcamLblCan" backgroundColor="0x000000" x="6" top="129">
+	<mx:Label id="webcamLbl" click="{showWebcam()}" text="{(lang.webcam)?(lang.webcam):('webcam')}" fontSize="9" color="0xffffff" />	
+</mx:Canvas>	
+<mx:Canvas id="filtersLblCan" backgroundColor="0x333333" x="{6+webcamLblCan.width+3}" top="129">
+	<mx:Label id="filtersLbl" click="{showFilters()}" text="{(lang.filters)?(lang.filters):('filters')}" fontSize="9" color="0xffffff" />	
+</mx:Canvas>
+
+<mx:VSlider toolTip="{(lang.jpegslidertooltip)?(lang.jpegslidertooltip):('')}" height="120" 
+	minimum="0" maximum="100" horizontalCenter="0" top="3" snapInterval="5" enabled="{(run)?(false):(true)}" 
+	id="jpegQualitySlide" change="{handleJpegQuality(event)}" />
+	
+<mx:Canvas width="166" height="126" right="3" top="3" backgroundColor="0x000000">
+	<mx:Canvas id="previewImg" top="3" left="3" width="160" mouseWheel="{moveHandler(event)}"
+		mouseDown="{moveSetHandler(event)}" mouseUp="{moveResetHandler(event)}" mouseOut="{moveResetHandler(event)}" 
+		buttonMode="{(enableZoom==true)?(true):(false)}" useHandCursor="{(enableZoom==true)?(true):(false)}" 
+		height="120" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+	
+	<mx:Button top="6" right="3" skin="{zoomIn}" visible="{enableZoom}" alpha="0.6" />
+	<mx:VSlider id="zoomSlider" top="21" right="5"  height="97" alpha="0.6" value="{zoomValue}" 
+		liveDragging="true"
+		showDataTip="false"
+		minimum="0" maximum="100"  visible="{enableZoom}" snapInterval="1" change="{thumbDr(zoomSlider.value)}"  />
+</mx:Canvas>
+
+<mx:Canvas id="snapshotLblCan" backgroundColor="0x000000" top="129" right="6">
+	<mx:Label id="snapshotLbl" color="0xffffff" fontWeight="bold" text="{(lang.snapshot)?(lang.snapshot):('snapshot')}" fontSize="9" paddingTop="0" paddingBottom="0" paddingLeft="3" paddingRight="3" />
+</mx:Canvas>	
+  
+<mx:Button id="actionBtn" skin="{(run)?(stopImg):(runImg)}" y="150" x="3"  />
+<mx:Button id="takeBtn" skin="{shotImg}" disabledSkin="{shotImgDis}" click="handleTake(event)" enabled="{takeBtnEnabled}" y="150" x="30"  />
+<mx:Button id="uploadBtn" skin="{uploadImg}" disabledSkin="{uploadImgDis}" click="handleUpload(event)" enabled="{uploadBtnEnabled}" y="150" x="57"  />
+<mx:Label id="statusLabel" color="0xffffff" fontSize="9" fontWeight="bold" y="152" x="84" />
+
+<mx:ProgressBar bottom="3" horizontalCenter="0" id="progBar" mode="manual" width="90%" labelPlacement="center" fontSize="8" fontFamily="Verdana" fontWeight="bold" textAlign="left"/>
+</mx:Application>
