@@ -6,6 +6,8 @@ class fUvatar {
 	var $targetUrl; 
     var $targetJpg;
     var $refresh;
+    var $width;
+    var $height;
     var $targetAnimGif;
     var $configXMLFilenam = 'config.xml';
     var $exitAfterUpload = true;
@@ -17,7 +19,21 @@ class fUvatar {
 
     }
     function process() {
-    	if(isset($_GET['fust'])) {
+    	if(!isset($_GET['f'])) $_GET['f'] = '';
+    //---player
+    //---get - f = ch - check - return xml, f = l - load jpg
+    	if($_GET['f']=='ch') {
+    		if(file_exists($this->targetFtp . $this->targetJpg)) {
+    		    $lastMod = filemtime($this->targetFtp . $this->targetJpg);
+    		    $dateLast = date("Y-m-d H:i:s",$lastMod);
+    		}
+    		else {
+    		    $lastMod = 0;
+    		    $dateLast = '';
+    		}
+    		echo '<fuplay><last>'.$dateLast.'</last><timestamp>'.$lastMod.'</timestamp><now>'.date('U').'</now></fuplay>';
+    		if($this->exitAfterUpload == true) exit();
+    	} elseif(isset($_GET['fust'])) {
     		$this->showStatusIcon($_GET['fust']);
 	    	if($this->exitAfterUpload == true) exit();
     	}  elseif(isset($_GET['fuco'])) {
@@ -40,7 +56,7 @@ class fUvatar {
                 }
             }
             if($this->exitAfterUpload == true) exit();
-        } elseif(isset($_GET['fuca'])) {
+        } elseif(isset($_GET['fuca']) || $_GET['f']=='l') {
           $this->showImg();
           if($this->exitAfterUpload == true) exit();
         }
@@ -67,6 +83,10 @@ class fUvatar {
     function getStatusIcon() {
 	    return '<img class="fuvatarstatus" src="'.$this->gateway.'?fust='.$this->id.'&fure='.$this->refresh.'" />';
     }
+    function getSwf() {
+        return '<script type="text/javascript">swfobject.embedSWF("fuplay.swf", "fuplay'.$this->id.'", "'.$this->width.'", "'.$this->height.'", "9.0.115", "expressInstall.swf",{con:"'.$this->targetUrl.'",u:"'.$this->id.'",time:'.$this->refresh.'},{allowFullScreen:"true"});</script>
+<div id="fuplay'.$this->id.'"></div>';
+    }
     function showStatusIcon($fuvatarId) {
     	header("Content-type: image/png") ;
     	if($this->isOnline()==true) {
@@ -80,7 +100,9 @@ class fUvatar {
     	header("Content-type: image/jpg") ;
     	if(file_exists($this->targetFtp.$this->targetJpg)) {
     		echo file_get_contents($this->targetFtp.$this->targetJpg);
+    		//echo file_get_contents($this->targetFtp.'source'.rand(0,5).'.jpg');
     	}
     	
     }
+    
 }
