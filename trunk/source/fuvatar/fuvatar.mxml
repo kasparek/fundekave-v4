@@ -152,9 +152,12 @@
       		progBar.label = ((lang.activitystatus)?(lang.activitystatus+' '):('')) + String(activityLevel)+'/'+conf.activity.level;
       		if(activityLevel > conf.activity.level) {
       			activityTimer.stop();
-      			dispatchEvent(new Event(fuvatar.ACTIVITY));
+      			setTimeout(dispatchActivityLater,200);
       		}
       	}
+      }
+      private function dispatchActivityLater():void {
+      	dispatchEvent(new Event(fuvatar.ACTIVITY));
       }
       private function timerHandler():void {
       	if(firstAfterActivity==true) {

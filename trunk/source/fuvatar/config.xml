@@ -3,10 +3,10 @@
 	<conf>
 		<autorun>1</autorun>
 		<mode>
-			<width>320</width>
-			<height>240</height>
+			<width>640</width>
+			<height>480</height>
 		</mode>
-		<timeout>5</timeout>
+		<timeout>1</timeout>
 		<url>index.php</url>
 		<jpegquality>70</jpegquality>
 		<activity>
