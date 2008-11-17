@@ -10,7 +10,7 @@ if($user->idkontrol) {
 if($user->currentPageParam=='t') {
     require('items.tags.php');
 } elseif($user->currentPageParam=='v') {
-    require('pages.searh.php');
+    require('pages.search.php');
 } else {
     //category list
     $category = new fCategory('sys_pages_category','categoryId');

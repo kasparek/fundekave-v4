@@ -4,10 +4,10 @@ $USERDRAFT = false;
 
 //----DEBUG
 if(isset($_GET['d'])) {
-print_r($user->currentPage);
-//print_r($_SESSION);
-die(); 
-fSystem::profile('START:'); 
+    print_r($user->currentPage);
+    //print_r($_SESSION);
+    die(); 
+    fSystem::profile('START:'); 
 }
 
 if(isset($_GET['t'])) {
