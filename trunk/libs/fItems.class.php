@@ -402,7 +402,7 @@ class fItems extends fQueryTool {
           $this->currentHeader = $arr['addon'];
       }
       
-      if($this->showComments==true) {
+      if($this->showComments == true) {
         $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$user->idkontrol,$this->itemIdInside));
       } else {
         $tpl->setVariable('COMMENTLINK',$link);

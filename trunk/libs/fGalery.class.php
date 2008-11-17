@@ -371,8 +371,11 @@ class fGalery {
   			  if($user->idkontrol) $tpl->touchBlock('xajaxSwitch');
   			  $tpl->setVariable('NEXTLINK',$user->getUri('i='.$arrImgId['next']));
   			}
-  			$tpl->setVariable('COMMENTS',fForum::show($itemId,$user->idkontrol,$fItems->itemIdInside,array('formAtEnd'=>$true,'showHead'=>false)));
-        $ret = $tpl->get();
+  			
+  			//TODO: comments in galery are switched offf in this release
+  			//$tpl->setVariable('COMMENTS',fForum::show($itemId,$user->idkontrol,$fItems->itemIdInside,array('formAtEnd'=>$true,'showHead'=>false)));
+        
+  			$ret = $tpl->get();
         $user->cacheSave($ret);
       }
 			return $ret;

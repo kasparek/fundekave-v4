@@ -49,7 +49,9 @@ if (isset($_POST['savegal'])) {
 	$arr['description'] = fSystem::textins($arr['description'],array('plainText'=>1));
 	$arr['content'] = fSystem::textins($arr['content']);
 	
-	if(!fError::isError()) {
+	if(fError::isError()) {
+	   $_SESSION['galerie_arr'] = $arr;
+	} else { 
 	    if($deleteThumbs) {
     	  $galery->getGaleryData($user->currentPageId);
     	  $cachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath();
@@ -75,48 +77,49 @@ if (isset($_POST['savegal'])) {
 		$fRelations = new fPagesRelations($pageId);
 		$fRelations->update();
 	}
-	
-   if(!empty($_FILES)) {
-        if(!empty($user->currentPage['galeryDir'])) {
-        	$adr = $galery->get('rootImg').$user->currentPage['galeryDir'];
-        	
-        	foreach ($_FILES as $foto) {
-        		if ($foto["error"]==0) $up=fSystem::upload($foto,$adr,500000);
-        	}
-        } else fError::addError('Neni nastaven adresar galerie');
-    }
+	if(!empty($pageId)) {
+       if(!empty($_FILES)) {
+            if(!empty($user->currentPage['galeryDir'])) {
+            	$adr = $galery->get('rootImg').$user->currentPage['galeryDir'];
+            	
+            	foreach ($_FILES as $foto) {
+            		if ($foto["error"]==0) $up=fSystem::upload($foto,$adr,500000);
+            	}
+            } else fError::addError('Neni nastaven adresar galerie');
+        }
 		
-	if($user->currentPageParam=='e' && isset($_POST['fot'])) {
-    	//---foto description, foto deleteing
-    	if(isset($_POST['delfoto'])) foreach ($_POST['delfoto'] as $dfoto) $galery->removeFoto($dfoto);
-    	if(isset($_POST['fot'])) {
-    	    foreach ($_POST['fot'] as $k=>$v) {
-    	        $changed = false;
-    	        $newDesc = fSystem::textins($v['comm'],array('plainText'=>1));
-    	        $galery->getFoto($k);
-    	        $oldDesc = $galery->get('fComment');
-    	        $oldDate = $galery->get('fDate');
-    	        if($newDesc!=$oldDesc) {
-    	            $galery->set('fComment',$newDesc);
-    	            $changed = true;
-    	        }
-    	        $newDate = $v['date'];
-    	        if(!empty($newDate)) {
-    	           if(strpos($newDate,'.')===true) $newDate = fSystem::den($newDate);
-    	           elseif(!fSystem::isDate($newDate)) $newDate = '';
-    	           if(empty($newDate)) fError::addError(ERROR_DATE_FORMAT);
-    	           else {
-    	               $galery->set('fDate',$newDate);
-    	               $changed=true;
-    	           }
-    	        }
-    	        if($changed) $galery->updateFoto();
-    	    }
-    	}
-	 
-	} 
+    	if($user->currentPageParam=='e' && isset($_POST['fot'])) {
+        	//---foto description, foto deleteing
+        	if(isset($_POST['delfoto'])) foreach ($_POST['delfoto'] as $dfoto) $galery->removeFoto($dfoto);
+        	if(isset($_POST['fot'])) {
+        	    foreach ($_POST['fot'] as $k=>$v) {
+        	        $changed = false;
+        	        $newDesc = fSystem::textins($v['comm'],array('plainText'=>1));
+        	        $galery->getFoto($k);
+        	        $oldDesc = $galery->get('fComment');
+        	        $oldDate = $galery->get('fDate');
+        	        if($newDesc!=$oldDesc) {
+        	            $galery->set('fComment',$newDesc);
+        	            $changed = true;
+        	        }
+        	        $newDate = $v['date'];
+        	        if(!empty($newDate)) {
+        	           if(strpos($newDate,'.')===true) $newDate = fSystem::den($newDate);
+        	           elseif(!fSystem::isDate($newDate)) $newDate = '';
+        	           if(empty($newDate)) fError::addError(ERROR_DATE_FORMAT);
+        	           else {
+        	               $galery->set('fDate',$newDate);
+        	               $changed=true;
+        	           }
+        	        }
+        	        if($changed) $galery->updateFoto();
+        	    }
+        	}
+    	 
+    	} 
+	}
 	
-	fHTTP::redirect($user->getUri('',$pageId));
+	fHTTP::redirect($user->getUri('',(!empty($pageId))?($pageId.'e'):('')));
 	
 }
 
@@ -137,8 +140,13 @@ if (isset($_POST['deletegal']) && $user->currentPageParam=='e'){
 }
 
 //---SHOWTIME
-if($user->currentPageParam=='e') {
-	$arr = $user->currentPage;
+if($user->currentPageParam=='e') $arr = $user->currentPage;
+if(!empty($_SESSION['galerie_arr'])) {
+    $arr = $_SESSION['galerie_arr'];
+    unset($_SESSION['galerie_arr']);
+}
+
+if(!empty($arr)) {
 	$xml = new SimpleXMLElement($arr['pageParams']);
     $enhancedSettings = $xml->enhancedsettings[0];
     $arr['xwidth'] = $enhancedSettings->width;
@@ -147,13 +155,12 @@ if($user->currentPageParam=='e') {
     $arr['xheightpx'] = $enhancedSettings->heightpx;
     $arr['xthumbstyle'] = $enhancedSettings->thumbnailstyle;
     $arr['fotoforum'] = $enhancedSettings->fotoforum;
-	if($arr['galeryDir'] != '') {
+
+    if($user->currentPageParam=='e' && $arr['galeryDir'] != '') {
 	    $galery->refreshImgToDb($user->currentPageId);
 	}
-} elseif (!empty($_SESSION['galerie_arr'])) {
-	$arr=$_SESSION['galerie_arr'];
-	unset($_SESSION['galerie_arr']);
 } else {
+    //---set defaults
 	$arr=array("categoryId"=>'1',
 	"dateContent"=>Date("Y-m-d"),"name"=>'',"description"=>'',"content"=>'',
 	'userIdOwner'=>$user->gid,'galeryDir'=>'',

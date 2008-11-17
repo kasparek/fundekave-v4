@@ -395,7 +395,8 @@ class fLeftPanel {
       		$arrTmp = fCalendarPlugins::$pluginName($drok,$dmesic,$user->gid,($userPageId==true)?($user->currentPageId):(''));
       		if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
       	}
-      	
+      	$arrEventsForDay = array();
+      	$arrEventForDayKeys = array();
       	foreach ($arrQ as $row){
       		$arrEventsForDay[$row[0]][] = array('id'=>$row[2],'name'=>$row[3],'link'=>$row[1]);
       	}

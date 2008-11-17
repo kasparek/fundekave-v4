@@ -69,8 +69,8 @@ if(!empty($arrPagesFound)) {
 	$arrPagesPaginated = $pager->getPageData();
 	
 	$tpl->setVariable('TOTAL',$totalItems);
-	if($totalItems > $sessGallSearchCache['perpage']) $tpl->setVariable('PAGER',$pager->links);
-	if($sessGallSearchCache['maybemore']==true) $tpl->touchBlock('maybemore');
+	if($totalItems > $pageSearchCache['perpage']) $tpl->setVariable('PAGER',$pager->links);
+	if($pageSearchCache['maybemore']==true) $tpl->touchBlock('maybemore');
 	
 	foreach ($arrPagesPaginated as $row){
 	    $tpl->setCurrentBlock('result');

@@ -14,14 +14,8 @@ NEJ
  - v klubu - ti co sleduji tenhle klub sleduji take
  - v pratelich - pratele taky sleduji
 
-dodelat
-  - KAPSA - odkazy u veci, pouziti
-
-GALERIE EDIT
- - checkovat jmeno adresare na nebezpecny znaky
- 
-
 GALERY DETAIL
+  - DISKUZE U GALERIE PROZATIM VYPNUTA
   - zobrazit u fotky pocet reakci / pocet neprectenych
   - zobrazit to celkove u galerie
   - nastaveni diskuze - pouze pro cteni, zapis pouze pro spravce, prihlasene, majitele
