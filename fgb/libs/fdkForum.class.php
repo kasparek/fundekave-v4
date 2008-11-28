@@ -5,6 +5,7 @@ class fdkForum {
   var $forumPageUri = ''; //---URL OF PAGE WITH GUESTBOOK
   var $serverPageId = ''; //---server side pageId
   var $salt = 'fdk35'; //---USE TO ENCODE control hash .. must be same as on server
+  var $dateFormat = 'Y-m-d H:i:s';
   var $arrErrors = array('nameEmpty' => 'No name specified','captchaFail'=>'Captcha failed');
   var $arrData; //---RSS array of loaded data
     //
@@ -15,6 +16,7 @@ class fdkForum {
   var $page = 1; //---current page
   
   function __construct($confArray) {
+  
     foreach($confArray as $k=>$v) {
       $this->$k = $v;
     }
@@ -110,7 +112,7 @@ class fdkForum {
     if(!empty($this->arrData->item)) {
       foreach($this->arrData->item as $item) {
         $tpl->setCurrentBlock('item');
-        $tpl->setVariable('IDATE',$item->pubDate);
+        $tpl->setVariable('IDATE',date($this->dateFormat,strtotime($item->pubDate)));
         $tpl->setVariable('INAME',$item->title);
         $tpl->setVariable('ITEXT',$item->description);
         $tpl->parseCurrentBlock();
