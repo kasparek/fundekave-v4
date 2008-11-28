@@ -392,9 +392,8 @@ class b2evo_captcha
 		function get_b2evo_captcha()
 		{
 			$this->make_captcha();
-			if($public=='') $public = $this->public_key;
 			//$_SERVER['DOCUMENT_ROOT']
-			return str_replace($this->ftpwebpath,$this->urlwebpath,$this->tempfolder).$this->filename_prefix.$public.'.jpg';
+			return str_replace($this->ftpwebpath,$this->urlwebpath,$this->tempfolder).$this->filename_prefix.$this->public_key.'.jpg';
 		}
 
 
@@ -632,7 +631,7 @@ class b2evo_captcha
 			$key = '';
 			$this->chars = mt_rand($this->minchars,$this->maxchars);
 			for($i=0; $i < $this->chars; $i++) {
-				$key .= $this->validchars{mt_rand(0,strlen($this->validchars))};
+				$key .= $this->validchars{mt_rand(0,(strlen($this->validchars)-1))};
 			}
 			if($this->case_sensitive==0) $key = strtoupper($key);
 			$this->public_key = md5($key);

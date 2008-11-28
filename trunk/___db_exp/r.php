@@ -5,10 +5,12 @@ function setMod($directory) {
   $arr = scandir($directory);
   foreach($arr as $dir) {
     if($dir!='.' && $dir!='..') {
-      chmod($directory.$dir,0777);
+      if(!chmod($directory.$dir,0777)) echo $directory.$dir; 
       if(is_dir($directory.$dir)) { 
         setMod($directory.$dir.'/');
         rmdir($directory.$dir);
+      } else {
+        unlink($directory.$dir);
       }
     }
   }

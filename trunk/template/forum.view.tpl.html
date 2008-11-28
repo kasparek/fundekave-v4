@@ -4,21 +4,23 @@
   <!-- BEGIN form -->
   <fieldset>
   <!-- BEGIN usernotlogged -->
-  <label>Jméno</label><input type="text" name="jmeno" value="{USERNAMENOTLOGGED}" /><br />
-  <label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
-  <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
-  <input type="text" name="pcaptcha" value="" /><br />
+  <label>Jméno</label><input type="text" name="jmeno" value="{USERNAMENOTLOGGED}" class="short" /><br />
   <!-- END usernotlogged -->
   <label for="{TEXTAREAID}">Text</label><textarea id="{TEXTAREAID}" class="draftable" name="zprava">{TEXTAREACONTENT}</textarea>{TEXTAREATOOLBOX}<br />
+  <!-- BEGIN usernotlogged2 -->
+  <label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
+  <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
+  <input type="text" name="pcaptcha" value="" class="xShort" /><br />
+  <!-- END usernotlogged2 -->
   <!-- BEGIN userlogged -->
   <input type="hidden" name="jmeno" value="{USERNAMELOGGED}" />
   <label for="frompocketid">URL</label><input id="frompocketid" title="[bude vlozeno jako odkaz, url obrazku se automaticky zobrazi]" type="text" name="objekt" value="" class="long" />
   <a href="#" id="frompocketthumb" class="hidden">Z kapsy</a><br />
   <!-- END userlogged -->
-  <label>&nbsp;</label><input type="submit" name="send" value="Odeslat" class="button">
+  <input type="submit" name="send" value="Odeslat" class="button submit">
   <!-- BEGIN userlogged2 -->
   <input type="submit" name="filtr" value="Filtr" class="button">
-  Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short" />
+  Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
   <!-- END userlogged2 -->
   </fieldset>
   <!-- END form -->

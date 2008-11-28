@@ -32,7 +32,7 @@ class fJSWrapper {
         if(!empty($this->objectsArr))
         foreach ($this->objectsArr as $item) {
             if($item['type']=='file') {
-                $this->targetContent .= file_get_contents($item['content'])."\n";
+                if(file_exists($item['content'])) $this->targetContent .= file_get_contents($item['content'])."\n";
             } else {
                 $this->targetContent .= $item['content']."\n";
             }

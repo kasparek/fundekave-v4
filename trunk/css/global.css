@@ -274,3 +274,13 @@ input.button, button {
 }
 
 /* END BASIC SCREEN ELEMENTS */
+
+/*POST PAGE*/
+DIV#recipientavatar {
+  float: left;
+  clear: left;
+}
+DIV#recipientcombo {
+  float: left;
+  clear: left;
+}

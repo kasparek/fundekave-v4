@@ -140,6 +140,7 @@ class fSystem {
       $breakLong = 1;
       $endOfLine = 1;
       $formatOption = 1;
+      if(!is_array($paramsArr)) $paramsArr = array();
       extract($paramsArr);
       if(isset($plainText)) {
           $option = 0;

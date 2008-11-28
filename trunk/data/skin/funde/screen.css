@@ -63,6 +63,19 @@ div#sidebar {
 	background: url("img/logo-bg.jpg") no-repeat left top;
 	text-align: left;
 }
+div#sidebar h2 {
+	line-height: 1.4em;
+}
+div#sidebar div#relationsList ul {
+	margin-left: 0;
+}
+div#sidebar div#relationsList ul li {
+	overflow: hidden;
+	background: url("img/arrow-white-bg.gif") no-repeat left center;
+	line-height: 1.6em;
+	list-style: none;
+	padding-left: 10px;
+}
 div#mainbar {
 	float:left;
 	width:100%;
@@ -189,6 +202,9 @@ div#mainbar ul#menu-secondary li a {
 
 /* ========= MAIN CONTENT ========= */
 
+span.newposts {
+	color: red;
+}
 div#pageholder.hasMainBanner #mainbar {
 	padding-top: 60px;
 }
@@ -274,7 +290,8 @@ div.pager {
 	text-align: center;
 }
 div#mainbar h2 {
-	line-height: 1.8em;
+	line-height: 2em;
+	font-size: 1.6em;
 }
 div#mainbar ul {
 	padding: 1em 0;
@@ -289,6 +306,45 @@ div#mainbar ul li {
 div#mainbar fieldset {
 	margin-bottom: 1em;
 	border: 1px solid #ddd;
+	background: #f0f0f0;
+}
+div#mainbar fieldset label {
+	float: left;
+	clear: left;
+}
+div#mainbar fieldset input {
+	width: 28em;
+	margin-bottom: 0.3em;
+}
+div#mainbar fieldset input.xShort {
+	width: 4em;
+}
+div#mainbar fieldset input.button {
+	width: auto;
+	min-width: 5em;
+	font-size: 1em;
+}
+div#mainbar fieldset input.submit {
+	margin-left: 10em;
+}
+div#mainbar fieldset textarea {
+	width: 28em;
+	height: 6em;
+	font-size: 1.21em;
+	margin-bottom: 0.3em;
+}
+div#mainbar fieldset div#textareaToolbox {
+	margin-left: 10em;
+	padding: 0.2em 1em;
+	width: 32em;
+	font-size: 1em;
+	background: #ddd;
+}
+span.textInsertStyle,
+span.textInsertObject {
+	margin-right: 1em;
+	padding-right: 1em;
+	border-right: 1px solid white;
 }
 ul#todaysInfo {
 	padding: 0;
@@ -310,37 +366,195 @@ div.mainpanel-content {
 	padding-right: 20px;
 }
 div.mainpanel-content h3 {
-	padding-top: 2em;
-	color: #666;
-	border-bottom: 2px solid #eee;
+	margin-top: 2em;
+	padding: 0.6em 0.6em 0.3em 0.6em;
+	color: white;
+	background: #332200;
+}
+div.mainpanel-content h3 a {
+	color: white;
+	text-decoration: none;
+}
+div.mainpanel-content h3 a:hover {
+	text-decoration: underline;
+}
+div.mainpanel-content div.galery span.abbr {
+	color: white;
+	margin-right: 1em;
+	position: relative;
+	float: right;
+	top: -2em;
+}
+div.mainpanel-content div.galery span.abbr abbr {
+	border: none;
 }
 div.mainpanel-content h3.summary, div.mainpanel-content h3.entry-title {
 	border: none;
 }
 div.mainpanel-content div#categories h3 {
 	border: none;
-	padding: 0;
-	padding-bottom: 0.5em;
+	margin: 0;
+	padding: 0 0 0.5em 10px;
+	color: black;
+	background: transparent url(img/arrow-white-bg.gif) no-repeat left 0.3em;
+}
+div.mainpanel-content div#categories h3 a{
+	color: black;
+}
+div.mainpanel-content div#categories ul {
+	margin-left: 30px;
+}
+div.mainpanel-content div#categories ul.showPageAvatar {
+}
+div.mainpanel-content div#categories ul.showPageAvatar li {
+	clear: left;
+	padding-left: 0;
+	background: none;
+	min-height:30px;
+}
+div.mainpanel-content div#categories ul.showPageAvatar li a {
+	margin-left: 70px;
+	line-height: 2em;
+}
+div.mainpanel-content div#categories ul.showPageAvatar li a.pageAvatar {
+	margin-left: -70px;
+	margin-right: -70px;
+	float: left;
+	margin-left: 0;
 }
 div.mainpanel-content div.hentry {
 	clear: left;
-	padding-top: 2em;
+	margin-top: 1.4em;
+	padding-top: 1em;
 	padding-bottom: 2em;
 	position: relative;
+	border-top: 1px solid #ddd;
+}
+div.mainpanel-content div.hentry div.header {
+	padding-top: 0.5em;
+}
+div.mainpanel-content div.hentry div.avatar {
+	float: left;
+	margin: 0 0.5em 0.5em 0;
 }
 div.mainpanel-content div.hentry abbr.published {
 	position: absolute;
-	top: 0.5em;
+	top: -0.9em;
 	left: 0;
+	padding: 0 0.6em;
 	line-height: 1.6em;
 	min-width: 120px;
 	background-color: #ddd;
 	border: none;
 	font-weight: bold;
 }
+div.mainpanel-content div.unread  abbr.published {
+	border-left: 0.3em solid red;
+	padding-left: 0.3em;
+}
 div.mainpanel-content div.hentry h2.entry-title a {
 	color: black;
 	text-decoration: none;
 }
+div.mainpanel-content div.hentry h3 {
+	margin: 0;
+	padding: 0;
+	color: black;
+	background: none;
+}
+div.mainpanel-content div.hentry div.entry-content {
+	padding-top: 0.5em;
+}
+div#mostVisitedPages,
+div#newCreatedPages,
+div#mostActivePages,
+div#mostPopularPages {
+	float: left;
+	width: 23%;
+	min-width: 150px;
+	margin-right: 2%;
+}
+div#mostVisitedPages ul li,
+div#newCreatedPages ul li,
+div#mostActivePages ul li,
+div#mostPopularPages ul li {
+	height: 1.6em;
+	overflow: hidden;
+}
+div.commentedItem {
+	clear: left;
+	border-top: 1px dashed #ddd;
+	padding: 1em 0 1em 30px;
+}
+div.commentedItem div.category {
+	font-weight: bold;
+	font-size: 1.2em;
+	padding: 0.2em 0.6em;
+	background: #eee;
+}
+div.commentedItem h2 {
+	font-size: 1.4em;
+}
+div.pagination {
+	margin: 0.3em 0;
+	padding: 0.3em 0;
+}
+div.pagination span.current {
+	background: #332200;
+	border-color: #6b5d3d;
+}
+div.pagination a {
+	color: #332200;
+	border-color: #6b5d3d;
+}
+div.pagination a:hover, div.pagination a:active {
+	border-color: #332200;
+}
+div.friends {
+	float: left;
+	width: 48%;
+	margin-right: 2%;
+}
+div.friends ul li {
+	background-image: none;
+	clear: left;
+}
+div.friends ul li ul li {
+	background: url("img/arrow-white-bg.gif") no-repeat left center;
+}
+div.friends ul li div,
+div.friends ul li ul {
+	float: left;
+}
+div.friends ul li div {
+	margin-right: 10px;
+}
+div#mainbar div.friends ul li ul {
+	padding: 0;
+}
+div#mainbar label {
+	display: inline-block;
+	min-width: 10em;
+}
+div.postmess {
+	padding-top: 1em;
+	margin-bottom: 1em;
+	border-top: 1px dashed #ddd;
+}
+/*POST PAGE*/
+DIV#recipientavatar {
+  min-width: 10em;
+  text-align: center;
+}
+DIV#recipientcombo {
+  min-width: 10em;
+  text-align: center;
+}
+DIV#recipientcombo SELECT {
+  width: 7em;
+  text-align: left;
+}
 
-} /* END MEDIA SCREEN */
+} 
+
+/* END MEDIA SCREEN */

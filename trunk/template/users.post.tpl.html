@@ -1,34 +1,34 @@
 <form action="{FORMACTION}" method="post" >
 <fieldset>
-<div id="recipientavatarbox">
+
+  <div id="recipientcombo">
 <!-- BEGIN friendscombo -->
   <select id="prokoho_book" name="prokoho_book" onchange='{FRIENDSCOMBOONCHANGE}'>
   	<option value="">-- Adresát --</option>
     <!-- BEGIN friendscombovalue -->	
   	<option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option>
     <!-- END friendscombovalue -->
-  </select><br />
+  </select> 
 <!-- END friendscombo -->
+  </div>
+<input type="text" id="prokoho" name="prokoho" value="{RECIPIENTS}" onchange='{RECIPIENTSONCHANGE}' class="long"><br />
+
 <!-- BEGIN selectedfriend -->
   <div id="recipientavatar">
   	{SELECTEDFRIENDAVATAR}<br />
     {SELECTEDFRIENDNAME}
-  	<!-- BEGIN selectedfriendbook -->
-    <br /><input id="switchFriendButt" type="button" onClick="{XAJAXDOFRIENDS}" value="Do přátel" class="button" title="Přidat / odebrat kamarada" />
-    <!-- END selectedfriendbook -->
   </div>
-</div>
 <!-- END selectedfriend -->
-<input type="text" id="prokoho" name="prokoho" value="{RECIPIENTS}" onchange='{RECIPIENTSONCHANGE}' class="long"><br />
+
 <textarea name="zprava" id="postText" class="draftable">{MESSAGE}</textarea>{MESSAGETOOLBOX}<br />
 <!-- BEGIN hiddenwho -->
 <input type="hidden" NAME="who" VALUE="{HIDDENWHO}" />
 <!-- END hiddenwho -->
-<input type="submit" name="send" value="Odeslat" class="button">&nbsp;&nbsp;
-<input type="submit" name="filtr" value="Filtr" class="button">&nbsp;&nbsp;
-<input type="submit" name="delo" value="Smaž" class="button">&nbsp;&nbsp;
-<input type="submit" name="delbe" value="Smaž mezi" class="button">&nbsp;&nbsp; 
-Na stránku: <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="short">
+<input type="submit" name="send" value="Odeslat" class="button submit"> 
+<input type="submit" name="filtr" value="Filtr" class="button"> 
+<input type="submit" name="delo" value="Smaž" class="button"> 
+<input type="submit" name="delbe" value="Smaž mezi" class="button">  
+Na stránku: <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort">
 </fieldset>
 
 <!-- BEGIN searchfilters -->

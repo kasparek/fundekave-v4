@@ -11,10 +11,11 @@ class fPocket extends fQueryTool {
         
     }
     static function getLink($itemId,$page=false) {
-        return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
+        global $conf;
+        if($conf["pocket"]["enabled"] == 1)
+            return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
     }
     function getItems() {
-        
         $this->setSelect("p.pocketId,p.userId,p.pageId,p.itemId,p.description,pa.name,i.typeId,i.addon,i.text,i.name,i.enclosure");
         $this->addJoin("join sys_pages as pa on pa.pageId=p.pageId");
         $this->addJoin("left join sys_pages_items as i on i.itemId=p.itemId");
@@ -57,88 +58,91 @@ class fPocket extends fQueryTool {
         }
     }
     function show($xajax=false) {
-        global $user;
-        $nameLength = 10;
-        $ret = '';
-        //$this->debug = 1;
-        $arr = $this->getItems();
-
-        $tpl = new fTemplateIT($this->template);
-
-        if(!empty($arr)) {
-            //TODO:
-            //---parse
-
-            foreach ($arr as $item) {
-                $tpl->setCurrentBlock('pocketitem');
-                $tpl->setVariable('POCKETLINK',(empty($item[3]))?('?k='.$item[2]):('?i='.$item[3]));
-                $tpl->setVariable('POCKETITEMID',(empty($item[3]))?('pocket'.$item[2]):('pocket'.$item[3]));
-                $nameOnPocket = $item[5];
-                $pocketType = 'page';
-                if(!empty($item[3])) {
-                    //---item - typeId - index 6
-                    //--- typeId-blog-name=addon [7], event-name=addon [7], galery-name=enclosure [10], forum-name=text [8]
-                    $tpl->setVariable('ITEMLINK','?i='.$item[3]);
-                    $pocketType = $typeId = $item[6];
-                    if($typeId=='forum') $index = 8;
-                    elseif ($typeId=='galery')  $index = 10;
-                    else $index = 7;
-                    $nameOnPocket = $item[$index];
+        
+        global $user,$conf;
+        if($conf["pocket"]["enabled"] == 1) {
+            $nameLength = 10;
+            $ret = '';
+            //$this->debug = 1;
+            $arr = $this->getItems();
+    
+            $tpl = new fTemplateIT($this->template);
+    
+            if(!empty($arr)) {
+                //TODO:
+                //---parse
+    
+                foreach ($arr as $item) {
+                    $tpl->setCurrentBlock('pocketitem');
+                    $tpl->setVariable('POCKETLINK',(empty($item[3]))?('?k='.$item[2]):('?i='.$item[3]));
+                    $tpl->setVariable('POCKETITEMID',(empty($item[3]))?('pocket'.$item[2]):('pocket'.$item[3]));
+                    $nameOnPocket = $item[5];
+                    $pocketType = 'page';
+                    if(!empty($item[3])) {
+                        //---item - typeId - index 6
+                        //--- typeId-blog-name=addon [7], event-name=addon [7], galery-name=enclosure [10], forum-name=text [8]
+                        $tpl->setVariable('ITEMLINK','?i='.$item[3]);
+                        $pocketType = $typeId = $item[6];
+                        if($typeId=='forum') $index = 8;
+                        elseif ($typeId=='galery')  $index = 10;
+                        else $index = 7;
+                        $nameOnPocket = $item[$index];
+                    }
+                    $tpl->setVariable('POCKETTITLE',fSystem::textins($item[5].((isset($index))?(' '.$item[$index]):('')),array('plainText'=>1)));
+                    $tpl->setVariable('POCKETNAME',fSystem::textins($nameOnPocket,array('plainText'=>1,'lengthLimit'=>20,'lengthLimitAddOnEnd'=>' ...')));
+                    $tpl->setVariable('POCKETTYPE',$pocketType);
+                    $tpl->parseCurrentBlock();
+    
+    
+                    $tpl->setCurrentBlock('pocketitemtooltip');
+                    $tpl->setVariable('USE',$user->getUri('p=u&pi='.((empty($item[3]))?($item[2]):($item[3]))));
+                    $tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
+                    $tpl->setVariable('PAGENAMECOMPLETE',$item[5]);
+                    $tpl->setVariable('PAGELINKTOOLTIP','?k='.$item[2]);
+                    if(!empty($item[3])) {
+    
+                        $tpl->setVariable('ITEMIDTOOLTIP','pocket'.$item[3]);
+                        $fItems = new fItems();
+                        $fItems->showTag = false;
+                        $fItems->showPocketAdd = false;
+                        $fItems->showComments = false;
+                        $fItems->showTooltip = false;
+                        $fItems->showRating = false;
+                        $fItems->showHentryClass = false;
+                        $fItems->showFooter = false;
+                        $fItems->showHeading = true;
+                        //$fItems->initData($item[6],$user->gid,true);
+                        $fItems->initData('',$user->gid);
+                        $fItems->initDetail($item[3]);
+                        $fItems->getData();
+                        $fItems->parse();
+                        $parsed = $fItems->show();
+                        $tpl->setVariable('ITEMASTOOLTIP',$parsed);
+    
+                    } else {
+                        $tpl->setVariable('ITEMIDTOOLTIP','pocket'.$item[2]);
+                        $tpl->setVariable('PAGEDESC',$item[4]);
+                    }
+                    $tpl->parseCurrentBlock();
+    
                 }
-                $tpl->setVariable('POCKETTITLE',fSystem::textins($item[5].((isset($index))?(' '.$item[$index]):('')),array('plainText'=>1)));
-                $tpl->setVariable('POCKETNAME',fSystem::textins($nameOnPocket,array('plainText'=>1,'lengthLimit'=>20,'lengthLimitAddOnEnd'=>' ...')));
-                $tpl->setVariable('POCKETTYPE',$pocketType);
-                $tpl->parseCurrentBlock();
-
-
-                $tpl->setCurrentBlock('pocketitemtooltip');
-                $tpl->setVariable('USE',$user->getUri('p=u&pi='.((empty($item[3]))?($item[2]):($item[3]))));
-                $tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
-                $tpl->setVariable('PAGENAMECOMPLETE',$item[5]);
-                $tpl->setVariable('PAGELINKTOOLTIP','?k='.$item[2]);
-                if(!empty($item[3])) {
-
-                    $tpl->setVariable('ITEMIDTOOLTIP','pocket'.$item[3]);
-                    $fItems = new fItems();
-                    $fItems->showTag = false;
-                    $fItems->showPocketAdd = false;
-                    $fItems->showComments = false;
-                    $fItems->showTooltip = false;
-                    $fItems->showRating = false;
-                    $fItems->showHentryClass = false;
-                    $fItems->showFooter = false;
-                    $fItems->showHeading = true;
-                    //$fItems->initData($item[6],$user->gid,true);
-                    $fItems->initData('',$user->gid);
-                    $fItems->initDetail($item[3]);
-                    $fItems->getData();
-                    $fItems->parse();
-                    $parsed = $fItems->show();
-                    $tpl->setVariable('ITEMASTOOLTIP',$parsed);
-
-                } else {
-                    $tpl->setVariable('ITEMIDTOOLTIP','pocket'.$item[2]);
-                    $tpl->setVariable('PAGEDESC',$item[4]);
-                }
-                $tpl->parseCurrentBlock();
-
+    
+                //print_r($arr);
+                //die();
+                //---cache
+    
+            } else {
+                $tpl->touchBlock('pocketempty');
             }
-
-            //print_r($arr);
-            //die();
-            //---cache
-
-        } else {
-            $tpl->touchBlock('pocketempty');
+    
+            if($xajax===true) {
+                $tpl->parse('pocket');
+                $ret = $tpl->get('pocket');
+            } else {
+                $ret = $tpl->get();
+            }
+    
+            return $ret;
         }
-
-        if($xajax===true) {
-            $tpl->parse('pocket');
-            $ret = $tpl->get('pocket');
-        } else {
-            $ret = $tpl->get();
-        }
-
-        return $ret;
-    }
+       }
 }

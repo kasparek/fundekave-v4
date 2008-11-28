@@ -15,8 +15,6 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
     if(fRules::get($user->gid,$user->currentPageId,2)) {
         if(empty($user->currentPageParam)) {
             if($typeId=='blog') {
-                fXajax::register('blog_blogEdit');
-                fXajax::register('blog_processFormBloged');
                 fSystem::secondaryMenuAddItem('#editnew',LABEL_ADD,"xajax_blog_blogEdit('0');",1);
             }
         }
@@ -26,7 +24,6 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
     //tlacitko sledovat - jen pro nemajitele
     if($user->idkontrol) {
       if($user->currentPageParam=='' && $user->currentPage['userIdOwner'] != $user->gid) {
-      	fXajax::register('forum_auditBook');
       	fSystem::secondaryMenuAddItem('#book',((0 == $user->obliben($user->currentPageId,$user->gid))?(LABEL_BOOK):(LABEL_UNBOOK)),"xajax_forum_auditBook('".$user->currentPageId."','".$user->gid."');",0,'bookButt');
       }
       fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'p'),LABEL_POLL);
@@ -34,7 +31,6 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
       if($user->currentPageParam=='') {
         if(isset($_GET['s']) || fItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>fItems::getTagToolbar(false)));
         else {
-          fXajax::register('forum_toolbar');
           fSystem::secondaryMenuAddItem($user->getUri('s=t'),LABEL_THUMBS,"xajax_forum_toolbar();return false;");
         }
       }

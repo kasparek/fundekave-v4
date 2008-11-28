@@ -1,10 +1,4 @@
 <?php
-$reqSetRecipient = fXajax::register('post_setRecipientAvatarFromBooked');
-$reqSetRecipient->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho_book');
-
-$reqSetRecipientFromInput = fXajax::register('post_setRecipientAvatarFromInput');
-$reqSetRecipientFromInput->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho');
-
 //---action part
 $redir = false;
 if(isset($_GET['filtr'])) {
@@ -137,7 +131,6 @@ $tpl->touchBlock('friendscombo');
 if($recipientId>0) {
 	$tpl->setVariable('SELECTEDFRIENDAVATAR',$user->showAvatar($recipientId));
 	$tpl->setVariable('SELECTEDFRIENDNAME',$user->getgidname($recipientId));
-	if(!$user->pritel($recipientId)) $tpl->setVariable('XAJAXDOFRIENDS',"xajax_user_switchFriend('".$recipientId.'");return(false);');
 }
 
 $tpl->setVariable('RECIPIENTS',$recipients);

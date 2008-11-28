@@ -5,7 +5,6 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
 }
 if($user->idkontrol) {
       if($user->currentPageParam=='' && $user->currentPage['userIdOwner'] != $user->gid) {
-      	fXajax::register('forum_auditBook');
       	fSystem::secondaryMenuAddItem('#book',((0 == $user->obliben($user->currentPageId,$user->gid))?(LABEL_BOOK):(LABEL_UNBOOK)),"xajax_forum_auditBook('".$user->currentPageId."','".$user->gid."');",0,'bookButt');
       }
      fSystem::secondaryMenuAddItem($user->getUri('p=a'),LABEL_POCKET_PUSH,"xajax_pocket_add('".$user->currentPageId."','1');return false;",0);
@@ -53,6 +52,7 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     	$tpl = new fTemplateIT('galery.thumbnails.tpl.html');
     	$tpl->setCurrentBlock("thumbnails");
     	$tpl->setVariable("GALERYTEXT",$galery->gText);
+    	$tpl->setVariable("GALERYHEAD",$user->currentPage['content']);
     
     	for($y=0;$y<$galery->gHeight;$y++){ 
     		$tpl->setCurrentBlock("row");

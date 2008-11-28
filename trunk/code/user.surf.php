@@ -56,14 +56,10 @@ if($total>0) {
     
     $od = 1;
     if($total>DEFAULT_PERPAGE) {
-        $pager = fSystem::initPager($total,DEFAULT_PERPAGE,array('extraVars('array('sc'=>$kat,'sm'=>$showAll)));
+        $pager = fSystem::initPager($total,DEFAULT_PERPAGE,array('extraVars'=>array('sc'=>$kat,'sm'=>$showAll)));
         $od = ($pager->getCurrentPageID()-1) * DEFAULT_PERPAGE;
-        $tpl->setVariable('TOPPAGER',$pager->links);
-        $tpl->setVariable('BOTTOMPAGER',$pager->links);
         
-        $tpl->setVariable('TOTAL',$total);
-        $tpl->setVariable('FROM',$od);
-        $tpl->setVariable('TO',$od+DEFAULT_PERPAGE);
+        $tpl->setVariable('BOTTOMPAGER',$pager->links);
     }
     
     

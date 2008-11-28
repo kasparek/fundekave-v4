@@ -134,13 +134,12 @@ class fPages extends fQueryTool {
         		  foreach ($arrForums[$category[0]] as $forum) {
             		$tpl->setCurrentBlock('all');
             		if($user->zaudico) {
+            		  $tpl->touchBlock('showicons');
             		   if(!empty($forum[3])) {
                 		 $tpl->setVariable("ALLICOKAM", $forum[0]);
                 		 $tpl->setVariable("ALLFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
                 		 $tpl->setVariable("ALLFORUMICOALT", substr($forum[2],0,8));
                 		 $tpl->setVariable("ALLFORUMICONAME", $forum[2]);
-            		   }  else {
-            		     $tpl->setVariable("ALLICOEMPTY", '&nbsp;');
             		   }
             		}
             		$tpl->setVariable("ALLFORUMNAME", $forum[2]);
@@ -171,7 +170,7 @@ class fPages extends fQueryTool {
 	    
 	    //---template init
         $tpl = new fTemplateIT('forums.booked.tpl.html');
-        
+        /*FIXME: moce delete somewhere else
         if(isset($_GET["del"])){
         	$delAuditId = $_GET["del"];
         	$tpl->setVariable('DELFORUMNAME',$this->db->getOne("SELECT name FROM sys_pages WHERE pageId='".$delAuditId."'"));
@@ -184,7 +183,7 @@ class fPages extends fQueryTool {
         	fError::addError("Klub odstranen");
         	fHTTP::redirect($user->getUri());
         }
-        
+        */
         //---srovnani klubu
         fForum::clearUnreadedMess();
         fForum::afavAll($user->gid,$this->type);
@@ -207,6 +206,7 @@ class fPages extends fQueryTool {
         $arraudit = $this->getContent();
         
         if(count($arraudit)>0){
+          if($user->zaudico) $tpl->touchBlock("showiconsowner");
         	foreach ($arraudit as $forum) {
         		$tpl->setCurrentBlock("owner");
         		if($user->zaudico) {
@@ -215,8 +215,6 @@ class fPages extends fQueryTool {
           			 $tpl->setVariable("OWNERFORUMICO", WEB_REL_PAGE_AVATAR.$forum[2]);
           			 $tpl->setVariable("OWNERFORUMICOALT", substr($forum[1],0,8));
           			 $tpl->setVariable("OWNERFORUMICONAME", $forum[1]);
-        		    }  else {
-        		     $tpl->setVariable("OWNERICOEMPTY", '&nbsp;');
         		    }
         		}
         		$tpl->setVariable("OWNERFORUMNAME", $forum[1]);
@@ -224,7 +222,7 @@ class fPages extends fQueryTool {
         		$tpl->setVariable("OWNERNEWCLASS", ($forum[4]>0)?('i_banner'):(''));
         		$tpl->setVariable("OWNERNEWCNT", $forum[4]);
         		$tpl->setVariable("OWNERCNT", $forum[3]);
-        		$tpl->setVariable("OWNERDELLINK", $user->getUri('nav=del&del='.$forum[0]));
+        		//$tpl->setVariable("OWNERDELLINK", $user->getUri('nav=del&del='.$forum[0]));
         		$tpl->parseCurrentBlock();
         	}
         }
@@ -238,7 +236,8 @@ class fPages extends fQueryTool {
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
         
-        if(count($arraudit)>0) 
+        if(count($arraudit)>0){ 
+          if($user->zaudico) $tpl->touchBlock("showiconsbooked");
            foreach ($arraudit as $forum) {
                $tpl->setCurrentBlock("booked");
         		if($user->zaudico) {
@@ -247,8 +246,6 @@ class fPages extends fQueryTool {
           			 $tpl->setVariable("BOOKEDFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
           			 $tpl->setVariable("BOOKEDFORUMICOALT", substr($forum[1],0,8));
           			 $tpl->setVariable("BOOKEDFORUMICONAME", $forum[1]);
-        		    }  else {
-        		     $tpl->setVariable("BOOKEDICOEMPTY", '&nbsp;');
         		    }
         		}
         		$tpl->setVariable("BOOKEDFORUMNAME", $forum[1]);
@@ -257,7 +254,7 @@ class fPages extends fQueryTool {
         		$tpl->setVariable("BOOKEDNEWCNT", $forum[5]);
         		$tpl->setVariable("BOOKEDCNT", $forum[4]);
         		$tpl->parseCurrentBlock();
-        	
+          }
         }
         
         //vypis novych
@@ -271,7 +268,8 @@ class fPages extends fQueryTool {
             $this->setLimit(0,6);
             $arraudit = $this->getContent();
             
-            if(count($arraudit)>0) 
+            if(count($arraudit)>0) {
+              if($user->zaudico) $tpl->touchBlock("showiconsnew");
                foreach ($arraudit as $forum) {
             	  $tpl->setCurrentBlock("new");
             		if($user->zaudico) {
@@ -280,8 +278,6 @@ class fPages extends fQueryTool {
               			 $tpl->setVariable("NEWFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
               			 $tpl->setVariable("NEWFORUMICOALT", substr($forum[1],0,8));
               			 $tpl->setVariable("NEWFORUMICONAME", $forum[1]);
-            		    }  else {
-            		     $tpl->setVariable("NEWICOEMPTY", '&nbsp;');
             		    }
             		}
             		$tpl->setVariable("NEWFORUMNAME", $forum[1]);
@@ -290,6 +286,7 @@ class fPages extends fQueryTool {
             		$tpl->setVariable("NEWNEWCNT", $forum[5]);
             		$tpl->setVariable("NEWCNT", $forum[4]);
             		$tpl->parseCurrentBlock();
+            }
             }
         }
         
