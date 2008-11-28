@@ -15,6 +15,7 @@ $confArray = array(
 'templatePath' => './template/', //--- local path to HTML templates - with slash on end
 'captchaTempFolderPath' => './temp/', //---must be 777 - local path to temporary folder for captcha images - with slash on end
 'displayForm' => 1, //---set 0 if you do not want display intpu form - just list of items
+'dateFormat' => 'H:i:s d.m.Y'
 );
 
 
