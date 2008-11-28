@@ -34,6 +34,22 @@ if($user->idkontrol) {
   fXajax::register('pocket_action');
   fXajax::register('forum_booked');
   fXajax::register('forum_listcategory');
+  //post page
+  $reqSetRecipient = fXajax::register('post_setRecipientAvatarFromBooked');
+  $reqSetRecipient->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho_book');
+  $reqSetRecipientFromInput = fXajax::register('post_setRecipientAvatarFromInput');
+  $reqSetRecipientFromInput->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho');
+  //items
+  fXajax::register('user_tag');
+  
+  fXajax::register('forum_auditBook');
+  //forum
+  fXajax::register('forum_toolbar');
+  //blog
+  fXajax::register('blog_blogEdit');
+  fXajax::register('blog_processFormBloged');
+  
+  
   fItems::setTagToolbar();
 }
 

@@ -13,12 +13,17 @@ class fError {
 		$_SESSION["sysmsg"]=array();
 	}
 	function getError($sys=false){
-		return($_SESSION[($sys)?("sysmsg"):("errormsg")]);
+    $index = ($sys)?("sysmsg"):("errormsg");
+	  if(!isset($_SESSION[$index])) $_SESSION[$index] = array();
+		return($_SESSION[$index]);
 	}
 	function isError($sys=false){
 		$ret=false;
+		
+		if(!isset($_SESSION["errormsg"])) $_SESSION["errormsg"] = array();
+		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();
+		
 		if(count($_SESSION[(($sys)?("sysmsg"):("errormsg"))]) > 0) $ret=true;
 		return($ret);
 	}
 }
-?>

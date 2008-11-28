@@ -284,6 +284,11 @@ class fItems extends fQueryTool {
   		    }
   		}
   		if($arr = $this->pop()) {
+  		    //chechk permissions to edit
+  		    $this->enableEdit=false;
+  		    if(fRules::get($user->gid,$arr['pageId'],2) || $arr['userId']==$user->gid) {
+  		        $this->enableEdit=true;
+  		    }
   	/*.........zacina vypis prispevku.........*/
   	$tpl = $this->itemTpl($arr['typeId']);
   	if($this->debug) print_r($this->tpl);
@@ -297,7 +302,11 @@ class fItems extends fQueryTool {
   	$tpl->setVariable('DATEISO',$arr['dateIso']);
   	if(isset($arr['name'])) $tpl->setVariable('AUTHOR',$arr['name']);
   	if(!empty($arr['unread'])) $tpl->touchBlock('unread');
-  	if($this->enableEdit==true) if(isset($arr['editItemId']) && $user->currentPageId==$arr['pageId']) $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
+  	if($this->enableEdit==true) {
+  	 if(isset($arr['editItemId']) && $user->currentPageId == $arr['pageId']) {
+  	     $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
+  	 }
+  	}
   	if($this->showText==true) $tpl->setVariable('TEXT',$arr['text']);
   	//---event only
   	if($arr['typeId']=='event') {

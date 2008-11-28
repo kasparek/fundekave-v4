@@ -7,8 +7,7 @@ class fdkForum {
   var $salt = 'fdk35'; //---USE TO ENCODE control hash .. must be same as on server
   var $arrErrors = array('nameEmpty' => 'No name specified','captchaFail'=>'Captcha failed');
   var $arrData; //---RSS array of loaded data
-  var $itemsRss; //---RSS items
-  //
+    //
   var $displayForm = true;
   var $name; //---form value
   var $text; //---form value
@@ -46,22 +45,21 @@ class fdkForum {
     $this->page = 1;
     if(isset($_GET['p'])) $this->page = $_GET['p']*1;
     if($this->page < 1) $this->page = 1;
-    require($this->forumLibsPath.'fRss.class.php');
-    //---RSS LOAD
-    $rss = new fRss();
-    $rssUrl = "http://xspace.cz/frss.php?k=".$this->serverPageId.(($this->page > 1)?('&p='.$this->page):('')).((!empty($sendStr))?('&hash='.$hash.'&data='.$sendStr):(''));
     
-    //$rssUrl = 'test.rss';
-    $rss->load($rssUrl);
-    $this->arrData = $rss->getChannel();  
-    $this->itemsRss = $rss->getItems();
+    //---RSS LOAD
+    $rssUrl = "http://xspace.cz/frss.php?k=".$this->serverPageId.(($this->page > 1)?('&p='.$this->page):('')).((!empty($sendStr))?('&hash='.$hash.'&data='.$sendStr):(''));
+    $xml  = simplexml_load_file($rssUrl);
+    
+    $this->arrData = $xml->channel;  
+    
   }
   function processRss() {
     $this->name = '';
     $this->text = '';
     //---PROCESS INFO MESSAGES FROM GENERATOR
     $this->page = 1;
-    list($dummy,$inDataString) = explode('|',$this->arrData['generator']);
+    
+    list($dummy,$inDataString) = explode('|',$this->arrData->generator);
     $inDataArrTmp = explode(';',$inDataString);
     if(!empty($inDataArrTmp)) {
         foreach ($inDataArrTmp as $val) {
@@ -107,18 +105,19 @@ class fdkForum {
       $tpl->setVariable('TEXT',$this->text);
     }
     $tpl->setVariable('PAGER',$pager->links);
+    
     //---set Items
-    if(!empty($this->itemsRss)) {
-      foreach($this->itemsRss as $item) {
+    if(!empty($this->arrData->item)) {
+      foreach($this->arrData->item as $item) {
         $tpl->setCurrentBlock('item');
-        $tpl->setVariable('IDATE',$item['pubDate']);
-        $tpl->setVariable('INAME',$item['title']);
-        $tpl->setVariable('ITEXT',$item['description']);
+        $tpl->setVariable('IDATE',$item->pubDate);
+        $tpl->setVariable('INAME',$item->title);
+        $tpl->setVariable('ITEXT',$item->description);
         $tpl->parseCurrentBlock();
       }
     }
+    
     //---PRINT RESULT
     echo $tpl->get();
   }
 }
-?>

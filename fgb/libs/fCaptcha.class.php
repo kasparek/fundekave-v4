@@ -1,10 +1,10 @@
 <?php
 class fCaptcha {
-    static function &init($confArray) {    
+    static function &init($confArray=array()) {    
                 
-        $tempfolder = ($confArray['tempFolder'])?($confArray['tempFolder']):('./data/b2evo_captcha_tmp/');
+        $tempfolder = (isset($confArray['tempFolder']))?($confArray['tempFolder']):('./data/b2evo_captcha_tmp/');
         
-        $ftpWebPath = ($confArray['libPath'])?($confArray['libPath']):(ROOT.ROOT_LIBS);
+        $ftpWebPath = (isset($confArray['libPath']))?($confArray['libPath']):(ROOT.ROOT_LIBS);
         
         $urlWebPath = '/';
         
@@ -25,9 +25,10 @@ class fCaptcha {
         $maxlifetime = 600;
         $case_sensitive = FALSE;
         $validchars = 'qwertasdfgxcvb';
-        $CAPTCHA_CONFIG = array('urlwebpath'=>$urlWebPath,'ftpwebpath'=>$ftpWebPath,'validchars'=>$validchars,'tempfolder'=>$tempfolder,'TTF_folder'=>$TTF_folder,'minchars'=>$minchars,'maxchars'=>$maxchars,'minsize'=>$minsize,'maxsize'=>$maxsize,'maxrotation'=>$maxrotation,'noise'=>$noise,'websafecolors'=>$websafecolors,'debug'=>$debug,'counter_filename'=>$counter_filename,'filename_prefix'=>$filename_prefix,'collect_garbage_after'=>$collect_garbage_after,'maxlifetime'=>maxlifetime,'case_sensitive'=>$case_sensitive);
+        $CAPTCHA_CONFIG = array('urlwebpath'=>$urlWebPath,'ftpwebpath'=>$ftpWebPath,'validchars'=>$validchars,'tempfolder'=>$tempfolder,'TTF_folder'=>$TTF_folder,'minchars'=>$minchars,'maxchars'=>$maxchars,'minsize'=>$minsize,'maxsize'=>$maxsize,'maxrotation'=>$maxrotation,'noise'=>$noise,'websafecolors'=>$websafecolors,'debug'=>$debug,'counter_filename'=>$counter_filename,'filename_prefix'=>$filename_prefix,'collect_garbage_after'=>$collect_garbage_after,'maxlifetime'=>$maxlifetime,'case_sensitive'=>$case_sensitive);
         require_once($ftpWebPath.'b2evo_captcha/b2evo_captcha.class.php');
-        return new b2evo_captcha($CAPTCHA_CONFIG); 
+        $ret = &new b2evo_captcha($CAPTCHA_CONFIG);
+        return  $ret;
     }
 }
 

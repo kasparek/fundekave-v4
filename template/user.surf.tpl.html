@@ -6,7 +6,7 @@
   <option value="1"<!-- BEGIN showall --> selected="selected"<!-- END showall -->>Vsechny</option></select> 
   <select name="sc">
   <option value="0">Nezarazene</option>
-  {CATOPTIONS}</select> <input type="submit" name="selectcat" value="Nastavit" />
+  {CATOPTIONS}</select> <input type="submit" name="selectcat" value="Nastavit" class="button" />
   </fieldset>
   <fieldset>
   <legend>Pridat</legend>
@@ -14,24 +14,21 @@
   <label for="surfdesc">Popis</label><input type="input" id="surfdesc" name="surfdesc" /><br />
   <label for="surfpublic">Pristup</label><select id="surfpublic" name="public"><option value="0">Jen pro me</option><option value="1">Vidi vsichni</option></select><br />
   <input type="hidden" name="selcat" value="{SELECTEDCATEGORY}" />
-  <input type="submit" name="insert" value="Vlozit" />
+  <input type="submit" name="insert" value="Vlozit" class="button submit" />
   </fieldset>
 </form>
 
 <!-- BEGIN catname --><h3>{CATEGORYNAME}</h3><!-- END catname -->
-<!-- BEGIN numbers -->
-<p class="pagernums">Zobrazené: <strong>{FROM}-{TO}</strong> Celkem: <strong>{TOTAL}</strong></p>
-<!-- END numbers -->
-<!-- BEGIN toppager -->
-<p class="pager">{TOPPAGER}</p>
-<!-- END toppager -->
-<p class="surf">
+
+<ul>
 <!-- BEGIN result -->
-<div><a href="{LINKURL}" class="url" title="{LINKTITLE}">{LINKPRINT}</a> {DESCRIPTION}
+<li><a href="{LINKURL}" class="url" title="{LINKTITLE}">{LINKPRINT}</a><br />
+{DESCRIPTION}
 <!-- BEGIN delete --> <a href="{DELETELINK}" onClick="if(confirm('Opravdu chcete mazat odkaz?')) return(true); else return(false);" class="delete">Smazat</a><!-- END delete -->
-<!-- BEGIN author --> <a href="{AUTHORLINK}" class="author">{AUTHORNAME}</a><!-- END author --></div>
+<!-- BEGIN author --> <a href="{AUTHORLINK}" class="author">{AUTHORNAME}</a><!-- END author -->
+</li>
 <!-- END result -->
-</p>
+</ul>
 <!-- BEGIN bottompager -->
-<p class="pager">{BOTTOMPAGER}</p>
+{BOTTOMPAGER}
 <!-- END bottompager -->

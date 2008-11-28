@@ -1,12 +1,22 @@
+
+
+//VERSION do 30.10.
+- prilozit z kapsy k clanku u blogu
+- prilozit z kapsy stranku ke galerii,strance (klub,blog) - vyuzit existujici funkci pro sprateleny stranky
+
+HTML CSS:
+- attribut for u inputu ve formularich
+- tlacitka ulozit pod formularem, vyhodit prazdnej label
+- CSS prispevek v klubu
+- pratele -> odkazy
+- posta -> do pratel - odstranit
+ 
+
+
+//---version TBC
 SOCIAL list
  - kdo kdy kde s kym - lama automat - to ted frci
  
-GALERIE EDIT
- - pridat zahlavi
-
-popis klubu / blogu - pouze plain text
-- pouziv v nahledu kapsa
-
 tag_weight
  - kontrolovat ze se to pri vypisu z klubu bere z cache .. mam pocit ze ne
 
@@ -29,7 +39,7 @@ sys_user_perm_cache
   - pri loginu pokud neni nic v cache .. vytvorit
 
 
-////////////////////////////////////////////////////////
+//install//////////////////////////////////////////////////////
 --------------------------------------------------------
 
 TODO on install/update/run:

@@ -2,7 +2,8 @@
 //TODO: zapsat log - pocitat pocet v dump, zapsat
 error_reporting(E_ALL);
 define('MAXITEMS',2000);
-set_time_limit('300');
+
+set_time_limit(3000);
 header("Content-Type: text/html; charset=windows-1250");
 
 if(!isset($_GET['import'])) { 
@@ -39,28 +40,34 @@ function dump($table,$queryTemp="SELECT {SELECT} from {TABLENAME}") {
   }
   echo $query.'<br>';
   $queryParts = explode("from",$query);
-  $dbCountArr = $db->getAll('select count(1) from '.$queryParts[count($queryParts)-1]);
+  $countQuery = 'select count(1) from '.$queryParts[count($queryParts)-1];
+  $dbCountArr = $db->getAll($countQuery);
   if(count($dbCountArr)>1) $dbCount = count($dbCountArr); else $dbCount=$dbCountArr[0][0];
-      
+  unset($dbCountArr);
+  
+  
   $itemcount = 0;
   $from = 0;
   $filepart=0;
   $strLen = 0;
+  $bytes = 0;
   if($dbCount>0) {
       for($x=0;$x<$dbCount;$x++) {
-          if($itemcount==2000) {
+          if($itemcount==4000) {
               $itemcount=0;
               $from++;
           }
           
           if($itemcount==0) {
-            $que = $query.' limit '.($from*2000).',2000';
+             unset($arr);
+            $que = $query.' limit '.($from*4000).',4000';
             $arr = $db->getAll($que);
             if(DB::iserror($arr)) {
                 die('---'.$que.'---');
             }
           }
-          $row = $arr[$itemcount];
+          //$row = $arr[$itemcount];
+          $row = array_pop($arr);
           $itemcount++;
           $insert = true;
 if(isset($addId)) {
@@ -116,6 +123,7 @@ if(isset($addId)) {
             if($row[1]==0) $insert=false;
         }
         if($insert) {
+            
             foreach($row as $k=>$v) {
                 $row[$k] = trim($v);
                 if($row[$k]=='0' || $row[$k]=='' || $row[$k]=='null') $row[$k] = 'null';
@@ -129,15 +137,15 @@ if(isset($addId)) {
             $item = '('.implode(',',$row).')';
             $strLen += strlen($item);
             $items[] = $item;
-            
+            unset($item);
           }
-          if(count($items) > MAXITEMS || ($dbCount-1)==$x || $strLen>600000) {
+          if((count($items) > MAXITEMS && $strLen>350000)|| ($dbCount-1)==$x) {
               $data = 'insert into '.$table['n'].' values '.implode(','."\r\n",$items).';';
+              unset($items);
               $backupFile = '/home/fundekave/www/fundekave/kasparek/export/' . $tableName . $filepart . '.sql';
               $data = iconv("windows-1250","utf-8",$data);
               $ret = file_put_contents($backupFile,$data);
-              $data = '';
-              $items = array();
+              unset($data);
               $filepart++;
               $strLen = 0;
             }
@@ -160,8 +168,11 @@ function import($table) {
   $tableName = $table['n'];
   $filename = $table['t'] . $filepart . '.sql';
   
-  $link = mysql_connect('mysql5-2', 'f4t_isam.97440', 'funka9') or die('Could not connect: ' . mysql_error());
-        mysql_select_db('f4t_isam_97440',$link) or die('Could not select database: ' . mysql_error());
+  //$link = mysql_connect('mysql5-2', 'f4t_isam.97440', 'funka9') or die('Could not connect: ' . mysql_error());
+  //mysql_select_db('f4t_isam_97440',$link) or die('Could not select database: ' . mysql_error());
+  
+  $link = mysql_connect('localhost', 'root', '') or die('Could not connect: ' . mysql_error());
+  mysql_select_db('fdk4',$link) or die('Could not select database: ' . mysql_error());
     
       
       
@@ -219,13 +230,13 @@ array('t'=>'ankklik','n'=>'sys_poll_answers_users','s'=>'ankid,odpid,usr'),
 
 
 
-array('t'=>'audit','conv'=>array('position'=>3,'file'=>'sys_audit'),'n'=>'sys_pages_items'
+array('t'=>'audit','conv'=>array('position'=>4,'file'=>'sys_audit'),'n'=>'sys_pages_items'
 ,'s'=>'id,"null","null","forum",id_aud,"null","null",id_usr,jmeno,"null","null",datum,text,http,"null","null","null","null",0,"null"'),
 
 array('t'=>'novinky','n'=>'sys_pages_items','f'=>140000
 ,'s'=>'id,"null","null","blog","maina","null","null",usr,autor,datum,"null",datum,text,"null",nadpis,"null","null","null",0,"null"'),
 
-array('t'=>'galfoto','conv'=>array('position'=>3,'file'=>'galerie'),'n'=>'sys_pages_items','f'=>150000
+array('t'=>'galfoto','conv'=>array('position'=>4,'file'=>'galerie'),'n'=>'sys_pages_items','f'=>150000
 ,'q'=>'SELECT gf.id,"null","null","galery",gf.galerie,"null","null",f.autor,u.jmeno,"null","null",f.datum,gf.popis,gf.detail,gf.nahled,"null","null",h.hit,0,"null" from galfoto as gf join galerie as f on f.id=gf.galerie left join sys_id as u on u.id=f.autor left join galfotohit as h on h.id=gf.id'),
 
 array('t'=>'akce','n'=>'sys_pages_items','f'=>145000
@@ -235,7 +246,7 @@ array('t'=>'akce','n'=>'sys_pages_items','f'=>145000
 ,0,concat(a.misto," ",m.nazev) from akce as a left join akcekateg as ac on ac.id=a.druhid join sys_id as u on a.idusr=u.id left join akcemisto as m on m.id=a.mistoid'
 ),
 
-array('t'=>'galfotohittime','n'=>'sys_pages_items_hit','f'=>150000,'q'=>'select h.idfoto,"null",h.hittime from galfotohittime as h join galfoto as f on f.id=h.idfoto'),
+array('t'=>'galfotohittime','n'=>'sys_pages_items_hit','f'=>150000,'q'=>'select h.idfoto,"null",h.hittime from galfotohittime as h join galfoto as f on f.id=h.idfoto order by h.hittime'),
 array('t'=>'sys_perm','n'=>'sys_users_perm','q'=>'select * from sys_perm where idpage>20000'),
 
 );

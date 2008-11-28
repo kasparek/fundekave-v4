@@ -19,8 +19,11 @@ class fError {
 	}
 	function isError($sys=false){
 		$ret=false;
+		
+		if(!isset($_SESSION["errormsg"])) $_SESSION["errormsg"] = array();
+		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();
+		
 		if(count($_SESSION[(($sys)?("sysmsg"):("errormsg"))]) > 0) $ret=true;
 		return($ret);
 	}
 }
-?>

@@ -48,7 +48,7 @@ if(!$nonDbInit) {
 //---system user init
 $user->currentItemId = 0;
 if(!$nonUserInit) {
-	require_once('fUser.class.php');
+	//require_once('fUser.class.php');
 	if(!isset($_SESSION["user"])) $_SESSION["user"] = new fUser();
 	$user = & $_SESSION["user"];
 
