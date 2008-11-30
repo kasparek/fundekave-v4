@@ -71,13 +71,7 @@ class fRules {
 		} else if($rulez==2) $ret = true;
 		return($ret);
 	}
-	//---settings rules
-	function publicSelect($name,$sel,$text=LABEL_RULES_ACCESS) {
-		$ret ='<label>'.$text.'</label><select id="accessSel" name="'.$name.'" class="tlacitko" onChange="setRules();">';
-		foreach($this->_pubTypes as $k=>$v) $ret.='<option value="'.$k.'"'.(($k==$sel)?(' selected="selected"'):('')).'>'.$v.'</option>';
-		$ret.='</select><br />';
-		return $ret;
-	}
+	
 	function getList($listPublic=true,$idstr=0) {
 		global $db;
 		if(!empty($idstr)) $this->page = $idstr;
@@ -98,24 +92,26 @@ class fRules {
 	}
 	function printEditForm($idstr=0) {
 		$this->getList(true,$idstr);
-		$ret ='<div id="rules"><h3>'.TEXT_PERMISSIONS_SET.'</h3>'
-		.$this->publicSelect('public',$this->public);
+		$tpl = new fTemplateIT('pages.permissions.tpl.html');
+		$tpl->setVariable('HEADERLABEL',TEXT_PERMISSIONS_SET);
+		$tpl->setVariable('SELECTLABEL',LABEL_RULES_ACCESS);
+		$tpl->setVariable('HELPLABEL',LABEL_RULES_HELP);
+		$tpl->setVariable('HELPTEXT',LABEL_RULES_HELP_TEXT);
+		
+		$selectOptions = '';
+		foreach($this->_pubTypes as $k=>$v) $selectOptions.='<option value="'.$k.'"'.(($k==$this->public)?(' selected="selected"'):('')).'>'.$v.'</option>';
+		$tpl->setVariable('SELECTOPTIONS',$selectOptions);
+		$tpl->setVariable('SELECTNAME','public');
+		
 		foreach ($this->ruleText as $k=>$v) {
-			$ret.='<div id="rule'.$k.'"><label>'.$this->ruleNames[$k].'</label><textarea name="rule['.$k.']" class="tlacitko">'.$v.'</textarea></div>';
+		    $tpl->setCurrentBlock('rules');
+		    $tpl->setVariable('RULESNUM',$k);
+		    $tpl->setVariable('RULESCONTENT',$v);
+		    $tpl->setVariable('RULESNAME',$this->ruleNames[$k]);
+			$tpl->parseCurrentBlock();
 		}
-		$ret.='<label>'.LABEL_RULES_HELP.'</label>'.LABEL_RULES_HELP_TEXT.'</div>
-		<script type="text/javascript">
-/* <![CDATA[ */
-	function setRules() {
-	   var display = \'none\';
-	   var accessSel = document.getElementById(\'accessSel\');
-	   if(accessSel.options[accessSel.selectedIndex].value==0) { display = \'block\'; }
-	   document.getElementById(\'rule1\').style.display = display;
-	}
-	setRules();
-/* ]]> */
-</script>';
-		return $ret;
+		
+		return $tpl->get();
 	}
 	function update(){
 		global $user,$db;
@@ -148,4 +144,3 @@ class fRules {
 	}
 	
 }
-?>

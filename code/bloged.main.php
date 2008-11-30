@@ -22,7 +22,8 @@ if(!empty($data)) $tpl->setVariable('LASTFORUMPOSTS',$data);
 $data = false;
 $data = $user->cacheGet('lastBlogPost');
 if(!$data) {
-  $arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='blog' and itemIdTop is null group by pageId order by dateCreated desc limit 0,10");
+  //$arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='blog' and itemIdTop is null group by pageId order by dateCreated desc limit 0,10");
+  $arr = $db->getCol("SELECT itemId FROM sys_pages_items where typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
   $fItems = new fItems();
   $fItems->showPageLabel = true;
   $fItems->initData('blog',$user->gid,true);

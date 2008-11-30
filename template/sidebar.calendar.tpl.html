@@ -1,4 +1,5 @@
-<h3>{CURRENTMONTH}. {CURRENTYEAR}</h3>
+<h3 class="calendarHeader">{CURRENTMONTH} {CURRENTYEAR}</h3>
+
 <table>
   <thead>
   <tr>
@@ -6,27 +7,27 @@
   </tr>
   </thead>
   <tbody>
-  <!-- BEGIN row --><tr>
+  <!-- BEGIN row -->
+  <tr>
 	 <!-- BEGIN column -->
-		<td>
-		<!-- BEGIN day --><a href="{DIARYURL}"<!-- BEGIN calclass --> class="<!-- BEGIN tip -->supernote-hover-{TAGDAYID}<!-- END tip -->
-<!-- BEGIN dayCurrent --> calendarDayCurrent<!-- END dayCurrent -->
-<!-- BEGIN dayEvent --> calendarDayEvent<!-- END dayEvent -->"<!-- END calclass -->>{DAY}</a><!-- END day -->
-    <!-- BEGIN noday -->&nbsp;<!-- END noday -->
+		<td<!-- BEGIN tdclass --> class="<!-- BEGIN dayblank -->dayBlank<!-- END dayblank --><!-- BEGIN dayCurrent --> calendarDayCurrent<!-- END dayCurrent --><!-- BEGIN dayEvent --> calendarDayEvent<!-- END dayEvent -->"<!-- END tdclass -->>
+		<!-- BEGIN day --><a href="{DIARYURL}"<!-- BEGIN calclass --> class="<!-- BEGIN tip -->supernote-hover-{TAGDAYID}<!-- END tip -->"<!-- END calclass -->>{DAY}</a><!-- END day -->
 		</td>
 	<!-- END column -->
 	</tr>
 <!-- END row -->
 </tbody>
 </table>
-  <div class="calendarPreviousMonthLink">
-    <a href="{PREVIOUSMONTHURL}"<!-- BEGIN xclickprev --> onclick='xajax_fcalendar_monthSwitch("{XYEARPREV}","{XMONTHPREV}");return false;'<!-- END xclickprev --> class="lnktoday">&lt;&lt; {PREVIOUSMONTH}</a>
-  </div>
-  <div class="calendarNextMonthLink">
-    <a href="{NEXTMONTHURL}"<!-- BEGIN xclicknext --> onclick='xajax_fcalendar_monthSwitch("{XYEARNEXT}","{XMONTHNEXT}");return false;'<!-- END xclicknext --> class="lnktoday">{NEXTMONTH} &gt;&gt;</a>
-  </div>
-  <!-- BEGIN eventday -->
-  <div id="supernote-note-{DAYID}" class="snp-triggeroffset notemenu">
-   <!-- BEGIN event --><a href="{EVENTLINK}">{EVENTLABEL}</a><br /><!-- END event -->
-  </div>
-  <!-- END eventday -->
+
+<div class="calendarPreviousMonthLink">
+  <a href="{PREVIOUSMONTHURL}"<!-- BEGIN xclickprev --> onclick='xajax_fcalendar_monthSwitch("{XYEARPREV}","{XMONTHPREV}");return false;'<!-- END xclickprev --> class="lnktoday">&lt;&lt; {PREVIOUSMONTH}</a>
+</div>
+<div class="calendarNextMonthLink">
+  <a href="{NEXTMONTHURL}"<!-- BEGIN xclicknext --> onclick='xajax_fcalendar_monthSwitch("{XYEARNEXT}","{XMONTHNEXT}");return false;'<!-- END xclicknext --> class="lnktoday">{NEXTMONTH} &gt;&gt;</a>
+</div>
+
+<!-- BEGIN eventday -->
+<div id="supernote-note-{DAYID}" class="snp-triggeroffset notemenu">
+<!-- BEGIN event --><a href="{EVENTLINK}">{EVENTLABEL}</a><br /><!-- END event -->
+</div>
+<!-- END eventday -->

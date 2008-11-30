@@ -11,23 +11,23 @@ opt.saveAddedRightOptions("addedRight");
 opt.saveNewLeftOptions("newLeft");
 opt.saveNewRightOptions("newRight");
 </script>
-<h3>Spratelene stranky</h3>
-<div id="pagesRelations">
-<label>&nbsp;</label>
-<table border=0>
+<fieldset>
+<legend>Spratelene stranky</legend>
+
+<table>
 <tr>
 	<td align="center">
 	<div><strong>Dostupne stranky</strong></div>
 	<select name="listLeft" id="listLeft" multiple size=10 style="width:300px;" ondblclick="opt.transferRight()">
 	  {OPTIONSLEFT}
 	</select><br />
-	Filtr: <input type="text" name="relFiltr" value="" onkeyup="optSetFilter(this.value);" />
+	Filtr: <input type="text" name="relFiltr" class="short" value="" onkeyup="optSetFilter(this.value);" />
 	</td>
 	<td valign="middle" align="center"><br /><br />
-		<input type="button" name="right" value="&gt;&gt;" onclick="opt.transferAllRight()" /><br />
-    <input type="button" name="right" value=" &gt; " onclick="opt.transferRight()" /><br />
-		<input type="button" name="left" value=" &lt; " onclick="opt.transferLeft()" /><br />
-		<input type="button" name="left" value="&lt;&lt;" onclick="opt.transferAllLeft()" />
+		<input type="button" class="button" name="right" value="&gt;&gt;" onclick="opt.transferAllRight()" /><br />
+    <input type="button" class="button" name="right" value=" &gt; " onclick="opt.transferRight()" /><br />
+		<input type="button" class="button" name="left" value=" &lt; " onclick="opt.transferLeft()" /><br />
+		<input type="button" class="button" name="left" value="&lt;&lt;" onclick="opt.transferAllLeft()" />
 	</td>
 	<td align="center">
 	<div><strong>Spratelene stranky</strong></div>
@@ -43,5 +43,6 @@ opt.saveNewRightOptions("newRight");
 <input type="hidden" name="addedRight" id="addedRight" value="" />
 <input type="hidden" name="newLeft" id="newLeft" value="" />
 <input type="hidden" name="newRight" id="newRight" value="" />
-</div>
+<input type="submit" name="save" value="Ulozit" class="button submit" />
+</fieldset>
 <script type="text/javascript">opt.init();</script>

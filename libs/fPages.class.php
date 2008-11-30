@@ -144,7 +144,10 @@ class fPages extends fQueryTool {
             		}
             		$tpl->setVariable("ALLFORUMNAME", $forum[2]);
             		$tpl->setVariable("ALLKAM", $forum[0]);
-            		if($user->idkontrol) if($forum[4]>0) $tpl->setVariable("ALLNEWCNT", $forum[4]);
+            		if($user->idkontrol) {
+            		    if($forum[4]>0) $tpl->setVariable("ALLNEWCNT", $forum[4]);
+            		    else $tpl->setVariable("ALLNEWCNT", '&nbsp;');
+            		}
             		$tpl->parseCurrentBlock();
             	}
         		}
@@ -219,9 +222,8 @@ class fPages extends fQueryTool {
         		}
         		$tpl->setVariable("OWNERFORUMNAME", $forum[1]);
         		$tpl->setVariable("OWNERKAM", $forum[0]);
-        		$tpl->setVariable("OWNERNEWCLASS", ($forum[4]>0)?('i_banner'):(''));
-        		$tpl->setVariable("OWNERNEWCNT", $forum[4]);
-        		$tpl->setVariable("OWNERCNT", $forum[3]);
+        		if($forum[4] > 0) $tpl->setVariable('OWNERNEWCNT',$forum[4]);
+        		else $tpl->setVariable('OWNERNEWCNT','&nbsp;');
         		//$tpl->setVariable("OWNERDELLINK", $user->getUri('nav=del&del='.$forum[0]));
         		$tpl->parseCurrentBlock();
         	}
@@ -250,9 +252,8 @@ class fPages extends fQueryTool {
         		}
         		$tpl->setVariable("BOOKEDFORUMNAME", $forum[1]);
         		$tpl->setVariable("BOOKEDKAM", $forum[0]);
-        		$tpl->setVariable("BOOKEDNEWCLASS", ($forum[5]>0)?('i_banner'):(''));
-        		$tpl->setVariable("BOOKEDNEWCNT", $forum[5]);
-        		$tpl->setVariable("BOOKEDCNT", $forum[4]);
+        		if($forum[5] > 0) $tpl->setVariable("BOOKEDNEWCNT", $forum[5]);
+        		else $tpl->setVariable("BOOKEDNEWCNT", '&nbsp;');
         		$tpl->parseCurrentBlock();
           }
         }
@@ -282,9 +283,8 @@ class fPages extends fQueryTool {
             		}
             		$tpl->setVariable("NEWFORUMNAME", $forum[1]);
             		$tpl->setVariable("NEWKAM", $forum[0]);
-            		$tpl->setVariable("NEWNEWCLASS", ($forum[5]>0)?('i_banner'):(''));
-            		$tpl->setVariable("NEWNEWCNT", $forum[5]);
-            		$tpl->setVariable("NEWCNT", $forum[4]);
+            		if($forum[5] > 0) $tpl->setVariable("NEWNEWCNT", $forum[5]);
+            		else $tpl->setVariable("NEWNEWCNT", '&nbsp;');
             		$tpl->parseCurrentBlock();
             }
             }

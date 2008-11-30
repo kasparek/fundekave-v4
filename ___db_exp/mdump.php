@@ -168,11 +168,11 @@ function import($table) {
   $tableName = $table['n'];
   $filename = $table['t'] . $filepart . '.sql';
   
-  //$link = mysql_connect('mysql5-2', 'f4t_isam.97440', 'funka9') or die('Could not connect: ' . mysql_error());
-  //mysql_select_db('f4t_isam_97440',$link) or die('Could not select database: ' . mysql_error());
+  $link = mysql_connect('mysql5-2', 'fdk4_p.97440', 'rohlicek') or die('Could not connect: ' . mysql_error());
+  mysql_select_db('fdk4_p_97440',$link) or die('Could not select database: ' . mysql_error());
   
-  $link = mysql_connect('localhost', 'root', '') or die('Could not connect: ' . mysql_error());
-  mysql_select_db('fdk4',$link) or die('Could not select database: ' . mysql_error());
+  //$link = mysql_connect('localhost', 'root', '') or die('Could not connect: ' . mysql_error());
+  //mysql_select_db('fdk4',$link) or die('Could not select database: ' . mysql_error());
     
       
       

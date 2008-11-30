@@ -167,7 +167,9 @@ class fQueryTool  {
 		if(!DB::iserror($data)) {
 		    if(isset($data[0][0])) return $data[0][0];
 		}
-		else die('Error in query: '.$dot);
+		else {
+      die('Error in query: '.$dot);
+    }
 	}
 	function getContent($from=0,$perPage=0) {
 		$dot = $this->buildQuery($from,$perPage);
@@ -178,8 +180,9 @@ class fQueryTool  {
 		  $data = $this->db->getAll($dot);
 		}
 		if(!DB::iserror($data)) return $data;
-		else die('Error in query: '.$dot);
-     
+		else {
+      die('Error in query: '.$dot);
+    } 
 	}
 	function get($id) {
 	    $this->addWhere($this->primaryCol.'="'.$id.'"');
