@@ -1,4 +1,8 @@
+full text hledani v prispevcich .. nefunguje kombinace co od koho ... vypada to spis na or
 
+remote guestbook, po captcha erroru nezachova pole
+
+smazat z css classu newposts
 
 //VERSION do 30.10.
 - prilozit z kapsy k clanku u blogu
@@ -44,41 +48,36 @@ sys_user_perm_cache
 
 TODO on install/update/run:
 
+#avatar transport, batch resize
+#pic transport - galery,akce, aico, banners
+# deje se pri exportu - u eventu ktery maji categoryId = 400 nastavit null
   CRON
     - jednou denne mazat celou cache
   DB
   
-  ALTER TABLE `sys_pages_items`  ORDER BY `dateCreated` DESC
--zalozit blog pro novinky
+ALTER TABLE `sys_pages_items`  ORDER BY `dateCreated` DESC;
+#zalozit blog pro novinky
 INSERT INTO `sys_pages` ( `pageId` , `pageIdTop` , `typeId` , `typeIdChild` , `categoryId` , `menuSecondaryGroup` , `leftpanelGroup` , `template` , `name` , `nameshort` , `description` , `content` , `public` , `dateCreated` , `dateUpdated` , `dateContent` , `userIdOwner` , `pageIco` , `cnt` , `locked` , `authorContent` , `galeryDir` , `pageParams` )
-VALUES (
-'mainb', NULL , 'blog', NULL , '318', NULL , '9', 'forum.view.php', 'Fundekave aktuality', 'Blog', NULL , NULL , '1', NOW( ) , NULL , NULL , '1', NULL , '0', '0', NULL , NULL , '<blog><home/></blog>'
-)
-update sys_pages_items set pageId='mainb' where pageId = 'maina'
-
-  update sys_pages_items as i set typeId = (select p.typeId from sys_pages as p where p.pageId=i.pageId )
-    - u eventu ktery maji categoryId = 400 nastavit null
-    - avatar transport, batch resize
-    - pic transport - galery,akce, aico, banners
-    - update hit on items to 0
-      update sys_pages_items set hit=0 where hit is null
-    - update hit from hits table
-      update sys_pages_items as i set hit=(select count(1) from sys_pages_items_hit as ih where ih.itemId=i.itemId) 
-    - update locked from null to 0 
-      update `sys_pages` set locked=0 where locked is null
-    - blogy kategorie
-      INSERT INTO `sys_pages_category` ( `categoryId` , `typeId` , `name` , `description` , `ord` , `public` ) VALUES (NULL , 'blog', 'Nezařazené', NULL , '0', '1');
-      update sys_pages set categoryId=318 where typeId="blog"
-    - surf
-      update `sys_surfinie` set categoryId=0 where categoryId is null
-    - sys_pages
-    update sys_pages as p set cnt = (select count(1) from sys_pages_items as i where i.pageId=p.pageId)
-    - update counter
-      update sys_pages_counter as pc set pc.typeId = (select p.typeId from sys_pages as p where p.pageId=pc.pageId)
-    ---- item tag_weight
-    update `sys_pages_items` as i set i.tag_weight = (select sum(t.weight) from sys_pages_items_tag as t where t.itemId = i.itemId);
-update `sys_pages_items` as i set i.tag_weight = 0 where i.tag_weight is null
-    
-    update `sys_pages_items` set typeId='event' where typeId='top'
-    
-    nastavit defaultni kategorii pro kluby,blogy a galerie
+VALUES ( 'mainb', NULL , 'blog', NULL , '318', NULL , '9', 'forum.view.php', 'Fundekave aktuality', 'Blog', NULL , NULL , '1', NOW( ) , NULL , NULL , '1', NULL , '0', '0', NULL , NULL , '<blog><home/></blog>' );
+update sys_pages_items set pageId='mainb' where pageId = 'maina';
+update sys_pages_items as i set typeId = (select p.typeId from sys_pages as p where p.pageId=i.pageId );
+#update hit on items to 0
+update sys_pages_items set hit=0 where hit is null;
+#update hit from hits table
+update sys_pages_items as i set hit=(select count(1) from sys_pages_items_hit as ih where ih.itemId=i.itemId); 
+#update locked from null to 0 
+update `sys_pages` set locked=0 where locked is null;
+#blogy kategorie
+INSERT INTO `sys_pages_category` ( `categoryId` , `typeId` , `name` , `description` , `ord` , `public` ) VALUES (NULL , 'blog', 'Nezařazené', NULL , '0', '1');
+update sys_pages set categoryId=318 where typeId="blog";
+#surf
+update `sys_surfinie` set categoryId=0 where categoryId is null;
+#sys_pages
+update sys_pages as p set cnt = (select count(1) from sys_pages_items as i where i.pageId=p.pageId);
+#update counter
+update sys_pages_counter as pc set pc.typeId = (select p.typeId from sys_pages as p where p.pageId=pc.pageId);
+#item tag_weight
+update `sys_pages_items` as i set i.tag_weight = (select sum(t.weight) from sys_pages_items_tag as t where t.itemId = i.itemId);
+update `sys_pages_items` as i set i.tag_weight = 0 where i.tag_weight is null;
+update `sys_pages_items` set typeId='event' where typeId='top';
+#nastavit defaultni kategorii pro kluby,blogy a galerie

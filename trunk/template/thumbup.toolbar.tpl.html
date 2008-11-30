@@ -2,8 +2,8 @@
 <!-- BEGIN search -->
     <fieldset>
         <legend>Hledat</legend>
-        obsahující <input name="searchText" value="{SEARCHTEXT}" type="text" /> od <input name="searchUser" value="{SEARCHWHO}" type="text">
-        <input type="submit" name="search" value="Hledat" />
+        obsahující <input name="searchText" value="{SEARCHTEXT}" type="text" class="short" /> od <input name="searchUser" value="{SEARCHWHO}" type="text" class="short">
+        <input type="submit" name="search" value="Hledat" class="button" />
     </fieldset>
 <!-- END search -->
     <fieldset>
@@ -25,8 +25,8 @@
         <option<!-- BEGIN dateintweek --> selected="selected"<!-- END dateintweek --> value="4">Tyden</option>
         <option<!-- BEGIN dateintday --> selected="selected"<!-- END dateintday --> value="5">Den</option>
         </select> 
-        <input type="submit" name="thumbset" value="Vybrat" />
-        <input type="submit" name="thumbupreset" value="Zrusit vyber"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
+        <input type="submit" name="thumbset" value="Vybrat" class="button" />
+        <input type="submit" name="thumbupreset" class="button" value="Zrusit vyber"<!-- BEGIN tudis --> disabled="disabled"<!-- END tudis --> />
         <br />
         <!-- BEGIN linkprevious --><a href="{PREVIOUSLINK}">{PREVIOUSTEXT}</a> <!-- END linkprevious --> 
         <!-- BEGIN current --> <span id="currentFilterDate">{CURRENTDATE}</span><!-- END current -->

@@ -1,13 +1,14 @@
 <?php
 $draftTextId = 'addftext';
 
+$dden = 0;
 if(!empty($_REQUEST['ddate']))
 	list($drok,$dmesic,$dden)=explode("-",$_REQUEST['ddate']);
 	
-	if($dden<1 || $dden>31) {
-		$allmonth=true; 
-		$dden='01';
-	} else $allmonth=false;
+if($dden<1 || $dden>31) {
+	$allmonth=true; 
+	$dden='01';
+} else $allmonth=false;
 if(empty($_REQUEST['ddate']) || !checkdate($dmesic,$dden,$drok)) {
 	$dmesic = date("m");
 	$drok = date("Y");

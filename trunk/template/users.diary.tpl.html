@@ -1,11 +1,14 @@
-<form name="diar" method="post" action="{FORMACTION}"><div>
-<label>Vyhledávání [text,dd.mm.rok]</label>
-<input type="text" name="dsearch" value="{SEARCHTEXT}" />
-&nbsp;<input type="text" name="dsden" value="{SEARCHDAY}" class="small" />.
-&nbsp;<input type="text" name="dsmesic" value="{SEARCHMONTH}" class="small" />.
-&nbsp;<input type="text" name="dsrok" value="{SEARCHYEAR}" class="short" />
-&nbsp;<input type="submit" name="search" value="Hledat" class="button"><br /><br />
-<label>&nbsp;</label><a href="{SHOWMONTHLINK}">Ukázat celý měsíc</a> | <a href="{SHOWMINELINK}">Jen moje</a> | <a href="#" onClick="showDiaryForm();">Přidat nový záznam</a></div></form>
+<form name="diar" method="post" action="{FORMACTION}">
+<fieldset>
+<legend>Vyhledávání [text,dd.mm.rok]</legend>
+<input type="text" name="dsearch" value="{SEARCHTEXT}" class="short" /> 
+<input type="text" name="dsden" value="{SEARCHDAY}" class="xShort" />. 
+<input type="text" name="dsmesic" value="{SEARCHMONTH}" class="xShort" />. 
+<input type="text" name="dsrok" value="{SEARCHYEAR}" class="xShort" /> 
+<input type="submit" name="search" value="Hledat" class="button">
+<a href="{SHOWMONTHLINK}">Ukázat celý měsíc</a> | <a href="{SHOWMINELINK}">Jen moje</a> | <a href="#" onClick="showDiaryForm();">Přidat nový záznam</a>
+</fieldset>
+</form>
 <script type="text/javascript" language="JavaScript">
 function resetAddForm() {
   document.getElementById('addfid').value = '0';
@@ -23,18 +26,18 @@ function showDiaryForm() {
 }
 </script>
 <form name="diar" id="addform" method="post" action="{ADDFORMACTION}" enctype="multipart/form-data">
-<p class="buttonbar"><label>&nbsp;</label><input type="submit" name="save" value="Uložit" class="button" /></p>
-<p>
+<fieldset>
 	<input type="hidden" name="did" id="addfid" value="{DID}" />
-	<label>Datum</label><input type="text" name="addfdate" id="addfdate" value="{DDATE}" />&nbsp;{JSCALENDARBUTTON}<br />
-  <label>Název</label><input type="text" name="dzkratka" id="addfname" value="{DNAME}" class="long" /><br />
-	<label>Text</label><textarea name="dtext" id="addftext" class="draftable">{DTEXT}</textarea>{DTEXTTOOLBOX}<br />
-	<label>Upozornění</label><select name="dpripomen" id="dpripomen" />{REMINDEROPTIONS}</select> 
+	<label for="addfdate">Datum</label><input type="text" name="addfdate" id="addfdate" value="{DDATE}" class="short" />&nbsp;{JSCALENDARBUTTON}<br />
+  <label for="addfname">Název</label><input type="text" name="dzkratka" id="addfname" value="{DNAME}" /><br />
+	<label for="addftext">Text</label><textarea name="dtext" id="addftext" class="draftable">{DTEXT}</textarea>{DTEXTTOOLBOX}<br />
+	<label for="dpripomen">Upozornění</label><select name="dpripomen" id="dpripomen" />{REMINDEROPTIONS}</select>  
   <select name="dopakovat" id="addfeveryday"><option value="0">Jen jednou</option><option value="1"<!-- BEGIN everydayselected --> selected="selected"<!-- END everydayselected -->>Kazdy den</option></select><br />
-  <label>Pristup:</label><select name="dpublic" id="addfpublic"><option value="0">Jen pro me</option><option value="1"<!-- BEGIN publicselected --> selected="selected"<!-- END publicselected -->>Vidi vsichni</option></select><br />
-	<label>Opakování</label><select name="drepeat" id="drepeat" />{REPEATOPTIONS}</select>
-	</p>
-  </form>
+  <label for="addfpublic">Pristup:</label><select name="dpublic" id="addfpublic"><option value="0">Jen pro me</option><option value="1"<!-- BEGIN publicselected --> selected="selected"<!-- END publicselected -->>Vidi vsichni</option></select><br />
+	<label for="drepeat">Opakování</label><select name="drepeat" id="drepeat" />{REPEATOPTIONS}</select><br />
+  <input type="submit" name="save" value="Uložit" class="button submit" />
+ </fieldset>
+ </form>
   <!-- BEGIN emptydiary -->
   <p>Žádný záznam</p>{DUMMYEMPTYDIARY}
   <!-- END emptydiary -->

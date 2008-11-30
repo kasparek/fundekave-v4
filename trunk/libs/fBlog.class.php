@@ -58,7 +58,7 @@ class fBlog extends fQueryTool  {
         		$tpl->setVariable('EDITDATE',$arr[1]);	
         		$tpl->setVariable('EDITTEXT',$arr[0]);	
         		$tpl->setVariable('EDITAUTOR',$arr[2]);	
-        		$tpl->setVariable('DELETEFAKE',' ');
+        		$tpl->touchBlock('newdelete');
         		$tpl->setVariable('EDITID',$itemId);
         	}
         } else {

@@ -48,7 +48,7 @@ if($redir) fHTTP::redirect($user->getUri());
 
 
 //--input form for search
-$arrkat = $db->getAll("SELECT categoryId,name FROM sys_pages_category where typeId='galery'".(($user->idkontrol)?(''):(' and public=1 '))." ORDER BY name");
+$arrkat = $db->getAll("SELECT categoryId,name FROM sys_pages_category where typeId='".$user->currentPage['typeIdChild']."'".(($user->idkontrol)?(''):(' and public=1 '))." ORDER BY name");
 
 $tpl = new fTemplateIT('pages.search.tpl.html');
 

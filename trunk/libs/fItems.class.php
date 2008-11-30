@@ -675,7 +675,7 @@ class fItems extends fQueryTool {
             if($thumbupData['order']==5) $fQuery->setOrder('i.dateCreated desc');
             elseif ($thumbupData['order'] > 2) {
                 if($thumbupData['interval']>1) {
-                    $fQuery->setOrder('hitsum desc');
+                    $fQuery->setOrder('ihistory.valueSum desc');
                     $fQuery->replaceSelect('i.hit','ihistory.valueSum as hitsum');
                     $fQuery->addWhere('ihistory.historyType = '.$thumbupData['order']);
                 } else $fQuery->setOrder('i.hit desc');

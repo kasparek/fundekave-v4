@@ -1,10 +1,5 @@
 <form action="{FORMACTION}" method="post" enctype="multipart/form-data" id="upfoto">
-<p class="buttonbar">
-<label>&nbsp;</label>
 <input type="hidden" name="gid" value="{GPAGEID}" />
-<input type="submit" name="savegal" value="Uložit" class="button" />
-<!-- BEGIN gdelete --><input type="submit" name="deletegal" value="Smazat galerii" onClick="if(confirm('Opravdu chcete vymazat tuto galerii?')) return(true); else return(false);" class="button" /><!-- END gdelete -->
-</p>
 
 <script type="text/javascript" src="./js/domtab.js"></script>
 
@@ -19,20 +14,20 @@
   
 <div>
 <a name="ft1" id="ft1"></a>
-<h3>Nastaveni galerie</h3>
-<p>
+<fieldset>
+<legend>Nastaveni galerie</legend>
 <label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br />
 <label>Kategorie</label><select name="arr[categoryId]">{CATEGORYOPTIONS}</select><br />
 <label>Název</label><input type="text" name="arr[name]" value="{GNAME}" class="long" /><br />
 <label>Popis</label><textarea name="arr[description]" id="{GDESCID}" class="draftable">{GDESC}</textarea><br />
 <label>Zahlaví</label><textarea name="arr[content]" id="{GCONTID}" class="draftable">{GCONT}</textarea>{GCONTTOOLBOX}<br />
-<label>Datum</label><input type="text" name="arr[dateContent]" value="{GDATE}" /><br />
-<label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" /><br />
-<label>Náhledy</label><input type="text" name="xwidth" value="{GWIDTH}" class="small" /> x 
-<input type="text" name="xheight" VALUE="{GHEIGHT}" class="small" /> [pocet na šířku x výšku]<br />
+<label>Datum</label><input type="text" name="arr[dateContent]" value="{GDATE}" class="short" /><br />
+<label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" class="short" /><br />
+<label>Náhledy</label><input type="text" name="xwidth" value="{GWIDTH}" class="xShort" /> x 
+<input type="text" name="xheight" VALUE="{GHEIGHT}" class="xShort" /> [pocet na šířku x výšku]<br />
 <!-- BEGIN enhancendgalery -->
-<label>Velikos náhledu v px</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="short" /> x 
-<input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="short" /> - Šířka x vyska (pouze pokud nejsou fyzicky náhledy)<br />
+<label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
+<input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
 <label>Styl nahledu</label><select name="xthumbstyle">{THUMSTYLEOPTIONS}</select><br />
 <!-- END enhancendgalery -->
 <!-- BEGIN galerylinks --> 
@@ -40,24 +35,23 @@
 	<label>Samostatná</label><span>{GSTANDALONELINK}</span><br />
 	<label>HTML adresa</label><span>{GEXTURL}</span><br />
 <!-- END galerylinks -->
-</p>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+<!-- BEGIN gdelete --><input type="submit" name="deletegal" value="Smazat galerii" onClick="if(confirm('Opravdu chcete vymazat tuto galerii?')) return(true); else return(false);" class="button" /><!-- END gdelete -->
+</fieldset>
 </div>
 <div>
   <a name="ft2" id="ft2"></a>
-  <p>
-    {PERMISSSIONSFORM}
-  </p>
+  {PERMISSSIONSFORM}
 </div>
 <div>
   <a name="ft3" id="ft3"></a>
-  <p>
-    {RELATIONSFORM}
-  </p>
+  {RELATIONSFORM}
 </div>
 <div>
 <a name="ft4" id="ft4"></a>
-<h3>Seznam fotografii</h3>
-<p>
+<fieldset>
+<legend>Seznam fotografii</legend>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
 <label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
 <label>Diskuze u foto:</label><select name="fotoforum">
 <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce na fotky</option>
@@ -78,16 +72,18 @@
 </tr>
 <!-- END gfoto -->
 </table>
-</p>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+</fieldset>
 </div>
 <div>
 <a name="ft5" id="ft5"></a>
-<h3>Nahrat fotografie</h3>
-<p>
+<fieldset>
+<legend>Nahrat fotografie</legend>
 <!-- BEGIN uploadinput -->
 <label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br />
 <!-- END uploadinput -->
-</p>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+</fieldset>
 </div>
 </div>
 </form>

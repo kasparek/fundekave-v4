@@ -2,7 +2,7 @@
 if($user->currentPageParam == 'archiv') $archiv = 1;
 
 if($user->currentPageParam=='archiv' || $user->currentPageParam=='a' || $user->currentPageParam=='e') {
-  fSystem::secondaryMenuAddItem($user->getUri('','event'),BUTTON_PAGE_BACK);
+  fSystem::secondaryMenuAddItem($user->getUri('','event',''),BUTTON_PAGE_BACK);
 } else {
   fSystem::secondaryMenuAddItem($user->getUri('','eventarchiv'),LABEL_EVENTS_ARCHIV);
   if(fRules::get($user->gid,$user->currentPageId,2)) {

@@ -1,7 +1,7 @@
 <?php
 $typeId = $user->currentPage['typeId'];
 
-if(!empty($user->currentPageParam)) fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId),BUTTON_PAGE_BACK);
+if(!empty($user->currentPageParam)) fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
 
 if(isset($_REQUEST['nid'])) {
   $user->currentItemId = $_REQUEST['nid']; //---backwards compatibility

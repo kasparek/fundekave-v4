@@ -75,7 +75,7 @@ if($user->currentPageAccess == true) {
     		$staticTemplate = true;
     		if(fRules::get($user->gid,$user->currentPageId,2)) {
     			if($user->currentPageParam == 'e') {
-    				fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId),BUTTON_PAGE_BACK);
+    				fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
     				$staticTemplate = false;
     				$template = 'page.edit.php';
     			}
@@ -102,7 +102,7 @@ if($user->currentPageAccess == true) {
     }
 	//SUPERADMIN access - tlacitka na nastaveni stranek
     if(fRules::get($user->gid,'sadmi',1)) {
-        if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId),BUTTON_PAGE_BACK);
+        if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
         else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'sa'),BUTTON_PAGE_SETTINGS,'',1);
     }
     $currentLeftpanelGroup = $user->currentPage["leftpanelGroup"];    

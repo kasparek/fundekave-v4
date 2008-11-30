@@ -409,24 +409,27 @@ class fLeftPanel {
       	    $tpl->setVariable('DAYSHORTCUT',$DAYSSHORT[$x]);
       	    $tpl->parseCurrentBlock();
       	}
-      	for ($y=0;$y<$ver;$y++) { 
+      	for ($y=0;$y < ($ver);$y++) { 
       		for ($x=0;$x<$hor;$x++) {
       		    $tpl->setCurrentBlock('column');
+      		    
       			if($z>=$dentydnu && $den<=$dnumesice) {
-    			    if($dden==$den) $tpl->touchBlock('dayCurrent');
+    			    if(date("j") == $den && $dmesic == date("m")) $tpl->touchBlock('dayCurrent');
         			if(in_array($den,$arrEventForDayKeys)) {
-                $tpl->touchBlock('dayEvent');
-                $tpl->setVariable('TAGDAYID','day'.$den);
-              }
+                        $tpl->touchBlock('dayEvent');
+                        $tpl->setVariable('TAGDAYID','day'.$den);
+                    }
       				$tpl->setVariable('DIARYURL',sprintf("?k=fdiar&ddate=%04d-%02d-%02d",$drok,$dmesic,$den));
       				$tpl->setVariable('DAY',$den);
       				$den++;
+      			} else {
+      			    $tpl->touchBlock('dayblank');
       			}
       			$z++;
+      			
       			$tpl->parseCurrentBlock();
       		}
       		$tpl->setCurrentBlock('row');
-      		$tpl->touchBlock('row');
       		$tpl->parseCurrentBlock();
       	}
       	$tpl->setVariable('PREVIOUSMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));

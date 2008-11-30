@@ -1,7 +1,7 @@
 <?
 require("./local.php");
   require(INIT_FILENAME);
-$dir = './data/idfoto/';
+$dir = './data/aico/';
 $arrFiles = fSystem::fileList($dir,'jpg|jpeg|gif|JPG|JPEG|GIF');
 if(!empty($arrFiles)) {
   while ($arrFiles) {
@@ -9,7 +9,7 @@ if(!empty($arrFiles)) {
     $sourceFile = $dir.$file;
     //chmod($sourceFile,0777);
     list($width,$height) = getimagesize($sourceFile);
-    if($width!=40 && $height!=50 && $width>0) {
+    if($width!=60 && $height!=25 && $width>0) {
       //resize, update
       $length = strlen($file);
       $extension = substr($file,$length-3);
@@ -22,7 +22,7 @@ if(!empty($arrFiles)) {
       
       $destinationFile = $dir.$destFile;
       echo $sourceFile.','.$destinationFile.'<br/>';
-      $iproc = new fImgProcess($sourceFile,$sourceFile,array('crop'=>1,'width'=>40,'height'=>50,'quality'=>90));
+      $iproc = new fImgProcess($sourceFile,$sourceFile,array('crop'=>1,'width'=>60,'height'=>25,'quality'=>90));
       
       if($sourceFile!=$destinationFile) {
         chmod($destinationFile,0777);

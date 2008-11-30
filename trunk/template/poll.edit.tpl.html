@@ -2,7 +2,8 @@
 <form action="{FORMACTIONADM}" method="post">
 <fieldset>
 <legend>Ankety pro stranku</legend>
-<label>Id stránky</label><input type="text" name="selpageid" value="{SELECTEDPAGEID}" /> <input type="submit" name="set" value="Nastavit" />
+<label>Id stránky</label><input type="text" name="selpageid" value="{SELECTEDPAGEID}" class="xShort" /> 
+<input type="submit" name="set" value="Nastavit" class="button" />
 </fieldset>
 </form>
 <!-- END adm -->
@@ -12,11 +13,11 @@
 <label>Aktivní</label><input type="checkbox" name="aktivnov" class="checkbox" /><br />
 <label>Veřejné výsledky</label><input type="checkbox" name="publicresults" class="checkbox" /><br />
 <label>Otázka</label><input type="text" name="otazka" class="long" /><br />
-<label>Počet hlasů na uživatele</label><input type="text" name="votesperuser" value="1" /><br />
+<label>Počet hlasů na uživatele</label><input type="text" name="votesperuser" value="1" class="xShort" /><br />
 <!-- BEGIN pageadm -->
-	<label>Stránka</label><input type="text" name="newpageid" value="" /><br />
+	<label>Stránka</label><input type="text" name="newpageid" value="" class="xShort" /><br />
 <!-- END pageadm -->
-<label>&nbsp;</label><input type="submit" name="add" value="Vložit" />
+<input type="submit" name="add" value="Vložit" class="button submit" />
 </fieldset></form>
 
 <form action="{FORMACTIONEDIT}" method="post">
@@ -30,7 +31,7 @@
 	<td><a href="{LISTLINKEDIT}">{LISTQUESTION}</a></td>
 	<td><a href="{LISTOWNERLINK}">{LISTOWNERNAME}</a></td>
 	<!-- BEGIN listpageadm -->
-		<td><input type="text" name="arr[{LISTPOLLIDADM}][idstr]" value="{POLLPAGEIDADM}" /></td>
+		<td><input type="text" name="arr[{LISTPOLLIDADM}][idstr]" value="{POLLPAGEIDADM}" class="xShort" /></td>
 	<!-- END listpageadm -->
 	<td>{LISTDATECREATE}</td>
 	<td><input type="checkbox" name="delank[]" value="{LISTPOLLID}" class="checkbox" /></td>

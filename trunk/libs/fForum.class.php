@@ -59,8 +59,11 @@ class fForum {
       
 			$ret = $fSave->save($arr,$arrNotQuoted);
 			
-			if(!empty($arr['itemIdTop'])) fForum::incrementReactionCount($arr['itemIdTop']);
-			else $db->query("update sys_pages set cnt=cnt+1 where pageId='".$arr['pageId']."'");
+			if($arr['itemIdTop'] > 0) fForum::incrementReactionCount($arr['itemIdTop']);
+			else {
+			 $dot = "update sys_pages set cnt=cnt+1 where pageId='".$arr['pageId']."'";
+        $db->query($dot);
+      }
 			
 			if($user->gid>0) $user->statAudit($arr['pageId'],false);
 			

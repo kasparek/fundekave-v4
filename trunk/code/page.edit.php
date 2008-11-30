@@ -5,11 +5,11 @@ if($user->currentPageParam != 'a') $fRelations = new fPagesRelations($user->curr
  * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
  */
 
-if(isset($_POST["save"])) {
-  
 $typeForSaveTool = $user->currentPage['typeId'];
 if($user->currentPageParam=='a') $typeForSaveTool = $user->currentPage['typeIdChild'];  
 
+if(isset($_POST["save"])) {
+  
 $sPage = new fPagesSaveTool($typeForSaveTool);  
 
   $notQuoted = array();
@@ -161,9 +161,10 @@ $tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm($user->currentPageI
 
 if($user->currentPageParam != 'a') $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($user->currentPageId));
 
-if($pageData['typeId']=='forum' || $pageData['typeId']=='blog') {
+$tpl->touchBlock('pageavatarupload');
+
+if($typeForSaveTool == 'forum' || $typeForSaveTool == 'blog') {
 	//enable avatar
-	$tpl->touchBlock('pageavatarupload');
 	$tpl->touchBlock('forumspecifictab');
 	//FORUM HOME
 	if(!$home = fUserDraft::get($user->currentPageId.'home')) {
