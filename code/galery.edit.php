@@ -11,14 +11,13 @@ if (isset($_POST['savegal'])) {
 	}
 	$fPagesSave = new fPagesSaveTool('galery');
 	
-	if(($xwidth = $_POST['xwidth']*1) < 1) $xwidth = $galery->get('thumbNumWidth');
-	if(($xheight = $_POST['xheight']*1) < 1) $xheight = $galery->get('thumbNumHeight');
+	if(($xperpage = $_POST['xperpage']*1) < 1) $xperpage = $galery->get('thumbNumWidth');
+
 	if(($xwidthpx = $_POST['xwidthpx']*1) < 10) $xwidthpx = $galery->get('widthThumb');
 	if(($xheightpx = $_POST['xheightpx']*1) < 10) $xheightpx = $galery->get('heightThumb');
 	$xthumbstyle = $_POST['xthumbstyle']*1;
 	$xml = new SimpleXMLElement($fPagesSave->getDef('pageParams'));
-	$xml->enhancedsettings[0]->width = $xwidth;
-	$xml->enhancedsettings[0]->height = $xheight;
+	$xml->enhancedsettings[0]->perpage = $xperpage;
 	$xml->enhancedsettings[0]->widthpx = $xwidthpx;
 	$xml->enhancedsettings[0]->heightpx = $xheightpx;
 	$xml->enhancedsettings[0]->thumbnailstyle = $xthumbstyle;
@@ -150,8 +149,7 @@ if(!empty($_SESSION['galerie_arr'])) {
 if(!empty($arr)) {
 	$xml = new SimpleXMLElement($arr['pageParams']);
     $enhancedSettings = $xml->enhancedsettings[0];
-    $arr['xwidth'] = $enhancedSettings->width;
-    $arr['xheight'] = $enhancedSettings->height;
+    $arr['xperpage'] = $enhancedSettings->perpage;
     $arr['xwidthpx'] = $enhancedSettings->widthpx;
     $arr['xheightpx'] = $enhancedSettings->heightpx;
     $arr['xthumbstyle'] = $enhancedSettings->thumbnailstyle;
@@ -165,8 +163,7 @@ if(!empty($arr)) {
 	$arr=array("categoryId"=>'1',
 	"dateContent"=>Date("Y-m-d"),"name"=>'',"description"=>'',"content"=>'',
 	'userIdOwner'=>$user->gid,'galeryDir'=>'',
-	'xwidth'=>$galery->get('thumbNumWidth'),
-	'xheight'=>$galery->get('thumbNumHeight'),
+	'xperpage'=>$galery->get('perpage'),
 	'xwidthpx'=>$galery->get('widthThumb'),
 	'xheightpx'=>$galery->get('heightThumb'),
 	'xthumbstyle'=>'0','fotoforum'=>1);
@@ -201,8 +198,7 @@ $tpl->addTextareaToolbox('GCONTTOOLBOX',$user->currentPageId.'cont');
 $tpl->setVariable('GDATE',$arr['dateContent']);
 $tpl->setVariable('GDIR',$arr['galeryDir']);
 ///---xmlparams
-$tpl->setVariable('GWIDTH',$arr['xwidth']);
-$tpl->setVariable('GHEIGHT',$arr['xheight']);
+$tpl->setVariable('PERPAGE',$arr['xperpage']);
 $tpl->setVariable('GTHUMBWIDTH',$arr['xwidthpx']);
 $tpl->setVariable('GTHUMBHEIGHT',$arr['xheightpx']);
 $options='';

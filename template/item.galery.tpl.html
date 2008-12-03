@@ -1,11 +1,13 @@
 <!-- BEGIN item -->
-<div id="{ITEMIDHTML}" class="<!-- BEGIN hentry -->hentry <!-- END hentry -->fotocard"{ADDONSTYLE}>
+<div id="{ITEMIDHTML}" class="<!-- BEGIN hentry -->hentry <!-- END hentry -->fotocard">
 	<!-- BEGIN pagelink --><h3 class="entry-title"><a href="{PAGELINK}" class="bookmark">{PAGENAME}</a></h3><!-- END pagelink -->
-	<div class="entry-content">
+	<div class="entry-content"{ADDONSTYLEWIDTH}>
     <!-- BEGIN rating --><p class="rating">Zobrazeno {HITS}x</p><!-- END rating -->
-    <div class="foto">
+    <div class="foto"{ADDONSTYLEHEIGHT}>
+    <!-- BEGIN raw -->
       <a href="{IMGURLDETAIL}" id="{ITEMIDHTML}" <!-- BEGIN tip --> class="<!-- BEGIN xajaxSwitch -->xajaxSwitch <!-- END xajaxSwitch --><!-- BEGIN popupc -->popupLink <!-- END popupc -->supernote-hover-foto{ITEMID}"<!-- END tip -->>
       <img src="{IMGURLTHUMB}" alt="{IMGALT}" title="{IMGTITLE}" /></a>
+    <!-- END raw -->
     </div>
     <!-- BEGIN info --><p>{TEXT}</p><!-- END info -->
     <!-- BEGIN toolbar -->

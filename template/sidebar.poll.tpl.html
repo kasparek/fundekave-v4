@@ -6,12 +6,9 @@
   <a href="{ANSWERURL}" class="pollAnswerLink"<!-- BEGIN xajaxonclick --> onclick='xajax_poll_pollVote(gup('poll',this.href));return false;'<!-- END xajaxonclick -->>{NOTVOTEDANSWER}</a>
   <!-- END notvoted -->
   <!-- BEGIN voted -->
-  {ANSWER}
+  {ANSWER}<br /><img src="{COLUMNSIMGURL}" align="middle" height="4" width="{COLUMNWIDTH}" /> {ANSWEWRCOUNT}
   <!-- END voted -->
 	</li>
-	<!-- BEGIN voted2 -->
-  <li><img src="{COLUMNSIMGURL}" align="middle" height="4" width="{COLUMNWIDTH}" /> {ANSWEWRCOUNT}</li>
-  <!-- END voted2 -->
 <!-- END answer -->
 </ul>
 <!-- BEGIN numbervote --><p id="restVotes">Muzete hlasovat {RESTVOTES}x</p><!-- END numbervote -->

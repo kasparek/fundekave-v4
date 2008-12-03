@@ -14,7 +14,7 @@ class fCalendarPlugins {
   }
   static function events($year,$month,$userId,$pageId = '') {
     global $db;
-    return $db->getAll("select date_format(dateStart,'%d') as den,concat('?k=event&i=',itemId) as link,itemId,name from sys_pages_items where dateStart like '".$year."-".$month."%'");
+    return $db->getAll("select date_format(dateStart,'%d') as den,concat('?k=event&i=',itemId) as link,itemId,addon from sys_pages_items where dateStart like '".$year."-".$month."%'");
   }
   static function blogItems($year,$month,$userId,$pageId = '') {
     global $db;

@@ -124,6 +124,13 @@ CREATE INDEX `pages-public` on sys_pages (public);
 CREATE INDEX `pages-locked` on sys_pages (locked);
 CREATE INDEX `pages-owner` on sys_pages (userIdOwner);
 
+CREATE TABLE `sys_pages_properties` (
+  `pageId` varchar(5) NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `value` varchar(100) NOT NULL,
+  PRIMARY KEY  (`pageId`,`name`)
+) ;
+
 CREATE TABLE sys_pages_relations (
   pageId varchar(5) NOT NULL
   ,pageIdRelative varchar(5) NOT NULL

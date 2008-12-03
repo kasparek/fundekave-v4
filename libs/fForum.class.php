@@ -75,7 +75,7 @@ class fForum {
 	}
   
 	static function setUnreadedMess($arrMessId){
-		if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess']=array();
+		if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess'] = array();
 		if(is_array($arrMessId)) $_SESSION['aNotReadedMess']=array_merge($_SESSION['aNotReadedMess'],$arrMessId);
 	}
 	static function isUnreadedMess($messId,$unset=true){
@@ -94,12 +94,12 @@ class fForum {
 	}
 	static function getSetUnreadedForum($id,$itemId){
 		Global $db,$user;
-		if($itemId==0) $unreadedCnt = $user->currentPage['cnt'] - $user->favoriteCnt;
+		if($itemId == 0) $unreadedCnt = $user->currentPage['cnt'] - $user->favoriteCnt;
 		else {
 		    $dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->gid.'" and i.itemId="'.$itemId.'"';
-		    
 		    $unreadedCnt = $db->getOne($dot);
 		}
+		$unreadedCnt = (($unreadedCnt < POSTS_UNREAD_MAX)?($unreadedCnt):(POSTS_UNREAD_MAX));
 		if($unreadedCnt > 0 && $user->idkontrol) {
 			$arrIds = $db->getCol("select itemId from sys_pages_items 
 			where pageId='".$id."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(''))." order by itemId desc limit 0,".$unreadedCnt);
@@ -363,12 +363,20 @@ class fForum {
 	    $ret = 0;
 	    $page = 0;
 	    $k = 0;
+	    
+	    $query = 'pouzita problemova funkce';
+	    $fname = '/home/www/fundekave.net/tmp/debug.txt';
+	    if(file_exists($fname)) $queryWrite = file_get_contents($fname)."\n--------------------------------------------------------------------------------\n".$query;
+      else $queryWrite = $query;
+      file_put_contents($fname,$queryWrite);
+	    /*
 	    while($ret==0) {
 	        $k++;
 	        $arr =$db->getCol("select itemId from sys_pages_items where pageId='".$pageId."' order by dateCreated desc limit ".$page.",".$perpage."");
 	        if(in_array($itemId,$arr)) $ret = $k;
 	        $page += $perpage; 
 	    }
+	    */
 	    return $ret;
 	}
 }

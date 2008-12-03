@@ -10,8 +10,7 @@ class fGalery {
 	var $_thumbTemplate = 'galery.thumb.tpl.html';
 	var $_detailTemplate = 'galery.detail.tpl.html';
 	var $_bckColorHex = 0;
-	var $_thumbNumWidth = 0;
-	var $_thumbNumHeight = 0;
+	var $_perpage = 0;
 	//---defaults - reseted with defs array
 	var $_root = ROOT; //FIXME: deprecated - everything is relative
 	var $_rootImg = WEB_REL_GALERY;
@@ -61,8 +60,7 @@ class fGalery {
 	var $gAuthorUsrId = 0;
 	var $gAuthorUsrname = '';
 	var $gPublic = 0;
-	var $gWidth = 0;
-	var $gHeight = 0;
+	var $gPerpage = 8;
 	var $gOrderItems = 0;
 	var $gPageParams = '';
 	
@@ -137,8 +135,9 @@ class fGalery {
         if($pageId!='') $this->gId = $pageId;
 	    
         $xml = new SimpleXMLElement($xmlString);
-        $this->gWidth = (String) $xml->enhancedsettings[0]->width;
-        $this->gHeight = (String) $xml->enhancedsettings[0]->height;
+        $this->gPerpage = (String) $xml->enhancedsettings[0]->perpage;
+        if(empty($this->gPerpage)) $this->gPerpage = $this->_perpage;
+              
         $this->gOrderItems = 0;
         if($xml->enhancedsettings[0]->orderitems) $this->gOrderItems = (String) $xml->enhancedsettings[0]->orderitems;
         $this->_widthMax = ($xml->enhancedsettings[0]->widthpx < 10)?($this->_widthThumb):((String) $xml->enhancedsettings[0]->widthpx);
@@ -319,7 +318,7 @@ class fGalery {
 			  $orderBy = $user->getPageParam('enhancedsettings/orderitems');
 			  $arrItemId = $db->getCol("select itemId from sys_pages_items where pageId='".$this->_fGaleryId."' order by ".((($orderBy==0)?('enclosure'):('dateCreated'))));
 			  
-  			$arr = array_chunk($arrItemId,($this->gWidth*$this->gHeight));
+  			$arr = array_chunk($arrItemId,$this->gPerpage);
   			foreach ($arr as $k=>$arrpage) {
   				if(in_array($this->_fId,$arrpage)) {
   					$pid = $k + 1;
@@ -331,10 +330,7 @@ class fGalery {
   			$tpl = new fTemplateIT($this->_detailTemplate);
   			$backLink = '?k='.$user->currentPageId.'&'.$conf['pager']['urlVar'].'='.$pid;
   			$tpl->setVariable("LINKBACKTOP",$backLink);
-  			$tpl->setVariable("LINKBACKBOTTOM",$backLink);
-  			if($this->_showGalerylink && !empty($this->_fGaleryName)) {
-  			    $tpl->setVariable("TITLENAME", $this->_fGaleryName);
-  			}
+  			  			
   			$tpl->setVariable("IMGALT", $this->_fGaleryName.' '.$this->_fDetail);
   			$tpl->setVariable("IMGDIR", $this->getDetailUrl());
   			if($this->_showComment && !empty($this->_fComment)) $tpl->setVariable("INFO",$this->_fComment);

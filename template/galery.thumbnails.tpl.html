@@ -1,17 +1,14 @@
 <!-- BEGIN thumbnails -->
 <!-- BEGIN galeryhead -->
-<div class="galery_head">{GALERYHEAD}</div>
+<div class="galeryHead">{GALERYHEAD}</div>
 <!-- END galeryhead -->
 <!-- BEGIN galerytext -->
-<div class="galery_info">{GALERYTEXT}</div>
+<div class="galeryInfo">{GALERYTEXT}</div>
 <!-- END galerytext -->
-<table class="fototable">
-<!-- BEGIN row -->
-	<tr><!-- BEGIN cell --><td> {THUMBNAIL} </td><!-- END cell --></tr>
-<!-- END row -->
-</table>
-<!-- BEGIN pagingend -->
-<div class="pager">{PAGEREND}</div>
-<div class="galery_nums">Celkem: <strong>{SUM}</strong></div>
-<!-- END pagingend -->
+
+<div class="hfeed galeryThumbs">
+<!-- BEGIN cell -->{THUMBNAIL}<!-- END cell -->
+</div>
+
+<!-- BEGIN pagingend -->{PAGEREND}<!-- END pagingend -->
 <!-- END thumbnails -->
