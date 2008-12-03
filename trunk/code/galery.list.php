@@ -51,11 +51,6 @@ if(!empty($arrgal)) {
         $tpl->setVariable("DATELOCAL",$gal[3]);
         $tpl->setVariable("DATEISO",$gal[5]);
         $tpl->setVariable("GALERYTEXT",$gal[4]);
-        $tpl->setVariable("AUTHOR",$user->getgidname($gal[2]));
-        if($user->idkontrol) {
-            $tpl->setVariable("AUTHORLINK",'?k=finfo&who='.$gal[2]);
-            $tpl->touchBlock('authorlinkclose');
-        }
         $tpl->parseCurrentBlock();
     }
 }

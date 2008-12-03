@@ -31,7 +31,8 @@ INSERT INTO `sys_pages` VALUES ('fdiar', null, 'top', null, null, 3, 3, 'user.di
 INSERT INTO `sys_pages` VALUES ('ffall', null, 'top', null, null, 3, 3, 'user.friends.all.php', 'Seznam všech registrovaných uživatelů', 'VšechnyID', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', null, null, 3, 3, 'user.settings.php', 'Nastavení osobních údajů', 'Osobní', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
-INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, null, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, 7, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('evena', null, 'event', null, null, 7, 1, 'events.edit.php', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('sadmi', null, 'admin', null, null, 9, null, 'sys.edit.php', 'Tam jsou lvi', 'admin', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 9, null, 'sys.edit.users.banns.php', 'Kontrola nad uživateli - blokování', 'Banány', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -71,7 +72,7 @@ INSERT INTO `sys_leftpanel_functions` VALUES (23, 'relatedPagesList', 'Spřátel
 truncate sys_leftpanel;
 INSERT INTO `sys_leftpanel` VALUES (1, 0, 1, 0);
 INSERT INTO `sys_leftpanel` VALUES (15, 0, 10, 1);
-INSERT INTO `sys_leftpanel` VALUES (2, 0, 23, 6);
+INSERT INTO `sys_leftpanel` VALUES (2, 0, 23, 4);
 INSERT INTO `sys_leftpanel` VALUES (3, 0, 2, 2);
 INSERT INTO `sys_leftpanel` VALUES (4, 0, 9, 5);
 INSERT INTO `sys_leftpanel` VALUES (5, 0, 5, 101);
@@ -83,7 +84,7 @@ INSERT INTO `sys_leftpanel` VALUES (10, 1, 13, 3);
 INSERT INTO `sys_leftpanel` VALUES (11, 2, 13, 3);
 INSERT INTO `sys_leftpanel` VALUES (12, 3, 6, 50);
 INSERT INTO `sys_leftpanel` VALUES (13, 9, 14, 3);
-INSERT INTO `sys_leftpanel` VALUES (14, 9, 11, 4);
+INSERT INTO `sys_leftpanel` VALUES (14, 9, 11, 6);
 INSERT INTO `sys_leftpanel` VALUES (16, 10, 15, 10);
 
 truncate sys_menu_secondary;
@@ -111,3 +112,5 @@ INSERT INTO `sys_menu_secondary` VALUES (32, 6, 'blols', 'Hledani v clancich', 0
 INSERT INTO `sys_menu_secondary` VALUES (33, 6, 'blobe', 'Nej', 0, 3);
 INSERT INTO `sys_menu_secondary` VALUES (34, 6, 'bloli', 'Živě', 0, 4);
 INSERT INTO `sys_menu_secondary` VALUES (35, 6, 'blone', 'Založit blog', 0, 5);
+
+INSERT INTO `sys_menu_secondary` VALUES (41, 7, 'evena', 'Novy tip', 0, 1);

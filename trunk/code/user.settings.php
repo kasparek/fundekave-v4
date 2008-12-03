@@ -15,8 +15,10 @@ if(isset($_POST['nav'])) {
 		$xml->personal[0]->hobby = fSystem::textins($_POST['infohoby'],array('plainText'=>1));
 		$xml->personal[0]->motto = fSystem::textins($_POST['infomotto'],array('plainText'=>1));
 		$xml->personal[0]->about = fSystem::textins($_POST['infoabout']);
-		$homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
-		if(fPages::pageOwner($homePageId) == $user->gid) $xml->personal[0]->HomePageId = $homePageId;
+		if(!empty($_POST['homepageid'])) {
+		  $homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
+		  if(fPages::pageOwner($homePageId) == $user->gid) $xml->personal[0]->HomePageId = $homePageId;
+		}
 		$user->userXml = $xml->asXML();
 		
 		$user->zbanner = (($_POST["zbanner"]=='1')?(1):(0));
@@ -74,14 +76,14 @@ $tpl->setVariable("SKINOPTIONS",$options);
 
 $xml = new SimpleXMLElement($arr[2]);
 $personal = $xml->personal[0];
-
+/*
 $options='';
 $arrOpt = $db->getAll('select pageId,name from sys_pages where userIdOwner="'.$user->gid.'"');
 if(!empty($arrOpt)) foreach ($arrOpt as $row) {
 	$options.='<option value="'.$row[0].'"'.(($row[0]==(string) $personal->HomePageId)?(' selected="selected"'):('')).'>'.$row[1].'</option>';
 }
 $tpl->setVariable("HOMEPAGEOPTIONS",$options);
-
+*/
 $tpl->setVariable("USERICQ",$arr[0]);
 $tpl->setVariable("USEREMAIL",$arr[1]);
 

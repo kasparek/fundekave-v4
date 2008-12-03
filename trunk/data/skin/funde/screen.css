@@ -67,7 +67,7 @@ div#sidebar {
 	text-align: left;
 }
 div#sidebar h2 {
-	line-height: 1.4em;
+	line-height: 1.1em;
 }
 div#sidebar div#relationsList ul {
 	margin-left: 0;
@@ -86,47 +86,6 @@ div#mainbar {
 	margin-right:-100%;
 	text-align: left;
 }
-/*div#header, div#pagebar {
-	position: relative;
-	width: 90%;
-	min-width: 780px;
-	margin: 0 auto;
-	clear: both;
-	text-align: left;
-}
-div#pagebar {
-	float: left;
-	z-index: 2;
-	background: white;
-}
-p#footer {
-	clear: both;
-	position: relative;
-	margin: 10px 20px;
-	padding: 10px 0;
-	border-top: 1px solid #999;
-	text-align: right;
-}
-div#mainbar {
-	position: relative;
-  	float: left;
-  	margin-left: 240px;
-	margin-right: 20px;
-	padding-top: 70px;
-	margin-bottom: 10px;
-}
-div#sidebar {
-	position: relative;
-	z-index: 3;
-	left: 20px;
-  	float: left;
-  	margin-top: -41px;
-	margin-left: 20px;
-	width: 200px;
-	margin-left: -100%;
-	padding-top: 140px;
-	background: url("img/logo-bg.jpg") no-repeat left top;
-}*/
 
 /* HEADER CONTENT */
 
@@ -417,18 +376,29 @@ div.mainpanel-content div#categories ul {
 }
 div#mainbar ul.showPageAvatar {
 }
+div#mainbar ul.showPageAvatar li a img {
+ padding: 0;
+ margin: 0;
+ float: left;
+ margin-right: 0.5em;
+}
 div#mainbar ul.showPageAvatar li {
 	clear: left;
 	padding-left: 0;
 	background: none;
+	line-height: 25px;
 }
 div#mainbar ul.showPageAvatar li a {
-	margin-left: 1em;
-	line-height: 2em;
+	display: block;
+	background: #eeeeee;
+	text-decoration: none;
+  margin-top: 2px; 
+  font-weight: bold;
+}
+div#mainbar ul.showPageAvatar li a:hover {
+	background: #bbbbbb
 }
 div#mainbar ul.showPageAvatar li a.pageAvatar {
-	margin-left: -70px;
-	margin-right: -70px;
 	float: left;
 	margin-left: 0;
 }
@@ -437,7 +407,7 @@ div#mainbar span.postsNew {
 	float: left;
 	width: 2em;
 	text-align: right;
-	margin-left: 70px;
+	margin-right: 0.5em;
 }
 div.mainpanel-content div.hentry {
 	clear: left;
@@ -481,6 +451,16 @@ div.mainpanel-content div.hentry h3 {
 }
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
+}
+div.mainpanel-content div.hentry ul {
+	background: #eeeeee;
+}
+div.mainpanel-content div.hentry li {
+	background: #dddddd;
+	display: block;
+	float: left;
+	padding: 0;
+	margin: 0;
 }
 div#mostVisitedPages,
 div#newCreatedPages,
@@ -581,6 +561,7 @@ div#fcalendar h3 {
 	background: #332200;
 	color: white;
 	padding: 0.3em 0.6em;
+	text-align: right;
 }
 div#fcalendar table td,
 div#fcalendar table th {
@@ -591,6 +572,9 @@ div#fcalendar table td {
 	empty-cells: show;
 	border-collapse: collapse;
 	border: 1px solid #ddd;
+}
+div#fcalendar table td.dayBlank {
+	border: 0;
 }
 div#fcalendar table td a {
 	text-decoration: none;

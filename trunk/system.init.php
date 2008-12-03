@@ -58,12 +58,12 @@ if(!$nonUserInit) {
     	$user->currentPageId = HOME_PAGE;
     	$user->currentPageParam = '';
     	//---backward compatibility
-    	if(isset($_GET['co'])) {
-    	    if($_GET['co']>33000) { $add = 'f'; $kam=$_GET['co']-33000; }
-    	    elseif($_GET['co']>23000 && $_GET['co']<33000) { $add = 'g'; $kam=$_GET['co']-23000; }
+    	if(isset($_GET['kam'])) {
+    	    if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
+    	    elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
     	    $els='';
     	    for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-    	    $user->currentPageId = $add . $els . $kam;
+    	    $_GET['k'] = $user->currentPageId = $add . $els . $kam;
     	}
     	//---u=username
     	if(isset($_GET['u'])) {

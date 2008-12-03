@@ -1,26 +1,13 @@
-<!-- BEGIN linkbacktop -->
-<div class="back"><a href="{LINKBACKTOP}">Zpet na galerii</a></div>
-<!-- END linkbacktop -->
-
-	<div class="foto-detail">
-  	<!-- BEGIN title --><h2>{TITLE}</h2><!-- END title -->
-  	<div class="card-photo"><!-- BEGIN nextlink --><a href="{NEXTLINK}"<!-- BEGIN xajaxSwitch --> class="xajaxSwitch"<!-- END xajaxSwitch --> title="Dalsi fotografie"><!-- END nextlink --><img src="{IMGDIR}" alt="{IMGALT}" /><!-- BEGIN nextlinkclose --></a><!-- END nextlinkclose --></div>
-  	<!-- BEGIN info --><p id="description">{INFO}</p><!-- END info -->
-    	<!-- BEGIN links --><div id="links">
-      <!-- BEGIN rating --><span class="rating">Zobrazeno {HITS}x</span><!-- END rating -->
-    	<!-- BEGIN tag -->{TAG} <!-- END tag -->
-      <!-- BEGIN pocket -->{POCKET} <!-- END pocket -->
-    </div><!-- END info -->
-  </div>
-
-  <!-- BEGIN prevthumb -->
-	<div class="previous">{THUMBPREVIOUS}Predchozi</div>
-	<!-- END prevthumb -->
-	<!-- BEGIN nextthumb -->
-	<div class="next">{THUMBNEXT}Dalsi</div>
-	<!-- END nextthumb -->
-
-<!-- BEGIN linkbackbottom -->
-<div class="back cleaner"><a href="{LINKBACKBOTTOM}">Zpet na galerii</a></div>
-<!-- END linkbackbottom -->
+<div class="fotoDetail">
+<!-- BEGIN linkbacktop --><p><a href="{LINKBACKTOP}">Zpet na galerii</a></p><!-- END linkbacktop -->
+<!-- BEGIN nextlink --><a href="{NEXTLINK}"<!-- BEGIN xajaxSwitch --> class="xajaxSwitch"<!-- END xajaxSwitch --> title="Dalsi fotografie"><!-- END nextlink --><img src="{IMGDIR}" alt="{IMGALT}" /><!-- BEGIN nextlinkclose --></a><!-- END nextlinkclose -->
+<!-- BEGIN info --><p>{INFO}</p><!-- END info -->
+<!-- BEGIN links --><ul>
+  <!-- BEGIN rating --><li><span class="rating">Zobrazeno {HITS}x</span></li><!-- END rating -->
+  <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
+  <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
+</ul><!-- END links -->
+</div>
+<!-- BEGIN prevthumb --><div class="previous">{THUMBPREVIOUS}Predchozi</div><!-- END prevthumb -->
+<!-- BEGIN nextthumb --><div class="next">{THUMBNEXT}Dalsi</div><!-- END nextthumb -->
 <!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->

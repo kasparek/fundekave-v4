@@ -307,7 +307,7 @@ class fItems extends fQueryTool {
   	     $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
   	 }
   	}
-  	if($this->showText==true) $tpl->setVariable('TEXT',$arr['text']);
+  	if($this->showText==true && !empty($arr['text'])) $tpl->setVariable('TEXT',$arr['text']);
   	//---event only
   	if($arr['typeId']=='event') {
   	    if($arr['categoryId']>0) {
@@ -355,7 +355,9 @@ class fItems extends fQueryTool {
   	         }
   	     }
   	    }
-  	    if($this->showFooter) $tpl->setVariable('EDITLINK','?k=evente&i='.$arr['itemId']);
+  	    if($this->showFooter) {
+  	        if($user->gid == $arr['userId'] || fRules::get($user->gid,$user->currentPageId,2)) $tpl->setVariable('EDITLINK','?k=eventu&i='.$arr['itemId']);
+  	    }
   	}
   	//---forum only
   	if($arr['typeId']=='forum') {
@@ -428,7 +430,8 @@ class fItems extends fQueryTool {
       $tpl->setVariable('IMGALT',$arr['pageName'].' '.$arr['enclosure']);
       $tpl->setVariable('IMGTITLE',$arr['pageName'].' '.$arr['enclosure']);
       $tpl->setVariable('IMGURLTHUMB',$arr['thumbUrl']);
-      $tpl->setVariable('ADDONSTYLE',' style="width: '.$arr['width'].'px;"');
+      $tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$arr['width'].'px;"');
+      $tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$arr['height'].'px;"');
       if($this->showRating==true) $tpl->setVariable('HITS',$arr['hit']);
       
       if($this->openPopup) {
@@ -730,5 +733,9 @@ class fItems extends fQueryTool {
         $this->db->query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
         $this->db->query("delete from sys_pages_items_hit where itemId='".$itemId."'");
         $this->db->query("delete from sys_pages_items_tag where itemId='".$itemId."'");
+    }
+    static function getItemUserId($itemId) {
+        global $db;
+        return $db->getOne("select userId from sys_pages_items where itemId='".$itemId."'");
     }
 }

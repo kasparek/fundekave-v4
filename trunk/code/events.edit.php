@@ -25,12 +25,12 @@ if(isset($_POST["nav"])){
 	if(fSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
 	$timeEndTmp = trim($_POST['timestart']);
 	if(fSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
-	$dateStart = textins($_POST['datestart'],array('plainText'=>1));
+	$dateStart = fSystem::textins($_POST['datestart'],array('plainText'=>1));
 	$dateStart = fSystem::switchDate($dateStart);
 	if(fSystem::isDate($dateStart)) $dateStart .= $timeStart;
 	else fError::addError(ERROR_DATE_FORMAT);
 	
-	$dateEnd = textins($_POST['dateend'],array('plainText'=>1));
+	$dateEnd = fSystem::textins($_POST['dateend'],array('plainText'=>1));
 	$dateEnd = fSystem::switchDate($dateEnd);
 	if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
 	
@@ -57,9 +57,11 @@ if(isset($_POST["nav"])){
 		$user->currentItemId = $fItems->saveItem($arrSave);
 		
 		if($_FILES['akceletak']['error'] == 0) {
+		    
 			$flypath = $conf['events']['flyer_source'];
-			$fl = pathinfo($flyerFilenameThumb);
-			$_FILES['akceletak']['name'] = "flyer".$user->currentItemId.'.'.strtolower($fl['extension']);
+			
+			$arr = explode('.',$_FILES['akceletak']['name']);
+			$_FILES['akceletak']['name'] = "flyer".$user->currentItemId.'.'.strtolower($arr[count($arr)-1]);
 			
 			if(fSystem::upload($_FILES['akceletak'],$flypath,500000)) {
         $cachedThumb = $conf['events']['flyer_cache'].$_FILES['akceletak']['name'];

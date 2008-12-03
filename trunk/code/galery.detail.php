@@ -31,7 +31,7 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     $fItems->setWhere('i.pageId="'.$user->currentPageId.'"');
     $fItems->addWhere('i.itemIdTop is null');
     $totalItems = $fItems->getCount();
-    $perPage = $galery->gWidth * $galery->gHeight;
+    $perPage = $galery->gPerpage;
 
     if($totalItems==0){
   		fError::addError(ERROR_GALERY_NOFOTO);
@@ -54,26 +54,17 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     	$tpl->setVariable("GALERYTEXT",$galery->gText);
     	$tpl->setVariable("GALERYHEAD",$user->currentPage['content']);
     
-    	for($y=0;$y<$galery->gHeight;$y++){ 
-    		$tpl->setCurrentBlock("row");
-    		for($x=0;$x<$galery->gWidth;$x++){ 
-    			$tpl->setCurrentBlock("cell");
-    			if($fItems->arrData) {
-    			 $fItems->parse();
-    			 $tpl->setVariable("THUMBNAIL",$fItems->show());
-    			} else {
-    				$tpl->setVariable("THUMBNAIL",'&nbsp;');
-    			}
-    			$tpl->edParseBlock("cell");
-    		}
-    		$tpl->edParseBlock("row");
-    	}
+    	$x=0;
+        while($fItems->arrData && $x < $galery->gPerpage) {
+    		$tpl->setCurrentBlock("cell");
+    		 $fItems->parse();
+    		 $tpl->setVariable("THUMBNAIL",$fItems->show());
+    		$tpl->parseCurrentBlock();
+        }
+    		
+    	
     	
     	if($perPage<$totalItems) {
-    		//$tpl->setVariable("FROM",$od+1);
-    		//$tpl->setVariable("TO",$od+$perPage);
-    		$tpl->setVariable("SUM",$totalItems);
-    		//$tpl->setVariable("PAGER",$pager->links);
     		$tpl->setVariable("PAGEREND",$pager->links);
     	}
     	$tpl->edParseBlock("thumbnails");

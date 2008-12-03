@@ -13,14 +13,11 @@ class fUser {
 	var $currentItem = array();
 	var $currentPageParam;
 	var $pageParamNeededPermission = array(
-	'e'=>2, //edit (galery,forum,kultura,klub,event)
-	'a'=>2, //add (galery,forum,kultura,klub,event)
+	'e'=>2, //edit (galery,forum,blog)
+	'u'=>4, //event - podle majitele - nebo ten kdo ma dve pro stranku
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
-	'v'=>1, //vyhledavani ve strankach
-	'w'=>1, //vyhledavani v prispevcich
 	'p'=>1, //anketa nastaveni
-	't'=>1, //top zebricky
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
 	var $currentPage;
@@ -319,6 +316,16 @@ class fUser {
 		  if($permissionNeeded==3) {
 		      $permPage = 'sadmi';
 		      $permissionNeeded = 1;
+		  }
+		  if($permissionNeeded==4) {
+		      ///check for i owner - permneeded=1 or permneeded= 2
+		      $permissionNeeded = 2;
+		      if(!empty($this->currentItemId)) {
+		          $userIdOwner = fItems::getItemUserId($this->currentItemId);
+		        if($this->gid == $userIdOwner) {
+		            $permissionNeeded = 1;
+		        }
+		      } 
 		  }
 		  //check if user have access to page with current permissions needed - else redirect to error
 		  if(!fRules::get($this->gid,$permPage,$permissionNeeded)) {

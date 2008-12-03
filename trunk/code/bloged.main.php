@@ -10,16 +10,16 @@ if(!$data) {
   $fItems->initData('forum',$user->gid,true);
   $fItems->addWhere('i.itemId in ('.$strItemId.')');
   $fItems->addOrder('i.dateCreated desc');
-  
   //$fItems->setGroup('i.pageId');
   $fItems->getData(0,3);
   while($fItems->arrData) $fItems->parse();
-  $data = '<div id="lastPost" class="hfeed">'.$fItems->show().'</div>';
+  $data = $fItems->show();
   $user->cacheSave($data);
 }
 if(!empty($data)) $tpl->setVariable('LASTFORUMPOSTS',$data);
 //---------------LAST-BLOG-POSTS
 $data = false;
+$firstPostSeparator = ';|||;';
 $data = $user->cacheGet('lastBlogPost');
 if(!$data) {
   //$arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='blog' and itemIdTop is null group by pageId order by dateCreated desc limit 0,10");
@@ -31,11 +31,22 @@ if(!$data) {
   $fItems->addWhere('i.itemId in ('.implode(',',$arr).')');
   $fItems->addOrder('i.dateCreated desc');
   $fItems->getData(0,5);
-  while($fItems->arrData) $fItems->parse();
-  $data = '<div id="lastPost" class="hfeed">'.$fItems->show().'</div>';
+  $firstPost = true;
+  while($fItems->arrData) {
+    $fItems->parse();
+    if($firstPost==true) {
+      $firstPostStr = $fItems->show();
+      $firstPost=false;
+    }
+  }
+  $data = $firstPostStr . $firstPostSeparator . $fItems->show();
   $user->cacheSave($data);
 }
-if(!empty($data)) $tpl->setVariable('LASTBLOGPOSTS',$data);
+if(!empty($data)) {
+  list($firstPostStr,$restPosts) = explode($firstPostSeparator,$data);  
+  if(!empty($firstPostStr)) $tpl->setVariable('LASTBLOGPOST',$firstPostStr);
+  if(!empty($restPosts)) $tpl->setVariable('LASTBLOGPOSTS',$restPosts);
+}
 //------LAST-CREATED-PAGES
 if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
     $fPages = new fPages(array('blog','galery','forum'),$user->gid,&$db);

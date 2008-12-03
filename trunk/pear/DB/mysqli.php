@@ -403,12 +403,10 @@ class DB_mysqli extends DB_common
         $result = @mysqli_query($this->connection, $query);
         
         $end = fSystem::getmicrotime();
-        $fname = '/home/www/fundekave.net/tmp/query.txt';
+
         $fnameSlow = '/home/www/fundekave.net/tmp/query-slowlog.txt';
         $query = "#Q\n".$query . "\n#T\n" . ($end-$start);
-        if(file_exists($fname)) $queryWrite = file_get_contents($fname)."\n--------------------------------------------------------------------------------\n".$query;
-        else $queryWrite = $query;
-        file_put_contents($fname,$queryWrite);
+
         if(round(($end-$start)>1)) {
           if(file_exists($fnameSlow)) $queryWriteSlow = file_get_contents($fnameSlow)."\n--------------------------------------------------------------------------------\n".$query;
           else $queryWriteSlow = $query;
