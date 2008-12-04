@@ -5,22 +5,14 @@ class fLeftPanel {
         $fPocket = new fPocket($user->gid);
         return $fPocket->show();
     }
-    static function parseRelatedPageList($arr) {
-        $tpl = new fTemplateIT('sidebar.relatedPages.tpl.html');
-        foreach($arr as $page) {
-            $tpl->setCurrentBlock('page');
-            $tpl->setVariable('PAGEID',$page[0]);
-            $tpl->setVariable('PAGESHORTNAME',$page[2]);
-            $tpl->setVariable('PAGENAME',$page[1]);
-            $tpl->parseCurrentBlock();
-        }
-        return $tpl->get();
-    }
+    
     static function bookedRelatedPagesList() {
         global $db,$user;
         if(!$tmptext = $user->cacheGet('bookedpagesrelated')) {
             $fPages = new fPages('',$user->gid,$db);
-            $fPages->setSelect('p.pageId,p.name,p.nameshort,sum(f1.book) as booksum');
+                        
+            $fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0,sum(f1.book) as booksum');
+            
             $fPages->addJoin('join sys_pages_favorites as f1 on p.pageId = f1.pageId');
             $fPages->addJoin("join sys_pages_favorites as f2 on f1.userId=f2.userId and f2.pageId='".$user->currentPageId."' and f2.book = '1'");
             $fPages->addWhere("f1.book=1 and f1.pageId!='".$user->currentPageId."'");
@@ -30,15 +22,9 @@ class fLeftPanel {
             $arr = $fPages->getContent();
             $tmptext = '';
             if(!empty($arr)) {
-                $tmptext = fLeftPanel::parseRelatedPageList($arr);
+                $tmptext = fPages::printPagelinkList($arr);
             }
             $user->cacheSave($tmptext);
-/*
-        $dot = "select sum(f1.book) as booksum,f1.pageId from sys_pages_favorites as f1 
-        join sys_pages_favorites as f2 on f1.userId=f2.userId and f2.pageId='".$user->currentPageId."' and f2.book = '1' 
-        where f1.book=1 and f1.pageId!='".$user->currentPageId."' group by f1.pageId order by booksum desc limit 0,10";
-*/
-        
         }
         return $tmptext;
     }
@@ -48,11 +34,13 @@ class fLeftPanel {
         $fPages = new fPages('',$user->gid,$db);
         $fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
         $fPages->addWhere('r.pageId="'.$user->currentPageId.'"');
-        $fPages->setSelect('p.pageId,p.name,p.nameshort');
+        
+        $fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
+        
         $arr = $fPages->getContent();
         $tmptext = '';
         if(!empty($arr)) {
-            $tmptext = fLeftPanel::parseRelatedPageList($arr);
+            $tmptext = fPages::printPagelinkList($arr);
         }
         $user->cacheSave($tmptext);
       }

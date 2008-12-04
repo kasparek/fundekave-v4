@@ -1,7 +1,8 @@
 truncate sys_pages;
-INSERT INTO `sys_pages` VALUES ('maina', null, 'top', null, null, null, 1, 'bloged.main.php', '', 'Úvod', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('frien', null, 'top', null, null, 3, 3, 'user.friends.php', 'Přátelé - Informace o uživatelích', 'Přátelé', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'forum', null, null, 2, 'pages.booked.php', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, null, 1, 'bloged.main.php', '', 'Úvod', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('frien', null, 'top', null, null, 2, 3, 'user.friends.php', 'Přátelé - Informace o uživatelích', 'Přátelé', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('booke', null, 'top', null, null, 3, 2, 'pages.booked.php', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('livea', null, 'top', null, null, 3, 2, 'items.live.php', 'Poslední pridane', 'FunDeLive', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('galer', null, 'top', 'galery', null, 4, 2, 'galery.list.php', 'Galerie - Fotografie a jiné obrázky', 'Galerie', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galed', null, 'top', 'galery', null, 4, 2, 'galery.edit.php', 'Nové a úpravy Galerie', 'EditGal', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -24,15 +25,15 @@ INSERT INTO `sys_pages` VALUES ('blols', null, 'top', 'blog', null, 6, 2, 'items
 INSERT INTO `sys_pages` VALUES ('blobe', null, 'top', 'blog', null, 6, 2, 'items.tags.php', 'Nejlepsi v blogach', 'Blog nej', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('roger', null, 'top', null, null, null, 1, 'registration.php', 'Registrace nového uživatele', 'Registrace', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', null, null, 3, 3, 'user.info.php', 'Informace o uživateli', 'Info', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', null, null, 3, 10, 'user.post.php', 'Pošta', 'Pošta', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('fsurf', null, 'top', null, null, 3, 3, 'user.surf.php', 'Oblíbené odkazy', 'Odkazy', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('fdiar', null, 'top', null, null, 3, 3, 'user.diary.php', 'Osobní diář', 'Diář', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('ffall', null, 'top', null, null, 3, 3, 'user.friends.all.php', 'Seznam všech registrovaných uživatelů', 'VšechnyID', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', null, null, 3, 3, 'user.settings.php', 'Nastavení osobních údajů', 'Osobní', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', null, null, 2, 3, 'user.info.php', 'Informace o uživateli', 'Info', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', 'post', null, 2, 10, 'user.post.php', 'Pošta', 'Pošta', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('fsurf', null, 'top', null, null, 2, 3, 'user.surf.php', 'Oblíbené odkazy', 'Odkazy', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('fdiar', null, 'top', 'diary', null, 2, 3, 'user.diary.php', 'Osobní diář', 'Diář', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('ffall', null, 'top', null, null, 2, 3, 'user.friends.all.php', 'Seznam všech registrovaných uživatelů', 'VšechnyID', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', null, null, 2, 3, 'user.settings.php', 'Nastavení osobních údajů', 'Osobní', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
-INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, 7, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('evena', null, 'event', null, null, 7, 1, 'events.edit.php', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 7, 1, 'events.view.php', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('evena', null, 'top', 'event', null, 7, 1, 'events.edit.php', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('sadmi', null, 'admin', null, null, 9, null, 'sys.edit.php', 'Tam jsou lvi', 'admin', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 9, null, 'sys.edit.users.banns.php', 'Kontrola nad uživateli - blokování', 'Banány', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -70,31 +71,43 @@ INSERT INTO `sys_leftpanel_functions` VALUES (23, 'relatedPagesList', 'Spřátel
 #INSERT INTO `sys_leftpanel_functions` VALUES (17, 'rh_pocasi_weatherdotcom', 'Weather', 1);
 
 truncate sys_leftpanel;
-INSERT INTO `sys_leftpanel` VALUES (1, 0, 1, 0);
-INSERT INTO `sys_leftpanel` VALUES (15, 0, 10, 1);
-INSERT INTO `sys_leftpanel` VALUES (2, 0, 23, 4);
-INSERT INTO `sys_leftpanel` VALUES (3, 0, 2, 2);
-INSERT INTO `sys_leftpanel` VALUES (4, 0, 9, 5);
-INSERT INTO `sys_leftpanel` VALUES (5, 0, 5, 101);
-INSERT INTO `sys_leftpanel` VALUES (6, 1, 8, 20);
-INSERT INTO `sys_leftpanel` VALUES (7, 1, 6, 50);
-INSERT INTO `sys_leftpanel` VALUES (8, 2, 6, 50);
-INSERT INTO `sys_leftpanel` VALUES (9, 3, 13, 3);
-INSERT INTO `sys_leftpanel` VALUES (10, 1, 13, 3);
-INSERT INTO `sys_leftpanel` VALUES (11, 2, 13, 3);
-INSERT INTO `sys_leftpanel` VALUES (12, 3, 6, 50);
-INSERT INTO `sys_leftpanel` VALUES (13, 9, 14, 3);
-INSERT INTO `sys_leftpanel` VALUES (14, 9, 11, 6);
-INSERT INTO `sys_leftpanel` VALUES (16, 10, 15, 10);
+INSERT INTO `sys_leftpanel` VALUES (1, 'default', 'rh_login', 0);
+INSERT INTO `sys_leftpanel` VALUES (2, 'default', 'pocket', 1);
+INSERT INTO `sys_leftpanel` VALUES (3, 'default', 'rh_anketa', 2);
+
+INSERT INTO `sys_leftpanel` VALUES (4, 'top', 'rh_diar_kalendar', 10);
+INSERT INTO `sys_leftpanel` VALUES (5, 'top', 'rh_akce_rnd', 20);
+INSERT INTO `sys_leftpanel` VALUES (6, 'top', 'rh_galerie_rnd', 40);
+
+INSERT INTO `sys_leftpanel` VALUES (7, 'default', 'relatedPagesList', 90);
+INSERT INTO `sys_leftpanel` VALUES (8, 'default', 'rh_logged_list', 100);
+
+#skupina pro kluby
+INSERT INTO `sys_leftpanel` VALUES (13, 'forum', 'rh_audit_popis', 10;
+INSERT INTO `sys_leftpanel` VALUES (14, 'forum', 'bookedRelatedPagesList', 60);
+
+#skupina pro blogy
+INSERT INTO `sys_leftpanel` VALUES (13, 'blog', 'rh_audit_popis', 10);
+INSERT INTO `sys_leftpanel` VALUES (10, 'blog', 'rh_diar_kalendar', 20);
+INSERT INTO `sys_leftpanel` VALUES (14, 'blog', 'bookedRelatedPagesList', 60);
+
+#skupina pro galerie
+INSERT INTO `sys_leftpanel` VALUES (14, 'galery', 'bookedRelatedPagesList', 60);
+
+#pouze posta
+INSERT INTO `sys_leftpanel` VALUES (16, 'post', 'rh_posta_kdo', 10);
+INSERT INTO `sys_leftpanel` VALUES (4, 'top', 'rh_diar_kalendar', 20);
 
 truncate sys_menu_secondary;
-INSERT INTO `sys_menu_secondary` VALUES (1, 3, 'fpost', 'Pošta', 0, 0);
-INSERT INTO `sys_menu_secondary` VALUES (2, 3, 'finfo', 'Info', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (3, 3, 'fsurf', 'Odkazy', 0, 2);
-INSERT INTO `sys_menu_secondary` VALUES (4, 3, 'fdiar', 'Diář', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (5, 3, 'ffall', 'Uživatelé', 0, 4);
-INSERT INTO `sys_menu_secondary` VALUES (6, 3, 'fedit', 'Osobní', 0, 10);
-INSERT INTO `sys_menu_secondary` VALUES (7, 3, 'sadmin', 'Admin', 0, 23);
+INSERT INTO `sys_menu_secondary` VALUES (1, 2, 'fpost', 'Pošta', 0, 0);
+INSERT INTO `sys_menu_secondary` VALUES (2, 2, 'finfo', 'Info', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (3, 2, 'fsurf', 'Odkazy', 0, 2);
+INSERT INTO `sys_menu_secondary` VALUES (4, 2, 'fdiar', 'Diář', 0, 3);
+INSERT INTO `sys_menu_secondary` VALUES (5, 2, 'ffall', 'Uživatelé', 0, 4);
+INSERT INTO `sys_menu_secondary` VALUES (6, 2, 'fedit', 'Osobní', 0, 10);
+INSERT INTO `sys_menu_secondary` VALUES (7, 2, 'sadmin', 'Admin', 0, 23);
+
+INSERT INTO `sys_menu_secondary` VALUES (6, 3, 'livea', 'Živě', 0, 0);
 
 INSERT INTO `sys_menu_secondary` VALUES (11, 4, 'taggi', 'Popisuj fotky', 0, 1);
 INSERT INTO `sys_menu_secondary` VALUES (12, 4, 'galse', 'Hledani galerii', 0, 2);

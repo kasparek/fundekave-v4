@@ -85,6 +85,7 @@ class fItems extends fQueryTool {
      **/
     
     public $arrData;
+    public $itemsRemoved = 0;
     private $typeId;
     private $byPermissions = false;
     private $fQuerySelectDefault = array('itemId'=>'i.itemId','userId'=>'i.userId','pageId'=>'i.pageId',
@@ -136,17 +137,19 @@ class fItems extends fQueryTool {
     function initData($typeId='forum',$byPermissions = false,$strictType=false) {
       global $db,$user;
       $this->queryReset();
-      $this->typeId = $typeId;
+      if(!empty($typeId)) $this->typeId = $typeId;
       $doPagesJoin = true;
       if($byPermissions!==false) { $this->byPermissions = $byPermissions; }
-      if($typeId=='') {
+      if(empty($typeId)) {
         $this->fQuerySelectDefault['typeId'] = 'i.typeId';
-      } elseif($strictType==true) $this->addWhere("i.typeId='".$typeId."'");
-      if($this->showPageLabel==true || $typeId=='' || $typeId=='galery') {
+      } elseif($strictType==true) {
+          $this->addWhere("i.typeId='".$typeId."'");
+      }
+      if($this->showPageLabel==true || empty($typeId) || $typeId=='galery') {
         $this->fQuerySelectDefault['pageName'] = 'p.name';
         if($doPagesJoin) $this->addJoin("join sys_pages as p on p.pageId=i.pageId");
       }
-      if($typeId=='' || $typeId=='blog') {
+      if(empty($typeId) || $typeId=='blog') {
         if($user->idkontrol) {
           $this->addJoin('left join sys_pages_items_readed_reactions as u on u.itemId=i.itemId and u.userId="'.$user->gid.'"');
           $this->fQuerySelectDefault['unReadedCnt'] = '(i.cnt-u.cnt)';
@@ -181,10 +184,16 @@ class fItems extends fQueryTool {
             $page++;
             if(empty($arrTmp)) break;
             else {
-              foreach($arrTmp as $row) if(fRules::get($this->byPermissions,$row[2],1)) {
-                $arr[]=$row;
-                $itemsCount++;
-                if($itemsCount == $count && $count!=0) break;
+              $this->itemsRemoved = 0;
+              foreach($arrTmp as $row) {
+                if(fRules::get($this->byPermissions,$row[2],1)) {
+                    $arr[]=$row;
+                    $itemsCount++;
+                    if($itemsCount == $count && $count!=0) break;
+                } else {
+                    //not permission for post
+                    $this->itemsRemoved++;
+                }
               }
             }
             if($count == 0) break;

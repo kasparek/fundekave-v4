@@ -168,20 +168,22 @@ $_SESSION["postid"]=array();
 if(!empty($arrpost)) {
 	foreach ($arrpost as $post) {
 		$tpl->setCurrentBlock("message");
-		if($post['userIdFrom'] != $user->gid) $tpl->setVariable("MESSAGEAVATAR", $user->showAvatar($post['userIdFrom']));
-		$tpl->setVariable("READEDCLASS", (($post["readed"]==1)?(' head'):(' butt')));
-		if($post['readed']==0) $tpl->setVariable("READEDMESSAGEFAKEVAR", ' ');
-		$tpl->setVariable("DELMESSAGEID", $post['postId']);
-		$tpl->setVariable("DATE", $post["datumcz"]);
+		if($post['userIdFrom'] != $user->gid) $tpl->setVariable("AVATAR", $user->showAvatar($post['userIdFrom']));
+		if($post["readed"]!=1) {
+		    $tpl->touchBlock("unread");
+		    $tpl->touchBlock("unreadmess");
+		}
+		$tpl->setVariable("EDITID", $post['postId']);
+		$tpl->setVariable("DATELOCAL", $post["datumcz"]);
+		$tpl->setVariable("DATEISO", $post["datum"]);
 		if($post["userIdFrom"]==$user->gid) {
 			$tpl->setVariable("SENTLINK", "34&who=".$post["userIdTo"]);
 			$tpl->setVariable("SENTNAME", $user->getgidname($post["userIdTo"]));
 		} else {
 			$tpl->setVariable("RECEIVEDLINK", "34&who=".$post["userIdTo"],$user->getgidname($post["userIdTo"]));
 			$tpl->setVariable("RECEIVEDNAME", $user->getgidname($post["userIdFrom"]));
-			if(!$user->pritel($post["userIdFrom"])) $tpl->setVariable("RECEIVETOFRIEND", $user->getUri('bookpra=1&bookuser='.$post["userIdFrom"]));
 		}
-		$tpl->setVariable("MESSAGETEXT", $post["text"]);
+		$tpl->setVariable("TEXT", $post["text"]);
 		$tpl->parseCurrentBlock();
 	
 		/*prectena*/

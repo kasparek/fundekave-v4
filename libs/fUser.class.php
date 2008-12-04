@@ -108,14 +108,14 @@ class fUser {
 	    
 	    if(!$this->idkontrol) {
         $vid = $db->getRow("SELECT  
-            p.typeId, p.categoryId, p.menuSecondaryGroup, p.leftpanelGroup, p.template, 
+            p.typeId, p.categoryId, p.menuSecondaryGroup, p.template, 
             p.name, p.nameshort, p.description, p.content, p.public, 
             p.userIdOwner, p.pageIco, p.locked, p.authorContent, p.galeryDir, 
             p.cnt, p.pageParams, p.dateContent, p.dateCreated, p.dateUpdated, p.typeIdChild   
             FROM sys_pages as p where p.pageId = '".$this->currentPageId."'");
 	    } else {
 	        $vid = $db->getRow("SELECT  
-            p.typeId, p.categoryId, p.menuSecondaryGroup, p.leftpanelGroup, p.template, 
+            p.typeId, p.categoryId, p.menuSecondaryGroup, p.template, 
             p.name, p.nameshort, p.description, p.content, p.public, 
             p.userIdOwner, p.pageIco, p.locked, p.authorContent, p.galeryDir, 
             p.cnt, p.pageParams, p.dateContent, p.dateCreated, p.dateUpdated, p.typeIdChild,  
@@ -136,31 +136,30 @@ class fUser {
     	        'typeId'=>$vid[0],
     	        'categoryId'=>$vid[1], 
     	        'menuSecondaryGroup'=>$vid[2], 
-    	        'leftpanelGroup'=>$vid[3], 
-    	        'template'=>$vid[4], 
-    	        'name'=>$vid[5], 
-    	        'nameshort'=>$vid[6], 
-    	        'description'=>$vid[7], 
-    	        'content'=>$vid[8], 
-    	        'public'=>$vid[9], 
-    	        'userIdOwner'=>$vid[10], 
-    	        'pageIco'=>$vid[11], 
-    	        'locked'=>$vid[12], 
-    	        'authorContent'=>$vid[13], 
-    	        'galeryDir'=>$vid[14], 
-    	        'pageParams'=>$vid[16],
-    	        'cnt'=>$vid[15],
-    	        'dateContent'=>$vid[17],
-    	        'dateCreated'=>$vid[18],
-    	        'dateUpdated'=>$vid[19],
-    	        'typeIdChild'=>$vid[20]
+    	        'template'=>$vid[3], 
+    	        'name'=>$vid[4], 
+    	        'nameshort'=>$vid[5], 
+    	        'description'=>$vid[6], 
+    	        'content'=>$vid[7], 
+    	        'public'=>$vid[8], 
+    	        'userIdOwner'=>$vid[9], 
+    	        'pageIco'=>$vid[10], 
+    	        'locked'=>$vid[11], 
+    	        'authorContent'=>$vid[12], 
+    	        'galeryDir'=>$vid[13], 
+    	        'pageParams'=>$vid[15],
+    	        'cnt'=>$vid[14],
+    	        'dateContent'=>$vid[16],
+    	        'dateCreated'=>$vid[17],
+    	        'dateUpdated'=>$vid[18],
+    	        'typeIdChild'=>$vid[19]
     	        );
     	        if($this->idkontrol) {
-                    $this->ip = $vid[21];
-                    $this->idloginInDb = $vid[22];
-                    if($vid[23]==1) $this->rulezInvalidate();
-				    $this->favorite = $vid[24]*1;
-				    $this->favoriteCnt = $vid[25]*1;
+                    $this->ip = $vid[20];
+                    $this->idloginInDb = $vid[21];
+                    if($vid[22]==1) $this->rulezInvalidate();
+				    $this->favorite = $vid[23]*1;
+				    $this->favoriteCnt = $vid[24]*1;
     	        }
 			}
 			
@@ -516,7 +515,7 @@ class fUser {
 	function isUsernameRegistered($name){
 		Global $db;
 		if(!isset($this->arrCachePerLoad['registeredUsername'][$name])) {
-		  $ret = $this->arrCachePerLoad['registeredUsername'][$name] = $db->getOne("select count(1) from sys_users where deleted=0 and name like '".$name."'");
+		  $ret = $this->arrCachePerLoad['registeredUsername'][$name] = $db->getOne("select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'");
 		} else {
     	    $ret = $this->arrCachePerLoad['registeredUsername'][$name];
     	}
@@ -742,13 +741,13 @@ class fUser {
     }
 	   
 	   $d_post = "SELECT postId,userId,userIdTo,userIdFrom,
-    date_format(dateCreated,'%H:%i:%S %d.%m.%Y') as datumcz,text,readed".$base." ORDER BY dateCreated DESC";
+    date_format(dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(dateCreated,'%Y-%m-%dT%T')".$base." ORDER BY dateCreated DESC";
 	 if($count==true) return $db->getOne('select count(1) '.$base);
      else {
      	$arr = $db->getAll($d_post.' limit '.$from.','.$perpage);
      	foreach ($arr as $row) {
      		$arrRet[] = array('postId'=>$row[0],'userId'=>$row[1],'userIdTo'=>$row[2],
-     		'userIdFrom'=>$row[3],'datumcz'=>$row[4],'text'=>$row[5],'readed'=>$row[6]); 
+     		'userIdFrom'=>$row[3],'datumcz'=>$row[4],'text'=>$row[5],'readed'=>$row[6],'datum'=>$row[7]); 
      	}
      	return $arrRet;
      }
