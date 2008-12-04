@@ -60,7 +60,6 @@ if(($user->currentPage['locked']==2 && $user->gid != $user->currentPage['userIdO
 if($user->currentPageAccess) {
   $template = $user->currentPage["template"];
 }
-$currentLeftpanelGroup = 0;
 //---DATA of page
 $TOPTPL = new fTemplateIT('main.tpl.html');
 
@@ -105,7 +104,7 @@ if($user->currentPageAccess == true) {
         if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
         else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'sa'),BUTTON_PAGE_SETTINGS,'',1);
     }
-    $currentLeftpanelGroup = $user->currentPage["leftpanelGroup"];    
+    
     /**/
 }
 
@@ -205,7 +204,7 @@ $rh = $db->getAll("select lf.function,
 	lf.name 
     from sys_leftpanel as l 
     join sys_leftpanel_functions as lf on l.functionId=lf.functionId 
-    where ".(($user->idkontrol)?(''):(" public=1 and "))." (leftpanelGroup=0".(($currentLeftpanelGroup>0)?(" or leftpanelGroup=".$currentLeftpanelGroup):('')).") order by ord");
+    where ".(($user->idkontrol)?(''):(" public=1 and "))." (l.leftpanelGroup='default' or l.leftpanelGroup='".$user->currentPage['typeId']."' or l.leftpanelGroup='".$user->currentPage['typeIdChild']."' order by ord");
 
 if(!empty($rh)) {
 	foreach ($rh as $rhitem) {

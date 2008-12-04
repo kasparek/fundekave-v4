@@ -102,7 +102,7 @@ class fPages extends fQueryTool {
 	function category($categoryId) {
 	    global $user;
         if(empty($this->type)) $this->type = $db->getOne('select typeId from sys_pages_category where categoryId="'.$categoryId.'"');
-        $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($user->idkontrol)?(',(p.cnt-f.cnt) as newMess'):('')));
+        $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($user->idkontrol)?(',(p.cnt-f.cnt) as newMess'):(',0')));
         $this->addWhere('p.locked<2');
         if ($user->idkontrol) {
           $this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$user->gid.'"');
@@ -131,25 +131,9 @@ class fPages extends fQueryTool {
             foreach ($arrCategory as $category) {
         		//vypis jednotlivych klubu	
         		if(!empty($arrForums[$category[0]])) {
-        		  foreach ($arrForums[$category[0]] as $forum) {
-            		$tpl->setCurrentBlock('all');
-            		if($user->zaudico) {
-            		  $tpl->touchBlock('showicons');
-            		   if(!empty($forum[3])) {
-                		 $tpl->setVariable("ALLICOKAM", $forum[0]);
-                		 $tpl->setVariable("ALLFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
-                		 $tpl->setVariable("ALLFORUMICOALT", substr($forum[2],0,8));
-                		 $tpl->setVariable("ALLFORUMICONAME", $forum[2]);
-            		   }
-            		}
-            		$tpl->setVariable("ALLFORUMNAME", $forum[2]);
-            		$tpl->setVariable("ALLKAM", $forum[0]);
-            		if($user->idkontrol) {
-            		    if($forum[4]>0) $tpl->setVariable("ALLNEWCNT", $forum[4]);
-            		    else $tpl->setVariable("ALLNEWCNT", '&nbsp;');
-            		}
-            		$tpl->parseCurrentBlock();
-            	}
+        		  
+        		    $tpl->setVariable("CATEGORYPAGELINKLIST",fPages::printPagelinkList($arrForums[$category[0]]));
+            	
         		}
             $tpl->setCurrentBlock('category');
             $tpl->setVariable('CATEGORYLINK','?k='.$user->currentPageId.$category[0]);
@@ -163,6 +147,35 @@ class fPages extends fQueryTool {
         }
         else return $tpl->get();
 	}
+	
+	static function printPagelinkList($arrLinks=array()) {
+	    global $user;
+        //---template init
+        $tpl = new fTemplateIT('item.pagelink.tpl.html');
+		//vypis jednotlivych klubu	
+		if(!empty($arrLinks)) {
+		  $tpl->touchBlock('showicons');
+		  foreach ($arrLinks as $forum) {
+    		$tpl->setCurrentBlock('item');
+    		if($user->zaudico) {
+    		   if(!empty($forum[3])) {
+        		 $tpl->setVariable("AVATARURL", WEB_REL_PAGE_AVATAR.$forum[3]);
+        		 $tpl->setVariable("AVATARNAME", $forum[2]);
+        		 $tpl->setVariable("AVATARALT", $forum[2]);
+    		   }
+    		}
+    		$tpl->setVariable("PAGENAME", $forum[2]);
+    		$tpl->setVariable("PAGEID", $forum[0]);
+    		if($user->idkontrol) {
+    		    if($forum[4]>0) $tpl->setVariable("PAGEPOSTSNEW", $forum[4]);
+    		    else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
+    		}
+    		$tpl->parseCurrentBlock();
+    	   }
+		}
+        return $tpl->get();
+	}
+	
 	function checkType() {
 	    if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
 	}
@@ -173,20 +186,7 @@ class fPages extends fQueryTool {
 	    
 	    //---template init
         $tpl = new fTemplateIT('forums.booked.tpl.html');
-        /*FIXME: moce delete somewhere else
-        if(isset($_GET["del"])){
-        	$delAuditId = $_GET["del"];
-        	$tpl->setVariable('DELFORUMNAME',$this->db->getOne("SELECT name FROM sys_pages WHERE pageId='".$delAuditId."'"));
-        	$tpl->setVariable('DELFORMACTION',$user->getUri());
-        	$tpl->setVariable('DELFORUMID',$delAuditId);
-        }
-        if(isset($_POST["delnow"]) && fRules::get($user->gid,($_POST["del"]),2)){
-        	$delAuditId = $_POST["del"];
-        	$this->db->query("update sys_pages set locked='3' where pageId='".$delAuditId."'");
-        	fError::addError("Klub odstranen");
-        	fHTTP::redirect($user->getUri());
-        }
-        */
+        
         //---srovnani klubu
         fForum::clearUnreadedMess();
         fForum::afavAll($user->gid,$this->type);
@@ -201,7 +201,7 @@ class fPages extends fQueryTool {
             }
         } else $userId=$user->gid;
         
-        $this->setSelect('p.pageId,p.name,p.pageIco,p.cnt,(p.cnt-f.cnt) as newMess');
+        $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
         $this->setWhere('p.userIdOwner="'.$userId.'" and p.pageId=f.pageId and p.locked<3');
         $this->setOrder('newMess desc,p.name');
@@ -209,29 +209,14 @@ class fPages extends fQueryTool {
         $arraudit = $this->getContent();
         
         if(count($arraudit)>0){
-          if($user->zaudico) $tpl->touchBlock("showiconsowner");
-        	foreach ($arraudit as $forum) {
-        		$tpl->setCurrentBlock("owner");
-        		if($user->zaudico) {
-        		    if(!empty($forum[2])) {
-          			 $tpl->setVariable("OWNERICOKAM", $forum[0]);
-          			 $tpl->setVariable("OWNERFORUMICO", WEB_REL_PAGE_AVATAR.$forum[2]);
-          			 $tpl->setVariable("OWNERFORUMICOALT", substr($forum[1],0,8));
-          			 $tpl->setVariable("OWNERFORUMICONAME", $forum[1]);
-        		    }
-        		}
-        		$tpl->setVariable("OWNERFORUMNAME", $forum[1]);
-        		$tpl->setVariable("OWNERKAM", $forum[0]);
-        		if($forum[4] > 0) $tpl->setVariable('OWNERNEWCNT',$forum[4]);
-        		else $tpl->setVariable('OWNERNEWCNT','&nbsp;');
-        		//$tpl->setVariable("OWNERDELLINK", $user->getUri('nav=del&del='.$forum[0]));
-        		$tpl->parseCurrentBlock();
-        	}
+            
+            $tpl->setVariable('PAGELINKSOWN',$this->printPagelinkList($arraudit));
+          
         }
         
         //vypis oblibenych
         $this->queryReset();
-        $this->setSelect('p.pageId,p.name,p.userIdOwner,p.pageIco,p.cnt,(p.cnt-f.cnt) as newMess');
+        $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userId.'"');
         $this->setWhere('f.book="1" and p.userIdOwner!="'.$userId.'" and p.locked<2');
         $this->setOrder('newMess desc,p.name');
@@ -239,29 +224,15 @@ class fPages extends fQueryTool {
         $arraudit = $this->getContent();
         
         if(count($arraudit)>0){ 
-          if($user->zaudico) $tpl->touchBlock("showiconsbooked");
-           foreach ($arraudit as $forum) {
-               $tpl->setCurrentBlock("booked");
-        		if($user->zaudico) {
-        		    if(!empty($forum[3])) {
-          			 $tpl->setVariable("BOOKEDICOKAM", $forum[0]);
-          			 $tpl->setVariable("BOOKEDFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
-          			 $tpl->setVariable("BOOKEDFORUMICOALT", substr($forum[1],0,8));
-          			 $tpl->setVariable("BOOKEDFORUMICONAME", $forum[1]);
-        		    }
-        		}
-        		$tpl->setVariable("BOOKEDFORUMNAME", $forum[1]);
-        		$tpl->setVariable("BOOKEDKAM", $forum[0]);
-        		if($forum[5] > 0) $tpl->setVariable("BOOKEDNEWCNT", $forum[5]);
-        		else $tpl->setVariable("BOOKEDNEWCNT", '&nbsp;');
-        		$tpl->parseCurrentBlock();
-          }
+            
+            $tpl->setVariable('PAGELINKSBOOKED',$this->printPagelinkList($arraudit));
+            
         }
         
         //vypis novych
         if($friendsBook==false) {
             $this->queryReset();
-            $this->setSelect('p.pageId,p.name,p.userIdOwner,p.pageIco,p.cnt,(p.cnt-f.cnt)');
+            $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
             $this->addJoin('left join sys_pages_favorites as f on f.userId="'.$userId.'"');
             $this->setWhere('f.pageId=p.pageId and f.book="0" and f.userId!=p.userIdOwner and p.userIdOwner!="'.$userId.'" and p.locked < 2');
             $this->setOrder('p.dateCreated desc');
@@ -270,23 +241,9 @@ class fPages extends fQueryTool {
             $arraudit = $this->getContent();
             
             if(count($arraudit)>0) {
-              if($user->zaudico) $tpl->touchBlock("showiconsnew");
-               foreach ($arraudit as $forum) {
-            	  $tpl->setCurrentBlock("new");
-            		if($user->zaudico) {
-            		    if(!empty($forum[3])) {
-              			 $tpl->setVariable("NEWICOKAM", $forum[0]);
-              			 $tpl->setVariable("NEWFORUMICO", WEB_REL_PAGE_AVATAR.$forum[3]);
-              			 $tpl->setVariable("NEWFORUMICOALT", substr($forum[1],0,8));
-              			 $tpl->setVariable("NEWFORUMICONAME", $forum[1]);
-            		    }
-            		}
-            		$tpl->setVariable("NEWFORUMNAME", $forum[1]);
-            		$tpl->setVariable("NEWKAM", $forum[0]);
-            		if($forum[5] > 0) $tpl->setVariable("NEWNEWCNT", $forum[5]);
-            		else $tpl->setVariable("NEWNEWCNT", '&nbsp;');
-            		$tpl->parseCurrentBlock();
-            }
+                
+                $tpl->setVariable('PAGELINKSNEW',$this->printPagelinkList($arraudit));
+                
             }
         }
         

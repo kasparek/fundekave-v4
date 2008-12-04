@@ -18,7 +18,9 @@ a {
 h1 {
 	font-size: 1.4em;
 }
-
+h2 {
+	font-size: 1.2em;
+}
 /* BASE FRAMEWORK */
 
 body {
@@ -68,16 +70,19 @@ div#sidebar {
 }
 div#sidebar h2 {
 	line-height: 1.1em;
+	margin-bottom: 0.5em;
 }
-div#sidebar div#relationsList ul {
+div#sidebar div.showPageAvatar ul {
 	margin-left: 0;
 }
-div#sidebar div#relationsList ul li {
+div#sidebar div.showPageAvatar ul li {
 	overflow: hidden;
-	background: url("img/arrow-white-bg.gif") no-repeat left center;
-	line-height: 1.6em;
+	line-height: 30px;
 	list-style: none;
-	padding-left: 10px;
+	padding-left: 0;
+}
+div#sidebar div.showPageAvatar img {
+	float: left;
 }
 div#mainbar {
 	float:left;
@@ -253,8 +258,9 @@ div.pager {
 	text-align: center;
 }
 div#mainbar h2 {
-	line-height: 2em;
-	font-size: 1.6em;
+	padding-top: 0.3em;
+	line-height: 1.6em;
+	font-size: 1.2em;
 }
 div#mainbar ul {
 	padding: 1em 0;
@@ -336,7 +342,8 @@ div.mainpanel-content {
 	padding-right: 20px;
 }
 div.mainpanel-content h3 {
-	margin-top: 2em;
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
 	padding: 0.6em 0.6em 0.3em 0.6em;
 	color: white;
 	background: #332200;
@@ -411,7 +418,7 @@ div#mainbar span.postsNew {
 }
 div.mainpanel-content div.hentry {
 	clear: left;
-	margin-top: 1.4em;
+	margin-top: 2em;
 	padding-top: 1em;
 	padding-bottom: 2em;
 	position: relative;
@@ -449,18 +456,90 @@ div.mainpanel-content div.hentry h3 {
 	color: black;
 	background: none;
 }
+div.mainpanel-content div.hentry h3 a {
+	color: black;
+}
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
 }
-div.mainpanel-content div.hentry ul {
+div#mainbar div.mainpanel-content div.hentry ul {
 	background: #eeeeee;
+	padding: 0.2em 0.6em;
+	margin-top: 1em;
 }
 div.mainpanel-content div.hentry li {
 	background: #dddddd;
 	display: block;
-	float: left;
+/*	float: left;*/
 	padding: 0;
 	margin: 0;
+}
+div.galleryList div.thumbnail {
+	float: left;
+	margin-right: 15px;
+}
+div.galleryList div.hentry {
+	clear: both;
+	min-height: 140px;
+	padding-bottom: 0;
+	margin-bottom: 1em;
+}
+div.galleryList div.hentry h3.entry-title {
+	padding: 0.5em 0;
+}
+div.galeryThumbs div.hentry {
+	float: left;
+	clear: none;
+	margin: 0 0.5em 1em 0.5em;
+	padding: 0.3em 0.6em;
+	height: 200px;
+	overflow: hidden;
+	border-top: 0;
+	border: 1px solid #ddd;
+}
+div.galeryThumbs div.hentry div.entry-content {
+	padding-top: 0;
+}
+div.galeryThumbs div.hentry div.foto {
+	text-align: center;
+}
+div.galeryThumbs div.hentry p {
+	position: relative;
+	top: -3em;
+	background: white;
+	height: 3em;
+	padding-top: 0.4em;
+}
+div.galeryThumbs div.hentry p.rating {
+	top: 0;
+	height: auto;
+	padding-top: 0.2em;
+}
+div.galeryInfo {
+	margin-bottom: 1em;
+}
+div#fotoBox div.back {
+	margin-bottom: 1em;
+	text-align: center;
+}
+div.fotoDetail,
+div.fotoDetail p {
+	text-align: center;
+}
+div.previous,
+div.next {
+	float: left;
+	width: 50%;
+}
+div.next {
+	text-align: right;
+}
+div.previous div,
+div.next div {
+	border: none !important;
+	width: auto !important;
+	height: auto !important;
+	padding: 0 !important;
 }
 div#mostVisitedPages,
 div#newCreatedPages,
@@ -493,8 +572,9 @@ div.commentedItem h2 {
 	font-size: 1.4em;
 }
 div.pagination {
+	clear: left;
 	margin: 0.3em 0;
-	padding: 0.3em 0;
+	padding: 1em 0;
 }
 div.pagination span.current {
 	background: #332200;
@@ -554,6 +634,9 @@ DIV#recipientcombo SELECT {
 
 /* calendar module */
 
+div#fcalendar {
+	margin-bottom: 1em;
+}
 div#fcalendar table {
 	width: 100%;
 }
@@ -561,7 +644,7 @@ div#fcalendar h3 {
 	background: #332200;
 	color: white;
 	padding: 0.3em 0.6em;
-	text-align: right;
+	text-align: center;
 }
 div#fcalendar table td,
 div#fcalendar table th {
@@ -574,7 +657,7 @@ div#fcalendar table td {
 	border: 1px solid #ddd;
 }
 div#fcalendar table td.dayBlank {
-	border: 0;
+	border: none;
 }
 div#fcalendar table td a {
 	text-decoration: none;

@@ -44,32 +44,16 @@ Na stránku: <input type="text" name="perpage" value="{PERPAGE}" title="počet z
 <!-- END toppager -->
 
 <!-- BEGIN message -->
-<div class="postmess">
-		<div class="postmess_content">
-  		<!-- BEGIN messageavatar -->
-      <div class="postmess_ico">{MESSAGEAVATAR}</div>
-      <!-- END messageavatar -->
-      <div class="postmess_head {READEDCLASS}">
-		    <div class="postmess_unread">
-		    <!-- BEGIN readedmessage -->
-        nepřečtená<br />{READEDMESSAGEFAKEVAR}
-        <!-- END readedmessage -->
-		    Smazat <input type="checkbox" name="del[]" value="{DELMESSAGEID}" class="checkbox" />
-        </div>
-		    <div class="postmess_date">{DATE}<br />
-		    <!-- BEGIN sent -->
-		    Odeslaná: <strong><a href="{SENTLINK}">{SENTNAME}</a></strong>
-		    <!-- END sent -->
-		    <!-- BEGIN received -->
-		    Přijatá: <strong><a href="{RECEIVEDLINK}">{RECEIVEDNAME}</a></strong>
-		      <!-- BEGIN receivedbook -->
-			    <a href="{RECEIVETOFRIEND}" title="přidat do přátel">&nbsp;do přátel&nbsp;</a>	
-          <!-- END receivedbook -->	
-		    <!-- END received -->
-		    </div>
-		  </div>
-		  <div class="postmess_text">{MESSAGETEXT}</div>
-		</div>
+<div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
+  <div class="header">
+    <!-- BEGIN avatar --><div class="avatar">{AVATAR}</div><!-- END avatar -->
+    <!-- BEGIN unreadmess -->Nepřečtená <!-- END unreadmess -->
+    <!-- BEGIN sent -->Odeslaná: <strong><span class="author vcard"><a href="{SENTLINK}" class="url"><span class="fn">{SENTNAME}</span></a></strong></span><!-- END sent -->
+    <!-- BEGIN received -->Přijatá: <strong><span class="author vcard"><a href="{RECEIVEDLINK}" class="url">{RECEIVEDNAME}</a></span></strong></span><!-- END received -->
+     Smazat: <input type="checkbox" name="del[]" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani, po odeslani" />
+    <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+  </div>
+  <div class="entry-content">{TEXT}</div>
 </div>
 <!-- END message -->
 

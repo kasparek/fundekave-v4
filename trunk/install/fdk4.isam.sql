@@ -1,10 +1,30 @@
 CREATE TABLE sys_leftpanel_functions (
-       functionId smallint unsigned NOT NULL AUTO_INCREMENT
-     , function VARCHAR(40) NOT NULL
+     , functionName VARCHAR(40) NOT NULL
      , name VARCHAR(40)
      , public TINYINT unsigned NOT NULL DEFAULT 0
-     , PRIMARY KEY (functionId)
+     , PRIMARY KEY (functionName)
+);
+
+CREATE TABLE sys_leftpanel (
+     leftpanelGroup VARCHAR(10) NOT NULL
+     , functionName VARCHAR(40) NOT NULL
+     , ord SMALLINT unsigned NOT NULL DEFAULT 0
+     , PRIMARY KEY (leftpanelGroup, functionName)
 )  ;
+CREATE INDEX leftpanel_group ON sys_leftpanel (leftpanelGroup ASC);
+CREATE INDEX leftpanel_func ON sys_leftpanel (functionName ASC);
+
+CREATE TABLE sys_users_leftpanel (
+  userId MEDIUMINT unsigned NOT NULL
+  , leftpanelGroup VARCHAR(10) NOT NULL
+  , functionName VARCHAR(40) NOT NULL
+  , ord SMALLINT unsigned NOT NULL DEFAULT 0
+  , minimized TINYINT unsigned NOT NULL DEFAULT 0
+  , PRIMARY KEY (userId ,leftpanelGroup, functionName)
+) ;
+CREATE INDEX leftpanel_user ON sys_user_leftpanel (userId ASC);
+CREATE INDEX leftpanel_group ON sys_user_leftpanel (leftpanelGroup ASC);
+CREATE INDEX leftpanel_func ON sys_user_leftpanel (functionName ASC);
 
 CREATE TABLE sys_sessions (
        sid VARCHAR(32) NOT NULL
@@ -98,7 +118,6 @@ CREATE TABLE sys_pages (
      , typeIdChild VARCHAR(10) DEFAULT null
      , categoryId SMALLINT unsigned DEFAULT null
      , menuSecondaryGroup VARCHAR(10) DEFAULT null
-     , leftpanelGroup VARCHAR(10) DEFAULT null
      , template VARCHAR(50) DEFAULT null
      , name VARCHAR(100) NOT NULL
      , nameshort VARCHAR(20) NOT NULL
@@ -329,16 +348,6 @@ CREATE TABLE sys_users_friends (
 )  ;
 CREATE INDEX userId ON sys_users_friends (userId ASC);
 CREATE INDEX userIdFriend ON sys_users_friends (userIdFriend ASC);
-
-CREATE TABLE sys_leftpanel (
-       leftpanelId smallint unsigned NOT NULL AUTO_INCREMENT
-     , leftpanelGroup VARCHAR(10) NOT NULL
-     , functionId SMALLINT unsigned NOT NULL
-     , ord SMALLINT unsigned NOT NULL DEFAULT 0
-     , PRIMARY KEY (leftpanelId)
-)  ;
-CREATE INDEX leftpanel_group ON sys_leftpanel (leftpanelGroup ASC);
-CREATE INDEX leftpanel_func ON sys_leftpanel (functionId ASC);
 
 CREATE TABLE sys_menu_secondary (
        menuSecondaryId smallint unsigned NOT NULL AUTO_INCREMENT

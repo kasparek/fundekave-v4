@@ -35,7 +35,7 @@ if($pageSearchCache['action']==1) {
 	if(!empty($pageSearchCache['filtrStr'])){
 	    $fPages->addWhereSearch(array('p.name','p.description','p.authorContent','p.dateContent'),$pageSearchCache['filtrStr'],'OR');
 	}
-	$fPages->setSelect('p.pageId,p.name,p.userIdOwner,p.authorContent,date_format(p.dateContent,"{#date_local#}")');
+	$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
 	$fPages->setOrder('p.dateContent',true);
 	$fPages->setLimit(0,$searchForTotal+1);
 	$arr = $fPages->getContent();
@@ -72,15 +72,8 @@ if(!empty($arrPagesFound)) {
 	if($totalItems > $pageSearchCache['perpage']) $tpl->setVariable('PAGER',$pager->links);
 	if($pageSearchCache['maybemore']==true) $tpl->touchBlock('maybemore');
 	
-	foreach ($arrPagesPaginated as $row){
-	    $tpl->setCurrentBlock('result');
-	    $tpl->setVariable('RNAME',$row[1]);
-	    $tpl->setVariable('RLINK','?k='.$row[0]);
-	    $tpl->setVariable('RDATE',$row[4]);
-	    $tpl->setVariable('OWNERLINK','?k=finfo&who='.$row[2]);
-	    $tpl->setVariable('OWNERNAME',$row[3]);
-	    $tpl->parseCurrentBlock();
-	}
+	$tpl->setVariable('PAGELINKS',fPages::printPagelinkList($arrPagesPaginated));
+	
 } else {
 	$tpl->touchBlock('noresults');
 }

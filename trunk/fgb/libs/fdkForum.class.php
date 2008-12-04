@@ -29,12 +29,12 @@ class fdkForum {
   function processPOST() {
     if(isset($_POST['name'])) {
       $captcha = fCaptcha::init(array (  'tempFolder' => $this->captchaTempFolderPath,  'libPath' => $this->forumLibsPath));
-    	if(!$captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) fError::addError($this->arrErrors['captchaFail']);
-    	if(!fError::isError()) {
-            $arrSend = array('name'=>$_POST['name'],'text'=>$_POST['text']);
-            $_SESSION['toSend'] = base64_encode(serialize($arrSend));
+    	if(!$captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) {
+    	    fError::addError($this->arrErrors['captchaFail']);
     	}
-      require($this->forumLibsPath."fHTTP.class.php");
+    	$arrSend = array('name'=>$_POST['name'],'text'=>$_POST['text']);
+        $_SESSION['toSend'] = base64_encode(serialize($arrSend));
+    	require($this->forumLibsPath."fHTTP.class.php");
     	fHTTP::redirect($this->forumPageUri);
     }
   }
@@ -78,14 +78,13 @@ class fdkForum {
     }
     if(!empty($inDataArr['E'])) foreach($inDataArr['E'] as $err) fError::addError($this->arrErrors[$err]);
     //---IF SAVED
-    if($inDataArr['I'][0] == 'insertOK') {
-      $_SESSION['toSend'] = '';
-    } elseif(isset($_SESSION['toSend'])) {
+    if(isset($_SESSION['toSend']) && fError::isError()) {
         $params = unserialize(base64_decode($_SESSION['toSend']));
         $this->name = $params['name'];
         $this->text = $params['text'];
-        $_SESSION['toSend'] = '';
+        
     }
+    $_SESSION['toSend'] = '';
   }
   function display() {
     require($this->forumLibsPath.'fPager.class.php');
