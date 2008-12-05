@@ -72,18 +72,41 @@ div#sidebar h2 {
 	line-height: 1.1em;
 	margin-bottom: 0.5em;
 }
-div#sidebar div.showPageAvatar ul {
-	margin-left: 0;
-}
-div#sidebar div.showPageAvatar ul li {
-	overflow: hidden;
-	line-height: 30px;
+
+div#sidebar ul.showPageAvatar {
 	list-style: none;
-	padding-left: 0;
+	padding: 0;
+	margin: 0;
+	line-height: 25px;
 }
-div#sidebar div.showPageAvatar img {
-	float: left;
+div#sidebar ul.showPageAvatar postsNew {
+	display: none;
 }
+div#sidebar ul.showPageAvatar img {
+ float: left;
+ margin-right: 0.5em;
+}
+div#sidebar ul.showPageAvatar li {
+	clear: left;
+overflow: hidden;
+	background: none;
+	list-style: none;
+		height: 25px;
+	 
+}
+div#sidebar ul.showPageAvatar li a {
+	display: block;
+	/*float: left;*/
+	background: #eeeeee;
+	text-decoration: none;
+	margin-top: 2px;
+	font-weight: bold;
+	vertical-align: middle;
+}
+div#sidebar ul.showPageAvatar li a:hover {
+	background: #bbbbbb
+}
+
 div#mainbar {
 	float:left;
 	width:100%;
@@ -405,10 +428,7 @@ div#mainbar ul.showPageAvatar li a {
 div#mainbar ul.showPageAvatar li a:hover {
 	background: #bbbbbb
 }
-div#mainbar ul.showPageAvatar li a.pageAvatar {
-	float: left;
-	margin-left: 0;
-}
+
 div#mainbar span.postsNew {
 	display: block;
 	float: left;

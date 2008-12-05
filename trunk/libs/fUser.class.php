@@ -340,7 +340,7 @@ class fUser {
 			params = '".$this->currentPageParam."'    
 			where loginId='".$this->idlogin."'");
 			
-			$db->query("update sys_users set dateUpdated = now(),hit=hit+1 where userId='".$this->gid."'");
+			$db->query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->gid."'");
 			
 			if($xajax==false) $db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
@@ -390,6 +390,7 @@ class fUser {
 		$sUser->addCol('avatar',$this->ico);
 		if(!empty($this->newPassword)) $sUser->addCol('password',$this->newPassword);
 		$sUser->addCol('userId',$this->gid);
+		$sUser->addCol('dateUpdated','now()',false);
 		$dot = $sUser->buildUpdate();
 		$db->query($dot);
 		//--refresh user information in session

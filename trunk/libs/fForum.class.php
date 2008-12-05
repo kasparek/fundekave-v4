@@ -223,7 +223,7 @@ class fForum {
         }
         //---filtrovani
         if(isset($_POST["filtr"])) {
-        	$user->filterSet($user->currentPageId,'text',fSystem::textins($_POST["zprava"],0,0));
+        	$user->filterSet($user->currentPageId,'text',fSystem::textins($_POST["zprava"],array('plainText'=>1));
         }
         //---per page
         if (isset($_POST["perpage"]) && $_POST["perpage"] != $user->auditPerPage) { 
