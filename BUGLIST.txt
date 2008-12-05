@@ -1,3 +1,5 @@
+pager do galerie i nahoru
+
 zvetsovani textarey
 
 zive do oblibenych

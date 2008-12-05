@@ -139,17 +139,21 @@ class fSystem {
     function textins($text,$paramsArr=array()) {
       $breakLong = 1;
       $endOfLine = 1;
-      $formatOption = 1;
+      
       if(!is_array($paramsArr)) $paramsArr = array();
-      extract($paramsArr);
-      if(isset($plainText)) {
-          $option = 0;
+      if(!isset($paramsArr['formatOption'])) $paramsArr['formatOption']=1;
+      
+      if(isset($paramsArr['plainText'])) {
+          $paramsArr['formatOption']=0;
           $endOfLine = 0;
       }
+      
       global $user;
         $text = trim($text);
-        if($formatOption==0 || !$user->idkontrol) $text = strip_tags($text);
-        if($formatOption==1) {
+        if($paramsArr['formatOption']==0 || $user->idkontrol==false) {
+            $text = strip_tags($text);
+        }
+        if($paramsArr['formatOption']==1) {
             require_once('HTML/BBCodeParser.php'); 
             $config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);
             $parser = new HTML_BBCodeParser($config['HTML_BBCodeParser']);
@@ -157,7 +161,7 @@ class fSystem {
             $parser->parse();
             $text = $parser->getParsed();
         }
-        if($formatOption<2) {
+        if($paramsArr['formatOption']<2) {
             require_once('PEAR.php');
             require_once('HTML/Safe.php');
             $safe = new HTML_Safe();
@@ -171,10 +175,10 @@ class fSystem {
         }
         elseif($endOfLine==2) $text = fSystem::textinsBr2nl($text);
         if($breakLong==1) $text = fSystem::wordWrap($text);
-        if(isset($lengthLimit)) {
-            if($lengthLimit>0) {
-                if(mb_strlen($text)>$lengthLimit) { $text = mb_substr($text,0,$lengthLimit);
-                    if(isset($lengthLimitAddOnEnd)) $text .= $lengthLimitAddOnEnd;
+        if(isset($paramsArr['lengthLimit'])) {
+            if($paramsArr['lengthLimit'] > 0) {
+                if(mb_strlen($text) > $paramsArr['lengthLimit']) { $text = mb_substr($text,0,$paramsArr['lengthLimit']);
+                    if(isset($paramsArr['lengthLimitAddOnEnd'])) $text .= $paramsArr['lengthLimitAddOnEnd'];
                 }
             }
         }
