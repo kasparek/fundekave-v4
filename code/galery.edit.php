@@ -36,6 +36,7 @@ if (isset($_POST['savegal'])) {
 	} else {
 	    if($arr['name']!=$user->currentPage['name'] && fPages::page_exist('name',$arr['name']))	fError::addError(ERROR_GALERY_NAMEEXISTS.': '.$arr['name']);
 	}
+	$arr['dateContent'] = fSystem::switchDate($arr['dateContent']);
 	if(!fSystem::isDate($arr['dateContent'])) fError::addError(ERROR_DATA_FORMAT);
 	$arr['categoryId'] *= 1;
 	if(empty($arr['categoryId'])) unset($arr['categoryId']);
@@ -195,7 +196,8 @@ $tpl->setVariable('GDESC',fSystem::textToTextarea($arr['description']));
 $tpl->setVariable('GCONT',fSystem::textToTextarea($arr['content']));
 $tpl->addTextareaToolbox('GCONTTOOLBOX',$user->currentPageId.'cont');
 
-$tpl->setVariable('GDATE',$arr['dateContent']);
+$datePart = explode(' ',$arr['dateContent']);
+$tpl->setVariable('GDATE',$datePart[0]);
 $tpl->setVariable('GDIR',$arr['galeryDir']);
 ///---xmlparams
 $tpl->setVariable('PERPAGE',$arr['xperpage']);

@@ -56,18 +56,7 @@ $sPage = new fPagesSaveTool($typeForSaveTool);
   	      $arr['menuSecondaryGroup'] = 'null';
   	    }
 	    }
-	    
-	    if($user->currentPageParam=='a') $arr['leftpanelGroup'] = 'null';
-	    if(isset($_POST['leftpanel'])) {
-  	    $leftpanel = $_POST['leftpanel'];
-  	    $notQuoted[] = 'leftpanelGroup';
-  	    if($leftpanel>0) {
-  	      $arr['leftpanelGroup'] = $leftpanel * 1;
-  	    } else {
-  	      $arr['leftpanelGroup'] = 'null';
-  	    }
-	    }
-	    
+	    	    
 	}
 	
 	if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') {
@@ -175,10 +164,8 @@ if($typeForSaveTool == 'forum' || $typeForSaveTool == 'blog') {
 	$tpl->addTextareaToolbox('CONTENTTOOLBOX',$user->currentPageId.'home');
 }
 //---if pageParam = sa - more options to edit on page
-//--- nameShort,template,menuSecondaryGroup,leftpanelGroup,categoryId,dateContent,locked,authorContent
+//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
 if($user->currentPageParam=='sa') {
-    $arrTmp = $db->getAll('select leftpanelGroup,leftpanelGroup from sys_leftpanel group by leftpanelGroup order by leftpanelGroup');
-    $tpl->setVariable('LEFTPANELOPTIONS',fSystem::getOptions($arrTmp,$pageData['leftpanelGroup']));
     $arrTmp = $db->getAll('select menuSecondaryGroup,menuSecondaryGroup from sys_menu_secondary group by menuSecondaryGroup order by menuSecondaryGroup');
     $tpl->setVariable('MENUSECOPTIONS',fSystem::getOptions($arrTmp,$pageData['menuSecondaryGroup']));
     $arrTmp = $db->getAll('select categoryId,name from sys_pages_category where typeId="'.$pageData['typeId'].'"');

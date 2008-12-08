@@ -8,6 +8,7 @@ if(isset($_POST['del']) && $user->currentItemId>0) {
 }
 if(isset($_POST["nav"])){
     $arrSave = array();
+    //---check flyer to upload
 	if(isset($_POST['delfly']) && !empty($user->currentItemId)){
 	    $fItems->setSelect('enclosure');
 	    $arr = $fItems->getItem($user->currentItemId);
@@ -18,27 +19,26 @@ if(isset($_POST["nav"])){
 		}
 		$arrSave['enclosure'] = '';
 	}
-	
+	//---check time
 	$timeStart = '';
 	$timeEnd = '';
 	$timeStartTmp = trim($_POST['timestart']);
 	if(fSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
 	$timeEndTmp = trim($_POST['timestart']);
 	if(fSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
+	//---check time
 	$dateStart = fSystem::textins($_POST['datestart'],array('plainText'=>1));
 	$dateStart = fSystem::switchDate($dateStart);
 	if(fSystem::isDate($dateStart)) $dateStart .= $timeStart;
 	else fError::addError(ERROR_DATE_FORMAT);
-	
 	$dateEnd = fSystem::textins($_POST['dateend'],array('plainText'=>1));
 	$dateEnd = fSystem::switchDate($dateEnd);
 	if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
-	
+	//---save array
 	$arrSave = array('location'=>fSystem::textins($_POST['place'],array('plainText'=>1))
 	,'addon'=>fSystem::textins($_POST['name'],array('plainText'=>1))
 	,'dateStart'=>$dateStart
 	,'text'=>fSystem::textins($_POST['description'])
-	
 	);
 	if($_POST['category']*1>0) $arrSave['categoryId'] = $_POST['category']*1;
 	
@@ -48,8 +48,9 @@ if(isset($_POST["nav"])){
 		$arrSave['itemId'] = $user->currentItemId;
 	} else {
 		$arrSave['userId'] = $user->gid;
-		$arrSave['typeId'] = 'event';
+		$arrSave['typeId'] = $user->currentPage['typeIdChild'];
 		$arrSave['dateCreated'] = 'NOW()';
+		$arrSave['pageId'] = $user->currentPageId;
 	}
 	
 	if(!fError::isError()) {
@@ -82,17 +83,17 @@ if(isset($_POST["nav"])){
 	} else {
 		$_SESSION['akce_arr'] = $arr;
 	}
-	
 
 	fHTTP::redirect($user->getUri());
 }
 //---SHOWTIME
-if($user->currentItemId>0) {
+if($user->currentItemId > 0) {
     $fItems->setSelect("itemId,categoryId,location,addon
-    ,date_format(dateStart,'{#date_iso#}'),date_format(dateStart,'{#time#}')
-    ,date_format(dateEnd,'{#date_iso#}'),date_format(dateEnd,'{#time#}')
+    ,date_format(dateStart,'{#date_local#}'),date_format(dateStart,'{#time#}')
+    ,date_format(dateEnd,'{#date_local#}'),date_format(dateEnd,'{#time#}')
     ,text,enclosure");
     $arrTmp = $fItems->getItem($user->currentItemId);
+    
 	$arr = array('itemId'=>$arrTmp[0]
 	,'categoryId'=>$arrTmp[1]
 	,'location'=>$arrTmp[2]
@@ -114,9 +115,9 @@ if($user->currentItemId>0) {
 	,'categoryId'=>0
 	,'location'=>''
 	,'name'=>''
-	,'dateStart'=>Date("Y-m-d")
+	,'dateStart'=>Date("d.m.Y")
 	,'timeStart'=>''
-	,'dateEnd'=>Date("Y-m-d")
+	,'dateEnd'=>Date("d.m.Y")
 	,'timeEnd'=>''
 	,'description'=>''
 	,'flyer'=>'');

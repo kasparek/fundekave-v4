@@ -17,6 +17,7 @@ class fBlog extends fQueryTool  {
           		$arrSave = array('addon'=>fSystem::textins($aFormValues['nadpis'],array('plainText'=>1)),'text'=>fSystem::textins($aFormValues['textclanku'])); 
           		$arrSave['name'] = fSystem::textins($aFormValues['autor'],array('plainText'=>1));
           		if($arrSave['name']=='') $arrSave['name'] = $user->gidname;
+          		$aFormValues['datum'] = fSystem::switchDate($aFormValues['datum']);
           		if(fSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = fSystem::textins($aFormValues['datum'],array('plainText'=>1));
           		if(isset($aFormValues['nid'])) $itemId = (int) $aFormValues['nid'];
           		else $itemId = 0;
@@ -45,10 +46,13 @@ class fBlog extends fQueryTool  {
 	}
 	function getEditForm($itemId) {
 	    global $user;
+	    
+	    $textAreaId = 'Blog'.$user->currentPageId;
+	    
 	    $tpl = new fTemplateIT('blog.editform.tpl.html');
         $tpl->setVariable('PAGEID',$user->currentPageId);
         if($itemId>0) {
-            $this->setSelect("text,date_format(dateCreated,'%Y-%m-%d'),name,addon");
+            $this->setSelect("text,date_format(dateCreated,'%d.%m.%Y'),name,addon");
             $this->setWhere("itemId='".$itemId."'");
             $arrTmp = $this->getContent();
         	$arr = $arrTmp[0];
@@ -62,11 +66,12 @@ class fBlog extends fQueryTool  {
         		$tpl->setVariable('EDITID',$itemId);
         	}
         } else {
-        	$tpl->setVariable('EDITDATE',Date("Y-m-d"));
-        	if($draft = fUserDraft::get('b'.$user->currentPageId)) $tpl->setVariable('EDITTEXT',$draft);	
+        	$tpl->setVariable('EDITDATE',Date("d.m.Y"));
+        	if($draft = fUserDraft::get($textAreaId)) $tpl->setVariable('EDITTEXT',$draft);	
         }
-        $tpl->setVariable('TEXTID','b'.$user->currentPageId);
-        $tpl->addTextareaToolbox('TEXTTOOLBOX','b'.$user->currentPageId);
+        
+        $tpl->setVariable('TEXTID',$textAreaId);
+        $tpl->addTextareaToolbox('TEXTTOOLBOX',$textAreaId);
         //---have to be called js functions: draftSetEventListeners, initInsertToTextarea
         
         return $tpl->get();

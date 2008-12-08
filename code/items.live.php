@@ -1,6 +1,10 @@
 <?php
 $typeId = $user->currentPage['typeIdChild'];
 
+$validTypesArr = fItems::TYPES_VALID();
+
+if(!in_array($typeId, $validTypesArr)) $typeId = fItems::TYPE_DEFAULT;
+
 $localPerPage = LIVE_PERPAGE;
 
 $fItems = new fItems();

@@ -21,7 +21,7 @@
 <label>Název</label><input type="text" name="arr[name]" value="{GNAME}" class="long" /><br />
 <label>Popis</label><textarea name="arr[description]" id="{GDESCID}" class="draftable">{GDESC}</textarea><br />
 <label>Zahlaví</label><textarea name="arr[content]" id="{GCONTID}" class="draftable">{GCONT}</textarea>{GCONTTOOLBOX}<br />
-<label>Datum</label><input type="text" name="arr[dateContent]" value="{GDATE}" class="short" /><br />
+<label>Datum</label><input type="text" name="arr[dateContent]" id="datecontent" value="{GDATE}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
 <label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" class="short" /><br />
 <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
 <!-- BEGIN enhancendgalery -->
@@ -66,7 +66,7 @@
   <tr>
   <td align="center"><img src="{FTHUMBURL}" title="{FNAME}" alt="{FNAME}"></td>
   <td><textarea name="fot[{FID}][comm]" id="galfoto{FID}" class="draftable">{FCOMMENT}</textarea><br />
-  <label>Datum fotky:</label><input type="text" name="fot[{FID}][date]" value="{FDATE}" /><br />
+  <label>Datum fotky:</label><input type="text" name="fot[{FID}][date]" id="foto{FID}" value="{FDATE}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
   <label>Smazat:</label><input type="checkbox" name="delfoto[]" value="{FID}" class="checkbox" /></td>
 </tr>
 <!-- END gfoto -->

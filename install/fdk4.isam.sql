@@ -1,6 +1,6 @@
 CREATE TABLE sys_leftpanel_functions (
-     , functionName VARCHAR(40) NOT NULL
-     , name VARCHAR(40)
+    functionName VARCHAR(40) NOT NULL
+     , name VARCHAR(40) NOT NULL
      , public TINYINT unsigned NOT NULL DEFAULT 0
      , PRIMARY KEY (functionName)
 );
@@ -22,9 +22,9 @@ CREATE TABLE sys_users_leftpanel (
   , minimized TINYINT unsigned NOT NULL DEFAULT 0
   , PRIMARY KEY (userId ,leftpanelGroup, functionName)
 ) ;
-CREATE INDEX leftpanel_user ON sys_user_leftpanel (userId ASC);
-CREATE INDEX leftpanel_group ON sys_user_leftpanel (leftpanelGroup ASC);
-CREATE INDEX leftpanel_func ON sys_user_leftpanel (functionName ASC);
+CREATE INDEX leftpanel_user ON sys_users_leftpanel (userId ASC);
+CREATE INDEX leftpanel_group ON sys_users_leftpanel (leftpanelGroup ASC);
+CREATE INDEX leftpanel_func ON sys_users_leftpanel (functionName ASC);
 
 CREATE TABLE sys_sessions (
        sid VARCHAR(32) NOT NULL
@@ -350,13 +350,12 @@ CREATE INDEX userId ON sys_users_friends (userId ASC);
 CREATE INDEX userIdFriend ON sys_users_friends (userIdFriend ASC);
 
 CREATE TABLE sys_menu_secondary (
-       menuSecondaryId smallint unsigned NOT NULL AUTO_INCREMENT
-     , menuSecondaryGroup VARCHAR(10) default null
+     menuSecondaryGroup VARCHAR(10) default null
      , pageId varchar(5) NOT NULL
      , name VARCHAR(50) NOT NULL
      , public TINYINT unsigned NOT NULL DEFAULT 0
      , ord SMALLINT unsigned DEFAULT 0
-     , PRIMARY KEY (menuSecondaryId)
+     , PRIMARY KEY (menuSecondaryGroup,pageId)
 )  ;
 CREATE INDEX menusec_page ON sys_menu_secondary (pageId ASC);
 

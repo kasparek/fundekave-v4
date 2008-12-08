@@ -9,16 +9,16 @@ if(isset($_REQUEST['nid'])) {
 }
 
 if($user->currentItemId > 0 && $typeId == 'blog') {
-    fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId),BUTTON_PAGE_BACK);
+    fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
 } else {
     
     if(fRules::get($user->gid,$user->currentPageId,2)) {
         if(empty($user->currentPageParam)) {
             if($typeId=='blog') {
-                fSystem::secondaryMenuAddItem('#editnew',LABEL_ADD,"xajax_blog_blogEdit('0');",1);
+                fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'a'),LABEL_ADD,"xajax_blog_blogEdit('0');return false;",1);
             }
         }
-        fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'e'),LABEL_SETTINGS,'',1);
+        fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'e'),LABEL_SETTINGS,'',1);
     }
     
     //tlacitko sledovat - jen pro nemajitele
@@ -26,8 +26,8 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
       if($user->currentPageParam=='' && $user->currentPage['userIdOwner'] != $user->gid) {
       	fSystem::secondaryMenuAddItem('#book',((0 == $user->obliben($user->currentPageId,$user->gid))?(LABEL_BOOK):(LABEL_UNBOOK)),"xajax_forum_auditBook('".$user->currentPageId."','".$user->gid."');",0,'bookButt');
       }
-      fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'p'),LABEL_POLL);
-      fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'s'),LABEL_STATS);
+      fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'p'),LABEL_POLL);
+      fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'s'),LABEL_STATS);
       if($user->currentPageParam=='') {
         if(isset($_GET['s']) || fItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>fItems::getTagToolbar(false)));
         else {
@@ -35,7 +35,7 @@ if($user->currentItemId > 0 && $typeId == 'blog') {
         }
       }
     }
-    fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'h'),LABEL_HOME);
+    fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'h'),LABEL_HOME);
 }
 
 if($user->currentPageParam == 'e') {

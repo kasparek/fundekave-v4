@@ -1,5 +1,11 @@
 <?php
 class fItems extends fQueryTool {
+	
+	static function TYPES_VALID() { 
+    	return array('forum','galery','blog','event');
+	}
+    const TYPE_DEFAULT = 'forum';
+    
     function __construct() {
      global $db;
      parent::__construct('sys_pages_items as i','i.itemId',$db);

@@ -69,9 +69,6 @@ if(isset($_SESSION['diar_arr'])) {
 //---show part
 $tpl = new fTemplateIT('users.diary.tpl.html');
 
-$fCalendar = new fCalendar();
-$tpl->setVariable('JSCALENDARBUTTON',$fCalendar->make_button('addfdate'));
-
 $tpl->setVariable('FORMACTION',$user->getUri());
 
 $tpl->setVariable('ADDFORMACTION',$user->getUri());
