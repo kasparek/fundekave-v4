@@ -16,6 +16,7 @@ function blog_blogEdit($messageId = 0,$currentPageId=0) {
 	$objResponse->assign('editnew', 'innerHTML', $data);
 	$objResponse->call('draftSetEventListeners');
   $objResponse->call('initInsertToTextarea');
+  $objResponse->call('datePickerController.create');
 
 	return $objResponse;
 }

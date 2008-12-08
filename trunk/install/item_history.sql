@@ -1,3 +1,5 @@
+truncate sys_pages_items_history;
+
 insert into sys_pages_items_history select date_format(dateCreated,"%Y") as dateCon,itemId,3,count(itemId)  
 from sys_pages_items_hit group by dateCon,itemId;
 insert into sys_pages_items_history select date_format(dateCreated,"%Y") as dateCon,itemId,4,count(itemId)  

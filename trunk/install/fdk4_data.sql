@@ -55,75 +55,75 @@ INSERT INTO `sys_menu` VALUES (7, 'foall', 'Kluby', 1, 7);
 INSERT INTO `sys_menu` VALUES (8, 'bloll', 'Blogy', 1, 8);
 
 truncate sys_leftpanel_functions;
-INSERT INTO `sys_leftpanel_functions` VALUES (1, 'rh_login', '', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (10, 'pocket', 'Kapsa', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES (2, 'rh_datum', '', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (5, 'rh_logged_list', 'OnLine uživatelé', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES (6, 'rh_galerie_rnd', 'Galerie', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (8, 'rh_akce_rnd', 'Tipy', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (9, 'rh_anketa', 'Anketa', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (11, 'bookedRelatedPagesList', 'Podobne sledovane', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES (13, 'rh_diar_kalendar', 'Kalendář', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES (14, 'rh_audit_popis', 'Popis', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES (15, 'rh_posta_kdo', 'Přijaté zprávy', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES (23, 'relatedPagesList', 'Spřátelená stránky', 1);
-#INSERT INTO `sys_leftpanel_functions` VALUES (16, 'rh_pocasi', 'Počasí', 1);
-#INSERT INTO `sys_leftpanel_functions` VALUES (17, 'rh_pocasi_weatherdotcom', 'Weather', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('pocket', 'Kapsa', 0);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_datum', '', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_logged_list', 'OnLine uživatelé', 0);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_galerie_rnd', 'Galerie', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_akce_rnd', 'Tipy', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_anketa', 'Anketa', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('bookedRelatedPagesList', 'Podobne sledovane', 0);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 0);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0);
+INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1);
+#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi', 'Počasí', 1);
+#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi_weatherdotcom', 'Weather', 1);
 
 truncate sys_leftpanel;
-INSERT INTO `sys_leftpanel` VALUES (1, 'default', 'rh_login', 0);
-INSERT INTO `sys_leftpanel` VALUES (2, 'default', 'pocket', 1);
-INSERT INTO `sys_leftpanel` VALUES (3, 'default', 'rh_anketa', 2);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_login', 0);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'pocket', 1);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_anketa', 2);
 
-INSERT INTO `sys_leftpanel` VALUES (4, 'top', 'rh_diar_kalendar', 10);
-INSERT INTO `sys_leftpanel` VALUES (5, 'top', 'rh_akce_rnd', 20);
-INSERT INTO `sys_leftpanel` VALUES (6, 'top', 'rh_galerie_rnd', 40);
+INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_diar_kalendar', 10);
+INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_akce_rnd', 20);
+INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_galerie_rnd', 40);
 
-INSERT INTO `sys_leftpanel` VALUES (7, 'default', 'relatedPagesList', 90);
-INSERT INTO `sys_leftpanel` VALUES (8, 'default', 'rh_logged_list', 100);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'relatedPagesList', 90);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_logged_list', 100);
 
 #skupina pro kluby
-INSERT INTO `sys_leftpanel` VALUES (13, 'forum', 'rh_audit_popis', 10;
-INSERT INTO `sys_leftpanel` VALUES (14, 'forum', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('forum', 'rh_audit_popis', 10);
+INSERT INTO `sys_leftpanel` VALUES ('forum', 'bookedRelatedPagesList', 60);
 
 #skupina pro blogy
-INSERT INTO `sys_leftpanel` VALUES (13, 'blog', 'rh_audit_popis', 10);
-INSERT INTO `sys_leftpanel` VALUES (10, 'blog', 'rh_diar_kalendar', 20);
-INSERT INTO `sys_leftpanel` VALUES (14, 'blog', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_audit_popis', 10);
+INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_diar_kalendar', 20);
+INSERT INTO `sys_leftpanel` VALUES ('blog', 'bookedRelatedPagesList', 60);
 
 #skupina pro galerie
-INSERT INTO `sys_leftpanel` VALUES (14, 'galery', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('galery', 'bookedRelatedPagesList', 60);
 
 #pouze posta
-INSERT INTO `sys_leftpanel` VALUES (16, 'post', 'rh_posta_kdo', 10);
-INSERT INTO `sys_leftpanel` VALUES (4, 'top', 'rh_diar_kalendar', 20);
+INSERT INTO `sys_leftpanel` VALUES ('post', 'rh_posta_kdo', 10);
+INSERT INTO `sys_leftpanel` VALUES ('post', 'rh_diar_kalendar', 20);
 
 truncate sys_menu_secondary;
-INSERT INTO `sys_menu_secondary` VALUES (1, 2, 'fpost', 'Pošta', 0, 0);
-INSERT INTO `sys_menu_secondary` VALUES (2, 2, 'finfo', 'Info', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (3, 2, 'fsurf', 'Odkazy', 0, 2);
-INSERT INTO `sys_menu_secondary` VALUES (4, 2, 'fdiar', 'Diář', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (5, 2, 'ffall', 'Uživatelé', 0, 4);
-INSERT INTO `sys_menu_secondary` VALUES (6, 2, 'fedit', 'Osobní', 0, 10);
-INSERT INTO `sys_menu_secondary` VALUES (7, 2, 'sadmin', 'Admin', 0, 23);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'fpost', 'Pošta', 0, 0);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'finfo', 'Info', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'fsurf', 'Odkazy', 0, 2);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'fdiar', 'Diář', 0, 3);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'ffall', 'Uživatelé', 0, 4);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'fedit', 'Osobní', 0, 10);
+INSERT INTO `sys_menu_secondary` VALUES (2, 'sadmin', 'Admin', 0, 23);
 
-INSERT INTO `sys_menu_secondary` VALUES (6, 3, 'livea', 'Živě', 0, 0);
+INSERT INTO `sys_menu_secondary` VALUES (3, 'livea', 'Živě', 0, 0);
 
-INSERT INTO `sys_menu_secondary` VALUES (11, 4, 'taggi', 'Popisuj fotky', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (12, 4, 'galse', 'Hledani galerii', 0, 2);
-INSERT INTO `sys_menu_secondary` VALUES (13, 4, 'galbe', 'Nej', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (14, 4, 'galed', 'Založit galerii', 0, 4);
+INSERT INTO `sys_menu_secondary` VALUES (4, 'taggi', 'Popisuj fotky', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (4, 'galse', 'Hledani galerii', 0, 2);
+INSERT INTO `sys_menu_secondary` VALUES (4, 'galbe', 'Nej', 0, 3);
+INSERT INTO `sys_menu_secondary` VALUES (4, 'galed', 'Založit galerii', 0, 4);
 
-INSERT INTO `sys_menu_secondary` VALUES (21, 5, 'forlw', 'Hledani klubu', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (22, 5, 'forls', 'Hledani v prispevcich', 0, 2);
-INSERT INTO `sys_menu_secondary` VALUES (23, 5, 'forbe', 'Nej', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (24, 5, 'forli', 'Živě', 0, 4);
-INSERT INTO `sys_menu_secondary` VALUES (25, 5, 'forne', 'Založit klub', 0, 5);
+INSERT INTO `sys_menu_secondary` VALUES (5, 'forlw', 'Hledani klubu', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (5, 'forls', 'Hledani v prispevcich', 0, 2);
+INSERT INTO `sys_menu_secondary` VALUES (5, 'forbe', 'Nej', 0, 3);
+INSERT INTO `sys_menu_secondary` VALUES (5, 'forli', 'Živě', 0, 4);
+INSERT INTO `sys_menu_secondary` VALUES (5, 'forne', 'Založit klub', 0, 5);
 
-INSERT INTO `sys_menu_secondary` VALUES (31, 6, 'blolw', 'Hledani blogu', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (32, 6, 'blols', 'Hledani v clancich', 0, 2);
-INSERT INTO `sys_menu_secondary` VALUES (33, 6, 'blobe', 'Nej', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (34, 6, 'bloli', 'Živě', 0, 4);
-INSERT INTO `sys_menu_secondary` VALUES (35, 6, 'blone', 'Založit blog', 0, 5);
+INSERT INTO `sys_menu_secondary` VALUES (6, 'blolw', 'Hledani blogu', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (6, 'blols', 'Hledani v clancich', 0, 2);
+INSERT INTO `sys_menu_secondary` VALUES (6, 'blobe', 'Nej', 0, 3);
+INSERT INTO `sys_menu_secondary` VALUES (6, 'bloli', 'Živě', 0, 4);
+INSERT INTO `sys_menu_secondary` VALUES (6, 'blone', 'Založit blog', 0, 5);
 
-INSERT INTO `sys_menu_secondary` VALUES (41, 7, 'evena', 'Novy tip', 0, 1);
+INSERT INTO `sys_menu_secondary` VALUES (7, 'evena', 'Novy tip', 0, 1);

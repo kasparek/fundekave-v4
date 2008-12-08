@@ -30,7 +30,7 @@ function showDiaryForm() {
 <form name="diar" id="addform" method="post" action="{ADDFORMACTION}" enctype="multipart/form-data">
 <fieldset>
 	<input type="hidden" name="did" id="addfid" value="{DID}" />
-	<label for="addfdate">Datum</label><input type="text" name="addfdate" id="addfdate" value="{DDATE}" class="short" />&nbsp;{JSCALENDARBUTTON}<br />
+	<label for="addfdate">Datum</label><input type="text" name="addfdate" id="addfdate" value="{DDATE}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
   <label for="addfname">Název</label><input type="text" name="dzkratka" id="addfname" value="{DNAME}" /><br />
 	<label for="addftext">Text</label><textarea name="dtext" id="addftext" class="draftable">{DTEXT}</textarea>{DTEXTTOOLBOX}<br />
 	<label for="dpripomen">Upozornění</label><select name="dpripomen" id="dpripomen" />{REMINDEROPTIONS}</select>  

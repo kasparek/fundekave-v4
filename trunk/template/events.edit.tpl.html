@@ -2,11 +2,11 @@
 <fieldset>
 <legend>{HEADING}</legend>
 <label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select><br />
-<label>Místo</label> <input type="text" name="place" value="{PLACE}" class="long" /><br />
-<label>Název</label><input type="text" name="name" value="{NAME}" class="long" /><br />
-<label>Datum-Cas Od</label><input type="text" name="datestart" value="{DATESTART}" class="short" />&nbsp;-&nbsp;<input type="text" name="timestart" value="{TIMESTART}" class="short" /><br />
-<label>Datum-Cas Do</label><input type="text" name="dateend" value="{DATEEND}" class="short" />&nbsp;-&nbsp;<input type="text" name="timeend" value="{TIMEEND}" class="short" /><br />
-<label>Upload letáku</label><input type="file" name="akceletak" class="long" /><br />
+<label>Název</label><input type="text" name="name" value="{NAME}" /><br />
+<label>Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
+<label>Datum-Cas Od</label><input type="text" name="datestart" id="datestart" value="{DATESTART}" class="short format-d-m-y divider-dot highlight-days-67" />&nbsp;-&nbsp;<input type="text" name="timestart" value="{TIMESTART}" class="xShort" /><br />
+<label>Datum-Cas Do</label><input type="text" name="dateend" id="dateend" value="{DATEEND}" class="short format-d-m-y divider-dot highlight-days-67" />&nbsp;-&nbsp;<input type="text" name="timeend" value="{TIMEEND}" class="xShort" /><br />
+<label>Upload letáku</label><input type="file" name="akceletak" /><br />
 <!-- BEGIN flyer -->
 <label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
 <label>Odstranit letak</label><input type="checkbox" name="delfly" value="1" class="checkbox" /><br />

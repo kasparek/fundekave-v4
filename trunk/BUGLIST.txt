@@ -1,10 +1,12 @@
+galerie - pocet obr, rozliseni
+
 pager do galerie i nahoru
 
 zvetsovani textarey
 
 zive do oblibenych
 
-klikani mezi nastavenim, statistikou
+klikani mezi nastavenim, statistikou - sekundarni menu - prepinani
 
 sprateleny v galerii
 

@@ -123,7 +123,9 @@ if($user->idkontrol) {
 //---ERROR MESSAGES
 $TOPTPL->printErrorMsg();
 //---HEADER
-$TOPTPL->setVariable("CSSSKIN", $user->getSkinCSSFilename());
+$cssPath = $user->getSkinCSSFilename();
+$TOPTPL->setVariable("CSSSKIN", $cssPath);
+
 $TOPTPL->setVariable("CHARSET", CHARSET);
 
 if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
@@ -138,11 +140,6 @@ if(!empty($arrXajax)) {
     	}
     }
 }
-/* FIXME: fix calendar include
-if(isset($fCalendar)) {
-  $TOPTPL->setVariable('JSCALENDARSOURCE',$fCalendar->get_load_files_code());
-}
-*/
 
 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 if($wrap = $JSWrapper->get()) {
@@ -200,11 +197,12 @@ if(!empty($lomenuItems)) {
   }
 }
 //---LEFT PANEL POPULATING
-$rh = $db->getAll("select lf.function,
+$rh = $db->getAll("select lf.functionName,
 	lf.name 
     from sys_leftpanel as l 
-    join sys_leftpanel_functions as lf on l.functionId=lf.functionId 
-    where ".(($user->idkontrol)?(''):(" public=1 and "))." (l.leftpanelGroup='default' or l.leftpanelGroup='".$user->currentPage['typeId']."' or l.leftpanelGroup='".$user->currentPage['typeIdChild']."' order by ord");
+    join sys_leftpanel_functions as lf on l.functionName = lf.functionName 
+    where ".(($user->idkontrol)?(''):(" lf.public=1 and "))." (l.leftpanelGroup='default' or l.leftpanelGroup='".$user->currentPage['typeId']."' or l.leftpanelGroup='".$user->currentPage['typeIdChild']."') 
+    order by l.ord");
 
 if(!empty($rh)) {
 	foreach ($rh as $rhitem) {
@@ -225,6 +223,23 @@ $TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<
 $ttips = '';
 if(!empty($user->arrUsers['tooltips'])) $ttips .= implode("\n",$user->arrUsers['tooltips']);
 $TOPTPL->setVariable('USERTOOLTIPS',$ttips);
+
+//--- last check
+//if calendar js and css is needed
+$useCalendar = false;
+foreach ($TOPTPL->blockdata as $item) {
+    if(strpos($item, 'format-') !== false) {
+        $useCalendar = true;
+    }
+}
+if($user->currentPage['typeId']=='blog') {
+    if(fRules::get($user->gid,$user->currentPageId,2)) {
+        $useCalendar = true;
+    }
+}
+if($useCalendar === true) {
+    $TOPTPL->setVariable("CSSSKINCALENDAR", $cssPath);
+}
 
 
 //----DEBUG

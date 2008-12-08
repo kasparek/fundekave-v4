@@ -217,8 +217,9 @@ class fSystem {
     static function switchDate($date) {
         $arr = explode('.',$date);
         if(count($arr)>1) {
-            return $date[2].'-'.$date[1].'-'.$date[0];
-        } else return $date;
+            $date = $arr[2].'-'.$arr[1].'-'.$arr[0];
+        }
+        return $date;
     }
     function isDate($datein) {
     	$ret=false;
