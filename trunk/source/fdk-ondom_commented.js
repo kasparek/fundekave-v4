@@ -98,9 +98,13 @@ function handleDraft() {
   var x, t = getTime(), arrDraftLength = arrDraft.length; 
   for (x=0;x<arrDraftLength;x++) {
     var currentTextarea = elm(arrDraft[x][0]), 
-    taText = '', taValueText = currentTextarea.value, taHTMLText = currentTextarea.innerHTML;
-    if(taValueText.length > taText.length) { taText = taValueText; };
-    if(taHTMLText.length > taText.length) { taText = taHTMLText; };
+    taText = '';
+    if(document.all) {
+      //---firefox
+      currentTextarea.setAttribute("value",currentTextarea.innerHTML);
+    }
+    taText = currentTextarea.value;
+    
     if(taText.length != arrDraft[x][1] && taText.length > 0) {
       if(arrDraft[x][3] === 0) {
         if(hasClass(currentTextarea,'draftSave')) {
