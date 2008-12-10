@@ -50,7 +50,7 @@ if(isset($_POST["nav"])){
 		$arrSave['userId'] = $user->gid;
 		$arrSave['typeId'] = $user->currentPage['typeIdChild'];
 		$arrSave['dateCreated'] = 'NOW()';
-		$arrSave['pageId'] = $user->currentPageId;
+		$arrSave['pageId'] = $user->currentPage['typeIdChild'];
 	}
 	
 	if(!fError::isError()) {
@@ -65,11 +65,9 @@ if(isset($_POST["nav"])){
 			$_FILES['akceletak']['name'] = "flyer".$user->currentItemId.'.'.strtolower($arr[count($arr)-1]);
 			
 			if(fSystem::upload($_FILES['akceletak'],$flypath,500000)) {
-        $cachedThumb = $conf['events']['flyer_cache'].$_FILES['akceletak']['name'];
+			   $cachedThumb = fEvents::thumbUrl($_FILES['akceletak']['name']);
     			if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
     			//---create thumb
-    			$p = pathinfo($cachedThumb);
- 	       $cachedThumb = str_replace($p['extension'],'jpg',$cachedThumb);
           
           $fImg = new fImgProcess($conf['events']['flyer_source'] . $_FILES['akceletak']['name']
               ,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
@@ -147,7 +145,7 @@ if($user->currentItemId > 0)
     $tpl->touchBlock('delakce');
 
 if(!empty($arr['flyer'])) {
-    $tpl->setVariable('FLYERURL',$conf['events']['flyer_source'].$arr['flyer']);
-    $tpl->setVariable('FLYERTHUMBURL',$conf['events']['flyer_cache'].$arr['flyer']);
+    $tpl->setVariable('FLYERURL',fEvents::flyerUrl($arr['flyer']));
+    $tpl->setVariable('FLYERTHUMBURL',fEvents::thumbUrl($arr['flyer']));
 }
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));

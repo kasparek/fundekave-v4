@@ -33,7 +33,6 @@ if($user->idkontrol) {
   fXajax::register('pocket_add');
   fXajax::register('pocket_action');
   fXajax::register('forum_booked');
-  fXajax::register('forum_listcategory');
   //post page
   $reqSetRecipient = fXajax::register('post_setRecipientAvatarFromBooked');
   $reqSetRecipient->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho_book');

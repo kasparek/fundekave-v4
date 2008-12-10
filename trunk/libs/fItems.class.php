@@ -339,10 +339,8 @@ class fItems extends fQueryTool {
   	    }
   	    
   	    if(!empty($arr['enclosure'])) {
-  	        $flyerFilenameThumb = $conf['events']['flyer_cache'].$arr['enclosure'];
-  	        $p = pathinfo($flyerFilenameThumb);
-            $flyerFilenameThumb = str_replace($p['extension'],'jpg',$flyerFilenameThumb);
-            $flyerFilename = $conf['events']['flyer_source'].$arr['enclosure'];
+            $flyerFilenameThumb = fEvents::thumbUrl($arr['enclosure']);
+            $flyerFilename = fEvents::flyerUrl($arr['enclosure']);
             if(!file_exists($flyerFilenameThumb)) {
             //---create thumb
             	$fImg = new fImgProcess($flyerFilename,$flyerFilenameThumb

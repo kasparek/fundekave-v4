@@ -254,21 +254,19 @@ class xajaxRequest
 	*/
 	function printScript()
 	{
-		$sOutput = $this->sName;
-		$sOutput .= "(";
+		echo $this->sName;
+		echo '(';
 		
-		$sSeparator = "";
+		$sSeparator = '';
 		
 		foreach ($this->aParameters as $sParameter)
 		{
-			$sOutput .= $sSeparator;
-			$sOutput .= $sParameter;
-			$sSeparator = ", ";
+			echo $sSeparator;
+			echo $sParameter;
+			$sSeparator = ', ';
 		}
 		
-		$sOutput .= ")";
-		
-		print $sOutput;
+		echo ')';
 	}
 }
 

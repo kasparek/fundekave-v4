@@ -143,7 +143,8 @@ class xajaxLanguageManager
 		if ('language' == $sName) {
 			if ($mValue !== $this->sLanguage) {
 				$sFolder = dirname(__FILE__);
-				require $sFolder . '/xajax_lang_' . $mValue . '.inc.php';
+				@include $sFolder . '/xajax_lang_' . $mValue . '.inc.php';
+				// require $sFolder . '/xajax_lang_' . $mValue . '.inc.php';
 				$this->sLanguage = $mValue;
 			}
 		}

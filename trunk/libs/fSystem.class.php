@@ -254,7 +254,7 @@ class fSystem {
     }
     
     /*---------------upload--------------*/
-    function upload($file,$kam='',$size=20000,$rewrite=true,$types=array("image/pjpeg","image/jpeg","image/gif","application/x-shockwave-flash")) {
+    function upload($file,$kam='',$size=20000,$rewrite=true,$types=array("image/pjpeg","image/jpeg","image/png","image/gif")) {
     	$ret = false;
         if (!is_uploaded_file($file["tmp_name"])) fError::addError(ERROR_UPLOAD_NOTLOADED);
     	else if($file['size'] > $size) fError::addError(ERROR_UPLOAD_TOBIG);

@@ -323,27 +323,65 @@ div#mainbar fieldset input.submit {
 	margin-left: 10em;
 }
 div#mainbar fieldset textarea {
-	width: 28em;
+	width: 400px;
 	height: 6em;
-	font-size: 1.21em;
+	font-size: 1.2em;
 	margin-bottom: 0.3em;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0 5px;
+}
+div#mainbar fieldset textarea.draftNotSave {
+  border-right: 2px solid #dd0000; 
+}
+div#mainbar fieldset textarea.draftSave {
+  border-right: 2px solid #00dd00;
 }
 div#mainbar fieldset textarea.largeTextarea {
-	width: 100%;
-	height:10em;
+	width: 95%;
+	height:14em;
 }
-div#mainbar fieldset div#textareaToolbox {
+div#mainbar fieldset div.textareaToolbox {
+  margin-top: -0.3em;
 	margin-left: 10em;
-	padding: 0.2em 1em;
-	width: 32em;
+	padding: 3px 5px;
+	width: 402px;
 	font-size: 1em;
 	background: #ddd;
+}
+div#mainbar fieldset div.textareaToolbox ul {
+  margin: 0;
+  padding: 0;
+   
+}
+div#mainbar fieldset div.textareaToolbox ul li {
+ list-style: none;
+}
+div#mainbar fieldset div.textareaToolboxLarge {
+	width: 95%;
+	margin-left: 0;
+}
+span.textInsertStyle,
+span.textInsertObject,
+span.textInsertHelp {
+  cursor: pointer;
 }
 span.textInsertStyle,
 span.textInsertObject {
 	margin-right: 1em;
 	padding-right: 1em;
 	border-right: 1px solid white;
+}
+span.textAreaResize {
+  float: right;
+}
+span.textAreaResize a {
+  text-decoration: none;
+  background: url("img/windows.png") no-repeat left top;
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin-top: -2px;  
 }
 ul#todaysInfo {
 	padding: 0;
@@ -535,6 +573,30 @@ div.galeryThumbs div.hentry p.rating {
 	height: auto;
 	padding-top: 0.2em;
 }
+
+/* events */
+div.mainpanel-content div.vevent {
+  margin-bottom: 2em;
+  padding: 0.5em;
+  background: #eee;
+  border: 1px solid #999;
+}
+div.mainpanel-content div.vevent div.description {
+  margin-left: 180px;
+}
+div.mainpanel-content div.vevent img.eventFlyerThumb {
+  float: left;
+  padding: 0.5em;
+}
+hr.cleaner {
+	padding: 0;
+	margin: 0;
+	clear: both;
+	height: 0;
+	border: 0 none;
+	min-height: 0;
+}
+
 div.galeryInfo {
 	margin-bottom: 1em;
 }

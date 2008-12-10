@@ -79,20 +79,20 @@ INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_diar_kalendar', 10);
 INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_akce_rnd', 20);
 INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_galerie_rnd', 40);
 
-INSERT INTO `sys_leftpanel` VALUES ('default', 'relatedPagesList', 90);
+INSERT INTO `sys_leftpanel` VALUES ('default', 'relatedPagesList', 80);
 INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_logged_list', 100);
 
 #skupina pro kluby
 INSERT INTO `sys_leftpanel` VALUES ('forum', 'rh_audit_popis', 10);
-INSERT INTO `sys_leftpanel` VALUES ('forum', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('forum', 'bookedRelatedPagesList', 90);
 
 #skupina pro blogy
 INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_audit_popis', 10);
 INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_diar_kalendar', 20);
-INSERT INTO `sys_leftpanel` VALUES ('blog', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('blog', 'bookedRelatedPagesList', 90);
 
 #skupina pro galerie
-INSERT INTO `sys_leftpanel` VALUES ('galery', 'bookedRelatedPagesList', 60);
+INSERT INTO `sys_leftpanel` VALUES ('galery', 'bookedRelatedPagesList', 90);
 
 #pouze posta
 INSERT INTO `sys_leftpanel` VALUES ('post', 'rh_posta_kdo', 10);
