@@ -51,7 +51,7 @@ function forum_fotoDetail($fotoId) {
     	$galery = new fGalery();
         $galery->getGaleryData($user->currentPageId);
     	$objResponse->assign('fotoBox', 'innerHTML', $galery->printDetail($user->currentItemId));
-    	$objResponse->call('setSwitchEventListeners');
+    	//$objResponse->call('setSwitchEventListeners');
     	$objResponse->call('setTagEventListeners');
     	$objResponse->call('setPocketAddEventListeners');
 	}

@@ -164,7 +164,7 @@ function onDomReady() {
   //---set poll
   setPollListeners();
   //---switch
-  setSwitchEventListeners();
+  //setSwitchEventListeners();
   //---pocket
   setPocketAddEventListeners();
   //---textarea toolbox
