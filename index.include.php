@@ -238,6 +238,7 @@ if($user->currentPage['typeId']=='blog') {
 }
 if($useCalendar === true) {
     $TOPTPL->setVariable("CSSSKINCALENDAR", $cssPath);
+    $TOPTPL->touchBlock("calendar2"); //---javascript on the end of the page
 }
 
 
