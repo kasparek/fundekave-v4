@@ -16,19 +16,7 @@ function forum_auditBook($auditId,$userId) {
 	$objResponse->assign('bookButt', 'innerHTML', $data);
 	return $objResponse;
 }
-function forum_listcategory($categoryId) {
-  global $db,$user;
-  
-  $fPages = new fPages('',$user->gid,$db);
-  $data = $fPages->printCategoryList($categoryId,true);
-  
-  $objResponse = new xajaxResponse();
-	$objResponse->setCharacterEncoding(CHARSET);
-	$objResponse->assign('categories', 'innerHTML', $data);
-	$objResponse->call('setCategoryEventListeners');
-	return $objResponse;
 
-}
 function forum_booked($typeId,$userId) {
   global $db,$user;
   

@@ -7,6 +7,7 @@ function poll_pollVote($params) {
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
 	$objResponse->assign('poll', 'innerHTML', $data);
+	$objResponse->call('setPollListeners');
 	return $objResponse;
 }
 fXajax::register('poll_pollVote');

@@ -7,7 +7,7 @@ function draft_save($place,$text) {
 	fUserDraft::save($place,$text);
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
-	$objResponse->replace($place, 'className', 'draftNotSave', 'draftSave');
+	$objResponse->call('draftSaved', $place);
 	return $objResponse;
 }
 

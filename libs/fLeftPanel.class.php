@@ -122,8 +122,8 @@ class fLeftPanel {
       	if(!empty($row)) {
       	    $tpl = new fTemplateIT('sidebar.event.tpl.html');
       		if($row['enclosure']!="") {
-      		    $flyerFilenameThumb = $conf['events']['flyer_cache'].$row['enclosure'];
-      	        $flyerFilename = $conf['events']['flyer_source'].$row['enclosure'];
+      	    $flyerFilenameThumb = fEvents::thumbUrl($row['enclosure']);
+            $flyerFilename = fEvents::flyerUrl($row['enclosure']);
       			if(file_exists($flyerFilename)){
       				$arr = getimagesize($flyerFilename);
               $tpl->setVariable('FLYERURL',$flyerFilename.'?height='.($arr[1]+20).'&width='.($arr[0]+20));

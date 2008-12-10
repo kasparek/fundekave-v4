@@ -211,6 +211,9 @@ class xajax
 		
 		if (null !== $sLanguage)
 			$this->configure('language', $sLanguage);
+
+		if ('utf-8' != XAJAX_DEFAULT_CHAR_ENCODING) $this->configure("decodeUTF8Input", true);
+
 	}
 	
 	/*
@@ -306,7 +309,7 @@ class xajax
 	*/
 	function getVersion()
 	{
-		return 'xajax 0.5 Beta 4';
+		return 'xajax 0.5 rc2';
 	}
 
 	/*
@@ -849,8 +852,8 @@ class xajax
 			} else if (!empty($_SERVER['SERVER_NAME'])) {
 				$aURL['host'] = $_SERVER['SERVER_NAME'];
 			} else {
-				print $this->objLanguageManager->getText('DTCTURI:01');
-				print $this->objLanguageManager->getText('DTCTURI:02');
+				echo $this->objLanguageManager->getText('DTCTURI:01');
+				echo $this->objLanguageManager->getText('DTCTURI:02');
 				exit();
 			}
 		}
@@ -1020,6 +1023,7 @@ class xajax
 	function setFlag($name, $value)
 	{
 		$this->configure($name, $value);
+
 	}
 
 	/*
@@ -1348,19 +1352,19 @@ function xajaxErrorHandler($errno, $errstr, $errfile, $errline)
 	$sCrLf = "\n";
 	
 	ob_start();
-	print $GLOBALS['xajaxErrorHandlerText'];
-	print $sCrLf;
-	print '----';
-	print $sCrLf;
-	print '[';
-	print $errTypeStr;
-	print '] ';
-	print $errstr;
-	print $sCrLf;
-	print 'Error on line ';
-	print $errline;
-	print ' of file ';
-	print $errfile;
+	echo $GLOBALS['xajaxErrorHandlerText'];
+	echo $sCrLf;
+	echo '----';
+	echo $sCrLf;
+	echo '[';
+	echo $errTypeStr;
+	echo '] ';
+	echo $errstr;
+	echo $sCrLf;
+	echo 'Error on line ';
+	echo $errline;
+	echo ' of file ';
+	echo $errfile;
 	$GLOBALS['xajaxErrorHandlerText'] = ob_get_clean();
 }
 

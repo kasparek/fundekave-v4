@@ -100,6 +100,7 @@ class xajaxPluginManager
 	function loadPlugins($aFolders)
 	{
 		foreach ($aFolders as $sFolder) {
+			if (is_dir($sFolder))
 			if ($handle = opendir($sFolder)) {
 				while (!(false === ($sName = readdir($handle)))) {
 					$nLength = strlen($sName);
