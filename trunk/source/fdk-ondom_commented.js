@@ -72,57 +72,54 @@ function initInsertToTextarea() {
 }
 
 //---textarea drafting
-var arrDraft = []; //0-id, 1-lastlength, 2-lasttime, 3-classNOTsave (0-not set,1-set)
-var timeDiffToSaveDraft = 10000;
-var idleDraftHandlerRunning = 0;
-var timeDraftLastKeyPressed = 0;
-function getTime() { var d = new Date(); return d.getTime(); };
+var arrDraft = [], //0-id, 1-lastlength
+timerRunning = false,
+draftTimer = 5000,
+draftTimeout, //---with this timer could be stopped
+draftTimeoutCounter = 0; //--if bigger than 3 stop timer - reset every time save function is called
 
-function idleDraftHandler() { 
-  if(idleDraftHandlerRunning==1) {
-    if(((getTime() - timeDraftLastKeyPressed) > timeDiffToSaveDraft)) {
-      var x, arrDraftLength = arrDraft.length; 
-      for (x=0;x<arrDraftLength;x++) { 
-        arrDraft[x][2] = timeDraftLastKeyPressed; 
-        arrDraft[x][1] = arrDraft[x][1] + 1; 
-      }; //---set all changed
-      handleDraft(); 
-      idleDraftHandlerRunning = 0;
-    } else {
-      setTimeout(idleDraftHandler, 3000);
-    };
-  };
-};
-
-function handleDraft() { 
-  var x, t = getTime(), arrDraftLength = arrDraft.length; 
+function draftDoSave() { 
+  var x, arrDraftLength = arrDraft.length; 
   for (x=0;x<arrDraftLength;x++) {
-    var currentTextarea = elm(arrDraft[x][0]), 
-    taText = '';
-    if(document.all) {
-      //---firefox
-      currentTextarea.setAttribute("value",currentTextarea.innerHTML);
-    }
+    var currentTextarea = elm(arrDraft[x][0]);
+    taRefreshValue(currentTextarea);
     taText = currentTextarea.value;
-    
     if(taText.length != arrDraft[x][1] && taText.length > 0) {
-      if(arrDraft[x][3] === 0) {
-        if(hasClass(currentTextarea,'draftSave')) {
-          removeClass(currentTextarea,'draftSave');
-        }; 
-        addClass(currentTextarea,'draftNotSave');
-        arrDraft[x][3]=1; 
-      };
-      if((t - arrDraft[x][2]) > timeDiffToSaveDraft) {
         xajax_draft_save(currentTextarea.id,taText);
-        arrDraft[x] = [currentTextarea.id,0,getTime(),0];
-      };
+        arrDraft[x][1] = taText.length;
+        draftTimeoutCounter = 0;
     };
   };
-  timeDraftLastKeyPressed = t;
-  if(idleDraftHandlerRunning === 0) { idleDraftHandlerRunning = 1; idleDraftHandler(); };
 };
-
+//---new
+function taRefreshValue(textareaInst) {
+  if(document.all) {
+    //---firefox
+    textareaInst.setAttribute("value",currentTextarea.innerHTML);
+  }
+}
+function draftGetLength(textareaInst) {
+  taRefreshValue(textareaInst);
+  return textareaInst.value.length;
+}
+//set class - is saved - green - callback function from xajax
+function draftSaved(textareaId) {
+  textareaInst = elm(textareaId);
+  removeClass(textareaInst,'draftNotSave');
+  addClass(textareaInst,'draftSave');
+}
+//check all ta and set not saved class if there is a difference between string length
+function draftIsSavedSetClass() {
+  var x, ta, arrDraftLength = arrDraft.length;
+  for (x=0;x<arrDraftLength;x++) {
+    ta = elm(arrDraft[x][0]);
+    if(arrDraft[x][1] != draftGetLength(ta)) {
+      removeClass(ta,'draftSave');
+      addClass(ta,'draftNotSave');
+    }
+  } 
+}
+//register textarea
 function setDraftElement(textareaParam) { 
   var x, add=1, arrDraftLength = arrDraft.length; 
   for (x=0;x<arrDraftLength;x++) { 
@@ -131,19 +128,28 @@ function setDraftElement(textareaParam) {
     }; 
   }; 
   if(add==1) { 
-    arrDraft.push([textareaParam.id,0,getTime(),0]); 
+    arrDraft.push([textareaParam.id,0]); 
   }; 
 };
-
-function draftEventHandler() { setDraftElement(this); handleDraft(); };
-
-function draftSaved(textareaId) {
-  textareaInst = elm(textareaId);
-  if(hasClass(textareaInst,'draftNotSave')) {
-    removeClass(textareaInst,'draftNotSave');
-  }; 
-  addClass(textareaInst,'draftSave');
+//initiate timer, check not saved
+function startDraftTimer() {
+  if(timerRunning === false) {
+    draftTimeout = setTimeout(draftTimerHandler, draftTimer);
+    timerRunning = true;
+  }
+  draftIsSavedSetClass();
 }
+function draftTimerHandler() {
+  draftDoSave();
+  draftTimeout = setTimeout(draftTimerHandler, draftTimer);
+  if(draftTimeoutCounter > 3) {
+    draftTimeoutCounter = 0;
+    timerRunning = false;
+    clearTimeout(draftTimeout);
+  }
+}
+//register ib keyup
+function draftEventHandler() { setDraftElement(this); startDraftTimer(); };
 
 //---popup opening
 function openPopup(href) { window.open(href,'fpopup','scrollbars='+gup("scrollbars",href)+',toolbar='+gup("toolbar",href)+',menubar='+gup("menubar",href)+',status='+gup("status",href)+',resizable='+gup("resizable",href)+',width='+gup("width",href)+',height='+gup("height",href)+''); };
@@ -176,5 +182,18 @@ function onDomReady() {
   //---super note init
   supernote = new SuperNote('supernote', {});
   
+  var arr = elmsByClass('fuvatarswf'), length = arr.length, z;
+  if(length > 0) { 
+    for(z=0;z<length;z++) { 
+      var elmInst = arr[z];
+      var elmImgInst = elm(elmInst.id.replace('fuplay','fuimg'));
+      var width = gup('w',elmImgInst.src);
+      var height =  gup('h',elmImgInst.src);
+      swfobject.embedSWF("/fuvatar/fuplay.swf", elmInst.id, width, height, "9.0.115", "expressInstall.swf",{u:elmInst.id.replace('fuplay',''),time:gup('t',elmImgInst.src)},{allowFullScreen:"true"});    
+    }; 
+  };
 };
+function datePickerInit() {
+  datePickerController.create();
+}
 DOMReady(onDomReady);

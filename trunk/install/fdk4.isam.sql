@@ -212,6 +212,7 @@ CREATE TABLE sys_pages_items (
      , cnt smallint unsigned not null default 0
      , tag_weight mediumint unsigned default 0
      , location VARCHAR(100) default null
+     , public TINYINT unsigned NOT NULL DEFAULT 1
      , PRIMARY KEY (itemId)
 )  ;
 CREATE INDEX `item-itemIdTop` ON sys_pages_items (itemIdTop ASC);

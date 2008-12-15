@@ -226,7 +226,7 @@ class fSystem {
     	$arr = explode(" ",$datein);
     	$da = explode("-",$arr[0]);
     	if(count($da)==3){
-    		if(checkdate($da[1],$da[2],$da[0])) $ret=true;
+    		if(checkdate(($da[1]*1),($da[2]*1),($da[0]*1))) $ret=true;
     	}
     	return $ret;
     }

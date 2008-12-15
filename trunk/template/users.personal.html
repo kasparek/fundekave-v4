@@ -60,4 +60,43 @@
 <textarea name="infoabout" id="userabout" class="draftable" />{USERABOUT}</textarea>{USERABOUTTOOLBOX}<br />
 <input type="submit" name="sava" value="Uložit" class="button submit" />
 </fieldset>
+<fieldset>
+<legend>Webcam nastaveni</legend>
+<label for="campublic">Webcam vidi</label><select id="campublic" name="campublic">
+<option value="0">Vsichni</option>
+<option value="1"<!-- BEGIN campublicregistered --> selected="selected"<!-- END campublicregistered -->>Jen registrovani</option>
+<option value="2"<!-- BEGIN campublicfriends --> selected="selected"<!-- END campublicfriends -->>Jen pratele</option>
+<option value="3"<!-- BEGIN campublicchosen --> selected="selected"<!-- END campublicchosen -->>Jen vybrani</option>
+</select><br />
+<div id="camChosenBox">
+<label for="camchosen">Vybrani</label><input type="text" id="camchosen" name="camchosen" value="{CAMCHOSEN}" />
+<script type="text/javascript">
+function localOnReady() {
+  if(elm("campublic").selectedIndex !== 3) elm("camChosenBox").style.display = 'none';
+  addEvent(elm("campublic"),'change',function() { elm("camChosenBox").style.display = (elm("campublic").selectedIndex === 3)?('block'):('none'); });
+}
+DOMReady(localOnReady);
+</script>
+</div> 
+<label for="camavatar">Jako avatar</label>
+<select id="camavatar" name="camavatar">
+<option value="0">Nepouzivat</option>
+<option value="1"<!-- BEGIN camavatar --> selected="selected"<!-- END camavatar -->>Pouzivat automaticky</option>
+</select>
+<br />
+<label for="camresolution">Velikost</label>
+<select id="camresolution" name="camresolution">
+<option value="0">160 x 120 px</option>
+<option value="1"<!-- BEGIN camresolution1 --> selected="selected"<!-- END camresolution1 -->>320 x 240 px</option>
+</select>
+<br />
+<label for="caminterval">Interval [3-60]</label><input type="text" id="caminterval" name="caminterval" value="{CAMINTERVAL}" class="xShort" /> vterin<br />
+<label for="camquality">Kvalita [0-100]</label><input type="text" id="camquality" name="camquality" value="{CAMQUALITY}" class="xShort" /> %<br />
+<label for="cammotion">Reaguje na pohyb</label><select id="cammotion" name="cammotion">
+<option value="1">Zapnuto</option>
+<option value="0"<!-- BEGIN cammotion --> selected="selected"<!-- END cammotion -->>Vypnuto</option>
+</select><br />
+
+<input type="submit" name="sava" value="Uložit" class="button submit" />
+</fieldset>
 </form>

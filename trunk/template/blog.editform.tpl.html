@@ -1,6 +1,10 @@
-<form action="javascript:void(null);" onsubmit="submitBloged();" method="post" name="bloged" id="bloged">
+<form action="javascript:void(null);" onsubmit="submitBlogedForm();" method="post" name="blogedForm" id="blogedForm"<!-- BEGIN classnotpublic --> class="notpublished"<!-- END classnotpublic -->>
   <fieldset>
-    <legend>Clanek</legend>
+    <legend>Clanek<!-- BEGIN headernotpublic --> - nepublikovany<!-- END headernotpublic --></legend>
+    <label for="formPublic">Stav</label><select id="formPublic" name="public">
+    <option value="0">Nepublikovany</option>
+    <option value="1"<!-- BEGIN statpublic --> selected="selected"<!-- END statpublic -->>Publikovano</option>
+    </select><br />
   	<label for="formHeader">Nadpis</label><input id="formHeader" name="nadpis" value="{EDITADDON}" type="text"><br />  
   	<label for="formDate">Datum</label><input id="formDate" name="datum" value="{EDITDATE}" type="text" class="short format-d-m-y divider-dot highlight-days-67"><br />
     <label for="formText">Text</label><textarea name="textclanku" id="{TEXTID}" class="draftable">{EDITTEXT}</textarea>{TEXTTOOLBOX}<br />
@@ -8,7 +12,7 @@
     <input name="save" id="submitButtonSave" value="Uložit" class="button submit" type="submit">  
     <!-- BEGIN newdelete -->
      <input type="hidden" name="del" id="bdel" value="0" />
-     <input name="delete" id="submitButtonDelete" value="Smazat" class="button" onclick="if(confirm('Opravdu chcete vymazat tento clánek ?')) {document.getElementById('bdel').value=1; this.submit();} return(false);" type="submit">
+     <input name="delete" id="submitButtonDelete" value="Smazat" class="button" onclick="if(confirm('Opravdu chcete vymazat tento clánek ?')) {elm('bdel').value=1; submitBlogedForm();} return(false);" type="submit">
     <!-- END newdelete -->
     <!-- BEGIN newedit --><input name="nid" value="{EDITID}" type="hidden"><!-- END newedit -->
     <input name="pageid" value="{PAGEID}" type="hidden">

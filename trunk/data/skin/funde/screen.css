@@ -308,6 +308,9 @@ div#mainbar fieldset input {
 	width: 28em;
 	margin-bottom: 0.3em;
 }
+div#mainbar fieldset select {
+	margin-bottom: 0.3em;
+}
 div#mainbar fieldset input.xShort {
 	width: 4em;
 }

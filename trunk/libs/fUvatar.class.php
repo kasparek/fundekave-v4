@@ -1,74 +1,76 @@
 <?php
 class fUvatar {
-	var $id = 1;
+  private $configTemplateUrl;
+
+	var $id;
 	var $gateway = 'index.php';
+ 
 	var $targetFtp;
 	var $targetUrl; 
     var $targetJpg;
+
+    //needed for player
+    var $resolution;
+    var $resolutions = array(
+    0=>array('width'=>160,'height'=>120),
+    1=>array('width'=>320,'height'=>240),
+    );
     var $refresh;
     var $width;
     var $height;
+    
     var $targetAnimGif;
     var $configXMLFilenam = 'config.xml';
     var $exitAfterUpload = true;
     var $iconUrl = 'img/';
     var $onlineIcon = 'fuvatar_online.png';
     var $offlineIcon = 'fuvatar_offline.png';
-    function __construct($paramsArr=array()) {
-            if(!empty($paramsArr)) foreach ($paramsArr as $k=>$v) $this->$k = $v;
-
-    }
-    function process() {
-    	if(!isset($_GET['f'])) $_GET['f'] = '';
-    //---player
-    //---get - f = ch - check - return xml, f = l - load jpg
-    	if($_GET['f']=='ch') {
-    		if(file_exists($this->targetFtp . $this->targetJpg)) {
-    		    $lastMod = filemtime($this->targetFtp . $this->targetJpg);
-    		    $dateLast = date("Y-m-d H:i:s",$lastMod);
-    		}
-    		else {
-    		    $lastMod = 0;
-    		    $dateLast = '';
-    		}
-    		echo '<fuplay><last>'.$dateLast.'</last><timestamp>'.$lastMod.'</timestamp><now>'.date('U').'</now></fuplay>';
-    		if($this->exitAfterUpload == true) exit();
-    	} elseif(isset($_GET['fust'])) {
-    		$this->showStatusIcon($_GET['fust']);
-	    	if($this->exitAfterUpload == true) exit();
-    	}  elseif(isset($_GET['fuco'])) {
-            echo $this->getConfig();
-            if($this->exitAfterUpload == true) exit();
-        } elseif(isset($_POST["futa"])) {
-            $type = 'jpg';
-            if(isset($_GET['futy'])) $type = $_GET['futy'];
-            if ($type=='gif') {
-            	if(!empty($this->targetAnimGif)) {
-            		$filename = $this->targetFtp . $this->targetAnimGif;
-            	   file_put_contents($filename,base64_decode($_POST["futa"]));
-            	   @chmod($filename, 0777);
-            	} 
-            } else {
-                if(!empty($this->targetJpg)) {
-                	$filename = $this->targetFtp . $this->targetJpg;
-                    file_put_contents($filename,base64_decode($_POST["futa"]));
-            	   @chmod($filename, 0777);
-                }
-            }
-            if($this->exitAfterUpload == true) exit();
-        } elseif(isset($_GET['fuca']) || $_GET['f']=='l') {
-          $this->showImg();
-          if($this->exitAfterUpload == true) exit();
+    function __construct($fuvatarId,$paramsArr=array()) {
+        $this->id = $fuvatarId;
+        if(!empty($paramsArr)) foreach ($paramsArr as $k=>$v) $this->$k = $v;
+        if(empty($this->width)) {
+            $res = $this->resolutions[$this->resolution*1];
+            $this->width = $res['width'];
+            $this->height = $res['height'];
         }
     }
+    
+    function upload($imageData) {
+      if(!empty($this->targetJpg)) {
+         	$filename = $this->targetFtp . $this->targetJpg;
+          file_put_contents($filename,base64_decode($imageData));
+         @chmod($filename, 0777);
+       }
+    }
+    
+    function download($username) {
+      if(!empty($this->targetFtp)) {
+         	$filename = $this->targetFtp . $username . '.jpg';
+         	if(file_exists($filename)) {
+            return file_get_contents($filename);
+          }
+       }
+    }
+        
     function getConfig() {
-        $configXML = file_get_contents('config.xml');
+        $configXML = file_get_contents($this->configTemplateUrl);
         return $configXML;
     }
-    function getImg() {
-    	if(file_exists($this->targetFtp . $this->targetJpg)) 
-	    	return '<img class="fuvatarimg" src="'.$this->gateway.'?fure='.$this->refresh.'&fuca='.filemtime($this->targetFtp . $this->targetJpg).'" />';
+    
+    function check() {
+        if(file_exists($this->targetFtp . $this->targetJpg)) {
+		    $lastMod = filemtime($this->targetFtp . $this->targetJpg);
+		    $dateLast = date("Y-m-d H:i:s",$lastMod);
+		}
+		else {
+		    $lastMod = 0;
+		    $dateLast = '';
+		}
+		echo '<fuplay><last>'.$dateLast.'</last><timestamp>'.$lastMod.'</timestamp><now>'.date('U').'</now></fuplay>';
     }
+    
+    
+    
     function isOnline() {
     	$ret = false;
     	if(file_exists($this->targetFtp . $this->targetJpg)) {
@@ -80,13 +82,14 @@ class fUvatar {
     	}
     	return $ret;
     }
-    function getStatusIcon() {
-	    return '<img class="fuvatarstatus" src="'.$this->gateway.'?fust='.$this->id.'&fure='.$this->refresh.'" />';
-    }
+    
+   
+    
     function getSwf() {
-        return '<script type="text/javascript">swfobject.embedSWF("fuplay.swf", "fuplay'.$this->id.'", "'.$this->width.'", "'.$this->height.'", "9.0.115", "expressInstall.swf",{con:"'.$this->targetUrl.'",u:"'.$this->id.'",time:'.$this->refresh.'},{allowFullScreen:"true"});</script>
-<div id="fuplay'.$this->id.'"></div>';
+        return '<div id="fuplay'.$this->id.'" class="fuvatarswf"><img id="fuimg'.$this->id.'" class="fuvatarimg" src="/fuvatar.php?u='.$this->id.'&w='.$this->width.'&h='.$this->height.'&t='.$this->refresh.'" /></div>';
     }
+    
+    
     function showStatusIcon($fuvatarId) {
     	header("Content-type: image/png") ;
     	if($this->isOnline()==true) {
@@ -96,13 +99,8 @@ class fUvatar {
     	}
     	echo file_get_contents($filename);
     }
-    function showImg() {
-    	header("Content-type: image/jpg") ;
-    	if(file_exists($this->targetFtp.$this->targetJpg)) {
-    		echo file_get_contents($this->targetFtp.$this->targetJpg);
-    		//echo file_get_contents($this->targetFtp.'source'.rand(0,5).'.jpg');
-    	}
-    	
+     function getStatusIcon() {
+	    return '<img class="fuvatarstatus" src="'.$this->gateway.'?fust='.$this->id.'&fure='.$this->refresh.'" />';
     }
     
 }
