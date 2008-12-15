@@ -80,7 +80,7 @@ class fUser {
     var $itemsSearch = array();
 
     //---additional user information XML structure
-	var $userXml = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal></user>";
+	var $userXml = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
 	//---default wheather location id - deprecated - not working anymore
 	var $weatherLocationId = 'EZXX0012';
 	
@@ -213,11 +213,6 @@ class fUser {
 				$this->galtype = $vid[9];
 				$this->weatherLocationId = $vid[10];
 				$this->homePageId = '';
-				//---user secondary menu buttons
-				//---DEPRECATED usrmenu
-                //$arr=$db->getAll("SELECT url,name FROM sys_users_buttons WHERE userId='".$this->gid."'");
-				//$this->usrmenu=array();
-				//foreach ($arr as $mnu) $this->usrmenu[]=array('pageId'=>$mnu[0],'name'=>$mnu[1],'typ'=>1);
 			}
 			
 		}
@@ -375,7 +370,22 @@ class fUser {
 		$db->query("delete from sys_users_logged where DATE_ADD(dateUpdated,INTERVAL " . $casout." MINUTE) < NOW()");
 		if ($idlog!=0) $db->query("delete from sys_users_logged where userId='" . $idlog."'");
 	}
-	
+	function getXMLVal($branch,$node,$default='') {
+	    $xml = new SimpleXMLElement($this->userXml);
+	    
+	    if(isset($xml->$branch)) {
+	       if(isset($xml->$branch->$node)) {
+	           return $xml->$branch->$node;
+	       }
+	    }
+	    
+	    return $default;
+	}
+	function setXMLVal($branch,$node,$value) {
+	    $xml = new SimpleXMLElement($this->userXml);
+	    $xml->$branch->$node = $value;
+	    $this->userXml = $xml->asXML();
+	}
 	function infowrt(){
 		Global $db;
 		$sUser = new fSqlSaveTool('sys_users','userId');
@@ -395,10 +405,11 @@ class fUser {
 		$db->query($dot);
 		//--refresh user information in session
 		$this->refresh();
+
 	}
 	
 	function register(){
-		$reservedUsernames = array('admin','administrator','test','aaa');
+		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
 		if(isset($_REQUEST["addusr"]) && $this->gid==0) {
 				global $db;
 				$jmenoreg = trim($_REQUEST["jmenoreg"]);
@@ -948,5 +959,39 @@ class fUser {
       global $db;
       if($userId==-1) $userId = $this->gid;
       $db->query('insert into sys_users_cache (userId,name,value,dateUpdated) values ("'.$userId.'","'.$key.'","'.$value.'",now()) on duplicate key update dateUpdated=now(),value = "'.$value.'"');
+    }
+    //---fuvatar support functions
+    function fuvatarAccess($userName) {
+        global $db;
+        $ret = false;
+        if($userName == $this->gidname) $ret = true;
+        else {
+            $row = $db->getRow('select userId,info from sys_users where name="'.$userName.'"');
+            if(!empty($row)) {
+                $xml = new SimpleXMLElement($row[1]);
+                switch ($xml->webcam->public) {
+                    case 0:
+                        $ret = true;
+                        break;
+                    case 1:
+                        if($user->gid > 0) $ret = true;
+                        break;
+                    case 2:
+                        $arr = $this->getFriends($row[0]);
+                        if(!empty($arr)) {
+                            if(in_array($this->gid,$arr)) $ret = true;
+                        }
+                        break;
+                    case 3:
+                        $chosen = $xml->webcam->chosen;
+                        if(!empty($chosen)) {
+                            $arrChosen = explode(',',$chosen);
+                            if(in_array($this->gid,$arrChosen)) $ret = true;
+                        }
+                        break;
+                }
+            }
+        }
+        return $ret;
     }
 }

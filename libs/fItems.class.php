@@ -97,7 +97,8 @@ class fItems extends fQueryTool {
     private $fQuerySelectDefault = array('itemId'=>'i.itemId','userId'=>'i.userId','pageId'=>'i.pageId',
         'text'=>'i.text',
         'enclosure'=>'i.enclosure','tag_weight'=>'i.tag_weight',
-        'pageIdBottom'=>'i.pageIdBottom','itemIdBottom'=>'i.itemIdBottom'
+        'pageIdBottom'=>'i.pageIdBottom','itemIdBottom'=>'i.itemIdBottom',
+        'public'=>'i.public'
         );
     private $fQuerySelectType = array(
         'galery'=>array('galeryDir'=>'p.galeryDir', 
@@ -128,8 +129,9 @@ class fItems extends fQueryTool {
             ),
         );
     function initDetail($itemId) {
+        global $user;
         $itemCheck = $this->db->getRow("select itemIdTop,typeId from sys_pages_items where itemId='".$itemId."'");
-        if($itemCheck[0]>0) {
+        if($itemCheck[0] > 0) {
             $this->itemIdInside =$itemId;
             $itemId = $itemCheck[0];
         }
@@ -138,6 +140,10 @@ class fItems extends fQueryTool {
     	    fForum::process($itemId);
     	}
         $this->addWhere("i.itemId='".$itemId."'");
+        
+        if(!fRules::get($user->gid,$user->currentPageId,2)) {
+          $this->addWhere('i.public = 1');
+        }
         return $itemId;
     }
     function initData($typeId='forum',$byPermissions = false,$strictType=false) {
@@ -160,6 +166,10 @@ class fItems extends fQueryTool {
           $this->addJoin('left join sys_pages_items_readed_reactions as u on u.itemId=i.itemId and u.userId="'.$user->gid.'"');
           $this->fQuerySelectDefault['unReadedCnt'] = '(i.cnt-u.cnt)';
         }
+      }
+      
+      if(!fRules::get($user->gid,$user->currentPageId,2)) {
+          $this->addWhere('i.public = 1');
       }
       
       $this->setSelect($this->getTypeColumns($typeId));
@@ -315,11 +325,18 @@ class fItems extends fQueryTool {
   	$tpl->setVariable('PAGEID', $arr['pageId']);
   	$tpl->setVariable('DATELOCAL',$arr['dateLocal']);
   	$tpl->setVariable('DATEISO',$arr['dateIso']);
+  	
+  	if($arr['public'] != 1) {
+  	    $tpl->touchBlock('notpublished');
+  	    $tpl->touchBlock('notpublishedheader');
+  	}
+  	
   	if(isset($arr['name'])) $tpl->setVariable('AUTHOR',$arr['name']);
   	if(!empty($arr['unread'])) $tpl->touchBlock('unread');
   	if($this->enableEdit==true) {
   	 if(isset($arr['editItemId']) && $user->currentPageId == $arr['pageId']) {
   	     $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
+  	     $tpl->setVariable('EDITPAGEID',$arr['pageId'].'u');
   	 }
   	}
   	if($this->showText==true && !empty($arr['text'])) $tpl->setVariable('TEXT',$arr['text']);

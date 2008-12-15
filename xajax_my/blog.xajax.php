@@ -15,8 +15,8 @@ function blog_blogEdit($messageId = 0,$currentPageId=0) {
 	$objResponse->setCharacterEncoding(CHARSET);
 	$objResponse->assign('editnew', 'innerHTML', $data);
 	$objResponse->call('draftSetEventListeners');
-  $objResponse->call('initInsertToTextarea');
-  $objResponse->call('datePickerController.create');
+    $objResponse->call('initInsertToTextarea');
+    $objResponse->call('datePickerInit');
 
 	return $objResponse;
 }
@@ -27,12 +27,18 @@ function blog_processFormBloged($aFormValues) {
 	if(!is_object($_SESSION["user"])) $_SESSION["user"] = new fUser();
 	$user = & $_SESSION["user"];
 	$fBlog = new fBlog($db);
-	$fBlog->process($aFormValues);
-	$data = $fBlog->listAll();
+	
+	$itemId = $fBlog->process($aFormValues);
+	
+	$data = $fBlog->listAll($itemId,true);
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
 	$objResponse->assign('bloged', 'innerHTML', $data);
+	$objResponse->call('draftSetEventListeners');
+    $objResponse->call('initInsertToTextarea');
+    $objResponse->call('datePickerInit');
+    
 	return $objResponse;
 }
 fXajax::register("blog_processFormBloged");

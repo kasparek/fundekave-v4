@@ -20,6 +20,8 @@ left join sys_skin as s on s.skinId=u.skinId
 left join sys_users_friends as f on f.userId='".$user->gid."' and f.userIdFriend=u.userId 
 WHERE u.userId = '".$who."'");
 
+$user->userXml = $arr[4];
+
 $tpl = new fTemplateIT('users.info.tpl.html');
 
 if($who != $user->gid) {
@@ -32,27 +34,26 @@ $tpl->setVariable('AVATAR',$user->showAvatar($who));
 $tpl->setVariable('NAME',$arr[1]);
 $tpl->setVariable('EMAIL',$arr[2]);
 if(!empty($arr[3])) $tpl->setVariable('ICQ',$arr[3]);
-
-if(!empty($arr[4])) {
-  $xml = new SimpleXMLElement($arr[4]);
-  $personal = $xml->personal[0];
   
-  $tpl->setVariable("WWW",$personal->www);
-  $tpl->setVariable("MOTTO",$personal->motto);
-  $tpl->setVariable("PLACE",$personal->place);
-  $tpl->setVariable("FOOD",$personal->food);
-  $tpl->setVariable("HOBBY",$personal->hobby);
-  $tpl->setVariable("ABOUT",$personal->about);
-
-  if(!empty($personal->HomePageId)) {
-      $tpl->setVariable("HOMEPAGEID",$personal->HomePageId);
-      $tpl->setVariable("HOMEPAGEUSERNAME",$arr[1]);
-  }
+$tpl->setVariable("WWW",$user->getXMLVal('personal','www'));
+$tpl->setVariable("MOTTO",$user->getXMLVal('personal','motto'));
+$tpl->setVariable("PLACE",$user->getXMLVal('personal','place'));
+$tpl->setVariable("FOOD",$user->getXMLVal('personal','food'));
+$tpl->setVariable("HOBBY",$user->getXMLVal('personal','hobby'));
+$tpl->setVariable("ABOUT",$user->getXMLVal('personal','about'));
+  
+$homePageId = $user->getXMLVal('personal','HomePageId');
+if(!empty($homePageId)) {
+    $tpl->setVariable("HOMEPAGEID",$homePageId);
+    $tpl->setVariable("HOMEPAGEUSERNAME",$arr[1]);
 }
 
 $tpl->setVariable("SKINNAME",$arr[7]);
 $tpl->setVariable("DATECREATED",$arr[5]);
 $tpl->setVariable("DATEUPDATED",$arr[6]);
+
+$fUvatar = new fUvatar($arr[1],array('refresh'=> $user->getXMLVal('webcam','interval'),'resolution'=> $user->getXMLVal('webcam','resolution')));
+$tpl->setVariable("WEBCAM",$fUvatar->getSwf());
 
 $arr = $db->getAll('SELECT u.userId,u.name,f.comment 
 FROM sys_users_friends AS f 
