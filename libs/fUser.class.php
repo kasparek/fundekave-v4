@@ -667,26 +667,7 @@ class fUser {
       }
     
      }
-    
-     		//---DEPRECATED	
-  			//check webcam file
-  			/*
-  			global $user;
-  			$jsname = '';
-  			if($user->idkontrol) {
-  				$webcamFileLive = "data/webcam/wc-".$idusr.".jpg";
-  				if(file_exists($webcamFileLive)) {
-  					$chTime = filemtime($webcamFileLive);
-  					if((date("U")-$chTime)<20) {
-  						//jede live
-  						if(!isset($_SESSION['avatar'][$idusr])) $_SESSION['avatar'][$idusr]=0;
-  						$_SESSION['avatar'][$idusr]++;
-  						$jsname = ' name="avatar'.$idusr.$_SESSION['avatar'][$idusr].'"';
-  					}
-  				}
-  			}
-  			/**/
-  			
+      			
   			$tpl->parse('useravatar');
   			
   			$ret = $this->arrUsers['avatar'][$avatarUserId] = $tpl->get('useravatar');
@@ -974,7 +955,7 @@ class fUser {
                         $ret = true;
                         break;
                     case 1:
-                        if($user->gid > 0) $ret = true;
+                        if($this->gid > 0) $ret = true;
                         break;
                     case 2:
                         $arr = $this->getFriends($row[0]);
@@ -994,4 +975,11 @@ class fUser {
         }
         return $ret;
     }
+    function updateAvatarFromWebcam($filename) {
+        if($this->getXMLVal('webcam','avatar') == 1) {
+            //---RESIZE
+            $resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
+            $iProc = new fImgProcess($filename,WEB_REL_AVATAR . $this->ico,$resizeParams);
+        }
+    } 
 }

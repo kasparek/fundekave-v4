@@ -289,16 +289,57 @@ div#mainbar ul {
 	padding: 1em 0;
 	margin: 0;
 }
-div#mainbar ul li {
+div#mainbar li {
 	padding-left: 10px;
 	list-style: none;
 	background: url("img/arrow-white-bg.gif") no-repeat left center;
 	line-height: 1.8em;
 }
+
+div#mainbar div.vevent ul {
+  display: block;
+  height: 1.8em;
+  background: #ddd;
+  margin-top: 0.5em;
+  padding: 0;
+}
+div#mainbar div.vevent li {
+  padding-left: 5px;
+  padding-right: 5px;
+  background: transparent;
+  list-style-type: none;
+  display: inline;
+  float: left;
+}
+div#mainbar div.hentry ul {
+  display: block;
+  height: 1.8em;
+  background: #ddd;
+  margin-top: 0.5em;
+  padding: 0;
+}
+div#mainbar div.hentry li {
+  padding-left: 5px;
+  padding-right: 5px;
+  background: transparent;
+  list-style-type: none;
+  display: inline;
+  float: left;
+}
+div#mainbar div.vevent li.opposite {
+  float:right;
+}
+div#mainbar div.hentry li.opposite {
+  float:right;
+}
+
 div#mainbar fieldset {
 	margin-bottom: 1em;
 	border: 1px solid #ddd;
 	background: #f0f0f0;
+}
+div#mainbar form.notpublished fieldset{
+  background: #ffe0c0;
 }
 div#mainbar fieldset label {
 	float: left;
@@ -520,21 +561,13 @@ div.mainpanel-content div.hentry h3 {
 div.mainpanel-content div.hentry h3 a {
 	color: black;
 }
+div.mainpanel-content div.notpublished h3 {
+	color: #ff0000;
+}
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
 }
-div#mainbar div.mainpanel-content div.hentry ul {
-	background: #eeeeee;
-	padding: 0.2em 0.6em;
-	margin-top: 1em;
-}
-div.mainpanel-content div.hentry li {
-	background: #dddddd;
-	display: block;
-/*	float: left;*/
-	padding: 0;
-	margin: 0;
-}
+
 div.galleryList div.thumbnail {
 	float: left;
 	margin-right: 15px;
@@ -704,15 +737,15 @@ div.postmess {
 	border-top: 1px dashed #ddd;
 }
 /*POST PAGE*/
-DIV#recipientavatar {
+div#recipientavatar {
   min-width: 10em;
   text-align: center;
 }
-DIV#recipientcombo {
+div#recipientcombo {
   min-width: 10em;
   text-align: center;
 }
-DIV#recipientcombo SELECT {
+div#recipientcombo select {
   width: 7em;
   text-align: left;
 }

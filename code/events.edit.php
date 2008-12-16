@@ -24,22 +24,27 @@ if(isset($_POST["nav"])){
 	$timeEnd = '';
 	$timeStartTmp = trim($_POST['timestart']);
 	if(fSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
-	$timeEndTmp = trim($_POST['timestart']);
+	$timeEndTmp = trim($_POST['timeend']);
 	if(fSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
 	//---check time
 	$dateStart = fSystem::textins($_POST['datestart'],array('plainText'=>1));
 	$dateStart = fSystem::switchDate($dateStart);
 	if(fSystem::isDate($dateStart)) $dateStart .= $timeStart;
 	else fError::addError(ERROR_DATE_FORMAT);
-	$dateEnd = fSystem::textins($_POST['dateend'],array('plainText'=>1));
-	$dateEnd = fSystem::switchDate($dateEnd);
-	if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
+	
 	//---save array
 	$arrSave = array('location'=>fSystem::textins($_POST['place'],array('plainText'=>1))
 	,'addon'=>fSystem::textins($_POST['name'],array('plainText'=>1))
 	,'dateStart'=>$dateStart
 	,'text'=>fSystem::textins($_POST['description'])
 	);
+	
+	$dateEnd = fSystem::textins($_POST['dateend'],array('plainText'=>1));
+	$dateEnd = fSystem::switchDate($dateEnd);
+	if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
+	
+	//print_r($arrSave);
+	//die();
 	if($_POST['category']*1>0) $arrSave['categoryId'] = $_POST['category']*1;
 	
 	if($arrSave['addon']=="") fError::addError(ERROR_NAME_EMPTY);
@@ -48,6 +53,7 @@ if(isset($_POST["nav"])){
 		$arrSave['itemId'] = $user->currentItemId;
 	} else {
 		$arrSave['userId'] = $user->gid;
+		$arrSave['name'] = $user->gidname;
 		$arrSave['typeId'] = $user->currentPage['typeIdChild'];
 		$arrSave['dateCreated'] = 'NOW()';
 		$arrSave['pageId'] = $user->currentPage['typeIdChild'];
@@ -87,8 +93,8 @@ if(isset($_POST["nav"])){
 //---SHOWTIME
 if($user->currentItemId > 0) {
     $fItems->setSelect("itemId,categoryId,location,addon
-    ,date_format(dateStart,'{#date_local#}'),date_format(dateStart,'{#time#}')
-    ,date_format(dateEnd,'{#date_local#}'),date_format(dateEnd,'{#time#}')
+    ,date_format(dateStart,'{#date_local#}'),date_format(dateStart,'{#time_short#}')
+    ,date_format(dateEnd,'{#date_local#}'),date_format(dateEnd,'{#time_short#}')
     ,text,enclosure");
     $arrTmp = $fItems->getItem($user->currentItemId);
     
@@ -100,7 +106,7 @@ if($user->currentItemId > 0) {
 	,'timeStart'=>$arrTmp[5]
 	,'dateEnd'=>$arrTmp[6]
 	,'timeEnd'=>$arrTmp[7]
-	,'description'=>$arrTmp[7]
+	,'description'=>$arrTmp[8]
 	,'flyer'=>$arrTmp[9]);
 	if($arr['timeStart']=='00:00')  $arr['timeStart']='';
 	if($arr['timeEnd']=='00:00')  $arr['timeEnd']='';
@@ -115,7 +121,7 @@ if($user->currentItemId > 0) {
 	,'name'=>''
 	,'dateStart'=>Date("d.m.Y")
 	,'timeStart'=>''
-	,'dateEnd'=>Date("d.m.Y")
+	,'dateEnd'=>''
 	,'timeEnd'=>''
 	,'description'=>''
 	,'flyer'=>'');

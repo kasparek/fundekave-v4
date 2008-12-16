@@ -122,8 +122,8 @@ class fItems extends fQueryTool {
             'startDateIso'=>"date_format(i.dateStart ,'{#date_iso#}')",
             'endDateLocal'=>"date_format(i.dateEnd ,'{#date_local#}')",
             'endDateIso'=>"date_format(i.dateEnd ,'{#date_iso#}')",
-            'startTime'=>"date_format(i.dateStart ,'{#time#}')",
-            'endTime'=>"date_format(i.dateEnd ,'{#time#}')",
+            'startTime'=>"date_format(i.dateStart ,'{#time_short#}')",
+            'endTime'=>"date_format(i.dateEnd ,'{#time_short#}')",
             'dateLocal'=>"date_format(i.dateCreated ,'{#date_local#}')",
             'dateIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"
             ),
@@ -348,11 +348,11 @@ class fItems extends fQueryTool {
   	    }
   	    $tpl->setVariable('LOCATION',$arr['location']);
   	    
-  	    $tpl->setVariable('STARTDATETIMEISO',$arr['startDateIso'].(($arr['startTime']!='00:00:00')?(' '.$arr['startTime']):('')));
-  	    $tpl->setVariable('STARTDATETIMELOCAL',$arr['startDateLocal'].(($arr['startTime']!='00:00:00')?('T'.$arr['startTime']):('')));
+  	    $tpl->setVariable('STARTDATETIMEISO',$arr['startDateIso'].(($arr['startTime']!='00:00')?('T'.$arr['startTime']):('')));
+  	    $tpl->setVariable('STARTDATETIMELOCAL',$arr['startDateLocal'].(($arr['startTime']!='00:00')?(' '.$arr['startTime']):('')));
   	    if(!empty($arr['endDateIso'])) {
-      	    $tpl->setVariable('ENDDATETIMEISO',$arr['endDateIso'].(($arr['endTime']!='00:00')?(' '.$arr['endTime']):('')));
-      	    $tpl->setVariable('ENDDATETIMELOCAL',$arr['endDateLocal'].(($arr['endTime']!='00:00')?('T'.$arr['endTime']):('')));
+      	    $tpl->setVariable('ENDDATETIMEISO',$arr['endDateIso'].(($arr['endTime']!='00:00')?('T'.$arr['endTime']):('')));
+      	    $tpl->setVariable('ENDDATETIMELOCAL',$arr['endDateLocal'].(($arr['endTime']!='00:00')?(' '.$arr['endTime']):('')));
   	    }
   	    
   	    if(!empty($arr['enclosure'])) {
@@ -371,6 +371,8 @@ class fItems extends fQueryTool {
           	    $tpl->setVariable('IMGEVENTTITLE',$arr['addon']);
           	    $tpl->setVariable('IMGEVENTALT',$arr['addon']);
             }
+  	    } else {
+  	        $tpl->setVariable('FLYERTHUMBURLDEFAULT',$user->getSkinCSSFilename() . '/img/flyer_default.png');
   	    }
   	    if($this->showComments == true) {
   	     

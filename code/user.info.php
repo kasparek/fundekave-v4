@@ -52,8 +52,11 @@ $tpl->setVariable("SKINNAME",$arr[7]);
 $tpl->setVariable("DATECREATED",$arr[5]);
 $tpl->setVariable("DATEUPDATED",$arr[6]);
 
-$fUvatar = new fUvatar($arr[1],array('refresh'=> $user->getXMLVal('webcam','interval'),'resolution'=> $user->getXMLVal('webcam','resolution')));
-$tpl->setVariable("WEBCAM",$fUvatar->getSwf());
+$fUvatar = new fUvatar($arr[1],array('targetFtp'=>ROOT.'tmp/fuvatar/','refresh'=> $user->getXMLVal('webcam','interval'),'resolution'=> $user->getXMLVal('webcam','resolution')));
+//check if has any image from webcam
+if($fUvatar->hasData()) {
+    $tpl->setVariable("WEBCAM",$fUvatar->getSwf());
+}
 
 $arr = $db->getAll('SELECT u.userId,u.name,f.comment 
 FROM sys_users_friends AS f 

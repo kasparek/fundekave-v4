@@ -232,8 +232,8 @@ class fSystem {
     }
     static function isTime($time) {
         $arrTime = explode(':',$time);
-        if (count($arrTime)==2) {
-        	if($arrTime[0]<24 && $arrTime[1]<60 && $arrTime[0]>0 && $arrTime[1]>0) return true;
+        if (count($arrTime) >= 2) {
+        	if($arrTime[0] < 24 && $arrTime[1] < 60 && $arrTime[0] >= 0 && $arrTime[1] >= 0) return true;
         }
     }
     function ip2num($ip) {

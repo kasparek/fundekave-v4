@@ -21,17 +21,7 @@ function user_switchFriend($userIdFriend,$elementId='') {
 	else $objResponse->assign($elementId, 'innerHTML', $ret);
 	return $objResponse;
 }
-function user_logout() {
-  global $user;
-  if(!is_object($_SESSION["user"])) $_SESSION["user"] = new fUser();
-	$user = & $_SESSION["user"];
-	$user->smazoldid($this->gid);
-  $user->idkontrol = false;
-  $user->gid = 0;
-  $user->refresh();
-  $user->currentPageId = '';
-  return true;
-}
+
 function user_tag($itemId) {
   global $user;
   $itemId = substr($itemId,1);
@@ -56,5 +46,3 @@ function user_tag($itemId) {
 }
 fXajax::register('user_tag');
 fXajax::register('user_switchFriend');
-fXajax::register('user_logout');
-?>

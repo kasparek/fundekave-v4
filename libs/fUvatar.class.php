@@ -40,6 +40,9 @@ class fUvatar {
          	$filename = $this->targetFtp . $this->targetJpg;
           file_put_contents($filename,base64_decode($imageData));
          @chmod($filename, 0777);
+         //---call to change avatar if auto change is set to true
+         global $user;
+         $user->updateAvatarFromWebcam($filename);
        }
     }
     
@@ -54,12 +57,36 @@ class fUvatar {
         
     function getConfig() {
         $configXML = file_get_contents($this->configTemplateUrl);
-        return $configXML;
+        $xml = new SimpleXMLElement($configXML);
+        //---change base config by user settings
+        global $user;
+        //default use 160x120
+        $xml->conf->mode->width = $this->resolutions[0]['width'];
+        $xml->conf->mode->height = $this->resolutions[0]['height'];
+
+        $resolution = (int) $user->getXMLVal('webcam','resolution');
+        if($resolution > 0) {
+            //use 320x240 or else
+            $xml->conf->mode->width = $this->resolutions[$resolution]['width'];
+            $xml->conf->mode->height = $this->resolutions[$resolution]['height'];
+        }
+        
+        $xml->conf->timeout  = (int) $user->getXMLVal('webcam','interval');
+        
+        $xml->conf->jpegquality = (int) $user->getXMLVal('webcam','quality');
+        if($xml->conf->jpegquality > 95) $xml->conf->jpegquality = 95;
+        if($xml->conf->jpegquality < 0) $xml->conf->jpegquality = 0;
+        
+        $xml->conf->activity->monitor = (int) $user->getXMLVal('webcam','motion');
+        
+        
+        return $xml->asXML();
     }
     
-    function check() {
-        if(file_exists($this->targetFtp . $this->targetJpg)) {
-		    $lastMod = filemtime($this->targetFtp . $this->targetJpg);
+    function check($username) {
+        $filename = $this->targetFtp . $username . '.jpg';
+        if(file_exists($filename)) {
+		    $lastMod = filemtime($filename);
 		    $dateLast = date("Y-m-d H:i:s",$lastMod);
 		}
 		else {
@@ -84,7 +111,9 @@ class fUvatar {
     }
     
    
-    
+    function hasData() {
+        return file_exists($this->targetFtp . $this->id . '.jpg');
+    }
     function getSwf() {
         return '<div id="fuplay'.$this->id.'" class="fuvatarswf"><img id="fuimg'.$this->id.'" class="fuvatarimg" src="/fuvatar.php?u='.$this->id.'&w='.$this->width.'&h='.$this->height.'&t='.$this->refresh.'" /></div>';
     }
