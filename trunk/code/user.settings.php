@@ -35,7 +35,7 @@ if(isset($_POST['nav'])) {
 		$user->setXMLVal('webcam','resolution',(int) $_POST['camresolution']);
 		
     $interval = (int) $_POST['caminterval'];
-		if($interval<0) $interval = 0;
+		if($interval<2) $interval = 2;
 		if($interval>100) $interval = 100;
 		$user->setXMLVal('webcam','interval',$interval);
 		

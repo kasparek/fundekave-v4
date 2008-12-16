@@ -28,7 +28,10 @@ if(isset($fuvatarFlag)) {
      if(isset($_GET['f'])) $function = $_GET['f'];
      if($function == 'ch') {
          //---check time
-         $fUvatar->check();
+         if(isset($_GET['u'])) {
+            $username = $_GET['u'];
+            $fUvatar->check($username);
+         }
      } else {
             //---get image
             //---check rules

@@ -23,6 +23,7 @@ class fQueryTool  {
     'date_iso' => '%Y-%m-%d',
     'date_local' => '%d.%m.%Y',
     'time' => '%T',
+    'time_short' => '%H:%i',
     'datetime_iso' => '%Y-%m-%d %T',
     'datetime_iso' => '%Y-%m-%dT%T',
     'datetime_local' => '%T %d.%m.%Y',

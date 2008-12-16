@@ -109,14 +109,7 @@ if($user->currentPageAccess == true) {
 
 //----DEBUG
 if(isset($_GET['d'])) { fSystem::profile('AFTER CONTENT'); }
-
-/*FIXME: need some enhancements because now its called on every switch page
-if($user->idkontrol) {
-  $xajax = fXajax::init();
-  $xajax->registerFunction('user_logout');
-  $onunload = 'xajax_user_logout();';
-}
-*/    
+ 
 //----------------	generate page	----------------------------------------
 
 //---ERROR MESSAGES

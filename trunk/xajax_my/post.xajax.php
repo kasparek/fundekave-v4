@@ -9,10 +9,7 @@ function post_setRecipientAvatarFromInput($recipientName) {
 	$recipientId = 0;
 	$recipientId = $user->getUserIdByName($recipientName) * 1;
 	if($recipientId==0) $recipientName='';
-	$data = $user->showAvatar($recipientId)
-			.'<br />'.$recipientName.
-			(($recipientId>0)?((($user->pritel($recipientId))?('')
-:('<br /><input id="switchFriendButt" type="button" onClick="xajax_user_switchFriend(\''.$recipientId.'\');return(false);" value="'.LABEL_FRIEND_ADD.'" class="button tlacitko" title="Pøidat / odebrat kamarada" />'))):(''));
+	$data = $user->showAvatar($recipientId);
 	
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
@@ -26,10 +23,7 @@ function post_setRecipientAvatarFromBooked($recipientId) {
 	$user = & $_SESSION["user"];
 	$data = '';
 	$recipientId = $recipientId * 1;
-	$data = $user->showAvatar($recipientId)
-			.'<br />'.$user->getgidname($recipientId).
-			(($recipientId>0)?((($user->pritel($recipientId))?('')
-:('<br /><input id="switchFriendButt" type="button" onClick="xajax_user_switchFriend(\''.$recipientId.'\');return(false);" value="'.LABEL_FRIEND_REMOVE.'" class="button tlacitko" title="Pøidat / odebrat kamarada" />'))):(''));
+	$data = $user->showAvatar($recipientId);
 
 	$objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
@@ -40,7 +34,3 @@ function post_setRecipientAvatarFromBooked($recipientId) {
 }
 fXajax::register('post_setRecipientAvatarFromBooked');
 fXajax::register('post_setRecipientAvatarFromInput');
-//delete after testing
-//$reqSetRecipient->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho_book');
-//$reqSetRecipientFromInput->setParameter(0, XAJAX_INPUT_VALUE, 'prokoho');
-?>

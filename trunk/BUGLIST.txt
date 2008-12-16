@@ -1,22 +1,10 @@
 fuvatar - prava na prohlizeni
 
-tipy -  popis nejde editovat, cas, a udelat neco z datumem do
-
-blog - mazani, publikovani
-
-draftable - divne to uklada a zobrazuje
-
 
 
 galerie - pocet obr, rozliseni
 
 pager do galerie i nahoru
-
-zvetsovani textarey
-
-zive do oblibenych
-
-klikani mezi nastavenim, statistikou - sekundarni menu - prepinani
 
 sprateleny v galerii
 

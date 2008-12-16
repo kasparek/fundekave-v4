@@ -2,17 +2,20 @@
 <div id="{ITEMIDHTML}" class="hentry<!-- BEGIN notpublished --> notpublished<!-- END notpublished -->">
 	<!-- BEGIN heading --><h2 class="entry-title summary"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
 	<!-- BEGIN notpublishedheader --><h3>Nepublikovano</h3><!-- END notpublishedheader -->
+	<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
 	<div class="entry-content">{TEXT}</div>
-	<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span> 
-  <span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span> 
+	
   <!-- BEGIN toolbar -->
   <ul>
+  <!-- BEGIN edit --><li class="opposite"><a href="?k={EDITPAGEID}&i={EDITID}" class="editLink" onclick='xajax_blog_blogEdit("{EDITID}");return false;'>Upravit</a></li><!-- END edit -->
+  <li class="opposite"><span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span></li>
+
   <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
   <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
   <!-- BEGIN commentlink --><li><a href="{COMMENTLINK}" class="commentsLink">Diskuze [<!-- BEGIN registered --><span class="newposts">NOVÉ _ {ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></li><!-- END commentlink -->
-  <!-- BEGIN edit --><li><a href="?k={EDITPAGEID}&i={EDITID}" class="editLink" onclick='xajax_blog_blogEdit("{EDITID}");return false;'>Upravit</a></li><!-- END edit -->
   </ul>
   <!-- BEGIN toolbar -->
+  
 </div>
 <!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
 <!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
