@@ -1,16 +1,4 @@
-fuvatar - prava na prohlizeni
-
-
-
-galerie - pocet obr, rozliseni
-
-pager do galerie i nahoru
-
 sprateleny v galerii
-
-po otevreni v klubech do noveho okna nejde otevrit nova dalsi sekce
-
-po ulozeni v blogu
 
 full text hledani v prispevcich .. nefunguje kombinace co od koho ... vypada to spis na or
 

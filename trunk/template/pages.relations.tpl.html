@@ -1,15 +1,18 @@
 <script language="javascript" src="js/OptionTransfer.js"></script>
 <script language="javascript">
-var opt = new OptionTransfer("listLeft","listRight");
-opt.setAutoSort(true);
-opt.setDelimiter(";");
-//opt.setstaticoptionregex("^(bill|bob|matt)$");
-opt.saveRemovedLeftOptions("removedLeft");
-opt.saveRemovedRightOptions("removedRight");
-opt.saveAddedLeftOptions("addedLeft");
-opt.saveAddedRightOptions("addedRight");
-opt.saveNewLeftOptions("newLeft");
-opt.saveNewRightOptions("newRight");
+var opt;
+function optInit() {
+  opt = new OptionTransfer("listLeft","listRight");
+  opt.setAutoSort(true);
+  opt.setDelimiter(";");
+  opt.saveRemovedLeftOptions("removedLeft");
+  opt.saveRemovedRightOptions("removedRight");
+  opt.saveAddedLeftOptions("addedLeft");
+  opt.saveAddedRightOptions("addedRight");
+  opt.saveNewLeftOptions("newLeft");
+  opt.saveNewRightOptions("newRight");
+}
+DOMReady(optInit());
 </script>
 <fieldset>
 <legend>Spratelene stranky</legend>

@@ -65,6 +65,7 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     	
     	
     	if($perPage<$totalItems) {
+    	 $tpl->setVariable("PAGERSTART",$pager->links);
     		$tpl->setVariable("PAGEREND",$pager->links);
     	}
     	$tpl->edParseBlock("thumbnails");
