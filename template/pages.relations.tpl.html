@@ -12,7 +12,7 @@ function optInit() {
   opt.saveNewLeftOptions("newLeft");
   opt.saveNewRightOptions("newRight");
 }
-DOMReady(optInit());
+DOMReady(optInit);
 </script>
 <fieldset>
 <legend>Spratelene stranky</legend>
@@ -48,4 +48,3 @@ DOMReady(optInit());
 <input type="hidden" name="newRight" id="newRight" value="" />
 <input type="submit" name="save" value="Ulozit" class="button submit" />
 </fieldset>
-<script type="text/javascript">opt.init();</script>

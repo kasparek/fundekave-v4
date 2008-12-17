@@ -89,6 +89,19 @@ class fPages extends fQueryTool {
 	    $db->query("delete from sys_pages_counter where pageId='".$pageId."'");
 	    $db->query("delete from sys_users_perm where pageId='".$pageId."'");
 	    $db->query("delete from sys_pages where pageId='".$pageId."'");
+	    
+	    $db->query("delete from sys_leftpanel_pages where pageId='".$pageId."'");
+	    $db->query("delete from sys_leftpanel_users where pageId='".$pageId."'");
+	    $db->query("delete from sys_users_pocket where pageId='".$pageId."'");
+	    $db->query("delete from sys_pages_properties where pageId='".$pageId."'");
+	    $db->query("delete from sys_pages_items where pageId='".$pageId."'");
+	    $db->query("delete from sys_menu where pageId='".$pageId."'");
+	    $db->query("delete from sys_menu_secondary where pageId='".$pageId."'");
+	    $db->query("delete from sys_users_perm_cache where pageId='".$pageId."'");
+	    
+	    /*
+	    TODO: clean polls
+	    */
 	}
 
 	static function cntSet($pageId,$increment=true,$refresh=false) {

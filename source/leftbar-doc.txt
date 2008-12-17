@@ -1,0 +1,10 @@
+
+-defaultni skupina pro typ stranky
+
+-moznost menit poradi pro urcitou stranku
+-moznost pridavat a odebirat pro urcitou stranku
+-moznost vypnout defaultni
+
+-moznost uzivatele menit poradi a minimalizovat
+
+-sprava leftbar functions

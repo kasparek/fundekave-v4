@@ -1,13 +1,13 @@
 <form action="{FORMACTION}" method="post" enctype="multipart/form-data">
 
-<script type="text/javascript" src="./js/domtab.js"></script>
-
 <div class="domtab">
   <ul class="domtabs">
     <li><a href="#ft1">Nastaveni</a></li>
     <li><a href="#ft2">Prava</a></li>
     <li><a href="#ft3">Spratelene stranky</a></li>
     <!-- BEGIN forumspecifictab --><li><a href="#ft4">Nastenka</a></li><!-- END forumspecifictab -->
+    <!-- BEGIN galeryspecifictabs --><li><a href="#ft5">Fotografie</a></li>
+    <li><a href="#ft6">Upload</a></li><!-- END galeryspecifictabs -->
   </ul>
 <div>
 <a name="ft1" id="ft1"></a>
@@ -19,12 +19,12 @@
 <!-- END pageowner -->
     <label>Název stranky</label>
     <input type="text" name="name" value="{PAGENAME}" class="long"><br />
+    <label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
     <!-- BEGIN sadmi -->
     <label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
-    <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}" class="long"><br />
-    <label>Autor stranky</label><input type="text" name="authorcontent" value="{PAGEAUTHOR}" class="long"><br />
-    <label>Datum obsahu</label><input type="text" name="datecontent" value="{DATECONTENT}" class="long"><br />
-    <label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="long"><br />
+    <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}"><br />
+    <label>Autor stranky</label><input type="text" name="authorcontent" value="{PAGEAUTHOR}" class="short"><br />
+    <label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="short"><br />
     <!-- BEGIN categories -->
     <label>Kategorie</label><select name="category">{CATEGORYOPTIONS}</select><br />
     <!-- END categories -->
@@ -42,9 +42,19 @@
     <label>Zahlaví</label>
     <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
     
+    <!-- BEGIN galeryspecific -->
+    <label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" class="short" /><br />
+    <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
+    <!-- BEGIN enhancendgalery -->
+    <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
+    <input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
+    <label>Styl nahledu</label><select name="xthumbstyle">{THUMSTYLEOPTIONS}</select><br />
+    <!-- END enhancendgalery -->
+    <!-- END galeryspecific -->
+    
 <input type="submit" name="save" value="Uložit" class="button submit" />
 <!-- BEGIN delpage -->
-<input type="submit" name="del" value="Smazat stránku" onClick="if(confirm('Opravdu chcete mazat?')) return(true); else return(false);" class="button" />
+<input type="submit" name="del" value="Smazat stránku" onClick="if(confirm('Opravdu chcete mazat tuto stranku?')) return(true); else return(false);" class="button" />
 <!-- END delpage -->    
 
 </fieldset>
@@ -69,6 +79,48 @@
 <input type="submit" name="save" value="Uložit" class="button submit" />
 </div>
 <!-- END forumspecific -->
+
+<!-- BEGIN galeryspecificcontent -->
+<div>
+<a name="ft5" id="ft5"></a>
+<fieldset>
+<legend>Seznam fotografii</legend>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+<label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
+<label>Diskuze u foto:</label><select name="fotoforum">
+<option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce na fotky</option>
+<option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
+<option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
+</select>
+<label>Řadit:</label><select name="galeryorder">
+<option value="0">Podle jména</option>
+<option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
+</select>
+<table>
+<!-- BEGIN gfoto -->
+  <tr>
+  <td align="center"><img src="{FTHUMBURL}" title="{FNAME}" alt="{FNAME}"></td>
+  <td><textarea name="fot[{FID}][comm]" id="galfoto{FID}" class="draftable">{FCOMMENT}</textarea><br />
+  <label>Datum fotky:</label><input type="text" name="fot[{FID}][date]" id="foto{FID}" value="{FDATE}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
+  <label>Smazat:</label><input type="checkbox" name="delfoto[]" value="{FID}" class="checkbox" /></td>
+</tr>
+<!-- END gfoto -->
+</table>
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+</fieldset>
+</div>
+
+<div>
+<a name="ft6" id="ft6"></a>
+<fieldset>
+<legend>Nahrat fotografie</legend>
+<!-- BEGIN uploadinput -->
+<label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br />
+<!-- END uploadinput -->
+<input type="submit" name="savegal" value="Uložit" class="button submit" />
+</fieldset>
+</div>
+<!-- END galeryspecificcontent -->
     
 </div>
 </form>

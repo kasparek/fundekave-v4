@@ -132,7 +132,8 @@ if(!empty($arrXajax)) {
     	}
     }
 }
-
+$JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLite-1.0.js');
+$JSWrapper->addFile(ROOT.ROOT_WEB.'js/supernote.js');
 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 if($wrap = $JSWrapper->get()) {
     $TOPTPL->setVariable("WRAPPEDJS", $wrap);
@@ -189,6 +190,12 @@ if(!empty($lomenuItems)) {
   }
 }
 //---LEFT PANEL POPULATING
+if($user->gid==1) {
+    $fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId'],$user->currentPage['typeIdChild']);
+    $fLeftpanel->load();
+    $fLeftpanel->show();
+}
+ else {
 $rh = $db->getAll("select lf.functionName,
 	lf.name 
     from sys_leftpanel as l 
@@ -199,7 +206,7 @@ $rh = $db->getAll("select lf.functionName,
 if(!empty($rh)) {
 	foreach ($rh as $rhitem) {
 		$fnc = $rhitem[0];
-		$letext = fLeftPanel::$fnc();
+		$letext = fLeftPanelPlugins::$fnc();
     if(!empty($letext)) {
       $TOPTPL->setCurrentBlock('sidebar-block');
       if(!empty($rhitem[1]))$TOPTPL->setVariable('SIDEBARHEAD',$rhitem[1]);
@@ -208,7 +215,7 @@ if(!empty($rh)) {
     }
 	}
 }
-
+ }
 //---FOOTER INFO
 $TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
 
@@ -219,9 +226,13 @@ $TOPTPL->setVariable('USERTOOLTIPS',$ttips);
 //--- last check
 //if calendar js and css is needed
 $useCalendar = false;
+$useDomTabs = false;
 foreach ($TOPTPL->blockdata as $item) {
     if(strpos($item, 'format-') !== false) {
         $useCalendar = true;
+    }
+    if(strpos($item, 'domtabs') !== false) {
+        $useDomTabs = true;
     }
 }
 if($user->currentPage['typeId']=='blog') {
@@ -232,6 +243,9 @@ if($user->currentPage['typeId']=='blog') {
 if($useCalendar === true) {
     $TOPTPL->setVariable("CSSSKINCALENDAR", $cssPath);
     $TOPTPL->touchBlock("calendar2"); //---javascript on the end of the page
+}
+if($useDomTabs === true) {
+    $TOPTPL->touchBlock("domtabs2"); //---javascript on the end of the page
 }
 
 

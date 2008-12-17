@@ -19,12 +19,6 @@ class fUvatar {
     var $width;
     var $height;
     
-    var $targetAnimGif;
-    var $configXMLFilenam = 'config.xml';
-    var $exitAfterUpload = true;
-    var $iconUrl = 'img/';
-    var $onlineIcon = 'fuvatar_online.png';
-    var $offlineIcon = 'fuvatar_offline.png';
     function __construct($fuvatarId,$paramsArr=array()) {
         $this->id = $fuvatarId;
         if(!empty($paramsArr)) foreach ($paramsArr as $k=>$v) $this->$k = $v;
@@ -72,17 +66,19 @@ class fUvatar {
         }
         
         $xml->conf->timeout  = (int) $user->getXMLVal('webcam','interval');
+        if(empty($xml->conf->timeout)) $xml->conf->timeout = 3;
         
         $xml->conf->jpegquality = (int) $user->getXMLVal('webcam','quality');
+        if(empty($xml->conf->jpegquality)) $xml->conf->jpegquality = 30;
         if($xml->conf->jpegquality > 95) $xml->conf->jpegquality = 95;
         if($xml->conf->jpegquality < 0) $xml->conf->jpegquality = 0;
         
         $xml->conf->activity->monitor = (int) $user->getXMLVal('webcam','motion');
         
-        
         return $xml->asXML();
     }
     
+    //---online check function for fuplay.swf
     function check($username) {
         $filename = $this->targetFtp . $username . '.jpg';
         if(file_exists($filename)) {
@@ -95,9 +91,7 @@ class fUvatar {
 		}
 		echo '<fuplay><last>'.$dateLast.'</last><timestamp>'.$lastMod.'</timestamp><now>'.date('U').'</now></fuplay>';
     }
-    
-    
-    
+ 
     function isOnline() {
     	$ret = false;
     	if(file_exists($this->targetFtp . $this->targetJpg)) {
@@ -110,7 +104,7 @@ class fUvatar {
     	return $ret;
     }
     
-   
+    //---print functions for swf
     function hasData() {
         return file_exists($this->targetFtp . $this->id . '.jpg');
     }
@@ -118,18 +112,6 @@ class fUvatar {
         return '<div id="fuplay'.$this->id.'" class="fuvatarswf"><img id="fuimg'.$this->id.'" class="fuvatarimg" src="/fuvatar.php?u='.$this->id.'&w='.$this->width.'&h='.$this->height.'&t='.$this->refresh.'" /></div>';
     }
     
-    
-    function showStatusIcon($fuvatarId) {
-    	header("Content-type: image/png") ;
-    	if($this->isOnline()==true) {
-    		$filename = $this->iconUrl.$this->onlineIcon;
-    	} else {
-	    	$filename =  $this->iconUrl.$this->offlineIcon;
-    	}
-    	echo file_get_contents($filename);
-    }
-     function getStatusIcon() {
-	    return '<img class="fuvatarstatus" src="'.$this->gateway.'?fust='.$this->id.'&fure='.$this->refresh.'" />';
-    }
+    //---get list of online users
     
 }
