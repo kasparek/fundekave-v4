@@ -45,43 +45,37 @@ function showDiaryForm() {
   <!-- END emptydiary -->
   
   <!-- BEGIN diarday -->
-  <p class="diary">
-  <h2>{DAYDATE}</h2>
-    <!-- BEGIN diaryevent --> 
-    <div>
-  		<h3>
-  		<!-- BEGIN labenolink -->
-      {EVENTNAMENOLINK}
-      <!-- END labenolink -->
-  		<!-- BEGIN labelink -->
-      <a href="{EVENTLINK}">{EVENTNAME}</a>
-      <!-- END labelink -->
-      </h3>
-  		<div>
-    		<!-- BEGIN repeatyear -->
-    		<div class="smalltext">opakování ročně</div>{DUMMYRYEAR}
-    		<!-- END repeatyear -->
-    		<!-- BEGIN repeatmonth -->
-    		<div class="smalltext">opakování ročně</div>{DUMMYRMONTH}
-    		<!-- END repeatmonth -->
-  		{EVENTTEXT}
-      </div>
+  <div class="diaryDay">
+      <!-- BEGIN diaryevent --> 
+    <div class="vevent">
+      <span class="abbr" title="{STARTDATETIMEISO}"><abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr></span>
+  		<h2 class="entry-title summary"><!-- BEGIN labelink --><a href="{EVENTLINK}"><!-- END labelink -->{EVENTNAME}<!-- BEGIN eventlinkclose --></a><!-- END eventlinkclose --></h2>
+  		<!-- BEGIN repeatyear --><strong>opakování ročně</strong><!-- END repeatyear -->
+  		<!-- BEGIN repeatmonth --><strong>opakování mesicne</strong><!-- END repeatmonth -->
+  		<!-- BEGIN desc --><div class="description">{EVENTTEXT}</div><!-- END desc -->
+  		
+      <!-- BEGIN toolbar -->
+      <ul>
       <!-- BEGIN eventeventlink -->
-    		<div><a href="{EVENTEVENTLINK}">DETAIL</a></div>
+    		<li><a href="{EVENTEVENTLINK}">Detail</a></li>
     	<!-- END eventeventlink -->
-  		<!-- BEGIN owneravatar -->
-    		<div class="dedit">Autor: <a href="{OWNERLINK}">{OWNERNAME}</a> {OWNERAVATAR}</div>
-    	<!-- END owneravatar -->
     	<!-- BEGIN editlink -->
-    		<div class="dedit"><a href="{EVENTEDITLINK}">Edit</a> |	<a href="{EVENTDELETELINK}"	onclick="if(confirm('Opravdu chcete vymazat tento záznam ?')) return(true); else return(false);">Delete</a></div>
+    		<li class="opposite"><a href="{EVENTDELETELINK}"	onclick="if(confirm('Opravdu chcete vymazat tento záznam ?')) return(true); else return(false);">Delete</a></li>
+        <li class="opposite"><a href="{EVENTEDITLINK}">Edit</a></li>
     	<!-- END editlink -->
+  		<!-- BEGIN owneravatar -->
+    		<li class="opposite"><span class="vcard"><a href="{AUTHORLINK}" class="author url"><span class="fn">{AUTHOR}</span></a></span></li>
+    	<!-- END owneravatar -->
+    	</ul>
+    	<!-- END toolbar -->
   	</div>
     <!-- END diaryevent -->
-  </p>
+  </div>
   <!-- END diarday -->
 
 <!-- BEGIN formhidden -->
 <script type="text/javascript">
   document.getElementById('addform').style.display='none';
+  DD_roundies.addRule('.vevent', 5);
 </script>
 <!-- END formhidden -->

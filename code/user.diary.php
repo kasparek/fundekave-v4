@@ -113,7 +113,7 @@ $tpl->setVariable('REPEATOPTIONS',$repeatOptions);
 
 //--------------vypis udalosti
 $qDiar = new fQueryTool('sys_users_diary as d');
-$qDiar->setSelect("date_format(d.dateEvent,'%d.%m.%Y') as datumcz,name,text,diaryId as id,userId,dateEvent,dateCreated,0 as typ");
+$qDiar->setSelect("date_format(d.dateEvent,'{#date_local#}') as datumcz,name,text,diaryId as id,userId,date_format(dateEvent,'{#date_iso#}') as dateEvent,dateCreated,0 as typ");
 if(!isset($_POST['search'])) {
 	$qDiar->addWhere("YEAR(dateEvent)='".$drok."' AND MONTH(dateEvent)='".$dmesic."'");
 	if($allmonth!=true) $qDiar->addWhere("DAYOFMONTH(dateEvent)='".$dden."'");
@@ -130,7 +130,7 @@ $dot1=$qDiar->buildQuery();
 
 //---pripraveni druheho dotazu na union s akcema
 $qAkce = new fQueryTool('sys_pages_items as e');
-$qAkce->setSelect("date_format(dateStart,'%d.%m.%Y') as datumcz,addon,location,itemId as id,userId,dateStart,dateCreated,3 as typ");
+$qAkce->setSelect("date_format(dateStart,'{#date_local#}') as datumcz,addon,location,itemId as id,userId,date_format(dateStart,'{#date_iso#}') as dateEvent,dateCreated,3 as typ");
 if(!isset($_POST['search'])) {
 	$qAkce->addWhere("YEAR(dateStart)='".$drok."' AND MONTH(dateStart)='".$dmesic."'");
 	if(!$allmonth) $qAkce->addWhere("DAYOFMONTH(dateStart)='".$dden."'");
@@ -169,8 +169,9 @@ $qDiarEvery->addWhere("recurrence in (1,2)");
 $dot3=$qDiarEvery->buildQuery();
 //---konec a kompletace dotazu
 $dot="(".$dot1.") union (".$dot2.") union (".$dot3.") order by dateEvent";
-//echo $dot;
+
 $arr=$db->getAll($dot);
+
 
 if(count($arr)>0) {
 	$oldDate = $arr[0][0];
@@ -179,20 +180,22 @@ if(count($arr)>0) {
 	 $row = array_shift($arr);
 	 
       $tpl->setCurrentBlock('diaryevent');
-	    if($row[7]==3) {
+      $tpl->setVariable('STARTDATETIMELOCAL',$row[0]);
+      $tpl->setVariable('STARTDATETIMEISO',$row[5]);
+      
+      $tpl->setVariable('EVENTNAME',$row[1]);
+	    
+      if($row[7] == 3) {
 	       $tpl->setVariable('EVENTLINK',$user->getUri('i='.$row[4],'event'));
-	       $tpl->setVariable('EVENTNAME',$row[1]);
-	    } else {
-	        $tpl->setVariable('EVENTNAMENOLINK',$row[1]);
+	       $tpl->touchBlock('eventlinkclose');
 	    }
-	    if($row[7]=='1') $tpl->setVariable('DUMMYRYEAR',' ');
-      elseif($row[7]=='2') $tpl->setVariable('DUMMYRMONTH',' ');
+	    if($row[7]=='1') $tpl->touchBlock('repeatyear');
+      elseif($row[7]=='2') $tpl->touchBlock('repeatmonth');
       $tpl->setVariable('EVENTTEXT',nl2br($row[2]));
 	    if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',$user->getUri('i='.$row[3],'event'));
   		if($row[5]!=$user->gid && $row[7]!=0) {
-  		    $tpl->setVariable('OWNERLINK','?k=33&who='.$row[4]);
-  		    $tpl->setVariable('OWNERNAME',$user->getgidname($row[4])); 
-              $tpl->setVariable('OWNERAVATAR',$user->showAvatar($row[4]));
+          $tpl->setVariable('AUTHORLINK','?k=finfo&who='.$row[4]);
+          $tpl->setVariable('AUTHOR',$user->getgidname($row[4])); 
   		} else {
   		    $tpl->setVariable('EVENTEDITLINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));
   		    $tpl->setVariable('EVENTDELETELINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&del='.$row[3]));
@@ -209,7 +212,8 @@ if(count($arr)>0) {
   		if($parseBlock==true) {
   		  //---parse day
   		  $tpl->setCurrentBlock('diarday');
-      	$tpl->setVariable('DAYDATE',$row[0]);
+  		  $tpl->touchBlock('diarday');
+      	
   		  $tpl->parseCurrentBlock(); 
   		  $parseBlock = false;
       } 

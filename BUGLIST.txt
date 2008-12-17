@@ -1,3 +1,8 @@
+TODO: statistiky tagovani
+SELECT u.name,count(t.itemId) as tagged FROM `sys_pages_items_tag` as t join sys_users as u on u.userId=t.userId  where t.tag is not null group by t.userId order by tagged desc
+
+TODO: povolit zapis do diskuze u blogu - prepinani v nastaveni
+
 sprateleny v galerii
 
 full text hledani v prispevcich .. nefunguje kombinace co od koho ... vypada to spis na or
