@@ -617,7 +617,7 @@ div.mainpanel-content div.vevent {
   background: #eee;
   border: 1px solid #999;
 }
-div.mainpanel-content div.vevent div.description {
+div.mainpanel-content div.vevent div.nextToFlyer {
   margin-left: 180px;
 }
 div.mainpanel-content div.vevent img.eventFlyerThumb {

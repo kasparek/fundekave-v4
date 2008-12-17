@@ -1,19 +1,5 @@
 <script language="javascript" src="js/OptionTransfer.js"></script>
-<script language="javascript">
-var opt;
-function optInit() {
-  opt = new OptionTransfer("listLeft","listRight");
-  opt.setAutoSort(true);
-  opt.setDelimiter(";");
-  opt.saveRemovedLeftOptions("removedLeft");
-  opt.saveRemovedRightOptions("removedRight");
-  opt.saveAddedLeftOptions("addedLeft");
-  opt.saveAddedRightOptions("addedRight");
-  opt.saveNewLeftOptions("newLeft");
-  opt.saveNewRightOptions("newRight");
-}
-DOMReady(optInit);
-</script>
+
 <fieldset>
 <legend>Spratelene stranky</legend>
 
@@ -24,7 +10,7 @@ DOMReady(optInit);
 	<select name="listLeft" id="listLeft" multiple size=10 style="width:300px;" ondblclick="opt.transferRight()">
 	  {OPTIONSLEFT}
 	</select><br />
-	Filtr: <input type="text" name="relFiltr" class="short" value="" onkeyup="optSetFilter(this.value);" />
+	Filtr: <input type="text" name="relFiltr" class="short" value="" onkeyup="optSetFilter(this.value,elm('listLeft'));" />
 	</td>
 	<td valign="middle" align="center"><br /><br />
 		<input type="button" class="button" name="right" value="&gt;&gt;" onclick="opt.transferAllRight()" /><br />
@@ -48,3 +34,19 @@ DOMReady(optInit);
 <input type="hidden" name="newRight" id="newRight" value="" />
 <input type="submit" name="save" value="Ulozit" class="button submit" />
 </fieldset>
+
+<script language="javascript">
+var opt;
+function optInit() {
+  opt = new OptionTransfer(elm("listLeft"),elm("listRight"));
+  opt.setAutoSort(true);
+  opt.setDelimiter(";");
+  opt.saveRemovedLeftOptions(elm("removedLeft"));
+  opt.saveRemovedRightOptions(elm("removedRight"));
+  opt.saveAddedLeftOptions(elm("addedLeft"));
+  opt.saveAddedRightOptions(elm("addedRight"));
+  opt.saveNewLeftOptions(elm("newLeft"));
+  opt.saveNewRightOptions(elm("newRight"));
+}
+DOMReady(optInit);
+</script>

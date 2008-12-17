@@ -35,9 +35,8 @@ all browsers that support Javascript.
 */
 //function to search and filter in options array -  kaspparek
 var optBackup = new Array();
-function optSetFilter(text) {
-    obj = document.getElementById('listLeft');
-
+function optSetFilter(text,obj) {
+    
     var re = new RegExp(text, 'i');
     var newArr = new Array();
     var z = 0;
@@ -487,22 +486,14 @@ function OT_setDelimiter(val) { this.delimiter=val; }
 function OT_setAutoSort(val) { this.autoSort=val; }
 function OT_setStaticOptionRegex(val) { this.staticOptionRegex=val; }
 function OT_init() {
-	if(!document.getElementById('listLeft')){alert("OptionTransfer init(): Left select list does not exist in form!");return false;}
-	if(!document.getElementById('listRight')){alert("OptionTransfer init(): Right select list does not exist in form!");return false;}
-	this.left=document.getElementById('listLeft');
-	this.right=document.getElementById('listRight');
-	for(var i=0;i<this.left.options.length;i++) {
+		
+  for(var i=0;i<this.left.options.length;i++) {
 		this.originalLeftValues[this.left.options[i].value]=1;
 		}
 	for(var i=0;i<this.right.options.length;i++) {
 		this.originalRightValues[this.right.options[i].value]=1;
 		}
-	if(this.removedLeftField!=null) { this.removedLeftField=document.getElementById('removedLeft'); }
-	if(this.removedRightField!=null) { this.removedRightField=document.getElementById('removedRight'); }
-	if(this.addedLeftField!=null) { this.addedLeftField=document.getElementById('addedLeft'); }
-	if(this.addedRightField!=null) { this.addedRightField=document.getElementById('addedRight'); }
-	if(this.newLeftField!=null) { this.newLeftField=document.getElementById('newLeft'); }
-	if(this.newRightField!=null) { this.newRightField=document.getElementById('newRight'); }
+	
 	this.update();
 	}
 // -------------------------------------------------------------------
@@ -511,8 +502,8 @@ function OT_init() {
 // -------------------------------------------------------------------
 function OptionTransfer(l,r) {
 	this.form = null;
-	this.left=l;
-	this.right=r;
+	this.left= l;
+	this.right= r;
 	this.autoSort=true;
 	this.delimiter=",";
 	this.staticOptionRegex = "";

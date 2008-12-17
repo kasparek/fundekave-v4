@@ -132,7 +132,7 @@ if(!empty($arrXajax)) {
     	}
     }
 }
-$JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLite-1.0.js');
+$JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLiteCompressed-1.0.js');
 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/supernote.js');
 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 if($wrap = $JSWrapper->get()) {
