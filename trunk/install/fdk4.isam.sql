@@ -2,29 +2,44 @@ CREATE TABLE sys_leftpanel_functions (
     functionName VARCHAR(40) NOT NULL
      , name VARCHAR(40) NOT NULL
      , public TINYINT unsigned NOT NULL DEFAULT 0
+     , userId MEDIUMINT unsigned NOT NULL
+     , content TEXT 
      , PRIMARY KEY (functionName)
 );
 
-CREATE TABLE sys_leftpanel (
+CREATE TABLE sys_leftpanel_defaults (
      leftpanelGroup VARCHAR(10) NOT NULL
      , functionName VARCHAR(40) NOT NULL
      , ord SMALLINT unsigned NOT NULL DEFAULT 0
+     , visible TINYINT unsigned NOT NULL DEFAULT 1
+     , minimized TINYINT unsigned NOT NULL DEFAULT 0
      , PRIMARY KEY (leftpanelGroup, functionName)
 )  ;
-CREATE INDEX leftpanel_group ON sys_leftpanel (leftpanelGroup ASC);
-CREATE INDEX leftpanel_func ON sys_leftpanel (functionName ASC);
+CREATE INDEX leftpanel_group ON sys_leftpanel_defaults (leftpanelGroup ASC);
+CREATE INDEX leftpanel_func ON sys_leftpanel_defaults (functionName ASC);
 
-CREATE TABLE sys_users_leftpanel (
+CREATE TABLE sys_leftpanel_pages (
+     pageId varchar(5) NOT NULL
+     , functionName VARCHAR(40) NOT NULL
+     , ord SMALLINT unsigned DEFAULT NULL
+     , visible TINYINT unsigned DEFAULT NULL
+     , minimized TINYINT unsigned DEFAULT NULL
+     , PRIMARY KEY (pageId, functionName)
+)  ;
+CREATE INDEX leftpanel_group ON sys_leftpanel_pages (pageId ASC);
+CREATE INDEX leftpanel_func ON sys_leftpanel_pages (functionName ASC);
+
+CREATE TABLE sys_leftpanel_users (
   userId MEDIUMINT unsigned NOT NULL
-  , leftpanelGroup VARCHAR(10) NOT NULL
+  , pageId varchar(5) NOT NULL
   , functionName VARCHAR(40) NOT NULL
-  , ord SMALLINT unsigned NOT NULL DEFAULT 0
-  , minimized TINYINT unsigned NOT NULL DEFAULT 0
-  , PRIMARY KEY (userId ,leftpanelGroup, functionName)
+  , ord SMALLINT unsigned DEFAULT NULL
+  , minimized TINYINT unsigned DEFAULT NULL
+  , PRIMARY KEY (userId ,pageId, functionName)
 ) ;
-CREATE INDEX leftpanel_user ON sys_users_leftpanel (userId ASC);
-CREATE INDEX leftpanel_group ON sys_users_leftpanel (leftpanelGroup ASC);
-CREATE INDEX leftpanel_func ON sys_users_leftpanel (functionName ASC);
+CREATE INDEX leftpanel_user ON sys_leftpanel_users (userId ASC);
+CREATE INDEX leftpanel_page ON sys_leftpanel_users (pageId ASC);
+CREATE INDEX leftpanel_func ON sys_leftpanel_users (functionName ASC);
 
 CREATE TABLE sys_sessions (
        sid VARCHAR(32) NOT NULL

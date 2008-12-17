@@ -60,6 +60,7 @@ $sPage = new fPagesSaveTool($typeForSaveTool);
 	}
 	
 	if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') {
+	    if(empty($user->currentPage['pageParams'])) $user->currentPage['pageParams'] = $sPage->defaults['forum']['pageParams'];
     	$xml = new SimpleXMLElement($user->currentPage['pageParams']);
 		$xml->home = fSystem::textins($_POST['forumhome']);
 		$arr['pageParams'] = $xml->asXML();
@@ -117,6 +118,36 @@ $sPage = new fPagesSaveTool($typeForSaveTool);
 	fHTTP::redirect($user->getUri());
 }
 
+if (isset($_POST['del']) && $user->currentPageParam=='e') {
+  if($typeForSaveTool=='galery') {
+    //---delete photo
+  	$dir = $user->currentPage['galeryDir'];
+  	$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->currentPageId."'");
+  	foreach ($arrd as $df) $galery->removeFoto($df);
+  	if(!empty($dir)) {
+  	  fSystem::rm_recursive($galery->_rootImg.$dir);
+  	  $galery->getGaleryData($user->currentPageId);
+  		$cachePath = $galery->getThumbCachePath();
+  		fSystem::rm_recursive($cachePath);
+  		$systemCachePath = $galery->getThumbCachePath($galery->_cacheDirSystemResolution);
+  		fSystem::rm_recursive($systemCachePath);
+  	}
+	}
+	fPages::deletePage($user->currentPageId);
+	fHTTP::redirect($user->getUri('','galer'));
+}
+
+//---SHOW TIME
+/***
+ *TODO:
+ *-kdyz je admin - tlacitko smazat
+ *- kdyz se maze top stranka tak se jen skryje
+ *-   
+ *
+ *
+ *
+ *
+ **/    
 if($user->currentPageParam=='a') {
 	//new page
 	$sPage = new fSqlSaveTool('sys_pages','pageId');
@@ -156,13 +187,73 @@ if($typeForSaveTool == 'forum' || $typeForSaveTool == 'blog') {
 	$tpl->touchBlock('forumspecifictab');
 	//FORUM HOME
 	if(!$home = fUserDraft::get($user->currentPageId.'home')) {
-		$xml = new SimpleXMLElement($pageData['pageParams']);
-		$home = fSystem::textToTextarea($xml->home);
+		if(!empty($pageData['pageParams'])) {
+	       $xml = new SimpleXMLElement($pageData['pageParams']);
+		  $home = fSystem::textToTextarea($xml->home);
+		}
 	}
 	$tpl->setVariable('CONTENT',$home);
 	$tpl->setVariable('HOMEID',$user->currentPageId.'home');
 	$tpl->addTextareaToolbox('CONTENTTOOLBOX',$user->currentPageId.'home');
 }
+
+if($typeForSaveTool == 'galery') {
+  $tpl->touchBlock('galeryspecifictabs');
+  
+  
+  $galery->getGaleryData($user->currentPageId);
+  $galery->getFoto($user->currentPageId,true,(($galery->gOrderItems==1)?('i.dateCreated desc'):('i.enclosure')));
+  
+	$tpl->setVariable('FOTOTOTAL',count($galery->arrData));
+	
+	if($galery->gOrderItems) $tpl->touchBlock('gorddate');
+	$tpl->touchBlock('fforum'.$arr['fotoforum']);
+	
+	if(!empty($galery->arrData)) {
+    	foreach ($galery->arrData as $foto){
+    	    list($date,$time) = explode('T',$foto['dateIso']);
+    	    if($date=='0000-00-00') $date='';
+    	    $exif = exif_read_data(ROOT.ROOT_WEB.$foto['detailUrl']);
+    	    if($exif!==false) {
+    	       
+        	    if(empty($date)) {
+                    $date = date("Y-m-d",$exif['FileDateTime']);
+                    if(isset($exif['DateTimeOriginal'])) {
+                        $da = new DateTime($exif['DateTimeOriginal']);
+                        $date = $da->format("Y-m-d");
+                    }
+                    
+                }
+               
+    	    }
+            
+            $tpl->setCurrentBlock('gfoto');
+    	    $tpl->setVariable('FID',$foto['itemId']);
+    	    $tpl->setVariable('FNAME',$foto['enclosure']);
+    	    $tpl->setVariable('FTHUMBURL',$foto['thumbUrl']);
+    	    $tpl->setVariable('FCOMMENT',$foto['text']);
+    	    
+    	    if($date!='0000-00-00') {
+    	       $tpl->setVariable('FDATE',$date);
+    	    }
+    	    
+    	    
+    	    $tpl->parseCurrentBlock();
+    	}
+    	
+	}
+  
+  
+  $numInputs=7;
+  for ($x=1;$x<$numInputs;$x++) {
+  	$tpl->setCurrentBlock('uploadinput');
+  	$tpl->setVariable('UPLOADINPUTLABEL','Foto '.$x.'.');
+  	$tpl->setVariable('UPLOADINPUTID',$x);
+  	$tpl->parseCurrentBlock();
+  }
+
+}
+
 //---if pageParam = sa - more options to edit on page
 //--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
 if($user->currentPageParam=='sa') {
@@ -176,4 +267,5 @@ if($user->currentPageParam=='sa') {
     $tpl->setVariable('PAGENAMESHORT',$pageData['nameshort']);
     $tpl->setVariable('PAGETEMPLATE',$pageData['template']);
 }
+
 $TOPTPL->addTab(array("MAINHEAD"=>($user->currentPageParam == 'a')?(LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));

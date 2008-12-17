@@ -55,48 +55,48 @@ INSERT INTO `sys_menu` VALUES (7, 'foall', 'Kluby', 1, 7);
 INSERT INTO `sys_menu` VALUES (8, 'bloll', 'Blogy', 1, 8);
 
 truncate sys_leftpanel_functions;
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('pocket', 'Kapsa', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_datum', '', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_logged_list', 'OnLine uživatelé', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_galerie_rnd', 'Galerie', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_akce_rnd', 'Tipy', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_anketa', 'Anketa', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('bookedRelatedPagesList', 'Podobne sledovane', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0);
-INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1);
-#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi', 'Počasí', 1);
-#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi_weatherdotcom', 'Weather', 1);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('pocket', 'Kapsa', 0, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_datum', '', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_logged_list', 'OnLine uživatelé', 0, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_galerie_rnd', 'Galerie', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_akce_rnd', 'Tipy', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_anketa', 'Anketa', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('bookedRelatedPagesList', 'Podobne sledovane', 0, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 0, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1, 1, null);
+#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi', 'Počasí', 1, 1, null);
+#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi_weatherdotcom', 'Weather', 1, 1, null);
 
-truncate sys_leftpanel;
-INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_login', 0);
-INSERT INTO `sys_leftpanel` VALUES ('default', 'pocket', 1);
-INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_anketa', 2);
+truncate sys_leftpanel_defaults;
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pocket', 1, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_anketa', 2, 1, 0);
 
-INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_diar_kalendar', 10);
-INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_akce_rnd', 20);
-INSERT INTO `sys_leftpanel` VALUES ('top', 'rh_galerie_rnd', 40);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 20, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1, 0);
 
-INSERT INTO `sys_leftpanel` VALUES ('default', 'relatedPagesList', 80);
-INSERT INTO `sys_leftpanel` VALUES ('default', 'rh_logged_list', 100);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'relatedPagesList', 80, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_logged_list', 100, 1, 0);
 
 #skupina pro kluby
-INSERT INTO `sys_leftpanel` VALUES ('forum', 'rh_audit_popis', 10);
-INSERT INTO `sys_leftpanel` VALUES ('forum', 'bookedRelatedPagesList', 90);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'rh_audit_popis', 10, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'bookedRelatedPagesList', 90, 1, 0);
 
 #skupina pro blogy
-INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_audit_popis', 10);
-INSERT INTO `sys_leftpanel` VALUES ('blog', 'rh_diar_kalendar', 20);
-INSERT INTO `sys_leftpanel` VALUES ('blog', 'bookedRelatedPagesList', 90);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_audit_popis', 10, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_diar_kalendar', 20, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'bookedRelatedPagesList', 90, 1, 0);
 
 #skupina pro galerie
-INSERT INTO `sys_leftpanel` VALUES ('galery', 'bookedRelatedPagesList', 90);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('galery', 'bookedRelatedPagesList', 90, 1, 0);
 
 #pouze posta
-INSERT INTO `sys_leftpanel` VALUES ('post', 'rh_posta_kdo', 10);
-INSERT INTO `sys_leftpanel` VALUES ('post', 'rh_diar_kalendar', 20);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_posta_kdo', 10, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_diar_kalendar', 20, 1, 0);
 
 truncate sys_menu_secondary;
 INSERT INTO `sys_menu_secondary` VALUES (2, 'fpost', 'Pošta', 0, 0);

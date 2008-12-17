@@ -192,6 +192,14 @@ function onDomReady() {
       swfobject.embedSWF("/fuvatar/fuplay.swf", elmInst.id, width, height, "9.0.115", "expressInstall.swf",{u:elmInst.id.replace('fuplay',''),time:gup('t',elmImgInst.src)},{allowFullScreen:"true"});    
     }; 
   };
+  //init domtabs
+  var arr = elmsByClass('domtabs'), length = arr.length, z;
+  if(length > 0) { 
+    for(z=0;z<length;z++) {
+      var elmInst = arr[z];
+      elmInst.style.display = block;
+    }
+  }
 };
 function datePickerInit() {
   datePickerController.create();

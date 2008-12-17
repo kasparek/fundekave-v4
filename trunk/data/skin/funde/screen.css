@@ -586,7 +586,7 @@ div.galeryThumbs div.hentry {
 	clear: none;
 	margin: 0 0.5em 1em 0.5em;
 	padding: 0.3em 0.6em;
-	height: 200px;
+	/*height: 200px;*/
 	overflow: hidden;
 	border-top: 0;
 	border: 1px solid #ddd;
@@ -814,6 +814,37 @@ div#fcalendar div.calendarNextMonthLink {
 	float: right;
 	text-align: right;
 	border-left: 0;
+}
+/*DOMTABS*/
+div.domtab ul.domtabs
+{
+display: none;
+margin-left: 0;
+padding-left: 0;
+white-space: nowrap;
+}
+
+div.domtab ul.domtabs li
+{
+list-style: none;
+display: inline;
+list-style-type: none;
+}
+
+div.domtab ul.domtabs a { padding: 3px 10px; }
+
+div.domtab ul.domtabs a:link, #navlist a:visited
+{
+color: #000;
+background-color: #ddd;
+text-decoration: none;
+}
+
+div.domtab ul.domtabs a:hover
+{
+color: #000;
+background-color: #eee;
+text-decoration: none;
 }
 
 } /* END MEDIA SCREEN */
