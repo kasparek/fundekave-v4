@@ -40,6 +40,11 @@ class fUser {
 	var $ip = '';
   	var $ipcheck = true;
   	var $ico = AVATAR_DEFAULT;
+  	
+  	var $email;
+  	var $icq;
+  	var $dateCreated;
+  	var $dateLast;
   	//---used when looking after someone informations
 	var $whoIs=0; 
 	//---new post alerting
@@ -80,10 +85,8 @@ class fUser {
     var $itemsSearch = array();
 
     //---additional user information XML structure
-	var $userXml = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
-	//---default wheather location id - deprecated - not working anymore
-	var $weatherLocationId = 'EZXX0012';
-	
+	var $xmlProperties = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
+		
 	function __construct() {
 	    $this->systemmenu = array();
 	    $this->arrFriends = array();
@@ -173,30 +176,11 @@ class fUser {
 		global $db;
 		$this->arrUsers = array();
     $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));		
-		if($this->idkontrol==false){
-			$this->gid = 0;
-			$this->gidname = '';
-			$this->idlogin = ''; 
-			$this->ip = ''; 
-			$this->homePageId = '';
-			$this->skin = 0;
-			$this->skinName='';
-			$this->skinDir = SKIN_DEFAULT;
-			$this->zbanner = 1; 
-			$this->zidico = 1; 
-			$this->zaudico = 1; 
-			$this->usrmenu=array();
-			$this->ico = AVATAR_DEFAULT;
-			$this->ipcheck=1;
-			$this->weatherLocationId = 'EZXX0012';
-			$this->favorite = 0;
-			$this->favoriteCnt = 0;
-			$this->rulezInvalidate();
-		} else { //refresh
+		if($this->idkontrol===true) { //refresh
 			$vid = $db->getRow("SELECT 
             u.name, u.skinId, u.avatar, u.zbanner, u.zavatar,
-            u.zforumico, s.name as skinName, s.dir as skinDir,
-            u.ipcheck, u.zgalerytype, u.weather_loc_id
+            u.zforumico, s.name, s.dir, u.ipcheck, u.zgalerytype, 
+            u.info, u.email, u.icq ,u.dateCreated, u.dateLastVisit 
             FROM sys_users as u 
             LEFT JOIN sys_skin as s ON s.skinId = u.skinId 
             WHERE u.userId='".$this->gid."'");
@@ -211,8 +195,12 @@ class fUser {
 				$this->skinDir = $vid[7];
 				$this->ipcheck = $vid[8];
 				$this->galtype = $vid[9];
-				$this->weatherLocationId = $vid[10];
+				$this->xmlProperties = $vid[10];
 				$this->homePageId = '';
+				$this->email = $vid[11]; 
+				$this->icq = $vid[12];
+				$this->dateCreated = $vid[13];
+				$this->dateLast = $vid[14];
 			}
 			
 		}
@@ -252,18 +240,22 @@ class fUser {
 	function check($ipkontrol=true) {
 		Global $db;
 		if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
-		if($this->idkontrol) { //---check only if user was logged
-    		if((!$ipkontrol || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)){
-    			$this->idkontrol=true;
+		//---ip address checking
+		if($this->idkontrol === true) { //---check only if user was logged
+    		if(($ipkontrol===false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
     			$this->idloginInDb = 'chOK';
     		} else {
-    			$this->idkontrol=false;
-    			if($this->gid!=0) {
-    				$this->refresh(); //---was logged - reset
-    				fError::addError(ERROR_USER_KICKED);
-    			}
+    		  //---user was logged but is lost - do logout acction
+    		  $localUri = $this->getUri();
+    		  
+    		  $this->smazoldid($this->gid);
+    			$this = new fUser();
+    			
+    			fError::addError(ERROR_USER_KICKED);
+    			//---do redirect
+    			fHTTP::redirect($this->getUri());
+    			
     		}
-    		
 		}
 		return($this->idkontrol);
 	}
@@ -274,17 +266,14 @@ class fUser {
 		$this->arrTooltips = array();
 		$this->arrUsers['tooltips'] = array();
 		//security check
-		if($this->idkontrol==false && $this->gid>0) $this->refresh();
+		
+		//---logout action
 		if( $this->currentPageId == 'elogo') {
-		    if($this->idkontrol==true) {
+		    if($this->idkontrol === true) {
+
     			$this->smazoldid($this->gid);
-    			/*
-    			$this->gid = 0;
-                $this->idkontrol = false;
-    			$this->refresh();
-    			$this->currentPageId = '';*/
-    			global $user;
-    			$user = new fUser();
+    			$this = new fUser();
+    			
     			fError::addError(MESSAGE_LOGOUT_OK);
     			fHTTP::redirect('index.php');
             }  
@@ -328,7 +317,7 @@ class fUser {
 		  } else $this->currentPageAccess = true;
 		
 		  //logged user function
-		  if($this->idkontrol) {
+		  if($this->idkontrol === true) {
 		    //---update user information
 			$db->query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(), 
 			location = '".$this->currentPageId."', 
@@ -337,7 +326,7 @@ class fUser {
 			
 			$db->query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->gid."'");
 			
-			if($xajax==false) $db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
+			if($xajax === false) $db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
 		  }
 		}
@@ -371,7 +360,7 @@ class fUser {
 		if ($idlog!=0) $db->query("delete from sys_users_logged where userId='" . $idlog."'");
 	}
 	function getXMLVal($branch,$node,$default='') {
-	    $xml = new SimpleXMLElement($this->userXml);
+	    $xml = new SimpleXMLElement($this->xmlProperties);
 	    
 	    if(isset($xml->$branch)) {
 	       if(isset($xml->$branch->$node)) {
@@ -382,15 +371,17 @@ class fUser {
 	    return $default;
 	}
 	function setXMLVal($branch,$node,$value) {
-	    $xml = new SimpleXMLElement($this->userXml);
+	    $xml = new SimpleXMLElement($this->xmlProperties);
 	    $xml->$branch->$node = $value;
-	    $this->userXml = $xml->asXML();
+	    $this->xmlProperties = $xml->asXML();
 	}
 	function infowrt(){
 		Global $db;
 		$sUser = new fSqlSaveTool('sys_users','userId');
 		$sUser->addCol('email',$this->email);
-		$sUser->addCol('info',$this->userXml);
+		
+		$sUser->addCol('info',$this->xmlProperties);
+		
 		$sUser->addCol('skinId',$this->skin);
 		$sUser->addCol('icq',$this->icq);
 		$sUser->addCol('zbanner',$this->zbanner);
@@ -424,7 +415,7 @@ class fUser {
 				if($pwdreg1!=$pwdreg2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
 				if(!fError::isError()){
 				    $dot = 'insert into sys_users (name,password,dateCreated,skinId,info) 
-					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->userXml.'")';
+					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->xmlProperties.'")';
 				    
 					if($db->query($dot)) {
 						$newiduser = $db->getOne("SELECT LAST_INSERT_ID()");

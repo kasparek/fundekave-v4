@@ -86,9 +86,7 @@ if(isset($_POST['nav'])) {
 	}
 }
 
-$arr = $db->getrow("select icq,email,info from sys_users where userId='".$user->gid."'");
-$user->userXml = $arr[2];
-
+//---SHOW TIME
 $tpl = new fTemplateIT('users.personal.html');
 
 $tpl->setVariable("FORMACTION",BASESCRIPTNAME.'?k='.$user->currentPageId);
@@ -108,8 +106,8 @@ if(!empty($arrOpt)) foreach ($arrOpt as $row) {
 }
 $tpl->setVariable("HOMEPAGEOPTIONS",$options);
 */
-$tpl->setVariable("USERICQ",$arr[0]);
-$tpl->setVariable("USEREMAIL",$arr[1]);
+$tpl->setVariable("USERICQ",$user->email);
+$tpl->setVariable("USEREMAIL",$user->icq);
 
 $tpl->setVariable("USERWWW",$user->getXMLVal('personal','www'));
 $tpl->setVariable("USERMOTTO",$user->getXMLVal('personal','motto'));

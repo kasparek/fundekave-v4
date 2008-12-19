@@ -1,5 +1,11 @@
 <?php
-if(!$who = $user->whoIs) $who = $user->gid;
+if($who = $user->whoIs) {
+  $userinfo = new fUser();
+  $userinfo->gid = $who;
+  $userinfo->refresh();
+} else {
+  $userInfo = &$user;
+}
 
 if(isset($_REQUEST["save"])) {
 	if(!$user->pritel($who)) $user->addpritel($who);
@@ -11,17 +17,7 @@ if(isset($_REQUEST["save"])) {
 	fHTTP::redirect($user->getUri('who='.$who));
 }
 
-$arr = $db->getRow("SELECT u.userId,u.name,u.email,u.icq,u.info,
-date_format(u.dateCreated,'%H:%i:%S %d.%m.%Y') as dateCreatedCz,
-date_format(u.dateUpdated,'%H:%i:%S %d.%m.%Y') as dateUpdatedCz,
-s.name as skinname,
-f.comment FROM sys_users as u 
-left join sys_skin as s on s.skinId=u.skinId 
-left join sys_users_friends as f on f.userId='".$user->gid."' and f.userIdFriend=u.userId 
-WHERE u.userId = '".$who."'");
-
-$user->userXml = $arr[4];
-
+//---SHOWTIME
 $tpl = new fTemplateIT('users.info.tpl.html');
 
 if($who != $user->gid) {
@@ -31,28 +27,28 @@ if($who != $user->gid) {
 }
 
 $tpl->setVariable('AVATAR',$user->showAvatar($who));
-$tpl->setVariable('NAME',$arr[1]);
-$tpl->setVariable('EMAIL',$arr[2]);
-if(!empty($arr[3])) $tpl->setVariable('ICQ',$arr[3]);
+$tpl->setVariable('NAME',$userinfo->gidname);
+$tpl->setVariable('EMAIL',$userinfo->email);
+if(!empty($userinfo->icq)) $tpl->setVariable('ICQ',$userinfo->icq);
   
-$tpl->setVariable("WWW",$user->getXMLVal('personal','www'));
-$tpl->setVariable("MOTTO",$user->getXMLVal('personal','motto'));
-$tpl->setVariable("PLACE",$user->getXMLVal('personal','place'));
-$tpl->setVariable("FOOD",$user->getXMLVal('personal','food'));
-$tpl->setVariable("HOBBY",$user->getXMLVal('personal','hobby'));
-$tpl->setVariable("ABOUT",$user->getXMLVal('personal','about'));
+$tpl->setVariable("WWW",$userinfo->getXMLVal('personal','www'));
+$tpl->setVariable("MOTTO",$userinfo->getXMLVal('personal','motto'));
+$tpl->setVariable("PLACE",$userinfo->getXMLVal('personal','place'));
+$tpl->setVariable("FOOD",$userinfo->getXMLVal('personal','food'));
+$tpl->setVariable("HOBBY",$userinfo->getXMLVal('personal','hobby'));
+$tpl->setVariable("ABOUT",$userinfo->getXMLVal('personal','about'));
   
-$homePageId = $user->getXMLVal('personal','HomePageId');
+$homePageId = $userinfo->getXMLVal('personal','HomePageId');
 if(!empty($homePageId)) {
     $tpl->setVariable("HOMEPAGEID",$homePageId);
-    $tpl->setVariable("HOMEPAGEUSERNAME",$arr[1]);
+    $tpl->setVariable("HOMEPAGEUSERNAME",$userinfo->gidname);
 }
 
-$tpl->setVariable("SKINNAME",$arr[7]);
-$tpl->setVariable("DATECREATED",$arr[5]);
-$tpl->setVariable("DATEUPDATED",$arr[6]);
+$tpl->setVariable("SKINNAME",$userinfo->skinName);
+$tpl->setVariable("DATECREATED",$userinfo->dateCreated);
+$tpl->setVariable("DATEUPDATED",$userinfo->dateLast);
 
-$fUvatar = new fUvatar($arr[1],array('targetFtp'=>ROOT.'tmp/fuvatar/','refresh'=> $user->getXMLVal('webcam','interval'),'resolution'=> $user->getXMLVal('webcam','resolution')));
+$fUvatar = new fUvatar($userinfo->gidname,array('targetFtp'=>ROOT.'tmp/fuvatar/','refresh'=> $userinfo->getXMLVal('webcam','interval'),'resolution'=> $userinfo->getXMLVal('webcam','resolution')));
 //check if has any image from webcam
 if($fUvatar->hasData()) {
     $tpl->setVariable("WEBCAM",$fUvatar->getSwf());

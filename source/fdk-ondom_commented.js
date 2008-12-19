@@ -3,18 +3,18 @@ function gup(name, url) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
   var regex = new RegExp( "[\\?&]"+name+"=([^&#]*)" ), results = regex.exec( url );
   return (results === null)?(0):(results[1]);
-}
+};
 function hasClass(elm, className) {
   return new RegExp(("(^|\\s)" + className + "(\\s|$)"), "i").test(elm.className);
-}
+};
 function setListeners(className,eventName,functionDefinition) {
   var arr = elmsByClass(className), length = arr.length, z;
   if(length > 0) { 
     for(z=0;z<length;z++) { 
       removeEvent(arr[z],eventName,functionDefinition);
       addEvent(arr[z],eventName,functionDefinition);
-    }; 
-  };
+    } 
+  }
 };
 
 //---textarea - text2cursor
@@ -31,9 +31,10 @@ function setCsr(elem, caretPos) {
       elem.setSelectionRange(caretPos, caretPos);
     } else {
       elem.focus();
-    };
-  };
+    }
+  }
 };
+
 function insertAtCursor(myField, myValue) {
   block = '';
   //IE support
@@ -55,15 +56,18 @@ function insertAtCursor(myField, myValue) {
   myField.value = myField.value.replace('-cursor-', block);
   setCsr(myField,caretPos);
 };
+
 function insert2Area(what) {
   var activeTextareaIdFromHref = gup('textid',what);
   if(activeTextareaIdFromHref) { activeTextareaId = elm(gup('textid',what)).id; };
   if(activeTextareaId) { insertAtCursor(elm(activeTextareaId), gup('tag',what)); };
-}
+};
+
 //---textarea - text2curosr init function
 function initInsertToTextarea() {
   setListeners('clickDaTag','click',function(event) { insert2Area(this.href); stopDefault(event); });
   setListeners('draftable','click',function(event) { activeTextareaId = this.id; stopDefault(event); });
+  setListeners('submit','click',function(event) { if(draftTimeout) { clearTimeout(draftTimeout); } });
   setListeners('toggleToolSize','click',function(event) { 
     var className = gup("class",this.href), elmId = gup("textid",this.href), elmInstance = elm(elmId), currentClass = elmInstance.className, toolInst = elm(gup('toolid',this.href));
     if(!hasClass(elmInstance,className)) { addClass(elmInstance,className); } else { removeClass(elmInstance,className); };
@@ -91,23 +95,26 @@ function draftDoSave() {
     };
   };
 };
-//---new
+
 function taRefreshValue(textareaInst) {
   if(document.all) {
     //---firefox
     textareaInst.setAttribute("value",currentTextarea.innerHTML);
   }
-}
+};
+
 function draftGetLength(textareaInst) {
   taRefreshValue(textareaInst);
   return textareaInst.value.length;
-}
+};
+
 //set class - is saved - green - callback function from xajax
 function draftSaved(textareaId) {
   textareaInst = elm(textareaId);
   removeClass(textareaInst,'draftNotSave');
   addClass(textareaInst,'draftSave');
-}
+};
+
 //check all ta and set not saved class if there is a difference between string length
 function draftIsSavedSetClass() {
   var x, ta, arrDraftLength = arrDraft.length;
@@ -118,7 +125,8 @@ function draftIsSavedSetClass() {
       addClass(ta,'draftNotSave');
     }
   } 
-}
+};
+
 //register textarea
 function setDraftElement(textareaParam) { 
   var x, add=1, arrDraftLength = arrDraft.length; 
@@ -131,6 +139,7 @@ function setDraftElement(textareaParam) {
     arrDraft.push([textareaParam.id,0]); 
   }; 
 };
+
 //initiate timer, check not saved
 function startDraftTimer() {
   if(timerRunning === false) {
@@ -138,7 +147,8 @@ function startDraftTimer() {
     timerRunning = true;
   }
   draftIsSavedSetClass();
-}
+};
+
 function draftTimerHandler() {
   draftDoSave();
   draftTimeout = setTimeout(draftTimerHandler, draftTimer);
@@ -147,7 +157,8 @@ function draftTimerHandler() {
     timerRunning = false;
     clearTimeout(draftTimeout);
   }
-}
+};
+
 //register ib keyup
 function draftEventHandler() { setDraftElement(this); startDraftTimer(); };
 
@@ -182,10 +193,12 @@ function onDomReady() {
   //---super note init
   supernote = new SuperNote('supernote', {});
   
-  var arr = elmsByClass('fuvatarswf'), length = arr.length, z;
+  var arr,elmInst,length,z;
+  arr = elmsByClass('fuvatarswf');
+  length = arr.length;
   if(length > 0) { 
     for(z=0;z<length;z++) { 
-      var elmInst = arr[z];
+      elmInst = arr[z];
       var elmImgInst = elm(elmInst.id.replace('fuplay','fuimg'));
       var width = gup('w',elmImgInst.src);
       var height =  gup('h',elmImgInst.src);
@@ -193,15 +206,19 @@ function onDomReady() {
     }; 
   };
   //init domtabs
-  var arr = elmsByClass('domtabs'), length = arr.length, z;
-  if(length > 0) { 
+  
+  arr = elmsByClass('domtabs');
+  length = arr.length;
+  if(length > 0) {
     for(z=0;z<length;z++) {
-      var elmInst = arr[z];
-      elmInst.style.display = block;
+      elmInst = arr[z];
+      elmInst.style.display = 'block';
     }
   }
 };
+
 function datePickerInit() {
   datePickerController.create();
-}
+};
+
 DOMReady(onDomReady);
