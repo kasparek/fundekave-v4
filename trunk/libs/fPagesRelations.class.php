@@ -4,6 +4,9 @@ class fPagesRelations {
     function __construct($pageId) {
         $this->pageId = $pageId;
     }
+    function setPageId($pageId) {
+      $this->pageId = $pageId;
+    }
     function update() {
         global $db,$user;
         $strRemovedRight = $_POST['removedRight'];

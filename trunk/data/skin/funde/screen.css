@@ -214,8 +214,12 @@ div#banner div.banner-content {
 	margin: 0 auto;
 	padding-left: 220px;
 }
-div.sidebar-block {
+div.sidebarBlock {
 	padding: 10px 0;
+	/*background: #eee;*/
+}
+div.sidebarBlock div.sidebarBlockToolbar {
+  float: right;
 }
 form#loginForm, div#loggedUserContainer {
 	color: white;

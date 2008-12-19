@@ -19,6 +19,9 @@ class fRules {
 		$this->_pubTypes = $ARRPUBLIC;
 		$this->ruleNames = $ARRPERMISSIONS;
 	}
+	function setPageId($page) {
+    $this->page = $page;
+  }
 	function set($usr,$page,$type){
 		global $db;
 		if($db->getOne("select count(1) from sys_users where userId='".$usr."'")==0) $this->_err='ins_noexistusr';
