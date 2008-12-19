@@ -1,4 +1,7 @@
 <?php
+
+$xajax = true; //---do not reload page settings
+
 if(!empty($_GET['u'])) {
   $fuvatarFlag = 'image';
   $fuvatarId = $_GET['u'];

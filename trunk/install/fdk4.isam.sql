@@ -432,3 +432,13 @@ CREATE TABLE sys_users_cache (
     , dateUpdated DATETIME not null
     , PRIMARY KEY (userId,name)
 );
+
+CREATE TABLE sys_users_fuvatar_live (
+     userId MEDIUMINT unsigned NOT NULL
+    , pageId varchar(5) NOT NULL
+    , refresh SMALLINT unsigned NOT NULL 
+    , filetime VARCHAR(20) not null
+    , dateUpdated DATETIME not null
+    , resolution TINYINT unsigned NOT NULL DEFAULT 0
+    , PRIMARY KEY (userId)
+);

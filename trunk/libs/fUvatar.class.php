@@ -19,7 +19,7 @@ class fUvatar {
     var $width;
     var $height;
     
-    function __construct($fuvatarId,$paramsArr=array()) {
+    function __construct($fuvatarId='',$paramsArr=array()) {
         $this->id = $fuvatarId;
         if(!empty($paramsArr)) foreach ($paramsArr as $k=>$v) $this->$k = $v;
         if(empty($this->width)) {
@@ -35,8 +35,13 @@ class fUvatar {
           file_put_contents($filename,base64_decode($imageData));
          @chmod($filename, 0777);
          //---call to change avatar if auto change is set to true
-         global $user;
+         global $user,$db;
          $user->updateAvatarFromWebcam($filename);
+         $interval = (int) $user->getXMLVal('webcam','interval');
+         $resolution = (int) $user->getXMLVal('webcam','resolution');
+         if(empty($interval)) $interval = 3;
+         $lastMod = filemtime($filename);
+         $db->query("INSERT INTO sys_users_fuvatar_live (`userId` ,`pageId` ,`refresh` ,`filetime` ,`dateUpdated` ,`resolution`) VALUES ('".$user->gid."', '".$user->currentPageId."', '".$interval."', '".$lastMod."', NOW(), '".$resolution."') on duplicate key update pageId='".$user->currentPageId."',refresh='".$interval."',filetime='".$lastMod."',dateUpdated=now(),resolution='".$resolution."'");
        }
     }
     
@@ -108,10 +113,33 @@ class fUvatar {
     function hasData() {
         return file_exists($this->targetFtp . $this->id . '.jpg');
     }
-    function getSwf() {
-        return '<div id="fuplay'.$this->id.'" class="fuvatarswf"><img id="fuimg'.$this->id.'" class="fuvatarimg" src="/fuvatar.php?u='.$this->id.'&w='.$this->width.'&h='.$this->height.'&t='.$this->refresh.'" /></div>';
+    /**
+     *fuArr - array(id=>fuvatarid,refresh=>intervak timeout,width=>(int),height=>(int)
+     **/         
+    function getSwf($fuArr=array()) {
+      if(empty($fuArr)) $fuArr = array('id'=>$this->id,'refresh'=>$this->refresh,'width'=>$this->width,'height'=>$this->height);
+        return '<div class="fuvatarbox"><div id="fuplay'.$fuArr['id'].'" class="fuvatarswf"><img id="fuimg'.$fuArr['id'].'" class="fuvatarimg" src="/fuvatar.php?u='.$fuArr['id'].'&w='.$fuArr['width'].'&h='.$fuArr['height'].'&t='.$fuArr['refresh'].'" /></div></div>';
     }
     
+ 
     //---get list of online users
+    function getLive() {
+      //---get list of live
+      global $db,$user;
+      $arr = $db->getAll("select u.name,fu.refresh,fu.resolution from sys_users_fuvatar_live as fu join sys_users as u on u.userId=fu.userId where fu.pageId='".$user->currentPageId."' and fu.filetime >= ".date("U")."-(fu.refresh*2) ");
+      
+      $ret = '';
+      
+      if(!empty($arr)) {
+        foreach($arr as $row) {
+          $res = $this->resolutions[$row[2]*1];
+            $arrSwf = array('id'=>$row[0],'refresh'=>$row[1],'width'=>$res['width'],'height'=>$res['height']);
+          $ret .= $this->getSwf($arrSwf);
+        }
+      }
+      
+      return $ret.'<hr class="cleaner" />';
+      
+    }
     
 }

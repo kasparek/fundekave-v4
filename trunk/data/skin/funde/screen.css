@@ -850,5 +850,8 @@ color: #000;
 background-color: #eee;
 text-decoration: none;
 }
-
+/*FUVATAR*/
+div.fuvatarbox {
+  float: right;
+}
 } /* END MEDIA SCREEN */
