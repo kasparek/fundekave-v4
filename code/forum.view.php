@@ -71,6 +71,10 @@ elseif($user->currentPageParam == 'h') {
 } else {
     
     fForum::process();
+    
+    $fuvatar =  new fUvatar();
+    $TOPTPL->addTab(array("MAINDATA"=>$fuvatar->getLive()));
+    
     $TOPTPL->addTab(array("MAINDATA"=>fForum::show()));
     
 }

@@ -1,3 +1,11 @@
+TODO: - blog - nastaveni jestli jsou u prispevku diskuze - globalne [pro vsechny/registrovany] a moznost nastaveni u jednotlivych prispevku
+
+TODO: kategorie prispevku pro stranku - blog
+
+remove from sys_users weather_loc_id
+
+TODO: aktualizace palcu kliknuti historie - overit ze to dela dobre
+
 TODO: statistiky tagovani
 SELECT u.name,count(t.itemId) as tagged FROM `sys_pages_items_tag` as t join sys_users as u on u.userId=t.userId  where t.tag is not null group by t.userId order by tagged desc
 
