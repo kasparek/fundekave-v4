@@ -43,12 +43,15 @@
     <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
     
     <!-- BEGIN galeryspecific -->
-    <label>Adresář</label><input type="text" name="arr[galeryDir]" value="{GDIR}" class="short" /><br />
+    <label>Adresář</label><input type="text" name="galeryDir" value="{GDIR}" class="short" /><br />
     <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
     <!-- BEGIN enhancendgalery -->
     <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
     <input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
-    <label>Styl nahledu</label><select name="xthumbstyle">{THUMSTYLEOPTIONS}</select><br />
+    <label>Styl nahledu</label><select name="xthumbstyle">
+    <option value="1"></option>
+    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->></option>
+    </select><br />
     <!-- END enhancendgalery -->
     <!-- END galeryspecific -->
     
