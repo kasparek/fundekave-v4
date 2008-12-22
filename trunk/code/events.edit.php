@@ -70,7 +70,7 @@ if(isset($_POST["nav"])){
 			$arr = explode('.',$_FILES['akceletak']['name']);
 			$_FILES['akceletak']['name'] = "flyer".$user->currentItemId.'.'.strtolower($arr[count($arr)-1]);
 			
-			if(fSystem::upload($_FILES['akceletak'],$flypath,500000)) {
+			if(fSystem::upload($_FILES['akceletak'],$flypath,800000)) {
 			   $cachedThumb = fEvents::thumbUrl($_FILES['akceletak']['name']);
     			if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
     			//---create thumb
