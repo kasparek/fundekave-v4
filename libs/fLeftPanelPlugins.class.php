@@ -133,7 +133,7 @@ class fLeftPanelPlugins {
       		}
       		
       		$tpl->setVariable('NAME',$row['addon']);
-      		$tpl->setVariable('DATELOCAL',(($row['startTime']!='00:00:00')?(' '.$row['startTime']):('')).$row['startDateLocal']);
+      		$tpl->setVariable('DATELOCAL',(($row['startTime']!='00:00')?($row['startTime'].' '):('')).$row['startDateLocal']);
       		$tpl->setVariable('DATEISO',$row['startDateIso']);
       		if($row['location']!='') $tpl->setVariable('PLACE',$row['location']);
       		$tpl->setVariable('EVENTURL','?i='.$row['itemId']);

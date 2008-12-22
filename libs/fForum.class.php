@@ -239,8 +239,9 @@ class fForum {
 	
 	/*
 	 * forum Print
+	 public write - 0:no write,1:public,2:only registered
 	 */
-	function show($itemId = 0,$publicWrite=true,$itemIdInside=0,$paramsArr=array()) {
+	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
 	    global $user,$db;
 	    $zprava = '';
 	    //---available params
@@ -248,7 +249,7 @@ class fForum {
 	    $showHead = true;
 	    extract($paramsArr);
 	    
-	    if(!$user->idkontrol && $publicWrite==true) { $captcha = fCaptcha::init(); }
+	    if(!$user->idkontrol && $publicWrite>0) { $captcha = fCaptcha::init(); }
 	    
 	    if ($user->auditPerPage < 2) $user->auditPerPage = 10;
         
@@ -270,7 +271,7 @@ class fForum {
             $desc = $user->currentPage['content'];
             if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
         }
-        if($user->currentPage['locked'] == 0 && $publicWrite==true) {
+        if($user->currentPage['locked'] == 0 && $publicWrite > 0) {
             $tpl->setVariable('FORMACTION',$user->getUri());
         	$name = "";
         	if($user->idkontrol) $zprava = fUserDraft::get('forum'.$user->currentPageId);
@@ -298,8 +299,11 @@ class fForum {
         	    $tpl->touchBlock('userlogged2');
         	    $tpl->setVariable('PERPAGE',$perpage);
         	}
-        } elseif($publicWrite==false) $tpl->setVariable('READONLY',MESSAGE_FORUM_REGISTEREDONLY);
-        else $tpl->setVariable('READONLY',MESSAGE_FORUM_READONLY);
+        } elseif($publicWrite == 2) {
+            $tpl->setVariable('READONLY',MESSAGE_FORUM_REGISTEREDONLY);
+        } else {
+            $tpl->setVariable('READONLY',MESSAGE_FORUM_READONLY);
+        }
         //---END FORM
         $fItems = new fItems();  
         $fItems->initData('forum');

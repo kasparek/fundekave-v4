@@ -101,7 +101,7 @@ if($user->currentPageAccess == true) {
 	//SUPERADMIN access - tlacitka na nastaveni stranek
     if(fRules::get($user->gid,'sadmi',1)) {
         if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
-        else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'sa'),BUTTON_PAGE_SETTINGS,'',1);
+        else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'sa'),BUTTON_PAGE_SETTINGS,'',1);
     }
     
     /**/
@@ -191,7 +191,7 @@ if(!empty($lomenuItems)) {
 }
 //---LEFT PANEL POPULATING
 if($user->gid==1) {
-    $fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId'],$user->currentPage['typeIdChild']);
+    $fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId']);
     $fLeftpanel->load();
     $fLeftpanel->show();
 }

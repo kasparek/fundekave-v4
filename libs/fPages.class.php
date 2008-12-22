@@ -274,4 +274,21 @@ class fPages extends fQueryTool {
 	  } else $row = $arr[$categoryId];
 	  return $row;
 	}
+	
+	//---properties
+    static function getProperty($pageId,$propertyName,$default=null) {
+            global $db;
+         $arr = $db->getAll("select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'");
+         if(empty($arr)) {
+             ///get default
+             $value = $default;
+         } else {
+             $value = $arr[0][0];
+         }
+         return $value;
+    }
+    static function setProperty($pageId,$propertyName,$propertyValue) {
+        global $db;
+        return $db->query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+    }
 }

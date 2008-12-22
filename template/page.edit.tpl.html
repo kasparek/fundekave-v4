@@ -8,6 +8,8 @@
     <!-- BEGIN forumspecifictab --><li><a href="#ft4">Nastenka</a></li><!-- END forumspecifictab -->
     <!-- BEGIN galeryspecifictabs --><li><a href="#ft5">Fotografie</a></li>
     <li><a href="#ft6">Upload</a></li><!-- END galeryspecifictabs -->
+    <!-- BEGIN categorytab --><li><a href="#ft7">Kategorie</a></li><!-- END categorytab -->
+    <!-- BEGIN leftpaneltab --><li><a href="#ft8">Levy panel</a></li><!-- END leftpaneltab -->
   </ul>
 <div>
 <a name="ft1" id="ft1"></a>
@@ -22,14 +24,14 @@
     <label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
     <!-- BEGIN sadmi -->
     <label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
-    <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}"><br />
+    <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}" class="short" /><br />
     <label>Autor stranky</label><input type="text" name="authorcontent" value="{PAGEAUTHOR}" class="short"><br />
     <label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="short"><br />
+    <label>Skupina menu</label><select name="menusec">{MENUSECOPTIONS}</select><br />
+    <!-- END sadmi -->
     <!-- BEGIN categories -->
     <label>Kategorie</label><select name="category">{CATEGORYOPTIONS}</select><br />
     <!-- END categories -->
-    <label>Skupina menu</label><select name="menusec">{MENUSECOPTIONS}</select><br />
-    <!-- END sadmi -->
     <!-- BEGIN pageavatarupload -->
     <label>Ikona (60x25px)</label>
     <input type="file" name="audico" /><br />
@@ -49,11 +51,18 @@
     <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
     <input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
     <label>Styl nahledu</label><select name="xthumbstyle">
-    <option value="1"></option>
-    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->></option>
+    <option value="1">Bez orezu</option>
+    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
     </select><br />
     <!-- END enhancendgalery -->
     <!-- END galeryspecific -->
+    <!-- BEGIN forumreaction -->
+    <label>Dikskuze:</label><select name="forumReact">
+      <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce</option>
+      <option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
+      <option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
+    </select><br />
+    <!-- END forumreaction -->
     
 <input type="submit" name="save" value="Uložit" class="button submit" />
 <!-- BEGIN delpage -->
@@ -88,17 +97,12 @@
 <a name="ft5" id="ft5"></a>
 <fieldset>
 <legend>Seznam fotografii</legend>
-<input type="submit" name="savegal" value="Uložit" class="button submit" />
+<input type="submit" name="savegal" value="Uložit" class="button submit" /><br />
 <label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
-<label>Diskuze u foto:</label><select name="fotoforum">
-<option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce na fotky</option>
-<option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
-<option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
-</select>
 <label>Řadit:</label><select name="galeryorder">
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
-</select>
+</select><br />
 <table>
 <!-- BEGIN gfoto -->
   <tr>
@@ -124,6 +128,20 @@
 </fieldset>
 </div>
 <!-- END galeryspecificcontent -->
+
+<!-- BEGIN categoryedit -->
+<div>
+<a name="ft7" id="ft7"></a>
+{PAGECATEGORYEDIT}
+</div>
+<!-- END categoryedit -->
+
+<!-- BEGIN leftpaneledit -->
+<div>
+<a name="ft8" id="ft8"></a>
+{LEFTPANELEDIT}
+</div>
+<!-- END leftpaneledit -->
     
 </div>
 </form>

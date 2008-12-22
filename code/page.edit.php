@@ -1,4 +1,8 @@
 <?php
+if($user->currentPageId=='galed') {
+   $user->currentPageParam = 'a' ;
+}
+
 $rules = new fRules((($user->currentPageParam != 'a')?($user->currentPageId):('')),$user->currentPage['userIdOwner']);
 if($user->currentPageParam != 'a') $fRelations = new fPagesRelations($user->currentPageId);
 
@@ -13,16 +17,30 @@ $textareaIdForumHome = 'home'.$user->currentPageId;
 $typeForSaveTool = $user->currentPage['typeId'];
 if($user->currentPageParam=='a') $typeForSaveTool = $user->currentPage['typeIdChild'];  
 
+$deleteThumbs = false;
 if($typeForSaveTool == 'galery') {
-  $deleteThumbs = false;
   $galery = new fGalery();
 }
 
 $sPage = new fPagesSaveTool($typeForSaveTool);  
 if($user->currentPageParam!='a')$sPage->xmlProperties = $user->currentPage['pageParams'];
-if(empty($sPage->xmlProperties)) $sPage->setXmlPropertiesDefaults();
+
+if(empty($sPage->xmlProperties)) {
+    $sPage->setXmlPropertiesDefaults();
+}
+
+if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
+    $category = new fCategory('sys_pages_category','categoryId');
+    $category->addWhere("typeId='".$user->currentPageId."'");
+    $category->arrSaveAddon = array('typeId'=>$user->currentPageId);
+    $category->process();
+}
+
+$fLeft = new fLeftPanel($user->currentPageId,0,$user->currentPage['typeId']);
 
 if(isset($_POST["save"])) {
+    
+    $fLeft->process($_POST['leftpanel']);
   
   $notQuoted = array();
 	$arr['name'] = fSystem::textins($_POST['name'],array('plainText'=>1));
@@ -48,19 +66,23 @@ if(isset($_POST["save"])) {
     $sPage->setXMLVal('enhancedsettings','heightpx',$xheightpx);
     $sPage->setXMLVal('enhancedsettings','thumbnailstyle',(int) $_POST['xthumbstyle']);
     $sPage->setXMLVal('enhancedsettings','orderitems',(int) $_POST['galeryorder']);
-    $sPage->setXMLVal('enhancedsettings','fotoforum',(int) $_POST['fotoforum']);
+    $sPage->setXMLVal('enhancedsettings','fotoforum',(int) $_POST['forumReact']);
     
     if($user->currentPage['pageParams'] != $sPage->xmlProperties && $user->currentPageParam=='e') {
 	    $deleteThumbs = true;
 	 }
+  } 
+  
+  if(isset($_POST['datecontent'])) {
+      $dateContent = fSystem::switchDate($_POST['datecontent']);
+	    if(!empty($dateContent)) if(fSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
   }
-
+  
 	if($user->currentPageParam=='sa') {
 	    $arr['nameShort'] = fSystem::textins($_POST['nameshort'],array('plainText'=>1));
 	    $arr['authorContent'] = fSystem::textins($_POST['authorcontent'],array('plainText'=>1));
 	    $arr['template'] = fSystem::textins($_POST['template'],array('plainText'=>1));
-	    $dateContent = fSystem::switchDate($_POST['datecontent']);
-	    if(!empty($dateContent)) if(fSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
+	        
 	    
 	    if($user->currentPageParam=='a') $arr['locked'] = 'null';
 	    if(isset($_POST['locked'])) {
@@ -95,7 +117,7 @@ if(isset($_POST["save"])) {
 	    	    
 	}
 	
-	if($typeForSaveTool=='forum' || $typeForSaveTool=='blog') {
+	if(isset($_POST['forumhome'])) {
 	 $sPage->setXMLVal('home',fSystem::textins($_POST['forumhome']));
 	}
 
@@ -158,6 +180,11 @@ if(isset($_POST["save"])) {
 		$rules->ruleText = $_POST['rule'];
 		$rules->update();
 		$fRelations->update();
+		
+		//---set properties
+		if ($typeForSaveTool=='blog') {
+            if(isset($_POST['forumReact'])) $fPages->setProperty($nid,'forumSet',(int) $_POST['forumReact']);
+        }
 		
 		//CLEAR DRAFT
 		fUserDraft::clear($textareaIdDescription);
@@ -258,8 +285,7 @@ if(isset($_POST['save'])) {
   unset($arr);
 } else if($user->currentPageParam=='a') {
 	//new page
-	$sPage = new fSqlSaveTool('sys_pages','pageId');
-	$pageData = $sPage->defaults[$user->currentPage['typeIdChild']];
+	$pageData = $sPage->defaults[$typeForSaveTool];
 } else {
 	//edit page
 	$pageData = $user->currentPage;
@@ -271,10 +297,13 @@ if(!empty($pageData['userIdOwner'])) {
 	$tpl->setVariable('OWNERLINK','?k=finfo&who='.$pageData['userIdOwner']);
 	$tpl->setVariable('OWNERNAME',$user->getgidname($pageData['userIdOwner']));
 }
-$tpl->setVariable('PAGENAME',$pageData['name']);
 
-if(!$pageDesc = fUserDraft::get($textareaIdDescription)) $pageDesc = $pageData['description'];
-if(!$pageCont = fUserDraft::get($textareaIdContent)) $pageCont = $pageData['content'];
+$pageDesc = '';
+$pageCont = '';
+
+if(isset($pageData['name'])) $tpl->setVariable('PAGENAME',$pageData['name']);
+if(isset($pageData['description'])) if(!$pageDesc = fUserDraft::get($textareaIdDescription)) $pageDesc = $pageData['description'];
+if(isset($pageData['content'])) if(!$pageCont = fUserDraft::get($textareaIdContent)) $pageCont = $pageData['content'];
 
 $tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
 $tpl->setVariable('PAGEDESCRIPTION',fSystem::textToTextarea($pageDesc));
@@ -290,7 +319,7 @@ if($user->currentPageParam != 'a') $tpl->setVariable('RELATIONSFORM',$fRelations
 
 $tpl->touchBlock('pageavatarupload');
 
-if($typeForSaveTool == 'forum' || $typeForSaveTool == 'blog') {
+if($typeForSaveTool == 'forum') {
 	//enable avatar
 	$tpl->touchBlock('forumspecifictab');
 	//FORUM HOME
@@ -302,32 +331,30 @@ if($typeForSaveTool == 'forum' || $typeForSaveTool == 'blog') {
 	$tpl->addTextareaToolbox('CONTENTTOOLBOX',$textareaIdForumHome);
 }
 
-if($typeForSaveTool == 'galery') {
+if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
   $galery->getGaleryData($user->currentPageId);
   $galery->getFoto($user->currentPageId,true,(($galery->gOrderItems==1)?('i.dateCreated desc'):('i.enclosure')));
-    
-  if($user->currentPageParam == 'a') {
-      $pageData['galeryDir'] = '';
-  } else {
-      $pageData['galeryDir'] = $galery->gDir;
-  }
-  
+   
+  $pageData['galeryDir'] = $galery->gDir;
 }
 
 if($typeForSaveTool == 'galery') {
-    $tpl->setVariable('GDIR',$pageData['galeryDir']);
+    if(isset($pageData['galeryDir'])) $tpl->setVariable('GDIR',$pageData['galeryDir']);
     $tpl->setVariable('PERPAGE',$sPage->getXMLVal('enhancedsettings','perpage'));
     $tpl->setVariable('GTHUMBWIDTH',$sPage->getXMLVal('enhancedsettings','widthpx'));
     $tpl->setVariable('GTHUMBHEIGHT',$sPage->getXMLVal('enhancedsettings','heightpx'));
     if($sPage->getXMLVal('enhancedsettings','thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
+    //$tpl->touchBlock('fforum'.($sPage->getXMLVal('enhancedsettings','fotoforum')*1));
+} elseif ($typeForSaveTool=='blog') {
+    $tpl->touchBlock('fforum'.(fPages::getProperty($user->currentPageId,'forumSet',1)*1));
 }
+
 if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
   $tpl->touchBlock('galeryspecifictabs');
     
 	$tpl->setVariable('FOTOTOTAL',count($galery->arrData));
 	
 	if($sPage->getXMLVal('enhancedsettings','orderitems') == 1) $tpl->touchBlock('gorddate');
-    $tpl->touchBlock('fforum'.($sPage->getXMLVal('enhancedsettings','fotoforum')*1));
 	
 	if(!empty($galery->arrData)) {
     	foreach ($galery->arrData as $foto){
@@ -373,6 +400,8 @@ if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
 $arrTmp = $db->getAll('select categoryId,name from sys_pages_category where typeId="'.$typeForSaveTool.'"');
 if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',fSystem::getOptions($arrTmp,$pageData['categoryId']));
 
+
+
 //---if pageParam = sa - more options to edit on page
 //--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
 if($user->currentPageParam=='sa') {
@@ -381,9 +410,21 @@ if($user->currentPageParam=='sa') {
     
     $tpl->setVariable('LOCKEDOPTIONS',fSystem::getOptions($ARRLOCKED,$pageData['locked']));
     $tpl->setVariable('PAGEAUTHOR',$pageData['authorContent']);
-    $tpl->setVariable('DATECONTENT',$pageData['dateContent']);
+    $date = new DateTime($pageData['dateContent']);
+    $tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
     $tpl->setVariable('PAGENAMESHORT',$pageData['nameshort']);
     $tpl->setVariable('PAGETEMPLATE',$pageData['template']);
 }
+
+if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
+    $tpl->touchBlock('categorytab');
+    $tpl->setVariable('PAGECATEGORYEDIT',$category->getEdit());
+}
+
+//---left panels configure
+    $tpl->touchBlock('leftpaneltab');
+    
+    $tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
+
 
 $TOPTPL->addTab(array("MAINHEAD"=>($user->currentPageParam == 'a')?(LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));

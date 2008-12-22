@@ -9,6 +9,16 @@
   	<label for="formDate">Datum</label><input id="formDate" name="datum" value="{EDITDATE}" type="text" class="short format-d-m-y divider-dot highlight-days-67"><br />
     <label for="formText">Text</label><textarea name="textclanku" id="{TEXTID}" class="draftable">{EDITTEXT}</textarea>{TEXTTOOLBOX}<br />
     <label for="formSign">Podpis</label><input id="formSign" name="autor" value="{EDITAUTOR}" type="text"><br />
+    <!-- BEGIN category -->
+    <label for="formCategory">Kategorie</label><select id="formCategory" name="category">
+    {CATEGORYOPTIONS}
+    </select><br />
+    <!-- END category -->
+    <label for="forumSet">Diskuze</label><select id="forumSet" name="forumset">
+    <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Verejna</option>
+<option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pro registrovane</option>
+<option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Vypnuta</option>
+    </select><br />
     <input name="save" id="submitButtonSave" value="Uložit" class="button submit" type="submit">  
     <!-- BEGIN newdelete -->
      <input type="hidden" name="del" id="bdel" value="0" />

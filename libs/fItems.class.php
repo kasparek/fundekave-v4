@@ -446,7 +446,9 @@ class fItems extends fQueryTool {
       }
       
       if($this->showComments == true) {
-        $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$user->idkontrol,$this->itemIdInside));
+        $writeRule = fItems::getProperty($arr['itemId'],'forumSet',1);
+        if(null !== $pageWriteRule = fItems::getProperty($arr['pageId'],'forumSet')) $writeRule = $pageWriteRule;
+        $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$writeRule,$this->itemIdInside));
       } else {
         $tpl->setVariable('COMMENTLINK',$link);
         if(isset($arr['unReadedCnt'])) {
@@ -769,5 +771,22 @@ class fItems extends fQueryTool {
     static function getItemUserId($itemId) {
         global $db;
         return $db->getOne("select userId from sys_pages_items where itemId='".$itemId."'");
+    }
+    
+    //---properties
+    static function getProperty($itemId,$propertyName,$default=0) {
+            global $db;
+         $arr = $db->getAll("select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'");
+         if(empty($arr)) {
+             ///get default
+             $value = $default;
+         } else {
+             $value = $arr[0][0];
+         }
+         return $value;
+    }
+    static function setProperty($itemId,$propertyName,$propertyValue) {
+        global $db;
+        return $db->query("insert into sys_pages_items_properties (itemId,name,value) values ('".$itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
     }
 }

@@ -13,11 +13,12 @@ class fRules {
 	var $page = '';
 	var $owner = 0;
 	
-	function __construct($page=0) {
+	function __construct($page=0,$owner=0) {
 	    global $ARRPUBLIC,$ARRPERMISSIONS;
 		$this->page = $page;
 		$this->_pubTypes = $ARRPUBLIC;
 		$this->ruleNames = $ARRPERMISSIONS;
+		$this->owner = $owner;
 	}
 	function setPageId($page) {
     $this->page = $page;
@@ -129,7 +130,7 @@ class fRules {
 					$usrname=trim($usrname);
 					if(!empty($usrname)) {
 						$usrid = $user->getUserIdByName($usrname);
-						if($usrid != $this->owner || empty($this->owner)) { // if not owner of page
+						if($usrid != $this->owner) { // if not owner of page
 							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
 							else fError::addError(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
 						}

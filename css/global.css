@@ -271,6 +271,9 @@ input.button, button {
 	padding: 0 0.5em;
 	font-weight: bold;
 	}
+.checkbox {
+  width: auto !important;
+}
 }
 
 /* END BASIC SCREEN ELEMENTS */

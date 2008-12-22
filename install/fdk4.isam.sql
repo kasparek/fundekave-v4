@@ -3,6 +3,7 @@ CREATE TABLE sys_leftpanel_functions (
      , name VARCHAR(40) NOT NULL
      , public TINYINT unsigned NOT NULL DEFAULT 0
      , userId MEDIUMINT unsigned NOT NULL
+     , pageId varchar(5) DEFAULT NULL
      , content TEXT 
      , PRIMARY KEY (functionName)
 );
@@ -12,7 +13,6 @@ CREATE TABLE sys_leftpanel_defaults (
      , functionName VARCHAR(40) NOT NULL
      , ord SMALLINT unsigned NOT NULL DEFAULT 0
      , visible TINYINT unsigned NOT NULL DEFAULT 1
-     , minimized TINYINT unsigned NOT NULL DEFAULT 0
      , PRIMARY KEY (leftpanelGroup, functionName)
 )  ;
 CREATE INDEX leftpanel_group ON sys_leftpanel_defaults (leftpanelGroup ASC);
@@ -23,7 +23,6 @@ CREATE TABLE sys_leftpanel_pages (
      , functionName VARCHAR(40) NOT NULL
      , ord SMALLINT unsigned DEFAULT NULL
      , visible TINYINT unsigned DEFAULT NULL
-     , minimized TINYINT unsigned DEFAULT NULL
      , PRIMARY KEY (pageId, functionName)
 )  ;
 CREATE INDEX leftpanel_group ON sys_leftpanel_pages (pageId ASC);
@@ -80,7 +79,6 @@ CREATE TABLE sys_users (
      , icq VARCHAR(20) DEFAULT null
      , info TEXT
      , avatar VARCHAR(100) DEFAULT null
-     , weather_loc_id VARCHAR(10) DEFAULT 'EZXX0012'
      , zbanner TINYINT unsigned DEFAULT 1
      , zavatar TINYINT unsigned DEFAULT 1
      , zforumico TINYINT unsigned DEFAULT 1
@@ -234,6 +232,13 @@ CREATE INDEX `item-itemIdTop` ON sys_pages_items (itemIdTop ASC);
 CREATE INDEX `item-pageId` ON sys_pages_items (pageId ASC);
 CREATE INDEX `item-userId` ON sys_pages_items (userId ASC);
 CREATE INDEX `item-dateCreated` ON sys_pages_items (dateCreated DESC);
+
+CREATE TABLE `sys_pages_items_properties` (
+  itemId mediumint unsigned NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `value` varchar(100) NOT NULL,
+  PRIMARY KEY  (`itemId`,`name`)
+) ;
 
 CREATE TABLE sys_pages_items_readed_reactions (
   itemId mediumint unsigned NOT NULL,

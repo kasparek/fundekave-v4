@@ -1,5 +1,5 @@
 <?php
-class fQueryTool  {
+class fQueryTool {
     var $db;
     var $cacheResults = false;
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';

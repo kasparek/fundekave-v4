@@ -9,7 +9,7 @@ if($user->idkontrol) {
       }
      fSystem::secondaryMenuAddItem($user->getUri('p=a'),LABEL_POCKET_PUSH,"xajax_pocket_add('".$user->currentPageId."','1');return false;",0);
 }
-if($user->currentPageParam == 'e') require(ROOT.ROOT_CODE.'galery.edit.php');
+if($user->currentPageParam == 'e') require(ROOT.ROOT_CODE.'page.edit.php');
 else {
 
 $galery = new fGalery();

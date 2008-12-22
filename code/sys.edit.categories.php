@@ -11,13 +11,14 @@ if(isset($_GET['f'])) if(in_array($_GET['f'],$arrType)) $type = trim($_GET['f'])
 
 $tmptext= '<p><label for="typefilter">Skupina</label><select id="typefilter" onchange="location = \'?k='.$user->currentPageId.'&f=\' + this.options[this.selectedIndex].value;">';
 foreach ($arrType as $k=>$v) $tmptext.='<option value="'.$v.'"'.(($v==$type)?(' selected="selected" '):('')).'>'.$v.'</option>';
-$tmptext.='</select></p>';
+$tmptext.='</select></p><form action="" method="post" name="kateg">';
 
 $category = new fCategory('sys_pages_category','categoryId');
+$category->process();
+
 $category->addWhere("typeId='".$type."'");
 $category->arrSaveAddon = array('typeId'=>$type);
 
 $tmptext .= $category->getEdit();
 
-$TOPTPL->addTab(array("MAINDATA"=>$tmptext));
-?>
+$TOPTPL->addTab(array("MAINDATA"=>$tmptext.'</form>'));

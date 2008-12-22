@@ -1,5 +1,3 @@
-<script language="javascript" src="js/OptionTransfer.js"></script>
-
 <fieldset>
 <legend>Spratelene stranky</legend>
 
@@ -7,22 +5,18 @@
 <tr>
 	<td align="center">
 	<div><strong>Dostupne stranky</strong></div>
-	<select name="listLeft" id="listLeft" multiple size=10 style="width:300px;" ondblclick="opt.transferRight()">
-	  {OPTIONSLEFT}
-	</select><br />
-	Filtr: <input type="text" name="relFiltr" class="short" value="" onkeyup="optSetFilter(this.value,elm('listLeft'));" />
+	<select name="listLeft" id="listLeft" multiple size=10 style="width:300px;">{OPTIONSLEFT}</select><br />
+	Filtr: <input type="text" name="relFiltr" class="short" value="" id="optLeftFilter" />
 	</td>
 	<td valign="middle" align="center"><br /><br />
-		<input type="button" class="button" name="right" value="&gt;&gt;" onclick="opt.transferAllRight()" /><br />
-    <input type="button" class="button" name="right" value=" &gt; " onclick="opt.transferRight()" /><br />
-		<input type="button" class="button" name="left" value=" &lt; " onclick="opt.transferLeft()" /><br />
-		<input type="button" class="button" name="left" value="&lt;&lt;" onclick="opt.transferAllLeft()" />
+		<input type="button" class="button" name="rightAll" id="moveRightAllButt" value="&gt;&gt;" /><br />
+    <input type="button" class="button" name="right" id="moveRightButt" value=" &gt; " /><br />
+		<input type="button" class="button" name="left" id="moveLeftButt" value=" &lt; " /><br />
+		<input type="button" class="button" name="leftAll" id="moveLeftAllButt" value="&lt;&lt;" />
 	</td>
 	<td align="center">
 	<div><strong>Spratelene stranky</strong></div>
-	<select name="listRight" id="listRight" multiple size=10 ondblclick="opt.transferLeft()" style="width:300px;">
-		{OPTIONSRIGHT}
-	</select>
+	<select name="listRight" id="listRight" multiple size=10 style="width:300px;">{OPTIONSRIGHT}</select>
 	</td>
 </tr>
 </table>
@@ -35,18 +29,28 @@
 <input type="submit" name="save" value="Ulozit" class="button submit" />
 </fieldset>
 
+<script language="javascript" src="js/OptionTransfer.js"></script>
 <script language="javascript">
-var opt;
+var optionTransfer;
 function optInit() {
-  opt = new OptionTransfer(elm("listLeft"),elm("listRight"));
-  opt.setAutoSort(true);
-  opt.setDelimiter(";");
-  opt.saveRemovedLeftOptions(elm("removedLeft"));
-  opt.saveRemovedRightOptions(elm("removedRight"));
-  opt.saveAddedLeftOptions(elm("addedLeft"));
-  opt.saveAddedRightOptions(elm("addedRight"));
-  opt.saveNewLeftOptions(elm("newLeft"));
-  opt.saveNewRightOptions(elm("newRight"));
+  optionTransfer = new OptionTransfer(elm("listLeft"),elm("listRight"));
+  optionTransfer.setAutoSort(true);
+  optionTransfer.setDelimiter(";");
+  optionTransfer.saveRemovedLeftOptions(elm("removedLeft"));
+  optionTransfer.saveRemovedRightOptions(elm("removedRight"));
+  optionTransfer.saveAddedLeftOptions(elm("addedLeft"));
+  optionTransfer.saveAddedRightOptions(elm("addedRight"));
+  optionTransfer.saveNewLeftOptions(elm("newLeft"));
+  optionTransfer.saveNewRightOptions(elm("newRight"));
+  
+  addEvent(elm("listLeft"),'dblclick',function(){ optionTransfer.transferRight(); });
+  addEvent(elm("listRight"),'dblclick',function(){ optionTransfer.transferLeft(); });
+  addEvent(elm("optLeftFilter"),'keyup',function(){ optSetFilter(this.value,elm('listLeft')); });
+  
+  addEvent(elm("moveRightAllButt"),'click',function(){ optionTransfer.transferAllRight() });
+  addEvent(elm("moveRightButt"),'click',function(){ optionTransfer.transferRight(); });
+  addEvent(elm("moveLeftAllButt"),'click',function(){ optionTransfer.transferAllLeft() });
+  addEvent(elm("moveLeftButt"),'click',function(){ optionTransfer.transferLeft(); });
 }
 DOMReady(optInit);
 </script>
