@@ -1,6 +1,29 @@
-TODO: - blog - nastaveni jestli jsou u prispevku diskuze - globalne [pro vsechny/registrovany] a moznost nastaveni u jednotlivych prispevku
+todo: do ddiare pro vice lidi
 
-TODO: kategorie prispevku pro stranku - blog
+!!!neprectene u blogu zvyraznit
+!!!nastaveni diskuze stejne jako u blogu
+
+rewrite
+- presmerovat www.fundekave.net na fundekave.net
+- presmerovat neco.fundekave.net na fundekave.net/neco
+- udelat vyjimky jako doku.fundekave.net
+- presmerovat fundekave.net/neco na fundekave.net/neco/
+- presmerovat fundekave.net/neco/ na fundekave.net?u=neco 
+
+
+TODO vikedn:
+2. customizace levyho sloupce pro stranky
+3. vytvareni novych
+4. customizace levyho sloupce pro uzivatele
+5. kategorie pro blogy - jen zobrazeni - microformat v sablone
+TODO: levy panel pro blogy s kategoriema
+6. nastaveni povoleni diskuzi pro blogy/clanky
+
+--- reseni rewritu
+7. vynucenej skin podle uzivatele
+8. custom menu podle uzivatele
+
+TODO: kategorie prispevku pro stranku - blog -> dodelata pouziti na strankach - vybirani kategorii, zobrazeni u clanku (s odkazem)
 
 remove from sys_users weather_loc_id
 
@@ -9,15 +32,8 @@ TODO: aktualizace palcu kliknuti historie - overit ze to dela dobre
 TODO: statistiky tagovani
 SELECT u.name,count(t.itemId) as tagged FROM `sys_pages_items_tag` as t join sys_users as u on u.userId=t.userId  where t.tag is not null group by t.userId order by tagged desc
 
-TODO: povolit zapis do diskuze u blogu - prepinani v nastaveni
-
-sprateleny v galerii
-
-full text hledani v prispevcich .. nefunguje kombinace co od koho ... vypada to spis na or
-
-remote guestbook, po captcha erroru nezachova pole
-
-smazat z css classu newposts
+!!!remote guestbook, po captcha erroru nezachova pole
+!!!pridavani v exploreru
 
 //VERSION do 30.10.
 - prilozit z kapsy k clanku u blogu
@@ -28,7 +44,6 @@ HTML CSS:
 - tlacitka ulozit pod formularem, vyhodit prazdnej label
 - CSS prispevek v klubu
 - pratele -> odkazy
-- posta -> do pratel - odstranit
 
 
 //---version TBC

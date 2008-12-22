@@ -83,4 +83,3 @@ class fSqlSaveTool {
     	return $db->query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
     }
 }
-?>

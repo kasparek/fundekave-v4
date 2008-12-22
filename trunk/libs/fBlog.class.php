@@ -23,6 +23,8 @@ class fBlog extends fQueryTool  {
           		if(isset($aFormValues['nid'])) $itemId = (int) $aFormValues['nid'];
           		else $itemId = 0;
           		
+          		if(isset($aFormValues['category'])) $arrSave['categoryId'] = (int) $aFormValues['category'];
+          		
           		$arrSave['public'] = 0;
           		if($aFormValues['public'] == 1) $arrSave['public'] = 1;
           		
@@ -35,6 +37,9 @@ class fBlog extends fQueryTool  {
           		}
           		//$fsave->debug=1;
           		$returnItemId = $fsave->save($arrSave);
+          		
+          		///properties
+          		fItems::setProperty($returnItemId,'forumSet',(int) $aFormValues['forumset']);
           		
           		fPages::cntSet($pageId);
           		fUserDraft::clear(fBlog::textAreaId());
@@ -63,7 +68,7 @@ class fBlog extends fQueryTool  {
 	    $tpl = new fTemplateIT('blog.editform.tpl.html');
         $tpl->setVariable('PAGEID',$user->currentPageId);
         if($itemId>0) {
-            $this->setSelect("text, date_format(dateCreated,'%d.%m.%Y'), name, addon, public");
+            $this->setSelect("text, date_format(dateCreated,'%d.%m.%Y'), name, addon, public, categoryId");
             $this->setWhere("itemId = '".$itemId."'");
             $arrTmp = $this->getContent();
         	$arr = $arrTmp[0];
@@ -81,6 +86,11 @@ class fBlog extends fQueryTool  {
         		} else {
         		    $tpl->touchBlock('statpublic');
         		}
+        		///properties
+        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',1));
+        		///categories
+        		if($opt = fSystem::getOptions($user->currentPageId,$arr[5],true,''))
+        		  $tpl->setVariable('CATEGORYOPTIONS',$opt);
         	}
         } else {
         	$tpl->setVariable('EDITDATE',Date("d.m.Y"));

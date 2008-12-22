@@ -1,10 +1,9 @@
 <!-- BEGIN kateg -->
-<div class="pager">{PAGER}</div>
-<form action="{FORMACTION}" method="post" name="kateg">
+{PAGER}
 <fieldset>
-<input type="submit" name="save" value="Uložit" class="button" />
-</fieldset>
-<div><table class="category">
+<legend>Kategorie</legend>
+
+<table class="category">
 <thead><tr><!-- BEGIN kateghead -->	<th>{COLUMN}</th><!-- END kateghead --></tr></thead>
 <tbody>
 <!-- BEGIN arrkateg -->
@@ -52,6 +51,7 @@
 </tr>
 </tbody>
 </table>
-</div>
-</form>
+
+<input type="submit" name="save" value="Uložit" class="submit button" />
+</fieldset>
 <!-- END kateg -->

@@ -361,9 +361,14 @@ class fSystem {
         if(file_exists($filepath)) return unlink($filepath);
     }
     static function getOptions($arr,$selected='',$firstEmpty=true,$firstText='') {
+        if(!is_array($arr)) {
+            global $db;
+            $arr = $db->getAll('select categoryId,name from sys_pages_category where typeId="'.$arr.'"');
+        }
         $options = '';
         if(!empty($arr)) {
-            if(is_array($arr[0])) {
+            $arrkeys = array_keys($arr);
+            if(is_array($arr[$arrkeys[0]])) {
                 foreach ($arr as $row) {
                 	$newArr[$row[0]] = $row[1];
                 }
@@ -371,7 +376,7 @@ class fSystem {
             }
             if($firstEmpty==true) $options .= '<option value="">'.$firstText.'</option>';
             foreach ($arr as $k=>$v) {
-                $options .= '<option value="'.$k.'"'.(($k==$selected)?(' selected="selected"'):('')).'>'.$v.'</option>';
+                $options .= '<option value="'.$k.'"'.(($k==$selected)?(' selected="selected"'):('')).'>'.((!empty($v))?($v):($k)).'</option>';
             }
         }
         return $options;

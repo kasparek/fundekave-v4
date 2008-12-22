@@ -149,7 +149,7 @@ define('LABEL_PAGES_USEDON','Pouzito na strankach');
 
 $ARRPUBLIC = array("0"=>"Soukromé","1"=>"Veřejné","2"=>"Pro registrované");
 $ARRPERMISSIONS = array(0=>'Nemá přístup',1=>'Uživatelé',2=>'Administrátoři');
-$ARRLOCKED = array(0=>'',1=>'Zamčeny - mozno číst',2=>'Zamčený, skrytý',3=>'Smazaný - nevidí ani majitel');
+$ARRLOCKED = array(1=>'Zamčeny - mozno číst',2=>'Zamčený, skrytý',3=>'Smazaný - nevidí ani majitel');
 $ARRWHERESEARCHLABELS = array(0=>"-- Kde --",1=>"Vložil",2=>"Text",3=>"Datum");
 $DAYSSHORT=array("1"=>"Po","2"=>"Út","3"=>"St","4"=>"Ct","5"=>"Pá","6"=>"So","7"=>"Ne");
 $MONTHS=array("01"=>"Leden","02"=>"Únor","03"=>"Brezen","04"=>"Duben","05"=>"Kveten","06"=>"Cerven","07"=>"Cervenec","08"=>"Srpen","09"=>"Zárí","10"=>"Ríjen","11"=>"Listopad","12"=>"Prosinec");

@@ -5,7 +5,7 @@ INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, 3, 'pages.bo
 INSERT INTO `sys_pages` VALUES ('livea', null, 'top', 'book', null, 3, 'items.live.php', 'Poslední pridane', 'FunDeLive', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('galer', null, 'top', 'galery', null, 4, 'galery.list.php', 'Galerie - Fotografie a jiné obrázky', 'Galerie', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('galed', null, 'top', 'galery', null, 4, 'galery.edit.php', 'Nové a úpravy Galerie', 'EditGal', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('galed', null, 'top', 'galery', null, 4, 'page.edit.php', 'Nové a úpravy Galerie', 'EditGal', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('taggi', null, 'top', 'galery', null, 4, 'items.tagging.randoms.php', 'Popisky k fotkam', 'Popisky', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galbe', null, 'top', 'galery', null, 4, 'items.tags.php', 'Nejlepsi foto', 'Nej fot', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galse', null, 'top', 'galery', null, 4, 'pages.search.php', 'Hledani galerii', 'Vyhledavani', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -55,20 +55,18 @@ INSERT INTO `sys_menu` VALUES (7, 'foall', 'Kluby', 1, 7);
 INSERT INTO `sys_menu` VALUES (8, 'bloll', 'Blogy', 1, 8);
 
 truncate sys_leftpanel_functions;
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('pocket', 'Kapsa', 0, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_datum', '', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_logged_list', 'OnLine uživatelé', 0, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_galerie_rnd', 'Galerie', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_akce_rnd', 'Tipy', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_anketa', 'Anketa', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('bookedRelatedPagesList', 'Podobne sledovane', 0, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 0, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0, 1, null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1, 1, null);
-#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi', 'Počasí', 1, 1, null);
-#INSERT INTO `sys_leftpanel_functions` VALUES ('rh_pocasi_weatherdotcom', 'Weather', 1, 1, null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('pocket', 'Kapsa', 0, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_datum', '', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_logged_list', 'OnLine uživatelé', 0, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_galerie_rnd', 'Galerie', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_akce_rnd', 'Tipy', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_anketa', 'Anketa', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('bookedRelatedPagesList', 'Podobne sledovane', 0, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 0, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1, 1, null,null);
 
 truncate sys_leftpanel_defaults;
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1, 0);

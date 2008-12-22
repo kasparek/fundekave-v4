@@ -1,0 +1,31 @@
+<fieldset>
+<legend>Konfigurace panelu</legend>
+<table>
+  <tr><th>Jmeno</th><th>Poradi</th><th>Vypnout / Odstranit</th></tr>
+<!-- BEGIN panelrow -->
+  <tr>
+  <td>{NAMESYS}<!-- BEGIN name --> - {NAME}<!-- END name --></td>
+  <td><input type="text" class="xShort" name="leftpanel[{LEFTID}][sequence]" value="{SEQUENCE}" /></td>
+  <td>
+  <!-- BEGIN visible -->
+    <select name="leftpanel[{VISIBLEID}][visible]"><option value="1">Zapnuty</option><option value="0"<!-- BEGIN invisible --> selected="selected"<!-- END invisible -->>Vypnuty</option></select>
+  <!-- END visible -->
+  <!-- BEGIN delete -->
+    <select name="leftpanel[{DELETEID}][delete]"><option value="1" selected="selected">Zapnuty</option><option value="0">Vypnuty</option></select>
+  <!-- END delete -->
+  </td>
+  </tr>
+<!-- END panelrow -->
+<!-- BEGIN newpanel -->
+<tr>
+<td colspan="3">Novy panel</td>
+</tr>
+<tr>
+<td><select name="leftpanel[new][name]">{AVAILABLEPANELS}</select></td>
+<td><input type="text" class="xShort" name="leftpanel[new][sequence]" value="0" /></td>
+<td></td>
+</tr>
+<!-- END newpanel -->
+</table>
+<input type="submit" name="save" value="Ulozit" class="button submit" />
+</fieldset>

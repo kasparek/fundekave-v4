@@ -3,6 +3,9 @@ class fPagesSaveTool extends fSqlSaveTool {
     var $pagesTable = 'sys_pages'; 
     var $pagesPrimaryCol = 'pageId';
     var $type;
+    
+    var $xmlProperties;
+    
     var $defaults = array(
     'forum'=>array(
       'typeId'=>'forum',
@@ -32,7 +35,7 @@ class fPagesSaveTool extends fSqlSaveTool {
       'nameshort'=>'GALERIE',
       'public'=>1,
       'locked'=>0,
-      'pageParams' => "<galery><enhancedsettings><orderitems>0</orderitems><perpage/><widthpx/><heightpx/><thumbnailstyle/><fotoforum>1</fotoforum></enhancedsettings></galery>"
+      'pageParams' => "<galery><enhancedsettings><orderitems>0</orderitems><perpage>9</perpage><widthpx>170</widthpx><heightpx>170</heightpx><thumbnailstyle>2</thumbnailstyle><fotoforum>0</fotoforum></enhancedsettings></galery>"
     ),
     'culture'=>array(
       'typeId'=>'culture',
@@ -87,5 +90,31 @@ class fPagesSaveTool extends fSqlSaveTool {
 
         return $this->save($cols,$notQuoted,$forceInsert);
     }
+    
+    function setXmlPropertiesDefaults() {
+      $this->xmlProperties = $this->defaults[$this->type]['pageParams'];
+    }
+    
+    function getXMLVal($branch,$node=false,$default='') {
+	    $xml = new SimpleXMLElement($this->xmlProperties);
+	    if(isset($xml->$branch)) {
+	       if($node===false) {
+          return $xml->$branch;
+         } else {
+  	       if(isset($xml->$branch->$node)) {
+  	           return $xml->$branch->$node;
+  	       }
+	       }
+	    }
+	    return $default;
+	}
+	function setXMLVal($branch,$node,$value=false) {
+	    $xml = new SimpleXMLElement($this->xmlProperties);
+	    if($value===false) {
+	     $xml->$branch = $node;
+	    } else {
+        $xml->$branch->$node = $value;
+	    }
+      $this->xmlProperties = $xml->asXML();
+	}
 }
-?>

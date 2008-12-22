@@ -28,7 +28,7 @@ class fCategory extends fQueryTool {
 		//---defaults for galery,culture,linx,audit,akce
 		$this->arrHead=array(LABEL_CATEGORY_NAME,LABEL_CATEGORY_ORDER,LABEL_CATEGORY_PUBLIC);
 		$this->arrInputType=array("text","text",'public');
-		$this->arrClass=array('','small','');
+		$this->arrClass=array('','xShort','');
 		$this->arrDbUsedCols=array('name','ord','public');
 		$this->requiredCol = 'name';
 		$this->setOrder('ord');
@@ -90,14 +90,18 @@ class fCategory extends fQueryTool {
 		$this->tplObject->edParseBlock("kategformelement".$this->formElement);
 		$this->tplObject->edParseBlock($blockname);
 	}
-	function getEdit() {
-		global $kam,$user,$conf;
-		
-		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;
-		
-		$rediraddon = '';
+	function getUriAddon() {
+	    global $user,$conf;
+	    
+	    $rediraddon = '';
 		if(!empty($_REQUEST[$conf['pager']['urlVar']])) $this->arrRedirAddon[$conf['pager']['urlVar']] = $_REQUEST[$conf['pager']['urlVar']];
 		if(!empty($this->arrRedirAddon)) foreach ($this->arrRedirAddon as $k=>$v) $rediraddon .= '&'.$k.'='.$v;
+		return $rediraddon;
+	}
+	function process($redirect=false) {
+	    global $user,$conf;
+	    
+		$rediraddon = $this->getUriAddon();
 		
 		//---action part
 		if(isset($_POST["save"])){
@@ -119,8 +123,16 @@ class fCategory extends fQueryTool {
 			if (isset($_POST["del".$this->ident])) foreach ($_POST["del".$this->ident] as $gkid) $this->db->query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');
 			$user->refresh();
 			
-			fHTTP::redirect($user->getUri($rediraddon));
+			if($redirect===true) fHTTP::redirect($user->getUri($rediraddon));
 		}
+	}
+	function getEdit() {
+		global $user,$conf;
+		
+		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;
+		
+		$rediraddon = $this->getUriAddon();
+		
 		//---show part
 		//nazev,popis,poradi,public,delete
 		$this->setSelect($this->primaryCol.','.implode(',',$this->arrDbUsedCols));
@@ -196,4 +208,3 @@ class fCategory extends fQueryTool {
 		return $this->tplObject->get();
 	}
 }
-?>

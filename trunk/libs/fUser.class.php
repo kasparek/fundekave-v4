@@ -41,8 +41,6 @@ class fUser {
   	var $ipcheck = true;
   	var $ico = AVATAR_DEFAULT;
   	
-  	var $email;
-  	var $icq;
   	var $dateCreated;
   	var $dateLast;
   	//---used when looking after someone informations
@@ -249,7 +247,8 @@ class fUser {
     		  $localUri = $this->getUri();
     		  
     		  $this->smazoldid($this->gid);
-    			$this = new fUser();
+    		    global $user;
+    			$user = new fUser();
     			
     			fError::addError(ERROR_USER_KICKED);
     			//---do redirect
@@ -272,7 +271,8 @@ class fUser {
 		    if($this->idkontrol === true) {
 
     			$this->smazoldid($this->gid);
-    			$this = new fUser();
+    			global $user;
+    			$user = new fUser();
     			
     			fError::addError(MESSAGE_LOGOUT_OK);
     			fHTTP::redirect('index.php');
@@ -361,13 +361,11 @@ class fUser {
 	}
 	function getXMLVal($branch,$node,$default='') {
 	    $xml = new SimpleXMLElement($this->xmlProperties);
-	    
 	    if(isset($xml->$branch)) {
 	       if(isset($xml->$branch->$node)) {
 	           return $xml->$branch->$node;
 	       }
 	    }
-	    
 	    return $default;
 	}
 	function setXMLVal($branch,$node,$value) {
