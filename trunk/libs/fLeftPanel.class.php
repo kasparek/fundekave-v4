@@ -280,6 +280,7 @@ class fLeftPanel extends fQueryTool {
           $tpl->setVariable('SEQUENCE',$panel['ord']);
           if($panel['origin']!='system') {
               $tpl->setVariable('DELETEID',$panel['functionName']);
+              $tpl->touchBlock('visible'.($panel['visible']*1));
           } else {
               $tpl->setVariable('VISIBLEID',$panel['functionName']);
               if($panel['visible']==0) $tpl->touchBlock('invisible');

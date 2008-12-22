@@ -5,7 +5,28 @@ class fLeftPanelPlugins {
         $fPocket = new fPocket($user->gid);
         return $fPocket->show();
     }
-    
+    static function pageCategories() {
+        global $db,$user;
+        if(!$tmptext = $user->cacheGet('pagescategories')) {
+            $arr = $db->getAll("select categoryId,name from sys_pages_category where typeId = '".$user->currentPageId."' order by ord,name");
+            $tmptext = '';
+            if(!empty($arr)) {
+                $tpl = new fTemplateIT('sidebar.page.categories.tpl.html');
+                foreach ($arr as $category) {
+                	$tpl->setCurrentBlock('item');
+                	$tpl->setVariable('PAGEID',$user->currentPageId);
+                	$tpl->setVariable('CATEGORYID',$category[0]);
+                	$tpl->setVariable('NAME',$category[1]);
+                	$tpl->setVariable('SUM',$db->getOne("select count(1) from sys_pages_items where categoryId='".$category[0]."'"));
+                	$tpl->parseCurrentBlock();
+                }
+                $tmptext = $tpl->get();
+            }
+            $user->cacheSave($tmptext);
+        }
+        return $tmptext;
+        
+    }
     static function bookedRelatedPagesList() {
         global $db,$user;
         if(!$tmptext = $user->cacheGet('bookedpagesrelated')) {
@@ -230,7 +251,7 @@ class fLeftPanelPlugins {
   	    $fItems = new fItems();
   	    
   	    $fItems->openPopup = true;
-        $fItems->showPageLabel = false;
+        $fItems->showPageLabel = true;
         $fItems->showTooltip = true;
   		  $fItems->showTag = true;
   		  $fItems->showText = true;

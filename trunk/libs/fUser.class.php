@@ -191,7 +191,7 @@ class fUser {
 				$this->zaudico = $vid[5];
 				$this->skinName = $vid[6];
 				$this->skinDir = $vid[7];
-				$this->ipcheck = $vid[8];
+				$this->ipcheck = ($vid[8]==1)?(true):(false);
 				$this->galtype = $vid[9];
 				$this->xmlProperties = $vid[10];
 				$this->homePageId = '';
@@ -240,7 +240,7 @@ class fUser {
 		if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 		//---ip address checking
 		if($this->idkontrol === true) { //---check only if user was logged
-    		if(($ipkontrol===false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
+    		if(($ipkontrol === false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
     			$this->idloginInDb = 'chOK';
     		} else {
     		  //---user was logged but is lost - do logout acction
@@ -807,6 +807,7 @@ class fUser {
 	var $cacheLiteCurrentConf = '';
 	var $cacheOptions = array();
 	var $cacheConf = array(
+	'pagescategories'=>array('lifeTime'=>86400,'pageBased'=>1),
     'pagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
     'bookedpagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
     'postwho'=>array('lifeTime'=>86400,'userBased'=>1),

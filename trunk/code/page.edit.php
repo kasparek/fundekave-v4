@@ -130,7 +130,10 @@ if(isset($_POST["save"])) {
     		$systemCachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath($galery->_cacheDirSystemResolution);
     		fSystem::rm_recursive($systemCachePath);
     		
-    		$adr = $galery->get('rootImg').$arr['galeryDir'];
+    		
+	    }
+	    if($typeForSaveTool=='galery') {
+    	    $adr = $galery->get('rootImg').$arr['galeryDir'];
     		if(!file_exists($adr)) {
     			if(mkdir ($adr, 0777)) {
     				mkdir ($adr."/nahled", 0777);
