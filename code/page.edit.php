@@ -1,10 +1,10 @@
 <?php
-if($user->currentPageId=='galed') {
+if($user->currentPageId=='galed' || $user->currentPageId=='paged') {
    $user->currentPageParam = 'a' ;
 }
 
 $rules = new fRules((($user->currentPageParam != 'a')?($user->currentPageId):('')),$user->currentPage['userIdOwner']);
-if($user->currentPageParam != 'a') $fRelations = new fPagesRelations($user->currentPageId);
+$fRelations = new fPagesRelations($user->currentPageId);
 
 $textareaIdDescription = 'desc'.$user->currentPageId;
 $textareaIdContent =  'cont'.$user->currentPageId;
@@ -65,8 +65,8 @@ if(isset($_POST["save"])) {
     $sPage->setXMLVal('enhancedsettings','widthpx',$xwidthpx);
     $sPage->setXMLVal('enhancedsettings','heightpx',$xheightpx);
     $sPage->setXMLVal('enhancedsettings','thumbnailstyle',(int) $_POST['xthumbstyle']);
-    $sPage->setXMLVal('enhancedsettings','orderitems',(int) $_POST['galeryorder']);
-    $sPage->setXMLVal('enhancedsettings','fotoforum',(int) $_POST['forumReact']);
+    if(isset($_POST['galeryorder'])) $sPage->setXMLVal('enhancedsettings','orderitems',(int) $_POST['galeryorder']);
+    if(isset($_POST['forumReact'])) $sPage->setXMLVal('enhancedsettings','fotoforum',(int) $_POST['forumReact']);
     
     if($user->currentPage['pageParams'] != $sPage->xmlProperties && $user->currentPageParam=='e') {
 	    $deleteThumbs = true;
@@ -397,8 +397,9 @@ if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
 
 }
 
+$categoryId = (isset($pageData['categoryId']))?($pageData['categoryId']):(0);
 $arrTmp = $db->getAll('select categoryId,name from sys_pages_category where typeId="'.$typeForSaveTool.'"');
-if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',fSystem::getOptions($arrTmp,$pageData['categoryId']));
+if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',fSystem::getOptions($arrTmp,$categoryId));
 
 
 
