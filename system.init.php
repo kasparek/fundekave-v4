@@ -28,12 +28,15 @@ spl_autoload_register("class_autoloader");
 require_once('DB.php');
 //-----------------------------------------------------------------db connection
 if(!$nonDbInit) {
-	$db = & DB::connect($conf['db'], $conf['dboptions']);
-	if (PEAR::isError($db)) die($db->getMessage());
-	$db->query("set character_set_client = utf8");
-	$db->query("set character_set_connection= utf8");
-	$db->query("set character_set_results = utf8");
-	$db->query("set character_name = utf8");
+  
+  	$db = & DB::connect($conf['db'], $conf['dboptions']);
+  	if (PEAR::isError($db)) die($db->getMessage());
+  	$db->query("set character_set_client = utf8");
+  	$db->query("set character_set_connection= utf8");
+  	$db->query("set character_set_results = utf8");
+  	$db->query("set character_name = utf8");
+  	return $db;
+	
 	//---session settings - stored in db
 	  //require_once("fSession.php");
     //session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");

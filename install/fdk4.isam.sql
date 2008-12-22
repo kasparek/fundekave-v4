@@ -60,8 +60,7 @@ CREATE TABLE sys_pages_category (
 )  ;
 
 CREATE TABLE sys_cron_log (
-       id mediumint unsigned NOT NULL AUTO_INCREMENT
-     , date DATETIME NOT NULL
+     date DATETIME NOT NULL
      , text TEXT
      , PRIMARY KEY (id)
 )  ;

@@ -1,19 +1,15 @@
 <form action="{FORMACTION}" method="POST">
 <fieldset>
   <legend>Filtrovat</legend>
-  <select name="kat"><option value=0>--- Kategorie ---</option>{CATEGORYOPTIONS}</select> 
-  <input type="text" name="filtr" value="{FILTRTEXT}" title="Hledani" class="short" />
-  Na stránku <input type="text" name="perpage" id="perpage" value="{PERPAGE}" class="xShort" /> 
+  Hledat <input type="text" name="filtr" value="{FILTRTEXT}" title="Hledani" class="short" /> 
+  v kategorii <select name="kat"><option value=0>--- Kategorie ---</option>{CATEGORYOPTIONS}</select> 
   <input type="submit" name="nav" value="Vybrat" class="button" />
 </fieldset>
 </form>
 <!-- BEGIN results -->
-<!-- BEGIN toppager -->{PAGER}<!-- END toppager -->
-<div class="pagernums">Celkem: <strong>{TOTAL}</strong></div>
-<!-- BEGIN maybemore --><p align="center">Zobrazeno pouze prvnich 100 nalezenych vysledku hledani</p><!-- END maybemore -->
-
+<!-- BEGIN toppager -->{TOPPAGER}<!-- END toppager -->
 {PAGELINKS}
-
+<!-- BEGIN bottompager -->{BOTTOMPAGER}<!-- END bottompager -->
 <!-- END results -->
 
 <!-- BEGIN noresults --><p align="center">Nenalezena žádná galerie vyhovující podmínkám</p><!-- END noresults -->

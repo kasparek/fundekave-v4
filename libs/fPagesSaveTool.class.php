@@ -7,6 +7,10 @@ class fPagesSaveTool extends fSqlSaveTool {
     var $xmlProperties;
     
     var $defaults = array(
+    'top'=>array(
+      'typeId'=>'top',
+      'pageParams' => "<top></top>"
+      ),
     'forum'=>array(
       'typeId'=>'forum',
       'categoryId'=>'null',
@@ -41,9 +45,8 @@ class fPagesSaveTool extends fSqlSaveTool {
       'typeId'=>'culture',
       'categoryId'=>'null',
       'menuSecondaryGroup'=>'null',
-      'leftpanelGroup'=>2,
       'template'=>'culture.view.tpl.html',
-      'nameshort'=>'KULTURA',
+      'nameshort'=>'',
       'public'=>1,
       'locked'=>0,
       'pageParams' => "<culture/>"

@@ -4,6 +4,8 @@ INSERT INTO `sys_pages` VALUES ('frien', null, 'top', 'friend', null, 2, 'user.f
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, 3, 'pages.booked.php', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('livea', null, 'top', 'book', null, 3, 'items.live.php', 'Poslední pridane', 'FunDeLive', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
+INSERT INTO `sys_pages` VALUES ('paged', null, 'top', 'culture', null, 2, 'page.edit.php', 'Nova stranka', 'Nova stranka', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+
 INSERT INTO `sys_pages` VALUES ('galer', null, 'top', 'galery', null, 4, 'galery.list.php', 'Galerie - Fotografie a jiné obrázky', 'Galerie', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galed', null, 'top', 'galery', null, 4, 'page.edit.php', 'Nové a úpravy Galerie', 'EditGal', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('taggi', null, 'top', 'galery', null, 4, 'items.tagging.randoms.php', 'Popisky k fotkam', 'Popisky', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -67,34 +69,36 @@ INSERT INTO `sys_leftpanel_functions` VALUES ('rh_diar_kalendar', 'Kalendář', 
 INSERT INTO `sys_leftpanel_functions` VALUES ('rh_audit_popis', 'Popis', 1, 1, null,null);
 INSERT INTO `sys_leftpanel_functions` VALUES ('rh_posta_kdo', 'Přijaté zprávy', 0, 1, null,null);
 INSERT INTO `sys_leftpanel_functions` VALUES ('relatedPagesList', 'Spřátelená stránky', 1, 1, null,null);
+INSERT INTO `sys_leftpanel_functions` VALUES ('pageCategories','Kategorie', 1, 1, null, null);
 
 truncate sys_leftpanel_defaults;
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pocket', 1, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_anketa', 2, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pocket', 1, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_anketa', 2, 1);
 
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 20, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 20, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1);
 
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'relatedPagesList', 80, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_logged_list', 100, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'relatedPagesList', 80, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_logged_list', 100, 1);
 
 #skupina pro kluby
-INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'rh_audit_popis', 10, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'bookedRelatedPagesList', 90, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'rh_audit_popis', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'bookedRelatedPagesList', 90, 1);
 
 #skupina pro blogy
-INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_audit_popis', 10, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_diar_kalendar', 20, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'bookedRelatedPagesList', 90, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_audit_popis', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_diar_kalendar', 20, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'pageCategories', 30, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'bookedRelatedPagesList', 90, 1);
 
 #skupina pro galerie
-INSERT INTO `sys_leftpanel_defaults` VALUES ('galery', 'bookedRelatedPagesList', 90, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('galery', 'bookedRelatedPagesList', 90, 1);
 
 #pouze posta
-INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_posta_kdo', 10, 1, 0);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_diar_kalendar', 20, 1, 0);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_posta_kdo', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_diar_kalendar', 20, 1);
 
 truncate sys_menu_secondary;
 INSERT INTO `sys_menu_secondary` VALUES (2, 'fpost', 'Pošta', 0, 0);
