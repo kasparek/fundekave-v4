@@ -123,16 +123,7 @@ if(isset($_POST["save"])) {
 
 	if(!fError::isError()) {
 		
-    if($deleteThumbs===true && $typeForSaveTool=='galery') {
-    	  $galery->getGaleryData($user->currentPageId);
-    	  $cachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath();
-    		fSystem::rm_recursive($cachePath);
-    		$systemCachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath($galery->_cacheDirSystemResolution);
-    		fSystem::rm_recursive($systemCachePath);
-    		
-    		
-	    }
-	    if($typeForSaveTool=='galery') {
+    if($typeForSaveTool=='galery') {
     	    $adr = $galery->get('rootImg').$arr['galeryDir'];
     		if(!file_exists($adr)) {
     			if(mkdir ($adr, 0777)) {
@@ -149,7 +140,28 @@ if(isset($_POST["save"])) {
 		} else {
 		  $arr['pageId'] = $user->currentPageId;
 		}
-	
+	    if(!empty($_POST['audicourl'])) {
+	        $filename = 'pageAvatar-'.$user->currentPageId.'.jpg';
+	        if($file = @file_get_contents($_POST['audicourl'])) {
+	            file_put_contents(WEB_REL_PAGE_AVATAR.$filename,$file);
+	            $resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
+                $iProc = new fImgProcess(WEB_REL_PAGE_AVATAR.$filename,WEB_REL_PAGE_AVATAR.$filename,$resizeParams);
+	        }
+	        $arr["pageIco"] = $filename;
+	        
+	    }
+	    
+	    if($deleteThumbs===true && $typeForSaveTool=='galery') {
+    	  $galery->getGaleryData($user->currentPageId);
+    	  $cachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath();
+    		fSystem::rm_recursive($cachePath);
+    		$systemCachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath($galery->_cacheDirSystemResolution);
+    		fSystem::rm_recursive($systemCachePath);
+    		
+    		
+	    }
+	    
+	    
         if ($_FILES["audico"]['error']==0) {
             $konc = Explode(".",$_FILES["audico"]["name"]);
 			$_FILES["audico"]['name'] = "icoaudit".$user->currentPageId.'.'.$konc[(count($konc)-1)];

@@ -11,6 +11,10 @@ class fPagesSaveTool extends fSqlSaveTool {
       'typeId'=>'top',
       'pageParams' => "<top></top>"
       ),
+    'admin'=>array(
+      'typeId'=>'admin',
+      'pageParams' => "<admin></admin>"
+      ),
     'forum'=>array(
       'typeId'=>'forum',
       'categoryId'=>'null',

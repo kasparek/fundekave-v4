@@ -1,7 +1,9 @@
-sidebar.randomfoto - nazev galerie
+page search  - pridat datum
+
+page edit galery - maze nahledy pokazde
 
 galery new - nevytvori adresar
-
+  
 todo: fuvatar - pridat u ikonky ze je online, odkaz na stranku se vsema kamerama, pripojena diskuze
 
 todo: cron - mazat tmp/cache-lite - starsi nez jeden den - jednou za den
