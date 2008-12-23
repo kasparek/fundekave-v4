@@ -446,8 +446,9 @@ class fItems extends fQueryTool {
       }
       
       if($this->showComments == true) {
-        $writeRule = fItems::getProperty($arr['itemId'],'forumSet',1);
-        if(null !== $pageWriteRule = fItems::getProperty($arr['pageId'],'forumSet')) $writeRule = $pageWriteRule;
+        $writeRule = fPages::getProperty($arr['pageId'],'forumSet');
+        if(false !== $itemWriteRule = fItems::getProperty($arr['itemId'],'forumSet',2)) $writeRule = $itemWriteRule;
+        
         $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$writeRule,$this->itemIdInside));
       } else {
         $tpl->setVariable('COMMENTLINK',$link);
@@ -774,7 +775,7 @@ class fItems extends fQueryTool {
     }
     
     //---properties
-    static function getProperty($itemId,$propertyName,$default=0) {
+    static function getProperty($itemId,$propertyName,$default=false) {
             global $db;
          $arr = $db->getAll("select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'");
          if(empty($arr)) {
