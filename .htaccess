@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_URI} !^js
+RewriteCond %{REQUEST_URI} !^obr
+RewriteCond %{REQUEST_URI} !^fuvatar
+RewriteCond %{REQUEST_URI} !^data
+RewriteCond %{REQUEST_URI} !^css
+RewriteCond %{REQUEST_URI} !^gbooks
+RewriteCond %{REQUEST_URI} !^o_O
+RewriteRule ^([A-Za-z0-9-\_]+)/?$ ?u=$1 [L,QSA]
