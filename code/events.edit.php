@@ -62,8 +62,22 @@ if(isset($_POST["nav"])){
 	if(!fError::isError()) {
 		
 		$user->currentItemId = $fItems->saveItem($arrSave);
-		
-		if($_FILES['akceletak']['error'] == 0) {
+		if(!empty($_POST['akceletakurl'])) {
+		    $filename = "flyer".$user->currentItemId.'.jpg';
+		    if($file = file_get_contents($_POST['akceletakurl'])) {
+	            file_put_contents($conf['events']['flyer_source'].$filename,$file);
+	        }
+	        $cachedThumb = fEvents::thumbUrl($filename);
+    			if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
+    			
+    			$fImg = new fImgProcess($conf['events']['flyer_source'] . $filename
+              ,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
+                ,'width'=>$conf['events']['thumb_width'],'height'=>0));
+                
+	        $fItems->saveItem(array("itemId"=>$user->currentItemId,'enclosure'=>$filename));
+    			$user->cacheRemove('eventtip','calendarlefthand');
+		}
+		elseif($_FILES['akceletak']['error'] == 0) {
 		    
 			$flypath = $conf['events']['flyer_source'];
 			
