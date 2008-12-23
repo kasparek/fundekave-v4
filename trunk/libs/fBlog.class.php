@@ -87,7 +87,7 @@ class fBlog extends fQueryTool  {
         		    $tpl->touchBlock('statpublic');
         		}
         		///properties
-        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',1));
+        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',fPages::getProperty($user->currentPageId,'forumSet',2)));
         		///categories
         		if($opt = fSystem::getOptions($user->currentPageId,$arr[5],true,''))
         		  $tpl->setVariable('CATEGORYOPTIONS',$opt);
