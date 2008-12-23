@@ -198,7 +198,7 @@ if(isset($_POST["save"])) {
 		
 		//---set properties
 		if ($typeForSaveTool=='blog') {
-            if(isset($_POST['forumReact'])) $fPages->setProperty($nid,'forumSet',(int) $_POST['forumReact']);
+            if(isset($_POST['forumReact'])) fPages::setProperty($nid,'forumSet',(int) $_POST['forumReact']);
         }
 		
 		//CLEAR DRAFT
