@@ -1,3 +1,5 @@
+pridani prispevku do diskuze u blogu nemaze cache na hlavni
+
 page search  - pridat datum
 
 page edit galery - maze nahledy pokazde
