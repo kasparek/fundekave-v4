@@ -73,6 +73,29 @@ div#sidebar h2 {
 	margin-bottom: 0.5em;
 }
 
+div#sidebar ul.onlineUsersList {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+div#sidebar ul.onlineUsersList span.fn {
+	padding: 0 2px;
+	font-weight: bold;
+}
+div#sidebar ul.onlineUsersList span.fn a {
+  text-decoration: none;
+}
+div#sidebar ul.onlineUsersList img.userAvatar {
+  float: left;
+  padding: 0 0.5em 0 0;
+}
+div#sidebar ul.onlineUsersList li {
+	clear: left;
+overflow: hidden;
+	background: none;
+	list-style: none;
+}
+
 div#sidebar ul.showPageAvatar {
 	list-style: none;
 	padding: 0;
@@ -215,8 +238,14 @@ div#banner div.banner-content {
 	padding-left: 220px;
 }
 div.sidebarBlock {
+  /*border: 1px solid #999;*/
+  margin: 0 0 1em 0;
+	padding: 0.3em;
+	background: #eee;
+}
+div.sidebarBlock.loginBlock {
 	padding: 10px 0;
-	/*background: #eee;*/
+	background: none;
 }
 div.sidebarBlock div.sidebarBlockToolbar {
   float: right;
@@ -462,7 +491,7 @@ div.mainpanel-content h3 a {
 	text-decoration: none;
 }
 div.mainpanel-content h3 a:hover {
-	text-decoration: underline;
+	text-decoration: underlined;
 }
 div.mainpanel-content div.galery span.abbr {
 	color: white;
@@ -578,6 +607,7 @@ div.mainpanel-content div.hentry span.author {
 }
 div.mainpanel-content div.hentry span.author a.currentLocation {
   font-weight: normal;
+  text-decoration: underline;
 }
 div.mainpanel-content div.hentry span.author a {
   text-decoration: none;
@@ -843,25 +873,11 @@ div#fcalendar table td.calendarDayCurrent a {
 }
 div#fcalendar div.calendarPreviousMonthLink,
 div#fcalendar div.calendarNextMonthLink {
-	width: 99px;
-	border: 1px solid #ddd;
-	background: #eae6da;
-	border-top: 0;
+	
+	/*background: #eae6da;
+	border-top: 0;*/
 }
-div#fcalendar div.calendarPreviousMonthLink a,
-div#fcalendar div.calendarNextMonthLink a {
-	display: block;
-	padding: 0.3em 0.6em;
-}
-div#fcalendar div.calendarPreviousMonthLink {
-	float: left;
-	border-right: 0;
-}
-div#fcalendar div.calendarNextMonthLink {
-	float: right;
-	text-align: right;
-	border-left: 0;
-}
+
 /*DOMTABS*/
 div.domtab ul.domtabs
 {

@@ -151,6 +151,10 @@ class fLeftPanel extends fQueryTool {
                 if(!empty($letext) || !empty($panel['minimized'])) {
                     global $TOPTPL;
                   $TOPTPL->setCurrentBlock('sidebar-block');
+                  //---if login block
+                  if($fnc == 'rh_login') {
+                    $TOPTPL->touchBlock('sidebar-block-login');
+                  }
                   //---set buttons - move up, move down, minimize/maximize
                   global $user;
                   $TOPTPL->setVariable('MOVEUP',$user->getUri('b='.$fnc.'&a=u'));
