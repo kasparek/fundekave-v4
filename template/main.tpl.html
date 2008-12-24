@@ -82,8 +82,8 @@
     <!-- BEGIN sidebar -->
     <div id="sidebar">
     	<!-- BEGIN sidebar-block -->
-    	<div class="sidebarBlock">
-    	<!-- BEGIN sidebar-block-toolbar --><div class="sidebarBlockToolbar"><a href="{MOVEUP}">u</a><a href="{MOVEDOWN}">d</a><a href="{MINIMIZE}">m</a></div><!-- END sidebar-block-toolbar -->
+    	<div class="sidebarBlock<!-- BEGIN sidebar-block-login --> loginBlock<!-- END sidebar-block-login -->">
+    	<!-- BEGIN sidebar-block-toolbar --><div class="sidebarBlockToolbar" style="display:none;"><a href="{MOVEUP}">u</a><a href="{MOVEDOWN}">d</a><a href="{MINIMIZE}">m</a></div><!-- END sidebar-block-toolbar -->
     	<!-- BEGIN sidebar-heading --><h2>{SIDEBARHEAD}</h2><!-- END sidebar-heading -->
     	{SIDEBARDATA}
     	</div>
@@ -110,8 +110,7 @@
 <script type="text/javascript" src="./js/domtab.js"></script>
 <!-- END domtabs2 -->
 <script type="text/javascript" src="fuvatar/swfobject.js"></script> 
-
-
+<script type="text/javascript">DD_roundies.addRule('.sidebarBlock', 5);</script>
 
 <script type="text/javascript">
 document.write(unescape("%3Cscript src='" + (("https:" == document.location.protocol) ? "https://ssl." : "http://www.") + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

@@ -308,16 +308,18 @@ class fLeftPanelPlugins {
     	  $ret = '';
       	$arrpra=$db->getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->gid." AND f.userIdFriend!='".$user->gid."' GROUP BY f.userIdFriend ORDER BY casklik");
       	if (count($arrpra)>0){
-      		$ret.='<p class="loggedUsersList">
-          <ul>';
+      		$ret.='<ul class="onlineUsersList">';
       		foreach ($arrpra as $pra){
       		    $kde = $user->getLocation($pra[0]);
       			$username = $user->getgidname($pra[0]);
-      			$ret.='<li><a href="?k=fpost&who='.$pra[0].'">'.$username.'</a>
-      			<a href="?k='.$kde['pageId'].$kde['param'].'" title="'.$kde['name'].'">'.$kde['nameshort'].' ['.substr($pra[1],3,5).']</a></li>';
+      			$ret.='<li>'
+      			. $user->showAvatar($pra[0])
+                .'<span class="vcard fn"<a href="?k=fpost&who='.$pra[0].'">'.$username.'</a></span><br />'
+      			.'<a href="?k='.$kde['pageId'].$kde['param'].'" title="Prave sleduje: '.$kde['name'].'">'.$kde['nameshort'].'</a><br />'
+      			.'<span title="Posledni aktivita">['.substr($pra[1],3,5).']</span>'
+            .'</li>';
       		}
-      	 $ret.='</ul>
-         </p>';
+      	 $ret.='</ul>';
       	}
       	$user->cacheSave($ret);
     	}

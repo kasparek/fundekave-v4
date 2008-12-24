@@ -497,11 +497,11 @@ class fUser {
 	function getLocation($userId) {
 		global $db;
 		if(!isset($this->arrCachePerLoad['onlineUserLocation'][$userId])) {
-		    $rid = $db->getRow("SELECT s.location,s.params,ss.nameshort,ss.name 
-    		FROM sys_users_logged s 
-    		left join sys_pages ss on s.location=ss.pageId and s.userId='".$userId."'");
+		    $query = "SELECT s.location,s.params,ss.nameshort,ss.name 
+    		FROM sys_users_logged as s join sys_pages as ss on s.location=ss.pageId and s.userId='".$userId."'";
+		    $rid = $db->getRow($query);
 		    if (!empty($rid)) {
-		      return $this->arrCachePerLoad['onlineUserLocation'][$userId] = array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[2]);
+		      return $this->arrCachePerLoad['onlineUserLocation'][$userId] = array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
 		    } else $this->arrCachePerLoad['onlineUserLocation'][$userId] = false;
 		} else return $this->arrCachePerLoad['onlineUserLocation'][$userId];
 	}
