@@ -62,14 +62,18 @@ class fItems extends fQueryTool {
     static function initTagXajax() {
         fXajax::register('user_tag');
     }
-    static function tagLabel($itemId,$typeId='') {
+    static function tagLabel($itemId,$typeId='',$format='numeric') {
         global $TAGLABELS,$db;
         if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         $totalTags = fItems::totalTags($itemId);
         $tagLabel = '';
-        if($totalTags == 1) $tagLabel = '1 '.$TAGLABELS[$typeId][1];
-        elseif ($totalTags > 1 && $totalTags < 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][2];
-        elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][3];
+        if($format=='numeric') {
+          $tagLabel = $totalTags;
+        } else {
+          if($totalTags == 1) $tagLabel = '1 '.$TAGLABELS[$typeId][1];
+          elseif ($totalTags > 1 && $totalTags < 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][2];
+          elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][3];
+        }
         return $tagLabel;
     }
     static function getTagLink($itemId,$userId,$typeId='',$removable=false) {
@@ -78,12 +82,15 @@ class fItems extends fQueryTool {
         if(fItems::isTagged($itemId,$userId)) {
             return '<span class="tagIs">'.fItems::tagLabel($itemId,$typeId).(($removable==true)?(' <a href="'.$user->getUri('rt='.$itemId).'">'.$TAGLABELS[$typeId][4].'</a>'):('')).'</span>';
         } else {
-            return '<span id="tag'.$itemId.'" class="tagMe"><a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'.$TAGLABELS[$typeId][0].'</a> '.fItems::tagLabel($itemId).'</span>';
+            return '<span id="tag'.$itemId.'" class="tagMe">
+            <a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'
+            .$TAGLABELS[$typeId][0].'</a> '.fItems::tagLabel($itemId).'</span>';
         }
     }
     static function getItemTagList($itemId) {
         global $db;
-        $arr = $db->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='".$itemId."'");
+        $arr = $db->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='"
+        .$itemId."'");
         return $arr;
     }
     /** 
