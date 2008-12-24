@@ -190,32 +190,11 @@ if(!empty($lomenuItems)) {
   }
 }
 //---LEFT PANEL POPULATING
-if($user->gid==1) {
-    $fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId']);
-    $fLeftpanel->load();
-    $fLeftpanel->show();
-}
- else {
-$rh = $db->getAll("select lf.functionName,
-	lf.name 
-    from sys_leftpanel as l 
-    join sys_leftpanel_functions as lf on l.functionName = lf.functionName 
-    where ".(($user->idkontrol)?(''):(" lf.public=1 and "))." (l.leftpanelGroup='default' or l.leftpanelGroup='".$user->currentPage['typeId']."' or l.leftpanelGroup='".$user->currentPage['typeIdChild']."') 
-    order by l.ord");
+$fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId']);
+$fLeftpanel->load();
+$fLeftpanel->show();
 
-if(!empty($rh)) {
-	foreach ($rh as $rhitem) {
-		$fnc = $rhitem[0];
-		$letext = fLeftPanelPlugins::$fnc();
-    if(!empty($letext)) {
-      $TOPTPL->setCurrentBlock('sidebar-block');
-      if(!empty($rhitem[1]))$TOPTPL->setVariable('SIDEBARHEAD',$rhitem[1]);
-      $TOPTPL->setVariable('SIDEBARDATA',$letext);
-      $TOPTPL->parseCurrentBlock();
-    }
-	}
-}
- }
+ 
 //---FOOTER INFO
 $TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
 
