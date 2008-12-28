@@ -34,6 +34,7 @@ class fBlog extends fQueryTool  {
           		    $arrSave['userId'] = $user->gid;
           		    $arrSave['pageId'] = $pageId;
           		    $arrSave['typeId'] = $this->typeId;
+          		    fPages::cntSet($pageId);
           		}
           		//$fsave->debug=1;
           		$returnItemId = $fsave->save($arrSave);
@@ -41,7 +42,6 @@ class fBlog extends fQueryTool  {
           		///properties
           		fItems::setProperty($returnItemId,'forumSet',(int) $aFormValues['forumset']);
           		
-          		fPages::cntSet($pageId);
           		fUserDraft::clear(fBlog::textAreaId());
           	} else {
           	  $fItems = new fItems();
@@ -137,7 +137,7 @@ class fBlog extends fQueryTool  {
 		    $fItems->showHeading = false;
 		    $fItems->initDetail($itemId);
 		} else {
-		    $fItems->setLimit($currentPage*$this->perPage,$this->perPage);
+		    $fItems->setLimit($currentPage * $this->perPage, $this->perPage);
 		    $fItems->setOrder("i.dateCreated desc");
 		}
 		

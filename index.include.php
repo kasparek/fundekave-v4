@@ -16,9 +16,10 @@ if(isset($_GET['t'])) {
   if($tagItem > 0) fItems::tag($tagItem,$user->gid);
 }
 if(isset($_GET['rt'])) {
-  //tag item
+  //remove tag item
   $tagItem = $_GET['rt'] * 1;
   if($tagItem > 0) fItems::removeTag($tagItem,$user->gid);
+  fHTTP::redirect($user->getUri());
 }
 if(isset($_REQUEST['book'])) fForum::setBooked($user->currentPageId,$user->gid,1);
 if(isset($_REQUEST['unbook'])) fForum::setBooked($user->currentPageId,$user->gid,0);

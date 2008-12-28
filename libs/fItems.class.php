@@ -69,21 +69,21 @@ class fItems extends fQueryTool {
     'default'=>array(
         'active' => '<span id="tag{ITEMID}" class="tagMe">{SUM} 
             <a href="{URLACCEPT}" class="tagLink" id="t{ITEMID}">
-            <img src="{CSSSKINURL}/img/thumb_up.png" title="Palec nahoru" />
+            <img src="{CSSSKINURL}/img/thumb_up.png" title="Hodnotit: palec nahoru" />
             </a></span>'
-        ,'used' => '<span class="tagIs">{SUM}</span>'
+        ,'used' => '<span class="tagIs">{SUM} <img src="{CSSSKINURL}/img/thumb_up_used.png" title="Hodnoceni uzivatelu: pocet palcu nahoru" /></span>'
         )
     ,'event'=>array(
         'active' => '<span id="tag{ITEMID}" class="tagMe">
-        <a href="{URLACCEPT}" title="Zucastnim se">Prijdu</a> Ucastniku: {SUM}
+        <a href="{URLACCEPT}" title="Zucastnim se" class="tagLink" id="t{ITEMID}">Prijdu</a> Ucastniku: {SUM}
         </span>'
-        ,'used' => '<span class="tagIs">
+        ,'used' => '<span>
         <!-- BEGIN removable --> <a href="{URLREMOVE}">Nezucastnim se</a><!-- END removable --> Ucastniku: {SUM}</span>'
         )
     );
     
     }
-    static function getTag($itemId,$userId,$typeId='',$removable=false) {
+    static function getTag($itemId,$userId,$typeId='') {
         global $db,$user;
         if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         $arrTemplates = fItems::itemTagTemplate();
@@ -107,9 +107,9 @@ class fItems extends fQueryTool {
         $tpl->setVariable('CSSSKINURL',$user->getSkinCSSFilename());
         $tpl->setVariable('SUM',fItems::totalTags($itemId));
         
-        if($removable===true) {
-            $tpl->setVariable('URLREMOVE',$user->getUri('rt='.$itemId));
-        }
+        
+        $tpl->setVariable('URLREMOVE',$user->getUri('rt='.$itemId));
+        
         
         return $tpl->get();
     }
@@ -195,9 +195,9 @@ class fItems extends fQueryTool {
         if($doPagesJoin) $this->addJoin("join sys_pages as p on p.pageId=i.pageId");
       }
       if(empty($typeId) || $typeId=='blog') {
-        if($user->idkontrol) {
+        if($user->idkontrol===true) {
           $this->addJoin('left join sys_pages_items_readed_reactions as u on u.itemId=i.itemId and u.userId="'.$user->gid.'"');
-          $this->fQuerySelectDefault['unReadedCnt'] = '(i.cnt-u.cnt)';
+          $this->fQuerySelectDefault['readedCnt'] = 'u.cnt as readed';
         }
       }
       
@@ -284,13 +284,24 @@ class fItems extends fQueryTool {
     private $tpl;
     private $tplType;
     private $tplParsed = '';
+    private $customTemplateName = '';
+    function setCustomTemplate($templateName) {
+        $this->customTemplateName = $templateName;
+    }
+    function getTemplateName($typeId) {
+        if(empty($this->customTemplateName)) {
+            return 'item.'.$typeId.'.tpl.html';
+        } else {
+            return $this->customTemplateName;
+        }
+    }
     function &itemTpl($typeId='') {
       if($this->tpl && $typeId!='' && $typeId!=$this->tplType) {
         $this->tplParsed .= $this->tpl->get();
         $this->tpl = false;
       }
       if(!$this->tpl && $typeId!='') {
-        $this->tpl = new fTemplateIT('item.'.$typeId.'.tpl.html');
+        $this->tpl = new fTemplateIT($this->getTemplateName($typeId));
         $this->tplType = $typeId;
       }
       return $this->tpl; 
@@ -343,7 +354,8 @@ class fItems extends fQueryTool {
   		}
   		if($arr = $this->pop()) {
   		    //chechk permissions to edit
-  		    $this->enableEdit=false;
+  		    $this->enableEdit = false;
+  		    
   		    if(fRules::get($user->gid,$arr['pageId'],2) || $arr['userId']==$user->gid) {
   		        $this->enableEdit=true;
   		    }
@@ -366,7 +378,7 @@ class fItems extends fQueryTool {
   	
   	if(isset($arr['name'])) $tpl->setVariable('AUTHOR',$arr['name']);
   	if(!empty($arr['unread'])) $tpl->touchBlock('unread');
-  	if($this->enableEdit==true) {
+  	if($this->enableEdit === true) {
   	 if(isset($arr['editItemId']) && $user->currentPageId == $arr['pageId']) {
   	     $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
   	     $tpl->setVariable('EDITPAGEID',$arr['pageId'].'u');
@@ -421,7 +433,9 @@ class fItems extends fQueryTool {
   	     }
   	    }
   	    if($this->showFooter) {
-  	        if($user->gid == $arr['userId'] || fRules::get($user->gid,$user->currentPageId,2)) $tpl->setVariable('EDITLINK','?k=eventu&i='.$arr['itemId']);
+  	        if($user->gid == $arr['userId'] || fRules::get($user->gid,$user->currentPageId,2)) {
+  	            $tpl->setVariable('EDITLINK','?k=eventu&i='.$arr['itemId']);
+  	        }
   	    }
   	}
   	//---forum only
@@ -441,9 +455,7 @@ class fItems extends fQueryTool {
   	 if($this->showTag==true) {
         fItems::initTagXajax();
         if(false === $user->getTimeCache('itemTags',$arr['itemId'],60)) $user->saveTimeCache($arr['tag_weight']);
-        $removableTag = false;
-        if($arr['typeId']=='event') $removableTag = true;
-        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->gid,$arr['typeId'],$removableTag));
+        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->gid,$arr['typeId']));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
@@ -485,13 +497,22 @@ class fItems extends fQueryTool {
         
         $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$writeRule,$this->itemIdInside));
       } else {
+          
+          
+          
         $tpl->setVariable('COMMENTLINK',$link);
-        if(isset($arr['unReadedCnt'])) {
-        	if($arr['unReadedCnt'] > 0) $tpl->setVariable('ALLNEWCNT',$arr['unReadedCnt']);
-        }
+        
         if(!isset($arr['commentsCnt'])) $arr['commentsCnt'] = 0;
+        
+        if(!isset($arr['readedCnt'])) $arr['readedCnt'] = $arr['commentsCnt'];
+        $unReadedReactions = $arr['commentsCnt'] - ($arr['readedCnt'] * 1);
+        
+        if($unReadedReactions > 0) {
+    	 $tpl->setVariable('ALLNEWCNT',$unReadedReactions);
+        }
+        
         $tpl->setVariable('CNTCOMMENTS',$arr['commentsCnt']);
-    	}
+      }
     }
     //---GALERY item
     if($arr['typeId'] == 'galery') {
@@ -783,8 +804,12 @@ class fItems extends fQueryTool {
                 $fQuery->addWhere("ihistory.dateInt = '".$date."'");
               }
             }
-            if($thumbupData['order']>0 && $thumbupData['interval']>1)
+            if($thumbupData['order']>0 && $thumbupData['interval']>1) {
               $fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
+            }
+            if($user->gid==1) {
+                $fQuery->debug = 1;
+            }
         }
     }
     function getItem($itemId) {
