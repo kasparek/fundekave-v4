@@ -645,7 +645,11 @@ div.mainpanel-content div.notpublished h3 {
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
 }
-
+div.mainpanel-content div.statistic {
+  margin: 0 auto;
+  padding: 0 0 0.3em 0; 
+  text-align: center;
+}
 div.galleryList div.thumbnail {
 	float: left;
 	margin-right: 15px;
@@ -664,28 +668,28 @@ div.galeryThumbs div.hentry {
 	clear: none;
 	margin: 0 0.5em 1em 0.5em;
 	padding: 0.3em 0.6em;
-	/*height: 200px;*/
 	overflow: hidden;
-	border-top: 0;
 	border: 1px solid #ddd;
 }
 div.galeryThumbs div.hentry div.entry-content {
-	padding-top: 0;
+	padding: 0;
 }
 div.galeryThumbs div.hentry div.foto {
 	text-align: center;
 }
-div.galeryThumbs div.hentry p {
-	position: relative;
-	top: -3em;
-	background: white;
-	height: 3em;
-	padding-top: 0.4em;
+
+span.tagIs {
+  padding-right: 20px;
+  line-height: 16px;
+	background: url("img/thumb_up_used.png") no-repeat right center;
 }
-div.galeryThumbs div.hentry p.rating {
+span.viewedTimes {
 	top: 0;
 	height: auto;
 	padding-top: 0.2em;
+	padding-right: 24px;
+	line-height: 16px;
+	background: url("img/eye.png") no-repeat right center;
 }
 
 /* events */
@@ -694,6 +698,18 @@ div.mainpanel-content div.vevent {
   padding: 0.5em;
   background: #eee;
   border: 1px solid #999;
+}
+div.sidebarBlock div.hentry {
+  text-align: center;
+}
+div.sidebarBlock div.hentry div.entry-content {
+  margin: 0 auto;
+}
+div.sidebarBlock div.vevent {
+  text-align: center;
+}
+div.sidebarBlock div.vevent span.location {
+  display: block;
 }
 div.mainpanel-content div.vevent div.nextToFlyer {
   margin-left: 180px;

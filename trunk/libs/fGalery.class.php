@@ -337,7 +337,7 @@ class fGalery {
   			
   			$tpl->setVariable("HITS",$this->_fHits);
   			if($user->idkontrol) {
-  			    $tpl->setVariable('TAG',fItems::getTagLink($itemId,$user->gid));
+  			    $tpl->setVariable('TAG',fItems::getTag($itemId,$user->gid,'galery'));
   			    $tpl->setVariable('POCKET',fPocket::getLink($itemId));
   			}
   			
