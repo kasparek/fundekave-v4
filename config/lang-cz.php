@@ -50,13 +50,6 @@ define('LABEL_STATS','Statistiky');
 define('LABEL_HOME','Nastenka');
 define('LABEL_DELETE','Smazat');
 
-$TAGLABELS = array(
-'forum'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
-'blog'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
-'galery'=>array('Palec nahoru','Palec','Palce','Palcu','Palec dolu'),
-'event'=>array('Přijdu','přijde','přijdou','přijde','Nepřijdu'),
-);
-
 define('LABEL_TAG_PAGE','Popisuj fotky');
 define('LABEL_RULES_ACCESS','Pristup');
 define('LABEL_RULES_HELP','Napoveda');

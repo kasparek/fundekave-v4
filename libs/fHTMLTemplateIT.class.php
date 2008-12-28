@@ -13,7 +13,7 @@ define('IT_UNKNOWN_OPTION',            -6);
  * @package  HTML_Template_IT
  *  fundekave - kasparek - local version of IT .. removed pear dependecies
  */
-class fHTML_Template_IT
+class fHTMLTemplateIT
 {
     /**
      * Contains the error objects
@@ -259,7 +259,7 @@ class fHTML_Template_IT
      *                     given to the object.
      * @see      setRoot()
      */
-    function fHTML_Template_IT($root = '', $options = null)
+    function __construct($root = '', $options = null)
     {
         if (!is_null($options)) {
             $this->setOptions($options);

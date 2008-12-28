@@ -62,31 +62,56 @@ class fItems extends fQueryTool {
     static function initTagXajax() {
         fXajax::register('user_tag');
     }
-    static function tagLabel($itemId,$typeId='') {
-        global $TAGLABELS,$db;
-        if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
-        $totalTags = fItems::totalTags($itemId);
-        $tagLabel = '';
-        
-        if($totalTags < 1) $tagLabel = '0 '.$TAGLABELS[$typeId][3];
-        elseif($totalTags == 1) $tagLabel = '1 '.$TAGLABELS[$typeId][1];
-        elseif ($totalTags > 1 && $totalTags < 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][2];
-        elseif ($totalTags >= 5) $tagLabel = $totalTags.' '.$TAGLABELS[$typeId][3];
-        
-        return $tagLabel;
+    
+    static function itemTagTemplate() {
+        return array(
+    
+    'default'=>array(
+        'active' => '<span id="tag{ITEMID}" class="tagMe">{SUM} 
+            <a href="{URLACCEPT}" class="tagLink" id="t{ITEMID}">
+            <img src="{CSSSKINURL}/img/thumb_up.png" title="Palec nahoru" />
+            </a></span>'
+        ,'used' => '<span class="tagIs">{SUM}</span>'
+        )
+    ,'event'=>array(
+        'active' => '<span id="tag{ITEMID}" class="tagMe">
+        <a href="{URLACCEPT}" title="Zucastnim se">Prijdu</a> Ucastniku: {SUM}
+        </span>'
+        ,'used' => '<span class="tagIs">
+        <!-- BEGIN removable --> <a href="{URLREMOVE}">Nezucastnim se</a><!-- END removable --> Ucastniku: {SUM}</span>'
+        )
+    );
+    
     }
-    static function getTagLink($itemId,$userId,$typeId='',$removable=false) {
-        global $db,$user,$TAGLABELS;
+    static function getTag($itemId,$userId,$typeId='',$removable=false) {
+        global $db,$user;
         if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
-        if(fItems::isTagged($itemId,$userId)) {
-            return '<span class="tagIs">'.fItems::tagLabel($itemId,$typeId).(($removable==true)?(' <a href="'.$user->getUri('rt='.$itemId).'">'.$TAGLABELS[$typeId][4].'</a>'):('')).'</span>';
+        $arrTemplates = fItems::itemTagTemplate();
+        $templates = array_keys($arrTemplates);
+        if(!in_array($typeId,$templates)) {
+            $templateType = $arrTemplates['default'];
         } else {
-            return '<span id="tag'.$itemId.'" class="tagMe">
-            <a href="?k='.$user->currentPageId.'&t='.$itemId.'" class="tagLink" id="t'.$itemId.'">'
-            .'<img src="'.$user->getSkinCSSFilename().'/img/thumb_up.png" title="Palec nahoru" />'
-            //.$TAGLABELS[$typeId][0]
-            .'</a> '.fItems::tagLabel($itemId,$typeId).'</span>';
+            $templateType = $arrTemplates[$typeId];
         }
+        $tpl = new fHTMLTemplateIT();
+        if(fItems::isTagged($itemId,$userId)) {
+            $template = $templateType['used'];
+            $tpl->setTemplate($template);
+        } else {
+            $template = $templateType['active'];
+            $tpl->setTemplate($template);
+            $tpl->setVariable('URLACCEPT',$user->getUri('t='.$itemId));
+        }
+        
+        $tpl->setVariable('ITEMID',$itemId);
+        $tpl->setVariable('CSSSKINURL',$user->getSkinCSSFilename());
+        $tpl->setVariable('SUM',fItems::totalTags($itemId));
+        
+        if($removable===true) {
+            $tpl->setVariable('URLREMOVE',$user->getUri('rt='.$itemId));
+        }
+        
+        return $tpl->get();
     }
     static function getItemTagList($itemId) {
         global $db;
@@ -418,7 +443,7 @@ class fItems extends fQueryTool {
         if(false === $user->getTimeCache('itemTags',$arr['itemId'],60)) $user->saveTimeCache($arr['tag_weight']);
         $removableTag = false;
         if($arr['typeId']=='event') $removableTag = true;
-        $tpl->setVariable('TAG',fItems::getTagLink($arr['itemId'],$user->gid,$arr['typeId'],$removableTag));
+        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->gid,$arr['typeId'],$removableTag));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
@@ -475,7 +500,7 @@ class fItems extends fQueryTool {
       $tpl->setVariable('IMGTITLE',$arr['pageName'].' '.$arr['enclosure']);
       $tpl->setVariable('IMGURLTHUMB',$arr['thumbUrl']);
       $tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$arr['width'].'px;"');
-      $tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$arr['height'].'px;"');
+      //$tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$arr['height'].'px;"');
       if($this->showRating==true) $tpl->setVariable('HITS',$arr['hit']);
       
       if($this->openPopup) {

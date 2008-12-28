@@ -40,8 +40,8 @@ function user_tag($itemId) {
   }
   $objResponse = new xajaxResponse();
 	$objResponse->setCharacterEncoding(CHARSET);
-	if($ret==true) $objResponse->assign('tag'.$itemId, 'innerHTML', fItems::tagLabel($itemId));
-	if($ret==true) $objResponse->assign('tag'.$itemId, 'className', 'tagIs');
+	if($ret==true) $objResponse->assign('tag'.$itemId, 'innerHTML', fItems::getTag($itemId,$user->gid));
+	//if($ret==true) $objResponse->assign('tag'.$itemId, 'className', 'tagIs');
 	return $objResponse;
 }
 fXajax::register('user_tag');

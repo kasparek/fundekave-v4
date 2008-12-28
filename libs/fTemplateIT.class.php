@@ -1,13 +1,11 @@
 <?php
-require('fHTML_Template_IT.class.php');
-
-class fTemplateIT extends fHTML_Template_IT {
+class fTemplateIT extends fHTMLTemplateIT {
 	
 	var $vars;
 	
 	function __construct($templatefile,$root = '',$removeUnknownVariables=TRUE, $removeEmptyBlocks=TRUE){
 	    if($root == '') $root = ROOT.ROOT_TEMPLATES;
-	    $this->fHTML_Template_IT($root);
+	    parent::__construct($root);
 		$this->loadTemplatefile($templatefile, $removeUnknownVariables, $removeEmptyBlocks); 
 	}
 	
