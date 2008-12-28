@@ -812,7 +812,7 @@ class fUser {
     'bookedpagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
     'postwho'=>array('lifeTime'=>86400,'userBased'=>1),
     'datelefthand'=>array('lifeTime'=>60),
-    'eventtip'=>array('lifeTime'=>60),
+    'eventtip'=>array('lifeTime'=>60,'userBased'=>1),
     'poll'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
     'fotornd'=>array('lifeTime'=>120),
     'forumdesc'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),

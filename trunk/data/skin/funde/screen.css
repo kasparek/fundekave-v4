@@ -186,6 +186,7 @@ ul#menu li.active a {
 div#menu-secondary-holder {
 	padding-top: 20px;
 	padding-right: 20px;
+	padding-bottom: 10px;
 }
 div#mainbar ul#menu-secondary {
 	margin: 0;
@@ -214,13 +215,12 @@ div#mainbar ul#menu-secondary li a {
 }
 
 /* ========= MAIN CONTENT ========= */
-
 span.postsNew {
 	color: red;
 	font-weight: bold;
 }
 div#pageholder.hasMainBanner #mainbar {
-	padding-top: 60px;
+	padding-top: 80px;
 }
 
 div#banner {
@@ -551,6 +551,12 @@ div#mainbar span.postsNew {
 	text-align: right;
 	margin-right: 0.5em;
 }
+div#mainbar div.hentry span.postsNew {
+	display: inline;
+	float: none;
+	text-align: left;
+	margin: 0;
+}
 div.mainpanel-content div.hentry {
 	clear: left;
 	margin-top: 2.3em;
@@ -564,7 +570,7 @@ div.mainpanel-content div.hentry a.tagLink img {
   margin-bottom: -4px;
 }
 div.mainpanel-content div.hasPageLabel {
-  margin-top: 4em;
+  margin-top: 5em;
 }
 div.mainpanel-content div.hentry div.avatar {
 	float: left;
@@ -679,9 +685,10 @@ div.galeryThumbs div.hentry div.foto {
 }
 
 span.tagIs {
-  padding-right: 20px;
   line-height: 16px;
-	background: url("img/thumb_up_used.png") no-repeat right center;
+}
+span.tagIs img {
+  margin-bottom:-4px;
 }
 span.viewedTimes {
 	top: 0;

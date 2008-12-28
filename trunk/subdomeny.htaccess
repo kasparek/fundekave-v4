@@ -1,9 +1,6 @@
 RewriteEngine On
 Options +FollowSymlinks
 
-RewriteCond %{HTTP_HOST} ^www\.fundekave\.net$
-RewriteRule (.*) http://fundekave.net/ [R=301,QSA,L]
-
 RewriteBase /
 RewriteCond %{HTTP_HOST} !^doku\.fundekave\.net
 RewriteCond %{HTTP_HOST} !^mail\.fundekave\.net

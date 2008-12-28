@@ -48,7 +48,7 @@ if(!empty($arronline)) {
 /*....zacatek vypisu booklych .....*/
 $arrpra = $db->getAll("SELECT f.userIdFriend,
 f.comment,
-date_format(u.dateUpdated,'%H:%i:%S %d.%m.%Y') as last,
+date_format(u.dateLastVisit,'%H:%i:%S %d.%m.%Y') as last,
 u.name 
 FROM sys_users_friends as f 
 left join sys_users as u on f.userIdFriend=u.userId

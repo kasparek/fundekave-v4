@@ -132,35 +132,20 @@ class fLeftPanelPlugins {
     }
     static function rh_akce_rnd() {
       global $db,$conf,$user;
+      $data = '';
       if(!$data = $user->cacheGet('eventtip')) {
         $fItems = new fItems();
+        $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);
         $fItems->addWhere('dateStart >= NOW()');
         $fItems->setOrder('rand()');
         $fItems->getData(0,1);
-        $row = $fItems->pop();
         
-      	if(!empty($row)) {
-      	    $tpl = new fTemplateIT('sidebar.event.tpl.html');
-      		if($row['enclosure']!="") {
-      	    $flyerFilenameThumb = fEvents::thumbUrl($row['enclosure']);
-            $flyerFilename = fEvents::flyerUrl($row['enclosure']);
-      			if(file_exists($flyerFilename)){
-      				$arr = getimagesize($flyerFilename);
-              $tpl->setVariable('FLYERURL',$flyerFilename.'?height='.($arr[1]+20).'&width='.($arr[0]+20));
-      				$tpl->setVariable('FLYERNAME',$row['addon']);
-      				$tpl->setVariable('FLYERTHUMBURL',$flyerFilenameThumb);
-      			}
-      		}
-      		
-      		$tpl->setVariable('NAME',$row['addon']);
-      		$tpl->setVariable('DATELOCAL',(($row['startTime']!='00:00')?($row['startTime'].' '):('')).$row['startDateLocal']);
-      		$tpl->setVariable('DATEISO',$row['startDateIso']);
-      		if($row['location']!='') $tpl->setVariable('PLACE',$row['location']);
-      		$tpl->setVariable('EVENTURL','?i='.$row['itemId']);
-      		$data = $tpl->get();
-      		$user->cacheSave($data);
+      	if(!empty($fItems->arrData)) {
+      		$fItems->parse();
+      		$data = $fItems->show();
       	}
+      	$user->cacheSave($data);
       }
       return $data;
     }

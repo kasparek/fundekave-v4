@@ -180,7 +180,7 @@ class fPages extends fQueryTool {
     		$tpl->setVariable("PAGENAME", $forum[2]);
     		$tpl->setVariable("PAGEID", $forum[0]);
     		if($user->idkontrol) {
-    		    if($forum[4]>0) $tpl->setVariable("PAGEPOSTSNEW", $forum[4]);
+    		    if($forum[4]>0 && $forum[4]<100000) $tpl->setVariable("PAGEPOSTSNEW", $forum[4]);
     		    else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
     		}
     		$tpl->parseCurrentBlock();
