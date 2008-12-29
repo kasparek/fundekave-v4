@@ -92,18 +92,7 @@ if(isset($_POST["save"])) {
 	       $arr['locked'] = $locked * 1;
 	     }
 	    }
-	    
-	    if($user->currentPageParam=='a') $arr['categoryId'] = 'null';
-	    if(isset($_POST['category'])) {
-  	    $cat = $_POST['category'];
-  	    $notQuoted[] = 'categoryId';
-  	    if($cat>0) {
-  	      $arr['categoryId'] = $cat * 1;
-  	    } else {
-  	      $arr['categoryId'] = 'null';
-  	    }
-	    }
-	    
+	    	    
 	    if($user->currentPageParam=='a') $arr['menuSecondaryGroup'] = 'null';
 	    if(isset($_POST['menusec'])) {
   	    $menusec = $_POST['menusec'];
@@ -114,8 +103,18 @@ if(isset($_POST["save"])) {
   	      $arr['menuSecondaryGroup'] = 'null';
   	    }
 	    }
-	    	    
 	}
+	
+	if($user->currentPageParam=='a') $arr['categoryId'] = 'null';
+	    if(isset($_POST['category'])) {
+  	    $cat = (int) $_POST['category'];
+  	    $notQuoted[] = 'categoryId';
+  	    if($cat > 0) {
+  	      $arr['categoryId'] = $cat;
+  	    } else {
+  	      $arr['categoryId'] = 'null';
+  	    }
+	    }
 	
 	if(isset($_POST['forumhome'])) {
 	 $sPage->setXMLVal('home',fSystem::textins($_POST['forumhome']));
@@ -181,7 +180,10 @@ if(isset($_POST["save"])) {
   
   //$sPage->debug = 1;
     $arr['pageParams'] = $sPage->xmlProperties;
-
+/*if($user->gid==1) {
+  print_r($arr);
+  die();
+}*/
 		$nid = $sPage->savePage($arr,$notQuoted);
 
 		$user->cacheRemove('forumdesc');
@@ -258,8 +260,8 @@ if(isset($_POST["save"])) {
 		fHTTP::redirect($user->getUri());
 	} else {
 	   //---error during value check .. let the values stay in form - data remain in _POST
-		fUserDraft::save($textareaIdDescription);
-		fUserDraft::save($textareaIdContent);
+		fUserDraft::save($textareaIdDescription,$_POST['description']);
+		fUserDraft::save($textareaIdContent,$_POST['content']);
 		if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') fUserDraft::save($textareaIdForumHome,$_POST['forumhome']);
 	}
 }
@@ -328,9 +330,9 @@ $tpl->setVariable('PAGECONTENT',fSystem::textToTextarea($pageCont));
 $tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$textareaIdContent);
 
 if(!empty($pageData['pageIco'])) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageData['pageIco']);
-$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm($user->currentPageId));
+$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
 
-if($user->currentPageParam != 'a') $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($user->currentPageId));
+$tpl->setVariable('RELATIONSFORM',$fRelations->getForm(($user->currentPageParam != 'a')?($user->currentPageId):(0)));
 
 $tpl->touchBlock('pageavatarupload');
 
@@ -375,8 +377,8 @@ if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
     	foreach ($galery->arrData as $foto){
     	    list($date,$time) = explode('T',$foto['dateIso']);
     	    if($date=='0000-00-00') $date='';
-    	    $exif = exif_read_data(ROOT.ROOT_WEB.$foto['detailUrl']);
-    	    if($exif!==false) {
+    	    $exif = @exif_read_data(ROOT.ROOT_WEB.$foto['detailUrl']);
+    	    if(!empty($exif)) {
         	    if(empty($date)) {
                     $date = date("Y-m-d",$exif['FileDateTime']);
                     if(isset($exif['DateTimeOriginal'])) {
@@ -426,11 +428,12 @@ if($user->currentPageParam=='sa') {
     
     $tpl->setVariable('LOCKEDOPTIONS',fSystem::getOptions($ARRLOCKED,$pageData['locked']));
     $tpl->setVariable('PAGEAUTHOR',$pageData['authorContent']);
-    $date = new DateTime($pageData['dateContent']);
-    $tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
+    
     $tpl->setVariable('PAGENAMESHORT',$pageData['nameshort']);
     $tpl->setVariable('PAGETEMPLATE',$pageData['template']);
 }
+    $date = new DateTime($pageData['dateContent']);
+    $tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
 
 if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
     $tpl->touchBlock('categorytab');

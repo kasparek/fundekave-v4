@@ -158,7 +158,7 @@ class fUser {
     	        if($this->idkontrol) {
                     $this->ip = $vid[20];
                     $this->idloginInDb = $vid[21];
-                    if($vid[22]==1) $this->rulezInvalidate();
+                    if($vid[22] == 1) $this->rulezInvalidate();
 				    $this->favorite = $vid[23]*1;
 				    $this->favoriteCnt = $vid[24]*1;
     	        }
@@ -258,7 +258,10 @@ class fUser {
 		}
 		return($this->idkontrol);
 	}
-	
+	function invalidatePermissions() {
+    global $db;
+    $db->query("update `sys_users_logged` set invalidatePerm=1");
+  }
 	function kde($xajax=false) {
 		global $db;
 		$this->arrCachePerLoad = array();

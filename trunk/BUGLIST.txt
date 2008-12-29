@@ -1,3 +1,6 @@
+stranka prirazeni do vice kategorii
+galerie - vyber fotky co bude na titulce
+
 thumb,hits history - porad to nejak blbe pocita
 TODO: aktualizace palcu kliknuti historie - overit ze to dela dobre
 
