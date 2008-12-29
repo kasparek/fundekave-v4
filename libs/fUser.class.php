@@ -807,6 +807,9 @@ class fUser {
 	var $cacheLiteCurrentConf = '';
 	var $cacheOptions = array();
 	var $cacheConf = array(
+	'mainMenu'=>array('lifeTime'=>86400,'userBased'=>1),
+	'secondaryMenu'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
+	'sidebarSet'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
 	'pagescategories'=>array('lifeTime'=>86400,'pageBased'=>1),
     'pagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
     'bookedpagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),

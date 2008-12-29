@@ -5,19 +5,21 @@ class fJSWrapper {
      *
      * @var array
      */
-    var $webRelCacheDir = './data/cache/js/';
+    var $systemRelCacheDir = '';
+    var $webRelCacheDir = '';
+    
     var $objectsArr = array();
     
     var $targetFilename = '';
     var $targetContent = '';
     
-    function __construct($targetFileLocalUrl='') {
-        if(!empty($targetFileLocalUrl)) $this->targetFilename = $targetFileLocalUrl;
-        else $this->generateFilename();
+    function __construct($systemPathToWeb,$webCachePath,$filename) {
+      $this->systemRelCacheDir = $systemPathToWeb;
+      $this->webRelCacheDir = $webCachePath;
+      $this->targetFilename = $filename;
     }
-    function generateFilename() {
-        global $user;
-        $this->targetFilename = $this->webRelCacheDir.$user->currentPage['typeId'].($user->idkontrol*1).'.js';
+    function isCached() {
+      return file_exists($this->systemRelCacheDir . $this->targetFilename);
     }
     function cleanCache() {
         //---delete all from cache directory
@@ -39,15 +41,15 @@ class fJSWrapper {
         }    
     }
     function get() {
-        if(!file_exists($this->targetFilename)){
+        if(!$this->isCached()){
             $this->parse();
             if(!empty($this->targetContent)) {
                 //save file
-                file_put_contents($this->targetFilename,$this->targetContent);
-                chmod($this->targetFilename,0777);
+                file_put_contents($this->systemRelCacheDir . $this->targetFilename,$this->targetContent);
+                chmod($this->systemRelCacheDir . $this->targetFilename,0777);
                 //return filename
-                return $this->targetFilename;
+                return $this->webRelCacheDir . $this->targetFilename;
             }
-        } else return $this->targetFilename;
+        } else return $this->webRelCacheDir . $this->targetFilename;
     }
 }

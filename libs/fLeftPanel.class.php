@@ -27,30 +27,38 @@ class fLeftPanel extends fQueryTool {
       
   }
   function load($allForPage=false) {
+    global $user;
      $this->panels = array();
      $this->panelsUsed = array();
           
-    $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
-    $this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
-    if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-    $arrTmp = $this->getContent();
-    $this->queryReset();
-        
-    $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'',fp.pageId,'',fp.ord,fp.visible");
-    $this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='".$this->pageId."'");
-    if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-    $arr2 = $this->getContent();
-    if(!empty($arr2)) foreach ($arr2 as $row) $arrTmp[] = $row;
-    $this->queryReset();
-        
-    if($this->userId > 0) {
-        $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'','',fu.userId,fu.ord,1,fu.minimized");
-        $this->addJoin("join sys_leftpanel_users as fu on fu.functionName = f.functionName and fu.pageId='".$this->pageId."' and fu.userId='".$this->userId."'");
-        if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-        $arr2 = $this->getContent();
-        if(!empty($arr2)) foreach ($arr2 as $row) $arrTmp[] = $row;
-        $this->queryReset();
-    } 
+    if(!$tmptext = $user->cacheGet('sidebarSet')) {
+          
+      $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
+      $this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
+      if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
+      $arrTmp = $this->getContent();
+      $this->queryReset();
+          
+      $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'',fp.pageId,'',fp.ord,fp.visible");
+      $this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='".$this->pageId."'");
+      if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
+      $arr2 = $this->getContent();
+      if(!empty($arr2)) foreach ($arr2 as $row) $arrTmp[] = $row;
+      $this->queryReset();
+          
+      if($this->userId > 0) {
+          $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'','',fu.userId,fu.ord,1,fu.minimized");
+          $this->addJoin("join sys_leftpanel_users as fu on fu.functionName = f.functionName and fu.pageId='".$this->pageId."' and fu.userId='".$this->userId."'");
+          if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
+          $arr2 = $this->getContent();
+          if(!empty($arr2)) foreach ($arr2 as $row) $arrTmp[] = $row;
+          $this->queryReset();
+      }
+      
+      $user->cacheSave(serialize($arrTmp));
+    } else {
+      $arrTmp = unserialize($tmptext);
+    }
     
     
     $arrGrouped = array();

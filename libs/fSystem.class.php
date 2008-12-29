@@ -81,7 +81,14 @@ class fSystem {
     	global $user,$db;
     	$x=0;
     	$user->topmenu = array();
-    	$arrmenu=$db->getAll("SELECT pageId,text FROM sys_menu ".((!$user->idkontrol)?("WHERE public=1"):(''))." ORDER BY ord");
+    	
+      if(!$tmptext = $user->cacheGet('mainMenu')) {
+    	 $arrmenu = $db->getAll("SELECT pageId,text FROM sys_menu ".((!$user->idkontrol)?("WHERE public=1"):(''))." ORDER BY ord");
+    	 $user->cacheSave(serialize($arrmenu));
+    	} else {
+        $arrmenu = unserialize($tmptext);
+      }
+    	
     	if($user->idkontrol) {
     	    $arrmenu[]=array('elogo',LABEL_LOGOUT);
     	}
@@ -94,10 +101,15 @@ class fSystem {
     function secondaryMenu($menu) {
     	global $db,$user;
     	$ret=array();
-    	$arrmnuTmp=$db->getAll("SELECT s.pageId, s.name 
-    	FROM sys_menu_secondary as s 
-    	INNER JOIN sys_pages as p ON p.menuSecondaryGroup=s.menuSecondaryGroup 
-    	WHERE ".(($user->idkontrol)?(''):("s.public=1 AND "))." p.pageId='".$user->currentPageId."' ORDER BY s.ord,s.name");
+    	if(!$tmptext = $user->cacheGet('secondaryMenu')) {
+      	$arrmnuTmp = $db->getAll("SELECT s.pageId, s.name 
+      	FROM sys_menu_secondary as s 
+      	INNER JOIN sys_pages as p ON p.menuSecondaryGroup=s.menuSecondaryGroup 
+      	WHERE ".(($user->idkontrol)?(''):("s.public=1 AND "))." p.pageId='".$user->currentPageId."' ORDER BY s.ord,s.name");
+      	$user->cacheSave(serialize($arrmnuTmp));
+    	} else {
+        $arrmnuTmp = unserialize($tmptext);
+      }
     	if(!empty($arrmnuTmp)) {
 	    	foreach ($arrmnuTmp as $row) {
 	    		$arrmnu[]=array('pageId'=>$row[0],'name'=>$row[1],'typ'=>0,'opposite'=>0);

@@ -123,19 +123,21 @@ $TOPTPL->setVariable("CHARSET", CHARSET);
 
 if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
-$JSWrapper = new fJSWrapper();
-if(!empty($arrXajax)) {
-    foreach ($arrXajax as $row) {
-        $row = trim($row);
-    	if(!empty($row)) {
-    	    if(preg_match("/(.js)$/",$row)) $JSWrapper->addFile($row);
-    	    else $JSWrapper->addCode($row);
-    	}
-    }
+$JSWrapper = new fJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->currentPage['typeId'].'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
+if(!$JSWrapper->isCached()) {
+  if(!empty($arrXajax)) {
+      foreach ($arrXajax as $row) {
+          $row = trim($row);
+      	if(!empty($row)) {
+      	    if(preg_match("/(.js)$/",$row)) $JSWrapper->addFile($row);
+      	    else $JSWrapper->addCode($row);
+      	}
+      }
+  }
+  $JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLiteCompressed-1.0.js');
+  $JSWrapper->addFile(ROOT.ROOT_WEB.'js/supernote.js');
+  $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 }
-$JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLiteCompressed-1.0.js');
-$JSWrapper->addFile(ROOT.ROOT_WEB.'js/supernote.js');
-$JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 if($wrap = $JSWrapper->get()) {
     $TOPTPL->setVariable("WRAPPEDJS", $wrap);
 }
