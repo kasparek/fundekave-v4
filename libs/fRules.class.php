@@ -145,6 +145,9 @@ class fRules {
 		$dot = "update sys_pages set public='".$this->public."' where pageId='".$this->page."'";
 		$db->query($dot);
 		
+		//---invalidate active users
+		$user->invalidatePermissions();
+		
 	}
 	
 }
