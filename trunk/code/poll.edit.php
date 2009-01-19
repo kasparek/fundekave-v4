@@ -129,7 +129,7 @@ if(!empty($ankid)){
 	$dot=$db->getRow("SELECT question,publicresults,votesperuser FROM sys_poll WHERE pollId='".$ankid."'");
 	
 	if(!empty($dot)){
-	    $tpl->setVariable('POLLSHOW',fLeftPanel::rh_anketa($ankid));
+	    //$tpl->setVariable('POLLSHOW',fLeftPanelPlugins::rh_anketa($ankid));
 	    $tpl->setVariable('POLLQUESTION',$dot[0]);
 	    $tpl->setVariable('POLLPUBLICCHECKED',(($dot[1]==1)?(' checked="checked"'):('')));
 	    $tpl->setVariable('POLLVOTESPERUSER',$dot[2]);
