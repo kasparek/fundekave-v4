@@ -8,19 +8,25 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
    $hash = $_GET['hash'];
    $localHash = md5($salt.$user->currentPageId);
   if($localHash == $hash) {
-  	$params = unserialize(base64_decode($_GET['data']));
-  
-  	if(empty($params['name'])) $processArr[]='E:nameEmpty';
-  	
-  	if(empty($processArr)) {
-      	if($params['text']!='' && $params['name']!='') {
-      		$arr['pageId'] = $user->currentPageId;
-      		$arr['text'] = fSystem::textins($params['text']);
-      		$arr['name'] = fSystem::textins($params['name'],array('plainText'=>1));
-      		if(fForum::messWrite($arr)) $processArr[] = 'I:insertOK';
-      	}
+    //echo $_GET['data'];
+    $paramsDecode = base64_decode($_GET['data']);
+    $paramsDecode = urldecode($paramsDecode);
+  	if($paramsDecode) {
+    	$paramsArr = explode($hash, $paramsDecode);
+    	$params['name'] = $paramsArr[0];
+    	$params['text'] = $paramsArr[1];
+    
+    	if(empty($params['name'])) $processArr[]='E:nameEmpty';
+    	
+    	if(empty($processArr)) {
+        	if($params['text']!='' && $params['name']!='') {
+        		$arr['pageId'] = $user->currentPageId;
+        		$arr['text'] = fSystem::textins($params['text']);
+        		$arr['name'] = fSystem::textins($params['name'],array('plainText'=>1));
+        		if(fForum::messWrite($arr)) $processArr[] = 'I:insertOK';
+        	}
+    	}
   	}
-  	
   }
 }
 //page type - forum,galery,blog,top - GLOBAL pageId - main
