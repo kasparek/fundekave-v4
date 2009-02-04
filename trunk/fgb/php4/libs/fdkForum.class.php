@@ -33,11 +33,8 @@ class fdkForum {
     	if(!$captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) {
     	    fError::addError($this->arrErrors['captchaFail']);
     	}
-      $_SESSION['toSend'] = base64_encode(
-        serialize(
-          array('name'=>$_POST['name'],'text'=>$_POST['text'])
-        )
-      );
+    	$hash = md5($this->salt.$this->serverPageId);
+      $_SESSION['toSend'] = $_POST['name'].$hash.$_POST['text'];
     	require($this->forumLibsPath."fHTTP.class.php");
     	fHTTP::redirect($this->forumPageUri);
     }
@@ -53,8 +50,7 @@ class fdkForum {
     //---add data to save
     if(isset($_SESSION['toSend']) && !fError::isError()) {
           $hash = md5($this->salt.$this->serverPageId);
-          $sendStr = $_SESSION['toSend'];
-          $rssUrl .= '&hash='.$hash.'&data='.$sendStr;
+          $rssUrl .= '&hash='.$hash.'&data='.base64_encode(urlencode($_SESSION['toSend']));
           $this->page = 1;
     }
     $rssUrl .= (($this->page > 1)?('&p='.$this->page):(''));
@@ -114,9 +110,10 @@ class fdkForum {
     if(!empty($inDataArr['E'])) foreach($inDataArr['E'] as $err) fError::addError($this->arrErrors[$err]);
     //---IF SAVED
     if(isset($_SESSION['toSend']) && fError::isError()) {
-        $params = unserialize(base64_decode($_SESSION['toSend']));
-        $this->name = $params['name'];
-        $this->text = $params['text'];
+        $hash = md5($this->salt.$this->serverPageId);
+        $params = explode($hash,$_SESSION['toSend']);
+        $this->name = $params[0];
+        $this->text = $params[1];
         
     }
     unset($_SESSION['toSend']);
