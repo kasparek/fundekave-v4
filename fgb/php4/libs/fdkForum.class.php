@@ -22,6 +22,7 @@ class fdkForum {
     }
     require($this->forumLibsPath.'fCaptcha.class.php');
     require($this->forumLibsPath."fError.class.php");
+    require($this->forumLibsPath."xmlparser.class.php");
     $this->processPOST();
     $this->dispatchRss();
     $this->processRss();
@@ -32,27 +33,61 @@ class fdkForum {
     	if(!$captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) {
     	    fError::addError($this->arrErrors['captchaFail']);
     	}
-    	$arrSend = array('name'=>$_POST['name'],'text'=>$_POST['text']);
-        $_SESSION['toSend'] = base64_encode(serialize($arrSend));
+      $_SESSION['toSend'] = base64_encode(
+        serialize(
+          array('name'=>$_POST['name'],'text'=>$_POST['text'])
+        )
+      );
     	require($this->forumLibsPath."fHTTP.class.php");
     	fHTTP::redirect($this->forumPageUri);
     }
   }
   function dispatchRss() {
     $sendStr = '';
-    if(isset($_SESSION['toSend']) && !fError::isError()) {
-          $hash = md5($this->salt.$this->serverPageId);
-          $sendStr = $_SESSION['toSend'];
-    }
+    //---pagination
     $this->page = 1;
     if(isset($_GET['p'])) $this->page = $_GET['p']*1;
     if($this->page < 1) $this->page = 1;
+    //---url
+    $rssUrl = "http://fundekave.net/frss.php?k=".$this->serverPageId;
+    //---add data to save
+    if(isset($_SESSION['toSend']) && !fError::isError()) {
+          $hash = md5($this->salt.$this->serverPageId);
+          $sendStr = $_SESSION['toSend'];
+          $rssUrl .= '&hash='.$hash.'&data='.$sendStr;
+          $this->page = 1;
+    }
+    $rssUrl .= (($this->page > 1)?('&p='.$this->page):(''));
     
     //---RSS LOAD
-    $rssUrl = "http://xspace.cz/frss.php?k=".$this->serverPageId.(($this->page > 1)?('&p='.$this->page):('')).((!empty($sendStr))?('&hash='.$hash.'&data='.$sendStr):(''));
-    $xml  = simplexml_load_file($rssUrl);
+    $lines = file($rssUrl);
+    $xml = implode('',$lines);
+   
+    $xmlParser = new XMLToArray();
+    $arr = $xmlParser->parse($xml);
+    $arr = $arr['_ELEMENTS'][0]['_ELEMENTS'][0]['_ELEMENTS'];
+    $arr = array_reverse($arr);
     
-    $this->arrData = $xml->channel;  
+    $item = array_pop($arr);
+    while($item['_NAME']!='item') {
+      $name = $item['_NAME'];
+      $data = $item['_DATA'];
+      $obj->$name = $data;
+      $item = array_pop($arr);
+    }
+    //---parse posts
+    while($item) {
+      $postObj = new stdClass();
+      foreach($item['_ELEMENTS'] as $post) {
+        $name = $post['_NAME'];
+        $data = $post['_DATA'];
+        $postObj->$name = $data;
+      }
+      $obj->item[] = $postObj;
+      $item = array_pop($arr);
+    }
+    
+    $this->arrData = $obj;  
     
   }
   function processRss() {
@@ -84,7 +119,7 @@ class fdkForum {
         $this->text = $params['text'];
         
     }
-    $_SESSION['toSend'] = '';
+    unset($_SESSION['toSend']);
   }
   function display() {
     require($this->forumLibsPath.'fPager.class.php');
