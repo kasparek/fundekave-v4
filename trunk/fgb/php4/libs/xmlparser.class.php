@@ -6,7 +6,6 @@ class XMLToArray {
 	// PUBLIC --- If a string is passed in, parse it right away.
 	function XMLToArray($xmlstring="") {
 		if ($xmlstring) return($this->parse($xmlstring));
-		return(true);
 	}
 	// PUBLIC --- Parse a text string containing valid XML into a multidimensional array located at rootnode.
 	function parse($xmlstring="") {
