@@ -20,29 +20,28 @@ if (isset($_REQUEST["filtr"])) {
 
 if(isset($_POST["send"]) && $_POST["zprava"]!='') {
 	$user->filterClean();
-	if (!empty($_POST["prokoho"])){
+	if (!empty($_POST["prokoho"])) {
 		$protmp=Explode(",",$_POST["prokoho"]);
 		foreach ($protmp as $usrname) {
-			if($pro = $user->getUserIdByName(Trim($usrname))) $arrto[]=$pro;
+			if($pro = $user->getUserIdByName(Trim($usrname))) $arrto[] = $pro;
 			else $errjm[]=Trim($usrname);
 		}
 		if(!empty($errjm)) fError::addError(implode(", ",$errjm)." :: ".MESSAGE_USERNAME_NOTEXISTS);
 	}
 
-	if (!empty($_POST["prokoho_book"])) $arrto[]=$_POST["prokoho_book"];
 	if (empty($arrto)) {
 		fError::addError('postnoto');
-		$_SESSION['posta_arr']=htmlspecialchars(trim($_POST["zprava"]));
-	}
-	$odkoho = $user->gid;
-	$zprava = fSystem::textins($_POST["zprava"]);
-	if(!fError::isError() && !empty($zprava)) {
-		foreach ($arrto as $komu){
-		  $user->send($komu,$zprava,$user->gid);
-		}
-		fUserDraft::clear('postText');
-		$redir = true;
-	}
+		fUserDraft::save('postText',$_POST["zprava"]);
+	} else {
+  	$zprava = fSystem::textins($_POST["zprava"]);
+  	if(!empty($zprava)) {
+    		foreach ($arrto as $komu){
+    		  $user->send($komu,$zprava,$user->gid);
+    		}
+    		fUserDraft::clear('postText');
+    		$redir = true;
+    }
+  }
 }
 if ($redir==true) {
 	fHTTP::redirect($user->getUri());
@@ -72,11 +71,6 @@ if (isset($_REQUEST["unbookpra"]) || isset($_REQUEST["bookpra"])) {
 //---showTIME
 $perpage = $user->postPerPage;
 if ($perpage < 2) $perpage = 2;
-
-if(!empty($_SESSION['posta_arr'])) {
-	$zprava = $_SESSION['posta_arr'];
-	unset($_SESSION['posta_arr']);
-}
 
 //load draft
 $zprava = fUserDraft::get('postText');
