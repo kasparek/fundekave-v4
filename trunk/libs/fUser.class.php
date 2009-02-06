@@ -698,12 +698,12 @@ class fUser {
 	function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
 		global $db;
-		$dot = 'insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) 
-		values ('.$komu.','.$komu.','.$odkoho.',NOW(),"'.$zprava.'",0,null)';
+		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) 
+		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
 		$db->query($dot);
 		$maxid = $db->getOne("SELECT LAST_INSERT_ID()");
-		$dot = 'insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed) 
-		values ('.$odkoho.','.$komu.','.$odkoho.',NOW(),'.$maxid.',"'.$zprava.'",0)';
+		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed) 
+		values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)";
 		$db->query($dot);
 		$this->cacheRemove('postwho');
 	}
