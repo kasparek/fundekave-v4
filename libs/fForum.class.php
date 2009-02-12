@@ -323,8 +323,7 @@ class fForum {
         if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
         $pager = fSystem::initPager(0,$perpage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
         $from = ($pager->getCurrentPageID()-1) * $perpage;
-        $fItems->setLimit($from,$perpage+1);
-        $fItems->getData();
+        $fItems->getData($from,$perpage+1);
         $total = count($fItems->arrData);
         
         $maybeMore = false;

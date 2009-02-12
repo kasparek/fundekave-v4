@@ -71,8 +71,7 @@ if($user->currentPage['typeId']=='top') {
                 $fItems->initData('galery');
                 $fItems->addWhere("i.pageId='".$row[0]."'");
                 $totalItems = $fItems->getCount();
-                $fItems->setLimit(rand(0,$totalItems),1);
-                $fItems->getData();
+                $fItems->getData(rand(0,$totalItems),1);
                 $arrItem = $fItems->pop();
                 if(!empty($thumbUrl)) $item['description'] .= '<p><a href="http://fundekave.net'.$arrItem['detailUrlToPopup'].'"><img src="'.$arrItem['thumbUrl'].'" /></p>'; //---random img from galery;
             }

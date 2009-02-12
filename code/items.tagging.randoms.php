@@ -43,11 +43,7 @@ $fItems->setOrder('tags,rand()');
 
 $tpl = new fTemplateIT('items.tagging.tpl.html');
 
-$fItems->setLimit(0,15);
-
-//$fItems->debug = 1;
-
-$fItems->getData();
+$fItems->getData(0,15);
 
 if(!empty($fItems->arrData)) {
 	while ($fItems->arrData) {

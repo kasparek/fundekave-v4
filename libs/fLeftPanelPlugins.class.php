@@ -247,10 +247,8 @@ class fLeftPanelPlugins {
         $total = $fItems->getCount();
 
   	    //$fItems->initData('galery',$user->gid,true);
-  	    
 
-        $fItems->setLimit(rand(0,$total),1);
-        $fItems->getData();
+        $fItems->getData(rand(0,$total),1);
         
         $fItems->parse();
       	if(!$data = $fItems->show()) $data='';

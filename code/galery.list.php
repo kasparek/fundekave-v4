@@ -28,7 +28,6 @@ if(!empty($arrgal)) {
     $fItems = new fItems();
     $fItems->initData('galery',$user->gid,true);
     $fItems->setOrder('i.hit desc');
-    $fItems->setLimit(0,1);
     $fItems->showTooltip = false;
     $fItems->showText = false;
     $fItems->showTag = false;
@@ -40,7 +39,7 @@ if(!empty($arrgal)) {
 
     foreach ($arrgal as $gal) {
         $fItems->setWhere('p.pageId="'.$gal[0].'"');
-        $fItems->getData();
+        $fItems->getData(0,1);
         $fItems->parse();
         $fotoThumb = $fItems->show();
         $tpl->setCurrentBlock('galery');
