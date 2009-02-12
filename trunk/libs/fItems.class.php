@@ -222,21 +222,24 @@ class fItems extends fQueryTool {
         $this->arrData = array();
         $itemTypeId = $this->typeId;
         
-        if($this->byPermissions===false) {
+        if($this->byPermissions === false) {
           $arr = $this->getContent($from, $count);
         } else {
           $itemsCount = 0;
           $page = 0;
           $arr = array();
-          while(count($arr) < $count || $count==0) {
-            $arrTmp = $this->getContent($from+($page*$count), $count);
+          
+          while(count($arr) < $count) {
+            $arrTmp = $this->getContent($from + ($page*$count), $count);
+          
             $page++;
-            if(empty($arrTmp)) break;
+            if(empty($arrTmp)) break; //---no records
             else {
               $this->itemsRemoved = 0;
               foreach($arrTmp as $row) {
+                //---check premissions
                 if(fRules::get($this->byPermissions,$row[2],1)) {
-                    $arr[]=$row;
+                    $arr[] = $row;
                     $itemsCount++;
                     if($itemsCount == $count && $count!=0) break;
                 } else {
@@ -245,6 +248,7 @@ class fItems extends fQueryTool {
                 }
               }
             }
+            //---we have got all in once
             if($count == 0) break;
           }
         }        
@@ -808,7 +812,7 @@ class fItems extends fQueryTool {
               $fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
             }
             if($user->gid==1) {
-                $fQuery->debug = 1;
+                //FIXME:$fQuery->debug = 1;
             }
         }
     }

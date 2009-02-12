@@ -13,8 +13,7 @@ fItems::setQueryTool(&$fItems);
 
 $pager = fSystem::initPager(0,$perpage,array('noAutoparse'=>1));
 $from = ($pager->getCurrentPageID()-1) * $perpage;
-$fItems->setLimit($from,$perpage+1);
-$fItems->getData();
+$fItems->getData($from,$perpage+1);
 $totalItems = count($fItems->arrData);
 
 $maybeMore = false;

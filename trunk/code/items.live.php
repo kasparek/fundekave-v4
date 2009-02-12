@@ -17,8 +17,7 @@ $fItems->setOrder('i.dateCreated desc');
 $pager = fSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
 $from = ($pager->getCurrentPageID()-1) * $localPerPage;
 
-$fItems->setLimit($from,$localPerPage+1);
-$fItems->getData();
+$fItems->getData($from,$localPerPage+1);
 $totalItems = count($fItems->arrData);
         
 $maybeMore = false;

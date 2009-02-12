@@ -432,7 +432,7 @@ if($user->currentPageParam=='sa') {
     $tpl->setVariable('PAGENAMESHORT',$pageData['nameshort']);
     $tpl->setVariable('PAGETEMPLATE',$pageData['template']);
 }
-    $date = new DateTime($pageData['dateContent']);
+    $date = new DateTime((!empty($pageData['dateContent']))?($pageData['dateContent']):(''));
     $tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
 
 if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {

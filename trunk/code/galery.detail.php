@@ -43,10 +43,9 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     
       $pager = fSystem::initPager($totalItems,$perPage);
     	$od = ($pager->getCurrentPageID()-1) * $perPage;
-    	
-    	$fItems->setLimit($od,$perPage);
+
     	$fItems->openPopup = ($user->galtype==0)?(false):(true);
-    	$fItems->getData();
+    	$fItems->getData($od,$perPage);
     
     	//---nahledy
     	$tpl = new fTemplateIT('galery.thumbnails.tpl.html');
