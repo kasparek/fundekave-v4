@@ -29,9 +29,11 @@ if($user->currentPageParam=='u') {
         if(!empty($filtr)) $fItems->addWhereSearch(array('i.location','i.addon','i.text'),$filtr,'or');
         
         if(!isset($archiv)) {
-            $fItems->addWhere("i.dateStart >= date_format(NOW(),'%Y-%m-%d')");
+          //---future
+            $fItems->addWhere("(i.dateStart >= date_format(NOW(),'%Y-%m-%d') or (i.dateEnd is not null and i.dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
             $fItems->setOrder('i.dateStart');
         } else {
+          //---archiv
             $fItems->addWhere("i.dateStart < date_format(NOW(),'%Y-%m-%d')");
             $fItems->setOrder('i.dateStart desc');
         }
