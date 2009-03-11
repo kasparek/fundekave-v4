@@ -229,7 +229,7 @@ class fItems extends fQueryTool {
           $page = 0;
           $arr = array();
           
-          while(count($arr) < $count) {
+          while(count($arr) < $count || $count==0) {
             $arrTmp = $this->getContent($from + ($page*$count), $count);
           
             $page++;
@@ -552,8 +552,8 @@ class fItems extends fQueryTool {
             if(!empty($fItem->arrData)) {
                 $fItem->parse();
                 $tpl->setVariable('ITEMBOTTOM',$fItem->show());
-                unset($fItem);
             }
+            unset($fItem);
         }
         if(!empty($arr['pageIdBottom'])) {
             if(fRules::get($user->gid,$arr['pageIdBottom'],1)) {

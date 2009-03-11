@@ -137,7 +137,7 @@ class fLeftPanelPlugins {
         $fItems = new fItems();
         $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);
-        $fItems->addWhere('dateStart >= NOW()');
+        $fItems->addWhere('dateStart >= NOW() or (dateEnd is not null and dateEnd >= NOW())');
         $fItems->setOrder('rand()');
         $fItems->getData(0,1);
         
