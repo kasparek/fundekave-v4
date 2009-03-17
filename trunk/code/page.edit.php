@@ -227,6 +227,7 @@ if(isset($_POST["save"])) {
         
         //---foto description, foto deleteing
         	if(isset($_POST['delfoto'])) foreach ($_POST['delfoto'] as $dfoto) $galery->removeFoto($dfoto);
+        	
         	if(isset($_POST['fot'])) {
         	    foreach ($_POST['fot'] as $k=>$v) {
         	        $changed = false;
@@ -234,7 +235,7 @@ if(isset($_POST["save"])) {
         	        $galery->getFoto($k);
         	        $oldDesc = $galery->get('fComment');
         	        $oldDate = $galery->get('fDate');
-        	        if($newDesc!=$oldDesc) {
+        	        if($newDesc != $oldDesc) {
         	            $galery->set('fComment',$newDesc);
         	            $changed = true;
         	        }
@@ -248,6 +249,7 @@ if(isset($_POST["save"])) {
         	               $changed=true;
         	           }
         	        }
+        	        
         	        if($changed) $galery->updateFoto();
         	    }
         	}
