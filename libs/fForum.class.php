@@ -192,11 +192,12 @@ class fForum {
         			}
         			if(!fError::isError()) {
             			$jmeno = fSystem::textins($jmeno,array('plainText'=>1));
-            			if($user->idkontrol)
+            			if($user->idkontrol) {
             			 $zprava = fSystem::textins($zprava);
-            			else 
+            			} else {
             			 $zprava = fSystem::textins($zprava,array('formatOption'=>0));
-            			$objekt = fSystem::textins($objekt,array('plainText'=>1));
+            			 $objekt = fSystem::textins($objekt,array('plainText'=>1));
+            			}
             		
             		//---insert
             		    $arrSave = array('pageId'=>$user->currentPageId,'userId'=>$user->gid,'name'=>$jmeno,'text'=>$zprava,'enclosure'=>$objekt);

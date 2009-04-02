@@ -162,9 +162,13 @@ class fSystem {
       
       global $user;
         $text = trim($text);
+        
+        
         if($paramsArr['formatOption']==0 || $user->idkontrol==false) {
             $text = strip_tags($text);
         }
+        
+        
         if($paramsArr['formatOption']==1) {
             require_once('HTML/BBCodeParser.php'); 
             $config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);
@@ -173,13 +177,25 @@ class fSystem {
             $parser->parse();
             $text = $parser->getParsed();
         }
-        if($paramsArr['formatOption']<2) {
+        
+        if($paramsArr['formatOption'] < 2) {
             require_once('PEAR.php');
             require_once('HTML/Safe.php');
             $safe = new HTML_Safe();
+            if($user->idkontrol) {
+            $objectKey = array_search('object',$safe->deleteTags);
+            array_splice($safe->deleteTags, $objectKey, 1);
+            $objectKey = array_search('embed',$safe->deleteTags);
+            array_splice($safe->deleteTags, $objectKey, 1);
+            
+            $objectKey = array_search('name',$safe->attributes);
+            array_splice($safe->attributes, $objectKey, 1);
+            
+            }
             $text = str_replace('\\','',$text);
             $text = $safe->parse($text);
         }
+        
         if($endOfLine==1) {
           $br='<br />';
           $text = str_replace(array($br."\r\n",$br."\n"),array("\r\n","\r\n"),$text);
