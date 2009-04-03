@@ -46,7 +46,7 @@ class fdkForum {
     if(isset($_GET['p'])) $this->page = $_GET['p']*1;
     if($this->page < 1) $this->page = 1;
     //---url
-    $rssUrl = "http://spolek.decin.cz/rss.php?k=".$this->serverPageId;
+    $rssUrl = "http://fundekave.net/frss.php?k=".$this->serverPageId;
     //---add data to save
     if(isset($_SESSION['toSend']) && !fError::isError()) {
           $hash = md5($this->salt.$this->serverPageId);
