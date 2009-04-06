@@ -118,7 +118,7 @@ class fUvatar {
      **/         
     function getSwf($fuArr=array()) {
       if(empty($fuArr)) $fuArr = array('id'=>$this->id,'refresh'=>$this->refresh,'width'=>$this->width,'height'=>$this->height);
-        return '<div class="fuvatarbox"><div id="fuplay'.$fuArr['id'].'" class="fuvatarswf"><img id="fuimg'.$fuArr['id'].'" class="fuvatarimg" src="/fuvatar.php?u='.$fuArr['id'].'&w='.$fuArr['width'].'&h='.$fuArr['height'].'&t='.$fuArr['refresh'].'" /></div></div>';
+        return '<div class="fuvatarbox"><div id="fuplay'.$fuArr['id'].'" class="fuvatarswf"><img id="fuimg'.$fuArr['id'].'" class="fuvatarimg" src="/fuvatar.php?u='.$fuArr['id'].'&w='.$fuArr['width'].'&h='.$fuArr['height'].'&amp;t='.$fuArr['refresh'].'" /></div></div>';
     }
     
  
