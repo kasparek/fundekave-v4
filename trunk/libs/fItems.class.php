@@ -438,7 +438,7 @@ class fItems extends fQueryTool {
   	    }
   	    if($this->showFooter) {
   	        if($user->gid == $arr['userId'] || fRules::get($user->gid,$user->currentPageId,2)) {
-  	            $tpl->setVariable('EDITLINK','?k=eventu&i='.$arr['itemId']);
+  	            $tpl->setVariable('EDITLINK','?k=eventu&amp;i='.$arr['itemId']);
   	        }
   	    }
   	}
@@ -487,7 +487,7 @@ class fItems extends fQueryTool {
     }
     //---BLOG
     if(isset($arr['addon'])) {
-      $link = '?k='.$arr['pageId'].'&i='.$arr['itemId'].'-'.fSystem::safeText($arr['addon']);
+      $link = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'].'-'.fSystem::safeText($arr['addon']);
       if($this->showHeading==true) {
         $tpl->setVariable('BLOGLINK',$link);
         $tpl->setVariable('BLOGTITLE',$arr['addon']);

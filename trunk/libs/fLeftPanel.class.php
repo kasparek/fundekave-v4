@@ -165,9 +165,9 @@ class fLeftPanel extends fQueryTool {
                   }
                   //---set buttons - move up, move down, minimize/maximize
                   global $user;
-                  $TOPTPL->setVariable('MOVEUP',$user->getUri('b='.$fnc.'&a=u'));
-                  $TOPTPL->setVariable('MOVEDOWN',$user->getUri('b='.$fnc.'&a=d'));
-                  $TOPTPL->setVariable('MINIMIZE',$user->getUri('b='.$fnc.'&a=m'));
+                  $TOPTPL->setVariable('MOVEUP',$user->getUri('b='.$fnc.'&amp;a=u'));
+                  $TOPTPL->setVariable('MOVEDOWN',$user->getUri('b='.$fnc.'&amp;a=d'));
+                  $TOPTPL->setVariable('MINIMIZE',$user->getUri('b='.$fnc.'&amp;a=m'));
                   
                   if(!empty($panel['name']))$TOPTPL->setVariable('SIDEBARHEAD',$panel['name']);
                   $TOPTPL->setVariable('SIDEBARDATA',$letext);

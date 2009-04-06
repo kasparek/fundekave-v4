@@ -182,8 +182,8 @@ class fGalery {
             list($width,$height) = getimagesize($arr['detailUrl']);
 				    $arr['detailWidth'] = $width;
   				  $arr['detailHeight'] = $height;
-  				  $arr['detailUrlToGalery'] = '?k='.$arr['pageId'].'&i='.$arr['itemId'];
-  				  $arr['detailUrlToPopup'] = '/pic.php?u='.$user->gid.'&i='.$this->_fId.'&width='.($width+60).'&height='.($height+60);
+  				  $arr['detailUrlToGalery'] = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'];
+  				  $arr['detailUrlToPopup'] = '/pic.php?u='.$user->gid.'&amp;i='.$this->_fId.'&amp;width='.($width+60).'&amp;height='.($height+60);
 				  } else {
             fError::addError('File not exists: '.$arr['detailUrl']);
           }
@@ -328,7 +328,7 @@ class fGalery {
   			$this->_widthMax = $this->_widthDetail;
   			$this->_heightMax = $this->_widthDetail;
   			$tpl = new fTemplateIT($this->_detailTemplate);
-  			$backLink = '?k='.$user->currentPageId.'&'.$conf['pager']['urlVar'].'='.$pid;
+  			$backLink = '?k='.$user->currentPageId.'&amp;'.$conf['pager']['urlVar'].'='.$pid;
   			$tpl->setVariable("LINKBACKTOP",$backLink);
   			  			
   			$tpl->setVariable("IMGALT", $this->_fGaleryName.' '.$this->_fDetail);
