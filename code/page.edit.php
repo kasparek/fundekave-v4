@@ -39,6 +39,7 @@ if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
 $fLeft = new fLeftPanel($user->currentPageId,0,$user->currentPage['typeId']);
 
 if(isset($_POST["save"])) {
+    fError::resetError();
     
     $fLeft->process($_POST['leftpanel']);
   
@@ -86,11 +87,9 @@ if(isset($_POST["save"])) {
 	    
 	    if($user->currentPageParam=='a') $arr['locked'] = 'null';
 	    if(isset($_POST['locked'])) {
-	     $locked = $_POST['locked'];
-	     if($locked>0) {
-	       $notQuoted[] = 'locked';
-	       $arr['locked'] = $locked * 1;
-	     }
+	     $locked = $_POST['locked'] * 1;
+	     $notQuoted[] = 'locked';
+	     $arr['locked'] = $locked * 1;
 	    }
 	    	    
 	    if($user->currentPageParam=='a') $arr['menuSecondaryGroup'] = 'null';
@@ -180,10 +179,12 @@ if(isset($_POST["save"])) {
   
   //$sPage->debug = 1;
     $arr['pageParams'] = $sPage->xmlProperties;
-/*if($user->gid==1) {
+    /*
+if($user->gid==1) {
   print_r($arr);
   die();
-}*/
+}
+/**/
 		$nid = $sPage->savePage($arr,$notQuoted);
 
 		$user->cacheRemove('forumdesc');
