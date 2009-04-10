@@ -812,7 +812,7 @@ class fItems extends fQueryTool {
               $fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
             }
             if($user->gid==1) {
-                //FIXME:$fQuery->debug = 1;
+             //---$fQuery->debug = 1;
             }
         }
     }
