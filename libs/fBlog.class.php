@@ -127,8 +127,8 @@ class fBlog extends fQueryTool  {
 		
 		if(!empty($user->currentPage['content'])) $tpl->setVariable('CONTENT',$user->currentPage['content']);
 		
-		$fItems = new fItems();  
-        $fItems->initData('blog');
+		$fItems = new fItems();
+		$fItems->initData('blog');
 		$fItems->addWhere("i.pageId='".$user->currentPageId."'");
 		$fItems->addWhere('i.itemIdTop is null');
 		

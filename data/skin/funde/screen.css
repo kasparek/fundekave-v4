@@ -544,7 +544,7 @@ div#mainbar ul.showPageAvatar li a:hover {
 	background: #bbbbbb
 }
 
-div#mainbar span.postsNew {
+div#mainbar li span.postsNew {
 	display: block;
 	float: left;
 	width: 2em;

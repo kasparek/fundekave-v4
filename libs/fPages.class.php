@@ -217,14 +217,22 @@ class fPages extends fQueryTool {
         $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
         $this->setWhere('p.userIdOwner="'.$userId.'" and p.pageId=f.pageId and p.locked<3');
-        $this->setOrder('newMess desc,p.name');
+        //$this->setOrder('newMess desc,p.name');
+        $this->setOrder('p.name');
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
         
         if(count($arraudit)>0){
             
             $tpl->setVariable('PAGELINKSOWN',$this->printPagelinkList($arraudit));
-          
+            
+            $newSum=0;
+            foreach($arraudit as $forum) {
+                     $newSum += $forum[4];
+            }
+            if($newSum>0) {
+              $tpl->setVariable('OWNERNEW',$newSum);
+            }
         }
         
         //vypis oblibenych
@@ -232,7 +240,8 @@ class fPages extends fQueryTool {
         $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userId.'"');
         $this->setWhere('f.book="1" and p.userIdOwner!="'.$userId.'" and p.locked<2');
-        $this->setOrder('newMess desc,p.name');
+        //$this->setOrder('newMess desc,p.name');
+        $this->setOrder('p.name');
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
         
@@ -240,6 +249,13 @@ class fPages extends fQueryTool {
             
             $tpl->setVariable('PAGELINKSBOOKED',$this->printPagelinkList($arraudit));
             
+            $newSum=0;
+            foreach($arraudit as $forum) {
+                     $newSum += $forum[4];
+            }
+            if($newSum>0) {
+              $tpl->setVariable('BOOKEDNEW',$newSum);
+            }
         }
         
         //vypis novych

@@ -69,11 +69,10 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
 }
 //------MOST-VISITED-PAGES
 if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
-    $arr = $db->getCol("select pageId from sys_pages_counter where typeId in ('galery','forum','blog') group by pageId order by dateStamp desc, sum(hit) desc limit 0,10");
+    $arr = $db->getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(hit) desc limit 0,10");
     //---cache result
     $x = 0;
     while($arr && $x < 6) {
-        $x++;
         $pageId = array_shift($arr);
         if(fRules::get($user->gid,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
@@ -82,6 +81,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
             $tpl->setVariable('MOSTVISITEDTITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
+            $x++;
         }
     }
     $user->cacheSave($tpl->get('mostvisitedpage'));
@@ -91,11 +91,10 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
 
 //------MOST-ACTIVE-PAGES
 if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
-    $arr = $db->getCol("select pageId from sys_pages_counter where typeId in ('galery','forum','blog') group by pageId order by dateStamp desc, sum(ins) desc limit 0,10");
+    $arr = $db->getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(ins) desc limit 0,10");
     //---cache result
     $x = 0;
     while($arr && $x < 6) {
-        $x++;
         $pageId = array_shift($arr);
         if(fRules::get($user->gid,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
@@ -104,6 +103,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
             $tpl->setVariable('MOSTACTIVETITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
+            $x++;
         }
     }
     $user->cacheSave($tpl->get('mostactivepage'));
@@ -118,7 +118,6 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
     //---cache result
     $x = 0;
     while($arr && $x < 6) {
-        $x++;
         $pageId = array_shift($arr);
         if(fRules::get($user->gid,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
@@ -127,6 +126,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
             $tpl->setVariable('MOSTFAVOURITETITLE',fSystem::textins($row[3],array('plainText'=>1)));
             $tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
             $tpl->parseCurrentBlock();
+            $x++;
         }
     }
     $user->cacheSave($tpl->get('mostfavouritepage'));
