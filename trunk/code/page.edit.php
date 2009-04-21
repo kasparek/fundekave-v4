@@ -1,6 +1,8 @@
 <?php
-if($user->currentPageId=='galed' || $user->currentPageId=='paged') {
+$redirectAdd = '';
+if(($user->currentPageId=='galed' || $user->currentPageId=='paged') && $user->currentPageParam!='sa') {
    $user->currentPageParam = 'a' ;
+   $redirectAdd = 'e';
 }
 
 $rules = new fRules((($user->currentPageParam != 'a')?($user->currentPageId):('')),$user->currentPage['userIdOwner']);
@@ -13,9 +15,8 @@ $textareaIdForumHome = 'home'.$user->currentPageId;
 /**
  * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
  */
-
 $typeForSaveTool = $user->currentPage['typeId'];
-if($user->currentPageParam=='a') $typeForSaveTool = $user->currentPage['typeIdChild'];  
+if($user->currentPageParam=='a') $typeForSaveTool = $user->currentPage['typeIdChild'];
 
 $deleteThumbs = false;
 if($typeForSaveTool == 'galery') {
@@ -40,9 +41,9 @@ $fLeft = new fLeftPanel($user->currentPageId,0,$user->currentPage['typeId']);
 
 if(isset($_POST["save"])) {
     fError::resetError();
-    
-    $fLeft->process($_POST['leftpanel']);
-  
+    if(isset($_POST['leftpanel'])) {
+     $fLeft->process($_POST['leftpanel']);
+    }
   $notQuoted = array();
 	$arr['name'] = fSystem::textins($_POST['name'],array('plainText'=>1));
 	if(empty($arr['name'])) fError::addError(ERROR_PAGE_ADD_NONAME);
@@ -177,28 +178,22 @@ if(isset($_POST["save"])) {
 		}
 		if(isset($_POST['delpic'])) $arr['pageIco'] = '';
   
-  //$sPage->debug = 1;
     $arr['pageParams'] = $sPage->xmlProperties;
-    /*
-if($user->gid==1) {
-  print_r($arr);
-  die();
-}
-/**/
+    
 		$nid = $sPage->savePage($arr,$notQuoted);
 
 		$user->cacheRemove('forumdesc');
 		
-		if($user->currentPageParam == 'a') {
-		  $rules->setPageId($nid);
-		  $fRelations->setPageId($nid);
-		}
-		//---rules,relations update	
-		$rules->public = $_POST['public'];
-		$rules->ruleText = $_POST['rule'];
-		$rules->update();
-		$fRelations->update();
+		if($user->currentPageParam != 'a') {
+		  //$rules->setPageId($nid);
+		  //$fRelations->setPageId($nid);
 		
+      //---rules,relations update	
+  		$rules->public = $_POST['public'];
+  		$rules->ruleText = $_POST['rule'];
+  		$rules->update();
+  		$fRelations->update();
+		}
 		//---set properties
 		if ($typeForSaveTool=='blog') {
             if(isset($_POST['forumReact'])) fPages::setProperty($nid,'forumSet',(int) $_POST['forumReact']);
@@ -223,7 +218,7 @@ if($user->gid==1) {
             	foreach ($_FILES as $foto) {
             		if ($foto["error"]==0) $up=fSystem::upload($foto,$adr,500000);
             	}
-            } else fError::addError(ERROR_GALERY_DIREMPTY);
+            }
         }
         
         //---foto description, foto deleteing
@@ -259,8 +254,7 @@ if($user->gid==1) {
         
     /**/
 		
-		
-		fHTTP::redirect($user->getUri());
+		fHTTP::redirect($user->getUri().$redirectAdd);
 	} else {
 	   //---error during value check .. let the values stay in form - data remain in _POST
 		fUserDraft::save($textareaIdDescription,$_POST['description']);
@@ -333,9 +327,13 @@ $tpl->setVariable('PAGECONTENT',fSystem::textToTextarea($pageCont));
 $tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$textareaIdContent);
 
 if(!empty($pageData['pageIco'])) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageData['pageIco']);
-$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
 
-$tpl->setVariable('RELATIONSFORM',$fRelations->getForm(($user->currentPageParam != 'a')?($user->currentPageId):(0)));
+if($user->currentPageParam!='a') {
+  $tpl->touchBlock('permissionstab');
+  $tpl->touchBlock('relatedtab');
+  $tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
+  $tpl->setVariable('RELATIONSFORM',$fRelations->getForm(($user->currentPageParam != 'a')?($user->currentPageId):(0)));
+}
 
 $tpl->touchBlock('pageavatarupload');
 
@@ -444,9 +442,11 @@ if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
 }
 
 //---left panels configure
-    $tpl->touchBlock('leftpaneltab');
-    
-    $tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
+if($user->currentPageParam!='a') {
+  $tpl->touchBlock('leftpaneltab');
+  $tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
+}
+
 
 
 $TOPTPL->addTab(array("MAINHEAD"=>($user->currentPageParam == 'a')?(LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));
