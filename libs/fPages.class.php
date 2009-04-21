@@ -194,6 +194,7 @@ class fPages extends fQueryTool {
 	}
 	function printBookedList($xajax=false) {
 	    global $user;
+	    $bookOrder = $user->getXMLVal('settings','bookedorder') * 1;
 	    
 	    $this->checkType();
 	    
@@ -217,8 +218,12 @@ class fPages extends fQueryTool {
         $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
         $this->setWhere('p.userIdOwner="'.$userId.'" and p.pageId=f.pageId and p.locked<3');
-        //$this->setOrder('newMess desc,p.name');
-        $this->setOrder('p.name');
+        if($bookOrder==1) {
+          $this->setOrder('p.name');
+        } else {
+          $this->setOrder('newMess desc,p.name');
+        }
+        
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
         
@@ -240,7 +245,11 @@ class fPages extends fQueryTool {
         $this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
         $this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userId.'"');
         $this->setWhere('f.book="1" and p.userIdOwner!="'.$userId.'" and p.locked<2');
-        //$this->setOrder('newMess desc,p.name');
+        if($bookOrder==1) {
+          $this->setOrder('p.name');
+        } else {
+          $this->setOrder('newMess desc,p.name');
+        }
         $this->setOrder('p.name');
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
