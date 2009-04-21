@@ -6,7 +6,7 @@ if(isset($_POST['nav'])) {
 		$user->email = fSystem::textins($_POST['infoemajl'],array('plainText'=>1));
 		
 		if($_POST['skin'] > 0) $user->skin = $_POST['skin'] * 1;
-		
+		$user->setXMLVal('settings','bookedorder', $_POST['bookedorder']*1);
 		$user->setXMLVal('personal','www',fSystem::textins($_POST['infowww'],array('plainText'=>1)));
 		$user->setXMLVal('personal','place',fSystem::textins($_POST['infomisto'],array('plainText'=>1)));
 		$user->setXMLVal('personal','food',fSystem::textins($_POST['infojidlo'],array('plainText'=>1)));
@@ -121,6 +121,7 @@ if($user->zbanner == 1) $tpl->touchBlock('zbanner');
 if($user->zaudico == 1) $tpl->touchBlock('zaudico');
 if($user->zidico == 1) $tpl->touchBlock('zidico');
 if($user->galtype == 1) $tpl->touchBlock('galtype');
+if($user->getXMLVal('settings','bookedorder') == 1) $tpl->touchBlock('bookedorder');
 
 //webcam
 switch($user->getXMLVal('webcam','public')) {
