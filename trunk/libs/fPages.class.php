@@ -250,7 +250,7 @@ class fPages extends fQueryTool {
         } else {
           $this->setOrder('newMess desc,p.name');
         }
-        $this->setOrder('p.name');
+        
         $this->setGroup('p.pageId');
         $arraudit = $this->getContent();
         
