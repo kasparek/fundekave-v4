@@ -1,31 +1,39 @@
 <?php
+
 if($who = $user->whoIs) {
+
   $userinfo = new fUser();
+  $userinfo->idkontrol = true;
   $userinfo->gid = $who;
   $userinfo->refresh();
+  
 } else {
-  $userInfo = &$user;
+
+  $userinfo = &$user;
+  $who = $user->gid;
+  
 }
 
 if(isset($_REQUEST["save"])) {
-	if(!$user->pritel($who)) $user->addpritel($who);
-	$koment=fSystem::textins($_POST["koment"],array('plainText'=>1));
-	$dot = "UPDATE sys_users_friends SET comment='".$koment."' WHERE userId='".$user->gid."' AND userIdFriend='".$who."'";
-	
-	$db->query($dot);
-	//TODO ??? lama send comment change? better to do page with user comments
-	fHTTP::redirect($user->getUri('who='.$who));
+  if($who!=$user->gid) {
+  	if(!$user->pritel($who)) $user->addpritel($who);
+  	$koment=fSystem::textins($_POST["koment"],array('plainText'=>1));
+  	$dot = "UPDATE sys_users_friends SET comment='".$koment."' WHERE userId='".$user->gid."' AND userIdFriend='".$who."'";
+  	$db->query($dot);
+  	//TODO ??? lama send comment change? better to do page with user comments
+  	fHTTP::redirect($user->getUri('who='.$who));
+	}
 }
 
 //---SHOWTIME
 $tpl = new fTemplateIT('users.info.tpl.html');
-
+/*
 if($who != $user->gid) {
     $tpl->setVariable('FORMACTION',$user->getUri());
 	$tpl->setVariable('MYCOMMENT',$arr[8]);
 	$tpl->setVariable('WHOSELECTED',$who);
 }
-
+*/
 $tpl->setVariable('AVATAR',$user->showAvatar($who));
 $tpl->setVariable('NAME',$userinfo->gidname);
 $tpl->setVariable('EMAIL',$userinfo->email);
@@ -54,6 +62,7 @@ if($fUvatar->hasData()) {
     $tpl->setVariable("WEBCAM",$fUvatar->getSwf());
 }
 
+/*
 $arr = $db->getAll('SELECT u.userId,u.name,f.comment 
 FROM sys_users_friends AS f 
 LEFT JOIN sys_users AS u ON u.userId = f.userId WHERE f.comment != "" AND f.userId!="'.$user->gid.'" AND f.userIdFriend="'.$who.'"');
@@ -67,5 +76,6 @@ foreach ($arr as $kom) {
 	$tpl->setVariable("USERCOMMENT",$kom[2]);
 	$tpl->parseCurrentBlock();
 }
+*/
 
 $TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));

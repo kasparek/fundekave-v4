@@ -60,7 +60,7 @@ if(!empty($arrpra)) {
           $tpl->setVariable('FRIENDSNAME',$user->getgidname($pra[0]));
           $tpl->setVariable('FUSERID',$pra[0]);
           $tpl->setVariable('FLAST',$pra[2]);
-          if(!empty($pra[1])) $tpl->setVariable('FCOMMENT',$pra[1]);
+          //if(!empty($pra[1])) $tpl->setVariable('FCOMMENT',$pra[1]);
   	    $tpl->parseCurrentBlock();
   }
 } else {
