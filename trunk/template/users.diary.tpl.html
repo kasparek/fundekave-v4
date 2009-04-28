@@ -6,7 +6,7 @@
 <input type="text" name="dsmesic" value="{SEARCHMONTH}" class="xShort" />. 
 <input type="text" name="dsrok" value="{SEARCHYEAR}" class="xShort" /> 
 <input type="submit" name="search" value="Hledat" class="button">
-<a href="{SHOWMONTHLINK}">Ukázat celý měsíc</a> | <a href="{SHOWMINELINK}">Jen moje</a> | <a href="#" onClick="showDiaryForm();">Přidat nový záznam</a>
+<a href="{SHOWMINELINK}">Jen moje</a> | <a href="#" onClick="showDiaryForm();">Přidat nový záznam</a>
 </fieldset>
 </form>
 <script type="text/javascript" language="JavaScript">
@@ -35,8 +35,10 @@ function showDiaryForm() {
 	<label for="addftext">Text</label><textarea name="dtext" id="addftext" class="draftable">{DTEXT}</textarea>{DTEXTTOOLBOX}<br />
 	<label for="dpripomen">Upozornění</label><select name="dpripomen" id="dpripomen" />{REMINDEROPTIONS}</select>  
   <select name="dopakovat" id="addfeveryday"><option value="0">Jen jednou</option><option value="1"<!-- BEGIN everydayselected --> selected="selected"<!-- END everydayselected -->>Kazdy den</option></select><br />
+  <!-- BEGIN personal -->
   <label for="addfpublic">Pristup:</label><select name="dpublic" id="addfpublic"><option value="0">Jen pro me</option><option value="1"<!-- BEGIN publicselected --> selected="selected"<!-- END publicselected -->>Vidi vsichni</option></select><br />
-	<label for="drepeat">Opakování</label><select name="drepeat" id="drepeat" />{REPEATOPTIONS}</select><br />
+	<!-- END personal -->
+  <label for="drepeat">Opakování</label><select name="drepeat" id="drepeat" />{REPEATOPTIONS}</select><br />
   <input type="submit" name="save" value="Uložit" class="button submit" />
  </fieldset>
  </form>
