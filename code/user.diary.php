@@ -4,11 +4,7 @@ $draftTextId = 'addftext';
 $dden = 0;
 if(!empty($_REQUEST['ddate']))
 	list($drok,$dmesic,$dden)=explode("-",$_REQUEST['ddate']);
-	
-if($dden<1 || $dden>31) {
-	$allmonth=true; 
-	$dden='01';
-} else $allmonth=false;
+
 if(empty($_REQUEST['ddate']) || !checkdate($dmesic,$dden,$drok)) {
 	$dmesic = date("m");
 	$drok = date("Y");
@@ -80,7 +76,6 @@ if(isset($_POST['dsrok'])) $tpl->setVariable('SEARCHYEAR',$_POST['dsrok']);
 
 $tpl->setVariable('TODAYDATE',$dden.'.'.$dmesic.'.'.$drok);
 
-$tpl->setVariable('SHOWMONTHLINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-00'));
 $tpl->setVariable('SHOWMINELINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-00&l=m'));
 
 if(isset($arrd)) {
@@ -115,13 +110,16 @@ $tpl->setVariable('REPEATOPTIONS',$repeatOptions);
 $qDiar = new fQueryTool('sys_users_diary as d');
 $qDiar->setSelect("date_format(d.dateEvent,'{#date_local#}') as datumcz,name,text,diaryId as id,userId,date_format(dateEvent,'{#date_iso#}') as dateEvent,dateCreated,0 as typ");
 if(!isset($_POST['search'])) {
+
 	$qDiar->addWhere("YEAR(dateEvent)='".$drok."' AND MONTH(dateEvent)='".$dmesic."'");
-	if($allmonth!=true) $qDiar->addWhere("DAYOFMONTH(dateEvent)='".$dden."'");
+
 } else {
+
 	if(!empty($_POST['dsrok'])) $qDiar->addWhere("YEAR(dateEvent)='".($_POST['dsrok']*1)."'");
 	if(!empty($_POST['dsmesic'])) $qDiar->addWhere("MONTH(dateEvent)='".($_POST['dsmesic']*1)."'");
 	if(!empty($_POST['dsden'])) $qDiar->addWhere("DAYOFMONTH(dateEvent)='".($_POST['dsden']*1)."'");
 	if(trim($_POST['dsearch'])!="") $qDiar->addWhere("(LOWER(name) LIKE '%".strtolower(trim($_POST['dsearch']))."%' OR LOWER(text) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
+
 }
 if(isset($_REQUEST['l'])) $qDiar->addWhere("userId='".$user->gid."'");
 else $qDiar->addWhere("(userId='".$user->gid."' or eventForAll='1')");

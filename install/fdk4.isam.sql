@@ -312,6 +312,7 @@ CREATE TABLE `sys_pages_counter` (
 CREATE TABLE sys_users_diary (
        diaryId mediumint unsigned NOT NULL AUTO_INCREMENT
      , userId MEDIUMINT unsigned NOT NULL DEFAULT 0
+     , pageId varchar(5) DEFAULT NULL
      , dateCreated DATETIME NOT NULL
      , dateEvent DATETIME not null
      , eventForAll tinyint(1) NOT NULL DEFAULT 0

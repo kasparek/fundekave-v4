@@ -314,9 +314,9 @@ class fItems extends fQueryTool {
         $ret = false;
 		if($enclosure!='') {
 		  if (preg_match("/(jpeg|jpg|gif|bmp|png|JPEG|JPG|GIF|BMP|PNG)$/",$enclosure)) {
-		      $ret = '<a href="'.$enclosure.'" target="_blank"><img src="' . $enclosure . '"></a>';
+		      $ret = '<a href="'.$enclosure.'" rel="lightbox"><img src="' . $enclosure . '"></a>';
 		  } elseif (preg_match("/^(http:\/\/)/",$enclosure)) {
-		      $ret = '<a href="' . $enclosure . '" target="_blank">' . $enclosure . '</a>';
+		      $ret = '<a href="' . $enclosure . '" rel="external">' . $enclosure . '</a>';
 		  } else $ret = $enclosure;
 		}
 		return $ret;

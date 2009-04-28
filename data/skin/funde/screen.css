@@ -651,6 +651,9 @@ div.mainpanel-content div.notpublished h3 {
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
 }
+div.mainpanel-content div.hentry div.entry-content img {
+	max-width: 680px;
+}
 div.mainpanel-content div.statistic {
   margin: 0 auto;
   padding: 0 0 0.3em 0; 
