@@ -4,7 +4,8 @@ if($_REQUEST['i'] > 0){
 	require("./local.php");
   require(INIT_FILENAME);
   $galery = new fGalery();
-	echo $galery->getPopup($user->currentItemId);
+  header('Content-Type: image/jpeg');
+	echo $galery->getRaw($user->currentItemId);
 } else {
   echo 'NO FOTO SPECIFIED';
 }

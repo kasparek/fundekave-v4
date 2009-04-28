@@ -384,6 +384,12 @@ class fGalery {
         $tpl->setVariable('FOTOURL',$this->getDetailUrl());
         return $tpl->get();
     }
+    
+    function getRaw($fotoId) {
+        $this->getFoto($fotoId);
+        $this->fotoHit();
+        return file_get_contents( $this->getDetailUrl() );
+    }
 			
 	function refreshImgToDb($galeryId){
 		global $db;

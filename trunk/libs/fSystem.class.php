@@ -170,12 +170,14 @@ class fSystem {
         
         
         if($paramsArr['formatOption']==1) {
+        
             require_once('HTML/BBCodeParser.php'); 
             $config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);
             $parser = new HTML_BBCodeParser($config['HTML_BBCodeParser']);
             $parser->setText($text);
             $parser->parse();
             $text = $parser->getParsed();
+            
         }
         
         if($paramsArr['formatOption'] < 2) {
