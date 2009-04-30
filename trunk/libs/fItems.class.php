@@ -531,6 +531,7 @@ class fItems extends fQueryTool {
       if($this->openPopup) {
         $tpl->setVariable('IMGURLDETAIL',$arr['detailUrlToPopup']);
         $tpl->touchBlock('popupc');
+        $tpl->setVariable('POPUPCLIGHTBOXGROUP','-'.$arr['pageId']);
       } else {
         $tpl->setVariable('IMGURLDETAIL',$arr['detailUrlToGalery']);
       }
