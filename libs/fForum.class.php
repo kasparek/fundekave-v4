@@ -41,6 +41,8 @@ class fForum {
 			if(empty($arr['itemIdTop'])) {
 			 $arr['itemIdTop'] = 'null';
 			 $arrNotQuoted[] = 'itemIdTop';
+      } else {
+        $user->cacheRemove('lastBlogPost');
       }
       if(empty($arr['userId'])) {
 			 $arr['userId'] = 'null';
@@ -150,15 +152,20 @@ class fForum {
         		if($captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) $cap = true; else $cap = false;
         	} else $cap = true;
         	
+        	if($user->idkontrol) $jmeno = $user->gidname;
+        	elseif(isset($_POST["jmeno"])) $jmeno = trim($_POST["jmeno"]);
+        	
+        	if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
+        	
+        	if(isset($_POST["objekt"])) {
+            $objekt = trim($_POST["objekt"]);
+          }
+        	
         	if($cap) {
-        	    if($user->idkontrol) $jmeno = $user->gidname;
-        	    elseif(isset($_POST["jmeno"])) $jmeno = trim($_POST["jmeno"]);
-        	    
-        	    if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
                 
-                if(isset($_POST["objekt"]))
+                if(isset($objekt))
                 {
-                  $objekt = trim($_POST["objekt"]);
+                  
                   
                   if(preg_match("/^link:([0-9a-zA-Z]*)$/" , $objekt)) {
                       $itemIdBottom = str_replace('link:','',$objekt);
@@ -196,11 +203,16 @@ class fForum {
             			 $zprava = fSystem::textins($zprava);
             			} else {
             			 $zprava = fSystem::textins($zprava,array('formatOption'=>0));
-            			 $objekt = fSystem::textins($objekt,array('plainText'=>1));
+            			 if(isset($objekt)) {
+            			   $objekt = fSystem::textins($objekt,array('plainText'=>1));
+            			 }
             			}
             		
             		//---insert
-            		    $arrSave = array('pageId'=>$user->currentPageId,'userId'=>$user->gid,'name'=>$jmeno,'text'=>$zprava,'enclosure'=>$objekt);
+            		    $arrSave = array('pageId'=>$user->currentPageId,'userId'=>$user->gid,'name'=>$jmeno,'text'=>$zprava);
+            		    if(isset($objekt)) {
+                      $arrSave['enclosure']=$objekt;
+                    }
             		    if(!empty($itemIdBottom)) $arrSave['itemIdBottom'] = $itemIdBottom;
             		    if(!empty($pageIdBottom)) $arrSave['pageIdBottom'] = $pageIdBottom;
             		    if($itemId > 0) $arrSave['itemIdTop'] = $itemId;
@@ -219,7 +231,7 @@ class fForum {
         		fError::adderror(ERROR_CAPTCHA);
         	}
         	if(fError::isError()) {
-              $_SESSION["cache_audit"] = array("zprava"=>$zprava,"objekt"=>$objekt,"name"=>$jmeno);
+              $_SESSION["cache_audit"] = array("zprava"=>$zprava,"objekt"=>(isset($objekt))?($objekt):(''),"name"=>$jmeno);
             }
         }
         //---filtrovani
