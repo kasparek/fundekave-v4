@@ -12,19 +12,13 @@ invalidate access perm after change does not work properly - blog - upravit
 
 sidebar - rnd tip - pridat tag a diskuzi
 
-pridani prispevku do diskuze u blogu nemaze cache na hlavni
-
 page search  - pridat datum
 
 page edit galery - maze nahledy pokazde
 
-galery new - nevytvori adresar
-  
 todo: fuvatar - pridat u ikonky ze je online, odkaz na stranku se vsema kamerama, pripojena diskuze
 
-todo: cron - mazat tmp/cache-lite - starsi nez jeden den - jednou za den
-
-todo: do ddiare pro vice lidi
+todo: do ddiare pro vice lidi / pro klub
 
 !!!neprectene u blogu zvyraznit
 !!!nastaveni diskuze stejne jako u blogu
@@ -85,6 +79,7 @@ GALERY DETAIL
   - nastaveni diskuze - pouze pro cteni, zapis pouze pro spravce, prihlasene, majitele
   
 ANKETA
+  - celkove zvyraznit anketu
   - style sloupce
 
 sys_user_perm_cache
