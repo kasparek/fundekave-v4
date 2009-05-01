@@ -132,13 +132,17 @@ class fBlog extends fQueryTool  {
 		$fItems->addWhere("i.pageId='".$user->currentPageId."'");
 		$fItems->addWhere('i.itemIdTop is null');
 		
-		if($itemId>0) {
+		if($itemId > 0) {
+		
 		    $fItems->showComments = true;
 		    $fItems->showHeading = false;
 		    $fItems->initDetail($itemId);
+		    
 		} else {
+		
 		    $fItems->setLimit($currentPage * $this->perPage, $this->perPage);
 		    $fItems->setOrder("i.dateCreated desc");
+		    
 		}
 		
 		$fItems->getData();
