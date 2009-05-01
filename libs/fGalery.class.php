@@ -512,7 +512,11 @@ class fGalery {
 	    if(fGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) if(!unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) fError::addError('Cannot delete thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
 	    //---delete system thumb
 		$thumbPathArr = $this->getThumbPath($this->_cacheDirSystemResolution);
-	    if(fGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) if(@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) fError::addError('Cannot delete system thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+	    if(fGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) { 
+        if(@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
+          //fError::addError('Cannot delete system thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+        }
+      }
 	    if(!fError::isError()) return true;
 	}
 }
