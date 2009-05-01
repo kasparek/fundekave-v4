@@ -8,6 +8,9 @@ class fCategory extends fQueryTool {
 	var $arrClass;
 	var $arrDbUsedCols;
 	
+	//selected category - by GET parameter
+	var $selected;
+	
 	var $arrSaveAddon;
 	var $arrRedirAddon;
 	var $template = 'category.edit.tpl.html';
@@ -51,7 +54,11 @@ class fCategory extends fQueryTool {
 		if(!empty($arr)) {
 			$this->tplObject = new fTemplateIT($this->templateList);
 			foreach ($arr as $row) {
-				if($row[0] == $selectedCat) $this->tplObject->setVariable('CATEGORYNAME',$row[1]);
+				if($row[0] == $selectedCat) {
+          $this->tplObject->setVariable('CATEGORYNAME',$row[1]);
+          $this->selected = $row;
+          $user->currentPage["name"] =  $this->selected[1] . ' - ' . $user->currentPage["name"];
+        }
 				$this->tplObject->setCurrentBlock('category');
 				$this->tplObject->setVariable('CATLINK',$user->getUri('kat='.$row[0]));
 				$this->tplObject->setVariable('CATNAME',$row[1]);

@@ -144,7 +144,8 @@ class fPages extends fQueryTool {
             foreach ($arrCategory as $category) {
         		//vypis jednotlivych klubu	
         		if(!empty($arrForums[$category[0]])) {
-        		  
+        		    //---add category name to title
+        		    $user->currentPage["name"] =  $category[1] . ' - ' . $user->currentPage["name"]; 
         		    $tpl->setVariable("CATEGORYPAGELINKLIST",fPages::printPagelinkList($arrForums[$category[0]]));
             	
         		}

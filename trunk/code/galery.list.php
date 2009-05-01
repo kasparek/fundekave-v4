@@ -3,10 +3,10 @@
 $category = new fCategory('sys_pages_category','categoryId');
 $TOPTPL->addTab(array("MAINDATA"=>$category->getList('galery')));
 
-if(isset($_REQUEST['kat'])) $kat = $_REQUEST['kat']*1; else $kat=0;
-
 $fPages = new fPages('galery',$user->gid,$db);
-if($kat > 0) $fPages->addWhere("p.categoryId='".$kat."'");
+if(!empty($category->selected)) {
+  $fPages->addWhere("p.categoryId='".$category->selected[0]."'");
+}
 
 $totalItems = $fPages->getCount();
 $from = 0;
