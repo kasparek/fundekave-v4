@@ -335,6 +335,12 @@ class fGalery {
   			$tpl->setVariable("IMGDIR", $this->getDetailUrl());
   			if($this->_showComment && !empty($this->_fComment)) $tpl->setVariable("INFO",$this->_fComment);
   			
+        if(!empty($this->_fName)) {
+          $user->currentPage["name"] = $this->_fName . ' - ' . $user->currentPage["name"];
+        } else {
+          $user->currentPage["name"] = $this->_fDetail . ' - ' . $user->currentPage["name"];
+        }
+  			
   			$tpl->setVariable("HITS",$this->_fHits);
   			if($user->idkontrol) {
   			    $tpl->setVariable('TAG',fItems::getTag($itemId,$user->gid,'galery'));

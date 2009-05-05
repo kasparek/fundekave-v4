@@ -534,7 +534,7 @@ class fUser {
 	function getUserIdByName($name){
 		Global $db;
 		if(!isset($this->arrCachePerLoad['idByName'][$name])) {
-		  return $this->arrCachePerLoad['idByName'][$name] = $db->getOne("select userId from sys_users where name='".$name."'");
+		  return $this->arrCachePerLoad['idByName'][$name] = $db->getOne("select userId from sys_users where deleted=0 and name='".$name."'");
 		} else {
     	    return $this->arrCachePerLoad['idByName'][$name];
 		}
