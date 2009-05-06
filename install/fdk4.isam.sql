@@ -217,6 +217,7 @@ CREATE TABLE sys_pages_items (
      , dateEnd DATETIME default NULL
      , dateCreated DATETIME NOT NULL
      , text TEXT
+     , textLong TEXT DEFAULT NULL
      , enclosure VARCHAR(255) default null
      , addon VARCHAR(100) default null
      , filesize mediumint unsigned default null

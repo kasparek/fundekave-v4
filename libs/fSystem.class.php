@@ -351,9 +351,13 @@ class fSystem {
         return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z0-9]*))$/" , $name);
     }
     static function safeText($text) {
-    	return strtr(iconv(CHARSET, 'US-ASCII//TRANSLIT', $text),
-            ' ,;:?*#!�$%&/(){}<>=`�|\\\'"',
-            '----------------------------');
+    	$url = $text;
+      $url = preg_replace('~[^\\pL0-9_]+~u', '-', $url);
+      $url = trim($url, "-");
+      $url = iconv("utf-8", "us-ascii//TRANSLIT", $url);
+      $url = strtolower($url);
+      $url = preg_replace('~[^-a-z0-9_]+~', '', $url);
+      return $url;
     }
     function array_neighbor($key, $arr, $consecutively = false) {
 		//$keys = array_keys($arr); --- when key is key
