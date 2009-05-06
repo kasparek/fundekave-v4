@@ -24,11 +24,13 @@ function class_autoloader($c) {
 	}
 }
 spl_autoload_register("class_autoloader");
+setlocale(LC_ALL,'cs_CZ.utf-8');
 //------------------------------------------------------------PEARlibs--required
 require_once('DB.php');
 //-----------------------------------------------------------------db connection
 if(!$nonDbInit) {
-  
+  function &initDB() {
+    global $conf;
   	$db = & DB::connect($conf['db'], $conf['dboptions']);
   	if (PEAR::isError($db)) die($db->getMessage());
   	$db->query("set character_set_client = utf8");
@@ -36,7 +38,7 @@ if(!$nonDbInit) {
   	$db->query("set character_set_results = utf8");
   	$db->query("set character_name = utf8");
   	return $db;
-	
+	}
 	//---session settings - stored in db
 	  //require_once("fSession.php");
     //session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");
@@ -44,6 +46,7 @@ if(!$nonDbInit) {
     ini_set('session.gc_probability',1);
     ini_set('session.save_path', ROOT.'tmp/');
 
+$db = initDB();
     session_start();
     require(ROOT.$conf['language']['path'].$conf['language']['filename']);
 }

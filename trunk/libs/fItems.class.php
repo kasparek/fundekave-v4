@@ -482,7 +482,7 @@ class fItems extends fQueryTool {
   	
   	if($this->showPageLabel==true) {
   	 $tpl->touchBlock('haspagelabel');
-      $tpl->setVariable('PAGELINK','?k='.$arr['pageId'].(($arr['typeId']=='forum')?('&i='.$arr['itemId'].'#i'.$arr['itemId']):('')));
+      $tpl->setVariable('PAGELINK','?k='.$arr['pageId'].'-'.fSystem::safetext($arr['pageName']).(($arr['typeId']=='forum')?('&i='.$arr['itemId'].'#i'.$arr['itemId']):('')));
       $tpl->setVariable('PAGENAME',$arr['pageName']);
     }
     //---BLOG
