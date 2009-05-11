@@ -52,22 +52,13 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     	$tpl->setCurrentBlock("thumbnails");
     	$tpl->setVariable("GALERYTEXT",$galery->gText);
     	$tpl->setVariable("GALERYHEAD",$user->currentPage['content']);
-    	
-    	$rowCount = ceil(sqrt($galery->gPerpage));
-    	$rowInc=1;
     
     	$x=0;
         while($fItems->arrData && $x < $galery->gPerpage) {
     		$tpl->setCurrentBlock("cell");
     		 $fItems->parse();
     		 $tpl->setVariable("THUMBNAIL",$fItems->show());
-    		 
-    		 if($rowInc == $rowCount) {
-    		     $tpl->touchBlock('row');
-    		     $rowInc=0;
-    		 }
-    		 $rowInc++;
-    		
+   		
     		 $tpl->parseCurrentBlock();
         }
     		

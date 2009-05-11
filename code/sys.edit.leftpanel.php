@@ -27,9 +27,11 @@ $category->arrOption['leftpanelGroup']=$arr;
 
 $tmptext= '<p><label for="typefilter">Skupina</label><select id="typefilter" onchange="location = \'?k='.$user->currentPageId.'&rh=\' + this.options[this.selectedIndex].value;">';
 foreach ($arr as $k=>$v) $tmptext.='<option value="'.$v.'"'.(($v==$sidebarGroup)?(' selected="selected" '):('')).'>'.$v.'</option>';
-$tmptext.='</select></p>';
+$tmptext.='</select></p><form method="post" action="">';
 
 $tmptext .= $category->getEdit();
+
+$tmptext.='</form>';
 
 $TOPTPL->addTab(array("MAINDATA"=>$tmptext));
 
