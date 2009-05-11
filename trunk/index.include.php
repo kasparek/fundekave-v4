@@ -147,6 +147,7 @@ if($user->currentPageAccess) {
   $pageHeading = $user->currentPage["name"];
 }
 $TOPTPL->setVariable("TITLE", (!empty($pageTitle)?($pageTitle.' - '):('')).BASEPAGETITLE);
+if(!empty($user->currentPage["description"])) $TOPTPL->setVariable("DESCRIPTION", str_replace('"','',$user->currentPage["description"]));
 if(!empty($pageHeading)) $TOPTPL->setVariable('PAGEHEAD',$pageHeading);
 //---BODY PARAMETERS
 $bodyAction = '';
