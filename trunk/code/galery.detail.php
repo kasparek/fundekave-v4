@@ -50,6 +50,16 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
     	//---nahledy
     	$tpl = new fTemplateIT('galery.thumbnails.tpl.html');
     	$tpl->setCurrentBlock("thumbnails");
+
+/*    	
+    	$category = new fCategory('sys_pages_category','categoryId');
+    	
+    	$tpl->setVariable("MAINGALERYLINK",'?k=galer');
+    	$tpl->setVariable("CATEGORYLINK",'?k=galer&k='.$galery->gText);
+    	$tpl->setVariable("CATEGORYDESC",$galery->gText);
+    	$tpl->setVariable("CATEGORYNAME",$galery->gText);
+ */   	
+    	
     	$tpl->setVariable("GALERYTEXT",$galery->gText);
     	$tpl->setVariable("GALERYHEAD",$user->currentPage['content']);
     

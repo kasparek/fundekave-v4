@@ -99,7 +99,7 @@ if(isset($_POST["nav"])){
 			}
 		}
 	} else {
-		$_SESSION['akce_arr'] = $arr;
+		$_SESSION['akce_arr'] = $arrSave;
 	}
 
 	fHTTP::redirect($user->getUri());
