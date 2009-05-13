@@ -125,7 +125,7 @@ CREATE INDEX `post-dateCreated` ON sys_users_post (dateCreated Desc);
 
 CREATE TABLE sys_pages (
      pageId varchar(5) NOT NULL
-     ,pageIdTop varchar(5) DEFAULT NULL
+     , pageIdTop varchar(5) DEFAULT NULL
      , typeId VARCHAR(10) DEFAULT null
      , typeIdChild VARCHAR(10) DEFAULT null
      , categoryId SMALLINT unsigned DEFAULT null
