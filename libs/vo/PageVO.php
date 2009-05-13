@@ -1,7 +1,8 @@
 <?php
+require('../fQueryTool.class.php');
 class PageVO extends fQueryTool {
   var $tableDef = 'CREATE TABLE sys_pages (
-     pageId varchar(5) NOT NULL
+     pageId varchar(5) NOT NULL PRIMARY KEY
      , pageIdTop varchar(5) DEFAULT NULL
      , typeId VARCHAR(10) DEFAULT null
      , typeIdChild VARCHAR(10) DEFAULT null
@@ -23,14 +24,21 @@ class PageVO extends fQueryTool {
      , authorContent VARCHAR(100)
      , galeryDir VARCHAR(100) DEFAULT null
      , pageParams text
-     , PRIMARY KEY (pageId)
-);';
+)  ;';
+
+
+  function PageVO() {
+    include('../../pear/SQL/Parser.php');
+    $parser = new SQL_Parser($this->tableDef,'MySQL');
+
+    var_dump( $parser->parse() );  
+  }
   //---db based
-  var $pageId
-  var $pageIdTop
+  var $pageId;
+  var $pageIdTop;
   var $typeId;
   var $typeIdChild;
-  var $categoryId
+  var $categoryId;
   var $categoryVO;
   var $menuSecondaryGroup;
   var $template;
@@ -56,3 +64,5 @@ class PageVO extends fQueryTool {
   var $htmlKeywords;
   
 }
+
+$a = new PageVO();
