@@ -43,7 +43,8 @@ if(!$nonUserInit) {
 	$user = FUser::getInstance();
 
 	if(!$xajax) {
-    	$user->currentPageId = HOME_PAGE;
+		$user->page->pageId = HOME_PAGE;
+    	
     	$user->currentPageParam = '';
     	//---backward compatibility
     	if(isset($_GET['kam'])) {
@@ -51,7 +52,7 @@ if(!$nonUserInit) {
     	    elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
     	    $els='';
     	    for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-    	    $_GET['k'] = $user->currentPageId = $add . $els . $kam;
+    	    $_GET['k'] = $user->page->pageId = $add . $els . $kam;
     	}
     	//---u=username
     	if(isset($_GET['u'])) {
@@ -59,7 +60,7 @@ if(!$nonUserInit) {
     	    if($userId > 0) {
     	        $arr  = $user->get($userId);
     	        if(!empty($arr['personal']->HomePageId)) {
-    	            $user->currentPageId = (string) $arr['personal']->HomePageId;
+    	            $user->page->pageId = (string) $arr['personal']->HomePageId;
     	        }
     	    }
     	}
@@ -68,9 +69,9 @@ if(!$nonUserInit) {
      	    $user->checkItem();
     	}
     	
-    	if(!empty($_REQUEST["k"])) $user->currentPageId = $_REQUEST['k'];
+    	if(!empty($_REQUEST["k"])) $user->page->pageId = $_REQUEST['k'];
     	elseif ($user->currentItemId > 0) {
-    	   $user->currentPageId = $user->currentItem['pageId'];
+    	   $user->page->pageId = $user->currentItem['pageId'];
     	}
     	if(isset($user->currentPageId{5})) {
     		//---slice pageid on fiveid and params
