@@ -1,3 +1,5 @@
+switch from XAJAX to JQuery ajax
+
 PROPOJENI
   - blogpost - galerie
   - galerie - blogpost

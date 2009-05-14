@@ -1,64 +1,46 @@
 <?php
 error_reporting(E_ALL);
 //------------------------------------------------------------------------------
-if(!isset($nonDbInit)) $nonDbInit = false;
+
 if(!isset($nonUserInit)) $nonUserInit = false;
 if(!isset($xajax)) $xajax = false;
+
 //-------------------------------------------------------------time for debuging
 list($usec, $sec) = explode(" ",microtime());
 $start = ((float)$usec + (float)$sec);
-//--------------------------------------------------------config + constant init
-if(file_exists(CONFIG_FILENAME)){
-	$conf=parse_ini_file(CONFIG_FILENAME, true);
-	foreach ($conf["phpdefined"] as $k=>$v) define(strtoupper($k),$v);
-	$conf["phpdefined"] = array();
-	set_include_path(get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR,$conf["include_path"]));
-} else {
-	die('Error: unable to locate config file');
-}
+
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(!strpos($c,'_')) {
-		$filename = $c . '.class.php';
-		include $filename;
+		if(strpos($c,'VO')) {
+			$c = 'vo/'.$c;
+		}
+		$c = $c . '.php';
+		include LIBSDIR . $c;
 	}
 }
 spl_autoload_register("class_autoloader");
 setlocale(LC_ALL,'cs_CZ.utf-8');
-//------------------------------------------------------------PEARlibs--required
-require_once('DB.php');
-//-----------------------------------------------------------------db connection
-if(!$nonDbInit) {
-  function &initDB() {
-    global $conf;
-  	$db = & DB::connect($conf['db'], $conf['dboptions']);
-  	if (PEAR::isError($db)) die($db->getMessage());
-  	$db->query("set character_set_client = utf8");
-  	$db->query("set character_set_connection= utf8");
-  	$db->query("set character_set_results = utf8");
-  	$db->query("set character_name = utf8");
-  	return $db;
-	}
-	//---session settings - stored in db
-	  //require_once("fSession.php");
-    //session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");
-    ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
-    ini_set('session.gc_probability',1);
-    ini_set('session.save_path', ROOT.'tmp/');
 
-$db = initDB();
-    session_start();
-    require(ROOT.$conf['language']['path'].$conf['language']['filename']);
-}
+//--------------------------------------------------------config + constant init
+FConf::getInstance();
+  
+//---session settings - stored in db
+//require_once("fSession.php");
+//session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");
+ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
+ini_set('session.gc_probability',1);
+ini_set('session.save_path', ROOT.'tmp/');
+
+//require_once(LIBSDIR.'FUser.php');
+
+session_start();
 
 //---system user init
 $user->currentItemId = 0;
 if(!$nonUserInit) {
-	//require_once('fUser.class.php');
-	if(!isset($_SESSION["user"])) $_SESSION["user"] = new fUser();
-	$user = & $_SESSION["user"];
-
-	define('ESID',''); //just for use when sid transmit on GET
+	
+	$user = FUser::getInstance();
 
 	if(!$xajax) {
     	$user->currentPageId = HOME_PAGE;

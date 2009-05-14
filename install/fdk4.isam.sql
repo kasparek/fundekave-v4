@@ -62,7 +62,6 @@ CREATE TABLE sys_pages_category (
 CREATE TABLE sys_cron_log (
      date DATETIME NOT NULL
      , text TEXT
-     , PRIMARY KEY (id)
 )  ;
 
 CREATE TABLE sys_users (
