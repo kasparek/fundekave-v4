@@ -21,9 +21,9 @@
 </form>
 <!-- END banneredit -->
 
-<p>
+
 <!-- BEGIN banner -->
-<p>
+<div>
   <!-- BEGIN strict --><h4>Povinny</h4><!-- END strict -->
   <div>
     <!-- BEGIN bannerimgdisplaydb --><img src="{BANNERURL}" title="{BANNERNAME}" alt="{BANNERNAME}" /><!-- END bannerimgdisplaydb -->
@@ -39,9 +39,9 @@
     <a href="{DELETEURL}" onclick="if(confirm('Opravdu chcete vymazat tento zaznam z databaze? Banner zustane na ftp.')) return(true); else return(false);">Smazat</a>
   </div>
   <hr />
-</p>
+</div>
 <!-- END banner -->
-</p>
+
 
 <!-- banner file list -->
 <h3>Bannery na serveru</h3>
@@ -54,7 +54,7 @@
 </form>
 
 <p>Zobrazeny jsou pouze ty ktere nejsou nastaveny v databazi pro pouziti na strankach</p>
-<p>
+
 <!-- BEGIN bannerimg -->
 <div>
 <!-- BEGIN bannerimgdisplay --><img src="{IMGURL}" title="{IMGNAME}" alt="{IMGNAME}" /><!-- END bannerimgdisplay -->
@@ -62,4 +62,3 @@
 <!-- BEGIN bannerimglink --><a href="{UNIMGURL}">Banner - {UNIMGNAME}</a>  <!-- END bannerimglink --> 
 <a href="{NEWBANNERURL}">Pouzit</a> <a href="{IMGDELETEURL}" onclick="if(confirm('Opravdu chcete vymazat tento banner?')) return(true); else return(false);">Smazat</a></div>
 <!-- END bannerimg -->
-</p>

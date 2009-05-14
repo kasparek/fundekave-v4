@@ -1,5 +1,5 @@
 <?php
-class fUser {
+class FUser {
     //---user access
     var $idkontrol = false;
     //---userID
@@ -84,11 +84,27 @@ class fUser {
 
     //---additional user information XML structure
 	var $xmlProperties = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
-		
-	function __construct() {
-	    $this->systemmenu = array();
-	    $this->arrFriends = array();
+	
+	public $initialized;
+	
+	private static $instance;
+	
+	static function &getInstance() {
+		if (!isset(self::$instance)) {
+			if(isset($_SESSION["user"])) {
+				if( !empty($_SESSION["user"]->initialized) ) {
+					self::$instance = &$_SESSION["user"];
+		     	}
+			} 
+		}
+		if (!isset(self::$instance)) {
+			self::$instance = &new FUser();
+			self::$instance->initialized = true;
+			$_SESSION["user"] = &self::$instance;
+		}
+		return self::$instance;
 	}
+	
 	function myDestructor() {
 	  //called before the session is written
 	  $this->arrCachePerLoad = array();
@@ -103,9 +119,21 @@ class fUser {
 	function __destruct() {
 	    $this->myDestructor();
 	}
+	
+	public $page;
+	
 	private function loadPage() {
-	    global $db;
-	    $this->__construct();
+	    
+		
+		
+	    $this->systemmenu = array();
+	    $this->arrFriends = array();
+	    
+	    $this->page = new PageVO();
+	    $this->page->pageId = $this->currentPageId;
+	    $this->page->load();
+	    
+	    
 	    
 	    if(!$this->idkontrol) {
         $vid = $db->getRow("SELECT  

@@ -1,6 +1,6 @@
 <?php
 //local settings for current server
-define('ROOT',"/_www/fdk4_svn/");
+define('ROOT',"/_web/fundekave-v4/");
 define('CONFIGDIR','config/');
 define('LIBSDIR','libs/');
 define('CONFIG_FILENAME',ROOT.CONFIGDIR.'fdk3.conf.ini');

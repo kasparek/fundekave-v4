@@ -186,7 +186,14 @@ class SQL_Parser
             $haveValue = true;
             switch ($option) {
                 case 'unsigned':
-                  //---
+                  	$this->getTok();
+                    if ($this->token = 'unsigned') {
+                        $constraintName = $this->lexer->tokText;
+                        $namedConstraint = true;
+                        $haveValue = false;
+                    } else {
+                        return $this->raiseError('Expected a constraint name');
+                    }
                   break;
                 case 'constraint':
                     $this->getTok();

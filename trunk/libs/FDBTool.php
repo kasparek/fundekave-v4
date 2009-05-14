@@ -1,24 +1,23 @@
 <?php
-class fQueryTool {
-    var $db;
+class FDBTool {
     var $cacheResults = false;
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
-	var $_where = '';
-	var $_order = '';
-	var $_select = '*';
-	var $selectCount = 'count(1)';
-	var $_group = '';
-	var $_join = '';
-	var $_limit = array();
+	private $_where = '';
+	private $_order = '';
+	private $_select = '*';
+	private $selectCount = 'count(1)';
+	private $_group = '';
+	private $_join = '';
+	private $_limit = array();
 	var $debug = 0;
-	var $openingDelimiter = '{#';
-	var $closingDelimiter     = '#}';
-	var $variablenameRegExp    = '[\.0-9A-Za-z_-]+';
-	var $variablesRegExp;
-	var $replaceKeys;
-	var $replaceVars = array(
+	private $openingDelimiter = '{#';
+	private $closingDelimiter     = '#}';
+	private $variablenameRegExp    = '[\.0-9A-Za-z_-]+';
+	private $variablesRegExp;
+	private $replaceKeys;
+	private $replaceVars = array(
     'date' => '%Y-%m-%d',
     'date_iso' => '%Y-%m-%d',
     'date_local' => '%d.%m.%Y',
@@ -29,19 +28,14 @@ class fQueryTool {
     'datetime_local' => '%T %d.%m.%Y',
     );
     //---save tool
-  var $_cols = array();
+  	var $_cols = array();
 	var $_notQuoted = array();
 	var $quoteType = "'";
-	function __construct($tableName='',$primaryCol='',$db=false) {
+	function __construct($tableName='',$primaryCol='') {
 		$this->table = $tableName;
 		$this->variablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')' . $this->closingDelimiter . '@sm';
 		$this->replaceKeys = array_keys($this->replaceVars);
 		$this->primaryCol = $primaryCol;
-		if($db) $this->db = &$db;
-		else {
-		    global $db;
-		    $this->db = &$db;
-		}
 	}
 	function queryReset() {
       $this->_where = '';
@@ -167,7 +161,8 @@ class fQueryTool {
 		if($this->cacheResults == true) {
 		  $data = $this->getCachedData($dot);
 		} else {
-		  $data = $this->db->getAll($dot);
+			$db = FDBConn::getInstance();
+		  $data = $db->getAll($dot);
 		}
 		if(!DB::iserror($data)) {
 		    if(isset($data[0][0])) return $data[0][0];
@@ -182,7 +177,8 @@ class fQueryTool {
 		if($this->cacheResults == true) {
 		  $data = $this->getCachedData($dot);
 		} else {
-		  $data = $this->db->getAll($dot);
+			$db = FDBConn::getInstance();
+		  $data = $db->getAll($dot);
 		}
 		if(!DB::iserror($data)) return $data;
 		else {
@@ -199,12 +195,19 @@ class fQueryTool {
 	    $cacheId = $query;
         $fromCache =  true;
 	    if(!$data = $user->cacheGet('fPages',$cacheId)) {
-            $data = $this->db->getAll($query);
+	    	$db = FDBConn::getInstance();
+            $data = $db->getAll($query);
             $user->cacheSave(serialize($data));
             $fromCache = false;
 		}
 		if($fromCache == true) $data = unserialize($data);
 		return $data;
+	}
+	//---get one record
+	function getRecord($recordId) {
+		$this->setSelect( implode(',',$this->_cols) );
+		$this->setWhere($this->primaryCol ."='".$recordId."'");
+		return $this->getContent();
 	}
 	//---save functions
 	function addCol($name,$value,$quote=true) {

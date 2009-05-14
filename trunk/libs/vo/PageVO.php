@@ -1,6 +1,5 @@
 <?php
-require('../fQueryTool.class.php');
-class PageVO extends fQueryTool {
+class PageVO extends FDBvo {
   var $tableDef = 'CREATE TABLE sys_pages (
      pageId varchar(5) NOT NULL PRIMARY KEY
      , pageIdTop varchar(5) DEFAULT NULL
@@ -28,11 +27,13 @@ class PageVO extends fQueryTool {
 
 
   function PageVO() {
-    include('../../pear/SQL/Parser.php');
-    $parser = new SQL_Parser($this->tableDef,'MySQL');
+  	
+  	parent::__construct();
 
-    var_dump( $parser->parse() );  
+    
   }
+  
+  
   //---db based
   var $pageId;
   var $pageIdTop;
@@ -64,5 +65,3 @@ class PageVO extends fQueryTool {
   var $htmlKeywords;
   
 }
-
-$a = new PageVO();
