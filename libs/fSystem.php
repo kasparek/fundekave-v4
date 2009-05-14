@@ -1,5 +1,5 @@
 <?php
-class fSystem {
+class FSystem {
     static function &initPager($totalItems=0,$perPage=20,$inputParams=array()) {
         global $conf;
         $params = $conf['pager'];
