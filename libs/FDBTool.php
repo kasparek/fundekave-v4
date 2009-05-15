@@ -4,11 +4,12 @@ class FDBTool {
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
-	private $_where = '';
-	private $_order = '';
-	private $_select = '*';
+	private $_where = array();
+	private $_order = array();
+	private $_select = array('*');
 	private $selectCount = 'count(1)';
-	private $_group = '';
+	private $_group = array();
+	private $autojoin = false;
 	private $_join = '';
 	private $_limit = array();
 	var $debug = 0;
@@ -38,10 +39,10 @@ class FDBTool {
 		$this->primaryCol = $primaryCol;
 	}
 	function queryReset() {
-      $this->_where = '';
-      $this->_join = '';
-      $this->_order = '';
-      $this->_group = '';
+      $this->_where = array();
+      $this->_join = array();
+      $this->_order = array();
+      $this->_group = array();
     }
 	function setTemplate($template) {
 		$this->queryTemplate = $template;
@@ -50,17 +51,40 @@ class FDBTool {
 	  return $this->queryTemplate;
 	}
 	function getWhere() {
-        return ((!empty($this->_where))?($this->_where):('1'));
+  if(empty($this->_where)) {
+    $where[] = '1';
+  } else if($this->autojoin===true) {
+    foreach($this->_where as $cond) {
+      if(!strpos($conf,'.') {
+        $cond = $this->table.'.'.$cond;
+      }
+      $where[] = $cond;
+    }
+  } else {
+     $where = $this->_where;
+  }
+        return implode(' ',$where);
     }
 	function setWhere($whereCondition) {
-		$this->_where = $whereCondition;
+		$this->_where = array($whereCondition);
 	}
 	function addWhere($where,$condition='AND') {
-        $this->setWhere(((!empty($this->_where))?($this->_where.' '.$condition.' '.$where):($where)));
+	      $len = count($this->_where);
+        if($len>0) {
+           $this->_where[$len-1] .= $condition;
+        }
+        $this->_where[] = $where;
 	}
 	function addJoin($condition) {
 		$this->_join .= ' '.$condition;
 	}
+	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
+    $this->_join .= ' '$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
+    $this->autoJoin = true;
+    foreach($selectColumnsArray as $col) {
+      $this->addSelect($table.'.'.$col);
+    }
+  }
 	function getJoin() {
 		return $this->_join;
 	}
@@ -79,27 +103,47 @@ class FDBTool {
 	    $this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'"'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
 	}
 	function setOrder($orderCondition='', $desc=false) {
-    	$this->_order = $orderCondition .($desc ? ' DESC' : '');
+	     $orderCondition = $orderCondition .($desc ? ' DESC' : '')
+    	$this->_order = explode(',',$orderCondition);
 	}
 	function addOrder($orderCondition='', $desc=false) {
-    	$order = $orderCondition .($desc ? ' DESC' : '');
-    	if ($this->_order) $this->_order = $this->_order.','.$order;
-    	else $this->_order = $order;
+    	$this->_order[] = $orderCondition .($desc ? ' DESC' : '');
 	}
 	function getOrder() {
-    	return ((!empty($this->_order))?(' order by '.$this->_order):(''));
+	 if($this->autojoin===true) {
+	   foreach($this->_order as $cond) {
+	     if(!strpos($cond,'.')) {
+                  $cond = $this->table.'.'.$cond;
+       }
+	     $order[] = $cond;
+     }
+   } else {
+    $order = $this->_order;
+   }
+    	if(!empty($order)) return ' order by '.implode(',',$order);
 	}
 	function setSelect($what='*') {
-    	$this->_select = $what;
+    	$this->_select = explode(',',$what);
 	}
 	function addSelect($what='*') {
-    	$this->_select .= ((!empty($this->_select))?(','):('')).$what;
+    	$this->_select[] = $what;
 	}
 	function replaceSelect($what,$with) {
-    	$this->_select = str_replace($what,$with,$this->_select);
+	$len=count($this->_select);
+	    for($i=0;$i<$len;$i++){
+      $this->_select[$i] = str_replace($what,$with,$this->_select[$i]);
+      }
 	}
 	function getSelect() {
-		return $this->_select;
+	 if($this->autojoin) {
+	 foreach($this->_select as $col) {
+    if(!strpos($col,'.')) $col = $this->table.'.'.$col;
+    $arrCols[] = $col;
+   }
+   } else {
+    $arrCols = $this->_select
+   }
+		return implode(',',$arrCols);
 	}
 	function setLimit($from=0, $count=0) {
     	if ($from==0 && $count==0) $this->_limit = array();
@@ -109,10 +153,21 @@ class FDBTool {
 		return ((!empty($this->_limit))?(' limit '.$this->_limit[0].','.$this->_limit[1]):(''));
 	}
 	function setGroup($group='') {
-    	$this->_group = $group;
+    	$this->_group = explode(',',$group);
 	}
 	function getGroup() {
-    	return ((!empty($this->_group))?(' group by '.$this->_group):(''));
+   	
+    	if($this->autojoin===true) {
+	   foreach($this->_group as $cond) {
+	     if(!strpos($cond,'.')) {
+                  $cond = $this->table.'.'.$cond;
+       }
+	     $group[] = $cond;
+     }
+   } else {
+    $group = $this->_group;
+   }
+    	if(!empty($group)) return ' group by '.implode(',',$group);
 	}
 	function buildBase() {
 		$query = $this->queryTemplate;

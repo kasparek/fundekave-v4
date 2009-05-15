@@ -25,13 +25,13 @@ class FDBvo extends FDBTool {
 		
 	  	$pCol = $this->primaryCol;
 	  	$arr = $this->getRecord( $this->$pCol );
-	  	
+	  	if(!empty($arr)) {
 	  	$len = count($arr[0]);
 	  	for($i=0;$i<$len;$i++) {
 	  		$col = $this->_cols[$i];
 	  		$this->$col = $arr[0][$i];
 	  	}
-	
+	    }
 	  }
 	
 }
