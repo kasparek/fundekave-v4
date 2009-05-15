@@ -43,6 +43,7 @@ if(!$nonUserInit) {
 	$user = FUser::getInstance();
 
 	if(!$xajax) {
+	 $this->page = new PageVO();
 		$user->page->pageId = HOME_PAGE;
     	
     	$user->currentPageParam = '';
@@ -65,28 +66,30 @@ if(!$nonUserInit) {
     	    }
     	}
     	if(!empty($_REQUEST["i"])) {
-    	    $user->currentItemId = (int) $_REQUEST['i'];
-     	    $user->checkItem();
+    	   $user->item = new ItemVO();
+    	    $user->item->itemId = (int) $_REQUEST['i'];
+     	    $user->item->checkItem();
     	}
     	
     	if(!empty($_REQUEST["k"])) $user->page->pageId = $_REQUEST['k'];
-    	elseif ($user->currentItemId > 0) {
+    	elseif ($user->item->itemId > 0) {
     	   $user->page->pageId = $user->currentItem['pageId'];
     	}
-    	if(isset($user->currentPageId{5})) {
+    	if(isset($user->page->pageId{5})) {
     		//---slice pageid on fiveid and params
-    		if($user->currentPageId{5}==';') {
-    		  $getArr = explode(";",substr($user->currentPageId,5));
+    		if($user->page->pageId{5}==';') {
+    		  $getArr = explode(";",substr($user->page->pageId,5));
     		  foreach ($getArr as $getVar) {
     		    $getVarArr = explode("=",$getVar);
     		    $_GET[$getVarArr[0]] = $getVarArr[1];
           }
         } else {
-    		  $user->currentPageParam = substr($user->currentPageId,5);
-    		  $user->currentPageId = substr($user->currentPageId,0,5);
+    		  $user->pageParam = substr($user->page->pageId,5);
+    		  $user->page->pageId = substr($user->page->pageId,0,5);
     		}
     	}
 	}
+	
 	$user->whoIs = 0;
 	if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 	$user->kde($xajax); //---check user / load info / load page content / chechk page exist

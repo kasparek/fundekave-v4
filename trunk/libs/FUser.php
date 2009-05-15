@@ -1,5 +1,11 @@
 <?php
 class FUser {
+  var $userVO;
+  var $loginVO;
+  var $pageVO;
+  var $pageParam;
+  var $itemVO;
+  
     //---user access
     var $idkontrol = false;
     //---userID
@@ -120,79 +126,7 @@ class FUser {
 	    $this->myDestructor();
 	}
 	
-	public $page;
-	
-	private function loadPage() {
-	    
-		
-		
-	    $this->systemmenu = array();
-	    $this->arrFriends = array();
-	    
-	    $this->page = new PageVO();
-	    $this->page->pageId = $this->currentPageId;
-	    $this->page->load();
-	    
-	    
-	    
-	    if(!$this->idkontrol) {
-        $vid = $db->getRow("SELECT  
-            p.typeId, p.categoryId, p.menuSecondaryGroup, p.template, 
-            p.name, p.nameshort, p.description, p.content, p.public, 
-            p.userIdOwner, p.pageIco, p.locked, p.authorContent, p.galeryDir, 
-            p.cnt, p.pageParams, p.dateContent, p.dateCreated, p.dateUpdated, p.typeIdChild   
-            FROM sys_pages as p where p.pageId = '".$this->currentPageId."'");
-	    } else {
-	        $vid = $db->getRow("SELECT  
-            p.typeId, p.categoryId, p.menuSecondaryGroup, p.template, 
-            p.name, p.nameshort, p.description, p.content, p.public, 
-            p.userIdOwner, p.pageIco, p.locked, p.authorContent, p.galeryDir, 
-            p.cnt, p.pageParams, p.dateContent, p.dateCreated, p.dateUpdated, p.typeIdChild,  
-            ul.ip,
-            ul.loginId,
-            ul.invalidatePerm,
-            pf.book,
-            pf.cnt
-            FROM sys_pages as p 
-            LEFT JOIN sys_users_logged as ul on ul.userId = '".$this->gid."' 
-            LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId 
-            where p.pageId = '".$this->currentPageId."'");
-	    }
-	    
-	    if(empty($vid)) $this->currentPageId = ''; //--page does not exist
-			else {
-			    $this->currentPage = array(
-    	        'typeId'=>$vid[0],
-    	        'categoryId'=>$vid[1], 
-    	        'menuSecondaryGroup'=>$vid[2], 
-    	        'template'=>$vid[3], 
-    	        'name'=>$vid[4], 
-    	        'nameshort'=>$vid[5], 
-    	        'description'=>$vid[6], 
-    	        'content'=>$vid[7], 
-    	        'public'=>$vid[8], 
-    	        'userIdOwner'=>$vid[9], 
-    	        'pageIco'=>$vid[10], 
-    	        'locked'=>$vid[11], 
-    	        'authorContent'=>$vid[12], 
-    	        'galeryDir'=>$vid[13], 
-    	        'pageParams'=>$vid[15],
-    	        'cnt'=>$vid[14],
-    	        'dateContent'=>$vid[16],
-    	        'dateCreated'=>$vid[17],
-    	        'dateUpdated'=>$vid[18],
-    	        'typeIdChild'=>$vid[19]
-    	        );
-    	        if($this->idkontrol) {
-                    $this->ip = $vid[20];
-                    $this->idloginInDb = $vid[21];
-                    if($vid[22] == 1) $this->rulezInvalidate();
-				    $this->favorite = $vid[23]*1;
-				    $this->favoriteCnt = $vid[24]*1;
-    	        }
-			}
-			
-	}
+
 	function getPageParam($paramName) {
 	  $xml = new SimpleXMLElement($this->currentPage['pageParams']);
 	  $result = $xml->xpath($paramName);
@@ -200,8 +134,7 @@ class FUser {
 	}
 	function refresh() {
 		global $db;
-		$this->arrUsers = array();
-    $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));		
+				
 		if($this->idkontrol===true) { //refresh
 			$vid = $db->getRow("SELECT 
             u.name, u.skinId, u.avatar, u.zbanner, u.zavatar,
@@ -236,19 +169,26 @@ class FUser {
 	    $name = trim($name);
 	    $pass = trim($pass);
 		if (!empty($name) && !empty($pass) && $this->idkontrol==false){
-			Global $db;
+			
 			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
-			$gid = $db->getOne($dot);
+			$db = FDBConn::getInstance();
+      $gid = $db->getOne($dot);
 			
 			if(!empty($gid)) {
-				$this->gid = $gid;
-				$this->idlogin = md5($pass.$this->lo.fSystem::getmicrotime());
-				$this->smazoldid($this->gid);
+			   $this->userVO = new UserVO();
+				$this->userVO->userId = $gid;
+				$this->userVO->load();
+				$this->userVO->idlogin = md5($pass.$this->lo.fSystem::getmicrotime());
+				$this->smazoldid($gid);
 				
 				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values 
-				("'.$this->gid.'","'.$this->idlogin.'",NOW(),NOW(),"'.$this->currentPageId.'","'.fSystem::getUserIp().'")');
+				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->page->pageId.'","'.fSystem::getUserIp().'")');
 				
 				$this->idkontrol = true;
+				
+				$this->arrUsers = array();
+    $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));
+    
 				$this->refresh();
 				
 				fForum::afavAll($this->gid); //----srovnani-seznamu-klubu-----
@@ -264,10 +204,22 @@ class FUser {
 		}
 	}
 	function check($ipkontrol=true) {
-		Global $db;
+		
+		
+		
 		if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 		//---ip address checking
 		if($this->idkontrol === true) { //---check only if user was logged
+		
+		$vid = $db->getRow("SELECT ul.ip, ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
+            FROM sys_users_logged as ul on ul.userId = '".$this->gid."' 
+            LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
+                    $this->ip = $vid[20];
+                    $this->idloginInDb = $vid[21];
+                    if($vid[22] == 1) $this->rulezInvalidate();
+				    $this->favorite = $vid[23]*1;
+				    $this->favoriteCnt = $vid[24]*1;
+		
     		if(($ipkontrol === false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
     			$this->idloginInDb = 'chOK';
     		} else {
@@ -287,40 +239,41 @@ class FUser {
 		return($this->idkontrol);
 	}
 	function invalidatePermissions() {
-    global $db;
+    $db = FDBConn::getInstance();
     $db->query("update `sys_users_logged` set invalidatePerm=1");
   }
 	function kde($xajax=false) {
-		global $db;
+		$this->systemmenu = array();
+	  $this->arrFriends = array();
 		$this->arrCachePerLoad = array();
 		$this->arrTooltips = array();
 		$this->arrUsers['tooltips'] = array();
-		//security check
 		
+    //---security check
 		//---logout action
-		if( $this->currentPageId == 'elogo') {
+		if( $this->page->pageId == 'elogo') {
 		    if($this->idkontrol === true) {
 
     			$this->smazoldid($this->gid);
-    			global $user;
-    			$user = new fUser();
-    			
+    			$this->user = new FUserVO(); 
+    			    			
     			fError::addError(MESSAGE_LOGOUT_OK);
     			fHTTP::redirect('index.php');
-            }  
+        }  
 		}
 		
 		//---try load current page
-		$this->loadPage();
-		
+			    if($this->page) {
+  	    $this->page->load();
+	    }
+	    
 		//---if page not exists redirect to error
-		if(empty($this->currentPageId)) {
-		    $this->currentPage = array();
+		if(empty($this->page->pageId)) {
 		    $this->currentPageAccess = false;
 		    fError::addError(ERROR_PAGE_NOTEXISTS);
 		} else {
 		  //---check if user is logged
-		  $this->check($this->ipcheck);
+		  $this->check($this->userVO->ipcheck);
 		  //---check permissions needed for current page
 		  $permissionNeeded = 1;
 		  if(!empty($this->currentPageParam)) 
@@ -365,17 +318,7 @@ class FUser {
 	function setWhoIs($userId) {
 	    if($this->isUserIdRegistered($userId)) $this->whoIs = $userId; else $this->whoIs=0;
 	}
-	function checkItem() {
-	    if($this->currentItemId > 0) {
-	        global $db;
-	        $item = $db->getRow("select typeId,pageId from sys_pages_items where itemId='".$this->currentItemId."'");
-	        if(fRules::get($this->gid,$item[1])) {
-	            $this->currentItem = array('typeId'=>$item[0],'pageId'=>$item[1]);
-	        } else {
-                $this->currentItemId = 0;   
-	        }
-	    }
-	}
+	
 	function obliben($pageId=0,$userId=0) {
 		global $db;
 		if((empty($idusr) || $userId==$this->userId) && ($pageId==0 || $pageId==$this->currentPageId)) {
@@ -385,10 +328,10 @@ class FUser {
 		}
 	}
 	/*.......smaze stary nebo stejny id z logged............*/
-	function smazoldid($idlog=0,$casout=USERLIFETIME){
-		Global $db;
+	function smazoldid($userId = 0,$casout = USERLIFETIME){
+		$db = FDBConn::getInstance();
 		$db->query("delete from sys_users_logged where DATE_ADD(dateUpdated,INTERVAL " . $casout." MINUTE) < NOW()");
-		if ($idlog!=0) $db->query("delete from sys_users_logged where userId='" . $idlog."'");
+		if ($userId > 0) $db->query("delete from sys_users_logged where userId='" . $userId . "'");
 	}
 	function getXMLVal($branch,$node,$default='') {
 	    $xml = new SimpleXMLElement($this->xmlProperties);

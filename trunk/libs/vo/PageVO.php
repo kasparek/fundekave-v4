@@ -29,7 +29,6 @@ class PageVO extends FDBvo {
   function PageVO() {
   	
   	parent::__construct();
-
     
   }
   
