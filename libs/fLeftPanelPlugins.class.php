@@ -297,7 +297,7 @@ class fLeftPanelPlugins {
       			$username = $user->getgidname($pra[0]);
       			$ret.='<li>'
       			. $user->showAvatar($pra[0])
-                .'<span class="vcard fn"<a href="?k=fpost&who='.$pra[0].'">'.$username.'</a></span><br />'
+                .'<span class="vcard fn"><a href="?k=fpost&who='.$pra[0].'">'.$username.'</a></span><br />'
       			.'<a href="?k='.$kde['pageId'].$kde['param'].'" title="Prave sleduje: '.$kde['name'].'">'.$kde['nameshort'].'</a><br />'
       			.'<span title="Posledni aktivita">['.substr($pra[1],3,5).']</span>'
             .'</li>';
