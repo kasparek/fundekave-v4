@@ -4,7 +4,7 @@ $USERDRAFT = false;
 
 //----DEBUG
 if(isset($_GET['d'])) {
-    print_r($user->currentPage);
+    print_r($user->pageVO);
     //print_r($_SESSION);
     die(); 
     fSystem::profile('START:'); 
@@ -13,16 +13,16 @@ if(isset($_GET['d'])) {
 if(isset($_GET['t'])) {
   //tag item
   $tagItem = $_GET['t'] * 1;
-  if($tagItem > 0) fItems::tag($tagItem,$user->gid);
+  if($tagItem > 0) fItems::tag($tagItem,$user->userVO->userId);
 }
 if(isset($_GET['rt'])) {
   //remove tag item
   $tagItem = $_GET['rt'] * 1;
-  if($tagItem > 0) fItems::removeTag($tagItem,$user->gid);
+  if($tagItem > 0) fItems::removeTag($tagItem,$user->userVO->userId);
   fHTTP::redirect($user->getUri());
 }
-if(isset($_REQUEST['book'])) fForum::setBooked($user->currentPageId,$user->gid,1);
-if(isset($_REQUEST['unbook'])) fForum::setBooked($user->currentPageId,$user->gid,0);
+if(isset($_REQUEST['book'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,1);
+if(isset($_REQUEST['unbook'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,0);
 
 if($user->idkontrol) {
   fXajax::register('user_switchFriend');
@@ -53,13 +53,11 @@ if($user->idkontrol) {
   fItems::setTagToolbar();
 }
 
-if(($user->currentPage['locked']==2 && $user->gid != $user->currentPage['userIdOwner']) || $user->currentPage['locked']==3)  {
+if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked==3)  {
 	fError::addError(MESSAGE_PAGE_LOCKED);
-	if(!fRules::get($user->gid,'sadmi',1)) $user->currentPageAccess = false;
+	if(!fRules::get($user->userVO->userId,'sadmi',1)) $user->currentPageAccess = false;
 }
-if($user->currentPageAccess) {
-  $template = $user->currentPage["template"];
-}
+
 //---DATA of page
 $TOPTPL = new fTemplateIT('main.tpl.html');
 
@@ -68,17 +66,18 @@ if(isset($_GET['d'])) { fSystem::profile('BEFORE CONTENT'); }
 
 if($user->currentPageAccess == true) {
     if($user->currentPageParam=='sa') $template = 'page.edit.php';
+    else $template = $user->pageVO->template;
     if($template != '') {
     	$staticTemplate = false;
     	if (preg_match("/(.html)$/",$template)) {
     		$staticTemplate = true;
-    		if(fRules::get($user->gid,$user->currentPageId,2)) {
+    		if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
     			if($user->currentPageParam == 'e') {
-    				fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
+    				fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),BUTTON_PAGE_BACK);
     				$staticTemplate = false;
     				$template = 'page.edit.php';
     			}
-        		else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId.'e'),BUTTON_EDIT);
+        		else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),BUTTON_EDIT);
     		}
     	}
 
@@ -89,18 +88,18 @@ if($user->currentPageAccess == true) {
     	} else {
     		//STATIC TEMPLATE
     		$tpl = new fTemplateIT($template);
-    		$tpl->vars = array_merge($user->currentPage,$_GET);
+    		$tpl->vars = array_merge($user->pageVO, $_GET);
     		$tpl->edParseBlock();
     		$TOPTPL->addTab(array("MAINDATA"=>$tpl->get()));
-        unset($tpl);	
+        	unset($tpl);
     	}
     	
     } else {
     	//NOT TEMPLATE AT ALL
-    	$contentData = array("MAINDATA"=>$user->currentPage["content"]);
+    	$contentData = array("MAINDATA"=>$user->pageVO->content);
     }
 	//SUPERADMIN access - tlacitka na nastaveni stranek
-    if(fRules::get($user->gid,'sadmi',1)) {
+    if(FRules::get($user->userVO->userId,'sadmi',1)) {
         if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
         else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'sa'),BUTTON_PAGE_SETTINGS,'',1);
     }
@@ -194,7 +193,7 @@ if(!empty($lomenuItems)) {
   }
 }
 //---LEFT PANEL POPULATING
-$fLeftpanel = new fLeftPanel($user->currentPageId,$user->gid,$user->currentPage['typeId']);
+$fLeftpanel = new fLeftPanel($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->typeId);
 $fLeftpanel->load();
 $fLeftpanel->show();
 
@@ -219,7 +218,7 @@ foreach ($TOPTPL->blockdata as $item) {
     }
 }
 if($user->currentPage['typeId']=='blog') {
-    if(fRules::get($user->gid,$user->currentPageId,2)) {
+    if(fRules::get($user->userVO->userId,$user->currentPageId,2)) {
         $useCalendar = true;
     }
 }
@@ -243,4 +242,5 @@ $user->myDestructor();
 //SESSIONS HAVE TO BE CLOSED BEFORE DB DISCONNECT WHEN SAVED IN DB
 session_write_close();
 //FIXME: when enabled it end up into connection interupted in edit of galery?
+$db = FDBConn::getInstance();
 $db->disconnect();

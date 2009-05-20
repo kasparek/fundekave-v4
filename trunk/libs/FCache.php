@@ -20,9 +20,15 @@ class FCache {
   private $activeGroup;
 
   private static $instance;
-	static function &getInstance() {
+	static function &getInstance($driver='',$lifeTime=-1) {
 		if (!isset(self::$instance)) {
 			self::$instance = &new FCache();
+		}
+		if($driver!='') {
+		  self::$instance->getDriver($driver);
+		}
+		if($lifeTime > -1) {
+			self::$instance->activeDriver->setConf($lifeTime);
 		}
 		return self::$instance;
 	}
@@ -38,7 +44,7 @@ class FCache {
           $this->sessionDriver = new SessionDriver();
         }
         $this->activeDriver = &$this->sessionDriver;
-      break
+      break;
       //---in database
       case 'd':
       case 'db':
@@ -48,7 +54,7 @@ class FCache {
           $this->databaseDriver = new DBDriver();
         }
         $this->activeDriver = &$this->databaseDriver;
-      break
+      break;
       //---cache lite
       case 'f':
       case 'file':
@@ -57,7 +63,7 @@ class FCache {
           $this->fileDriver = new FileDriver();
         }
         $this->activeDriver = &$this->fileDriver;
-      break
+      break;
       //---per load
       case 'load':
       case 'l':
@@ -72,7 +78,7 @@ class FCache {
     return $this->activeDriver;
   }
 	
-	public function getData($driver, $id, $group='default' ) {
+	public function getData( $id, $group='default', $driver='' ) {
     if($driver!='') {
       $this->getDriver($driver);
     }
@@ -83,7 +89,7 @@ class FCache {
     
   }
   
-  public function setData($data, $driver='', $id='', $group=NULL, $lifeTime=-1) {
+  public function setData( $data, $id='', $group=NULL, $driver='', $lifeTime=-1 ) {
     if($driver!='') {
       $this->getDriver($driver);
     }
@@ -96,10 +102,25 @@ class FCache {
     if($group!=NULL) {
       $this->activeGroup = $group;
     }
-    if(!empty($id) {
+    if(!empty($id)) {
       $this->activeDriver->setData($id, $data, $this->activeGroup);
     }
   }
+  
+  public function invalidateData(  $id='', $group='default' ) {
+  if($id!='') {
+    $this->activeDriver->invalidateData($id, $group);
+    }
+  }
 	
+	public function invalidateGroup( $group='' ) {
+	 if($group!='') {
+    $this->activeDriver->invalidateGroup( $group );
+    }
+  }
+  
+  public function invalidate() {
+    $this->activeDriver->invalidate();
+  }
 
 }

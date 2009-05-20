@@ -1,5 +1,5 @@
 <?php
-class fRules {
+class FRules {
 	//public - 0-soukr,1-verejny,2-verejny pro registrovany,3-admin pages
 	var $_table='sys_users_perm';
 	var $_arrCols = array('userId','pageId','rules');
@@ -24,7 +24,7 @@ class fRules {
     $this->page = $page;
   }
 	function set($usr,$page,$type){
-		global $db;
+		$db = FDBConn::getInstance();
 		if($db->getOne("select count(1) from sys_users where userId='".$usr."'")==0) $this->_err='ins_noexistusr';
 		if($db->getOne("select count(1) from sys_pages where pageId='".$page."'")==0) $this->_err='ins_noexistpage';
 		if(!in_array($type,array_keys($this->_rules))) $this->_err='ins_badruletype';
@@ -46,14 +46,20 @@ class fRules {
 		$db->query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
 	}
 	
+	
+	static function invalidate() {
+	 $cache = FCache::getInstance('s');
+	 $cache->invalidateGroup('fRules');
+	}
+	
+	//---END---functions from user class
+	
 	static function get($usr,$page,$type=1) {
-		global $db,$user;
+		$db = FDBConn::getInstance();
 		$ret=false;
-		if(!$user) {
-			if(!is_object($_SESSION["user"])) $_SESSION["user"] = new fUser();
-			$user = & $_SESSION["user"];
-		}
-		if(!$rulez = $user->rulezGet($usr,$page,$type)) {
+		
+		$cache = FCache::getInstance('s');
+		if(!$rulez = $cache->getData($usr.'-'.$page.'-'.$type, 'fRules')) {
 			//---if is rules = 0 is ban
 			$dot = "select r.userId,r.rules,s.public,s.userIdOwner   
 			from sys_pages as s 
@@ -62,22 +68,22 @@ class fRules {
 			where s.pageId='".$page."'";
 			
 			$arr = $db->getRow($dot);
-			if($arr[3] == $user->gid) $ret = true;
+			if($arr[3] == $usr) $ret = true;
 			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
 			elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher
 			elseif ($arr[2] < 3 && $type<2) { // not an admin page, just reading
 				//not an owner
 				if($arr[2] == 1) $ret = true; //public page
-				if($arr[2] == 2 && $user->idkontrol) $ret = true; //for registrated page
+				if($arr[2] == 2 && $usr > 0) $ret = true; //for registrated page
 			}
-			$user->rulezPut($usr,$page,$type,$ret);
+			$cache->setData($ret, $usr.'-'.$page.'-'.$type, 'fRules');
 		
 		} else if($rulez==2) $ret = true;
 		return($ret);
 	}
 	
 	function getList($listPublic=true,$idstr=0) {
-		global $db;
+		$db = FDBConn::getInstance();
 		if(!empty($idstr)) $this->page = $idstr;
 		if(!empty($this->page)) {
 			foreach ($this->_rules as $k=>$v) {
@@ -118,10 +124,10 @@ class fRules {
 		return $tpl->get();
 	}
 	function update(){
-		global $user,$db;
+	 $db = FDBConn::getInstance();
+	 $user = FUser::getInstance();
 		//---set rules
 		$this->clear(); //delete perm for page
-		
 		
 		foreach ($this->ruleText as $k=>$v){
 			if(!empty($v)) {

@@ -1,20 +1,23 @@
 <?php
-class fLeftPanelPlugins {
+class FLeftPanelPlugins {
     static function pocket() {
-        global $user;
-        $fPocket = new fPocket($user->gid);
+        $user = FUser::getInstance();
+        $fPocket = new fPocket($user->userVO->userId);
         return $fPocket->show();
     }
     static function pageCategories() {
-        global $db,$user;
-        if(!$tmptext = $user->cacheGet('pagescategories')) {
-            $arr = $db->getAll("select categoryId,name from sys_pages_category where typeId = '".$user->currentPageId."' order by ord,name");
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('f',86400);
+        if(!$tmptext = $cache->getData($user->pageVO->pageId, 'pagescategories')) {
+            $arr = $db->getAll("select categoryId,name from sys_pages_category where typeId = '".$user->pageVO->pageId."' order by ord,name");
             $tmptext = '';
             if(!empty($arr)) {
+            	
                 $tpl = new fTemplateIT('sidebar.page.categories.tpl.html');
                 foreach ($arr as $category) {
                 	$tpl->setCurrentBlock('item');
-                	$tpl->setVariable('PAGEID',$user->currentPageId);
+                	$tpl->setVariable('PAGEID',$user->pageVO->pageId);
                 	$tpl->setVariable('CATEGORYID',$category[0]);
                 	$tpl->setVariable('NAME',$category[1]);
                 	$tpl->setVariable('SUM',$db->getOne("select count(1) from sys_pages_items where categoryId='".$category[0]."'"));
@@ -22,18 +25,17 @@ class fLeftPanelPlugins {
                 }
                 $tmptext = $tpl->get();
             }
-            $user->cacheSave($tmptext);
+            $cache->setData($tmptext);
         }
         return $tmptext;
-        
     }
     static function bookedRelatedPagesList() {
-        global $db,$user;
-        if(!$tmptext = $user->cacheGet('bookedpagesrelated')) {
-            $fPages = new fPages('',$user->gid,$db);
-                        
+        $db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('f',86400);
+        if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'bookedpagesrelated')) {
+            $fPages = new FPages('',$user->userVO->userId);
             $fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0,sum(f1.book) as booksum');
-            
             $fPages->addJoin('join sys_pages_favorites as f1 on p.pageId = f1.pageId');
             $fPages->addJoin("join sys_pages_favorites as f2 on f1.userId=f2.userId and f2.pageId='".$user->currentPageId."' and f2.book = '1'");
             $fPages->addWhere("f1.book=1 and f1.pageId!='".$user->currentPageId."'");
@@ -45,16 +47,18 @@ class fLeftPanelPlugins {
             if(!empty($arr)) {
                 $tmptext = fPages::printPagelinkList($arr);
             }
-            $user->cacheSave($tmptext);
+            $cache->setData($tmptext);
         }
         return $tmptext;
     }
     static function relatedPagesList() {
-      global $user,$db;
-       if(!$tmptext = $user->cacheGet('pagesrelated')) {
-        $fPages = new fPages('',$user->gid,$db);
+      $db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('f',86400);
+       if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'pagesrelated')) {
+        $fPages = new fPages('',$user->userVO->userId);
         $fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
-        $fPages->addWhere('r.pageId="'.$user->currentPageId.'"');
+        $fPages->addWhere('r.pageId="'.$user->pageVO->pageId.'"');
         
         $fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
         
@@ -63,22 +67,22 @@ class fLeftPanelPlugins {
         if(!empty($arr)) {
             $tmptext = fPages::printPagelinkList($arr);
         }
-        $user->cacheSave($tmptext);
+        $cache->setData($tmptext);
       }
       return $tmptext;
     }
     static function rh_posta_kdo() {
-    	global $db,$user;
-      if(!$serializedArr = $user->cacheGet('postwho')) {
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('s',86400);
+      if(!$arr = $cache->getData('postwho')) {
         
         $dot = "SELECT count(p.postId),userIdFrom,i.name 
       	FROM sys_users_post AS p LEFT JOIN sys_users AS i ON i.userId=p.userIdFrom
-      	WHERE p.userId=".$user->gid." AND p.userIdFrom!=".$user->gid." AND i.name is not null GROUP BY userIdFrom ORDER BY i.name";
+      	WHERE p.userId=".$user->userVO->userId." AND p.userIdFrom!=".$user->userVO->userId." AND i.name is not null GROUP BY userIdFrom ORDER BY i.name";
       	$arr = $db->getAll($dot);
       	
-        $user->cacheSave(serialize($arr));
-      } else {
-        $arr = unserialize($serializedArr);
+        $user->setData($arr);
       }
       
       $tmptext = '';
@@ -93,11 +97,11 @@ class fLeftPanelPlugins {
       return($tmptext);
     }
     static function rh_login() {
-    	Global $user;
+    	$user = FUser::getInstance();
     	if($user->idkontrol) {
     	    $tpl = new fTemplateIT('sidebar.user.logged.tpl.html');
 			$tpl->setVariable('AVATAR',$user->showAvatar(-1,array('noTooltip'=>1)));
-			$tpl->setVariable('NAME',$user->gidname);
+			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',fSystem::getOnlineUsersCount());
 			$recentEvent = $user->getDiaryCnt();
 			if($recentEvent>0) $tpl->setVariable('DIARY',$recentEvent);
@@ -116,6 +120,7 @@ class fLeftPanelPlugins {
     	return $ret;
     }
     static function rh_datum() {
+    	/*
       global $conf,$user,$DAYS;
       if(!$ret = $user->cacheGet('datelefthand')) {
       	include(ROOT.$conf['language']['path'].'calendar.php');
@@ -129,11 +134,12 @@ class fLeftPanelPlugins {
       	$user->cacheSave($ret);
       }
     	return($ret);
+    	*/
     }
     static function rh_akce_rnd() {
-      global $db,$conf,$user;
-      $data = '';
-      if(!$data = $user->cacheGet('eventtip')) {
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('f',86400);
+       if(!$tmptext = $cache->getData($user->idkontrol,'eventtip')) {
         $fItems = new fItems();
         $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);
@@ -145,40 +151,43 @@ class fLeftPanelPlugins {
       		$fItems->parse();
       		$data = $fItems->show();
       	}
-      	$user->cacheSave($data);
+      	$cache->setData($data);
       }
       return $data;
     }
     //---odpid je nastaveno jen kdyz se hlasuje
-    static function rh_anketa($ankid=0,$odpid=0,$oUser=false,$calledFromXajax=false) {
-    	global $db,$user;
+    static function rh_anketa($ankid=0,$odpid=0,$calledFromXajax=false) {
+    	
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	$cache = FCache::getInstance('f',86400);
+
     	if($user->idkontrol) { ///anketa je jen pro registrovany
-    	if(!is_object($user) && $oUser) $user = $oUser;
     	
     	if(isset($_GET['poll']) && $user->idkontrol) {
         $arrGet = explode(";",$_GET['poll']);
-        if($ankid==0) $ankid = $db->getOne("SELECT pollId FROM sys_poll WHERE activ=1 AND pageId='".$user->currentPageId."'");
+        if($ankid==0) $ankid = $db->getOne("SELECT pollId FROM sys_poll WHERE activ=1 AND pageId='".$user->pageVO->pageId."'");
         if($arrGet[0]==$ankid) $odpid = $arrGet[1];
       }
     	if ($odpid > 0) {
-    	  $user->cacheRemove('poll');
+    		$cache->invalidateGroup('poll');
     	}
     	
-    	if(!$data = $user->cacheGet('poll')) {
+    	if(!$data = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'poll')) {
       	$data = '';
       	$arrVoted = array();
  	
-      	if($ankid == 0) $do=$db->getRow("SELECT pollId,question,votesperuser FROM sys_poll WHERE activ=1 AND pageId='".$user->currentPageId."'");
+      	if($ankid == 0) $do=$db->getRow("SELECT pollId,question,votesperuser FROM sys_poll WHERE activ=1 AND pageId='".$user->pageVO->pageId."'");
       	else $do=$db->getRow("SELECT pollId,question,votesperuser FROM sys_poll WHERE pollId=".$ankid);
       	if(!empty($do))	{
       		$voted=false;
-      		$arrVoted = $db->getCol("SELECT pollAnswerId FROM sys_poll_answers_users WHERE pollId=".$do[0]." AND userId=".$user->gid);
+      		$arrVoted = $db->getCol("SELECT pollAnswerId FROM sys_poll_answers_users WHERE pollId=".$do[0]." AND userId=".$user->userVO->userId);
       		
       		if(($do[2]-count($arrVoted))<1) $voted = true;
       		//---write wote
       		if (!empty($odpid) && $user->idkontrol && !$voted){
-      			$db->query("INSERT INTO sys_poll_answers_users (pollId,pollAnswerId,userId) VALUES ('".$ankid."','".$odpid."','".$user->gid."')");
-      			$arrVoted = $db->getCol("SELECT pollAnswerId FROM sys_poll_answers_users WHERE pollId=".$do[0]." AND userId=".$user->gid);
+      			$db->query("INSERT INTO sys_poll_answers_users (pollId,pollAnswerId,userId) VALUES ('".$ankid."','".$odpid."','".$user->userVO->userId."')");
+      			$arrVoted = $db->getCol("SELECT pollAnswerId FROM sys_poll_answers_users WHERE pollId=".$do[0]." AND userId=".$user->userVO->userId);
       		}
       		$restVotes = $do[2]-count($arrVoted);
       		if($restVotes<1) {
@@ -209,7 +218,7 @@ class fLeftPanelPlugins {
       				    $tpl->setVariable('ANSWERID',$odp[0]);
       				  }
       				    $tpl->setVariable('NOTVOTEDANSWER',$odp[1]);
-      				    $tpl->setVariable('ANSWERURL','?k='.$user->currentPageId.'&poll='.$do[0].':'.$odp[0]);
+      				    $tpl->setVariable('ANSWERURL','?k='.$user->pageVO->pageId.'&poll='.$do[0].':'.$odp[0]);
       				} else {
       				    $tpl->setVariable('ANSWER',$odp[1]);
       				    $tpl->setVariable('COLUMNSIMGURL','/sloupec.gif');
@@ -223,7 +232,7 @@ class fLeftPanelPlugins {
       		}	
       		$data = $tpl->get();
       		
-      		$user->cacheSave($data);
+      		$cache->setData($data);
       	}
       }
       if($calledFromXajax==false && !empty($data)) $data = '<div id="poll">'.$data.'</div>';
@@ -231,8 +240,8 @@ class fLeftPanelPlugins {
       }
     }
     static function rh_galerie_rnd(){
-    	global $user;
-  	  if(!$data = $user->cacheGet('fotornd')) {
+    	$cache = FCache::getInstance('f',86400);
+  	  if(!$data = $cache->getData('fotornd')) {
   	    $fItems = new fItems();
   	    
   	    $fItems->openPopup = true;
@@ -246,25 +255,25 @@ class fLeftPanelPlugins {
   	    
         $total = $fItems->getCount();
 
-  	    //$fItems->initData('galery',$user->gid,true);
+  	    //$fItems->initData('galery',$user->userVO->userId,true);
 
         $fItems->getData(rand(0,$total),1);
         
         $fItems->parse();
       	if(!$data = $fItems->show()) $data='';
       	
-      	$user->cacheSave($data);
+      	$cache->setData($data);
     	}
     	return $data;
     }
     static function rh_audit_popis(){
-    	global $db,$user;
-    	if(!$ret = $user->cacheGet('forumdesc')) {
-      	$ret['klub'] = $db->getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->currentPageId."'");
+    	$cache = FCache::getInstance('f',86400);
+    	if(!$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'forumdesc')) {
+      	$ret['klub'] = $db->getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->pageVO->pageId."'");
       	if(!DB::iserror($ret['klub'])){
-      		$ret['admins'] = $db->getCol("SELECT userId FROM sys_users_perm WHERE rules=2 and pageId='".$user->currentPageId."'");
+      		$ret['admins'] = $db->getCol("SELECT userId FROM sys_users_perm WHERE rules=2 and pageId='".$user->pageVO->pageId."'");
       	}
-      	$user->cacheSave(serialize($ret));
+      	$cache->setData(serialize($ret));
     	} else {
         $ret = unserialize($ret);
       }
@@ -286,10 +295,11 @@ class fLeftPanelPlugins {
     	return $ret;
     }
     static function rh_logged_list(){
-    	global $db,$user;
-    	if(!$ret = $user->cacheGet('loggedlist')) {
+    	$db = FDBConn::getInstance();
+    	$cache = FCache::getInstance('s',10);
+    	if(!$ret = $cache->getData('loggedlist')) {
     	  $ret = '';
-      	$arrpra=$db->getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->gid." AND f.userIdFriend!='".$user->gid."' GROUP BY f.userIdFriend ORDER BY casklik");
+      	$arrpra=$db->getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->userVO->userId." AND f.userIdFriend!='".$user->userVO->userId."' GROUP BY f.userIdFriend ORDER BY casklik");
       	if (count($arrpra)>0){
       		$ret.='<ul class="onlineUsersList">';
       		foreach ($arrpra as $pra){
@@ -304,13 +314,13 @@ class fLeftPanelPlugins {
       		}
       	 $ret.='</ul>';
       	}
-      	$user->cacheSave($ret);
+      	$cache->setData($ret);
     	}
     	return($ret);
     }
 
     static function rh_diar_kalendar($year='',$month='') {
-    	global $db,$user,$MONTHS,$DAYSSHORT;
+    	global $MONTHS,$DAYSSHORT;
     	$dden = 1;
     	if(!empty($_REQUEST['ddate'])) {
     		list($drok,$dmesic,$dden)=explode("-",$_REQUEST['ddate']);
@@ -328,7 +338,9 @@ class fLeftPanelPlugins {
     	}
     	
       //---cache by drok,dmesic
-      $data = $user->cacheGet('calendarlefthand',$drok.$dmesic);
+      $cache = FCache::getInstance('f',3600);
+      $user = FUser::getInstance();
+      $data = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId.'-'.$drok.$dmesic,'calendarlefthand');
       
       if(!$data) {
       
@@ -342,7 +354,7 @@ class fLeftPanelPlugins {
       	$ver=6;
       	$ver=ceil((($dentydnu-1)+$dnumesice)/$hor);
       
-      	$getpodm=BASESCRIPTNAME.'?k='.$user->currentPageId;
+      	$getpodm=BASESCRIPTNAME.'?k='.$user->pageVO->pageId;
       
       	if(($dmesic-1)<1) {
       		$monthbefore=12;
@@ -386,7 +398,7 @@ class fLeftPanelPlugins {
       	}
       	$arrQ = array();
       	foreach ($arrUsedPlugins as $pluginName) {
-      		$arrTmp = fCalendarPlugins::$pluginName($drok,$dmesic,$user->gid,($userPageId==true)?($user->currentPageId):(''));
+      		$arrTmp = fCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
       		if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
       	}
       	$arrEventsForDay = array();
@@ -450,7 +462,7 @@ class fLeftPanelPlugins {
         }
       	$data = $tpl->get();
       	
-      	$user->cacheSave($data);
+      	$cache->setData($data);
       	
       }
     	

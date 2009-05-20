@@ -43,8 +43,9 @@ if(!$nonUserInit) {
 	$user = FUser::getInstance();
 
 	if(!$xajax) {
-	 $this->page = new PageVO();
-		$user->page->pageId = HOME_PAGE;
+	 $user->pageVO = new PageVO();
+	 $user->itemVO = new ItemVO();
+		$user->pageVO->pageId = HOME_PAGE;
     	
     	$user->currentPageParam = '';
     	//---backward compatibility
@@ -53,7 +54,7 @@ if(!$nonUserInit) {
     	    elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
     	    $els='';
     	    for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-    	    $_GET['k'] = $user->page->pageId = $add . $els . $kam;
+    	    $_GET['k'] = $user->pageVO->pageId = $add . $els . $kam;
     	}
     	//---u=username
     	if(isset($_GET['u'])) {
@@ -61,31 +62,30 @@ if(!$nonUserInit) {
     	    if($userId > 0) {
     	        $arr  = $user->get($userId);
     	        if(!empty($arr['personal']->HomePageId)) {
-    	            $user->page->pageId = (string) $arr['personal']->HomePageId;
+    	            $user->pageVO->pageId = (string) $arr['personal']->HomePageId;
     	        }
     	    }
     	}
     	if(!empty($_REQUEST["i"])) {
-    	   $user->item = new ItemVO();
-    	    $user->item->itemId = (int) $_REQUEST['i'];
-     	    $user->item->checkItem();
+    	    $user->itemVO->itemId = (int) $_REQUEST['i'];
+     	    $user->itemVO->checkItem();
     	}
     	
-    	if(!empty($_REQUEST["k"])) $user->page->pageId = $_REQUEST['k'];
-    	elseif ($user->item->itemId > 0) {
-    	   $user->page->pageId = $user->currentItem['pageId'];
+    	if(!empty($_REQUEST["k"])) $user->pageVO->pageId = $_REQUEST['k'];
+    	elseif ($user->itemVO->itemId > 0) {
+    	   $user->pageVO->pageId = $user->currentItem['pageId'];
     	}
-    	if(isset($user->page->pageId{5})) {
+    	if(isset($user->pageVO->pageId{5})) {
     		//---slice pageid on fiveid and params
-    		if($user->page->pageId{5}==';') {
-    		  $getArr = explode(";",substr($user->page->pageId,5));
+    		if($user->pageVO->pageId{5}==';') {
+    		  $getArr = explode(";",substr($user->pageVO->pageId,5));
     		  foreach ($getArr as $getVar) {
     		    $getVarArr = explode("=",$getVar);
     		    $_GET[$getVarArr[0]] = $getVarArr[1];
           }
         } else {
-    		  $user->pageParam = substr($user->page->pageId,5);
-    		  $user->page->pageId = substr($user->page->pageId,0,5);
+    		  $user->pageParam = substr($user->pageVO->pageId,5);
+    		  $user->pageVO->pageId = substr($user->pageVO->pageId,0,5);
     		}
     	}
 	}

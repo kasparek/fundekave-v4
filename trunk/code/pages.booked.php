@@ -13,7 +13,7 @@ if(isset($_GET['t'])) $typeId = $_GET['t'];
 
 if(!in_array($typeId, $validTypesArr)) $typeId = fItems::TYPE_DEFAULT;
 
-$fPages = new fPages($typeId,$user->gid,$db);
+$fPages = new fPages($typeId,$user->gid);
 $data = $fPages->printBookedList();
 
 $TOPTPL->addTab(array("MAINDATA"=>$data));

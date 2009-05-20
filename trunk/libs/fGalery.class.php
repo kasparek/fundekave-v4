@@ -104,7 +104,7 @@ class fGalery {
                 $this->gPublic = $user->currentPage['public'];
                 $this->gPageParams = $user->currentPage['pageParams'];
 		    } else {
-		        $fPage = new fPages('galery',$user->gid,$db);
+		        $fPage = new fPages('galery',$user->userVO->userId);
 		        $fPage->primaryCol = 'p.pageId';
 		        $fPage->setSelect('p.categoryId,p.galeryDir,p.name,
 		        p.description,p.dateContent,p.userIdOwner,
@@ -183,7 +183,7 @@ class fGalery {
 				    $arr['detailWidth'] = $width;
   				  $arr['detailHeight'] = $height;
   				  $arr['detailUrlToGalery'] = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'];
-  				  $arr['detailUrlToPopup'] = '/pic.php?u='.$user->gid.'&amp;i='.$this->_fId.'&amp;width='.($width+60).'&amp;height='.($height+60);
+  				  $arr['detailUrlToPopup'] = '/pic.php?u='.$user->userVO->userId.'&amp;i='.$this->_fId.'&amp;width='.($width+60).'&amp;height='.($height+60);
 				  } else {
             fError::addError('File not exists: '.$arr['detailUrl']);
           }
@@ -293,7 +293,7 @@ class fGalery {
 	 global $user,$db;
     if(!empty($this->_fId)){
 			$db->query("update sys_pages_items set hit=hit+1 where itemId=".$this->_fId);
-			$db->query("insert into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->_fId.",".$user->gid.",now())");
+			$db->query("insert into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->_fId.",".$user->userVO->userId.",now())");
 			$this->_fHits++;
 		}
   }
@@ -343,7 +343,7 @@ class fGalery {
   			
   			$tpl->setVariable("HITS",$this->_fHits);
   			if($user->idkontrol) {
-  			    $tpl->setVariable('TAG',fItems::getTag($itemId,$user->gid,'galery'));
+  			    $tpl->setVariable('TAG',fItems::getTag($itemId,$user->userVO->userId,'galery'));
   			    $tpl->setVariable('POCKET',fPocket::getLink($itemId));
   			}
   			
@@ -489,8 +489,8 @@ class fGalery {
 	        $arr['enclosure'] = $this->_fDetail;
 	        $arr['pageId'] = $this->_fGaleryId;
 	        $arr['typeId'] = 'galery';
-	        $arr['userId'] = $user->gid;
-	        $arr['name'] = $user->gidname;
+	        $arr['userId'] = $user->userVO->userId;
+	        $arr['name'] = $user->userVO->name;
 	    }
 	    if($newfid = $fSave->save($arr,$notQuoted)) {
 	        $this->_fId = $newfid;

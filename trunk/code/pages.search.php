@@ -21,7 +21,7 @@ if(isset($_POST['filtr'])) {
 
 	
 
-	$fPages = new fPages($user->currentPage['typeIdChild'],$user->gid,$db);
+	$fPages = new fPages($user->currentPage['typeIdChild'],$user->userVO->userId);
 	$fItems->cacheResults = true;
     if(!empty($pageSearchCache['categoryId'])) $fPages->addWhere("p.categoryId=".$pageSearchCache['categoryId']);
     

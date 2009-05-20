@@ -3,7 +3,7 @@
 $category = new fCategory('sys_pages_category','categoryId');
 $TOPTPL->addTab(array("MAINDATA"=>$category->getList('galery')));
 
-$fPages = new fPages('galery',$user->gid,$db);
+$fPages = new fPages('galery',$user->userVO->userId);
 if(!empty($category->selected)) {
   $fPages->addWhere("p.categoryId='".$category->selected[0]."'");
 }
@@ -26,7 +26,7 @@ $arrgal = $fPages->getContent();
 
 if(!empty($arrgal)) {
     $fItems = new fItems();
-    $fItems->initData('galery',$user->gid,true);
+    $fItems->initData('galery',$user->userVO->userId,true);
     $fItems->setOrder('i.hit desc');
     $fItems->showTooltip = false;
     $fItems->showText = false;

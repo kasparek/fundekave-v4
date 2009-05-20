@@ -12,7 +12,7 @@ class FileDriver
       if(!is_dir(ROOT.ROOT_CACHE_TEXT)) mkdir(ROOT.ROOT_CACHE_TEXT,0777,true);
       $cacheOptions['cacheDir'] = ROOT.ROOT_CACHE_TEXT;
       $cacheOptions['lifeTime'] = $this->lifeTime;
-      $this->cacheLite = new Cache_Lite($this->cacheOptions);
+      $this->cacheLite = new Cache_Lite($cacheOptions);
   }
   
   public function setConf( $lifeTime ) {
@@ -28,12 +28,18 @@ class FileDriver
     return $this->cacheLite->get($id,$group);
   }
   
-  public function invalidateData($id='') {
-    if(!empty($id)) {
-      unset($this->data[$id])
-    } else {
-      $this->data = array();
+  public function invalidateData($id='',$group='default') {
+    if($id!='') {
+      $cacheLite->remove($id, $group);
     }
+  }
+  
+  public function invalidateGroup( $group='default' ) {
+    $cacheLite->clean($group);
+  }
+  
+  public function invalidate( ) {
+    $cacheLite->clean();
   }
 
 

@@ -46,7 +46,7 @@ if(isset($_POST['nav'])) {
 //---SHOW PART
 $tpl = new fTemplateIT('sys.edit.pages.tpl.html');
 
-$fPages = new fPages($type,$user->gid,$db);
+$fPages = new fPages($type,$user->userVO->userId);
 $fPages->sa = true;
 if($arrParams['cate'] > 0) $fPages->addWhere("p.categoryId='".$arrParams['cate']."'");
 if($typeLength>0) $fPages->addWhere("p.typeId='".$arrParams['type']."'");
@@ -67,7 +67,7 @@ if($totalItems>$perPage) {
 $arr = $fPages->getContent($from,$perPage);
 
 
-$tpl->setVariable('CURRENTPAGEID',$user->currentPageId);
+$tpl->setVariable('CURRENTPAGEID',$user->pageVO->pageId);
 
 $options='';
 foreach ($arrType as $k=>$v) {
