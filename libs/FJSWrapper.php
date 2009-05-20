@@ -1,5 +1,5 @@
 <?php
-class fJSWrapper {
+class FJSWrapper {
     /**
      * contaion array('type'=>file|code,'content'=>text)
      *

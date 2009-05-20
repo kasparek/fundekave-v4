@@ -58,8 +58,6 @@ class FUser {
 	var $strictBanner = array();
 	var $strictBannerAllClicked = 0;
 	//---manu buttons cache
-	var $topmenu = array();
-	var $usrmenu = array();
 	var $systemmenu = array();
     //---cache for other users informations
 	var $arrUsers = array();
@@ -185,6 +183,10 @@ class FUser {
 				
 				$this->idkontrol = true;
 				
+				
+				$cache = FCache::getInstance( 's' );
+				$cache->invalidate();
+				
 				$this->arrUsers = array();
         $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));
     
@@ -215,7 +217,7 @@ class FUser {
             LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
                     $this->ip = $vid[20];
                     $this->idloginInDb = $vid[21];
-                    if($vid[22] == 1) $this->rulezInvalidate();
+                    if($vid[22] == 1) FRules::invalidate();
 				    $this->favorite = $vid[23]*1;
 				    $this->favoriteCnt = $vid[24]*1;
 		
@@ -242,6 +244,8 @@ class FUser {
     $db->query("update `sys_users_logged` set invalidatePerm=1");
   }
 	function kde($xajax=false) {
+	 if(!$this->userVO) $this->userVO = new UserVO();
+	
 		$this->systemmenu = array();
 	  $this->arrFriends = array();
 		$this->arrCachePerLoad = array();
@@ -253,8 +257,11 @@ class FUser {
 		if( $this->page->pageId == 'elogo') {
 		    if($this->idkontrol === true) {
 
-    			$this->smazoldid($this->gid);
+    			$this->smazoldid($this->userVO->userId);
     			$this->user = new FUserVO(); 
+    			
+    			$cache = FCache::getInstance( 's' );
+				$cache->invalidate();
     			    			
     			fError::addError(MESSAGE_LOGOUT_OK);
     			fHTTP::redirect('index.php');
@@ -515,7 +522,7 @@ class FUser {
 		return $db->getOne("select count(1) from sys_users_diary where (userId='".$usrid."' or eventForAll=1) and year(dateEvent)=year(now()) and month(dateEvent)=month(now()) and dayofmonth(dateEvent)=dayofmonth(now())");
 	}
 	function pocitadlo(){
-		Global  $db;
+		$db = FDBConn::getInstance();
 		$hits = $db->getOne("select sum(hit) from sys_users");
 		return $hits;
 	}
@@ -750,9 +757,9 @@ class FUser {
 	}
 	function getUri($otherParams='',$pageId='',$pageParam=false) {
 	   $pageParam = ($pageParam===false)?($this->currentPageParam):($pageParam);
-	    if(empty($pageId) && $this->currentItemId>0) $params[] = 'i='.$this->currentItemId;
+	    if(empty($pageId) && $this->itemVO->itemId>0) $params[] = 'i='.$this->itemVO->itemId;
 	    if(!empty($pageId)) $params[] = 'k='.$pageId.$pageParam;
-	    elseif(!empty($this->currentPageId)) $params[] = 'k='.$this->currentPageId.$pageParam;
+	    elseif(!empty($this->pageVO->pageId)) $params[] = 'k='.$this->pageVO->pageId.$pageParam;
 	    if($otherParams!='') $params[] = $otherParams;
 	    $parStr = implode("&",$params);
 		return BASESCRIPTNAME.(strlen($parStr)>0)?('?'.$parStr):('');

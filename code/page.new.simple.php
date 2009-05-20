@@ -1,5 +1,5 @@
 <?php
-$typeId = $user->currentPage['typeIdChild'];
+$typeId = $user->pageVO->typeIdChild;
 $arrDefaultCategory = array('blog'=>318,'forum'=>301);
 // blog or forum
 
@@ -15,7 +15,7 @@ if($user->idkontrol) {
 		if(!fError::isError()) {
 			$fPageSave = new fPagesSaveTool($typeId);
 			$newPageId = $fPageSave->savePage(array('name'=>$nazev,'categoryId'=>$arrDefaultCategory[$typeId],
-      'description'=>$ocem,'userIdOwner'=>$user->gid));
+      'description'=>$ocem,'userIdOwner'=>$user->userVO->userId));
 			$user->cacheRemove('calendarlefthand');
 			fError::addError(MESSAGE_SUCCESS_CREATE.': <a href="?k='.$newPageId.'">'.$nazev.'</a>');
 			fHTTP::redirect($user->getUri());

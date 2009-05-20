@@ -1,16 +1,16 @@
 <?php
 $redirectAdd = '';
-if(($user->currentPageId=='galed' || $user->currentPageId=='paged') && $user->currentPageParam!='sa') {
+if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->currentPageParam!='sa') {
    $user->currentPageParam = 'a' ;
    $redirectAdd = 'e';
 }
 
-$rules = new fRules((($user->currentPageParam != 'a')?($user->currentPageId):('')),$user->currentPage['userIdOwner']);
-$fRelations = new fPagesRelations($user->currentPageId);
+$rules = new fRules((($user->currentPageParam != 'a')?($user->pageVO->pageId):('')),$user->currentPage['userIdOwner']);
+$fRelations = new fPagesRelations($user->pageVO->pageId);
 
-$textareaIdDescription = 'desc'.$user->currentPageId;
-$textareaIdContent =  'cont'.$user->currentPageId;
-$textareaIdForumHome = 'home'.$user->currentPageId;
+$textareaIdDescription = 'desc'.$user->pageVO->pageId;
+$textareaIdContent =  'cont'.$user->pageVO->pageId;
+$textareaIdForumHome = 'home'.$user->pageVO->pageId;
 
 /**
  * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
@@ -32,12 +32,12 @@ if(empty($sPage->xmlProperties)) {
 
 if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
     $category = new fCategory('sys_pages_category','categoryId');
-    $category->addWhere("typeId='".$user->currentPageId."'");
-    $category->arrSaveAddon = array('typeId'=>$user->currentPageId);
+    $category->addWhere("typeId='".$user->pageVO->pageId."'");
+    $category->arrSaveAddon = array('typeId'=>$user->pageVO->pageId);
     $category->process();
 }
 
-$fLeft = new fLeftPanel($user->currentPageId,0,$user->currentPage['typeId']);
+$fLeft = new fLeftPanel($user->pageVO->pageId,0,$user->currentPage['typeId']);
 
 if(isset($_POST["save"])) {
     fError::resetError();
@@ -134,13 +134,13 @@ if(isset($_POST["save"])) {
 	    }
     		
 		if($user->currentPageParam == 'a') {
-			$arr['userIdOwner'] = $user->gid;
+			$arr['userIdOwner'] = $user->userVO->userId;
 			$user->cacheRemove('calendarlefthand');
 		} else {
-		  $arr['pageId'] = $user->currentPageId;
+		  $arr['pageId'] = $user->pageVO->pageId;
 		}
 	    if(!empty($_POST['audicourl'])) {
-	        $filename = 'pageAvatar-'.$user->currentPageId.'.jpg';
+	        $filename = 'pageAvatar-'.$user->pageVO->pageId.'.jpg';
 	        if($file = @file_get_contents($_POST['audicourl'])) {
 	            file_put_contents(WEB_REL_PAGE_AVATAR.$filename,$file);
 	            $resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
@@ -151,7 +151,7 @@ if(isset($_POST["save"])) {
 	    }
 	    
 	    if($deleteThumbs===true && $typeForSaveTool=='galery') {
-    	  $galery->getGaleryData($user->currentPageId);
+    	  $galery->getGaleryData($user->pageVO->pageId);
     	  $cachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath();
     		fSystem::rm_recursive($cachePath);
     		$systemCachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath($galery->_cacheDirSystemResolution);
@@ -163,7 +163,7 @@ if(isset($_POST["save"])) {
 	    
         if ($_FILES["audico"]['error']==0) {
             $konc = Explode(".",$_FILES["audico"]["name"]);
-			$_FILES["audico"]['name'] = "icoaudit".$user->currentPageId.'.'.$konc[(count($konc)-1)];
+			$_FILES["audico"]['name'] = "icoaudit".$user->pageVO->pageId.'.'.$konc[(count($konc)-1)];
 			if($up = fSystem::upload($_FILES["audico"],WEB_REL_PAGE_AVATAR,200000)) {
                 //---resize and crop if needed
                 list($width,$height,$type) = getimagesize(WEB_REL_PAGE_AVATAR.$up['name']);
@@ -203,7 +203,7 @@ if(isset($_POST["save"])) {
 		fUserDraft::clear($textareaIdDescription);
 		fUserDraft::clear($textareaIdContent);
 		if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') fUserDraft::clear($textareaIdForumHome);
-		if(isset($nid)) $user->currentPageId = $nid;		
+		if(isset($nid)) $user->pageVO->pageId = $nid;		
 		if($user->currentPageParam=='a') $user->currentPageParam = '';
 		/**/
 		
@@ -267,18 +267,18 @@ if (isset($_POST['del']) && $user->currentPageParam=='e') {
   if($typeForSaveTool=='galery') {
     //---delete photo
   	$dir = $user->currentPage['galeryDir'];
-  	$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->currentPageId."'");
+  	$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->pageVO->pageId."'");
   	foreach ($arrd as $df) $galery->removeFoto($df);
   	if(!empty($dir)) {
   	  fSystem::rm_recursive($galery->_rootImg.$dir);
-  	  $galery->getGaleryData($user->currentPageId);
+  	  $galery->getGaleryData($user->pageVO->pageId);
   		$cachePath = $galery->getThumbCachePath();
   		fSystem::rm_recursive($cachePath);
   		$systemCachePath = $galery->getThumbCachePath($galery->_cacheDirSystemResolution);
   		fSystem::rm_recursive($systemCachePath);
   	}
 	}
-	fPages::deletePage($user->currentPageId);
+	fPages::deletePage($user->pageVO->pageId);
 	fHTTP::redirect($user->getUri('','galer'));
 }
 
@@ -332,7 +332,7 @@ if($user->currentPageParam!='a') {
   $tpl->touchBlock('permissionstab');
   $tpl->touchBlock('relatedtab');
   $tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
-  $tpl->setVariable('RELATIONSFORM',$fRelations->getForm(($user->currentPageParam != 'a')?($user->currentPageId):(0)));
+  $tpl->setVariable('RELATIONSFORM',$fRelations->getForm(($user->currentPageParam != 'a')?($user->pageVO->pageId):(0)));
 }
 
 $tpl->touchBlock('pageavatarupload');
@@ -350,8 +350,8 @@ if($typeForSaveTool == 'forum') {
 }
 
 if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {
-  $galery->getGaleryData($user->currentPageId);
-  $galery->getFoto($user->currentPageId,true,(($galery->gOrderItems==1)?('i.dateCreated desc'):('i.enclosure')));
+  $galery->getGaleryData($user->pageVO->pageId);
+  $galery->getFoto($user->pageVO->pageId,true,(($galery->gOrderItems==1)?('i.dateCreated desc'):('i.enclosure')));
    
   $pageData['galeryDir'] = $galery->gDir;
 }
@@ -364,7 +364,7 @@ if($typeForSaveTool == 'galery') {
     if($sPage->getXMLVal('enhancedsettings','thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
     //$tpl->touchBlock('fforum'.($sPage->getXMLVal('enhancedsettings','fotoforum')*1));
 } elseif ($typeForSaveTool=='blog') {
-    $tpl->touchBlock('fforum'.(fPages::getProperty($user->currentPageId,'forumSet',1)*1));
+    $tpl->touchBlock('fforum'.(fPages::getProperty($user->pageVO->pageId,'forumSet',1)*1));
 }
 
 if($typeForSaveTool == 'galery' && $user->currentPageParam != 'a') {

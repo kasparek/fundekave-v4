@@ -12,7 +12,7 @@ class ItemVO {
 	         $this->typeId = $item[0];
 	           $this->pageId = $item[1];
 	        } else {
-	           $this->itemId = 0
+	           $this->itemId = 0;
 	        }
 	    }
 	}

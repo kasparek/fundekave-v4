@@ -30,12 +30,12 @@ class fPagesRelations {
         $user->cacheRemove('pagesrelated');
     }
     function getForm() {
-        global $db,$user;
+        $db = FDBConn::getInstance();
         $arrPageIdRelatives = $db->getCol('select pageIdRelative from sys_pages_relations where pageId="'.$this->pageId.'"');
         
         if(!empty($arrPageIdRelatives)) $strPageIdRelatives = "'".implode("','",$arrPageIdRelatives)."'";
         else $strPageIdRelatives = '';
-        $fpages = new fPages(array('galery','forum','blog'),$user->gid,$db);
+        $fpages = new fPages(array('galery','forum','blog'),$user->gid);
         $fpages->setSelect('p.pageId,p.name,p.nameshort,p.authorContent');
         $fpages->setOrder('p.typeId,p.dateCreated desc,p.name');
         $fpages->setWhere('p.pageId!="'.$this->pageId.'"');
@@ -65,6 +65,11 @@ class fPagesRelations {
         
         return $tpl->get();
     }
+    
+    /*
+     *SPRING GRAPH FUNCTIONS 
+     * 
+     *
     function getRoamerXML($userId=0) {
         global $db;
         $fPages = new fPages(array('forum','galery','top','blog'),$userId,$db);
@@ -89,6 +94,7 @@ class fPagesRelations {
         //file_put_contents('roamerData.xml',$xml);
         return $xml;
     }
+    
     var $nodes = array();
     var $edges = array();
     var $arrToDone = array();
@@ -110,7 +116,7 @@ class fPagesRelations {
                     /*var_dump($this->nodes);
                     var_dump($this->edges);
                     echo $row['id'];
-                    die();*/
+                    die();
                 	$this->addNodes($row['id']);
                 
             }
@@ -118,7 +124,6 @@ class fPagesRelations {
         }
     }
     function getFriedsRoamerXML($userId=0) {
-        global $db,$user;
         if($userId>0) {
             
             $this->addNodes($userId);
@@ -133,5 +138,7 @@ class fPagesRelations {
             return $xml;
         }
     }
+    /**/
 }
+
 ?>

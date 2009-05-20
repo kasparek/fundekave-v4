@@ -1,5 +1,5 @@
 <?php
-class fLeftPanel extends fQueryTool {
+class FLeftPanel extends FDBTool {
   private $pageId;
   private $pageType;
   private $userId;
@@ -7,9 +7,8 @@ class fLeftPanel extends fQueryTool {
   private $panels; //---array of sorted visible panels for given page and user if logged in
   private $panelsUsed; //---list of used panel names
   
-  function __construct($pageId,$userId='0',$pageType='top') {
-    global $db;
-    parent::__construct('sys_leftpanel_functions as f','f.functionName',$db);
+  function __construct($pageId, $userId='0', $pageType='top') {
+    parent::__construct('sys_leftpanel_functions as f','f.functionName');
     $this->pageId = $pageId;
     $this->pageType = $pageType;
     $this->userId = $userId;
@@ -23,15 +22,15 @@ class fLeftPanel extends fQueryTool {
    * @param int() $userId - if 0 chage setting for a page
    */
   static function processAction($pageId,$functionName,$action,$userId=0) {
-      global $db;
+      
       
   }
   function load($allForPage=false) {
-    global $user;
      $this->panels = array();
      $this->panelsUsed = array();
-          
-    if(!$tmptext = $user->cacheGet('sidebarSet')) {
+
+     $cache = FCache::getInstance( 's' );
+    if( !$arrTmp = $cache->getData('sidebarSet') ) {
           
       $this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
       $this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
@@ -55,11 +54,8 @@ class fLeftPanel extends fQueryTool {
           $this->queryReset();
       }
       
-      $user->cacheSave(serialize($arrTmp));
-    } else {
-      $arrTmp = unserialize($tmptext);
+      $cache->setData( $arrTmp );
     }
-    
     
     $arrGrouped = array();
     //---group
@@ -164,11 +160,12 @@ class fLeftPanel extends fQueryTool {
                     $TOPTPL->touchBlock('sidebar-block-login');
                   }
                   //---set buttons - move up, move down, minimize/maximize
-                  global $user;
+                  /*
+                   * TODO: minimize/maximize script - ajax
                   $TOPTPL->setVariable('MOVEUP',$user->getUri('b='.$fnc.'&amp;a=u'));
                   $TOPTPL->setVariable('MOVEDOWN',$user->getUri('b='.$fnc.'&amp;a=d'));
                   $TOPTPL->setVariable('MINIMIZE',$user->getUri('b='.$fnc.'&amp;a=m'));
-                  
+                  */
                   if(!empty($panel['name']))$TOPTPL->setVariable('SIDEBARHEAD',$panel['name']);
                   $TOPTPL->setVariable('SIDEBARDATA',$letext);
                   $TOPTPL->parseCurrentBlock();
@@ -181,7 +178,8 @@ class fLeftPanel extends fQueryTool {
   
   //---edit
   function getAvailablePanels() {
-      global $db,$user;
+      $user = FUser::getInstance();
+      
       $this->load(true);
       //---1. not used, 2.user has access to use (system panels only sa,other by pageid)
       $this->setSelect('f.functionName,f.name,f.pageId');
@@ -192,12 +190,12 @@ class fLeftPanel extends fQueryTool {
       	    //not used panel
       	    if(!empty($row[2])) {
       	        //check for pageid
-      	        if(fRules::get($user->gid,$row[2],2)) {
+      	        if(FRules::get($user->userVO->userId,$row[2],2)) {
       	            $arrAvailable[] = $row;
       	        }
       	    } else {
       	        //must have sa access
-      	        if(fRules::get($user->gid,'sadmi',1)) {
+      	        if(FRules::get($user->userVO->userId,'sadmi',1)) {
       	            $arrAvailable[] = $row;
       	        }
       	    }
@@ -206,15 +204,16 @@ class fLeftPanel extends fQueryTool {
       if(!empty($arrAvailable)) return $arrAvailable;
   }
   function panelInsert($type,$functionName,$sequence,$visible=1) {
+  	
       if($type=='page') {
         $dot = "insert into sys_leftpanel_pages (pageId,functionName,ord,visible) values ('".$this->pageId."','".$functionName."',".$sequence.",".$visible.")";
       }
       if(!empty($dot)) {
-        return $this->db->query($dot);
+        return $this->query( $dot );
       }
   }
   function panelUpdate($type,$functionName,$arr) {
-      global $db;
+      
       //---get current settings
       foreach ($this->panels as $panel) {
       	if($panel['functionName']==$functionName) {
@@ -253,9 +252,9 @@ class fLeftPanel extends fQueryTool {
               } else {
                   //---update
                   if(isset($currentPanel['delete'])) {
-                      $this->db->query("delete from sys_leftpanel_pages where pageId='".$this->pageId."' and functionName='".$functionName."'");
+                      $this->query("delete from sys_leftpanel_pages where pageId='".$this->pageId."' and functionName='".$functionName."'");
                   } else {
-                      $this->db->query("update sys_leftpanel_pages set sequence=".$currentPanel['ord'].",visible=".$currentPanel['visible']." where pageId='".$this->pageId."' and functionName='".$functionName."'");
+                      $this->query("update sys_leftpanel_pages set sequence=".$currentPanel['ord'].",visible=".$currentPanel['visible']." where pageId='".$this->pageId."' and functionName='".$functionName."'");
                   }
               }
           }

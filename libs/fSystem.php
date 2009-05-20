@@ -1,7 +1,7 @@
 <?php
 class FSystem {
     static function &initPager($totalItems=0,$perPage=20,$inputParams=array()) {
-        global $conf;
+        $conf = FConf::getInstance();
         $params = $conf['pager'];
 		$params['prevImg'] = PAGER_PREVIOUS;
 		$params['nextImg'] = PAGER_NEXT;
@@ -12,12 +12,13 @@ class FSystem {
 		return $pager;
     }
     function grndbanner($kam=0) {
-    	Global $db,$user;
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
     	if(empty($user->strictBanner)) {
         	if($user->zbanner == 0 && $user->strictBannerAllClicked == 0) {
     	        $dot = "select b.bannerId,b.imageUrl,b.linkUrl,
     	        if(h.dateCreated is null or date_format(max(h.dateCreated),'%d') != date_format(now(),'%d'),0,1)
-    	        from sys_banner as b left join sys_banner_hit as h on b.bannerId=h.bannerId and h.userId='".$user->gid."'
+    	        from sys_banner as b left join sys_banner_hit as h on b.bannerId=h.bannerId and h.userId='".$user->userVO->userId."'
     	        where b.dateFrom <= NOW() AND b.dateTo > NOW() 
     	        and b.strict=1 
     	        group by b.bannerId";
@@ -59,11 +60,12 @@ class FSystem {
     	}
     }
     function bannerRedirect($bannerId) {
-      global $db,$user;
+      $db = FDBConn::getInstance();
+		$user = FUser::getInstance();
       $bid = $bannerId * 1;
       $db->query("UPDATE banner SET hit = (hit+1) WHERE id='".$bid."'");
       if($user->idkontrol) {
-          $db->query("insert into sys_banner_hit (bannerId,userId,dateCreated) values ('".$bid."','".$user->gid."',now())");
+          $db->query("insert into sys_banner_hit (bannerId,userId,dateCreated) values ('".$bid."','".$user->userVO->userId."',now())");
           if($user->zbanner == 1)  {
               if(count($user->strictBanner > 1)) {
                   foreach ($user->strictBanner as $banner) {
@@ -78,45 +80,46 @@ class FSystem {
     }
     /*.......generate MENU............*/
     function topmenu(){
-    	global $user,$db;
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	
     	$x=0;
     	$user->topmenu = array();
-    	
-      if(!$tmptext = $user->cacheGet('mainMenu')) {
+    	$cache = FCache::getInstance( 's' );	
+      if(!$arrmenu = $cache->getData('mainMenu')) {
     	 $arrmenu = $db->getAll("SELECT pageId,text FROM sys_menu ".((!$user->idkontrol)?("WHERE public=1"):(''))." ORDER BY ord");
-    	 $user->cacheSave(serialize($arrmenu));
-    	} else {
-        $arrmenu = unserialize($tmptext);
-      }
+    	 $cache->setData( $arrmenu );
+    	} 
     	
     	if($user->idkontrol) {
     	    $arrmenu[]=array('elogo',LABEL_LOGOUT);
     	}
     	foreach ($arrmenu as $ro) {
-    		$menuItems[] = array("LINK"=>'?k='.$ro[0],"ACTIVE"=>(($user->currentPageId==$ro[0])?(1):(0)),"TEXT"=>$ro[1]);
+    		$menuItems[] = array("LINK"=>BASESCRIPTNAME.(($ro[0]!=HOME_PAGE)?('?k='.$ro[0]):('')),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
     		$user->topmenu[] = $ro[0];
     	}
+    	
     	return $menuItems;
     }
     function secondaryMenu($menu) {
-    	global $db,$user;
+    	$db = FDBConn::getInstance();
+    	$user = FUser::getInstance();
+    	
     	$ret=array();
-    	if(!$tmptext = $user->cacheGet('secondaryMenu')) {
+    	$cache = FCache::getInstance( 's' );
+    	if(!$arrmnuTmp = $cache->getData('secondaryMenu')) {
       	$arrmnuTmp = $db->getAll("SELECT s.pageId, s.name 
       	FROM sys_menu_secondary as s 
       	INNER JOIN sys_pages as p ON p.menuSecondaryGroup=s.menuSecondaryGroup 
       	WHERE ".(($user->idkontrol)?(''):("s.public=1 AND "))." p.pageId='".$user->currentPageId."' ORDER BY s.ord,s.name");
-      	$user->cacheSave(serialize($arrmnuTmp));
-    	} else {
-        $arrmnuTmp = unserialize($tmptext);
-      }
+      	$cache->setData($arrmnuTmp);
+    	} 
     	if(!empty($arrmnuTmp)) {
 	    	foreach ($arrmnuTmp as $row) {
 	    		$arrmnu[]=array('pageId'=>$row[0],'name'=>$row[1],'typ'=>0,'opposite'=>0);
 	    	}
     	} else $arrmnu = array();
     	if(!empty($user->systemmenu)) $arrmnu = array_merge($user->systemmenu,$arrmnu);
-    	if(!empty($user->usrmenu)) $arrmnu = array_merge($arrmnu,$user->usrmenu);
     	
     	if(count($arrmnu)>0){
     		$x=0;
@@ -135,7 +138,7 @@ class FSystem {
     	return($ret);
     }
     function secondaryMenuAddItem($link,$text,$click='',$opposite='0',$buttonId='') {
-        global $user;
+        $user = FUser::getInstance();
         $button = array('pageId'=>$link,'typ'=>1,'name'=>$text,'opposite'=>$opposite,'id'=>$buttonId);
         if(!empty($click)) $button['click'] = $click;
         $user->systemmenu[] = $button;
@@ -160,10 +163,10 @@ class FSystem {
           $endOfLine = 0;
       }
       
-      global $user;
+      
         $text = trim($text);
         
-        
+        $user = FUser::getInstance();
         if($paramsArr['formatOption']==0 || $user->idkontrol==false) {
             $text = strip_tags($text);
         }

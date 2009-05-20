@@ -7,7 +7,7 @@ if(!$data) {
   $arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
   $strItemId = implode(',',$arr);
   $fItems->showPageLabel = true;
-  $fItems->initData('forum',$user->gid,true);
+  $fItems->initData('forum',$user->userVO->userId,true);
   $fItems->addWhere('i.itemId in ('.$strItemId.')');
   $fItems->addOrder('i.dateCreated desc');
   //$fItems->setGroup('i.pageId');
@@ -26,7 +26,7 @@ if(!$data) {
   $arr = $db->getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
   $fItems = new fItems();
   $fItems->showPageLabel = true;
-  $fItems->initData('blog',$user->gid,true);
+  $fItems->initData('blog',$user->userVO->userId,true);
   //$fItems->addWhere('itemIdTop is null');
   $fItems->addWhere('i.itemId in ('.implode(',',$arr).')');
   $fItems->addOrder('i.dateCreated desc');
@@ -49,7 +49,7 @@ if(!empty($data)) {
 }
 //------LAST-CREATED-PAGES
 if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
-    $fPages = new fPages(array('blog','galery','forum'),$user->gid,&$db);
+    $fPages = new fPages(array('blog','galery','forum'),$user->userVO->userId);
     $fPages->setOrder('p.dateCreated desc');
     $fPages->addWhere('p.locked < 2');
     $fPages->setLimit(0,5);
@@ -74,7 +74,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
     $x = 0;
     while($arr && $x < 6) {
         $pageId = array_shift($arr);
-        if(fRules::get($user->gid,$pageId)) {
+        if(fRules::get($user->userVO->userId,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostvisitedpage');
             $tpl->setVariable('MOSTVISITEDEURL','?k='.$row[0]);
@@ -96,7 +96,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
     $x = 0;
     while($arr && $x < 6) {
         $pageId = array_shift($arr);
-        if(fRules::get($user->gid,$pageId)) {
+        if(fRules::get($user->userVO->userId,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostactivepage');
             $tpl->setVariable('MOSTACTIVEURL','?k='.$row[0]);
@@ -119,7 +119,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
     $x = 0;
     while($arr && $x < 6) {
         $pageId = array_shift($arr);
-        if(fRules::get($user->gid,$pageId)) {
+        if(fRules::get($user->userVO->userId,$pageId)) {
             $row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
             $tpl->setCurrentBlock('mostfavouritepage');
             $tpl->setVariable('MOSTFAVOURITEURL','?k='.$row[0]);

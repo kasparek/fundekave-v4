@@ -3,7 +3,7 @@ class SessionDriver
 {
 
   private $data;
-  private $lifeTime = 60;
+  private $lifeTime = 3600;
   
   function __construct() {
     $data = &$_SESSION['FCache_data'];
@@ -16,25 +16,32 @@ class SessionDriver
   
   public function setData($id=NULL, $data, $group = 'default') {
     if($id!=NULL) {
-      $this->data[$id] = array($this->lifeTime, date("U") , $data);
+      $this->data[$group][$id] = array($this->lifeTime, date("U") , $data);
     } 
   }
   
   public function getData($id, $group = 'default') {
-  if(isset($this->data[$id])) {
-      if($this->data[$id][0] + $this->data[$id][1] > date("U") || $this->data[$id][0]==0) {
-      return $this->data[$id];
+  if(isset($this->data[$group][$id])) {
+      if($this->data[$group][$id][0] + $this->data[$group][$id][1] > date("U") || $this->data[$group][$id][0]==0) {
+      return $this->data[$group][$id];
     } else {
-      $this->invalidateData($id);
+      $this->invalidateData($id, $group);
     }
   }
+  }
   
-  public function invalidateData($id='') {
+  public function invalidateData($id='',$group='default') {
     if(!empty($id)) {
-      unset($this->data[$id])
-    } else {
-      $this->data = array();
-    }
+      unset($this->data[$group][$id]);
+    } 
+  }
+  
+  public function invalidateGroup( $group='default' ) {
+    $this->data[$group] = array();
+  }
+  
+  public function invalidate( ) {
+    $this->data = array();
   }
 
 }

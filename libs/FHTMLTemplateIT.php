@@ -13,7 +13,7 @@ define('IT_UNKNOWN_OPTION',            -6);
  * @package  HTML_Template_IT
  *  fundekave - kasparek - local version of IT .. removed pear dependecies
  */
-class fHTMLTemplateIT
+class FHTMLTemplateIT
 {
     /**
      * Contains the error objects

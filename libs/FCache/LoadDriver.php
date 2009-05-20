@@ -10,22 +10,28 @@ class LoadDriver
   
   public function setData($id=NULL, $data, $group = 'default') {
     if($id!=NULL) {
-      $this->data[$id] = $data;
+      $this->data[$group][$id] = $data;
     } 
   }
   
   public function getData($id, $group = 'default') {
-    if(isset($this->data[$id])) {
-      return $this->data[$id];
+    if(isset($this->data[$group][$id])) {
+      return $this->data[$group][$id];
     }
   }
   
-  public function invalidateData($id='') {
+  public function invalidateData($id='',$group='default') {
     if(!empty($id)) {
-      unset($this->data[$id])
-    } else {
-      $this->data = array();
+      unset($this->data[$group][$id]);
     }
+  }
+  
+  public function invalidateGroup( $group='default' ) {
+    $this->data[$group] = array();
+  }
+  
+  public function invalidate( ) {
+    $this->data = array();
   }
 
 

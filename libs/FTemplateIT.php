@@ -1,5 +1,5 @@
 <?php
-class fTemplateIT extends fHTMLTemplateIT {
+class FTemplateIT extends fHTMLTemplateIT {
 	
 	var $vars;
 	

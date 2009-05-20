@@ -4,5 +4,5 @@ if ($user->idkontrol) {
   $fForum->clearUnreadedMess();
   $fForum->afavAll($user->gid);
 }
-$fPages = new fPages('',$user->gid,&$db);
+$fPages = new fPages('',$user->userVO->userId);
 $TOPTPL->addTab(array("MAINDATA"=>$fPages->printCategoryList()));

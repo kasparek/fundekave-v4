@@ -1,5 +1,5 @@
 <?php
-class fError {
+class FError {
 	function __construct(){
 		if(!isset($_SESSION["errormsg"])) $_SESSION["errormsg"] = array();
 		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();

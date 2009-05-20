@@ -47,7 +47,7 @@ class FDBTool {
 	}
 	function queryReset() {
       $this->_where = array();
-      $this->_join = array();
+      $this->_join = '';
       $this->_order = array();
       $this->_group = array();
     }
@@ -62,7 +62,7 @@ class FDBTool {
     $where[] = '1';
   } else if($this->autojoin===true) {
     foreach($this->_where as $cond) {
-      if(!strpos($conf,'.') {
+      if(!strpos($conf,'.')) {
         $cond = $this->table.'.'.$cond;
       }
       $where[] = $cond;
@@ -86,7 +86,7 @@ class FDBTool {
 		$this->_join .= ' '.$condition;
 	}
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
-    $this->_join .= ' '$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
+    $this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
     $this->autoJoin = true;
     foreach($selectColumnsArray as $col) {
       $this->addSelect($table.'.'.$col);
@@ -110,7 +110,7 @@ class FDBTool {
 	    $this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'"'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
 	}
 	function setOrder($orderCondition='', $desc=false) {
-	     $orderCondition = $orderCondition .($desc ? ' DESC' : '')
+	     $orderCondition = $orderCondition .($desc ? ' DESC' : '');
     	$this->_order = explode(',',$orderCondition);
 	}
 	function addOrder($orderCondition='', $desc=false) {
@@ -148,7 +148,7 @@ class FDBTool {
     $arrCols[] = $col;
    }
    } else {
-    $arrCols = $this->_select
+    $arrCols = $this->_select;
    }
 		return implode(',',$arrCols);
 	}
@@ -309,7 +309,7 @@ class FDBTool {
 		return $ret;
 	}
 	function getLastId() {
-		global $db;
+		$db = FDBConn::getInstance();
 		return $db->getOne("SELECT LAST_INSERT_ID()");
 	}
 	function save($cols=array(),$notQuoted=array(),$forceInsert=false) {
@@ -323,7 +323,7 @@ class FDBTool {
     			$dot = $this->buildUpdate();
     		}
     		
-    		global $db;
+    		$db = FDBConn::getInstance();
     		if($this->debug==1) echo $dot;
     		if($db->query($dot)) {
     			if(isset($cols[$this->primaryCol])) return $cols[$this->primaryCol];
@@ -332,7 +332,7 @@ class FDBTool {
     		}
     }
     function delete($id) {
-    	global $db;
+    	$db = FDBConn::getInstance();
     	return $db->query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
     }
 	//---save support functions
@@ -346,6 +346,24 @@ class FDBTool {
     		$arr[$k] = ((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
     	}
     	return $arr;
+    }
+    
+    //---simple query
+    function getAll($query) {
+    	$db = FDBConn::getInstance();
+    	return $db->getAll($query);
+    }
+    function getRow($query) {
+    	$db = FDBConn::getInstance();
+    	return $db->getRow($query);
+    }
+    function getOne($query) {
+    	$db = FDBConn::getInstance();
+    	return $db->getOne($query);
+    }
+    function query($query) {
+    	$db = FDBConn::getInstance();
+    	$db->query($query);
     }
 }
 

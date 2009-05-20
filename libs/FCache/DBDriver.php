@@ -31,14 +31,23 @@ class DBDriver
       }
   }
   
-  public function invalidateData($id='') {
+  public function invalidateData($id='',$group='default') {
     $db = FDBConn::getInstance();
     $user = FUser::getInstance();
     if(!empty($id)) {
       $db->query('delete from sys_users_cache where userId = "'.$user->userVO->userId.'" and name="'.$id.'"');
-    } else {
-      $db->query('delete from sys_users_cache where userId = "'.$user->userVO->userId.'"');
-    }
+    } 
+  }
+  
+  public function invalidateGroup( $group='default' ) {
+    $db = FDBConn::getInstance();
+    $user = FUser::getInstance();
+    $db->query('delete from sys_users_cache where userId = "'.$user->userVO->userId.'"');
+  }
+  
+  public function invalidate( ) {
+    $db = FDBConn::getInstance();
+    $db->query('delete from sys_users_cache');
   }
 
 }
