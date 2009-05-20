@@ -1,4 +1,7 @@
 <?php
+$category = new fCategory('sys_pages_category','categoryId');
+$TOPTPL->addTab(array("MAINDATA"=>$category->getList('event')));
+
 if($user->currentPageParam == 'archiv') $archiv = 1;
 
 if($user->currentPageParam=='archiv' || $user->currentPageParam=='a' || $user->currentPageParam=='e') {
@@ -23,7 +26,7 @@ if($user->currentPageParam=='u') {
         $fItems->initDetail($user->currentItemId);
         
     } else {
-        if(isset($_REQUEST['adruh'])) $adruh = (int) $_REQUEST['adruh'];
+        if(isset($_REQUEST['kat'])) $adruh = (int) $_REQUEST['kat'];
         if(isset($_REQUEST['filtr'])) $filtr = trim($_REQUEST['filtr']); 
         if($adruh>0) $fItems->addWhere('i.categoryId="'.$adruh.'"');
         if(!empty($filtr)) $fItems->addWhereSearch(array('i.location','i.addon','i.text'),$filtr,'or');
@@ -45,13 +48,15 @@ if($user->currentPageParam=='u') {
     $tpl = new fTemplateIT('events.tpl.html');
     if($celkem > 0) {
         if($celkem > $perPage) {
-           $pager = fSystem::initPager($celkem,$perPage,array('extraVars'=>array('adruh'=>$adruh,'filtr'=>$filtr)));
+           $pager = fSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
     	   $od = ($pager->getCurrentPageID()-1) * $perPage;    
         } else $od=0;
            
     	$fItems->getData($od,$perPage);
     
     	if($user->currentItemId == 0) {
+    	/*
+    	//---search functionality temp. removed
             $arrOpt = $db->getAll('select categoryId,name from sys_pages_category where typeId="event" order by ord,name');
             $options = '';
             if(!empty($arrOpt)) foreach ($arrOpt as $row) {
@@ -59,7 +64,7 @@ if($user->currentPageParam=='u') {
             }
             $tpl->setVariable('CATEGORYOPTIONS',$options);
             $tpl->setVariable('FILTRVALUE',$filtr);
-    	
+    	*/
           	if($celkem > $perPage) {
           	   $tpl->setVariable('LISTTOTAL',$celkem);
           	   $tpl->setVariable('PAGER',$pager->links);

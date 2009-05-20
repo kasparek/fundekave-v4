@@ -27,8 +27,10 @@
 </tbody>
 </table>
 
+<div class="vcalendar">
 <!-- BEGIN eventday -->
 <div id="supernote-note-{DAYID}" class="snp-triggeroffset notemenu">
-<!-- BEGIN event --><a href="{EVENTLINK}">{EVENTLABEL}</a><br /><!-- END event -->
+<!-- BEGIN event --><div class="vevent"><span class="summary"><a href="{EVENTLINK}" class="url">{EVENTLABEL}</a></span> <span class="abbr" title="{STARTDATETIMEISO}"><abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr></span></div><!-- END event -->
 </div>
 <!-- END eventday -->
+</div>

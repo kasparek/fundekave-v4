@@ -392,7 +392,7 @@ class fLeftPanelPlugins {
       	$arrEventsForDay = array();
       	$arrEventForDayKeys = array();
       	foreach ($arrQ as $row){
-      		$arrEventsForDay[$row[0]][] = array('id'=>$row[2],'name'=>$row[3],'link'=>$row[1]);
+      		$arrEventsForDay[$row[0]][] = array('link'=>$row[1],'id'=>$row[2],'name'=>$row[3],'dateiso'=>$row[4],'datelocal'=>$row[5]);
       	}
       	$arrEventForDayKeys = array_keys($arrEventsForDay);
       	$tpl = new fTemplateIT('sidebar.calendar.tpl.html');
@@ -440,6 +440,8 @@ class fLeftPanelPlugins {
             $tpl->setCurrentBlock('event');
             $tpl->setVariable('EVENTLINK',$event['link']);
             $tpl->setVariable('EVENTLABEL',$event['name']);
+            $tpl->setVariable('STARTDATETIMEISO',$event['dateiso']);
+            $tpl->setVariable('STARTDATETIMELOCAL',$event['datelocal']);
             $tpl->parseCurrentBlock();
           }
           $tpl->setCurrentBlock('eventday');

@@ -1,20 +1,8 @@
 <!-- BEGIN events -->
-<!-- BEGIN eventsearch -->
-<form method="post"><fieldset>
-  <legend>Vyhledavani</legend>
-    <select name="adruh"><option value="0">-- druh --</option>{CATEGORYOPTIONS}</select> 
-    <input type="text" name="filtr" value="{FILTRVALUE}" class="short" /> 
-    <input type="submit" name="nav" value="Hledat" class="button" />
-  </fieldset>
-</form>
-<!-- END eventsearch -->
-<div class="hfeed">
+<div class="vcalendar">
 {ITEMS}
 </div>
-
 <!-- BEGIN pager -->{PAGER}<!-- END pager -->
 <!-- END events -->
-<!-- BEGIN notanyevents -->
-<p>Nejsou žádné akce</p>
-<!-- END notanyevents -->
+<!-- BEGIN notanyevents --><p>Nejsou žádné akce</p><!-- END notanyevents -->
 <script type="text/javascript">DD_roundies.addRule('.vevent', 5);</script>
