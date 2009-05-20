@@ -169,16 +169,15 @@ class FUser {
 	    $name = trim($name);
 	    $pass = trim($pass);
 		if (!empty($name) && !empty($pass) && $this->idkontrol==false){
-			
-			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
 			$db = FDBConn::getInstance();
+			//---login query
+			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
       $gid = $db->getOne($dot);
-			
 			if(!empty($gid)) {
 			   $this->userVO = new UserVO();
 				$this->userVO->userId = $gid;
 				$this->userVO->load();
-				$this->userVO->idlogin = md5($pass.$this->lo.fSystem::getmicrotime());
+				$this->userVO->idlogin = md5( $pass . $this->lo . fSystem::getmicrotime() );
 				$this->smazoldid($gid);
 				
 				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values 
@@ -187,7 +186,7 @@ class FUser {
 				$this->idkontrol = true;
 				
 				$this->arrUsers = array();
-    $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));
+        $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));
     
 				$this->refresh();
 				
@@ -551,7 +550,7 @@ class FUser {
 	function getFriends($userId=0,$refresh=false) {
 		if(empty($userId)) $userId = $this->gid;
 		if($refresh || !isset($this->arrFriends[$userId])) {
-			global $db;
+			$db = FDBConn::getInstance();
 			$arr = $db->getAll("SELECT p.userIdFriend,s.name 
 			FROM sys_users_friends as p left join sys_users as s on p.userIdFriend = s.userId 
 			WHERE p.userId = ".$userId." ORDER BY s.name");
@@ -668,7 +667,8 @@ class FUser {
 	}
 	function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
-		global $db;
+		$db = FDBConn::getInstance();
+		
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) 
 		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
 		$db->query($dot);
@@ -687,7 +687,8 @@ class FUser {
   
   //---get post
   function getPost($from,$perpage,$count=false) {
-    Global $db;
+    $db = FDBConn::getInstance();
+    
     $base = ' FROM sys_users_post WHERE userId='.$this->gid;
     
     if($filterText = $this->filterGet($this->currentPageId,'text')) $base.=" AND lower(text) LIKE '%".strtolower($filterText)."%'";
@@ -710,16 +711,13 @@ class FUser {
   }
 	
 	function diarPrip(){
-		Global $db;
 		$sentCount = 0;
-		
 		$fQuery = new fQueryTool('sys_users_diary');
-		$fQuery->setSelect("diaryId,name,date_format(dateEvent,'{#date_local#}'),everyday,reminder,userId,
-		date_format(dateEvent,'{#date_iso#}')");
+		$fQuery->setSelect("diaryId, name, date_format(dateEvent,'{#date_local#}'), everyday, reminder, userId, date_format(dateEvent,'{#date_iso#}')");
 		$fQuery->setWhere("DATE_SUB(dateEvent,INTERVAL (reminder-1) DAY)<=NOW() AND reminder != 0");
 		$arr = $fQuery->getContent();
-		
 		if(!empty($arr)){
+		  $db = FDBConn::getInstance();
 			foreach($arr as $row){
 				if($row[3]==1) $newprip=$row[4]-1; else $newprip=0;
 				$dot = "UPDATE sys_users_diary SET reminder=$newprip WHERE diaryId=".$row[0];
@@ -860,6 +858,8 @@ class FUser {
         $cacheLite->clean();	
       }
   }
+  //-------------------------------------
+  
   //---TIME CACHE STORED IN SESSION FOR SMALL DATA
     function resetGroupTimeCache($group) {
       $this->arrCacheOnTime[$group] = array();
