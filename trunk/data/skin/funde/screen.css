@@ -151,12 +151,6 @@ div#logo {
 	background: url("img/fundekave-logo.gif") no-repeat left top;
 	border-bottom: 1px solid #6b5d3d;
 }
-/*div#logo img {
-	position: absolute;
-	left: -9999em;
-	width: 1em;
-}
-*/
 /* PRIMARY MENU */
 
 ul#menu {
