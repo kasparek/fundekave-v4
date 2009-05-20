@@ -40,6 +40,7 @@ class UserVO extends FDBvo {
 	var $zgalerytype = 0;
 	var $deleted;
 	var $hit;
+	
 	//---security
   var $idlogin = '';
 	var $idloginInDb = '';

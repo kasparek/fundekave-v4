@@ -1,6 +1,13 @@
 <?php
 class FDBTool {
-    var $cacheResults = false;
+  /**
+   *cacheResults
+   *0 - no cache
+   *1 - cache per load
+   *2 - cache per session
+   *3 - cache in file
+   **/                 
+  var $cacheResults = 0;
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
