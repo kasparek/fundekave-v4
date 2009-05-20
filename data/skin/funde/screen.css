@@ -87,7 +87,7 @@ div#sidebar ul.onlineUsersList span.fn a {
 }
 div#sidebar ul.onlineUsersList img.userAvatar {
   float: left;
-  padding: 0 0.5em 0 0;
+  margin: 0 0.5em 0 0;
 }
 div#sidebar ul.onlineUsersList li {
 	clear: left;
@@ -151,13 +151,12 @@ div#logo {
 	background: url("img/fundekave-logo.gif") no-repeat left top;
 	border-bottom: 1px solid #6b5d3d;
 }
-
-div#logo img {
+/*div#logo img {
 	position: absolute;
 	left: -9999em;
 	width: 1em;
 }
-
+*/
 /* PRIMARY MENU */
 
 ul#menu {
@@ -253,7 +252,8 @@ div.sidebarBlock div.sidebarBlockToolbar {
 form#loginForm, div#loggedUserContainer {
 	color: white;
 	margin-top: 10px;
-	padding: 0 20px;
+	padding: 0 16px;
+	padding-right: 26px;
 	min-height: 100px;
 }
 form#loginForm label {
@@ -303,6 +303,9 @@ div#loggedUserContainer p {
 }
 div#loggedUserContainer a.recentSender {
 	font-size: 0.8em;
+}
+div#loggedUserContainer img.userAvatar{
+  border: 1px solid #412c00;
 }
 p#footer span {
 	float: left;
