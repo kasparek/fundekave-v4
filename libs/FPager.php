@@ -1,5 +1,5 @@
 <?php
-class fPager {
+class FPager {
     var $totalItems = 0;
     var $maybeMore = false;
     var $currentPage = 1;

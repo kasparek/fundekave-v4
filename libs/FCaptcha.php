@@ -1,5 +1,5 @@
 <?php
-class fCaptcha {
+class FCaptcha {
     static function &init($confArray=array()) {    
                 
         $tempfolder = (isset($confArray['tempFolder']))?($confArray['tempFolder']):('./data/b2evo_captcha_tmp/');
@@ -42,4 +42,3 @@ $src = $captcha->get_b2evo_captcha();
 <input type="hidden" name="captchaimage" value="'.$src.'" />
 <input type="text" name="pcaptcha" value="" />
 */
-?>

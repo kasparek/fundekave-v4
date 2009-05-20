@@ -1,23 +1,24 @@
 <?php
-class fBlog extends fQueryTool  {
+class FBlog extends FDBTool  {
     var $typeId = 'blog';
 	var $perPage;
 	
-	function __construct($db) {
-        parent::__construct('sys_pages_items as i','i.itemId',$db);
+	function __construct() {
+        parent::__construct('sys_pages_items as i','i.itemId');
 		$this->perPage = BLOG_PERPAGE;
 	}
-	function process($aFormValues) {
-	    global $user;
+	
+  function process($aFormValues) {
+	    $user = FUser::getInstance();
 	    $returnItemId = 0;
 	    $pageId = $aFormValues['pageid'];
-    	if(fRules::get($user->gid,$pageId,2) === true) {
-          	$fsave = new fSqlSaveTool('sys_pages_items','itemId');
+    	if(fRules::get($user->userVO->userId,$pageId,2) === true) {
+          	$fsave = new FDBTool('sys_pages_items','itemId');
           	if(!isset($aFormValues['del'])) $aFormValues['del'] = 0; 
           	if($aFormValues['del'] == 0) {
           		$arrSave = array('addon'=>fSystem::textins($aFormValues['nadpis'],array('plainText'=>1)),'text'=>fSystem::textins($aFormValues['textclanku'])); 
           		$arrSave['name'] = fSystem::textins($aFormValues['autor'],array('plainText'=>1));
-          		if($arrSave['name']=='') $arrSave['name'] = $user->gidname;
+          		if($arrSave['name']=='') $arrSave['name'] = $user->userVO->name;
           		$aFormValues['datum'] = fSystem::switchDate($aFormValues['datum']);
           		if(fSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = fSystem::textins($aFormValues['datum'],array('plainText'=>1));
           		if(isset($aFormValues['nid'])) $itemId = (int) $aFormValues['nid'];
@@ -31,7 +32,7 @@ class fBlog extends fQueryTool  {
           		if($itemId>0) {
           		    $arrSave['itemId'] = $aFormValues['nid']*1;
           		} else {
-          		    $arrSave['userId'] = $user->gid;
+          		    $arrSave['userId'] = $user->userVO->userId;
           		    $arrSave['pageId'] = $pageId;
           		    $arrSave['typeId'] = $this->typeId;
           		    fPages::cntSet($pageId);
@@ -49,7 +50,9 @@ class fBlog extends fQueryTool  {
           	  fPages::cntSet($pageId,false);
           	  $returnItemId = 0;
           	}
-          	$user->cacheRemove('lastBlogPost');
+          	$cache = FCache::getInstance('f');
+          	$cache->invalideteGroup('lastBlogPost');
+          	
     	} else {
         //---DO AJAX ERROR - cant save data - no rules
         //echo 'error::rules';
@@ -57,16 +60,16 @@ class fBlog extends fQueryTool  {
       return $returnItemId;
 	}
 	static function textAreaId() {
-	    global $user;
-	    return 'Blog'.$user->currentPageId;
+	    $user = FUser::getInstance();
+	    return 'Blog'.$user->pageVO->pageId;
 	}
 	function getEditForm($itemId) {
-	    global $user;
+	    $user = FUser::getInstance();
 	    
 	    $textAreaId = fBlog::textAreaId();
 	    
 	    $tpl = new fTemplateIT('blog.editform.tpl.html');
-        $tpl->setVariable('PAGEID',$user->currentPageId);
+        $tpl->setVariable('PAGEID',$user->pageVO->pageId);
         if($itemId>0) {
             $this->setSelect("text, date_format(dateCreated,'%d.%m.%Y'), name, addon, public, categoryId");
             $this->setWhere("itemId = '".$itemId."'");
@@ -87,9 +90,9 @@ class fBlog extends fQueryTool  {
         		    $tpl->touchBlock('statpublic');
         		}
         		///properties
-        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',fPages::getProperty($user->currentPageId,'forumSet',2)));
+        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',fPages::getProperty($user->pageVO->pageId,'forumSet',2)));
         		///categories
-        		if($opt = fSystem::getOptions($user->currentPageId,$arr[5],true,''))
+        		if($opt = fSystem::getOptions($user->pageVO->pageId,$arr[5],true,''))
         		  $tpl->setVariable('CATEGORYOPTIONS',$opt);
         	}
         } else {
@@ -104,32 +107,32 @@ class fBlog extends fQueryTool  {
         return $tpl->get();
 	}
 	function listAll($itemId = 0,$editMode = false) {
-	    global $user;
+	    $user = FUser::getInstance();
 	    $itemId = (int) $itemId;
 		$tpl = new fTemplateIT('blog.list.tpl.html');
 		if($user->idkontrol) $tpl->touchBlock('logged');
 		
 		//--edit mode
 		if($editMode === true) {
-		    if(fRules::get($user->gid,$user->currentPageId,2)) {
+		    if(fRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
 		        $tpl->setVariable('EDITFORM',$this->getEditForm($itemId));
 		    }
 		}
 		
 		$currentPage = 0;
 		if(empty($itemId)) {
-    		if($user->currentPage['cnt'] > $this->perPage) {
-    			$pager = fSystem::initPager($user->currentPage['cnt'],$this->perPage);
+    		if($user->pageVO->cnt > $this->perPage) {
+    			$pager = fSystem::initPager($user->pageVO->cnt,$this->perPage);
     			$tpl->setVariable('BOTTOMPAGER',$pager->links);
     			$currentPage = $pager->getCurrentPageID()-1;
     		}
 		}
 		
-		if(!empty($user->currentPage['content'])) $tpl->setVariable('CONTENT',$user->currentPage['content']);
+		if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
 		
 		$fItems = new fItems();
 		$fItems->initData('blog');
-		$fItems->addWhere("i.pageId='".$user->currentPageId."'");
+		$fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
 		$fItems->addWhere('i.itemIdTop is null');
 		
 		if($itemId > 0) {
@@ -150,9 +153,9 @@ class fBlog extends fQueryTool  {
 		if(!empty($fItems->arrData)){
 		    if($user->idkontrol) fItems::initTagXajax();
 			while($fItems->arrData) $fItems->parse();
-			fForum::aFav($user->currentPageId,$user->gid,$user->currentPage['cnt']);
+			fForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
             $tpl->setVariable('ITEMS',$fItems->show());
-            if($itemId>0) $user->currentPage['name'] = $fItems->currentHeader;
+            if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
         }
 		return $tpl->get();
 	}

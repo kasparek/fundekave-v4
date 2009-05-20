@@ -1,5 +1,5 @@
 <?php
-class fImgProcess {
+class FImgProcess {
     //---type - 1-GIF,2-JPG,3-PNG,4-SWF,5-PSD,6-BMP,7-TIFF,8-TIFF,9-JPC,10-JP2,11-JPX,12-JB2,13-SWC,14-IFF,15-WBMP,16-XBM
     var $supportedMimeTypes = array(1,2,3);
     
@@ -357,4 +357,3 @@ class fImgProcess {
         return true; 
     }
 }
-?>

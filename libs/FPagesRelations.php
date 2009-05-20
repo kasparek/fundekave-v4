@@ -1,5 +1,5 @@
 <?php
-class fPagesRelations {
+class FPagesRelations {
     var $pageId;
     function __construct($pageId) {
         $this->pageId = $pageId;
@@ -8,7 +8,7 @@ class fPagesRelations {
       $this->pageId = $pageId;
     }
     function update() {
-        global $db,$user;
+        $db = FDBConn::getInstance();
         $strRemovedRight = $_POST['removedRight'];
         $strAddedRight = $_POST['addedRight'];
         if(!empty($strRemovedRight)) {
@@ -27,7 +27,8 @@ class fPagesRelations {
         	   $db->query($dot);
             }
         }
-        $user->cacheRemove('pagesrelated');
+        $cache = FCache::getInstance('f');
+        $cache->invalidateGroup('pagesrelated');
     }
     function getForm() {
         $db = FDBConn::getInstance();
@@ -35,7 +36,8 @@ class fPagesRelations {
         
         if(!empty($arrPageIdRelatives)) $strPageIdRelatives = "'".implode("','",$arrPageIdRelatives)."'";
         else $strPageIdRelatives = '';
-        $fpages = new fPages(array('galery','forum','blog'),$user->gid);
+        $user = FUser::getInstance();
+        $fpages = new fPages(array('galery','forum','blog'),$user->userVO->userId);
         $fpages->setSelect('p.pageId,p.name,p.nameshort,p.authorContent');
         $fpages->setOrder('p.typeId,p.dateCreated desc,p.name');
         $fpages->setWhere('p.pageId!="'.$this->pageId.'"');

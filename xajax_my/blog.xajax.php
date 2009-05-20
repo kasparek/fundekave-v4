@@ -8,7 +8,7 @@ function blog_blogEdit($messageId = 0,$currentPageId=0) {
 	//???? $user->currentPageId = currentPageId();
 	//--TODO check if user is logged else save draft data and return that user need to login, use popup, save draft
     
-	$fBlog = new fBlog($db);
+	$fBlog = new FBlog();
 	$data = $fBlog->getEditForm($messageId);
     
 	$objResponse = new xajaxResponse();

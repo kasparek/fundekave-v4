@@ -65,7 +65,7 @@ elseif($user->currentPageParam == 'h') {
     
 } elseif ($typeId=='blog') {
     
-    $fBlog = new fBlog($db);
+    $fBlog = new FBlog();
     $TOPTPL->addTab(array("MAINDATA"=>$fBlog->listAll($user->currentItemId,(($user->currentPageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
     
 } else {

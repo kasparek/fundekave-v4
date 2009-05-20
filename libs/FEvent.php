@@ -1,15 +1,15 @@
 <?php
-class fEvents {
+class FEvents {
   static function thumbName($flyerName) {
     $arrTmp = explode('.',$flyerName);
     return str_replace($arrTmp[count($arrTmp)-1],'jpg',$flyerName);
   }
   static function thumbUrl($flyerName) {
-    global $conf;
+    $conf = FConf::getInstance(); 
     return $conf['events']['flyer_cache'] . fEvents::thumbName($flyerName);
   }
   static function flyerUrl($flyerName) {
-    global $conf;
+    $conf = FConf::getInstance(); 
     return $conf['events']['flyer_source'] . $flyerName;
   }
 }

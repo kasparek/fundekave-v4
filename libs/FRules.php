@@ -53,6 +53,10 @@ class FRules {
 	}
 	
 	//---END---functions from user class
+	static function getCurrent($type=1) {
+	 $user = FUser::getInstance(); 
+	 fRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
+  }
 	
 	static function get($usr,$page,$type=1) {
 		$db = FDBConn::getInstance();
