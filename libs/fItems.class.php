@@ -485,14 +485,14 @@ class fItems extends fQueryTool {
       $tpl->setVariable('PAGELINK','?k='.$arr['pageId'].'-'.fSystem::safetext($arr['pageName']).(($arr['typeId']=='forum')?('&i='.$arr['itemId'].'#i'.$arr['itemId']):('')));
       $tpl->setVariable('PAGENAME',$arr['pageName']);
     }
-    //---BLOG
+    //---BLOG / EVENT
     if(isset($arr['addon'])) {
       $link = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'].'-'.fSystem::safeText($arr['addon']);
-      if($this->showHeading==true) {
+      if($this->showHeading==true || $arr['typeId']=='event') {
         $tpl->setVariable('BLOGLINK',$link);
         $tpl->setVariable('BLOGTITLE',$arr['addon']);
       } else {
-          $this->currentHeader = $arr['addon'];
+        $this->currentHeader = $arr['addon'];
       }
       
       if($this->showComments == true) {

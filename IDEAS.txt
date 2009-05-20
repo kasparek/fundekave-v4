@@ -1,3 +1,14 @@
+event page
+- kategorie
+- kalendar
+
+minimize left bloks
+<!-- BEGIN sidebar-block-toolbar --><div class="sidebarBlockToolbar" style="display:none;"><a href="{MOVEUP}">u</a><a href="{MOVEDOWN}">d</a><a href="{MINIMIZE}">m</a></div><!-- END sidebar-block-toolbar -->
+
+rss-
+events - just events
+main - last blogs, posts, events
+
 switch from XAJAX to JQuery ajax
 
 PROPOJENI
