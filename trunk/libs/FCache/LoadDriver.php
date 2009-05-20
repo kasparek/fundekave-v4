@@ -17,7 +17,7 @@ class LoadDriver
   public function getData($id, $group = 'default') {
     if(isset($this->data[$group][$id])) {
       return $this->data[$group][$id];
-    }
+    } else return false;
   }
   
   public function invalidateData($id='',$group='default') {

@@ -1,5 +1,5 @@
 <?php
-class fPagesSaveTool extends fSqlSaveTool {
+class FPagesSaveTool extends FDBTool {
     var $pagesTable = 'sys_pages'; 
     var $pagesPrimaryCol = 'pageId';
     var $type;
@@ -64,8 +64,7 @@ class fPagesSaveTool extends fSqlSaveTool {
       if(isset($this->defaults[$this->type][$var])) return $this->defaults[$this->type][$var];
     }
     function getType($pageId) {
-       global $db;
-       return $this->type = $db->getOne('select typeId from sys_pages where pageId="'.$pageId.'"');
+       return $this->type = $this->getOne('select typeId from sys_pages where pageId="'.$pageId.'"');
     }
     function savePage($cols,$notQuoted=array()) {
         if(empty($this->type)) {

@@ -85,7 +85,7 @@ class FCache {
     $this->activeId = $id;
     $this->activeGroup = $group;
     
-    $this->activeDriver->getData($this->activeId, $this->activeGroup);
+    return $this->activeDriver->getData($this->activeId, $this->activeGroup);
     
   }
   

@@ -1,5 +1,5 @@
 <?php
-class fCategory extends fQueryTool {
+class FCategory extends FDBTool {
 	var $ident = 'cat'; //---required
 	var $tplObject;
 	
@@ -24,10 +24,10 @@ class fCategory extends fQueryTool {
 	var $perpage = 30;
 	var $editlink = false;
 	
-	function __construct($tableName,$primaryCol,&$db=false) {
-		global $user,$ARRPUBLIC;
+	function __construct($tableName,$primaryCol) {
+		global $ARRPUBLIC;
 		$this->arrPublic = $ARRPUBLIC;
-		parent::__construct($tableName,$primaryCol,&$db);
+		parent::__construct($tableName,$primaryCol);
 		//---defaults for galery,culture,linx,audit,akce
 		$this->arrHead=array(LABEL_CATEGORY_NAME,LABEL_CATEGORY_ORDER,LABEL_CATEGORY_PUBLIC);
 		$this->arrInputType=array("text","text",'public');
@@ -35,6 +35,7 @@ class fCategory extends fQueryTool {
 		$this->arrDbUsedCols=array('name','ord','public');
 		$this->requiredCol = 'name';
 		$this->setOrder('ord');
+		$user = FUser::getInstance();
 		if(!$user->idkontrol) $this->addWhere('public=1');
 	}
 	/**
@@ -44,7 +45,7 @@ class fCategory extends fQueryTool {
 	 * @return String - HTML
 	 */
 	function getList($typeId='') {
-		global $user,$db;
+		$user = FUser::getInstance();
 		if(isset($_GET['kat'])) $selectedCat = (int) $_GET['kat'];
 		else $selectedCat = 0;
 		if(!empty($typeId)) $this->addWhere("typeId='".$typeId."'");
@@ -57,7 +58,7 @@ class fCategory extends fQueryTool {
 				if($row[0] == $selectedCat) {
           $this->tplObject->setVariable('CATEGORYNAME',$row[1]);
           $this->selected = $row;
-          $user->currentPage["name"] =  $this->selected[1] . ' - ' . $user->currentPage["name"];
+          $user->pageVO->name =  $this->selected[1] . ' - ' . $user->pageVO->name;
         }
 				$this->tplObject->setCurrentBlock('category');
 				$this->tplObject->setVariable('CATLINK',$user->getUri('kat='.$row[0]));
@@ -98,15 +99,14 @@ class fCategory extends fQueryTool {
 		$this->tplObject->edParseBlock($blockname);
 	}
 	function getUriAddon() {
-	    global $user,$conf;
-	    
+	    $user = FUser::getInstance();
+	    $conf = FConf::getInstance();
 	    $rediraddon = '';
 		if(!empty($_REQUEST[$conf['pager']['urlVar']])) $this->arrRedirAddon[$conf['pager']['urlVar']] = $_REQUEST[$conf['pager']['urlVar']];
 		if(!empty($this->arrRedirAddon)) foreach ($this->arrRedirAddon as $k=>$v) $rediraddon .= '&'.$k.'='.$v;
 		return $rediraddon;
 	}
 	function process($redirect=false) {
-	    global $user,$conf;
 	    
 		$rediraddon = $this->getUriAddon();
 		
@@ -128,13 +128,14 @@ class fCategory extends fQueryTool {
 					}
 				}
 			if (isset($_POST["del".$this->ident])) foreach ($_POST["del".$this->ident] as $gkid) $this->db->query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');
-			$user->refresh();
 			
-			if($redirect===true) fHTTP::redirect($user->getUri($rediraddon));
+			if($redirect===true) {
+			   $user = FUser::getInstance();
+        fHTTP::redirect($user->getUri($rediraddon));
+      }
 		}
 	}
 	function getEdit() {
-		global $user,$conf;
 		
 		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;
 		
@@ -159,7 +160,7 @@ class fCategory extends fQueryTool {
 		
 		$arr = $this->getContent();
 		
-		
+		$user = FUser::getInstance();
 		$this->tplObject->setVariable("FORMACTION",$user->getUri($addToUrl));
 
 		$arrheadtmp = $this->arrHead;

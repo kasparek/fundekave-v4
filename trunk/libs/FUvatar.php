@@ -1,5 +1,5 @@
 <?php
-class fUvatar {
+class FUvatar {
   private $configTemplateUrl;
 
 	var $id;
@@ -35,7 +35,8 @@ class fUvatar {
           file_put_contents($filename,base64_decode($imageData));
          @chmod($filename, 0777);
          //---call to change avatar if auto change is set to true
-         global $user,$db;
+         $db = FDBConn::getInstance();
+        $user = FUser::getInstance();
          $user->updateAvatarFromWebcam($filename);
          $interval = (int) $user->getXMLVal('webcam','interval');
          $resolution = (int) $user->getXMLVal('webcam','resolution');
@@ -58,11 +59,12 @@ class fUvatar {
         $configXML = file_get_contents($this->configTemplateUrl);
         $xml = new SimpleXMLElement($configXML);
         //---change base config by user settings
-        global $user;
+        
         //default use 160x120
         $xml->conf->mode->width = $this->resolutions[0]['width'];
         $xml->conf->mode->height = $this->resolutions[0]['height'];
-
+        
+        $user = FUser::getInstance();
         $resolution = (int) $user->getXMLVal('webcam','resolution');
         if($resolution > 0) {
             //use 320x240 or else
@@ -125,8 +127,10 @@ class fUvatar {
     //---get list of online users
     function getLive() {
       //---get list of live
-      global $db,$user;
-      $arr = $db->getAll("select u.name,fu.refresh,fu.resolution from sys_users_fuvatar_live as fu join sys_users as u on u.userId=fu.userId where fu.pageId='".$user->currentPageId."' and fu.filetime >= ".date("U")."-(fu.refresh*2) ");
+      $db = FDBConn::getInstance();
+        $user = FUser::getInstance();
+        
+      $arr = $db->getAll("select u.name,fu.refresh,fu.resolution from sys_users_fuvatar_live as fu join sys_users as u on u.userId=fu.userId where fu.pageId='".$user->pageVO->pageId."' and fu.filetime >= ".date("U")."-(fu.refresh*2) ");
       
       $ret = '';
       

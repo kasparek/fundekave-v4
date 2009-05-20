@@ -27,6 +27,8 @@ class SessionDriver
     } else {
       $this->invalidateData($id, $group);
     }
+  } else {
+    return false;
   }
   }
   

@@ -1,17 +1,16 @@
 <?php
-class fPocket extends fQueryTool {
+class FPocket extends FDBTool {
     private $userId;
     private $template = 'sidebar.user.pocket.tpl.html';
     function __construct($userId) {
-        global $db;
         $this->userId = $userId;
-        parent::__construct('sys_users_pocket as p','p.pocketId',$db);
+        parent::__construct('sys_users_pocket as p','p.pocketId');
     }
     function __destruct() {
         
     }
     static function getLink($itemId,$page=false) {
-        global $conf;
+        $conf = FConf::getInstance();
         if($conf["pocket"]["enabled"] == 1)
             return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
     }
@@ -27,39 +26,37 @@ class fPocket extends fQueryTool {
         //TODO:---delete cache
         if(empty($page)) {
             $testDot = "select count(1) from sys_users_pocket where userId='".$this->userId."' and itemId='".$itemId."'";
-            $pageId = $this->db->getOne("select pageId from sys_pages_items where itemId='".$itemId."'");
+            $pageId = $this->getOne("select pageId from sys_pages_items where itemId='".$itemId."'");
         } else {
             $testDot = "select count(1) from sys_users_pocket where userId='".$this->userId."' and pageId='".$itemId."' and itemId is null";
             $pageId = $itemId;
             $itemId = 0;
         }
-        $isInPocket = $this->db->getOne($testDot);
+        $isInPocket = $this->getOne($testDot);
         if($isInPocket == 0 && !empty($pageId)) {
             $dot = "INSERT INTO sys_users_pocket (userId,pageId,itemId,description,dateCreated)
                 VALUES ('".$this->userId."', '".$pageId."', ".(($itemId>0)?("'".$itemId."'"):('null')).", '".$description."', NOW());";
-            return $this->db->query($dot);
+            return $this->query($dot);
         }
     }
     function removeItem($pocketId) {
         //TODO:---delete cache
-        return $this->db->query("delete from sys_users_pocket where pocketId='".$pocketId."'");
+        return $this->query("delete from sys_users_pocket where pocketId='".$pocketId."'");
     }
     function clear() {
         //TODO:---delete cache
-        return $this->db->query("delete from sys_users_pocket where userId='".$this->userId."'");
+        return $this->query("delete from sys_users_pocket where userId='".$this->userId."'");
     }
     function checkPocketItem($pocketId,$userId) {
-        return $this->db->getOne("select count(1) from sys_users_pocket where pocketId='".$pocketId."' and userId='".$userId."'");
+        return $this->getOne("select count(1) from sys_users_pocket where pocketId='".$pocketId."' and userId='".$userId."'");
     }
     function action($action,$pocketId) {
-        global $user;
-        if($this->checkPocketItem($pocketId,$user->gid)) {
+        if($this->checkPocketItem($pocketId,$this->userId)) {
             if($action=='r') $this->removeItem($pocketId);
         }
     }
     function show($xajax=false) {
-        
-        global $user,$conf;
+        $conf = FConf::getInstance();
         if($conf["pocket"]["enabled"] == 1) {
             $nameLength = 10;
             $ret = '';
@@ -93,7 +90,7 @@ class fPocket extends fQueryTool {
                     $tpl->setVariable('POCKETTYPE',$pocketType);
                     $tpl->parseCurrentBlock();
     
-    
+          $user = FUser::getInstance();
                     $tpl->setCurrentBlock('pocketitemtooltip');
                     $tpl->setVariable('USE',$user->getUri('p=u&pi='.((empty($item[3]))?($item[2]):($item[3]))));
                     $tpl->setVariable('REMOVE',$user->getUri('p=r&pi='.$item[0]));
@@ -112,7 +109,7 @@ class fPocket extends fQueryTool {
                         $fItems->showFooter = false;
                         $fItems->showHeading = true;
                         //$fItems->initData($item[6],$user->gid,true);
-                        $fItems->initData('',$user->gid);
+                        $fItems->initData('',$user->userVO->userId);
                         $fItems->initDetail($item[3]);
                         $fItems->getData();
                         $fItems->parse();

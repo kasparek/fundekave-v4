@@ -11,7 +11,7 @@ function sess_close() {
 	return 1;
 }
 function sess_read($key) {
-	Global $db;
+	$db = FDBConn::getInstance();
 	$data=$db->getCol("SELECT session FROM sys_sessions WHERE sid = '".$key."'");
 	if(count($data)==0) {
 		$db->query("INSERT INTO sys_sessions (sid, hostname, timestamp) values('".$key."', '".getHostIp()."', ".date("U").")");
@@ -22,17 +22,16 @@ function sess_read($key) {
 	return($session);
 }
 function sess_write($key, $value) {
-	Global $db,$conf;
-	if(empty($db)) $db = & DB::connect($conf['db'], $conf['dboptions']);
+	$db = FDBConn::getInstance();
 	$db->query("UPDATE sys_sessions SET hostname = '".getHostIp()."', session = '".$value."', timestamp = ".Date("U")." WHERE sid = '".$key."'");
 	return '';
 }
 function sess_destroy($key) {
-	Global $db;
+	$db = FDBConn::getInstance();
 	$db->query("DELETE FROM sys_sessions WHERE sid = '$key'");
 }
 function sess_gc($lifetime) {
-	Global $db;
+	$db = FDBConn::getInstance();
 	$db->query("DELETE FROM sys_sessions WHERE timestamp < '".(Date("U")-$lifetime)."'");
 	return 1;
 }
@@ -48,4 +47,3 @@ function getHostIp(){
 	.((!empty($_SERVER["X_HTTP_FORWARDED_FOR"]))?($_SERVER["X_HTTP_FORWARDED_FOR"]):(''));
 	return $ip;
 }
-?>

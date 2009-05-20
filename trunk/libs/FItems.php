@@ -1,5 +1,5 @@
 <?php
-class fItems extends fQueryTool {
+class FItems extends FDBTool {
 	
 	static function TYPES_VALID() { 
     	return array('forum','galery','blog','event');
@@ -7,8 +7,7 @@ class fItems extends fQueryTool {
     const TYPE_DEFAULT = 'forum';
     
     function __construct() {
-     global $db;
-     parent::__construct('sys_pages_items as i','i.itemId',$db);
+     parent::__construct('sys_pages_items as i','i.itemId');
     }
     /**
      * TAGGING section
@@ -20,41 +19,41 @@ class fItems extends fQueryTool {
      * @return boolean
      */
     static function itemExists($itemId) {
-        global $db;
-        return $db->getOne("select count(1) from sys_pages_items where itemId='".$itemId."'");
+        return $this->getOne("select count(1) from sys_pages_items where itemId='".$itemId."'");
     }
     static function tag($itemId,$userId,$weight=1,$tag='') {
-        global $db,$user;
-        $user->arrUsers['mytags'] = array();
-        $db->query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');
-        return $db->query("insert into sys_pages_items_tag values 
-        ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
+        $cache = FCache::getInstance('s');
+        $cache->invalidateGroup('mytags');
+        $this->query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');
+        return $this->query("insert into sys_pages_items_tag values ('".$itemId."','".$userId."',".(($tag!='')?("'".fSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
     }
     static function removeTag($itemId,$userId) {
-        global $db,$user;
-        if($db->getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
-            $db->query('update sys_pages_items set tag_weight=tag_weight-1 where itemId="'.$itemId.'"');
-            $user->resetGroupTimeCache('itemTags');
-            unset($user->arrUsers['mytags']);
-            return $db->query("delete from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'");
+        if($this->getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
+            $this->query('update sys_pages_items set tag_weight=tag_weight-1 where itemId="'.$itemId.'"');
+            $cache = FCache::getInstance('s');
+            $cache->invalidateGroup('mytags');
+            $cache->invalidateGroup('itemTags');
+            return $this->query("delete from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'");
         }
     }
     static function isTagged($itemId,$userId) {
-        global $db,$user;
         if($itemId>0 && $userId>0) {
-          if(isset($user->arrUsers['mytags'][$userId][$itemId])) return $user->arrUsers['mytags'][$userId][$itemId];
-          else {
-            return $user->arrUsers['mytags'][$userId][$itemId] = $db->getOne("select count(1) from sys_pages_items_tag where userId='".$userId."' and itemId='".$itemId."'");
+          $cache = FCache::getInstance('s',60);
+          $tagged = $cache->getData($userId.'-'.$itemId,'mytags');
+          if($tagged===false) {
+            $tagged = $this->getOne("select count(1) from sys_pages_items_tag where userId='".$userId."' and itemId='".$itemId."'");
+            $cache->setData($tagged); 
           }
+          return $tagged; 
         }
     }
     static function totalTags($itemId) {
-        global $db,$user;
         if($itemId > 0) {
-          $ret = $user->getTimeCache('itemTags',$itemId,60);
+          $cache = FCache::getInstance('s',60);
+          $ret = $cache->getData($itemId, 'itemTags');
           if($ret === false) {
-            $ret = $db->getOne("select sum(weight) from sys_pages_items_tag where itemId='".$itemId."'");
-            $user->saveTimeCache($ret);
+            $ret = $this->getOne("select sum(weight) from sys_pages_items_tag where itemId='".$itemId."'");
+            $cache->setData( $ret );
           }
           return $ret;
         }
@@ -84,8 +83,7 @@ class fItems extends fQueryTool {
     
     }
     static function getTag($itemId,$userId,$typeId='') {
-        global $db,$user;
-        if($typeId=='') $typeId = $db->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
+        if($typeId=='') $typeId = $this->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
         $arrTemplates = fItems::itemTagTemplate();
         $templates = array_keys($arrTemplates);
         if(!in_array($typeId,$templates)) {
@@ -100,23 +98,21 @@ class fItems extends fQueryTool {
         } else {
             $template = $templateType['active'];
             $tpl->setTemplate($template);
-            $tpl->setVariable('URLACCEPT',$user->getUri('t='.$itemId));
+            $tpl->setVariable('URLACCEPT',FUser::getUri('t='.$itemId));
         }
         
         $tpl->setVariable('ITEMID',$itemId);
-        $tpl->setVariable('CSSSKINURL',$user->getSkinCSSFilename());
-        $tpl->setVariable('SUM',fItems::totalTags($itemId));
+        $tpl->setVariable('CSSSKINURL',FUser::getSkinCSSFilename());
+        $tpl->setVariable('SUM',FItems::totalTags($itemId));
         
         
-        $tpl->setVariable('URLREMOVE',$user->getUri('rt='.$itemId));
+        $tpl->setVariable('URLREMOVE',FUser::getUri('rt='.$itemId));
         
         
         return $tpl->get();
     }
     static function getItemTagList($itemId) {
-        global $db;
-        $arr = $db->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='"
-        .$itemId."'");
+        $arr = $this->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='".$itemId."'");
         return $arr;
     }
     /** 
@@ -162,8 +158,7 @@ class fItems extends fQueryTool {
             ),
         );
     function initDetail($itemId) {
-        global $user;
-        $itemCheck = $this->db->getRow("select itemIdTop,typeId from sys_pages_items where itemId='".$itemId."'");
+        $itemCheck = $this->getRow("select itemIdTop,typeId from sys_pages_items where itemId='".$itemId."'");
         if($itemCheck[0] > 0) {
             $this->itemIdInside =$itemId;
             $itemId = $itemCheck[0];
@@ -174,13 +169,12 @@ class fItems extends fQueryTool {
     	}
         $this->addWhere("i.itemId='".$itemId."'");
         
-        if(!fRules::get($user->gid,$user->currentPageId,2)) {
+        if(!fRules::getCurrent(2)) {
           $this->addWhere('i.public = 1');
         }
         return $itemId;
     }
     function initData($typeId='forum',$byPermissions = false,$strictType=false) {
-      global $db,$user;
       $this->queryReset();
       if(!empty($typeId)) $this->typeId = $typeId;
       $doPagesJoin = true;
@@ -195,13 +189,14 @@ class fItems extends fQueryTool {
         if($doPagesJoin) $this->addJoin("join sys_pages as p on p.pageId=i.pageId");
       }
       if(empty($typeId) || $typeId=='blog') {
+        $user = FUser::getInstance();
         if($user->idkontrol===true) {
-          $this->addJoin('left join sys_pages_items_readed_reactions as u on u.itemId=i.itemId and u.userId="'.$user->gid.'"');
+          $this->addJoin('left join sys_pages_items_readed_reactions as u on u.itemId=i.itemId and u.userId="'.$user->userVO->userId.'"');
           $this->fQuerySelectDefault['readedCnt'] = 'u.cnt as readed';
         }
       }
       
-      if(!fRules::get($user->gid,$user->currentPageId,2)) {
+      if(!fRules::get( 2 )) {
           $this->addWhere('i.public = 1');
       }
       
@@ -218,7 +213,6 @@ class fItems extends fQueryTool {
         else return implode(",",$arrSelect);
     }
     function getData($from=0, $count=0) {
-      global $user;
         $this->arrData = array();
         $itemTypeId = $this->typeId;
         
@@ -279,7 +273,8 @@ class fItems extends fQueryTool {
               break;
               
             }
-            if (($user->gid > 0 && $user->gid == $namedRow['userId']) || fRules::get($user->gid,$namedRow['pageId'],2)) $namedRow['editItemId'] = $namedRow['itemId'];
+            $user = FUser::getInstance();
+            if (($user->userVO->userId > 0 && $user->userVO->userId == $namedRow['userId']) || fRules::get($user->userVO->userId,$namedRow['pageId'],2)) $namedRow['editItemId'] = $namedRow['itemId'];
             $this->arrData[] = $namedRow;
           }
         }
@@ -344,7 +339,7 @@ class fItems extends fQueryTool {
         if($this->arrData) return array_shift($this->arrData);
     }
     function parse($itemId=0) {
-  		global $user,$conf;
+      $user = FUser::getInstance();
   		if($itemId>0) {
   		    if(count($this->arrData)>1) {
       		    foreach ($this->arrData as $item) {
@@ -359,8 +354,7 @@ class fItems extends fQueryTool {
   		if($arr = $this->pop()) {
   		    //chechk permissions to edit
   		    $this->enableEdit = false;
-  		    
-  		    if(fRules::get($user->gid,$arr['pageId'],2) || $arr['userId']==$user->gid) {
+  		    if(fRules::get($user->userVO->userId,$arr['pageId'],2) || $arr['userId']==$user->userVO->userId) {
   		        $this->enableEdit=true;
   		    }
   	/*.........zacina vypis prispevku.........*/
@@ -383,7 +377,7 @@ class fItems extends fQueryTool {
   	if(isset($arr['name'])) $tpl->setVariable('AUTHOR',$arr['name']);
   	if(!empty($arr['unread'])) $tpl->touchBlock('unread');
   	if($this->enableEdit === true) {
-  	 if(isset($arr['editItemId']) && $user->currentPageId == $arr['pageId']) {
+  	 if(isset($arr['editItemId']) && $user->pageVO->pageId == $arr['pageId']) {
   	     $tpl->setVariable('EDITID',$arr['editItemId']); //--- FORUM/delete-BLOG/edit
   	     $tpl->setVariable('EDITPAGEID',$arr['pageId'].'u');
   	 }
@@ -409,6 +403,7 @@ class fItems extends fQueryTool {
             $flyerFilename = fEvents::flyerUrl($arr['enclosure']);
             if(!file_exists($flyerFilenameThumb)) {
             //---create thumb
+              $conf = FConf::getInstance();
             	$fImg = new fImgProcess($flyerFilename,$flyerFilenameThumb
                 ,array('quality'=>$conf['events']['thumb_quality']
                 ,'width'=>$conf['events']['thumb_width'],'height'=>0));
@@ -421,14 +416,14 @@ class fItems extends fQueryTool {
           	    $tpl->setVariable('IMGEVENTALT',$arr['addon']);
             }
   	    } else {
-  	        $tpl->setVariable('FLYERTHUMBURLDEFAULT',$user->getSkinCSSFilename() . '/img/flyer_default.png');
+  	        $tpl->setVariable('FLYERTHUMBURLDEFAULT',FUser::getSkinCSSFilename() . '/img/flyer_default.png');
   	    }
   	    if($this->showComments == true) {
   	     
   	     if($arr['tag_weight'] > 0) {
   	     
   	         $arrTags = fItems::getItemTagList($arr['itemId']);
-  	     
+  	         
   	         foreach ($arrTags as $tag) {
   	             $tpl->setCurrentBlock('participant');
   	             $tpl->setVariable('PARTICIPANTAVATAR',$user->showAvatar($tag[0],array('showName'=>1)));
@@ -437,7 +432,7 @@ class fItems extends fQueryTool {
   	     }
   	    }
   	    if($this->showFooter) {
-  	        if($user->gid == $arr['userId'] || fRules::get($user->gid,$user->currentPageId,2)) {
+  	        if($user->userVO->userId == $arr['userId'] || fRules::getCurrent(2)) {
   	            $tpl->setVariable('EDITLINK','?k=eventu&amp;i='.$arr['itemId']);
   	        }
   	    }
@@ -446,7 +441,7 @@ class fItems extends fQueryTool {
   	if($arr['typeId']=='forum') {
       if(!empty($arr['enclosure'])) $tpl->setVariable('ENCLOSURE',fItems::proccessItemEnclosure($arr['enclosure']));
       
-      if($user->zidico==1) {
+      if($user->userVO->zavatar == 1) {
           $avatarId = (int) $arr['userId'];
           $avatar = $user->showAvatar($avatarId);
           $tpl->setVariable('AVATAR',$avatar);
@@ -458,8 +453,9 @@ class fItems extends fQueryTool {
      //---thumb tag link
   	 if($this->showTag==true) {
         fItems::initTagXajax();
-        if(false === $user->getTimeCache('itemTags',$arr['itemId'],60)) $user->saveTimeCache($arr['tag_weight']);
-        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->gid,$arr['typeId']));
+        $cache = FCache::getInstance('s',60);        
+        if(false === $cache->getData($arr['itemId'],'itemTags')) $cache->setData($arr['tag_weight']);
+        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->userVO->userId,$arr['typeId']));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
@@ -547,7 +543,7 @@ class fItems extends fQueryTool {
             $fItem = new fItems();
             $fItem->enableEdit = false;
             $fItem->showPageLabel = true;
-            $fItem->initData('',$user->gid);
+            $fItem->initData('',$user->userVO->userId);
             $fItem->getItem($arr['itemIdBottom']);
             $fItem->getData();
             if(!empty($fItem->arrData)) {
@@ -557,7 +553,7 @@ class fItems extends fQueryTool {
             unset($fItem);
         }
         if(!empty($arr['pageIdBottom'])) {
-            if(fRules::get($user->gid,$arr['pageIdBottom'],1)) {
+            if(fRules::get($user->userVO->userId,$arr['pageIdBottom'],1)) {
                 $tpl->setVariable('ITEMBOTTOM','<h3><a href="?k='.$arr['pageIdBottom'].'">'.fPages::pageAttribute($arr['pageIdBottom']).'</a></h3>');
             }
         }
@@ -589,8 +585,9 @@ class fItems extends fQueryTool {
     * FILTER TOOLBAR FUNCTIONS
     * */    
     static function &getTagToolbarData() {
-      global $user;
-      $arr = & $user->arrTagItems[$user->currentPageId];
+      $cache = FCache::getInstance('s',0);
+      $user = FUser::getInstance();
+      $arr = $cache->getData($user->pageVO->pageId,'tagToolData');
       if(!isset($arr['order'])) $arr['order'] = 0;
       if(!isset($arr['date'])) $arr['date'] = 0;
       if(!isset($arr['interval'])) $arr['interval'] = 1;
@@ -601,6 +598,13 @@ class fItems extends fQueryTool {
       }
       return $arr; 
     }
+    
+    static function setTagToolbarData($arr) {
+            $cache = FCache::getInstance('s',0);
+          $user = FUser::getInstance();
+          $cache->setData($arr,$user->pageVO->pageId,'tagToolData');
+    }
+    
     static function isToolbarEnabled() {
         $toolbarData = &fItems::getTagToolbarData();
         return $toolbarData['enabled'];
@@ -612,6 +616,7 @@ class fItems extends fQueryTool {
             	$toolbarData[$k] = $v;
             }
         }
+        FItems::setTagToolbarData($toolbarData);
     }
     static function getIntervalConf($par) {
         $arr = array(
@@ -624,7 +629,6 @@ class fItems extends fQueryTool {
     }
         
     static function getTagToolbar($showHits=true,$params=array()) {
-      global $user;
       $toolbarData = &fItems::getTagToolbarData();
       $tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
       
@@ -686,17 +690,19 @@ class fItems extends fQueryTool {
               }
           }
           if(isset($previous)) {
-              $tpl->setVariable('PREVIOUSLINK',$user->getUri('tuda=prev'));
+              $tpl->setVariable('PREVIOUSLINK',FUser::getUri('tuda=prev'));
               $tpl->setVariable('PREVIOUSTEXT',PAGER_PREVIOUS . (($previous!='')?(' ' .$previous):('')));
           }
           if(isset($current)) $tpl->setVariable('CURRENTDATE',$current);
           if(isset($next)) {
-              $tpl->setVariable('NEXTLINK',$user->getUri('tuda=next'));
+              $tpl->setVariable('NEXTLINK',FUser::getUri('tuda=next'));
               $tpl->setVariable('NEXTTEXT',(($next!='')?($next .' '):('')). PAGER_NEXT);
           }
       }
       if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
-      $tpl->setVariable('FORMACTION',$user->getUri());
+      $tpl->setVariable('FORMACTION',FUser::getUri());
+
+      FItems::setTagToolbarData($toolbarData);
 
       return $tpl->get();
     }
@@ -743,9 +749,9 @@ class fItems extends fQueryTool {
             }
         }
       }
+      FItems::setTagToolbarData($toolbarData);
     }
     static function setQueryTool(&$fQuery) {
-        global $user;
         $thumbupData = &fItems::getTagToolbarData();
         if($thumbupData['enabled']==1) {
             
@@ -758,7 +764,7 @@ class fItems extends fQueryTool {
                 if(!empty($thumbupData['usersWho'])) {
                     $usersNameArr = explode(',',$thumbupData['usersWho']);
                     foreach ($usersNameArr as $userName) {
-                    	if($userId = $user->getUserIdByName($userName)) {
+                    	if($userId = FUser::getUserIdByName($userName)) {
                     	    $validatedUserId[] = $userId;
                     	}
                     	else fError::addError(MESSAGE_USERNAME_NOTEXISTS.': '.$userName);
@@ -785,7 +791,8 @@ class fItems extends fQueryTool {
                 } else $fQuery->replaceSelect('i.tag_weight','i.tag_weight as thumbs');
                 if(isset($thumbupData['filter']))
                 if($thumbupData['filter'] == 2) {
-                    $fQuery->addWhere('it.userId="'.$user->gid.'"');
+                  $user = FUser::getInstance();
+                    $fQuery->addWhere('it.userId="'.$user->userVO->userId.'"');
                     $fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=i.itemId');
                 } 
             }
@@ -812,9 +819,6 @@ class fItems extends fQueryTool {
             if($thumbupData['order']>0 && $thumbupData['interval']>1) {
               $fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
             }
-            if($user->gid==1) {
-             //---$fQuery->debug = 1;
-            }
         }
     }
     function getItem($itemId) {
@@ -827,21 +831,19 @@ class fItems extends fQueryTool {
       return $sItem->Save($arrData,array('dateCreated'));
     }
     function deleteItem($itemId) {
-        $this->db->query("delete from sys_pages_items where itemId='".$itemId."'");
-        $this->db->query("delete from sys_users_pocket where itemId='".$itemId."'");
-        $this->db->query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
-        $this->db->query("delete from sys_pages_items_hit where itemId='".$itemId."'");
-        $this->db->query("delete from sys_pages_items_tag where itemId='".$itemId."'");
+        $this->query("delete from sys_pages_items where itemId='".$itemId."'");
+        $this->query("delete from sys_users_pocket where itemId='".$itemId."'");
+        $this->query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
+        $this->query("delete from sys_pages_items_hit where itemId='".$itemId."'");
+        $this->query("delete from sys_pages_items_tag where itemId='".$itemId."'");
     }
     static function getItemUserId($itemId) {
-        global $db;
-        return $db->getOne("select userId from sys_pages_items where itemId='".$itemId."'");
+        return $this->getOne("select userId from sys_pages_items where itemId='".$itemId."'");
     }
     
     //---properties
     static function getProperty($itemId,$propertyName,$default=false) {
-            global $db;
-         $arr = $db->getAll("select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'");
+         $arr = $this->getAll("select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'");
          if(empty($arr)) {
              ///get default
              $value = $default;
@@ -851,7 +853,6 @@ class fItems extends fQueryTool {
          return $value;
     }
     static function setProperty($itemId,$propertyName,$propertyValue) {
-        global $db;
-        return $db->query("insert into sys_pages_items_properties (itemId,name,value) values ('".$itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+         return $this->query("insert into sys_pages_items_properties (itemId,name,value) values ('".$itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
     }
 }

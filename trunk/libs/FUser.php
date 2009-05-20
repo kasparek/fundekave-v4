@@ -74,14 +74,7 @@ class FUser {
 	var $arrFriends = array();
 	//---used for cacheing tooltips from other libraries (galery)
     var $arrTooltips = array();
-    //---used for thumbup toolbar - tag filtering 
-    var $arrTagItems = array();
-    //---cache per load - clean every page load
-    var $arrCachePerLoad = array();
-    //---cleared on given interval
-    var $arrCacheOnTime = array();
-    var $arrCacheTimeKeeper = array();
-    var $pointerCacheTimeValue;
+    
     //---cache search in pages
     var $pagesSearch = array();
     var $itemsSearch = array();
@@ -485,21 +478,22 @@ class FUser {
 		    } else $this->arrCachePerLoad['onlineUserLocation'][$userId] = false;
 		} else return $this->arrCachePerLoad['onlineUserLocation'][$userId];
 	}
-	function isUserIdRegistered($userId) {
-		Global $db;
-		if(!isset($this->arrCachePerLoad['registeredUserIds'][$userId])) {
-		  return $this->arrCachePerLoad['registeredUserIds'][$userId] = $db->getOne("select count(1) from sys_users where userId='".$userId."'");
-		} else {
-    	    return $this->arrCachePerLoad['registeredUserIds'][$userId];
+	static function isUserIdRegistered($userId) {
+		$cache = FCache::getInstance('l');
+		if( $ret = $cache->getData($name,'isId') !== false ) {
+		  $db = FDBConn::getInstance();
+		  $ret = $db->getOne("select count(1) from sys_users where userId='".$userId."'");
+		  $cache->setData($ret);
 		}
+		return $ret;
 	}
-	function isUsernameRegistered($name){
-		Global $db;
-		if(!isset($this->arrCachePerLoad['registeredUsername'][$name])) {
-		  $ret = $this->arrCachePerLoad['registeredUsername'][$name] = $db->getOne("select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'");
-		} else {
-    	    $ret = $this->arrCachePerLoad['registeredUsername'][$name];
-    	}
+	static function isUsernameRegistered($name){
+		$cache = FCache::getInstance('l');
+		if( $ret = $cache->getData($name,'isReg') !== false ) {
+		  $db = FDBConn::getInstance();
+		  $ret = $db->getOne("select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'");
+		  $cache->setData($ret);
+		}
 		return $ret;
 	}
 	/**
@@ -508,13 +502,14 @@ class FUser {
 	 * @param unknown_type $name
 	 * @return unknown
 	 */
-	function getUserIdByName($name){
-		Global $db;
-		if(!isset($this->arrCachePerLoad['idByName'][$name])) {
-		  return $this->arrCachePerLoad['idByName'][$name] = $db->getOne("select userId from sys_users where deleted=0 and name='".$name."'");
-		} else {
-    	    return $this->arrCachePerLoad['idByName'][$name];
+	static function getUserIdByName($name){
+	 $db = FDBConn::getInstance();
+	 $cache = FCache::getInstance('l');
+		if($id = $cache->getData($name,'idByName')===false)) {
+		  $id = $db->getOne("select userId from sys_users where deleted=0 and name='".$name."'");
+		  $cache->setData($id,$name,'idByName');
 		}
+		return $id;
 	}
 	function getDiaryCnt($usrid=0) {
 		global $db;
@@ -737,185 +732,25 @@ class FUser {
 		}
 		return $sentCount;
 	}
-	function getSkinCSSFilename() {
-		Global $db;
+	static function getSkinCSSFilename() {
 		$skin = SKIN_DEFAULT;
+		//---TODO: from userVO load custom skin name
 		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
 		return(WEB_REL_CSS.$skin);
 	}
-	function rulezInvalidate() {
-		$this->arrRulez = array();
-	}
-	function rulezPut($usr,$page,$type,$value) {
-		if($value == true) $value = 2; else $value = 1;
-		$this->arrRulez[$usr][$page][$type] = $value;
-	}
-	//FIXME: good idea of caching rulez but must be a way to invalidate a cache from server
-	function rulezGet($usr,$page,$type) {
-		if(!empty($this->arrRulez[$usr][$page][$type])) return $this->arrRulez[$usr][$page][$type];
-		else return false;
-	}
-	function getUri($otherParams='',$pageId='',$pageParam=false) {
-	   $pageParam = ($pageParam===false)?($this->currentPageParam):($pageParam);
-	    if(empty($pageId) && $this->itemVO->itemId>0) $params[] = 'i='.$this->itemVO->itemId;
+	
+	static function getUri($otherParams='',$pageId='',$pageParam=false) {
+	   $user = FUser::getInstance();
+	   $pageParam = ($pageParam===false)?($user->currentPageParam):($pageParam);
+	    if(empty($pageId) && $user->itemVO->itemId>0) $params[] = 'i='.$user->itemVO->itemId;
 	    if(!empty($pageId)) $params[] = 'k='.$pageId.$pageParam;
-	    elseif(!empty($this->pageVO->pageId)) $params[] = 'k='.$this->pageVO->pageId.$pageParam;
+	    elseif(!empty($user->pageVO->pageId)) $params[] = 'k='.$user->pageVO->pageId.$pageParam;
 	    if($otherParams!='') $params[] = $otherParams;
 	    $parStr = implode("&",$params);
 		return BASESCRIPTNAME.(strlen($parStr)>0)?('?'.$parStr):('');
 	}
-	//---FILTERING FUNCTIONS
-	function filterClean() {
-		$this->arrFilter = array();
-	}
-	function filterSet($pageId,$type,$text) {
-	    if(!isset($this->arrFilter[$pageId])) $this->arrFilter[$pageId] = array();
-	    if(!isset($this->arrFilter[$pageId][$type])) $this->arrFilter[$pageId][$type] = null;
-		if($text != $this->arrFilter[$pageId][$type]) {
-       		if($text=='') unset($this->arrFilter[$pageId][$type]);
-       		else $this->arrFilter[$pageId][$type] = $text;
-       		if(count($this->arrFilter[$pageId])==0) unset($this->arrFilter[$pageId]);
-        }
-	}
-	function filterGet($pageId,$type) {
-		if(isset($this->arrFilter[$pageId][$type])) return $this->arrFilter[$pageId][$type];
-		else return false;
-	}
-	//---CACHE FUNTIONS
-	var $cacheLite = false;
-	var $cacheLiteCurrentConf = '';
-	var $cacheOptions = array();
-	var $cacheConf = array(
-	'mainMenu'=>array('lifeTime'=>86400,'userBased'=>1),
-	'secondaryMenu'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-	'sidebarSet'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-	'pagescategories'=>array('lifeTime'=>86400,'pageBased'=>1),
-    'pagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-    'bookedpagesrelated'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-    'postwho'=>array('lifeTime'=>86400,'userBased'=>1),
-    'datelefthand'=>array('lifeTime'=>60),
-    'eventtip'=>array('lifeTime'=>60,'userBased'=>1),
-    'poll'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-    'fotornd'=>array('lifeTime'=>120),
-    'forumdesc'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-    'loggedlist'=>array('lifeTime'=>10,'userBased'=>1),
-    'calendarlefthand'=>array('lifeTime'=>86400,'userBased'=>1,'pageBased'=>1),
-    'fotodetail'=>array('lifeTime'=>60,'userBased'=>1),
-    'fototags'=>array('lifeTime'=>86400,'userBased'=>1),
-    'fotohits'=>array('lifeTime'=>86400,'userBased'=>1),
-    'fPages'=>array('lifeTime'=>86400),
-    'lastForumPost'=>array('lifeTime'=>86400,'userBased'=>1),
-    'lastBlogPost'=>array('lifeTime'=>86400,'userBased'=>1),
-    'userBasedMedium'=>array('lifeTime'=>600,'userBased'=>1),
-  );
-  
-	function &cacheGetInstance($conf='') {
-    if($conf=='') $conf = $this->cacheLiteCurrentConf;
-    
-    if(!$this->cacheLite || $this->cacheLiteCurrentConf!=$conf) {
-      $this->cacheOptions = array();
-      if(isset($this->cacheConf[$conf])) {
-        foreach ($this->cacheConf[$conf] as $k=>$v) $this->cacheSet($k,$v);
-      }
-      $this->cacheLiteCurrentConf = $conf;
-      require_once('Cache/Lite.php'); 
-      if(!is_dir(ROOT.ROOT_CACHE_TEXT)) mkdir(ROOT.ROOT_CACHE_TEXT,0777,true);
-      $this->cacheOptions['cacheDir'] = ROOT.ROOT_CACHE_TEXT;
-      if(!isset($this->cacheOptions['lifeTime'])) $this->cacheOptions['lifeTime'] = null;
-      $this->cacheLite = new Cache_Lite($this->cacheOptions);   
-   }
-   return $this->cacheLite;
-  }
-  function cacheReset() {
-    $this->cacheLite = null;
-  }
-  function cacheSet($key,$value) {
-    $this->cacheOptions[$key] = $value;
-  }
-    function cacheGet($cacheId,$addonCacheId = '') {
-        $cacheLite =& $this->cacheGetInstance($cacheId);
-        $group = 'default';
-        if(isset($this->cacheOptions['userBased']) || isset($this->cacheOptions['pageBased'])) {
-          $group = $cacheId;
-          
-          if(isset($this->cacheOptions['userBased'])) $cacheId .= $this->gid;
-          if(isset($this->cacheOptions['pageBased'])) $cacheId .= $this->currentPageId;
-        }
-        return $cacheLite->get($cacheId.$addonCacheId,$group); 
-    }
-  function cacheSave($data) {
-    if($this->cacheLite) {
-      return $this->cacheLite->save($data); 
-    }
-  }
-  function cacheRemove($arrCacheId) {
-    if(!is_array($arrCacheId)) $arrCacheId = array($arrCacheId);
-    foreach($arrCacheId as $cacheId) {
-      $cacheLite = $this->cacheGetInstance($cacheId);
-      if(isset($this->cacheOptions['userBased']) || isset($this->cacheOptions['pageBased'])) {
-        $cacheLite->clean($cacheId);
-      } else {
-        $cacheLite->remove($cacheId);
-      }
-    }
-  }
-  function cacheTotalClean() {
-      foreach ($this->cacheConf as $k=>$conf) {
-        $cacheLite = $this->cacheGetInstance($k);
-        $cacheLite->clean();	
-      }
-  }
-  //-------------------------------------
-  
-  //---TIME CACHE STORED IN SESSION FOR SMALL DATA
-    function resetGroupTimeCache($group) {
-      $this->arrCacheOnTime[$group] = array();
-      unset($this->arrCacheTimeKeeper[$group]);
-    }
-    function cleanTimeCache() {
-        if(!empty($this->arrCacheTimeKeeper))
-        foreach ($this->arrCacheTimeKeeper as $k=>$group) {
-        	if($group['time']+$group['int'] < date("U")) {
-            $this->arrCacheOnTime[$k] = array();
-            unset($this->arrCacheTimeKeeper[$k]);
-          }
-        }
-    }
-    function getTimeCache($group,$arrKeys,$timeSec) {
-        if(!is_array($arrKeys)) $arrKeys = array($arrKeys);
-        if(!isset($this->arrCacheTimeKeeper[$group])) {
-            $this->arrCacheTimeKeeper[$group] = array('int'=>$timeSec,'time'=>date("U"));
-        }
-        $this->cleanTimeCache();
-        $ret = false;
-        if(!isset($this->arrCacheOnTime[$group])) $this->arrCacheOnTime[$group] = array();
-        $this->pointerCacheTimeValue = &$this->arrCacheOnTime[$group];
-        foreach ($arrKeys as $key) {
-            if(!isset($this->pointerCacheTimeValue[$key])) $this->pointerCacheTimeValue[$key] = false;
-            $this->pointerCacheTimeValue = &$this->pointerCacheTimeValue[$key];
-        }
-        if($this->pointerCacheTimeValue !== false) $ret = $this->pointerCacheTimeValue;
-        return $ret;
-    }
-    function saveTimeCache($data) {
-        $this->pointerCacheTimeValue = $data;
-    }
-    //---DB USER CACHE STORE
-    function getDBCache($key,$userId=-1) {
-      global $db;
-      if($userId==-1) $userId = $this->gid;
-      if($value = $db->getOne("select value from sys_users_cache where userId='".$userId."' and name='".$key."'")) {
-        return $value;
-      } else {
-        return false;
-      }
-    }
-    function setDBCache($key,$value,$userId=-1) {
-      global $db;
-      if($userId==-1) $userId = $this->gid;
-      $db->query('insert into sys_users_cache (userId,name,value,dateUpdated) values ("'.$userId.'","'.$key.'","'.$value.'",now()) on duplicate key update dateUpdated=now(),value = "'.$value.'"');
-    }
-    //---fuvatar support functions
+		
+    //---fuvatar support functions--------------------------------------
     function fuvatarAccess($userName) {
         global $db;
         $ret = false;

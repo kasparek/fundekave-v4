@@ -1,5 +1,5 @@
 <?php
-class fForum {
+class fForum extends FDBTool {
 	var $aMessCount;
 	var $aMessNewCount;
 	var $aId;
@@ -14,35 +14,34 @@ class fForum {
 		
 	}
 	static function setBooked($auditId,$userId,$book) {
-		global $db;
-		$db->query("update sys_pages_favorites set book='".$book."' where pageId='".($auditId)."' AND userId='" . $userId."'");
+		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".($auditId)."' AND userId='" . $userId."'");
 	}
 	static function messDel($id,$auditId=0) {
-		global $db,$user;
 		if(!is_array($id)) $id= array($id);
 		if(!empty($id)) {
-			if(empty($auditId)) $auditId = $db->getOne("select pageId from sys_pages_items where itemId='".$id[0]."'");
+		  $user = FUser::getInstance();
+			if(empty($auditId)) $auditId = $this->getOne("select pageId from sys_pages_items where itemId='".$id[0]."'");
 			$fItems = new fItems();
 			foreach ($id as $delaud) {
-					if(fRules::get($user->gid,$user->currentPageId,2) 
-					|| $user->gid == $db->getOne("SELECT userId FROM sys_pages_items WHERE itemId='".$delaud."'")) {
+					if(fRules::getCurrent(2) 
+					|| $user->userVO->userId == $this->getOne("SELECT userId FROM sys_pages_items WHERE itemId='".$delaud."'")) {
 					$fItems->deleteItem($delaud);
         }
 			}
-			$db->query("update sys_pages set cnt=".$db->getOne("select count(1) from sys_pages_items where pageId='".$auditId."'")." where pageId='".$auditId."'");
+			$this->query("update sys_pages set cnt=".$this->getOne("select count(1) from sys_pages_items where pageId='".$auditId."'")." where pageId='".$auditId."'");
 			$user->statAudit($auditId);
 		}
 	}
 	static function messWrite($arr) {
-			global $db,$user;
-			$fSave = new fSqlSaveTool('sys_pages_items','itemId');
+			$fSave = new FDBTool('sys_pages_items','itemId');
 			$arrNotQuoted = array('dateCreated');
 			$arr['dateCreated'] = 'NOW()';
 			if(empty($arr['itemIdTop'])) {
 			 $arr['itemIdTop'] = 'null';
 			 $arrNotQuoted[] = 'itemIdTop';
       } else {
-        $user->cacheRemove('lastBlogPost');
+        $cache = FCache::getInstance('f');
+        $cache->invalidateGroup('lastBlogPost');
       }
       if(empty($arr['userId'])) {
 			 $arr['userId'] = 'null';
@@ -64,16 +63,15 @@ class fForum {
 			if($arr['itemIdTop'] > 0) fForum::incrementReactionCount($arr['itemIdTop']);
 			else {
 			 $dot = "update sys_pages set cnt=cnt+1 where pageId='".$arr['pageId']."'";
-        $db->query($dot);
+        $this->query($dot);
       }
-			
-			if($user->gid>0) $user->statAudit($arr['pageId'],false);
+			$user = FUser::getInstance(); 
+			if($user->userVO->userId > 0) $user->statAudit($arr['pageId'],false);
 			
 			return $ret;
 	}
 	static function updateReadedReactions($itemId,$userId) {
-	    global $db;
-	    return $db->query("insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
+	    return $this->query("insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
 	}
   
 	static function setUnreadedMess($arrMessId){
@@ -95,15 +93,15 @@ class fForum {
 		$_SESSION['aNotReadedMess'] = array();
 	}
 	static function getSetUnreadedForum($id,$itemId){
-		Global $db,$user;
-		if($itemId == 0) $unreadedCnt = $user->currentPage['cnt'] - $user->favoriteCnt;
+		$user = FUser::getInstance(); 
+		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->favoriteCnt;
 		else {
-		    $dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->gid.'" and i.itemId="'.$itemId.'"';
-		    $unreadedCnt = $db->getOne($dot);
+		    $dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$itemId.'"';
+		    $unreadedCnt = $this->getOne($dot);
 		}
 		$unreadedCnt = (($unreadedCnt < POSTS_UNREAD_MAX)?($unreadedCnt):(POSTS_UNREAD_MAX));
 		if($unreadedCnt > 0 && $user->idkontrol) {
-			$arrIds = $db->getCol("select itemId from sys_pages_items 
+			$arrIds = $this->getCol("select itemId from sys_pages_items 
 			where pageId='".$id."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(''))." order by itemId desc limit 0,".$unreadedCnt);
 			if(!empty($arrIds)){
 				if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess']=array();
@@ -116,35 +114,36 @@ class fForum {
 	//---aktualizace oblibenych
 	/*.......aktualizace FAV KLUBU............*/
 	static function aFavAll($usrId,$typeId='forum') {
-		Global  $db;
 		if(!empty($usrId)){
-			$klo=$db->getCol("SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'");
-			$kls=$db->getCol("SELECT pageId FROM sys_pages where typeId = '".$typeId."'");
+			$klo=$this->getCol("SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'");
+			$kls=$this->getCol("SELECT pageId FROM sys_pages where typeId = '".$typeId."'");
 			if(!isset($klo[0])) $res=$kls;
 			else $res = array_diff($kls,$klo);
-			foreach($res as $r) $db->query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+			foreach($res as $r) $this->query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
 		}
 	}
 	static function aFav($pageId,$userId,$cnt,$booked=0) {
-		global $db;
 		if(!empty($userId)){
 		    $dot = "insert into sys_pages_favorites values ('".$userId."','".$pageId."','".$cnt."','".$booked."') on duplicate key update cnt='".$cnt."'";
-		    $db->query($dot);
+		    $this->query($dot);
 		}
 	}
 	static function incrementReactionCount($itemId) {
-	    global $db;
 	    $dot = "update sys_pages_items set cnt=cnt+1 where itemId='".$itemId."'";
-	    return $db->query($dot);
+	    return $this->query($dot);
 	}
 	function process($itemId = 0,$callbackFunction=false) {
-	    global $user,$db;
+	    $user = FUser::getInstance();
+	    
         $redirect = false;
         
         if(isset($_POST["send"])) {
-            $user->filterClean();
+          //======================TODO: sort out that filter
+            $cache = FCache->getInstance('s',0);
+            $cache->invalidateGroup('forumFilter');
+            
         	if (!empty($_POST["del"])) {
-        		fForum::messDel($_POST['del'],$user->currentPageId);
+        		fForum::messDel($_POST['del'],$user->pageVO->pageId);
         		$redirect = true;
         	}
         	if(!$user->idkontrol) {
@@ -152,7 +151,7 @@ class fForum {
         		if($captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) $cap = true; else $cap = false;
         	} else $cap = true;
         	
-        	if($user->idkontrol) $jmeno = $user->gidname;
+        	if($user->idkontrol) $jmeno = $user->userVO->name;
         	elseif(isset($_POST["jmeno"])) $jmeno = trim($_POST["jmeno"]);
         	
         	if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
@@ -193,7 +192,7 @@ class fForum {
         				fError::addError("Nezadali jste jmeno");
         				$redirect = true;
         			}
-        			if ($user->isUsernameRegistered($jmeno) && !$user->idkontrol){
+        			if (FUser::isUsernameRegistered($jmeno) && !$user->idkontrol){
         				fError::addError("Jmeno uz nekdo pouziva");
         				$redirect = true;
         			}
@@ -209,7 +208,7 @@ class fForum {
             			}
             		
             		//---insert
-            		    $arrSave = array('pageId'=>$user->currentPageId,'userId'=>$user->gid,'name'=>$jmeno,'text'=>$zprava);
+            		    $arrSave = array('pageId'=>$user->pageVO->pageId,'userId'=>$user->userVO->userId,'name'=>$jmeno,'text'=>$zprava);
             		    if(isset($objekt)) {
                       $arrSave['enclosure']=$objekt;
                     }
@@ -222,7 +221,7 @@ class fForum {
                         $_SESSION["cache_audit"] = array();
                   
                       //---on success
-                        if($user->idkontrol) fUserDraft::clear('forum'.$user->currentPageId);
+                        if($user->idkontrol) fUserDraft::clear('forum'.$user->pageVO->pageId);
                 			$redirect = true;
                     }
                         
@@ -255,7 +254,7 @@ class fForum {
 	 public write - 0:no write,1:public,2:only registered
 	 */
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
-	    global $user,$db;
+	    global $user;
 	    $zprava = '';
 	    //---available params
 	    $formAtEnd = false;
@@ -374,8 +373,8 @@ class fForum {
 
         return $tpl->get();
 	}
+	
 	private function getItemPage($itemId,$pageId,$perpage) {
-	    global $db;
 	    $ret = 0;
 	    $page = 0;
 	    $k = 0;
@@ -385,7 +384,8 @@ class fForum {
 	    if(file_exists($fname)) $queryWrite = file_get_contents($fname)."\n--------------------------------------------------------------------------------\n".$query;
       else $queryWrite = $query;
       file_put_contents($fname,$queryWrite);
-	    /*
+	
+      /*
 	    while($ret==0) {
 	        $k++;
 	        $arr =$db->getCol("select itemId from sys_pages_items where pageId='".$pageId."' order by dateCreated desc limit ".$page.",".$perpage."");

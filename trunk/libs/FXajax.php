@@ -1,15 +1,16 @@
 <?php
-class fXajax {
-  static function &init() {
-  	global $xajax;
-  	if(!is_object($xajax)) {
+class FXajax {
+  private static $instance;
+	static function &getInstance() {
+  	
+  	if (!isset(self::$instance)) {
   		require_once(ROOT.'xajax_core/xajax.inc.php');
-  		$xajax = new xajax('xajax.php');
-  		$xajax->configure('javascript URI', './js/');
-  		$xajax->configure('scriptLoadTimeout', 0);
-  		if(isset($_GET['xdebug'])) $xajax->configure('debug', true);
+  		self::$instance = new xajax('xajax.php');
+  		self::$instance->configure('javascript URI', './js/');
+  		self::$instance->configure('scriptLoadTimeout', 0);
+  		if(isset($_GET['xdebug'])) self::$instance->configure('debug', true);
   	}
-  	return $xajax;
+  	return self::$instance;
   }
   static function register($fcename) {
     global $xajaxRegisteredFunctions;

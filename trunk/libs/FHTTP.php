@@ -8,7 +8,7 @@
  *
  my short version of PEAR::HTTP .. just redirect
  */
-class fHTTP
+class FHTTP
 {
     /**
      * Redirect
@@ -138,5 +138,3 @@ class fHTTP
     }
 
 }
-
-?>
