@@ -349,19 +349,60 @@ class FDBTool {
     }
     
     //---simple query
-    function getAll($query) {
-    	$db = FDBConn::getInstance();
-    	return $db->getAll($query);
+    static function getAll($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+    	if($key!==null) {
+    		//---cache results
+    		$cache = FCache::getInstance($driver);
+    		if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( $ret = $cache->getData($key,$grp) === false ) {
+			  $db = FDBConn::getInstance();
+			  $ret = $db->getAll($query);
+			  $cache->setData( $ret );
+			}
+			return $ret;
+    	} else {
+    		//---no cache
+    		$db = FDBConn::getInstance();
+    		return $db->getAll($query);
+    	}
     }
-    function getRow($query) {
-    	$db = FDBConn::getInstance();
-    	return $db->getRow($query);
+    static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+    	if($key!==null) {
+    		//---cache results
+    		$cache = FCache::getInstance($driver);
+    		if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( $ret = $cache->getData($key,$grp) === false ) {
+			  $db = FDBConn::getInstance();
+			  $ret = $db->getRow($query);
+			  $cache->setData( $ret );
+			}
+			return $ret;
+    	} else {
+    		//---no cache
+    		$db = FDBConn::getInstance();
+    		return $db->getRow($query);
+    	}
     }
-    function getOne($query) {
-    	$db = FDBConn::getInstance();
-    	return $db->getOne($query);
+    
+    static function getOne($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+    	if($key!==null) {
+    		//---cache results
+    		$cache = FCache::getInstance($driver);
+    		if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( $ret = $cache->getData($key,$grp) === false ) {
+			  $db = FDBConn::getInstance();
+			  $ret = $db->getOne($query);
+			  $cache->setData( $ret );
+			}
+			return $ret;
+    	} else {
+    		//---no cache
+    		$db = FDBConn::getInstance();
+    		return $db->getOne($query);
+    	}
     }
-    function query($query) {
+    
+    static function query($query) {
     	$db = FDBConn::getInstance();
     	$db->query($query);
     }

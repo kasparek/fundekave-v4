@@ -1,23 +1,21 @@
 <?php
 class FUser {
-  var $userVO;
-  var $loginVO;
-  var $pageVO;
-  var $pageParam;
-  var $itemVO;
+	var $userVO;
+	var $loginVO;
+	var $pageVO;
+	var $itemVO;
+	
+	var $pageParam; //---replacing ->currentPageParam
+	
+	//---used when looking after someone informations
+	var $whoIs = 0; //---replace with whoIsUserVO
   
     //---user access
     var $idkontrol = false;
-    //---userID
-	var $gid = 0;
-	var $idlogin = '';
-	var $idloginInDb = '';
-	var $lo = 'fdk4.salt';
-	//--page informations
-	var $currentPageId = '';
-	var $currentItemId = 0;
-	var $currentItem = array();
-	var $currentPageParam;
+    var $currentPageAccess = false;
+    //---security salt
+    var $lo = 'fdk4.salt';
+
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
 	'u'=>4, //event - podle majitele - nebo ten kdo ma dve pro stranku
@@ -26,61 +24,13 @@ class FUser {
 	'p'=>1, //anketa nastaveni
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
-	var $currentPage;
-	var $currentPageAccess = false;
-	var $favorite = 0;
-	var $favoriteCnt = 0;
-	//---logged user personal information
-	var $gidname = '';
-	var $newPassword = '';
-	var $galtype=0;
-	var $skin = 0;
-	var $skinName = '';
-	var $skinDir = '';
-	var $homePageId = '';
-	var $email = '';
-	var $icq = '';
-	var $zbanner = 1;
-	var $zidico = 1;
-	var $zaudico = 1;
-	var $ip = '';
-  	var $ipcheck = true;
-  	var $ico = AVATAR_DEFAULT;
-  	
-  	var $dateCreated;
-  	var $dateLast;
-  	//---used when looking after someone informations
-	var $whoIs=0; 
-	//---new post alerting
-	var $newPost = 0;
-	var $newPostFrom = '';
-	//---used as array for banners displaying
-	var $strictBanner = array();
-	var $strictBannerAllClicked = 0;
-	//---manu buttons cache
-	var $systemmenu = array();
+		
     //---cache for other users informations
 	var $arrUsers = array();
-	//---cache for permissions
-	var $arrRulez = array();
-	//---items per page
-	var $auditPerPage = FORUM_PERPAGE;
-	var $postPerPage = POST_PERPAGE;
-	//---cache for filtering
-	var $arrFilter = array();
-	//---cache for galery search results
-	var $galSearchCache = array();
+	
 	//---cache for logged friends - id, names
 	var $arrFriends = array();
-	//---used for cacheing tooltips from other libraries (galery)
-    var $arrTooltips = array();
-    
-    //---cache search in pages
-    var $pagesSearch = array();
-    var $itemsSearch = array();
-
-    //---additional user information XML structure
-	var $xmlProperties = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
+	
 	
 	public $initialized;
 	
@@ -102,16 +52,19 @@ class FUser {
 		return self::$instance;
 	}
 	
+	static function logon() {
+		$user = FUser::getInstance();
+		return $user->idkontrol;
+	}
+	
 	function myDestructor() {
 	  //called before the session is written
-	  $this->arrCachePerLoad = array();
-	    $this->systemmenu = array();
-	    $this->arrFriends = array();
-	    //$this->arrUsers = array();
-	    $this->arrTooltips = array();
+	  
 	    
-	    $this->cacheLite = false;
-	    $this->cacheLiteCurrentConf = '';
+	    $this->arrFriends = array();
+
+	    
+	    
 	}
 	function __destruct() {
 	    $this->myDestructor();
@@ -206,13 +159,13 @@ class FUser {
 		if($this->idkontrol === true) { //---check only if user was logged
 		
 		$vid = $db->getRow("SELECT ul.ip, ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
-            FROM sys_users_logged as ul on ul.userId = '".$this->gid."' 
+            FROM sys_users_logged as ul on ul.userId = '".$this->userVO->userId."' 
             LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
-                    $this->ip = $vid[20];
-                    $this->idloginInDb = $vid[21];
-                    if($vid[22] == 1) FRules::invalidate();
-				    $this->favorite = $vid[23]*1;
-				    $this->favoriteCnt = $vid[24]*1;
+                    $this->ip = $vid[0];
+                    $this->idloginInDb = $vid[1];
+                    if($vid[2] == 1) FRules::invalidate();
+				    $this->pageVO->favorite = $vid[3]*1;
+				    $this->pageVO->favoriteCnt = $vid[4]*1;
 		
     		if(($ipkontrol === false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
     			$this->idloginInDb = 'chOK';
@@ -233,16 +186,16 @@ class FUser {
 		return($this->idkontrol);
 	}
 	function invalidatePermissions() {
-    $db = FDBConn::getInstance();
-    $db->query("update `sys_users_logged` set invalidatePerm=1");
-  }
-	function kde($xajax=false) {
+        FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
+  	}
+	
+  	function kde($xajax=false) {
 	 if(!$this->userVO) $this->userVO = new UserVO();
 	
-		$this->systemmenu = array();
+		
 	  $this->arrFriends = array();
-		$this->arrCachePerLoad = array();
-		$this->arrTooltips = array();
+		
+		
 		$this->arrUsers['tooltips'] = array();
 		
     //---security check
@@ -321,7 +274,7 @@ class FUser {
 	function obliben($pageId=0,$userId=0) {
 		global $db;
 		if((empty($idusr) || $userId==$this->userId) && ($pageId==0 || $pageId==$this->currentPageId)) {
-      return $this->favorite;
+      return $this->pageVO->favorite;
     } else {
 		  return($db->getOne("select count(1) from sys_pages_favorites where book='1' AND pageId = '".$pageId."' AND userId = '".$userId."'"));
 		}
@@ -421,38 +374,14 @@ class FUser {
 	 * @param int $gid
 	 * @return String
 	 */
-	function getgidname($gid){
-		if(!empty($gid)) {
-			if(empty($this->arrUsers['username'][$gid])) {
-				global $db;
-				$this->arrUsers['username'][$gid] = $db->getOne("SELECT name FROM sys_users WHERE userId = '".$gid."'");
-			}
-			return $this->arrUsers['username'][$gid];
-		}
+	function getgidname($userId){
+		$q = "SELECT name FROM sys_users WHERE userId = '".$userId."'";
+		return FDBTool::getOne($q, $userId, 'Un', 'l');
 	}
-	function gnpost($gid=0){
-		Global $db;
-		if($gid==0) $gid=$this->gid;
-		$dot = "select userIdFrom from sys_users_post where readed=0 AND userIdFrom!='".$gid."' AND userId='".$gid."' order by dateCreated desc";
-		$npost = $db->getCol($dot);
-		
-		if(count($npost)>0) {
-			$this->newPost = count($npost);
-			$this->newPostFrom = $this->getgidname($npost[0]);
-			return(true);
-		} else {
-			$this->newPost = 0;
-			$this->newPostFrom = '';
-			return(false);
-		}
-	}
+	
 	function isOnline($userId){
-		Global $db;
-		if(!isset($this->arrCachePerLoad['onlineUsers'][$userId])) {
-		  return $this->arrCachePerLoad['onlineUsers'][$userId] = $db->getOne("select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated AND userId=".$userId);
-		} else {
-		    return $this->arrCachePerLoad['onlineUsers'][$userId];
-		}
+		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated AND userId=".$userId;
+		return FDBTool::getOne($q, $userId, 'isOn', 'l');
 	}
 	function get($userId) {
 	 global $db;
@@ -478,23 +407,15 @@ class FUser {
 		    } else $this->arrCachePerLoad['onlineUserLocation'][$userId] = false;
 		} else return $this->arrCachePerLoad['onlineUserLocation'][$userId];
 	}
+	
 	static function isUserIdRegistered($userId) {
-		$cache = FCache::getInstance('l');
-		if( $ret = $cache->getData($name,'isId') !== false ) {
-		  $db = FDBConn::getInstance();
-		  $ret = $db->getOne("select count(1) from sys_users where userId='".$userId."'");
-		  $cache->setData($ret);
-		}
-		return $ret;
+		$q = "select count(1) from sys_users where userId='".$userId."'";
+		return FDBTool::getOne($q, $userId, 'isId', 'l');
 	}
+	
 	static function isUsernameRegistered($name){
-		$cache = FCache::getInstance('l');
-		if( $ret = $cache->getData($name,'isReg') !== false ) {
-		  $db = FDBConn::getInstance();
-		  $ret = $db->getOne("select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'");
-		  $cache->setData($ret);
-		}
-		return $ret;
+		$q = "select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'";
+		return FDBTool::getOne($q, $name, 'isReg', 'l');
 	}
 	/**
 	 * load userId if username exists
@@ -503,13 +424,8 @@ class FUser {
 	 * @return unknown
 	 */
 	static function getUserIdByName($name){
-	 $db = FDBConn::getInstance();
-	 $cache = FCache::getInstance('l');
-		if($id = $cache->getData($name,'idByName')===false)) {
-		  $id = $db->getOne("select userId from sys_users where deleted=0 and name='".$name."'");
-		  $cache->setData($id,$name,'idByName');
-		}
-		return $id;
+		$q = "select userId from sys_users where deleted=0 and name='".$name."'";
+		return FDBTool::getOne($q, $name, 'idByN', 'l');
 	}
 	function getDiaryCnt($usrid=0) {
 		global $db;
@@ -517,19 +433,17 @@ class FUser {
 		return $db->getOne("select count(1) from sys_users_diary where (userId='".$usrid."' or eventForAll=1) and year(dateEvent)=year(now()) and month(dateEvent)=month(now()) and dayofmonth(dateEvent)=dayofmonth(now())");
 	}
 	function pocitadlo(){
-		$db = FDBConn::getInstance();
-		$hits = $db->getOne("select sum(hit) from sys_users");
-		return $hits;
+		$q = "select sum(hit) from sys_users";
+		return FDBTool::getOne($q, 'tCounter', 'default', 's', 0);
 	}
 	function statAudit($aud,$count=true){
-		Global  $db;
-		if($count) $str=$db->getOne("select count(1) from sys_pages_items where pageId='".$aud."' AND userId='".$this->gid."'");
+		$db = FDBConn::getInstance();
+		if($count) $str = $db->getOne("select count(1) from sys_pages_items where pageId='".$aud."' AND userId='".$this->userVO->userId."'");
 		else $str="ins+1";
-		$db->query("update sys_pages_counter set ins=".$str." WHERE pageId='".$aud."'and dateStamp=now() AND userId='".$this->gid."'");
+		$db->query("update sys_pages_counter set ins=".$str." WHERE pageId='".$aud."'and dateStamp=now() AND userId='".$this->userVO->userId."'");
 	}
 	///----FRIENDS managments
 	function pritel($userId) {
-		Global  $db;
 		$arr = $this->getFriends($this->gid);
 		return(in_array($userId,$arr));
 	}

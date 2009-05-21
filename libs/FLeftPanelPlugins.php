@@ -105,9 +105,9 @@ class FLeftPanelPlugins {
 			$tpl->setVariable('ONLINE',fSystem::getOnlineUsersCount());
 			$recentEvent = $user->getDiaryCnt();
 			if($recentEvent>0) $tpl->setVariable('DIARY',$recentEvent);
-			if($user->gnpost()) {
-			    $tpl->setVariable('NEWPOST',$user->newPost);
-			    $tpl->setVariable('NEWPOSTFROMNAME',$user->newPostFrom);
+			if($user->userVO->hasNewMessages()) {
+			    $tpl->setVariable('NEWPOST',$user->userVO->newPost);
+			    $tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
 			}
     	} else {
     		

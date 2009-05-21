@@ -1,4 +1,8 @@
 <?php
+
+//TODO: save in cache
+//var $postPerPage = POST_PERPAGE;
+
 //---action part
 $redir = false;
 if(isset($_GET['filtr'])) {

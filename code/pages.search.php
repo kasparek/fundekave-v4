@@ -1,4 +1,6 @@
 <?php
+//TODO:put in FCache
+//var $pagesSearch = array();
 $pageSearchCache = & $user->pagesSearch;
 if(empty($pageSearchCache)) {
     $pageSearchCache = array('perpage'=>SEARCH_PERPAGE,'filtrStr'=>'','categoryId'=>0,'action'=>1,'data'=>array(),'maybemore'=>false);

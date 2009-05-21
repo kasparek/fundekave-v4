@@ -58,6 +58,12 @@ class PageVO extends FDBvo {
   var $dateContent;
   var $dateCreated;
   var $dateUpdated;
+  
+  //---dedicted
+  //---based on logged user
+  var $favorite;
+  var $favoriteCnt;
+  
   //---changed
   var $htmlTitle;
   var $htmlDescription;

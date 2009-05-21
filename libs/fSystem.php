@@ -14,8 +14,14 @@ class FSystem {
     function grndbanner($kam=0) {
     	$db = FDBConn::getInstance();
     	$user = FUser::getInstance();
-    	if(empty($user->strictBanner)) {
-        	if($user->zbanner == 0 && $user->strictBannerAllClicked == 0) {
+    	
+    	$cache = FCache::getInstance('s',0);
+    	$strictBanner = $cache->getData('list','banners');
+    	$strictBannerAllClicked = $cache->getData('allClick','banners');
+    	if($strictBannerAllClicked === false) $strictBannerAllClicked = 0;
+    	
+    	if(empty($strictBanner)) {
+        	if($user->userVO->zbanner == 0 && $strictBannerAllClicked == 0) {
     	        $dot = "select b.bannerId,b.imageUrl,b.linkUrl,
     	        if(h.dateCreated is null or date_format(max(h.dateCreated),'%d') != date_format(now(),'%d'),0,1)
     	        from sys_banner as b left join sys_banner_hit as h on b.bannerId=h.bannerId and h.userId='".$user->userVO->userId."'
@@ -23,28 +29,28 @@ class FSystem {
     	        and b.strict=1 
     	        group by b.bannerId";
     	        $arr = $db->getAll($dot);
-    	        $user->strictBannerAllClicked = 1;
+    	        $strictBannerAllClicked = 1;
     	        foreach ($arr as $row) {
     	        	if($row[3]==0) {
-    	        	    $user->strictBanner[] = $row;
-    	        	    $user->strictBannerAllClicked = 0;
+    	        	    $strictBanner[] = $row;
+    	        	    $strictBannerAllClicked = 0;
     	        	}
     	        }
-        	} elseif($user->zbanner == 1) {
-        	    
+        	} elseif($user->userVO->zbanner == 1) {
             	    $dot = "SELECT bannerId,imageUrl,linkUrl FROM sys_banner WHERE dateFrom <= NOW() AND dateTo > NOW() ORDER BY RAND()";
-                	$user->strictBanner = $db->getAll($dot);
-        	    
+                	$strictBanner = $db->getAll($dot);
         	}
+        	$cache->setData($strictBanner, 'list','banners');
+        	$cache->setData($strictBannerAllClicked, 'allClick','banners');
     	}
     	
-    	if(!empty($user->strictBanner)) {
-        	
-            if($user->zbanner == 0)
-               $banner = array_shift($user->strictBanner);
-             else
-                $banner = $user->strictBanner[rand(0,count($user->strictBanner)-1)];
-            
+    	if(!empty($strictBanner)) {
+            if($user->userVO->zbanner == 0) {
+               $banner = array_shift($strictBanner);
+               $cache->setData($strictBanner, 'list','banners');
+            } else {
+                $banner = $strictBanner[rand(0,count($strictBanner)-1)];
+            }
             $imgname = WEB_REL_BANNER . $banner[1];
             $imglink = 'bannredir.php?bid='.$banner[0];
             
@@ -59,41 +65,38 @@ class FSystem {
             return($ret);
     	}
     }
+    
     function bannerRedirect($bannerId) {
-      $db = FDBConn::getInstance();
 		$user = FUser::getInstance();
       $bid = $bannerId * 1;
-      $db->query("UPDATE banner SET hit = (hit+1) WHERE id='".$bid."'");
+      FDBTool::query("UPDATE banner SET hit = (hit+1) WHERE id='".$bid."'");
       if($user->idkontrol) {
-          $db->query("insert into sys_banner_hit (bannerId,userId,dateCreated) values ('".$bid."','".$user->userVO->userId."',now())");
+          FDBTool::query("insert into sys_banner_hit (bannerId,userId,dateCreated) values ('".$bid."','".$user->userVO->userId."',now())");
           if($user->zbanner == 1)  {
-              if(count($user->strictBanner > 1)) {
-                  foreach ($user->strictBanner as $banner) {
+          	$cache = FCache::getInstance('s',0);
+    		$strictBanner = $cache->getData('list','banners');
+              if(count($strictBanner > 1)) {
+                  foreach ($strictBanner as $banner) {
                   	if($banner[0]!=$bid) $newBannArr[] = $banner;
                   }
-                  $user->strictBanner = $newBannArr;
+                  $cache->setData($newBannArr, 'list','banners');
               }
-              else $user->strictBanner = 1;
+              else $cache->setData(1 , 'list','banners');
           }
       }
       header("Location: http://".str_replace("http://","",$db->getOne("SELECT linkUrl FROM sys_banner WHERE bannerId='".$bid."'")));
     }
     /*.......generate MENU............*/
     function topmenu(){
-    	$db = FDBConn::getInstance();
     	$user = FUser::getInstance();
     	
-    	$x=0;
-    	$user->topmenu = array();
-    	$cache = FCache::getInstance( 's' );	
-      if(!$arrmenu = $cache->getData('mainMenu')) {
-    	 $arrmenu = $db->getAll("SELECT pageId,text FROM sys_menu ".((!$user->idkontrol)?("WHERE public=1"):(''))." ORDER BY ord");
-    	 $cache->setData( $arrmenu );
-    	} 
-    	
-    	if($user->idkontrol) {
+      	$q = "SELECT pageId,text FROM sys_menu ".((!$user->idkontrol)?("WHERE public=1"):(''))." ORDER BY ord";
+    	 $arrmenu = FDBTool::getAll($q,'tMenu','default','s',0);
+
+    	 if($user->idkontrol) {
     	    $arrmenu[]=array('elogo',LABEL_LOGOUT);
     	}
+    	
     	foreach ($arrmenu as $ro) {
     		$menuItems[] = array("LINK"=>BASESCRIPTNAME.(($ro[0]!=HOME_PAGE)?('?k='.$ro[0]):('')),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
     		$user->topmenu[] = $ro[0];
@@ -102,24 +105,24 @@ class FSystem {
     	return $menuItems;
     }
     function secondaryMenu($menu) {
-    	$db = FDBConn::getInstance();
     	$user = FUser::getInstance();
     	
     	$ret=array();
-    	$cache = FCache::getInstance( 's' );
-    	if(!$arrmnuTmp = $cache->getData('secondaryMenu')) {
-      	$arrmnuTmp = $db->getAll("SELECT s.pageId, s.name 
+
+      	$q = "SELECT s.pageId, s.name 
       	FROM sys_menu_secondary as s 
       	INNER JOIN sys_pages as p ON p.menuSecondaryGroup=s.menuSecondaryGroup 
-      	WHERE ".(($user->idkontrol)?(''):("s.public=1 AND "))." p.pageId='".$user->currentPageId."' ORDER BY s.ord,s.name");
-      	$cache->setData($arrmnuTmp);
-    	} 
+      	WHERE ".(($user->idkontrol)?(''):("s.public=1 AND "))." p.pageId='".$user->pageVO->pageId."' ORDER BY s.ord,s.name";
+    	$arrmenu = FDBTool::getAll($q,'sMenu','default','s',0);
+    	
     	if(!empty($arrmnuTmp)) {
 	    	foreach ($arrmnuTmp as $row) {
 	    		$arrmnu[]=array('pageId'=>$row[0],'name'=>$row[1],'typ'=>0,'opposite'=>0);
 	    	}
     	} else $arrmnu = array();
-    	if(!empty($user->systemmenu)) $arrmnu = array_merge($user->systemmenu,$arrmnu);
+    	
+    	$cache = FCache::getInstance('l');
+    	if($secMenuCustom = $cache->getData('secMenu')!==false) $arrmnu = array_merge($secMenuCustom,$arrmnu);
     	
     	if(count($arrmnu)>0){
     		$x=0;
@@ -127,7 +130,7 @@ class FSystem {
     			$idlnk=""; $x++;
     			if (!empty($who)) $idlnk.='&who='.$user->whoIs;
                 $button = array("LINK"=>(($mnu['typ']==1)?($mnu['pageId'].$idlnk):(BASESCRIPTNAME.'?k='.$mnu["pageId"].$idlnk)),
-    			"ACTIVE"=>((preg_match("/".$user->currentPageId.$user->currentPageParam."$/",$mnu["pageId"]))?(1):(0)),
+    			"ACTIVE"=>((preg_match("/".$user->pageVO->pageId.$user->pageParam."$/",$mnu["pageId"]))?(1):(0)),
           "TEXT"=>$mnu["name"],"OPPOSITE"=>(($mnu['opposite']==1)?(1):(0)));    			
     			if(!empty($mnu['click'])) $button['CLICK'] = $mnu['click'];
     			if(!empty($mnu['id'])) $button['ID'] = $mnu['id'];
@@ -137,11 +140,13 @@ class FSystem {
     	
     	return($ret);
     }
-    function secondaryMenuAddItem($link,$text,$click='',$opposite='0',$buttonId='') {
-        $user = FUser::getInstance();
+    static function secondaryMenuAddItem($link,$text,$click='',$opposite='0',$buttonId='') {
         $button = array('pageId'=>$link,'typ'=>1,'name'=>$text,'opposite'=>$opposite,'id'=>$buttonId);
         if(!empty($click)) $button['click'] = $click;
-        $user->systemmenu[] = $button;
+        $cache = FCache::getInstance('l');
+        $secMenuCustom = $cache->getData('secMenu');
+        $secMenuCustom[] = $button;
+        $cache->setData($secMenuCustom);
     }
     /**
      * option - 0 - remove html, safe text 1 - remove html, safe text, parse bb, 2- nothing - just trim
@@ -318,41 +323,30 @@ class FSystem {
     	$ret.='</select>';
     	return $ret;
     }
-    //--REMOVE HERE
-    function skinrol($name,$sel="") {
-    	global $db;
-    	$vys=$db->getAll("SELECT skinId,name FROM sys_skin");
-    	$ret='<select name="'.$name.'" size="1" class="tlacitko">';
-    	foreach ($vys as $row) $ret.='<option value="'.$row[0].'"'.(($sel==$row[0])?(' selected'):('')).'>'.$row[1].'</option>';
-    	$ret.='</select>';
-    	return $ret;
-    }
     
-    function rolPublic($name,$sel,$class='tlacitko'){
-    	global $ARRPUBLIC;
-    	$ret='<select name="'.$name.'"'.(($class)?(' class="'.$class.'"'):('')).'>';
-    	foreach($ARRPUBLIC as $k=>$v) $ret.='<option value="'.$k.'"'.(($sel==$k)?(' selected="selected"'):('')).'>'.$v.'</option>';
-    	$ret.='</select>';
-    	return($ret);
-    }
     function getmicrotime(){
        list($usec, $sec) = explode(" ",microtime());
        return ((float)$usec + (float)$sec);
     }
+    
     static function profile($comment='') {
         global $debugTime,$start;
         echo ((!empty($comment))?('<br>'.$comment):('')).'<br>memory peak:'.round(memory_get_peak_usage()/1024).'_usage:'.round(memory_get_usage()/1024).'<br>';
         echo $debugTime = fSystem::getmicrotime()-$start.'<br>';
     }
+    
     static function checkFilename($filename) {
         return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z\_0-9\.-]*))$/" , $filename);
     }
+    
     static function checkDirname($dirname) {
         return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z\_0-9-\/]*))$/" , $dirname);
     }
+    
     static function checkUsername($name) {
         return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z0-9]*))$/" , $name);
     }
+    
     static function safeText($text) {
     	$url = $text;
       $url = preg_replace('~[^\\pL0-9_]+~u', '-', $url);
@@ -362,6 +356,7 @@ class FSystem {
       $url = preg_replace('~[^-a-z0-9_]+~', '', $url);
       return $url;
     }
+    
     function array_neighbor($key, $arr, $consecutively = false) {
 		//$keys = array_keys($arr); --- when key is key
 		$keys = $arr; //--- when key is value
@@ -381,6 +376,7 @@ class FSystem {
 		}
 		return $return;
 	}
+	
 	static function rm_recursive($filepath) {
         if (is_dir($filepath) && !is_link($filepath)) {
             if ($dh = opendir($filepath)) {
@@ -399,8 +395,7 @@ class FSystem {
     }
     static function getOptions($arr,$selected='',$firstEmpty=true,$firstText='') {
         if(!is_array($arr)) {
-            global $db;
-            $arr = $db->getAll('select categoryId,name from sys_pages_category where typeId="'.$arr.'"');
+            $arr = FDBTool::getAll('select categoryId,name from sys_pages_category where typeId="'.$arr.'"');
         }
         $options = '';
         if(!empty($arr)) {
@@ -420,7 +415,7 @@ class FSystem {
     }
     //---static system support functions
     static function getOnlineUsersCount() {
-		Global $db;
-		return($db->getOne("select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated"));
+		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
+		return FDBTool::getOne($q,'uOnC','default','s',60);
 	}
 }

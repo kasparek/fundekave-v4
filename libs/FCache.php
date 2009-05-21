@@ -29,6 +29,8 @@ class FCache {
 		}
 		if($lifeTime > -1) {
 			self::$instance->activeDriver->setConf($lifeTime);
+		} else {
+			self::$instance->activeDriver->setConf(self::$instance->activeDriver->lifeTimeDefault);
 		}
 		return self::$instance;
 	}
@@ -87,6 +89,10 @@ class FCache {
     
     return $this->activeDriver->getData($this->activeId, $this->activeGroup);
     
+  }
+  
+  public function setConf( $lifeTime ) {
+  	$this->activeDriver->setConf($lifeTime);
   }
   
   public function setData( $data, $id='', $group=NULL, $driver='', $lifeTime=-1 ) {
