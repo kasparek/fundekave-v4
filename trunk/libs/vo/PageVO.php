@@ -32,7 +32,6 @@ class PageVO extends FDBvo {
     
   }
   
-  
   //---db based
   var $pageId;
   var $pageIdTop;
@@ -68,5 +67,11 @@ class PageVO extends FDBvo {
   var $htmlTitle;
   var $htmlDescription;
   var $htmlKeywords;
+  
+	function getPageParam($paramName) {
+	  $xml = new SimpleXMLElement($this->pageParams);
+	  $result = $xml->xpath($paramName);
+	  if(isset($result[0])) return (String) $result[0];
+	}
   
 }

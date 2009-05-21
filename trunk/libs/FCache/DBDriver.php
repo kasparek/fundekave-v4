@@ -20,6 +20,10 @@ class DBDriver
     }
   }
   
+  public function getGroup($group = 'default') {
+  	return false;
+  }
+  
   public function getData($id, $group = 'default') {
     $db = FDBConn::getInstance();
     $user = FUser::getInstance();

@@ -11,6 +11,12 @@ class LoadDriver
     
   }
   
+public function getGroup($group = 'default') {
+	if(isset($this->data[$group])) {
+  	return $this->data[$group];
+	} else return false;
+  }
+  
   public function setData($id=NULL, $data, $group = 'default') {
     if($id!=NULL) {
       $this->data[$group][$id] = $data;

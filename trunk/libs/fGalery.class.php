@@ -315,7 +315,7 @@ class fGalery {
 			//---get pid for linkback
 			$this->fotoHit();
 			if(!$ret = $user->cacheGet('fotodetail',$itemId)) {
-			  $orderBy = $user->getPageParam('enhancedsettings/orderitems');
+			  $orderBy = $user->pageVO->getPageParam('enhancedsettings/orderitems');
 			  $arrItemId = $db->getCol("select itemId from sys_pages_items where pageId='".$this->_fGaleryId."' order by ".((($orderBy==0)?('enclosure'):('dateCreated'))));
 			  
   			$arr = array_chunk($arrItemId,$this->gPerpage);

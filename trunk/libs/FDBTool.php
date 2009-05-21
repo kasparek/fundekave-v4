@@ -404,7 +404,7 @@ class FDBTool {
     
     static function query($query) {
     	$db = FDBConn::getInstance();
-    	$db->query($query);
+    	return $db->query($query);
     }
 }
 

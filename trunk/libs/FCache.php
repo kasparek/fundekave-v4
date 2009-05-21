@@ -79,6 +79,17 @@ class FCache {
     }
     return $this->activeDriver;
   }
+
+  public function setConf( $lifeTime ) {
+  	$this->activeDriver->setConf($lifeTime);
+  }
+  
+  public function getGroup( $group='default', $driver='' ) {
+  if($driver!='') {
+      $this->getDriver($driver);
+    }
+    return $this->activeDriver->getGroup( $group );
+  }
 	
 	public function getData( $id, $group='default', $driver='' ) {
     if($driver!='') {
@@ -91,9 +102,7 @@ class FCache {
     
   }
   
-  public function setConf( $lifeTime ) {
-  	$this->activeDriver->setConf($lifeTime);
-  }
+  
   
   public function setData( $data, $id='', $group=NULL, $driver='', $lifeTime=-1 ) {
     if($driver!='') {
