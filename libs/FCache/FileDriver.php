@@ -26,6 +26,10 @@ class FileDriver
     $this->cacheLite->save( $data, $id, $group );
   }
   
+	public function getGroup($group = 'default') {
+		return false;
+	}
+  
   public function getData($id, $group = 'default') {
     return $this->cacheLite->get($id,$group);
   }

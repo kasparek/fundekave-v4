@@ -43,7 +43,6 @@ class UserVO extends FDBvo {
 	
 	//---security
   var $idlogin = '';
-	var $idloginInDb = '';
 	var $ip = '';
 
 	//---skin info

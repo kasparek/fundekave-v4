@@ -97,7 +97,7 @@ if($totalItems > $perpage) {
 $arrpost = $user->getPost($od,$perpage);
 	
 //---set default recipient
-$arrFriends = & $user->getFriends();
+$arrFriends = $user->getFriends();
 
 $recipients = '';
 if(!empty($arrpost)) {

@@ -201,8 +201,10 @@ $fLeftpanel->show();
 //---FOOTER INFO
 $TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
 
+//---user tooltips - one per user avatar displayed
 $ttips = '';
-if(!empty($user->arrUsers['tooltips'])) $ttips .= implode("\n",$user->arrUsers['tooltips']);
+$cache = FCache::getInstance('l');
+if($arrUserAvatarTips = $cache->getGroup('UavatarTip') !==false ) $ttips .= implode("\n", $arrUserAvatarTips);
 $TOPTPL->setVariable('USERTOOLTIPS',$ttips);
 
 //--- last check

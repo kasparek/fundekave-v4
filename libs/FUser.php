@@ -24,13 +24,6 @@ class FUser {
 	'p'=>1, //anketa nastaveni
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
-		
-    //---cache for other users informations
-	var $arrUsers = array();
-	
-	//---cache for logged friends - id, names
-	var $arrFriends = array();
-	
 	
 	public $initialized;
 	
@@ -57,168 +50,101 @@ class FUser {
 		return $user->idkontrol;
 	}
 	
-	function myDestructor() {
-	  //called before the session is written
-	  
-	    
-	    $this->arrFriends = array();
-
-	    
-	    
-	}
-	function __destruct() {
-	    $this->myDestructor();
-	}
-	
-
-	function getPageParam($paramName) {
-	  $xml = new SimpleXMLElement($this->currentPage['pageParams']);
-	  $result = $xml->xpath($paramName);
-	  if(isset($result[0])) return (String) $result[0];
-	}
-	function refresh() {
-		global $db;
-				
-		if($this->idkontrol===true) { //refresh
-			$vid = $db->getRow("SELECT 
-            u.name, u.skinId, u.avatar, u.zbanner, u.zavatar,
-            u.zforumico, s.name, s.dir, u.ipcheck, u.zgalerytype, 
-            u.info, u.email, u.icq ,u.dateCreated, u.dateLastVisit 
-            FROM sys_users as u 
-            LEFT JOIN sys_skin as s ON s.skinId = u.skinId 
-            WHERE u.userId='".$this->gid."'");
-			if(!DB::iserror($vid)) {
-				$this->gidname = $vid[0];
-				$this->skin = $vid[1];
-				if(!empty($vid[2])) $this->ico = $vid[2]; else $this->ico = AVATAR_DEFAULT;
-				$this->zbanner = $vid[3];
-				$this->zidico = $vid[4];
-				$this->zaudico = $vid[5];
-				$this->skinName = $vid[6];
-				$this->skinDir = $vid[7];
-				$this->ipcheck = ($vid[8]==1)?(true):(false);
-				$this->galtype = $vid[9];
-				$this->xmlProperties = $vid[10];
-				$this->homePageId = '';
-				$this->email = $vid[11]; 
-				$this->icq = $vid[12];
-				$this->dateCreated = $vid[13];
-				$this->dateLast = $vid[14];
-			}
-			
-		}
-	}
-	
+	/**
+	 * Log-IN user into system
+	 * @param $name - string
+	 * @param $pass - string
+	 * @return void
+	 */	
 	function login($name,$pass){
 	    $name = trim($name);
 	    $pass = trim($pass);
-		if (!empty($name) && !empty($pass) && $this->idkontrol==false){
+		if (!empty($name) && !empty($pass) && $this->idkontrol==false) {
 			$db = FDBConn::getInstance();
 			//---login query
 			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
-      $gid = $db->getOne($dot);
+			$gid = $db->getOne($dot);
 			if(!empty($gid)) {
 			   $this->userVO = new UserVO();
 				$this->userVO->userId = $gid;
 				$this->userVO->load();
 				$this->userVO->idlogin = md5( $pass . $this->lo . fSystem::getmicrotime() );
+				$this->userVO->ip = fSystem::getUserIp();
 				$this->smazoldid($gid);
-				
+				//---db logon
 				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values 
-				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->page->pageId.'","'.fSystem::getUserIp().'")');
-				
+				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->page->pageId.'","'.$this->userVO->ip.'")');
+				//---logon
 				$this->idkontrol = true;
-				
-				
+				//---session cache
 				$cache = FCache::getInstance( 's' );
 				$cache->invalidate();
-				
-				$this->arrUsers = array();
-        $this->cacheRemove(array('forumdesc', 'loggedlist', 'postwho'));
-    
-				$this->refresh();
-				
-				fForum::afavAll($this->gid); //----srovnani-seznamu-klubu-----
-			    $this->strictBanner = array();
-			    $this->strictBannerAllClicked = 0;
+				//---file cache
+				$cache = FCache::getInstance( 'f' );
+				$cache->invalidateData('forumdesc');
+				$cache->invalidateData('loggedlist');
+				$cache->invalidateData('postwho');
+				fForum::afavAll($gid); //----srovnani-seznamu-klubu-----
 				$this->diarPrip(); //---remind from diary
-				
 			} else {
 				fError::addError(ERROR_LOGIN_WRONGUSERORPASS);
 			}
-			
-			fHTTP::redirect($this->getUri());
+			fHTTP::redirect(FUser::getUri());
 		}
 	}
+	
+	function logout() {
+		$this->smazoldid($this->userVO->userId);
+    	$this->user = new FUserVO(); 
+    	$cache = FCache::getInstance( 's' );
+		$cache->invalidate();
+	}
+	
 	function check($ipkontrol=true) {
-		
-		
-		
 		if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 		//---ip address checking
 		if($this->idkontrol === true) { //---check only if user was logged
+			$vid = FDBTool::getRow("SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
+            	FROM sys_users_logged as ul on ul.userId = '".$this->userVO->userId."' 
+            	LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
+                    
+			$idloginInDb = $vid[0];
+			if($vid[1] == 1) FRules::invalidate();
+		    $this->pageVO->favorite = $vid[2]*1;
+		    $this->pageVO->favoriteCnt = $vid[3]*1;
 		
-		$vid = $db->getRow("SELECT ul.ip, ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
-            FROM sys_users_logged as ul on ul.userId = '".$this->userVO->userId."' 
-            LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
-                    $this->ip = $vid[0];
-                    $this->idloginInDb = $vid[1];
-                    if($vid[2] == 1) FRules::invalidate();
-				    $this->pageVO->favorite = $vid[3]*1;
-				    $this->pageVO->favoriteCnt = $vid[4]*1;
-		
-    		if(($ipkontrol === false || $this->ip == fSystem::getUserIp()) && ($this->idlogin == $this->idloginInDb)) {
-    			$this->idloginInDb = 'chOK';
+    		if(($ipkontrol === false || $this->userVO->ip == fSystem::getUserIp()) && ($this->idlogin == $idloginInDb)) {
+    			//---user allright
     		} else {
     		  //---user was logged but is lost - do logout acction
-    		  $localUri = $this->getUri();
-    		  
-    		  $this->smazoldid($this->gid);
-    		    global $user;
-    			$user = new fUser();
-    			
+    		  $localUri = FUser::getUri();
+    		  $this->logout();
     			fError::addError(ERROR_USER_KICKED);
     			//---do redirect
     			fHTTP::redirect($this->getUri());
-    			
     		}
 		}
 		return($this->idkontrol);
 	}
+
 	function invalidatePermissions() {
         FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
   	}
 	
-  	function kde($xajax=false) {
-	 if(!$this->userVO) $this->userVO = new UserVO();
-	
-		
-	  $this->arrFriends = array();
-		
-		
-		$this->arrUsers['tooltips'] = array();
-		
-    //---security check
+	function kde($xajax=false) {
+		if(!$this->userVO) $this->userVO = new UserVO();
 		//---logout action
 		if( $this->page->pageId == 'elogo') {
 		    if($this->idkontrol === true) {
-
-    			$this->smazoldid($this->userVO->userId);
-    			$this->user = new FUserVO(); 
-    			
-    			$cache = FCache::getInstance( 's' );
-				$cache->invalidate();
-    			    			
+				$this->logout();
     			fError::addError(MESSAGE_LOGOUT_OK);
     			fHTTP::redirect('index.php');
-        }  
+	        }  
 		}
-		
 		//---try load current page
-			    if($this->page) {
-  	    $this->page->load();
+	    if($this->pageVO) {
+  	    	$this->pageVO->load();
 	    }
-	    
 		//---if page not exists redirect to error
 		if(empty($this->page->pageId)) {
 		    $this->currentPageAccess = false;
@@ -228,10 +154,11 @@ class FUser {
 		  $this->check($this->userVO->ipcheck);
 		  //---check permissions needed for current page
 		  $permissionNeeded = 1;
-		  if(!empty($this->currentPageParam)) 
-    		  if(isset($this->pageParamNeededPermission[$this->currentPageParam])) 
-		          $permissionNeeded = $this->pageParamNeededPermission[$this->currentPageParam];
-		  $permPage = $this->currentPageId;
+		  if(!empty($this->pageParam)) 
+    		  if(isset($this->pageParamNeededPermission[$this->pageParam])) { 
+		          $permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
+    		  }
+		  $permPage = $this->pageVO->pageId;
 		  if($permissionNeeded==3) {
 		      $permPage = 'sadmi';
 		      $permissionNeeded = 1;
@@ -239,15 +166,15 @@ class FUser {
 		  if($permissionNeeded==4) {
 		      ///check for i owner - permneeded=1 or permneeded= 2
 		      $permissionNeeded = 2;
-		      if(!empty($this->currentItemId)) {
-		          $userIdOwner = fItems::getItemUserId($this->currentItemId);
-		        if($this->gid == $userIdOwner) {
+		      if(!empty($this->itemVO->itemId)) {
+		          $userIdOwner = fItems::getItemUserId($this->itemVO->itemId);
+		        if($this->userVO->userId == $userIdOwner) {
 		            $permissionNeeded = 1;
 		        }
 		      } 
 		  }
 		  //check if user have access to page with current permissions needed - else redirect to error
-		  if(!fRules::get($this->gid,$permPage,$permissionNeeded)) {
+		  if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
     		  $this->currentPageAccess = false;
 		      fError::addError(ERROR_ACCESS_DENIED);
 		  } else $this->currentPageAccess = true;
@@ -255,29 +182,30 @@ class FUser {
 		  //logged user function
 		  if($this->idkontrol === true) {
 		    //---update user information
-			$db->query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(), 
+			FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(), 
 			location = '".$this->currentPageId."', 
 			params = '".$this->currentPageParam."'    
 			where loginId='".$this->idlogin."'");
 			
-			$db->query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->gid."'");
+			FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->gid."'");
 			
-			if($xajax === false) $db->query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
+			if($xajax === false) FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->currentPageId."', '".$this->currentPage['typeId']."', '".$this->gid."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
 		  }
 		}
 	}
+	
 	function setWhoIs($userId) {
 	    if($this->isUserIdRegistered($userId)) $this->whoIs = $userId; else $this->whoIs=0;
 	}
 	
 	function obliben($pageId=0,$userId=0) {
-		global $db;
-		if((empty($idusr) || $userId==$this->userId) && ($pageId==0 || $pageId==$this->currentPageId)) {
-      return $this->pageVO->favorite;
+		if((empty($idusr) || $userId==$this->userVO->userId) && ($pageId==0 || $pageId==$this->pageVO->pageId)) {
+      $favorite = $this->pageVO->favorite;
     } else {
-		  return($db->getOne("select count(1) from sys_pages_favorites where book='1' AND pageId = '".$pageId."' AND userId = '".$userId."'"));
+		  $favorite = FDBTool::getOne("select count(1) from sys_pages_favorites where book='1' AND pageId = '".$pageId."' AND userId = '".$userId."'");
 		}
+		return $favorite;
 	}
 	/*.......smaze stary nebo stejny id z logged............*/
 	function smazoldid($userId = 0,$casout = USERLIFETIME){
@@ -285,6 +213,8 @@ class FUser {
 		$db->query("delete from sys_users_logged where DATE_ADD(dateUpdated,INTERVAL " . $casout." MINUTE) < NOW()");
 		if ($userId > 0) $db->query("delete from sys_users_logged where userId='" . $userId . "'");
 	}
+	
+	//TODO: move to userVO - next 4 functions
 	function getXMLVal($branch,$node,$default='') {
 	    $xml = new SimpleXMLElement($this->xmlProperties);
 	    if(isset($xml->$branch)) {
@@ -298,6 +228,20 @@ class FUser {
 	    $xml = new SimpleXMLElement($this->xmlProperties);
 	    $xml->$branch->$node = $value;
 	    $this->xmlProperties = $xml->asXML();
+	}
+	
+function get($userId) {
+	 global $db;
+	    $arr = $db->getRow("SELECT u.userId,u.name,u.email,u.icq,u.info,
+            date_format(u.dateCreated,'%H:%i:%S %d.%m.%Y') as dateCreatedCz,
+            date_format(u.dateUpdated,'%H:%i:%S %d.%m.%Y') as dateUpdatedCz 
+            FROM sys_users as u 
+            WHERE u.userId = '".$userId."'");
+	    if(!empty($arr)) {
+	        $xml = new SimpleXMLElement($arr[4]);
+            $arr['personal'] = $xml->personal[0];
+	        return $arr;
+	    }
 	}
 	function infowrt(){
 		Global $db;
@@ -326,33 +270,31 @@ class FUser {
 	function register(){
 		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
 		if(isset($_REQUEST["addusr"]) && $this->gid==0) {
-				global $db;
-				$jmenoreg = trim($_REQUEST["jmenoreg"]);
-				$pwdreg1 = trim($_REQUEST["pwdreg1"]);
-				$pwdreg2 = trim($_REQUEST["pwdreg2"]);
-				if(strlen($jmenoreg)<2) fError::addError(ERROR_REGISTER_TOSHORTNAME);
-				elseif(strlen($jmenoreg)>10) fError::addError(ERROR_REGISTER_TOLONGNAME);
-				elseif (!fSystem::checkUsername($jmenoreg)) fError::addError(ERROR_REGISTER_NOTALLOWEDNAME);
-				elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) fError::addError(ERROR_REGISTER_NAMEEXISTS);
-				if($jmenoreg==$pwdreg1) fError::addError(ERROR_REGISTER_PASSWORDNOTSAFE);
-				if(strlen($pwdreg1)<2) fError::addError(ERROR_REGISTER_PASSWORDTOSHORT);
-				if($pwdreg1!=$pwdreg2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
-				if(!fError::isError()){
-				    $dot = 'insert into sys_users (name,password,dateCreated,skinId,info) 
+			$jmenoreg = trim($_REQUEST["jmenoreg"]);
+			$pwdreg1 = trim($_REQUEST["pwdreg1"]);
+			$pwdreg2 = trim($_REQUEST["pwdreg2"]);
+			if(strlen($jmenoreg)<2) fError::addError(ERROR_REGISTER_TOSHORTNAME);
+			elseif(strlen($jmenoreg)>10) fError::addError(ERROR_REGISTER_TOLONGNAME);
+			elseif (!fSystem::checkUsername($jmenoreg)) fError::addError(ERROR_REGISTER_NOTALLOWEDNAME);
+			elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) fError::addError(ERROR_REGISTER_NAMEEXISTS);
+			if($jmenoreg==$pwdreg1) fError::addError(ERROR_REGISTER_PASSWORDNOTSAFE);
+			if(strlen($pwdreg1)<2) fError::addError(ERROR_REGISTER_PASSWORDTOSHORT);
+			if($pwdreg1!=$pwdreg2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
+			if(!fError::isError()){
+				$dot = 'insert into sys_users (name,password,dateCreated,skinId,info) 
 					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->xmlProperties.'")';
-				    
-					if($db->query($dot)) {
-						$newiduser = $db->getOne("SELECT LAST_INSERT_ID()");
-						fError::addError(MESSAGE_REGISTER_SUCCESS);
-						//---oznameni o registraci
-						$this->sendSAMessage(array('NEWUSERID'=>$newiduser,'NEWUSERNAME'=>$jmenoreg),MESSAGE_USER_NEWREGISTERED);
-						fHTTP::redirect(BASESCRIPTNAME."?".ESID);
-					}
+				if(FDBTool::query($dot)) {
+					$newiduser = FDBTool::getOne("SELECT LAST_INSERT_ID()");
+					fError::addError(MESSAGE_REGISTER_SUCCESS);
+					//---oznameni o registraci
+					$this->sendSAMessage(array('NEWUSERID'=>$newiduser,'NEWUSERNAME'=>$jmenoreg),MESSAGE_USER_NEWREGISTERED);
+					fHTTP::redirect(BASESCRIPTNAME."?".ESID);
 				}
-				
+			}
 			fHTTP::redirect(BASESCRIPTNAME."?k=roger".ESID);
 		}
 	}
+	
 	function parseMessage($arrVars,$template) {
 	    $message = $template;
 	    if(!empty($arrVars)) foreach ($arrVars as $k=>$v) $message = str_replace('{'.$k.'}',$v,$message);
@@ -360,12 +302,12 @@ class FUser {
 	    $message = str_replace('"','\"',$message);
 	    return $message;
 	}
+	
 	function sendSAMessage($arrVars,$template) {
-	    global $db;
-	    $arr = $db->getCol('select userId from sys_users_perm where rules=2 and pageId="sadmi"');
+	    $arr = FDBTool::getCol('select userId from sys_users_perm where rules=2 and pageId="sadmi"');
 	    if(!empty($arr)) {
 	        $message = $this->parseMessage($arrVars,$template);
-    	    foreach ($arr as $userId)  $this->send($userId,$message);
+    	    foreach ($arr as $userId) $this->send($userId,$message);
 	    }
 	}
 	/**
@@ -376,36 +318,26 @@ class FUser {
 	 */
 	function getgidname($userId){
 		$q = "SELECT name FROM sys_users WHERE userId = '".$userId."'";
-		return FDBTool::getOne($q, $userId, 'Un', 'l');
+		return FDBTool::getOne($q, $userId, 'Uname', 'l');
 	}
 	
 	function isOnline($userId){
 		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated AND userId=".$userId;
 		return FDBTool::getOne($q, $userId, 'isOn', 'l');
 	}
-	function get($userId) {
-	 global $db;
-	    $arr = $db->getRow("SELECT u.userId,u.name,u.email,u.icq,u.info,
-            date_format(u.dateCreated,'%H:%i:%S %d.%m.%Y') as dateCreatedCz,
-            date_format(u.dateUpdated,'%H:%i:%S %d.%m.%Y') as dateUpdatedCz 
-            FROM sys_users as u 
-            WHERE u.userId = '".$userId."'");
-	    if(!empty($arr)) {
-	        $xml = new SimpleXMLElement($arr[4]);
-            $arr['personal'] = $xml->personal[0];
-	        return $arr;
-	    }
-	}
+		
 	function getLocation($userId) {
-		global $db;
-		if(!isset($this->arrCachePerLoad['onlineUserLocation'][$userId])) {
+		$cache = FCache::getInstance('l');
+		if($loc = $cache->getData($userId, 'Uloc') !== false) {
 		    $query = "SELECT s.location,s.params,ss.nameshort,ss.name 
     		FROM sys_users_logged as s join sys_pages as ss on s.location=ss.pageId and s.userId='".$userId."'";
 		    $rid = $db->getRow($query);
 		    if (!empty($rid)) {
-		      return $this->arrCachePerLoad['onlineUserLocation'][$userId] = array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
-		    } else $this->arrCachePerLoad['onlineUserLocation'][$userId] = false;
-		} else return $this->arrCachePerLoad['onlineUserLocation'][$userId];
+		    	$loc = array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
+		    	$cache->setData( $loc );
+		    } else $cache->setData( '' );
+		} 
+		return $loc;
 	}
 	
 	static function isUserIdRegistered($userId) {
@@ -428,9 +360,8 @@ class FUser {
 		return FDBTool::getOne($q, $name, 'idByN', 'l');
 	}
 	function getDiaryCnt($usrid=0) {
-		global $db;
-		if(empty($usrid)) $usrid = $this->gid;
-		return $db->getOne("select count(1) from sys_users_diary where (userId='".$usrid."' or eventForAll=1) and year(dateEvent)=year(now()) and month(dateEvent)=month(now()) and dayofmonth(dateEvent)=dayofmonth(now())");
+		if(empty($usrid)) $usrid = $this->userVO->userId;
+		return FDBTool::getOne("select count(1) from sys_users_diary where (userId='".$usrid."' or eventForAll=1) and year(dateEvent)=year(now()) and month(dateEvent)=month(now()) and dayofmonth(dateEvent)=dayofmonth(now())");
 	}
 	function pocitadlo(){
 		$q = "select sum(hit) from sys_users";
@@ -442,60 +373,58 @@ class FUser {
 		else $str="ins+1";
 		$db->query("update sys_pages_counter set ins=".$str." WHERE pageId='".$aud."'and dateStamp=now() AND userId='".$this->userVO->userId."'");
 	}
+	
 	///----FRIENDS managments
 	function pritel($userId) {
 		$arr = $this->getFriends($this->gid);
 		return(in_array($userId,$arr));
 	}
 	function addpritel($book_idpra) {
-		Global  $db;
 		if(!is_array($book_idpra)) $book_idpra = array($book_idpra);
 		foreach ($book_idpra as $friendId) {
-			$db->query("insert into sys_users_friends (userId,userIdFriend,dateCreated) values ('" . $this->gid . "','" . $friendId . "',NOW())");
-			$this->arrFriends[$this->gid][$friendId] = $friendId;
+			FDBTool::query("insert into sys_users_friends (userId,userIdFriend,dateCreated) values ('" . $this->gid . "','" . $friendId . "',NOW())");
+			$this->getFriends(0,true);
 		}
 	}
 	function delpritel($unbook_id) {
-		global $db;
 		if($this->idkontrol) {
-			$db->query('delete from sys_users_friends where userId='.$this->gid.' and userIdFriend='.$unbook_id);
-			//$this->getFriends(0,true);
-			unset($this->arrFriends[$this->gid][$unbook_id]);
+			FDBTool::query('delete from sys_users_friends where userId='.$this->userVO->userId.' and userIdFriend='.$unbook_id);
+			$this->getFriends(0,true);
 		}
 	}
 	function getFriends($userId=0,$refresh=false) {
-		if(empty($userId)) $userId = $this->gid;
-		if($refresh || !isset($this->arrFriends[$userId])) {
-			$db = FDBConn::getInstance();
-			$arr = $db->getAll("SELECT p.userIdFriend,s.name 
+		$cacheGroup = 'friends';
+		$cache = FCache::getInstance('s', 0);
+		if($refresh==true) {
+			$cache->invalidateGroup($cacheGroup);
+		}
+		if(empty($userId)) $userId = $this->userVO->userId;
+		$q = "SELECT p.userIdFriend,s.name 
 			FROM sys_users_friends as p left join sys_users as s on p.userIdFriend = s.userId 
-			WHERE p.userId = ".$userId." ORDER BY s.name");
-			
-			if(!empty($arr)) 
-				foreach ($arr as $row) {
-					$this->arrFriends[$userId][$row[0]] = $row[0];
-					$this->arrUsers['username'][$row[0]] = $row[1];
+			WHERE p.userId = ".$userId." ORDER BY s.name";
+		$arrTmp = FDBTool::getAll($q, $userId, $cacheGroup, 's', 0);
+		
+			$arr = array();
+			if(!empty($arrTmp)) {
+				foreach ($arrTmp as $row) {
+					$arr[$row[0]] = $row[0];
+					$cache->setData($row[1], $row[0], 'Uname');
 				}
-			else $this->arrFriends[$userId] = array();
-		}
-		return $this->arrFriends[$userId];
+			} 
+		
+		return $arr;
 	}
-	function koment($idusr,$koho) {
-		if($idusr!=0) {
-			global $db;
-			if($v_id=$db->getOne("SELECT comment FROM sys_users_friends WHERE userId=".$koho." AND userIdFriend = ".$idusr)) return($v_id);
-		}
-	}
-	
+		
 	function getAvatarUrl($userId=-1){
 		$picname = WEB_REL_AVATAR . AVATAR_DEFAULT;
 		if($userId==-1) $picname = WEB_REL_AVATAR . $this->ico; //---myself
 		elseif($userId > 0) {
-            if(!isset($this->arrUsers['avatarUrl'][$userId])) {
-			   global $db;
-			   $userAvatar = WEB_REL_AVATAR . $db->getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
-               if(file_exists($userAvatar) && !is_dir($userAvatar)) $picname = $this->arrUsers['avatarUrl'][$userId] = $userAvatar;
-            } else $picname = $this->arrUsers['avatarUrl'][$userId];
+			$cache = FCache::getInstance('l');
+            if( $picname = $cache->getData($userId,'UavaUrl') === false ) {
+			   $userAvatar = WEB_REL_AVATAR . FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
+               if(file_exists($userAvatar) && !is_dir($userAvatar)) $picname = $userAvatar;
+               $cache->setData($picname ,$userId,'UavaUrl');
+            }
 		}
 		return($picname);
 	}
@@ -511,21 +440,21 @@ class FUser {
         $showName = (isset($paramsArr['showName']))?(true):(false);
         $noTooltip = (isset($paramsArr['noTooltip']))?(true):(false);
         
-	    $this->arrUsers['avatar'] = array();
 	    
-	 $avatarUserId = ($userId==-1)?($this->gid):($userId);
-	 if(!isset($this->arrUsers['avatar'])) $this->arrUsers['avatar'] = array();
-	 if(!isset($this->arrUsers['avatar'][$avatarUserId])) $this->arrUsers['avatar'][$avatarUserId] = false;
+	    
+	 $avatarUserId = ($userId==-1)?($this->userVO->userId):($userId);
+	 
+	 $cache = FCache::getInstance('l');
     
-	 if(!$ret = $this->arrUsers['avatar'][$avatarUserId]) {
+	 if(!$ret = $cache->getData($avatarUserId,'Uavatar')) {
 	   $tpl = new fTemplateIT('user.avatar.tpl.html');
 	   
-     if($userId==-1 ) $avatarUserName = $this->gidname;
+     if($userId==-1 ) $avatarUserName = $this->userVO->name;
      elseif($userId > 0) $avatarUserName = $this->getgidname($avatarUserId);
      else $avatarUserName = '';
 	
      if($showName) $tpl->setVariable('USERNAME',$avatarUserName);
-     if($this->zidico==1) {
+     if($this->userVO->zavatar==1) {
       $tpl->setVariable('AVATARURL',$this->getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
       $tpl->setVariable('AVATARUSERNAME',$avatarUserName);
       if(isset($class)) $tpl->setVariable('AVATARCLASS',$class);
@@ -538,7 +467,7 @@ class FUser {
         if($noTooltip==false) $tpl->setVariable('NAMECLASS','supernote-hover-avatar'.$avatarUserId);
         $tpl->touchBlock('linknameend');
       }
-      if($this->zidico) {
+      if($this->userVO->zavatar) {
         $tpl->setVariable('AVATARLINK',$avatarUrl);
         if($noTooltip==false) $tpl->setVariable('AVATARLINKCLASS','supernote-hover-avatar'.$avatarUserId);
         $tpl->touchBlock('linkavatarend');
@@ -547,15 +476,15 @@ class FUser {
      }
       			
   			$tpl->parse('useravatar');
+  			$ret = $tpl->get('useravatar');
   			
-  			$ret = $this->arrUsers['avatar'][$avatarUserId] = $tpl->get('useravatar');
+  			$cache->setData($ret,$avatarUserId,'Uavatar');
 		}
 		
-		if($noTooltip==false && $this->idkontrol==true && $avatarUserId > 0 && !isset($this->arrUsers['tooltips'][$avatarUserId])) {
+		if($noTooltip==false && $this->idkontrol==true && $avatarUserId > 0 && $cache->getData($avatarUserId, 'UavatarTip')===false) {
 		  
-			$avatarUserName = ($userId==-1)?($this->gidname):($this->getgidname($userId));
+			$avatarUserName = ($userId==-1)?($this->userVO->name):($this->getgidname($userId));
      		if(!isset($tpl)) $tpl = new fTemplateIT('user.avatar.tpl.html');
-			///TOOLTIP - generated just once
   			
 	      $tpl->setVariable('TOOLTIPID','supernote-note-avatar'.$avatarUserId);
 	      $tpl->setVariable('TIPCLASS','snp-mouseoffset notemenu');
@@ -565,7 +494,7 @@ class FUser {
 	        array('url'=>'?k=finfo&who='.$avatarUserId,'text'=>LABEL_INFO),
 	        array('url'=>'?k=fpost&who='.$avatarUserId,'text'=>LABEL_POST),
 	      );
-				if($avatarUserId!=$this->gid) $arrLinks[] = array('url'=>'#','id'=>'avbook'.$avatarUserId,'click'=>"xajax_user_switchFriend('".$avatarUserId."','avbook".$avatarUserId."');return(false);",'text'=>(($this->pritel($avatarUserId))?(LABEL_FRIEND_REMOVE):(LABEL_FRIEND_ADD)));
+				if($avatarUserId!=$this->userVO->userId) $arrLinks[] = array('url'=>'#','id'=>'avbook'.$avatarUserId,'click'=>"xajax_user_switchFriend('".$avatarUserId."','avbook".$avatarUserId."');return(false);",'text'=>(($this->pritel($avatarUserId))?(LABEL_FRIEND_REMOVE):(LABEL_FRIEND_ADD)));
 
   			
   			foreach ($arrLinks as $tip) {
@@ -577,34 +506,34 @@ class FUser {
 		        $tpl->parseCurrentBlock();
 		      }
 		     $tpl->parse('tooltip');
-		     $this->arrUsers['tooltips'][$avatarUserId] = $tpl->get('tooltip');
+		     $cache->setData( $tpl->get('tooltip'), $avatarUserId, 'UavatarTip' );
  		}
+ 		
 		return $ret;
 	}
 	function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
-		$db = FDBConn::getInstance();
-		
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) 
 		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
-		$db->query($dot);
+		FDBTool::query($dot);
 		$maxid = $db->getOne("SELECT LAST_INSERT_ID()");
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed) 
 		values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)";
-		$db->query($dot);
-		$this->cacheRemove('postwho');
+		FDBTool::query($dot);
+		//---invalidate cache
+		$cache = FCache::getInstance('s');
+		$cache->invalidateData('postwho');
 	}
    function deletePost($messageId) { //--might be array or not
-       global $db;
 	if(!is_array($messageId)) $messageId[] = $messageId; 
-	 $db->query("delete from sys_users_post where postId in (" . implode(',',$messageId).")");
-	 $this->cacheRemove('postwho');
+	 FDBTool::query("delete from sys_users_post where postId in (" . implode(',',$messageId).")");
+	 //---invalidate cache
+	$cache = FCache::getInstance('s');
+	$cache->invalidateData('postwho');
   }
   
   //---get post
   function getPost($from,$perpage,$count=false) {
-    $db = FDBConn::getInstance();
-    
     $base = ' FROM sys_users_post WHERE userId='.$this->gid;
     
     if($filterText = $this->filterGet($this->currentPageId,'text')) $base.=" AND lower(text) LIKE '%".strtolower($filterText)."%'";
@@ -615,9 +544,9 @@ class FUser {
 	   
 	   $d_post = "SELECT postId,userId,userIdTo,userIdFrom,
     date_format(dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(dateCreated,'%Y-%m-%dT%T')".$base." ORDER BY dateCreated DESC";
-	 if($count==true) return $db->getOne('select count(1) '.$base);
+	 if($count==true) return FDBTool::getOne('select count(1) '.$base);
      else {
-     	$arr = $db->getAll($d_post.' limit '.$from.','.$perpage);
+     	$arr = FDBTool::getAll($d_post.' limit '.$from.','.$perpage);
      	foreach ($arr as $row) {
      		$arrRet[] = array('postId'=>$row[0],'userId'=>$row[1],'userIdTo'=>$row[2],
      		'userIdFrom'=>$row[3],'datumcz'=>$row[4],'text'=>$row[5],'readed'=>$row[6],'datum'=>$row[7]); 
@@ -628,16 +557,15 @@ class FUser {
 	
 	function diarPrip(){
 		$sentCount = 0;
-		$fQuery = new fQueryTool('sys_users_diary');
+		$fQuery = new FDBTool('sys_users_diary');
 		$fQuery->setSelect("diaryId, name, date_format(dateEvent,'{#date_local#}'), everyday, reminder, userId, date_format(dateEvent,'{#date_iso#}')");
 		$fQuery->setWhere("DATE_SUB(dateEvent,INTERVAL (reminder-1) DAY)<=NOW() AND reminder != 0");
 		$arr = $fQuery->getContent();
 		if(!empty($arr)){
-		  $db = FDBConn::getInstance();
 			foreach($arr as $row){
 				if($row[3]==1) $newprip=$row[4]-1; else $newprip=0;
 				$dot = "UPDATE sys_users_diary SET reminder=$newprip WHERE diaryId=".$row[0];
-				$db->query($dot);
+				FDBTool::query($dot);
 				$arrVars = array('LINK'=>BASESCRIPTNAME.'?k=fdiar&ddate='.$row[6],'NAME'=>$row[1],'DATE'=>$row[2]);
 				$message = $this->parseMessage($arrVars,MESSAGE_DIARY_REMINDER);
 				$this->send($row[5],$message);
