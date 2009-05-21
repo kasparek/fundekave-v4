@@ -3,7 +3,9 @@ class FileDriver
 {
   
   private $cacheLite;
+  
   //---could be null to live forever
+  public $lifeTimeDefault = 60;
   private $lifeTime = 60;
   
 

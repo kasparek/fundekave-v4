@@ -5,6 +5,7 @@
  **/ 
 class DBDriver
 {
+	public $lifeTimeDefault = 0;
   private $lifetime = 0;
 
   public function setConf( $lifeTime ) {

@@ -3,6 +3,7 @@ class SessionDriver
 {
 
   private $data;
+  public $lifeTimeDefault = 3600;
   private $lifeTime = 3600;
   
   function __construct() {

@@ -4,6 +4,9 @@ class LoadDriver
 
   private $data;
   
+  public $lifeTimeDefault = 0;
+  private $lifeTime = 0;
+  
   public function setConf( $lifeTime ) {
     
   }

@@ -44,12 +44,18 @@ class UserVO extends FDBvo {
 	//---security
   var $idlogin = '';
 	var $idloginInDb = '';
-  
 	var $ip = '';
+
 	//---skin info
 	var $skin = 0;
 	var $skinName = '';
 	var $skinDir = '';
+	
+	//---user messages
+	//---new post alerting
+	var $newPost = 0;
+	var $newPostFrom = '';
+	
 	
 	  function PageVO() {
   	
@@ -62,4 +68,21 @@ class UserVO extends FDBvo {
 		$this->setWhere($this->primaryCol ."='".$recordId."'");
 		$this->addJoinAuto('sys_skin','skinId','name');
     }
+    
+	function hasNewMessages(){
+		$db = FDBConn::getInstance();
+		
+		$dot = "select userIdFrom from sys_users_post where readed=0 AND userIdFrom!='".$this->userId."' AND userId='".$this->userId."' order by dateCreated desc";
+		$npost = $db->getCol($dot);
+		
+		if(count($npost)>0) {
+			$this->newPost = count($npost);
+			$this->newPostFrom = $this->getgidname($npost[0]);
+			return(true);
+		} else {
+			$this->newPost = 0;
+			$this->newPostFrom = '';
+			return(false);
+		}
+	}
 }

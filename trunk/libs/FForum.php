@@ -1,5 +1,5 @@
 <?php
-class fForum extends FDBTool {
+class FForum extends FDBTool {
 	var $aMessCount;
 	var $aMessNewCount;
 	var $aId;
@@ -9,10 +9,7 @@ class fForum extends FDBTool {
 	var $aLocked = 0;
 	var $aOwnerUsername;
 	var $aIdLastVisit;
-	
-	function __construct() {
 		
-	}
 	static function setBooked($auditId,$userId,$book) {
 		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".($auditId)."' AND userId='" . $userId."'");
 	}
@@ -94,7 +91,7 @@ class fForum extends FDBTool {
 	}
 	static function getSetUnreadedForum($id,$itemId){
 		$user = FUser::getInstance(); 
-		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->favoriteCnt;
+		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
 		else {
 		    $dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$itemId.'"';
 		    $unreadedCnt = $this->getOne($dot);
@@ -132,26 +129,28 @@ class fForum extends FDBTool {
 	    $dot = "update sys_pages_items set cnt=cnt+1 where itemId='".$itemId."'";
 	    return $this->query($dot);
 	}
-	function process($itemId = 0,$callbackFunction=false) {
+	static function process( $itemId = 0, $callbackFunction=false) {
 	    $user = FUser::getInstance();
+	    $pageId = $user->pageVO->pageId;
+	    $logon = $user->idkontrol;
 	    
         $redirect = false;
         
         if(isset($_POST["send"])) {
-          //======================TODO: sort out that filter
-            $cache = FCache->getInstance('s',0);
+          
+            $cache = FCache::getInstance('s',0);
             $cache->invalidateGroup('forumFilter');
             
         	if (!empty($_POST["del"])) {
-        		fForum::messDel($_POST['del'],$user->pageVO->pageId);
+        		fForum::messDel($_POST['del'],$pageId);
         		$redirect = true;
         	}
-        	if(!$user->idkontrol) {
+        	if(!$logon) {
         	    $captcha = fCaptcha::init();
         		if($captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) $cap = true; else $cap = false;
         	} else $cap = true;
         	
-        	if($user->idkontrol) $jmeno = $user->userVO->name;
+        	if(FUser::logon()) $jmeno = $user->userVO->name;
         	elseif(isset($_POST["jmeno"])) $jmeno = trim($_POST["jmeno"]);
         	
         	if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
@@ -192,13 +191,13 @@ class fForum extends FDBTool {
         				fError::addError("Nezadali jste jmeno");
         				$redirect = true;
         			}
-        			if (FUser::isUsernameRegistered($jmeno) && !$user->idkontrol){
+        			if (FUser::isUsernameRegistered($jmeno) && !$logon){
         				fError::addError("Jmeno uz nekdo pouziva");
         				$redirect = true;
         			}
         			if(!fError::isError()) {
             			$jmeno = fSystem::textins($jmeno,array('plainText'=>1));
-            			if($user->idkontrol) {
+            			if($logon) {
             			 $zprava = fSystem::textins($zprava);
             			} else {
             			 $zprava = fSystem::textins($zprava,array('formatOption'=>0));
@@ -208,7 +207,7 @@ class fForum extends FDBTool {
             			}
             		
             		//---insert
-            		    $arrSave = array('pageId'=>$user->pageVO->pageId,'userId'=>$user->userVO->userId,'name'=>$jmeno,'text'=>$zprava);
+            		    $arrSave = array('pageId'=>$pageId,'userId'=>$user->userVO->userId,'name'=>$jmeno,'text'=>$zprava);
             		    if(isset($objekt)) {
                       $arrSave['enclosure']=$objekt;
                     }
@@ -216,12 +215,13 @@ class fForum extends FDBTool {
             		    if(!empty($pageIdBottom)) $arrSave['pageIdBottom'] = $pageIdBottom;
             		    if($itemId > 0) $arrSave['itemIdTop'] = $itemId;
             		    
-                        fForum::messWrite($arrSave);
+                        FForum::messWrite($arrSave);
                         
-                        $_SESSION["cache_audit"] = array();
+                        $cache = FCache::getInstance('s',0);
+                        $cache->invalidateData($pageId,'form');
                   
                       //---on success
-                        if($user->idkontrol) fUserDraft::clear('forum'.$user->pageVO->pageId);
+                        if(FUser::logon()) fUserDraft::clear('forum'.$pageId);
                 			$redirect = true;
                     }
                         
@@ -230,22 +230,31 @@ class fForum extends FDBTool {
         		fError::adderror(ERROR_CAPTCHA);
         	}
         	if(fError::isError()) {
-              $_SESSION["cache_audit"] = array("zprava"=>$zprava,"objekt"=>(isset($objekt))?($objekt):(''),"name"=>$jmeno);
+              $formData = array("zprava"=>$zprava,"objekt"=>(isset($objekt))?($objekt):(''),"name"=>$jmeno);
+              $cache = FCache::getInstance('s',0);
+              $cache->setData($formData, $pageId, 'form');
             }
         }
         //---filtrovani
         if(isset($_POST["filtr"])) {
-        	$user->filterSet($user->currentPageId,'text',fSystem::textins($_POST["zprava"],array('plainText'=>1)));
+        	$cache = FCache::getInstance('s',0);
+            $cache->setData(fSystem::textins($_POST["zprava"],array('plainText'=>1)), $pageId, 'filter');
         }
         //---per page
-        if (isset($_POST["perpage"]) && $_POST["perpage"] != $user->auditPerPage) { 
-        	$user->auditPerPage = $_POST["perpage"]*1;
+        $cache = FCache::getInstance('s',0);
+        if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = FORUM_PERPAGE;
+        
+        if (isset($_POST["perpage"]) && $_POST["perpage"] != $perPage) {
+        	$perPage = $_POST["perpage"]*1;
+        	if($perPage < 2) $perPage = 10;
+        	$cache->setData($perPage, $pageId,'pp');
         }
         //---redirect
         if($redirect==true) {
-            $user->cacheRemove('lastForumPost');
+        	$cache = FCache::getInstance('f');
+            $cache->invalidateData('lastForumPost');
             if($callbackFunction) call_user_func($callbackFunction);
-            fHTTP::redirect($user->getUri());
+            fHTTP::redirect(FUser::getUri());
         }
 	}
 	
@@ -254,57 +263,61 @@ class fForum extends FDBTool {
 	 public write - 0:no write,1:public,2:only registered
 	 */
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
-	    global $user;
+	    $user = FUser::getInstance();
+	    
 	    $zprava = '';
 	    //---available params
 	    $formAtEnd = false;
 	    $showHead = true;
 	    extract($paramsArr);
 	    
-	    if(!$user->idkontrol && $publicWrite>0) { $captcha = fCaptcha::init(); }
+	    if(FUser::logon() === true && $publicWrite>0) { $captcha = fCaptcha::init(); }
 	    
-	    if ($user->auditPerPage < 2) $user->auditPerPage = 10;
-        
-        if($user->idkontrol == true) {
-            $unreadedCnt = fForum::getSetUnreadedForum($user->currentPageId,$itemId);
+	    $cache = FCache::getInstance('s',0);
+        if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = FORUM_PERPAGE;
+	    
+        if( FUser::logon() === true ) {
+            $unreadedCnt = fForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
             if($unreadedCnt > 0) {
-                $unreadedCnt += 5;
-                if($unreadedCnt < 20) $user->auditPerPage = 20;
-        	    elseif($unreadedCnt > 100) $user->auditPerPage=100;
-        	    else $user->auditPerPage = $unreadedCnt;    
+                if($unreadedCnt > 20 || $perPage <= $unreadedCnt) $perPage = $unreadedCnt + 5;
+        	    elseif($unreadedCnt > 100) $perPage = 100;
             }
         }
         
-        $perpage = $user->auditPerPage;
         /* ........ vypis nazvu auditka .........*/
         //--FORM
         $tpl = new fTemplateIT('forum.view.tpl.html');
         if($showHead===true) {
-            $desc = $user->currentPage['content'];
+            $desc = $user->pageVO->content;
             if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
         }
-        if($user->currentPage['locked'] == 0 && $publicWrite > 0) {
-            $tpl->setVariable('FORMACTION',$user->getUri());
+        if($user->pageVO->locked == 0 && $publicWrite > 0) {
+            $tpl->setVariable('FORMACTION',FUser::getUri());
         	$name = "";
-        	if($user->idkontrol) $zprava = fUserDraft::get('forum'.$user->currentPageId);
-        	if(!empty($_SESSION["cache_audit"])) {
-        	   $zprava = $_SESSION["cache_audit"]['zprava'];
-        	   $objekt = $_SESSION["cache_audit"]['objekt'];
-        	   $name = $_SESSION["cache_audit"]['name'];
-        		unset($_SESSION["cache_audit"]);
+        	if($user->idkontrol) $zprava = fUserDraft::get('forum'.$user->pageVO->pageId);
+        	
+        	$cache = FCache::getInstance('s',0);
+            $formData = $cache->getData( $user->pageVO->pageId, 'form');
+        	if($formData !== false) {
+        	   $zprava = $formData['zprava'];
+        	   $objekt = $formData['objekt'];
+        	   $name = $formData['name'];
+        	   $cache->invalidateData($user->pageVO->pageId, 'form');
         	}
         	if ($user->idkontrol) {
-        	   $tpl->setVariable('USERNAMELOGGED',$user->gidname);
+        	   $tpl->setVariable('USERNAMELOGGED',$user->userVO->name);
         	} else {
           	$tpl->setVariable('USERNAMENOTLOGGED',$name);
         		$src = $captcha->get_b2evo_captcha();
         		$tpl->setVariable('CAPTCHASRC',$src);
         		
         	}
-        	$tpl->setVariable('TEXTAREAID','forum'.$user->currentPageId);
-        	$tpl->addTextareaToolbox('TEXTAREATOOLBOX','forum'.$user->currentPageId);
+        	$tpl->setVariable('TEXTAREAID','forum'.$user->pageVO->pageId);
+        	$tpl->addTextareaToolbox('TEXTAREATOOLBOX','forum'.$user->pageVO->pageId);
        	
-        	$tpl->setVariable('TEXTAREACONTENT',(($filterTxt = $user->filterGet($user->currentPageId,'text'))?($filterTxt):($zprava)));
+        	$cache = FCache::getInstance('s',0);
+            $filter = $cache->getData( $user->pageVO->pageId, 'filter');
+        	$tpl->setVariable('TEXTAREACONTENT',(($filter!==false)?($filter):($zprava)));
 
         	if ($user->idkontrol) {
             $tpl->touchBlock('userlogged');
@@ -319,7 +332,7 @@ class fForum extends FDBTool {
         //---END FORM
         $fItems = new fItems();  
         $fItems->initData('forum');
-        $fItems->addWhere("i.pageId='".$user->currentPageId."'");
+        $fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
         if(!empty($itemId)) $fItems->addWhere("i.itemIdTop='".$itemId."'");
         if(!empty($filterTxt)) {
         	$fItems->addWhereSearch(array('i.name','i.text','i.enclosure','i.dateCreated'),$filterTxt,'or');
@@ -327,10 +340,10 @@ class fForum extends FDBTool {
         $fItems->setOrder("i.dateCreated DESC");
         fItems::setQueryTool(&$fItems);
         $manualCurrentPage = 0;
-        if($user->currentItemId > 0 || $itemIdInside > 0) {
-            if($user->currentItemId > 0) $itemIdInside = $user->currentItemId;
+        if($user->itemVO->itemId > 0 || $itemIdInside > 0) {
+            if($user->itemVO->itemId > 0) $itemIdInside = $user->itemVO->itemId;
             //---find a page of this item to have link to it
-            if($itemIdInside > 0) $manualCurrentPage = fForum::getItemPage($itemIdInside,$user->currentPageId,$perpage);
+            if($itemIdInside > 0) $manualCurrentPage = fForum::getItemPage($itemIdInside,$user->pageVO->pageId,$perpage);
         }
         if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
         $pager = fSystem::initPager(0,$perpage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
@@ -367,8 +380,8 @@ class fForum extends FDBTool {
         	    
         	}
         	/*......aktualizace novych a prectenych......*/
-        	if($itemId>0) fForum::updateReadedReactions($itemId,$user->gid);
-        	else fForum::aFav($user->currentPageId,$user->gid,$user->currentPage['cnt']);
+        	if($itemId>0) fForum::updateReadedReactions($itemId,$user->userVO->userId);
+        	else fForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
         } else $tpl->touchBlock('messno');
 
         return $tpl->get();
