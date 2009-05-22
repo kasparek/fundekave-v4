@@ -88,7 +88,7 @@ class UserVO extends FDBvo {
 	}
 	
 	function getXMLVal($branch,$node,$default='') {
-	    $xml = new SimpleXMLElement($this->xmlProperties);
+	    $xml = new SimpleXMLElement($this->info);
 	    if(isset($xml->$branch)) {
 	       if(isset($xml->$branch->$node)) {
 	           return $xml->$branch->$node;
@@ -98,7 +98,7 @@ class UserVO extends FDBvo {
 	}
 	
 	function setXMLVal($branch,$node,$value) {
-	    $xml = new SimpleXMLElement($this->xmlProperties);
+	    $xml = new SimpleXMLElement($this->info);
 	    $xml->$branch->$node = $value;
 	    $this->xmlProperties = $xml->asXML();
 	}

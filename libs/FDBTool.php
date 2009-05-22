@@ -70,7 +70,7 @@ class FDBTool {
   } else {
      $where = $this->_where;
   }
-        return implode(' ',$where);
+        return ' '.implode(' ',$where);
     }
 	function setWhere($whereCondition) {
 		$this->_where = array($whereCondition);
@@ -80,7 +80,7 @@ class FDBTool {
         if($len>0) {
            $this->_where[$len-1] .= $condition;
         }
-        $this->_where[] = $where;
+        $this->_where[] = ' '.$where.' ';
 	}
 	function addJoin($condition) {
 		$this->_join .= ' '.$condition;
@@ -366,6 +366,7 @@ class FDBTool {
     		return $db->getAll($query);
     	}
     }
+    
     static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
     	if($key!==null) {
     		//---cache results
@@ -374,6 +375,24 @@ class FDBTool {
 			if( $ret = $cache->getData($key,$grp) === false ) {
 			  $db = FDBConn::getInstance();
 			  $ret = $db->getRow($query);
+			  $cache->setData( $ret );
+			}
+			return $ret;
+    	} else {
+    		//---no cache
+    		$db = FDBConn::getInstance();
+    		return $db->getRow($query);
+    	}
+    }
+    
+	static function getCol($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+    	if($key!==null) {
+    		//---cache results
+    		$cache = FCache::getInstance($driver);
+    		if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( $ret = $cache->getData($key,$grp) === false ) {
+			  $db = FDBConn::getInstance();
+			  $ret = $db->getCol($query);
 			  $cache->setData( $ret );
 			}
 			return $ret;

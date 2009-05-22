@@ -18,7 +18,7 @@ if (isset($_POST['save'])){
 	
 	list($nden,$nmesic,$nrok)=explode(".",$_POST['addfdate']);
 	if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else fError::addError(ERROR_DATA_FORMAT);
-	$arrd['userId'] = $user->gid;
+	$arrd['userId'] = $user->userVO->userId;
 	$arrd['reminder'] = $_POST['dpripomen'] * 1;
 	$arrd['dateCreated'] = 'NOW()';
 	if(isset($_POST['did'])) $arrd['diaryId'] = $_POST['did'] * 1;
@@ -34,23 +34,23 @@ if (isset($_POST['save'])){
 	} else {
 		$_SESSION['diar_arr'] = $arrd;
 	}
-	fHTTP::redirect($user->getUri('ddate='.$arrd['dateEvent']));
+	fHTTP::redirect(FUser::getUri('ddate='.$arrd['dateEvent']));
 }
 
-if(!empty($_REQUEST['del']) && $user->idkontrol) {
+if(!empty($_REQUEST['del']) && FUser::logon()) {
         $dot = 'delete from sys_users_diary where diaryId="'.($_REQUEST['del']*1).'"';
 		if($db->query($dot)) { 
 		  fError::addError(LABEL_DELETED_OK);
 		  $user->cacheRemove('calendarlefthand');
 		}
-		fHTTP::redirect($user->getUri('ddate='.$_REQUEST['ddate']));
+		fHTTP::redirect(FUser::getUri('ddate='.$_REQUEST['ddate']));
 }
 
 if(!empty($_REQUEST['did'])) {
   $eventId = $_REQUEST['did'] * 1;
 	$qDiar = new fQueryTool('sys_users_diary as d');
 	$qDiar->setSelect("diaryId,name,text,date_format(dateEvent,'%d.%m.%Y') as devent,reminder,everyday,eventForAll,recurrence");
-	$qDiar->setWhere("userId='".$user->gid."'");
+	$qDiar->setWhere("userId='".$user->userVO->userId."'");
 	$qDiar->addWhere('diaryId="'.$eventId.'"');
 	$arrd = $db->getRow($qDiar->buildQuery());
 }
@@ -65,9 +65,9 @@ if(isset($_SESSION['diar_arr'])) {
 //---show part
 $tpl = new fTemplateIT('users.diary.tpl.html');
 
-$tpl->setVariable('FORMACTION',$user->getUri());
+$tpl->setVariable('FORMACTION',FUser::getUri());
 
-$tpl->setVariable('ADDFORMACTION',$user->getUri());
+$tpl->setVariable('ADDFORMACTION',FUser::getUri());
 
 if(isset($_POST['dsearch'])) $tpl->setVariable('SEARCHTEXT',$_POST['dsearch']);
 if(isset($_POST['dsden'])) $tpl->setVariable('SEARCHDAY',$_POST['dsden']);
@@ -76,7 +76,7 @@ if(isset($_POST['dsrok'])) $tpl->setVariable('SEARCHYEAR',$_POST['dsrok']);
 
 $tpl->setVariable('TODAYDATE',$dden.'.'.$dmesic.'.'.$drok);
 
-$tpl->setVariable('SHOWMINELINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-00&l=m'));
+$tpl->setVariable('SHOWMINELINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-00&l=m'));
 
 if(isset($arrd)) {
     $tpl->setVariable('DID',$arrd[0]);
@@ -96,18 +96,19 @@ if(isset($arrd)) {
 $tpl->addTextareaToolbox('DTEXTTOOLBOX','addftext');
 
 $reminderOptions='';
-foreach ($DIARYREMINDER as $k=>$v) {
+
+foreach (FLang::$DIARYREMINDER as $k=>$v) {
 	$reminderOptions.='<option value="'.$k.'"'.(($k==$arrd[4])?(' selected="selected"'):('')).'>'.$v.'</option>';
 }
 $tpl->setVariable('REMINDEROPTIONS',$reminderOptions);
 $repeatOptions='';
-foreach ($DIARYREPEATER as $k=>$v) {
+foreach (FLang::$DIARYREPEATER as $k=>$v) {
 	$repeatOptions.='<option value="'.$k.'"'.(($k==$arrd[7])?(' selected="selected"'):('')).'>'.$v.'</option>';
 }
 $tpl->setVariable('REPEATOPTIONS',$repeatOptions);	
 
 //--------------vypis udalosti
-$qDiar = new fQueryTool('sys_users_diary as d');
+$qDiar = new FDBTool('sys_users_diary as d');
 $qDiar->setSelect("date_format(d.dateEvent,'{#date_local#}') as datumcz,name,text,diaryId as id,userId,date_format(dateEvent,'{#date_iso#}') as dateEvent,dateCreated,0 as typ");
 if(!isset($_POST['search'])) {
 
@@ -121,13 +122,13 @@ if(!isset($_POST['search'])) {
 	if(trim($_POST['dsearch'])!="") $qDiar->addWhere("(LOWER(name) LIKE '%".strtolower(trim($_POST['dsearch']))."%' OR LOWER(text) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
 
 }
-if(isset($_REQUEST['l'])) $qDiar->addWhere("userId='".$user->gid."'");
-else $qDiar->addWhere("(userId='".$user->gid."' or eventForAll='1')");
+if(isset($_REQUEST['l'])) $qDiar->addWhere("userId='".$user->userVO->userId."'");
+else $qDiar->addWhere("(userId='".$user->userVO->userId."' or eventForAll='1')");
 $qDiar->addWhere("recurrence=0");
 $dot1=$qDiar->buildQuery();
 
 //---pripraveni druheho dotazu na union s akcema
-$qAkce = new fQueryTool('sys_pages_items as e');
+$qAkce = new FDBTool('sys_pages_items as e');
 $qAkce->setSelect("date_format(dateStart,'{#date_local#}') as datumcz,addon,location,itemId as id,userId,date_format(dateStart,'{#date_iso#}') as dateEvent,dateCreated,3 as typ");
 if(!isset($_POST['search'])) {
 	$qAkce->addWhere("YEAR(dateStart)='".$drok."' AND MONTH(dateStart)='".$dmesic."'");
@@ -140,11 +141,11 @@ if(!isset($_POST['search'])) {
 	OR LOWER(text) LIKE '%".strtolower(trim($_POST['dsearch']))."%' 
 	OR LOWER(location) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
 }
-if(isset($_REQUEST['l'])) $qAkce->addWhere("userId='".$user->gid."'");
+if(isset($_REQUEST['l'])) $qAkce->addWhere("userId='".$user->userVO->userId."'");
 $dot2=$qAkce->buildQuery();
 
 //---dotaz pro opakuj�c� se akce
-$qDiarEvery = new fQueryTool('sys_users_diary');
+$qDiarEvery = new FDBTool('sys_users_diary');
 $qDiarEvery->setSelect("concat(date_format(dateEvent,'%d.%m.'),date_format(NOW(),'%Y')) as datumcz,
 name,
 text,
@@ -161,8 +162,8 @@ if(!isset($_POST['search'])) {
 	if(!empty($_POST['dsden'])) $qDiarEvery->addWhere("dayofmonth(dateEvent)='".($_POST['dsden']*1)."'");
 	if(trim($_POST['dsearch'])!="") $qDiarEvery->addWhere("(LOWER(name) LIKE '%".strtolower(trim($_POST['dsearch']))."%' OR LOWER(text) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
 }
-if(isset($_REQUEST['l'])) $qDiarEvery->addWhere("userId='".$user->gid."'");
-else $qDiarEvery->addWhere("(userId='".$user->gid."' or eventForAll='1')");
+if(isset($_REQUEST['l'])) $qDiarEvery->addWhere("userId='".$user->userVO->userId."'");
+else $qDiarEvery->addWhere("(userId='".$user->userVO->userId."' or eventForAll='1')");
 $qDiarEvery->addWhere("recurrence in (1,2)");
 $dot3=$qDiarEvery->buildQuery();
 //---konec a kompletace dotazu
@@ -184,19 +185,19 @@ if(count($arr)>0) {
       $tpl->setVariable('EVENTNAME',$row[1]);
 	    
       if($row[7] == 3) {
-	       $tpl->setVariable('EVENTLINK',$user->getUri('i='.$row[4],'event'));
+	       $tpl->setVariable('EVENTLINK',FUser::getUri('i='.$row[4],'event'));
 	       $tpl->touchBlock('eventlinkclose');
 	    }
 	    if($row[7]=='1') $tpl->touchBlock('repeatyear');
       elseif($row[7]=='2') $tpl->touchBlock('repeatmonth');
       $tpl->setVariable('EVENTTEXT',nl2br($row[2]));
-	    if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',$user->getUri('i='.$row[3],'event'));
-  		if($row[5]!=$user->gid && $row[7]!=0) {
+	    if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',FUser::getUri('i='.$row[3],'event'));
+  		if($row[5]!=$user->userVO->userId && $row[7]!=0) {
           $tpl->setVariable('AUTHORLINK','?k=finfo&who='.$row[4]);
-          $tpl->setVariable('AUTHOR',$user->getgidname($row[4])); 
+          $tpl->setVariable('AUTHOR',FUser::getgidname($row[4])); 
   		} else {
-  		    $tpl->setVariable('EVENTEDITLINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));
-  		    $tpl->setVariable('EVENTDELETELINK',$user->getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&del='.$row[3]));
+  		    $tpl->setVariable('EVENTEDITLINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));
+  		    $tpl->setVariable('EVENTDELETELINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&del='.$row[3]));
   		}
 		  $tpl->parseCurrentBlock();
      

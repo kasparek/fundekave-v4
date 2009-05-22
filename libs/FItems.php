@@ -196,7 +196,7 @@ class FItems extends FDBTool {
         }
       }
       
-      if(!fRules::get( 2 )) {
+      if(!FRules::getCurrent( 2 )) {
           $this->addWhere('i.public = 1');
       }
       

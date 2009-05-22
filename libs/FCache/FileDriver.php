@@ -36,16 +36,16 @@ class FileDriver
   
   public function invalidateData($id='',$group='default') {
     if($id!='') {
-      $cacheLite->remove($id, $group);
+      $this->cacheLite->remove($id, $group);
     }
   }
   
   public function invalidateGroup( $group='default' ) {
-    $cacheLite->clean($group);
+    $this->cacheLite->clean($group);
   }
   
   public function invalidate( ) {
-    $cacheLite->clean();
+    $this->cacheLite->clean();
   }
 
 

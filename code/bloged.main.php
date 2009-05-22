@@ -1,29 +1,34 @@
 <?php
 $tpl = new fTemplateIT('maina.tpl.html');
 //--------------LAST-FORUM-POSTS
-$data = $user->cacheGet('lastForumPost');
-if(!$data) {
+$cache = FCache::getInstance('f',3600);
+$data = $cache->getData('lastForumPost');
+if($data === false) {
   $fItems = new fItems();
-  $arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
-  $strItemId = implode(',',$arr);
-  $fItems->showPageLabel = true;
-  $fItems->initData('forum',$user->userVO->userId,true);
-  $fItems->addWhere('i.itemId in ('.$strItemId.')');
-  $fItems->addOrder('i.dateCreated desc');
-  //$fItems->setGroup('i.pageId');
-  $fItems->getData(0,3);
-  while($fItems->arrData) $fItems->parse();
-  $data = $fItems->show();
-  $user->cacheSave($data);
+  $arr = FDBTool::getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
+  $data = '';
+  if(!empty($arr)) {
+	  $strItemId = implode(',',$arr);
+	  $fItems->showPageLabel = true;
+	  $fItems->initData('forum',$user->userVO->userId,true);
+	  $fItems->addWhere('i.itemId in ('.$strItemId.')');
+	  $fItems->addOrder('i.dateCreated desc');
+	  //$fItems->setGroup('i.pageId');
+	  $fItems->getData(0,3);
+	  while($fItems->arrData) $fItems->parse();
+	  $data = $fItems->show();
+  }
+  $cache->setData($data);
 }
 if(!empty($data)) $tpl->setVariable('LASTFORUMPOSTS',$data);
 //---------------LAST-BLOG-POSTS
-$data = false;
 $firstPostSeparator = ';|||;';
-$data = $user->cacheGet('lastBlogPost');
-if(!$data) {
+$data = $cache->getData('lastBlogPost');
+if($data===false) {
+	$data = '';
   //$arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='blog' and itemIdTop is null group by pageId order by dateCreated desc limit 0,10");
-  $arr = $db->getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
+  $arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
+  if(!empty($arr)) {
   $fItems = new fItems();
   $fItems->showPageLabel = true;
   $fItems->initData('blog',$user->userVO->userId,true);
@@ -40,15 +45,18 @@ if(!$data) {
     }
   }
   $data = $firstPostStr . $firstPostSeparator . $fItems->show();
-  $user->cacheSave($data);
+  }
+  $cache->setData($data);
 }
+
 if(!empty($data)) {
   list($firstPostStr,$restPosts) = explode($firstPostSeparator,$data);  
   if(!empty($firstPostStr)) $tpl->setVariable('LASTBLOGPOST',$firstPostStr);
   if(!empty($restPosts)) $tpl->setVariable('LASTBLOGPOSTS',$restPosts);
 }
+
 //------LAST-CREATED-PAGES
-if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
+if($tmptext = $cache->getData('lastCreated') !== false) {
     $fPages = new fPages(array('blog','galery','forum'),$user->userVO->userId);
     $fPages->setOrder('p.dateCreated desc');
     $fPages->addWhere('p.locked < 2');
@@ -63,12 +71,12 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','lastCreated')) {
         $tpl->setVariable('NEWPAGETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
         $tpl->parseCurrentBlock();
     }
-    $user->cacheSave($tpl->get('newpage'));
+    $cache->setData( $tpl->get('newpage') );
 } else {
     $tpl->setVariable('NEWPAGECACHED',$tmptext);
 }
 //------MOST-VISITED-PAGES
-if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
+if($tmptext = $cache->getData('mostVisited') !== false) {
     $arr = $db->getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(hit) desc limit 0,10");
     //---cache result
     $x = 0;
@@ -84,13 +92,13 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostVisited')) {
             $x++;
         }
     }
-    $user->cacheSave($tpl->get('mostvisitedpage'));
+    $cache->setData($tpl->get('mostvisitedpage'));
 } else {
     $tpl->setVariable('MOSTVISITEDECACHED',$tmptext);
 }
 
 //------MOST-ACTIVE-PAGES
-if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
+if($tmptext = $cache->getData('mostActive') !== false) {
     $arr = $db->getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(ins) desc limit 0,10");
     //---cache result
     $x = 0;
@@ -106,14 +114,13 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostActive')) {
             $x++;
         }
     }
-    $user->cacheSave($tpl->get('mostactivepage'));
+    $cache->setData($tpl->get('mostactivepage'));
 } else {
     $tpl->setVariable('MOSTACTIVECACHED',$tmptext);
 }
 
 //------MOST-FAVOURITE-PAGES
-
-if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
+if($tmptext = $cache->getData('mostFavourite') !== false) {
     $arr = $db->getCol("select pageId from sys_pages_favorites where book=1 group by pageId order by sum(book) desc limit 0,10");
     //---cache result
     $x = 0;
@@ -129,7 +136,7 @@ if(!$tmptext = $user->cacheGet('userBasedMedium','mostFavourite')) {
             $x++;
         }
     }
-    $user->cacheSave($tpl->get('mostfavouritepage'));
+    $cache->setData($tpl->get('mostfavouritepage'));
 } else {
     $tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
 }

@@ -12,7 +12,7 @@ class FUser {
   
     //---user access
     var $idkontrol = false;
-    var $currentPageAccess = false;
+    var $pageAccess = false;
     //---security salt
     var $lo = 'fdk4.salt';
 
@@ -77,7 +77,7 @@ class FUser {
 				FUser::invalidateUsers($gid);
 				//---db logon
 				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values 
-				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->page->pageId.'","'.$this->userVO->ip.'")');
+				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->pageVO->pageId.'","'.$this->userVO->ip.'")');
 				//---logon
 				$this->idkontrol = true;
 				//---session cache
@@ -103,7 +103,8 @@ class FUser {
 	 */
 	function logout() {
 		FUser::invalidateUsers($this->userVO->userId);
-    	$this->user = new FUserVO(); 
+		$this->idkontrol = false;
+    	$this->user = new UserVO(); 
     	$cache = FCache::getInstance( 's' );
 		$cache->invalidate();
 	}
@@ -115,9 +116,11 @@ class FUser {
 	 */
 	function check() {
 		if($this->idkontrol === true) { //---check only if user was logged
+			
 			$vid = FDBTool::getRow("SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
-            	FROM sys_users_logged as ul on ul.userId = '".$this->userVO->userId."' 
-            	LEFT JOIN sys_pages_favorites as pf on pf.pageId = p.pageId and pf.userId=ul.userId and p.pageId = '".$this->page->pageId."'");
+            	FROM sys_users_logged as ul  
+            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageVO->pageId."' and ul.userId = '".$this->userVO->userId."'");
+			
 			$idloginInDb = $vid[0];
 			if($vid[1] == 1) FRules::invalidate();
 		    $this->pageVO->favorite = $vid[2]*1;
@@ -144,7 +147,7 @@ class FUser {
 	function kde($xajax=false) {
 		if(!$this->userVO) $this->userVO = new UserVO();
 		//---logout action
-		if( $this->page->pageId == 'elogo') {
+		if( $this->pageVO->pageId == 'elogo') {
 		    if($this->idkontrol === true) {
 				$this->logout();
     			fError::addError(MESSAGE_LOGOUT_OK);
@@ -156,8 +159,8 @@ class FUser {
   	    	$this->pageVO->load();
 	    }
 		//---if page not exists redirect to error
-		if(empty($this->page->pageId)) {
-		    $this->currentPageAccess = false;
+		if(empty($this->pageVO->pageId)) {
+		    $this->pageAccess = false;
 		    fError::addError(ERROR_PAGE_NOTEXISTS);
 		} else {
 			//---check if user sent data to login
@@ -187,19 +190,19 @@ class FUser {
 		  }
 		  //check if user have access to page with current permissions needed - else redirect to error
 		  if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
-    		  $this->currentPageAccess = false;
+    		  $this->pageAccess = false;
 		      fError::addError(ERROR_ACCESS_DENIED);
-		  } else $this->currentPageAccess = true;
+		  } else $this->pageAccess = true;
 		
 		  //logged user function
 		  if($this->idkontrol === true) {
 		    //---update user information
 			FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(), 
-			location = '".$this->currentPageId."', 
-			params = '".$this->currentPageParam."'    
-			where loginId='".$this->idlogin."'");
+			location = '".$this->pageVO->pageId."', 
+			params = '".$this->pageParam."'    
+			where loginId='".$this->userVO->idlogin."'");
 			
-			FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->gid."'");
+			FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
 			
 			if($xajax === false) FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
@@ -243,7 +246,7 @@ class FUser {
 	 */
 	function register(){
 		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
-		if(isset($_REQUEST["addusr"]) && $this->gid==0) {
+		if(isset($_REQUEST["addusr"]) && $this->idkontrol === false) {
 			$jmenoreg = trim($_REQUEST["jmenoreg"]);
 			$pwdreg1 = trim($_REQUEST["pwdreg1"]);
 			$pwdreg2 = trim($_REQUEST["pwdreg2"]);
@@ -256,16 +259,16 @@ class FUser {
 			if($pwdreg1!=$pwdreg2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
 			if(!fError::isError()){
 				$dot = 'insert into sys_users (name,password,dateCreated,skinId,info) 
-					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->xmlProperties.'")';
+					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->userVO->info.'")';
 				if(FDBTool::query($dot)) {
 					$newiduser = FDBTool::getOne("SELECT LAST_INSERT_ID()");
 					fError::addError(MESSAGE_REGISTER_SUCCESS);
 					//---oznameni o registraci
 					FMessages::sendSAMessage(array('NEWUSERID'=>$newiduser,'NEWUSERNAME'=>$jmenoreg),MESSAGE_USER_NEWREGISTERED);
-					fHTTP::redirect(BASESCRIPTNAME."?".ESID);
+					fHTTP::redirect($this->getUri('',HOME_PAGE));
 				}
 			}
-			fHTTP::redirect(BASESCRIPTNAME."?k=roger".ESID);
+			fHTTP::redirect($this->getUri());
 		}
 	}
 	

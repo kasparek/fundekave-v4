@@ -135,7 +135,7 @@ class FPages extends FDBTool {
         
         //---template init
         $tpl = new fTemplateIT('forums.all.tpl.html');
-        $arrCategory = $this->db->getAll("select categoryId,name from sys_pages_category where typeId='".$this->type."' order by ord,name");
+        $arrCategory = FDBTool::getAll("select categoryId,name from sys_pages_category where typeId='".$this->type."' order by ord,name");
         if(count($arrCategory)>0) {
             foreach ($arrCategory as $category) {
         		//vypis jednotlivych klubu	
@@ -191,7 +191,7 @@ class FPages extends FDBTool {
 	}
 	function printBookedList($xajax=false) {
 	    $user = FUser::getInstance();
-	    $bookOrder = $user->getXMLVal('settings','bookedorder') * 1;
+	    $bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
 	    
 	    $this->checkType();
 	    
