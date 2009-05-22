@@ -148,6 +148,7 @@ class FSystem {
         $secMenuCustom[] = $button;
         $cache->setData($secMenuCustom);
     }
+        
     /**
      * option - 0 - remove html, safe text 1 - remove html, safe text, parse bb, 2- nothing - just trim
      *

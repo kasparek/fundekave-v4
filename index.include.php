@@ -199,6 +199,7 @@ $fLeftpanel->show();
 
  
 //---FOOTER INFO
+$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
 $TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
 
 //---user tooltips - one per user avatar displayed

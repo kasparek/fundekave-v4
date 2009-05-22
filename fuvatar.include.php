@@ -40,7 +40,7 @@ if(isset($fuvatarFlag)) {
             //---check rules
             if(isset($_GET['u'])) {
               $username = $_GET['u'];
-              if(true === $user->fuvatarAccess($username)) {
+              if(true === FUvatar::fuvatarAccess($username)) {
                 header ("content-type: image/jpg");
                 echo $fUvatar->download($username);
               }

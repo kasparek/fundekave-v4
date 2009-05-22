@@ -58,11 +58,14 @@ if(!$nonUserInit) {
     	}
     	//---u=username
     	if(isset($_GET['u'])) {
-    	    $userId = $user->getUserIdByName($_GET['u']);
+    	    $userId = FUser::getUserIdByName($_GET['u']);
     	    if($userId > 0) {
-    	        $arr  = $user->get($userId);
-    	        if(!empty($arr['personal']->HomePageId)) {
-    	            $user->pageVO->pageId = (string) $arr['personal']->HomePageId;
+    	    	$userVO = new UserVO();
+    	    	$userVO->userId = $userId;
+    	    	$userVO->loadVO();
+    	        $usersPageId = $userVO->getXMLVal('personal','HomePageId');
+    	        if(!empty($usersPageId)) {
+    	            $user->pageVO->pageId = (string) $usersPageId;
     	        }
     	    }
     	}

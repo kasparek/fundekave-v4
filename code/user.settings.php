@@ -1,24 +1,25 @@
 <?php
 if(isset($_POST['nav'])) {
 	if($_POST['nav']=='infosave') {
+		$userVO = $user->userVO;
 		//--setxml elements
-		$user->icq = str_replace("-","",fSystem::textins($_POST['infoicq'],array('plainText'=>1)));
-		$user->email = fSystem::textins($_POST['infoemajl'],array('plainText'=>1));
+		$userVO->icq = str_replace("-","",fSystem::textins($_POST['infoicq'],array('plainText'=>1)));
+		$userVO->email = fSystem::textins($_POST['infoemajl'],array('plainText'=>1));
 		
-		if($_POST['skin'] > 0) $user->skin = $_POST['skin'] * 1;
-		$user->setXMLVal('settings','bookedorder', $_POST['bookedorder']*1);
-		$user->setXMLVal('personal','www',fSystem::textins($_POST['infowww'],array('plainText'=>1)));
-		$user->setXMLVal('personal','place',fSystem::textins($_POST['infomisto'],array('plainText'=>1)));
-		$user->setXMLVal('personal','food',fSystem::textins($_POST['infojidlo'],array('plainText'=>1)));
-		$user->setXMLVal('personal','hobby',fSystem::textins($_POST['infohoby'],array('plainText'=>1)));
-		$user->setXMLVal('personal','motto',fSystem::textins($_POST['infomotto'],array('plainText'=>1)));
-		$user->setXMLVal('personal','about',fSystem::textins($_POST['infoabout']));
+		if($_POST['skin'] > 0) $userVO->skin = $_POST['skin'] * 1;
+		$userVO->setXMLVal('settings','bookedorder', $_POST['bookedorder']*1);
+		$userVO->setXMLVal('personal','www',fSystem::textins($_POST['infowww'],array('plainText'=>1)));
+		$userVO->setXMLVal('personal','place',fSystem::textins($_POST['infomisto'],array('plainText'=>1)));
+		$userVO->setXMLVal('personal','food',fSystem::textins($_POST['infojidlo'],array('plainText'=>1)));
+		$userVO->setXMLVal('personal','hobby',fSystem::textins($_POST['infohoby'],array('plainText'=>1)));
+		$userVO->setXMLVal('personal','motto',fSystem::textins($_POST['infomotto'],array('plainText'=>1)));
+		$userVO->setXMLVal('personal','about',fSystem::textins($_POST['infoabout']));
 		if(!empty($_POST['homepageid'])) {
 		  $homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
-		  if(fPages::pageOwner($homePageId) == $user->gid) $user->setXMLVal('personal','HomePageId',$homePageId);
+		  if(fPages::pageOwner($homePageId) == $userVO->gid) $userVO->setXMLVal('personal','HomePageId',$homePageId);
 		}
 		//---webcam
-		$user->setXMLVal('webcam','public',(int) $_POST['campublic']);
+		$userVO->setXMLVal('webcam','public',(int) $_POST['campublic']);
 		if(!empty($_POST['camchosen'])) {
 		$chosenUsernames = explode(',',$_POST['camchosen']);
 		foreach ($chosenUsernames as $username) {
@@ -28,28 +29,28 @@ if(isset($_POST['nav'])) {
         }
             if(!empty($arrUserIdValidatedArr)) {
 		       $userListChosen = implode(',',$arrUserIdValidatedArr);
-                $user->setXMLVal('webcam','chosen',$userListChosen);
+                $userVO->setXMLVal('webcam','chosen',$userListChosen);
             }
 		}
-        $user->setXMLVal('webcam','avatar',(int) $_POST['camavatar']);
-		$user->setXMLVal('webcam','resolution',(int) $_POST['camresolution']);
+        $userVO->setXMLVal('webcam','avatar',(int) $_POST['camavatar']);
+		$userVO->setXMLVal('webcam','resolution',(int) $_POST['camresolution']);
 		
     $interval = (int) $_POST['caminterval'];
 		if($interval<2) $interval = 2;
 		if($interval>100) $interval = 100;
-		$user->setXMLVal('webcam','interval',$interval);
+		$userVO->setXMLVal('webcam','interval',$interval);
 		
         $quality = (int) $_POST['camquality'];
 		if($quality<0) $quality = 0;
 		if($quality>100) $quality = 100;
-		$user->setXMLVal('webcam','quality',$quality);
+		$userVO->setXMLVal('webcam','quality',$quality);
 		
-		$user->setXMLVal('webcam','motion',(int) $_POST['cammotion']);
+		$userVO->setXMLVal('webcam','motion',(int) $_POST['cammotion']);
 		
-		$user->zbanner = (($_POST["zbanner"]=='1')?(1):(0));
-		$user->zaudico = (($_POST["zaudico"]=='1')?(1):(0));
-		$user->zidico = (($_POST["zidico"]=='1')?(1):(0));
-		$user->galtype = (($_POST["galtype"]=='1')?(1):(0));
+		$userVO->zbanner = (($_POST["zbanner"]=='1')?(1):(0));
+		$userVO->zforumico = (($_POST["zaudico"]=='1')?(1):(0));
+		$userVO->zavatar = (($_POST["zidico"]=='1')?(1):(0));
+		$userVO->zgaltype = (($_POST["galtype"]=='1')?(1):(0));
 		
 		//password
 		$pass1 = fSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
@@ -58,7 +59,7 @@ if(isset($_POST['nav'])) {
 			if(strlen($pass1)<3) fError::addError(ERROR_REGISTER_PASSWORDTOSHORT);
 			if($pass1!=$pass2) fError::addError(ERROR_REGISTER_PASSWORDDONTMATCH);
 			if (!fError::isError()){
-				$user->newPassword = md5(trim($_POST["pwdreg1"]));
+				$userVO->passwordNew = md5(trim($_POST["pwdreg1"]));
 				fError::addError(MESSAGE_PASSWORD_SET);
 			}
 		}
@@ -66,7 +67,7 @@ if(isset($_POST['nav'])) {
 		//avatar
 		if ($_FILES["idfoto"]["error"] == 0){
 			$konc = Explode(".",$_FILES["idfoto"]["name"]);
-			$_FILES["idfoto"]['name'] = fSystem::safeText($user->gidname).".".$user->gid.".".$konc[(count($konc)-1)];
+			$_FILES["idfoto"]['name'] = fSystem::safeText($userVO->name).".".$userVO->userId.".".$konc[(count($konc)-1)];
 			if($up = fSystem::upload($_FILES["idfoto"],WEB_REL_AVATAR,20000)) {
 			 //---resize and crop if needed
 			 list($avatarWidth,$avatarHeight,$type) = getimagesize(WEB_REL_AVATAR.$up['name']);
@@ -77,12 +78,12 @@ if(isset($_POST['nav'])) {
                 $iProc = new fImgProcess(WEB_REL_AVATAR.$_FILES["idfoto"]['name'],WEB_REL_AVATAR.$up['name'],$resizeParams);
 			  
        }
-			 $user->ico = $up['name'];
+			 $userVO->avatar = $up['name'];
 			}
 		}
 		
-		$user->infowrt();
-		fHTTP::redirect($user->getUri());
+		$userVO->saveVO();
+		fHTTP::redirect(FUser::getUri());
 	}
 }
 

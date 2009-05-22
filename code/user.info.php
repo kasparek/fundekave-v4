@@ -16,7 +16,7 @@ if($who = $user->whoIs) {
 
 if(isset($_REQUEST["save"])) {
   if($who!=$user->gid) {
-  	if(!$user->pritel($who)) $user->addpritel($who);
+  	if(!$user->userVO->isFriend($who)) $user->userVO->addFriend($who);
   	$koment=fSystem::textins($_POST["koment"],array('plainText'=>1));
   	$dot = "UPDATE sys_users_friends SET comment='".$koment."' WHERE userId='".$user->gid."' AND userIdFriend='".$who."'";
   	$db->query($dot);

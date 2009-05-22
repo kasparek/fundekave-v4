@@ -312,7 +312,7 @@ class FDBTool {
 		$db = FDBConn::getInstance();
 		return $db->getOne("SELECT LAST_INSERT_ID()");
 	}
-	function save($cols=array(),$notQuoted=array(),$forceInsert=false) {
+	function save( $cols=array(), $notQuoted=array(), $forceInsert=false ) {
     		if(!empty($cols)) $this->setCols($cols,$notQuoted);
     		$insert = false;
     		if(empty($this->_cols[$this->primaryCol]) || $forceInsert) {

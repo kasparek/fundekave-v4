@@ -103,7 +103,7 @@ class FLeftPanelPlugins {
 			$tpl->setVariable('AVATAR',$user->showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',fSystem::getOnlineUsersCount());
-			$recentEvent = $user->getDiaryCnt();
+			$recentEvent = $user->userVO->getDiaryCnt();
 			if($recentEvent>0) $tpl->setVariable('DIARY',$recentEvent);
 			if($user->userVO->hasNewMessages()) {
 			    $tpl->setVariable('NEWPOST',$user->userVO->newPost);

@@ -1,17 +1,16 @@
 <?php
 $nonUserInit = false;
 function user_switchFriend($userIdFriend,$elementId='') {
-	global $user;
-	if(!is_object($_SESSION["user"])) $_SESSION["user"] = new fUser();
-	$user = & $_SESSION["user"];
-	$user->getFriends(0,true);
-	if($user->pritel($userIdFriend)) {
+	$user = FUser::getInstance();
+	
+	$user->userVO->getFriends(true);
+	if($user->userVO->isFriend($userIdFriend)) {
     //remove
-    $user->delpritel($userIdFriend);
+    $user->userVO->removeFriend($userIdFriend);
     $ret = LABEL_FRIEND_ADD;
   } else {
     //add
-    $user->addpritel($userIdFriend);
+    $user->userVO->addFriend($userIdFriend);
     $ret = LABEL_FRIEND_REMOVE;
   }
 	

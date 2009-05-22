@@ -40,7 +40,7 @@ if(isset($_POST["send"]) && $_POST["zprava"]!='') {
   	$zprava = fSystem::textins($_POST["zprava"]);
   	if(!empty($zprava)) {
     		foreach ($arrto as $komu){
-    		  $user->send($komu,$zprava,$user->gid);
+    		  FMessages::send($komu,$zprava,$user->gid);
     		}
     		fUserDraft::clear('postText');
     		$redir = true;
@@ -63,14 +63,14 @@ if ((isset($_POST["delo"]) || isset($_POST["delbe"])) && !empty($_POST["del"])) 
 	} else {
 		$arrdel = $_POST["del"];
 	}
-	$user->deletePost($arrdel);
+	FMessages::delete($arrdel);
 	fHTTP::redirect($user->getUri());
 }
 //---add remove friend
 if (isset($_REQUEST["unbookpra"]) || isset($_REQUEST["bookpra"])) {
-	if (isset($_REQUEST["unbookpra"])) $user->delpritel($_REQUEST["bookuser"],$user->gid);
-	else $user->addpritel($_REQUEST["bookuser"]);
-	fHTTP::redirect($user->getUri());
+	if (isset($_REQUEST["unbookpra"])) $user->userVO->removeFriend($_REQUEST["bookuser"],$user->gid);
+	else $user->userVO->addFriend($_REQUEST["bookuser"]);
+	fHTTP::redirect(FUser::getUri());
 }
 //---showTIME
 $perpage = $user->postPerPage;
@@ -84,7 +84,7 @@ if($filterText = $user->filterGet($user->currentPageId,'text')) $zprava = $filte
 //---filtering
 $pagerExtraVars = array();
 	
-$totalItems = $user->getPost(0,0,true);
+$totalItems = FMessages::load($user->userVO->userId,0,0,true);
 
 if(!empty($user->whoIs)) $pagerExtraVars['who']=$user->whoIs;
 
@@ -94,10 +94,10 @@ if($totalItems > $perpage) {
 	$od=($pager->getCurrentPageID()-1) * $perpage;
 }
 
-$arrpost = $user->getPost($od,$perpage);
+$arrpost = FMessages::load($user->userVO->userId, $od, $perpage);
 	
 //---set default recipient
-$arrFriends = $user->getFriends();
+$arrFriends = $user->userVO->getFriends();
 
 $recipients = '';
 if(!empty($arrpost)) {

@@ -71,6 +71,10 @@ class FImgProcess {
         }
     }
     
+    static function process($source,$target='',$mode=array()) {
+    	return new FImgProcess($source, $target, $mode);
+    }
+    
     function open() {
         if(!is_dir($this->sourceUrl) && file_exists($this->sourceUrl)) {
             list($this->sourceWidth,$this->sourceHeight,$this->sourceMimeType) = getimagesize($this->sourceUrl);

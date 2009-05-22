@@ -3,12 +3,12 @@ if(isset($_REQUEST['usrfilter'])) $_SESSION['bannanusrfilter']=$usrfilter=$_REQU
 elseif(!empty($_SESSION['bannanusrfilter'])) $usrfilter=$_SESSION['bannanusrfilter'];
 else $usrfilter=0;
 
-if(isset($_GET['du']) && fRules::get($user->gid,$user->currentPageId)) $user->smazoldid($_GET['du']);
-if(isset($_POST["usersstat"]) && fRules::get($user->gid,$user->currentPageId)) {
+if(isset($_GET['du']) && FRules::getCurrent()) FUser::invalidateUsers($_GET['du']);
+if(isset($_POST["usersstat"]) && FRules::getCurrent()) {
 	foreach ($_POST["usersstat"] as $k=>$v){
-		$db->query("update sys_users set deleted=".$v." where userId=".$k);
+		FDBTool::query("update sys_users set deleted=".$v." where userId=".$k);
 	}
-	fHTTP::redirect($user->getUri());
+	FHTTP::redirect(FUser::getUri());
 }
 
 //-----------------SELECT

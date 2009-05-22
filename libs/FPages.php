@@ -205,7 +205,7 @@ class FPages extends FDBTool {
         //vypis vlastnich
         $friendsBook = false;
         if(!empty($user->whoIs)){
-            if($user->pritel($user->whoIs)) {
+            if($user->userVO->isFriend($user->whoIs)) {
             	$userId = $user->whoIs;
             	$tpl->setVariable('AVATAR',$user->showAvatar($userId,array('showName'=>1)));
             	$friendsBook = true;
