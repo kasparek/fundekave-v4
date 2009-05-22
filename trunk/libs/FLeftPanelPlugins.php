@@ -100,7 +100,7 @@ class FLeftPanelPlugins {
     	$user = FUser::getInstance();
     	if($user->idkontrol) {
     	    $tpl = new fTemplateIT('sidebar.user.logged.tpl.html');
-			$tpl->setVariable('AVATAR',$user->showAvatar(-1,array('noTooltip'=>1)));
+			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',fSystem::getOnlineUsersCount());
 			$recentEvent = $user->userVO->getDiaryCnt();
@@ -139,7 +139,7 @@ class FLeftPanelPlugins {
     static function rh_akce_rnd() {
     	$user = FUser::getInstance();
     	$cache = FCache::getInstance('f',86400);
-       if(!$tmptext = $cache->getData($user->idkontrol,'eventtip')) {
+       if($data = $cache->getData($user->idkontrol,'eventtip') !== false) {
         $fItems = new fItems();
         $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);
@@ -151,6 +151,7 @@ class FLeftPanelPlugins {
       		$fItems->parse();
       		$data = $fItems->show();
       	}
+      	
       	$cache->setData($data);
       }
       return $data;
@@ -299,6 +300,7 @@ class FLeftPanelPlugins {
     	$cache = FCache::getInstance('s',10);
     	if(!$ret = $cache->getData('loggedlist')) {
     	  $ret = '';
+    	  $user = FUser::getInstance();
       	$arrpra=$db->getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->userVO->userId." AND f.userIdFriend!='".$user->userVO->userId."' GROUP BY f.userIdFriend ORDER BY casklik");
       	if (count($arrpra)>0){
       		$ret.='<ul class="onlineUsersList">';
@@ -373,7 +375,7 @@ class FLeftPanelPlugins {
       	if(!checkdate($monthafter,$dden,$yearafter)) $dayafter='01'; else $dayafter = $dden;
       	if(!checkdate($monthbefore,$dden,$yearbefore)) $daybefore='01'; else $daybefore = $dden;
       	
-      	if($user->currentPage['typeId']=='top') {
+      	if($user->pageVO->typeId == 'top') {
   	    	$arrUsedPlugins = array(
   	    	'diaryItems',
   	    	'diaryRecurrenceItems',
@@ -383,7 +385,7 @@ class FLeftPanelPlugins {
   	    	'forums'
   	    	);
   	    	$userPageId = false;
-  	    } elseif($user->currentPage['typeId']=='event') {
+  	    } elseif($user->pageVO->typeId == 'event') {
   	        $arrUsedPlugins = array(
   	    	'diaryItems',
   	    	'diaryRecurrenceItems',
@@ -393,7 +395,7 @@ class FLeftPanelPlugins {
       	} else {
       	  $userPageId = true;
       		//---just items for given page
-      		$typeId = $user->currentPage['typeId'];
+      		$typeId = $user->pageVO->typeId;
       		if($typeId=='blog') $arrUsedPlugins = array('blogItems');
       	}
       	$arrQ = array();

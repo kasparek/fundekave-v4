@@ -55,7 +55,7 @@ if($user->idkontrol) {
 
 if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked==3)  {
 	fError::addError(MESSAGE_PAGE_LOCKED);
-	if(!fRules::get($user->userVO->userId,'sadmi',1)) $user->currentPageAccess = false;
+	if(!fRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 }
 
 //---DATA of page
@@ -64,15 +64,15 @@ $TOPTPL = new fTemplateIT('main.tpl.html');
 //----DEBUG
 if(isset($_GET['d'])) { fSystem::profile('BEFORE CONTENT'); }
 
-if($user->currentPageAccess == true) {
-    if($user->currentPageParam=='sa') $template = 'page.edit.php';
+if($user->pageAccess == true) {
+    if($user->pageParam=='sa') $template = 'page.edit.php';
     else $template = $user->pageVO->template;
     if($template != '') {
     	$staticTemplate = false;
     	if (preg_match("/(.html)$/",$template)) {
     		$staticTemplate = true;
     		if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
-    			if($user->currentPageParam == 'e') {
+    			if($user->pageParam == 'e') {
     				fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),BUTTON_PAGE_BACK);
     				$staticTemplate = false;
     				$template = 'page.edit.php';
@@ -100,8 +100,8 @@ if($user->currentPageAccess == true) {
     }
 	//SUPERADMIN access - tlacitka na nastaveni stranek
     if(FRules::get($user->userVO->userId,'sadmi',1)) {
-        if($user->currentPageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,''),BUTTON_PAGE_BACK);
-        else fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'sa'),BUTTON_PAGE_SETTINGS,'',1);
+        if($user->pageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),BUTTON_PAGE_BACK);
+        else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,'sa'),BUTTON_PAGE_SETTINGS,'',1);
     }
     
     /**/
@@ -122,7 +122,7 @@ $TOPTPL->setVariable("CHARSET", CHARSET);
 
 if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
-$JSWrapper = new fJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->currentPage['typeId'].'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
+$JSWrapper = new fJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->pageVO->typeId.'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
 if(!$JSWrapper->isCached()) {
   if(!empty($arrXajax)) {
       foreach ($arrXajax as $row) {
@@ -141,12 +141,12 @@ if($wrap = $JSWrapper->get()) {
     $TOPTPL->setVariable("WRAPPEDJS", $wrap);
 }
 
-if($user->currentPageAccess) {
-  $pageTitle = $user->currentPage["name"];
-  $pageHeading = $user->currentPage["name"];
+if($user->pageAccess) {
+  $pageTitle = $user->pageVO->name;
+  $pageHeading = $user->pageVO->name;
 }
 $TOPTPL->setVariable("TITLE", (!empty($pageTitle)?($pageTitle.' - '):('')).BASEPAGETITLE);
-if(!empty($user->currentPage["description"])) $TOPTPL->setVariable("DESCRIPTION", str_replace('"','',$user->currentPage["description"]));
+if(!empty($user->pageVO->description)) $TOPTPL->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 if(!empty($pageHeading)) $TOPTPL->setVariable('PAGEHEAD',$pageHeading);
 //---BODY PARAMETERS
 $bodyAction = '';
@@ -175,7 +175,7 @@ if(!isset($_GET['nobanner'])) {
   }
 }
 //---SECONDARY MENU
-$lomenuItems = fSystem::secondaryMenu($user->currentPageId);
+$lomenuItems = fSystem::secondaryMenu($user->pageVO->pageId);
 if(!empty($lomenuItems)) {
   foreach($lomenuItems as $menuItem) {
     $TOPTPL->setCurrentBlock("secondary-menu-item");
@@ -200,7 +200,7 @@ $fLeftpanel->show();
  
 //---FOOTER INFO
 $pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
-$TOPTPL->setVariable("COUNTER", $user->pocitadlo().'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
+$TOPTPL->setVariable("COUNTER", $pagesSum.'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
 
 //---user tooltips - one per user avatar displayed
 $ttips = '';
@@ -220,8 +220,8 @@ foreach ($TOPTPL->blockdata as $item) {
         $useDomTabs = true;
     }
 }
-if($user->currentPage['typeId']=='blog') {
-    if(fRules::get($user->userVO->userId,$user->currentPageId,2)) {
+if($user->pageVO->typeId=='blog') {
+    if(fRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
         $useCalendar = true;
     }
 }
@@ -241,9 +241,6 @@ if(isset($_GET['d'])) { fSystem::profile('DONE:');die(); }
 header("Content-Type: text/html; charset=".CHARSET);
 $TOPTPL->show();
 
-$user->myDestructor();
-//SESSIONS HAVE TO BE CLOSED BEFORE DB DISCONNECT WHEN SAVED IN DB
 session_write_close();
-//FIXME: when enabled it end up into connection interupted in edit of galery?
 $db = FDBConn::getInstance();
 $db->disconnect();

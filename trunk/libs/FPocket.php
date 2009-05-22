@@ -57,7 +57,7 @@ class FPocket extends FDBTool {
     }
     function show($xajax=false) {
         $conf = FConf::getInstance();
-        if($conf["pocket"]["enabled"] == 1) {
+        if($conf->a["pocket"]["enabled"] == 1) {
             $nameLength = 10;
             $ret = '';
             //$this->debug = 1;

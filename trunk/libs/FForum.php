@@ -122,11 +122,15 @@ class FForum extends FDBTool {
 	/*.......aktualizace FAV KLUBU............*/
 	static function aFavAll($usrId,$typeId='forum') {
 		if(!empty($usrId)){
-			$klo=$this->getCol("SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'");
-			$kls=$this->getCol("SELECT pageId FROM sys_pages where typeId = '".$typeId."'");
+			$klo=FDBTool::getCol("SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'");
+			$kls=FDBTool::getCol("SELECT pageId FROM sys_pages where typeId = '".$typeId."'");
 			if(!isset($klo[0])) $res=$kls;
 			else $res = array_diff($kls,$klo);
-			foreach($res as $r) $this->query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+			if(!empty($res)) {
+				foreach($res as $r) {
+					FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+				}
+			} 
 		}
 	}
 	static function aFav($pageId,$userId,$cnt,$booked=0) {
