@@ -35,14 +35,19 @@ class FUvatar {
           file_put_contents($filename,base64_decode($imageData));
          @chmod($filename, 0777);
          //---call to change avatar if auto change is set to true
-         $db = FDBConn::getInstance();
         $user = FUser::getInstance();
-         $user->updateAvatarFromWebcam($filename);
+         
+      if($user->userVO->getXMLVal('webcam','avatar') == 1) {
+            //---RESIZE
+            $resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
+            FImgProcess::process($filename,WEB_REL_AVATAR . $user->userVO->avatar,$resizeParams);
+        }
+         
          $interval = (int) $user->getXMLVal('webcam','interval');
          $resolution = (int) $user->getXMLVal('webcam','resolution');
          if(empty($interval)) $interval = 3;
          $lastMod = filemtime($filename);
-         $db->query("INSERT INTO sys_users_fuvatar_live (`userId` ,`pageId` ,`refresh` ,`filetime` ,`dateUpdated` ,`resolution`) VALUES ('".$user->gid."', '".$user->currentPageId."', '".$interval."', '".$lastMod."', NOW(), '".$resolution."') on duplicate key update pageId='".$user->currentPageId."',refresh='".$interval."',filetime='".$lastMod."',dateUpdated=now(),resolution='".$resolution."'");
+         FDBTool::query("INSERT INTO sys_users_fuvatar_live (`userId` ,`pageId` ,`refresh` ,`filetime` ,`dateUpdated` ,`resolution`) VALUES ('".$user->gid."', '".$user->currentPageId."', '".$interval."', '".$lastMod."', NOW(), '".$resolution."') on duplicate key update pageId='".$user->currentPageId."',refresh='".$interval."',filetime='".$lastMod."',dateUpdated=now(),resolution='".$resolution."'");
        }
     }
     
@@ -144,6 +149,43 @@ class FUvatar {
       
       return $ret.'<hr class="cleaner" />';
       
+    }
+    
+//---fuvatar support functions--------------------------------------
+    static function fuvatarAccess($userName) {
+        $user = FUser::getInstance();
+        $ret = false;
+        if($userName == $user->gidname) $ret = true;
+        else {
+            $row = FDBTool::getRow('select userId,info from sys_users where name="'.$userName.'"');
+            if(!empty($row)) {
+                $xml = new SimpleXMLElement($row[1]);
+                switch ($xml->webcam->public) {
+                    case 0:
+                        $ret = true;
+                        break;
+                    case 1:
+                        if($user->gid > 0) $ret = true;
+                        break;
+                    case 2:
+                    	$userVO = new UserVO();
+                    	$userVO->userId = $row[0];
+                        $arr = $userVO->getFriends();
+                        if(!empty($arr)) {
+                            if(in_array($user->gid,$arr)) $ret = true;
+                        }
+                        break;
+                    case 3:
+                        $chosen = $xml->webcam->chosen;
+                        if(!empty($chosen)) {
+                            $arrChosen = explode(',',$chosen);
+                            if(in_array($user->gid,$arrChosen)) $ret = true;
+                        }
+                        break;
+                }
+            }
+        }
+        return $ret;
     }
     
 }

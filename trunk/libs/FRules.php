@@ -128,8 +128,6 @@ class FRules {
 		return $tpl->get();
 	}
 	function update(){
-	 $db = FDBConn::getInstance();
-	 $user = FUser::getInstance();
 		//---set rules
 		$this->clear(); //delete perm for page
 		
@@ -139,7 +137,7 @@ class FRules {
 				foreach ($arr as $usrname){
 					$usrname=trim($usrname);
 					if(!empty($usrname)) {
-						$usrid = $user->getUserIdByName($usrname);
+						$usrid = FUser::getUserIdByName($usrname);
 						if($usrid != $this->owner) { // if not owner of page
 							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
 							else fError::addError(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
@@ -153,10 +151,10 @@ class FRules {
 		if(count($this->ruleList['1']) != 0) $this->public=0;
 		
 		$dot = "update sys_pages set public='".$this->public."' where pageId='".$this->page."'";
-		$db->query($dot);
+		FDBTool::query($dot);
 		
 		//---invalidate active users
-		$user->invalidatePermissions();
+		FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
 		
 	}
 	

@@ -20,7 +20,7 @@ if(fRules::get($user->gid,$user->currentPageId,2)) {
 //tlacitko sledovat - jen pro nemajitele
 if($user->idkontrol) {
   if($user->currentPageParam=='' && $user->currentPage['userIdOwner'] != $user->gid) {
-  	fSystem::secondaryMenuAddItem('#book',((0 == $user->obliben($user->currentPageId,$user->gid))?(LABEL_BOOK):(LABEL_UNBOOK)),"xajax_forum_auditBook('".$user->currentPageId."','".$user->gid."');",0,'bookButt');
+  	fSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?(LABEL_BOOK):(LABEL_UNBOOK)),"xajax_forum_auditBook('".$user->currentPageId."','".$user->gid."');",0,'bookButt');
   }
   
   fSystem::secondaryMenuAddItem($user->getUri('',$user->currentPageId,'p'),LABEL_POLL);

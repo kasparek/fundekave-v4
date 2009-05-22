@@ -1,11 +1,11 @@
 <?php
 if(isset($_REQUEST["book_idpra"])){
-	$user->addpritel($_REQUEST["book_idpra"]);
-	fHTTP::redirect($user->getUri());
+	$user->userVO->addFriend($_REQUEST["book_idpra"]);
+	fHTTP::redirect(FUser::getUri());
 }
 if(isset($_REQUEST["unbook_id"])) {
-	$user->delpritel($_REQUEST["unbook_id"]);
-	fHTTP::redirect($user->getUri());
+	$user->userVO->removeFriend($_REQUEST["unbook_id"]);
+	fHTTP::redirect(FUser::getUri());
 }
 
 $tpl = new fTemplateIT('user.friends.tpl.html');

@@ -13,6 +13,14 @@ class FForum extends FDBTool {
 	static function setBooked($auditId,$userId,$book) {
 		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".($auditId)."' AND userId='" . $userId."'");
 	}
+	
+	static function statAudit($pageId, $userId, $count=true){
+		$db = FDBConn::getInstance();
+		if($count) $str = $db->getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='".$userId."'");
+		else $str="ins+1";
+		$db->query("update sys_pages_counter set ins=".$str." WHERE pageId='".$pageId."'and dateStamp=now() AND userId='".$userId."'");
+	}
+	
 	static function messDel($id,$auditId=0) {
 		if(!is_array($id)) $id= array($id);
 		if(!empty($id)) {
@@ -26,7 +34,7 @@ class FForum extends FDBTool {
         }
 			}
 			$this->query("update sys_pages set cnt=".$this->getOne("select count(1) from sys_pages_items where pageId='".$auditId."'")." where pageId='".$auditId."'");
-			$user->statAudit($auditId);
+			FForum::statAudit($auditId, $user->userVO->userId);
 		}
 	}
 	static function messWrite($arr) {
@@ -63,7 +71,9 @@ class FForum extends FDBTool {
         $this->query($dot);
       }
 			$user = FUser::getInstance(); 
-			if($user->userVO->userId > 0) $user->statAudit($arr['pageId'],false);
+			if($user->userVO->userId > 0) {
+				FForum::statAudit($arr['pageId'], $user->userVO->userId, false);
+			}
 			
 			return $ret;
 	}
