@@ -13,7 +13,7 @@ class FPages extends FDBTool {
 	function __construct($type,$userId,$permission=1) {
 		
 		$this->type = $type;
-		$this->userId = $userId;
+		$this->userId = $userId * 1;
 		$this->permission = $permission;
 		
 		parent::__construct();
@@ -94,7 +94,6 @@ class FPages extends FDBTool {
 	    $this->query("delete from sys_pages_items where pageId='".$pageId."'");
 	    $this->query("delete from sys_menu where pageId='".$pageId."'");
 	    $this->query("delete from sys_menu_secondary where pageId='".$pageId."'");
-	    $this->query("delete from sys_users_perm_cache where pageId='".$pageId."'");
 	    
 	    /*
 	    TODO: clean polls
@@ -123,8 +122,8 @@ class FPages extends FDBTool {
 	    $user = FUser::getInstance();
 	    
 	    $this->type = $user->pageVO->typeIdChild;
-        if(!empty($user->currentPageParam) || $categoryId>0) {
-          if($categoryId==0) $categoryId = $user->currentPageParam * 1;
+        if(!empty($user->pageParam) || $categoryId>0) {
+          if($categoryId==0) $categoryId = $user->pageParam * 1;
           if($categoryId>0) {
             $this->category($categoryId);
             if($arr = $this->getContent()) {

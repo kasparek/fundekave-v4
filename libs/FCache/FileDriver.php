@@ -22,8 +22,8 @@ class FileDriver
     $this->cacheLite->setLifeTime = $lifeTime;
   }
   
-  public function setData($id=NULL, $data, $group = 'default') {
-    $this->cacheLite->save( $data, $id, $group );
+  public function setData($id, $data, $group = 'default') {
+    $this->cacheLite->save( serialize($data), $id, $group );
   }
   
 	public function getGroup($group = 'default') {
@@ -31,7 +31,7 @@ class FileDriver
 	}
   
   public function getData($id, $group = 'default') {
-    return $this->cacheLite->get($id,$group);
+    return unserialize($this->cacheLite->get($id,$group));
   }
   
   public function invalidateData($id='',$group='default') {

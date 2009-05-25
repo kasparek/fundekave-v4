@@ -16,8 +16,8 @@ class FRules {
 	function __construct($page=0,$owner=0) {
 	    global $ARRPUBLIC,$ARRPERMISSIONS;
 		$this->page = $page;
-		$this->_pubTypes = $ARRPUBLIC;
-		$this->ruleNames = $ARRPERMISSIONS;
+		$this->_pubTypes = FLang::$ARRPUBLIC;
+		$this->ruleNames = FLang::$ARRPERMISSIONS;
 		$this->owner = $owner;
 	}
 	function setPageId($page) {
@@ -107,10 +107,10 @@ class FRules {
 	function printEditForm($idstr=0) {
 		$this->getList(true,$idstr);
 		$tpl = new fTemplateIT('pages.permissions.tpl.html');
-		$tpl->setVariable('HEADERLABEL',TEXT_PERMISSIONS_SET);
-		$tpl->setVariable('SELECTLABEL',LABEL_RULES_ACCESS);
-		$tpl->setVariable('HELPLABEL',LABEL_RULES_HELP);
-		$tpl->setVariable('HELPTEXT',LABEL_RULES_HELP_TEXT);
+		$tpl->setVariable('HEADERLABEL',FLang::$TEXT_PERMISSIONS_SET);
+		$tpl->setVariable('SELECTLABEL',FLang::$LABEL_RULES_ACCESS);
+		$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);
+		$tpl->setVariable('HELPTEXT',FLang::$LABEL_RULES_HELP_TEXT);
 		
 		$selectOptions = '';
 		foreach($this->_pubTypes as $k=>$v) $selectOptions.='<option value="'.$k.'"'.(($k==$this->public)?(' selected="selected"'):('')).'>'.$v.'</option>';

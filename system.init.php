@@ -5,25 +5,32 @@ error_reporting(E_ALL);
 if(!isset($nonUserInit)) $nonUserInit = false;
 if(!isset($xajax)) $xajax = false;
 
-//-------------------------------------------------------------time for debuging
-list($usec, $sec) = explode(" ",microtime());
-$start = ((float)$usec + (float)$sec);
-
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
-	if(!strpos($c,'_')) {
-		if(strpos($c,'VO')) {
-			$c = 'vo/'.$c;
+	
+		if(strpos($c,'page_')!==false) {
+			$c = ROOT.ROOT_CODE . $c ;
+		} else {
+			if(strpos($c,'VO')!==false) {
+				$c = 'vo/'.$c;
+			}
+			$c = LIBSDIR . $c ;
 		}
-		$c = $c . '.php';
-		include LIBSDIR . $c;
-	}
+		
+		include  $c . '.php';
+	
 }
 spl_autoload_register("class_autoloader");
 setlocale(LC_ALL,'cs_CZ.utf-8');
 
 //--------------------------------------------------------config + constant init
 FConf::getInstance();
+
+//-------------------------------------------------------------time for debuging
+list($usec, $sec) = explode(" ",microtime());
+$start = ((float)$usec + (float)$sec);
+$cache = FCache::getInstance('l');
+$cache->setData($start,'start','debug');
   
 //---session settings - stored in db
 //require_once("fSession.php");
@@ -31,8 +38,6 @@ FConf::getInstance();
 ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
 ini_set('session.gc_probability',1);
 ini_set('session.save_path', ROOT.'tmp/');
-
-//require_once(LIBSDIR.'FUser.php');
 
 session_start();
 
@@ -47,7 +52,7 @@ if(!$nonUserInit) {
 	 $user->itemVO = new ItemVO();
 		$user->pageVO->pageId = HOME_PAGE;
     	
-    	$user->currentPageParam = '';
+    	$user->pageParam = '';
     	//---backward compatibility
     	if(isset($_GET['kam'])) {
     	    if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
@@ -76,7 +81,7 @@ if(!$nonUserInit) {
     	
     	if(!empty($_REQUEST["k"])) $user->pageVO->pageId = $_REQUEST['k'];
     	elseif ($user->itemVO->itemId > 0) {
-    	   $user->pageVO->pageId = $user->currentItem['pageId'];
+    	   $user->pageVO->pageId = $user->itemVO['pageId'];
     	}
     	if(isset($user->pageVO->pageId{5})) {
     		//---slice pageid on fiveid and params

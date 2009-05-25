@@ -1,16 +1,28 @@
 <?php
 class FDBTool {
-  /**
-   *cacheResults
-   *0 - no cache
-   *1 - cache per load
-   *2 - cache per session
-   *3 - cache in file
-   **/                 
-  var $cacheResults = 0;
+	/**
+	 *cacheResults - driver
+	 * 
+	 * 0 - no cache
+	 * l - cache per load
+	 * s - cache per session
+	 * d - database 
+	 * f - cache in file
+	 **/
+	var $cacheResults = 0;
+	/**
+	 * lifetime in seconds of cached results
+	 *
+	 * @var Number
+	 */
+	var $lifeTime = 0;
+	
+	var $debug = 0;
+	
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
+	
 	private $_where = array();
 	private $_order = array();
 	private $_select = array('*');
@@ -19,7 +31,7 @@ class FDBTool {
 	private $autojoin = false;
 	private $_join = '';
 	private $_limit = array();
-	var $debug = 0;
+	
 	private $openingDelimiter = '{#';
 	private $closingDelimiter     = '#}';
 	private $variablenameRegExp    = '[\.0-9A-Za-z_-]+';
@@ -34,147 +46,150 @@ class FDBTool {
     'datetime_iso' => '%Y-%m-%d %T',
     'datetime_iso' => '%Y-%m-%dT%T',
     'datetime_local' => '%T %d.%m.%Y',
-    );
-    //---save tool
-  	var $_cols = array();
+	);
+	
+	//---save tool
+	var $_cols = array();
 	var $_notQuoted = array();
 	var $quoteType = "'";
+	
 	function __construct($tableName='',$primaryCol='') {
 		$this->table = $tableName;
 		$this->variablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')' . $this->closingDelimiter . '@sm';
 		$this->replaceKeys = array_keys($this->replaceVars);
 		$this->primaryCol = $primaryCol;
 	}
+	
 	function queryReset() {
-      $this->_where = array();
-      $this->_join = '';
-      $this->_order = array();
-      $this->_group = array();
-    }
+		$this->_where = array();
+		$this->_join = '';
+		$this->_order = array();
+		$this->_group = array();
+	}
 	function setTemplate($template) {
 		$this->queryTemplate = $template;
 	}
 	function getTemplate() {
-	  return $this->queryTemplate;
+		return $this->queryTemplate;
 	}
 	function getWhere() {
-  if(empty($this->_where)) {
-    $where[] = '1';
-  } else if($this->autojoin===true) {
-    foreach($this->_where as $cond) {
-      if(!strpos($conf,'.')) {
-        $cond = $this->table.'.'.$cond;
-      }
-      $where[] = $cond;
-    }
-  } else {
-     $where = $this->_where;
-  }
-        return ' '.implode(' ',$where);
-    }
+		if(empty($this->_where)) {
+			$where[] = '1';
+		} else if($this->autojoin===true) {
+			foreach($this->_where as $cond) {
+				if(!strpos($conf,'.')) {
+					$cond = $this->table.'.'.$cond;
+				}
+				$where[] = $cond;
+			}
+		} else {
+			$where = $this->_where;
+		}
+		return ' '.implode(' ',$where);
+	}
 	function setWhere($whereCondition) {
 		$this->_where = array($whereCondition);
 	}
 	function addWhere($where,$condition='AND') {
-	      $len = count($this->_where);
-        if($len>0) {
-           $this->_where[$len-1] .= $condition;
-        }
-        $this->_where[] = ' '.$where.' ';
+		$len = count($this->_where);
+		if($len>0) {
+			$this->_where[$len-1] .= $condition;
+		}
+		$this->_where[] = ' '.$where.' ';
 	}
 	function addJoin($condition) {
 		$this->_join .= ' '.$condition;
 	}
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
-    $this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
-    $this->autoJoin = true;
-    foreach($selectColumnsArray as $col) {
-      $this->addSelect($table.'.'.$col);
-    }
-  }
+		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
+		$this->autoJoin = true;
+		foreach($selectColumnsArray as $col) {
+			$this->addSelect($table.'.'.$col);
+		}
+	}
 	function getJoin() {
 		return $this->_join;
 	}
 	function addWhereSearch($column, $string, $condition = "AND",$groupCondition="AND") {
-	    $string = str_replace('"', '""', str_replace(' ', '%',strtolower(trim($string))));
-	    if(is_array($column)) {
-	    	foreach ($column as $col) {
-	    		$arr[] = ' LOWER('.$col.') LIKE "%'.$string.'%" ';
-	    		$str = implode($condition,$arr);
-	    	}
-	    	$this->addWhere('('.$str.')', $groupCondition);
-	    }
+		$string = str_replace('"', '""', str_replace(' ', '%',strtolower(trim($string))));
+		if(is_array($column)) {
+			foreach ($column as $col) {
+				$arr[] = ' LOWER('.$col.') LIKE "%'.$string.'%" ';
+				$str = implode($condition,$arr);
+			}
+			$this->addWhere('('.$str.')', $groupCondition);
+		}
 		else $this->addWhere('LOWER('.$column.') LIKE "%'.$string.'%"', $condition);
 	}
 	function addFulltextSearch($columns, $string, $condition = "AND",$queryExpansion=true) {
-	    $this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'"'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
+		$this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'"'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
 	}
 	function setOrder($orderCondition='', $desc=false) {
-	     $orderCondition = $orderCondition .($desc ? ' DESC' : '');
-    	$this->_order = explode(',',$orderCondition);
+		$orderCondition = $orderCondition .($desc ? ' DESC' : '');
+		$this->_order = explode(',',$orderCondition);
 	}
 	function addOrder($orderCondition='', $desc=false) {
-    	$this->_order[] = $orderCondition .($desc ? ' DESC' : '');
+		$this->_order[] = $orderCondition .($desc ? ' DESC' : '');
 	}
 	function getOrder() {
 	 if($this->autojoin===true) {
-	   foreach($this->_order as $cond) {
-	     if(!strpos($cond,'.')) {
-                  $cond = $this->table.'.'.$cond;
-       }
-	     $order[] = $cond;
-     }
-   } else {
-    $order = $this->_order;
-   }
-    	if(!empty($order)) return ' order by '.implode(',',$order);
+	 	foreach($this->_order as $cond) {
+	 		if(!strpos($cond,'.')) {
+	 			$cond = $this->table.'.'.$cond;
+	 		}
+	 		$order[] = $cond;
+	 	}
+	 } else {
+	 	$order = $this->_order;
+	 }
+	 if(!empty($order)) return ' order by '.implode(',',$order);
 	}
 	function setSelect($what='*') {
-    	$this->_select = explode(',',$what);
+		$this->_select = explode(',',$what);
 	}
 	function addSelect($what='*') {
-    	$this->_select[] = $what;
+		$this->_select[] = $what;
 	}
 	function replaceSelect($what,$with) {
-	$len=count($this->_select);
-	    for($i=0;$i<$len;$i++){
-      $this->_select[$i] = str_replace($what,$with,$this->_select[$i]);
-      }
+		$len=count($this->_select);
+		for($i=0;$i<$len;$i++){
+			$this->_select[$i] = str_replace($what,$with,$this->_select[$i]);
+		}
 	}
 	function getSelect() {
 	 if($this->autojoin) {
-	 foreach($this->_select as $col) {
-    if(!strpos($col,'.')) $col = $this->table.'.'.$col;
-    $arrCols[] = $col;
-   }
-   } else {
-    $arrCols = $this->_select;
-   }
+	 	foreach($this->_select as $col) {
+	 		if(!strpos($col,'.')) $col = $this->table.'.'.$col;
+	 		$arrCols[] = $col;
+	 	}
+	 } else {
+	 	$arrCols = $this->_select;
+	 }
 		return implode(',',$arrCols);
 	}
 	function setLimit($from=0, $count=0) {
-    	if ($from==0 && $count==0) $this->_limit = array();
-    	else $this->_limit = array($from, $count);
+		if ($from==0 && $count==0) $this->_limit = array();
+		else $this->_limit = array($from, $count);
 	}
 	function getLimit() {
 		return ((!empty($this->_limit))?(' limit '.$this->_limit[0].','.$this->_limit[1]):(''));
 	}
 	function setGroup($group='') {
-    	$this->_group = explode(',',$group);
+		$this->_group = explode(',',$group);
 	}
 	function getGroup() {
-   	
-    	if($this->autojoin===true) {
-	   foreach($this->_group as $cond) {
-	     if(!strpos($cond,'.')) {
-                  $cond = $this->table.'.'.$cond;
-       }
-	     $group[] = $cond;
-     }
-   } else {
-    $group = $this->_group;
-   }
-    	if(!empty($group)) return ' group by '.implode(',',$group);
+
+		if($this->autojoin===true) {
+			foreach($this->_group as $cond) {
+				if(!strpos($cond,'.')) {
+					$cond = $this->table.'.'.$cond;
+				}
+				$group[] = $cond;
+			}
+		} else {
+			$group = $this->_group;
+		}
+		if(!empty($group)) return ' group by '.implode(',',$group);
 	}
 	function buildBase() {
 		$query = $this->queryTemplate;
@@ -185,30 +200,30 @@ class FDBTool {
 		return $query;
 	}
 	function replaceKeys($query) {
-        preg_match_all($this->variablesRegExp, $query, $regs);
-        $length = count($regs[1]);
-        if ($length != 0) {
-          $x = 0;
-          while($x < $length) {
-            if(in_array($regs[1][$x],$this->replaceKeys)) $query = str_replace($regs[0][$x],$this->replaceVars[$regs[1][$x]],$query);
-            else die('fQueryTool:key not exists:'.$regs[1][$x]);
-            $x++;
-          }
-        }
-        return $query;
-    }
+		preg_match_all($this->variablesRegExp, $query, $regs);
+		$length = count($regs[1]);
+		if ($length != 0) {
+			$x = 0;
+			while($x < $length) {
+				if(in_array($regs[1][$x],$this->replaceKeys)) $query = str_replace($regs[0][$x],$this->replaceVars[$regs[1][$x]],$query);
+				else die('fQueryTool:key not exists:'.$regs[1][$x]);
+				$x++;
+			}
+		}
+		return $query;
+	}
 	function buildQuery($from=0,$perPage=0) {
-	    if($perPage>0) $this->setLimit($from,$perPage);
+		if($perPage>0) $this->setLimit($from,$perPage);
 		$query = $this->buildBase();
 		$query = str_replace('{SELECT}',$this->getSelect(),$query);
 		$query = str_replace('{ORDER}',$this->getOrder(),$query);
 		$query = str_replace('{LIMIT}',$this->getLimit(),$query);
 		$query = $this->replaceKeys($query);
-		if($this->debug==1) echo "BUILDED: ".$query." <br />\n"; 
+		if($this->debug==1) echo "BUILDED: ".$query." <br />\n";
 		return $query;
 	}
 	function buildGetCount($count = '') {
-	    if($count!='') $this->selectCount = $count;
+		if($count!='') $this->selectCount = $count;
 		$query = $this->buildBase();
 		$query = str_replace('{SELECT}',$this->selectCount,$query);
 		$query = str_replace('{ORDER}','',$query);
@@ -221,50 +236,35 @@ class FDBTool {
 		$dot = $this->buildGetCount();
 		if($this->debug==1) echo "GETCOUNT RUN: ".$dot." <br />\n"; ;
 		if($this->cacheResults == true) {
-		  $data = $this->getCachedData($dot);
+			$data = $this->getCachedData($dot);
 		} else {
 			$db = FDBConn::getInstance();
-		  $data = $db->getAll($dot);
+			$data = $db->getAll($dot);
 		}
 		if(!DB::iserror($data)) {
-		    if(isset($data[0][0])) return $data[0][0];
+			if(isset($data[0][0])) return $data[0][0];
 		}
 		else {
-      die('Error in query: '.$dot);
-    }
+			die('Error in query: '.$dot);
+		}
 	}
 	function getContent($from=0,$perPage=0) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug==1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
-		if($this->cacheResults == true) {
-		  $data = $this->getCachedData($dot);
-		} else {
-			$db = FDBConn::getInstance();
-		  $data = $db->getAll($dot);
-		}
+		
+		$data = FDBTool::getAll($dot,md5($dot),'dbtool',$this->cacheResults,$this->lifeTime);
+		
 		if(!DB::iserror($data)) return $data;
 		else {
-      die('Error in query: '.$dot);
-    } 
+			die('Error in query: '.$dot);
+		}
 	}
 	function get($id) {
-	    $this->addWhere($this->primaryCol.'="'.$id.'"');
-	    $ret = $this->getContent();
-	    if(!empty($ret)) return $ret[0];
+		$this->addWhere($this->primaryCol.'="'.$id.'"');
+		$ret = $this->getContent();
+		if(!empty($ret)) return $ret[0];
 	}
-	private function getCachedData($query) {
-	    global $user;
-	    $cacheId = $query;
-        $fromCache =  true;
-	    if(!$data = $user->cacheGet('fPages',$cacheId)) {
-	    	$db = FDBConn::getInstance();
-            $data = $db->getAll($query);
-            $user->cacheSave(serialize($data));
-            $fromCache = false;
-		}
-		if($fromCache == true) $data = unserialize($data);
-		return $data;
-	}
+	
 	//---get one record
 	function getRecord($recordId) {
 		$this->setSelect( implode(',',$this->_cols) );
@@ -313,117 +313,117 @@ class FDBTool {
 		return $db->getOne("SELECT LAST_INSERT_ID()");
 	}
 	function save( $cols=array(), $notQuoted=array(), $forceInsert=false ) {
-    		if(!empty($cols)) $this->setCols($cols,$notQuoted);
-    		$insert = false;
-    		if(empty($this->_cols[$this->primaryCol]) || $forceInsert) {
-    			$dot = $this->buildInsert();
-    			$insert = true;
-    		} else {
-    			$retId = $this->_cols[$this->primaryCol];
-    			$dot = $this->buildUpdate();
-    		}
-    		
-    		$db = FDBConn::getInstance();
-    		if($this->debug==1) echo $dot;
-    		if($db->query($dot)) {
-    			if(isset($cols[$this->primaryCol])) return $cols[$this->primaryCol];
-    			elseif($insert) return $this->getLastId();
-    			else return $retId;
-    		}
-    }
-    function delete($id) {
-    	$db = FDBConn::getInstance();
-    	return $db->query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
-    }
+		if(!empty($cols)) $this->setCols($cols,$notQuoted);
+		$insert = false;
+		if(empty($this->_cols[$this->primaryCol]) || $forceInsert) {
+			$dot = $this->buildInsert();
+			$insert = true;
+		} else {
+			$retId = $this->_cols[$this->primaryCol];
+			$dot = $this->buildUpdate();
+		}
+
+		$db = FDBConn::getInstance();
+		if($this->debug==1) echo $dot;
+		if($db->query($dot)) {
+			if(isset($cols[$this->primaryCol])) return $cols[$this->primaryCol];
+			elseif($insert) return $this->getLastId();
+			else return $retId;
+		}
+	}
+	function delete($id) {
+		$db = FDBConn::getInstance();
+		return $db->query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
+	}
 	//---save support functions
 	function quote($str) {
-        $str = str_replace($this->quoteType,'\\'.$this->quoteType, $str);
-        $str = str_replace('\\\\','\\', $str);
-        return $this->quoteType . trim($str) . $this->quoteType;
-    }
-    function quoteCols() {
-    	foreach ($this->_cols as $k=>$v) {
-    		$arr[$k] = ((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
-    	}
-    	return $arr;
-    }
-    
-    //---simple query
-    static function getAll($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-    	if($key!==null) {
-    		//---cache results
-    		$cache = FCache::getInstance($driver);
-    		if($lifeTime > -1) $cache->setConf($lifeTime);
-			if( $ret = $cache->getData($key,$grp) === false ) {
-			  $db = FDBConn::getInstance();
-			  $ret = $db->getAll($query);
-			  $cache->setData( $ret );
+		$str = str_replace($this->quoteType,'\\'.$this->quoteType, $str);
+		$str = str_replace('\\\\','\\', $str);
+		return $this->quoteType . trim($str) . $this->quoteType;
+	}
+	function quoteCols() {
+		foreach ($this->_cols as $k=>$v) {
+			$arr[$k] = ((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
+		}
+		return $arr;
+	}
+
+	//---simple query
+	static function getAll($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+		if($key !== null || $driver != 0) {
+			//---cache results
+			$cache = FCache::getInstance($driver);
+			if($lifeTime > -1) $cache->setConf($lifeTime);
+			if(false === ($ret = $cache->getData($key,$grp))) {
+				$db = FDBConn::getInstance();
+				$ret = $db->getAll($query);
+				$cache->setData( $ret );
 			}
-			return $ret;
-    	} else {
-    		//---no cache
-    		$db = FDBConn::getInstance();
-    		return $db->getAll($query);
-    	}
-    }
-    
-    static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-    	if($key!==null) {
-    		//---cache results
-    		$cache = FCache::getInstance($driver);
-    		if($lifeTime > -1) $cache->setConf($lifeTime);
-			if( $ret = $cache->getData($key,$grp) === false ) {
-			  $db = FDBConn::getInstance();
-			  $ret = $db->getRow($query);
-			  $cache->setData( $ret );
+		} else {
+			//---no cache
+			$db = FDBConn::getInstance();
+			$ret = $db->getAll($query);
+		}
+		return $ret;
+	}
+
+	static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+		if($key!==null) {
+			//---cache results
+			$cache = FCache::getInstance($driver);
+			if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( ($ret = $cache->getData($key,$grp)) === false ) {
+				$db = FDBConn::getInstance();
+				$ret = $db->getRow($query);
+				$cache->setData( $ret );
 			}
-			return $ret;
-    	} else {
-    		//---no cache
-    		$db = FDBConn::getInstance();
-    		return $db->getRow($query);
-    	}
-    }
-    
+		} else {
+			//---no cache
+			$db = FDBConn::getInstance();
+			$ret = $db->getRow($query);
+		}
+		return $ret;
+	}
+
 	static function getCol($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-    	if($key!==null) {
-    		//---cache results
-    		$cache = FCache::getInstance($driver);
-    		if($lifeTime > -1) $cache->setConf($lifeTime);
-			if( $ret = $cache->getData($key,$grp) === false ) {
-			  $db = FDBConn::getInstance();
-			  $ret = $db->getCol($query);
-			  $cache->setData( $ret );
+		if($key!==null) {
+			//---cache results
+			$cache = FCache::getInstance($driver);
+			if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( ($ret = $cache->getData($key,$grp)) === false ) {
+				$db = FDBConn::getInstance();
+				$ret = $db->getCol($query);
+				$cache->setData( $ret );
 			}
-			return $ret;
-    	} else {
-    		//---no cache
-    		$db = FDBConn::getInstance();
-    		return $db->getRow($query);
-    	}
-    }
-    
-    static function getOne($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-    	if($key!==null) {
-    		//---cache results
-    		$cache = FCache::getInstance($driver);
-    		if($lifeTime > -1) $cache->setConf($lifeTime);
-			if( $ret = $cache->getData($key,$grp) === false ) {
-			  $db = FDBConn::getInstance();
-			  $ret = $db->getOne($query);
-			  $cache->setData( $ret );
+		} else {
+			//---no cache
+			$db = FDBConn::getInstance();
+			$ret = $db->getRow($query);
+		}
+		return $ret;
+	}
+
+	static function getOne($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
+		if($key!==null) {
+			//---cache results
+			$cache = FCache::getInstance($driver);
+			if($lifeTime > -1) $cache->setConf($lifeTime);
+			if( ($ret = $cache->getData($key,$grp)) === false ) {
+				$db = FDBConn::getInstance();
+				$ret = $db->getOne($query);
+				$cache->setData( $ret );
 			}
-			return $ret;
-    	} else {
-    		//---no cache
-    		$db = FDBConn::getInstance();
-    		return $db->getOne($query);
-    	}
-    }
-    
-    static function query($query) {
-    	$db = FDBConn::getInstance();
-    	return $db->query($query);
-    }
+		} else {
+			//---no cache
+			$db = FDBConn::getInstance();
+			$ret = $db->getOne($query);
+		}
+		return $ret;
+	}
+
+	static function query($query) {
+		$db = FDBConn::getInstance();
+		return $db->query($query);
+	}
 }
 
