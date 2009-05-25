@@ -12,7 +12,7 @@ class FAvatar {
 			$picname = WEB_REL_AVATAR . $user->userVO->avatar; //---myself
 		} elseif($userId > 0) {
 			$cache = FCache::getInstance('l');
-            if( $picname = $cache->getData($userId,'UavaUrl') === false ) {
+            if( ($picname = $cache->getData($userId,'UavaUrl')) === false ) {
 			   $userAvatar = WEB_REL_AVATAR . FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
                if(file_exists($userAvatar) && !is_dir($userAvatar)) $picname = $userAvatar;
                $cache->setData($picname ,$userId,'UavaUrl');

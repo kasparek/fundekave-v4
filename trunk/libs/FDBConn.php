@@ -7,7 +7,10 @@ class FDBConn
 			$conf = FConf::getInstance();
 			require_once('DB.php');
 			self::$instance = & DB::connect($conf->a['db'], $conf->a['dboptions']);
-			if (PEAR::isError(self::$instance)) die(self::$instance->getMessage());
+			if (PEAR::isError(self::$instance)) {
+				die(self::$instance->getMessage());
+				return false;
+			}
 			self::$instance->query("set character_set_client = utf8");
 			self::$instance->query("set character_set_connection= utf8");
 			self::$instance->query("set character_set_results = utf8");

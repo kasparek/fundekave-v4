@@ -94,7 +94,7 @@ class FSystem {
     	 $arrmenu = FDBTool::getAll($q,'tMenu','default','s',0);
 
     	 if($user->idkontrol) {
-    	    $arrmenu[]=array('elogo',LABEL_LOGOUT);
+    	    $arrmenu[]=array('elogo',FLang::$LABEL_LOGOUT);
     	}
     	
     	foreach ($arrmenu as $ro) {
@@ -122,7 +122,9 @@ class FSystem {
     	} else $arrmnu = array();
     	
     	$cache = FCache::getInstance('l');
-    	if($secMenuCustom = $cache->getData('secMenu')!==false) $arrmnu = array_merge($secMenuCustom,$arrmnu);
+    	if(false !== $secMenuCustom = $cache->getData('secMenu') ) {
+    		$arrmnu = array_merge($secMenuCustom,$arrmnu);
+    	}
     	
     	if(count($arrmnu)>0){
     		$x=0;

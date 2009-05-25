@@ -139,7 +139,7 @@ class FLeftPanelPlugins {
     static function rh_akce_rnd() {
     	$user = FUser::getInstance();
     	$cache = FCache::getInstance('f',86400);
-       if($data = $cache->getData($user->idkontrol,'eventtip') !== false) {
+       if(false !== $data = $cache->getData($user->idkontrol,'eventtip') ) {
         $fItems = new fItems();
         $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);

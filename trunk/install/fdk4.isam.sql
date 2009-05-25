@@ -421,23 +421,6 @@ CREATE TABLE sys_users_perm (
 CREATE INDEX perm_user ON sys_users_perm (userId ASC);
 CREATE INDEX perm_page ON sys_users_perm (pageId ASC);
 
-CREATE TABLE sys_users_perm_cache (
-     typeId VARCHAR(10) not null
-    , userId MEDIUMINT unsigned NOT NULL
-     , pageId varchar(5) NOT NULL
-);
-CREATE INDEX perm_cache_type ON sys_users_perm_cache (typeId ASC);
-CREATE INDEX perm_cache_user ON sys_users_perm_cache (userId ASC);
-CREATE INDEX perm_cache_page ON sys_users_perm_cache (pageId ASC);
-
-CREATE TABLE sys_users_cache (
-     userId MEDIUMINT unsigned NOT NULL
-    , name VARCHAR(20) not null
-    , value VARCHAR(100) not null
-    , dateUpdated DATETIME not null
-    , PRIMARY KEY (userId,name)
-);
-
 CREATE TABLE sys_users_fuvatar_live (
      userId MEDIUMINT unsigned NOT NULL
     , pageId varchar(5) NOT NULL

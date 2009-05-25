@@ -153,7 +153,7 @@ class FLeftPanel extends FDBTool {
             		}
         		}
                 if(!empty($letext) || !empty($panel['minimized'])) {
-                    global $TOPTPL;
+                   $TOPTPL = FBuildPage::getInstance();
                   $TOPTPL->setCurrentBlock('sidebar-block');
                   //---if login block
                   if($fnc == 'rh_login') {
