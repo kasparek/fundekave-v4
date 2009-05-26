@@ -121,7 +121,7 @@ class FBuildPage {
 		$tpl->setVariable("CHARSET", CHARSET);
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
-		$JSWrapper = new fJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->pageVO->typeId.'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
+		$JSWrapper = new FJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->pageVO->typeId.'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
 		if(!$JSWrapper->isCached()) {
 		  if(!empty($arrXajax)) {
 		      foreach ($arrXajax as $row) {

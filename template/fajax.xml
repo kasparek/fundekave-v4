@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FAjax>
+<Response>
+<!-- BEGIN callback -->
+<Item target="callback" property="function"><![CDATA[{FUNCTION}]]></Item>
+<!-- END callback -->
+<!-- BEGIN data -->
+<Item target="{TARGET}" property="{PROP}"><![CDATA[{DATA}]]></Item>
+<!-- END data -->
+</Response>
+</FAjax>
