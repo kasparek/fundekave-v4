@@ -1,10 +1,5 @@
 <?php
 error_reporting(E_ALL);
-//------------------------------------------------------------------------------
-
-if(!isset($nonUserInit)) $nonUserInit = false;
-if(!isset($xajax)) $xajax = false;
-
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	
@@ -43,11 +38,11 @@ session_start();
 
 //---system user init
 $user->currentItemId = 0;
-if(!$nonUserInit) {
+
 	
 	$user = FUser::getInstance();
 
-	if(!$xajax) {
+	if(!isset($_POST['m'])) {
 	 $user->pageVO = new PageVO();
 	 $user->itemVO = new ItemVO();
 		$user->pageVO->pageId = HOME_PAGE;
@@ -96,9 +91,10 @@ if(!$nonUserInit) {
     		  $user->pageVO->pageId = substr($user->pageVO->pageId,0,5);
     		}
     	}
+    	$user->whoIs = 0;
+	     if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
+	} else {
+		$user->pageAccess = true;	
 	}
 	
-	$user->whoIs = 0;
-	if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
-	$user->kde($xajax); //---check user / load info / load page content / chechk page exist
-}
+	$user->kde(); //---check user / load info / load page content / chechk page exist

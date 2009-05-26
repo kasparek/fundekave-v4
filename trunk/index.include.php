@@ -2,6 +2,21 @@
 require(INIT_FILENAME);
 $USERDRAFT = false;
 
+if(isset($_POST['m'])) {
+	//---dealing with ajax requests
+	switch($_POST['m']) {
+		case 'post':
+			switch($_POST['a']) {
+				case 'avatarfrominput':
+					$ret = FAjax::post_AvatarFromInput();
+					break;
+			}
+			break;
+	}
+	echo $ret;
+	exit();
+}
+
 //----DEBUG
 if(isset($_GET['d'])) {
     print_r($user->pageVO);

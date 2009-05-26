@@ -1,9 +1,9 @@
 <?php
 class FUser {
-	
+
 	//---security salt
 	const LO = 'fdk5.salt';
-	
+
 	var $userVO;
 	var $loginVO;
 	var $pageVO;
@@ -17,7 +17,7 @@ class FUser {
 	//---user access
 	var $idkontrol = false;
 	var $pageAccess = false;
-	
+
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
 	'u'=>4, //event - podle majitele - nebo ten kdo ma dve pro stranku
@@ -69,7 +69,7 @@ class FUser {
 			return false;
 		}
 	}
-	
+
 	static function getToken($tokenizer) {
 		return md5( $tokenizer . FUser::LO . fSystem::getmicrotime() );
 	}
@@ -137,15 +137,28 @@ class FUser {
 	 */
 	function check() {
 		if($this->userVO->userId > 0) { //---check only if user was logged
-				
-			$vid = FDBTool::getRow("SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
+			if($this->pageVO) {
+				$q = "SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
             	FROM sys_users_logged as ul  
-            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageVO->pageId."' and ul.userId = '".$this->userVO->userId."'");
-				
+            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId 
+            	and pf.pageId = '".$this->pageVO->pageId."' 
+            	and ul.userId = '".$this->userVO->userId."'";
+			} else {
+				$q = "SELECT loginId, invalidatePerm
+            	FROM sys_users_logged    
+            	where userId = '".$this->userVO->userId."'";	
+			}
+
+			$vid = FDBTool::getRow($q);
+
 			$idloginInDb = $vid[0];
 			if($vid[1] == 1) FRules::invalidate();
-			$this->pageVO->favorite = $vid[2]*1;
-			$this->pageVO->favoriteCnt = $vid[3]*1;
+
+			if($this->pageVO) {
+				$this->pageVO->favorite = $vid[2]*1;
+				$this->pageVO->favoriteCnt = $vid[3]*1;
+			}
+
 			//---ip address checking
 			if(($this->userVO->ipcheck === false || $this->userVO->ip == fSystem::getUserIp()) && ($this->userVO->idlogin == $idloginInDb)) {
 				//---user allright
@@ -154,8 +167,10 @@ class FUser {
 				//---user was logged but is lost - do logout acction
 				$this->logout();
 				fError::addError(FLang::$ERROR_USER_KICKED);
-				//---do redirect
-				fHTTP::redirect(FUser::getUri());
+				if($this->pageVO) {
+					//---do redirect
+					fHTTP::redirect(FUser::getUri());
+				}
 			}
 		}
 		return($this->idkontrol);
@@ -166,7 +181,7 @@ class FUser {
 	 * @param $xajax - only reason is when called from ajax function not to count into page statistics
 	 * @return void
 	 */
-	function kde($xajax=false) {
+	function kde() {
 		if(!$this->userVO) {
 			//---try to load user from cache
 			$cache = FCache::getInstance('s');
@@ -174,69 +189,74 @@ class FUser {
 				$this->userVO = new UserVO();
 			}
 		}
-		//---logout action
-		if( $this->pageVO->pageId == 'elogo') {
-			if($this->userVO->userId > 0) {
-				$this->logout();
-				fError::addError(FLang::$MESSAGE_LOGOUT_OK);
-				fHTTP::redirect('index.php');
+		if($this->pageVO) {
+			//---logout action
+			if( $this->pageVO->pageId == 'elogo') {
+				if($this->userVO->userId > 0) {
+					$this->logout();
+					fError::addError(FLang::$MESSAGE_LOGOUT_OK);
+					fHTTP::redirect('index.php');
+				}
+			}
+			//---try load current page
+			$this->pageVO->load();
+			if(empty($this->pageVO->pageId)) {
+				$this->pageAccess = false;
+				fError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
+			} else {
+				$this->pageAccess = true;
 			}
 		}
-		//---try load current page
-		if($this->pageVO) {
-			$this->pageVO->load();
-		}
 		//---if page not exists redirect to error
-		if(empty($this->pageVO->pageId)) {
-			$this->pageAccess = false;
-			fError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
-		} else {
+		if($this->pageAccess == true) {
 			//---check if user sent data to login
 			if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 			//---check if user is logged
 			$this->check();
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
-			if(!empty($this->pageParam))
-			if(isset($this->pageParamNeededPermission[$this->pageParam])) {
-				$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
-			}
-			$permPage = $this->pageVO->pageId;
-			if($permissionNeeded==3) {
-				$permPage = 'sadmi';
-				$permissionNeeded = 1;
-			}
-			if($permissionNeeded==4) {
-				///check for i owner - permneeded=1 or permneeded= 2
-				$permissionNeeded = 2;
-				if(!empty($this->itemVO->itemId)) {
-					$userIdOwner = fItems::getItemUserId($this->itemVO->itemId);
-					if($this->userVO->userId == $userIdOwner) {
-						$permissionNeeded = 1;
-					}
+			if(!empty($this->pageParam)) {
+				if(isset($this->pageParamNeededPermission[$this->pageParam])) {
+					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-			//check if user have access to page with current permissions needed - else redirect to error
-			if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
-				$this->pageAccess = false;
-				fError::addError(FLang::$ERROR_ACCESS_DENIED);
-			} else $this->pageAccess = true;
-
+			if($this->pageVO) {
+				$permPage = $this->pageVO->pageId;
+				if($permissionNeeded==3) {
+					$permPage = 'sadmi';
+					$permissionNeeded = 1;
+				}
+				if($permissionNeeded==4) {
+					///check for i owner - permneeded=1 or permneeded= 2
+					$permissionNeeded = 2;
+					if(!empty($this->itemVO->itemId)) {
+						$userIdOwner = fItems::getItemUserId($this->itemVO->itemId);
+						if($this->userVO->userId == $userIdOwner) {
+							$permissionNeeded = 1;
+						}
+					}
+				}
+				//check if user have access to page with current permissions needed - else redirect to error
+				if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
+					$this->pageAccess = false;
+					fError::addError(FLang::$ERROR_ACCESS_DENIED);
+				} else $this->pageAccess = true;
+			}
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
 				}
-				
+
 				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(),
-			location = '".$this->pageVO->pageId."', 
+			location = '".(($this->pageVO)?($this->pageVO->pageId):(''))."', 
 			params = '".$this->pageParam."'    
 			where loginId='".$this->userVO->idlogin."'");
 					
 				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
 					
-				if($xajax === false) FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
+				if( $this->pageVO ) FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
 			}
 		}
@@ -395,22 +415,22 @@ class FUser {
 	static function getUri($otherParams='',$pageId='',$pageParam=false) {
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
-		
-		
+
+
 		$newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
-		
+
 		if( empty($pageId) && $user->itemVO->itemId > 0 ) {
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}
-		
-		$newPageId .= $pageParam;
+
+		$newPageId = 'k=' . $newPageId . $pageParam;
 		if(!empty($newPageId)) $params[] = $newPageId;
-				
+
 		if($otherParams!='') $params[] = $otherParams;
-		
+
 		$parStr = implode("&amp;",$params);
 		return BASESCRIPTNAME.(strlen($parStr)>0)?('?'.$parStr):('');
 	}

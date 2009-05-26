@@ -29,7 +29,7 @@ class FCategory extends FDBTool {
 		$this->arrPublic = $ARRPUBLIC;
 		parent::__construct($tableName,$primaryCol);
 		//---defaults for galery,culture,linx,audit,akce
-		$this->arrHead=array(LABEL_CATEGORY_NAME,LABEL_CATEGORY_ORDER,LABEL_CATEGORY_PUBLIC);
+		$this->arrHead=array(FLang::$LABEL_CATEGORY_NAME,FLang::$LABEL_CATEGORY_ORDER,FLang::$LABEL_CATEGORY_PUBLIC);
 		$this->arrInputType=array("text","text",'public');
 		$this->arrClass=array('','xShort','');
 		$this->arrDbUsedCols=array('name','ord','public');
