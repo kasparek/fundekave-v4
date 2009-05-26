@@ -39,7 +39,6 @@ class FBuildPage {
 		    	}
 		    	
 		    	if ($staticTemplate == false) {
-		    		
 		    		if( class_exists($template) ) {
 		    			$c = new $template;
 		    			$c->process();
@@ -95,7 +94,7 @@ class FBuildPage {
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 		    if(FRules::get($user->userVO->userId,'sadmi',1)) {
 		        if($user->pageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
-		        else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
+		        else fSystem::secondaryMenuAddItem(FUser::getUri('',$user->pageVO->pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
 		    }
 		    
 		    /**/

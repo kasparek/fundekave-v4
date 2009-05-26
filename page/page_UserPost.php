@@ -1,9 +1,9 @@
 <?php
 include_once('iPage.php');
-class page_Main implements iPage {
+class page_UserPost implements iPage {
 
 	static function process() {
-
+		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 		//---action part - cache -pp,filtr
 		$redir = false;
@@ -14,7 +14,8 @@ class page_Main implements iPage {
 			}
 		}
 
-		if (isset($_POST["perpage"]) && $_POST["perpage"] != $user->postPerPage) {
+		$perPage = $cache->getData($user->pageVO->pageId,'pp');
+		if (isset($_POST["perpage"]) && $_POST["perpage"] != $perPage) {
 			$perPage = $_REQUEST["perpage"]*1;
 			$cache->setData($perPage, $user->pageVO->pageId,'pp');
 			$redir = true;
@@ -95,7 +96,7 @@ class page_Main implements iPage {
 		//load draft
 		$zprava = fUserDraft::get('postText');
 		//load from filter
-		if(($filterText = $cache->getDate('text','filtrPost')) !== false) $zprava = $filterText;
+		if(($filterText = $cache->getData('text','filtrPost')) !== false) $zprava = $filterText;
 
 		//---filtering
 		$pagerExtraVars = array();
@@ -114,7 +115,7 @@ class page_Main implements iPage {
 
 		//---set default recipient
 		$arrFriends = $user->userVO->getFriends();
-
+		$recipientId = 0;
 		$recipients = '';
 		if(!empty($arrpost)) {
 			if($arrpost[0]['userIdFrom']!=$user->userVO->userId) {
@@ -132,12 +133,10 @@ class page_Main implements iPage {
 		//override recipients if filtering
 		if($filterUsername = $cache->getData('name','filtrPost')) $recipients = $filterUsername;
 
-		//--output
-		$recipientId = $recipientId * 1;
 
 		$tpl = new fTemplateIT('users.post.tpl.html');
 
-		$tpl->setVariable('FORMACTION',$user->getUri());
+		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$tpl->touchBlock('selectedfriend');
 		$tpl->touchBlock('friendscombo');
 
@@ -147,7 +146,6 @@ class page_Main implements iPage {
 		}
 
 		$tpl->setVariable('RECIPIENTS',$recipients);
-		$tpl->setVariable('RECIPIENTSONCHANGE',$reqSetRecipientFromInput->getScript());
 		$tpl->setVariable('MESSAGE',$zprava);
 		$tpl->addTextareaToolbox('MESSAGETOOLBOX','postText');
 		$tpl->setVariable('HIDDENWHO',$user->whoIs);
@@ -159,14 +157,14 @@ class page_Main implements iPage {
 		if ($filterUsername) {
 			$tpl->setVariable('FILTERUSERNAME',$filterUsername);
 		}
-		if($totalItems > $user->postPerPage) {
+		
+		if($totalItems > $perPage) {
 			$tpl->setVariable('TOPPAGER',$pager->links);
 			$tpl->setVariable('TOTAL',$totalItems);
 			$tpl->setVariable('BOTTOMPAGER',$pager->links);
 		}
 
 		if(!empty($arrFriends)) {
-			$tpl->setVariable('FRIENDSCOMBOONCHANGE',$reqSetRecipient->getScript());
 			foreach ($arrFriends as $v) {
 				$tpl->setCurrentBlock("friendscombovalue");
 				$tpl->setVariable("FRIENDCOMBOID", $v);

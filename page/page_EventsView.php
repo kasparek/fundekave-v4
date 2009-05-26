@@ -58,7 +58,8 @@ class page_EventsView implements iPage {
 
 			//--listovani
 			$celkem = $fItems->getCount();
-			$perPage = $conf['events']['perpage'];
+			$conf = FConf::getInstance();
+			$perPage = $conf->a['events']['perpage'];
 			$tpl = new fTemplateIT('events.tpl.html');
 			if($celkem > 0) {
 				if($celkem > $perPage) {
