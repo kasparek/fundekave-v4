@@ -240,7 +240,11 @@ class FUser {
 				if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
 					$this->pageAccess = false;
 					fError::addError(FLang::$ERROR_ACCESS_DENIED);
-				} else $this->pageAccess = true;
+				} else {
+					$this->pageAccess = true;
+					$cache = FCache::getInstance('s');
+					$cache->setData($this->pageVO->pageId,'lastPage');
+				}
 			}
 			//logged user function
 			if($this->idkontrol === true) {
@@ -255,11 +259,13 @@ class FUser {
 			where loginId='".$this->userVO->idlogin."'");
 					
 				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
-					
-				if( $this->pageVO ) FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
 
 			}
 		}
+	}
+	
+	function pageStat() {
+		FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
 	}
 
 	function setWhoIs($userId) {
@@ -416,7 +422,6 @@ class FUser {
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
-
 		$newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
@@ -425,9 +430,8 @@ class FUser {
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}
-
-		$newPageId = 'k=' . $newPageId . $pageParam;
-		if(!empty($newPageId)) $params[] = $newPageId;
+		
+		if(!empty($newPageId)) $params[] = 'k=' . $newPageId . $pageParam;
 
 		if($otherParams!='') $params[] = $otherParams;
 

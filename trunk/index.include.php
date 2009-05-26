@@ -1,20 +1,9 @@
-<?php
-require(INIT_FILENAME);
-$USERDRAFT = false;
+<?php 
+require(INIT_FILENAME); 
 
-if(isset($_POST['m'])) {
-	//---dealing with ajax requests
-	switch($_POST['m']) {
-		case 'post':
-			switch($_POST['a']) {
-				case 'avatarfrominput':
-					$ret = FAjax::post_AvatarFromInput();
-					break;
-			}
-			break;
-	}
-	echo $ret;
-	exit();
+$user = FUser::getInstance();
+if(isset($_POST['m']) && $user->pageAccess == true) {
+  FAjax::process($_POST['m'],$_POST['data']);
 }
 
 //----DEBUG

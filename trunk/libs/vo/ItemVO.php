@@ -1,6 +1,6 @@
 <?php
 class ItemVO {
-  var $itemId;
+  var $itemId = 0;
   var $typeId;
   var $pageId;
   
