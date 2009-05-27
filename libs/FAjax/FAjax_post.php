@@ -7,11 +7,8 @@ class FAjax_post {
 		$ret = FAvatar::showAvatar($recipientId,array('showName'=>true,'withTooltip'=>true));
 		
 		//---create response
-			$retData[] = array('target'=>$data['result'],'property'=>$data['resultProperty'],'value'=>$ret);
-			unset($data['result']);
-			unset($data['resultProperty']);
-			return FAjax::buildResponse($retData, $data);
-		
+		$fajax = FAfax::getInstance();
+		$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
 	}
 	
 }

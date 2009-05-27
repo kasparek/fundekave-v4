@@ -98,7 +98,7 @@ class FItems extends FDBTool {
         } else {
             $template = $templateType['active'];
             $tpl->setTemplate($template);
-            $tpl->setVariable('URLACCEPT',FUser::getUri('t='.$itemId));
+            $tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId));
         }
         
         $tpl->setVariable('ITEMID',$itemId);
