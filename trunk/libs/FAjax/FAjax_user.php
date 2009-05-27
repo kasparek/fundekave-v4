@@ -14,11 +14,12 @@ static function switchFriend($data) {
 				$user->userVO->addFriend($userIdFriend);
 				$ret = FLang::$LABEL_FRIEND_REMOVE;
 			}
-			return $ret;
+			
+			//---create response
+			$retData[] = array('target'=>$data['result'],'property'=>$data['resultProperty'],'value'=>$ret);
+			unset($data['result']);
+			unset($data['resultProperty']);
+			return FAjax::buildResponse($retData, $data);
 		}
 	}
-	static function TestTest($data) {
-    file_put_contents('test.xml', $data);
-    return 'ok';
-  }
 }

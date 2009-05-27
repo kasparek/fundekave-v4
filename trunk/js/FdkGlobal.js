@@ -9,48 +9,36 @@ function initSupernote() {
 }
 
 function initSwitchFriend() {
-
   $(".switchFriend").click(function (evt) {
-  
-    var href = $(this).attr("href");
-    var link = $(this);
     evt.preventDefault();
-    
-  $.ajax({
-			type: "POST", url: "index.php", data: "m=user-switchFriend&userId=" + gup('switchUser',href),
-			complete: function(data){
-				link.html(data.responseText);
-				initSwitchFriend();
-			}
-		 });
-    
+    addXMLRequest('userId', gup('switchUser',$(this).attr("href")));
+    addXMLRequest('result', $(this).attr("id"));
+    addXMLRequest('resultProperty', 'html');
+    addXMLRequest('call', 'initSwitchFriend');
+    sendAjax('user-switchFriend');
   });
-  
-  $(".testtest").click(function (evt) {
-  
-    addXMLRequest('dada','sdfsdfsdfsd');
-    addXMLRequest('drdr','aaaaaa');
-    addXMLRequest('111','dfgdfg');
-    evt.preventDefault();
-    
-  $.ajax({
-			type: "POST", url: "index.php", cache:false, processData:false, data: "m=user-TestTest-x&data=" + getXMLRequest(),
-			complete: function(data){
-				alert(data.responseText);
-			}
-		 });
-    
-  });
-  
-  
 }
 
-function sendAjax(action, data) {
+function sendAjax(action) {
   $.ajax({
-			type: "POST", url: "index.php", data: "m=user-switchFriend&data=" + data,
+			type: "POST", url: "index.php", cache:false, data: "m="+action+"-x&data=" + getXMLRequest(),
 			complete: function(data){
-				link.html(data.responseText);
-				initSwitchFriend();
+        $(data.responseText).find("Item").each(function() {
+          var item = $(this);
+          switch($(item).attr('property')) {
+            case 'callback':
+              eval( $(item).text() + "( data.responseText );" );
+            break;
+            case 'call':
+              eval( $(item).text() + "();" );
+            break;
+            case 'html':
+              eval( $(item).attr('target')+'.'+$(item).attr('property')+' = $(item).text();' );
+            break;
+            default:
+              eval( $(item).attr('target')+'.attr("'+$(item).attr('property')+'", $(item).text());' );
+          }
+        });
 			}
 		 });
 }

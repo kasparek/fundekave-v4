@@ -2,6 +2,12 @@
 require(INIT_FILENAME); 
 
 $user = FUser::getInstance();
+FAjax::process('user-switchFriend-x',array('data'=>'<FXajax><Request>
+<Item name="userId">2</Item>
+<Item name="result"><![CDATA[user01]]></Item>
+<Item name="resultProperty"><![CDATA[html]]></Item>
+<Item name="call"><![CDATA[initSwitchFriend]]></Item>
+</Request></FXajax>'));
 if(isset($_POST['m']) && $user->pageAccess == true) {
   FAjax::process($_POST['m'],$_POST['data']);
 }
