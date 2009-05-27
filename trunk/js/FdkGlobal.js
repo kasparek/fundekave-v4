@@ -15,7 +15,12 @@ function initSwitchFriend() {
 
 function switchFriendRequest(evt) {
     evt.preventDefault();
-    addXMLRequest('userId', gup('d',$(this).attr("href")));
+    var data = gup('d',$(this).attr("href"));
+    var dataArr = data.split(';');
+    for(var i=0;i<dataArr.length;i++) {
+    var valueArr = dataArr[i].split(':');
+      addXMLRequest(valueArr[0], valueArr[1]);
+    }
     addXMLRequest('result', $(this).attr("id"));
     addXMLRequest('resultProperty', 'html');
     addXMLRequest('call', 'initSwitchFriend');

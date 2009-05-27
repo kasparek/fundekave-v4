@@ -97,7 +97,7 @@ class FAvatar {
 			array('url'=>'?k=fpost&who='.$avatarUserId,'text'=>FLang::$LABEL_POST),
 			);
 			if($avatarUserId != $user->userVO->userId) {
-				$arrLinks[] = array('url'=>FUser::getUri('m=user-switchFriend&d='.$avatarUserId)
+				$arrLinks[] = array('url'=>FUser::getUri('m=user-switchFriend&d=userId:'.$avatarUserId)
 				,'id'=>'avbook'.$avatarUserId
 				,'class'=>'switchFriend'
 				,'text'=>(($user->userVO->isFriend($avatarUserId))?(FLang::$LABEL_FRIEND_REMOVE):(FLang::$LABEL_FRIEND_ADD)));
