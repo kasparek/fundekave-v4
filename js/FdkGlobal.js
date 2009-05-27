@@ -1,9 +1,3 @@
-function gup(name, url) {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regex = new RegExp( "[\\?&]"+name+"=([^&#]*)" ), results = regex.exec( url );
-  return (results === null)?(0):(results[1]);
-};
-
 function initSupernote() {
   //supernote = new SuperNote('supernote', {});
 }
@@ -13,6 +7,24 @@ function initSwitchFriend() {
   $(".switchFriend").bind('click', switchFriendRequest);
 }
 
+/**
+ *main init
+ **/ 
+$(document).ready(function(){
+
+initSupernote();
+initSwitchFriend();
+
+});
+
+//---util funcions
+function gup(name, url) {
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regex = new RegExp( "[\\?&]"+name+"=([^&#]*)" ), results = regex.exec( url );
+  return (results === null)?(0):(results[1]);
+};
+
+//---ajax request functions
 function switchFriendRequest(evt) {
     evt.preventDefault();
     var data = gup('d',$(this).attr("href"));
@@ -25,8 +37,9 @@ function switchFriendRequest(evt) {
     addXMLRequest('resultProperty', 'html');
     addXMLRequest('call', 'initSwitchFriend');
     sendAjax(gup('m',$(this).attr("href")));
-  }
+}
 
+//---send and process ajax request
 function sendAjax(action) {
   var data = getXMLRequest();
   $.ajax({
@@ -52,17 +65,7 @@ function sendAjax(action) {
 		 });
 }
 
-/**
- *main init
- **/ 
-$(document).ready(function(){
-
-initSupernote();
-initSwitchFriend();
-
-});
-
-//---jquery plugin
+//---build xml request
 var xmlArray = [];
 var xmlStr = '<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';
 function resetXMLRequest() {
