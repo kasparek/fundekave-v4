@@ -36,4 +36,29 @@ static function switchFriend($data) {
 			return FAjax::buildResponse($retData, $data);
 		}
 	}
+	static function tag($data) {
+  
+  
+  $itemId = substr($itemId,1);
+  
+	$ret = false;
+	
+	if($userId = FUser::logon()) {
+	
+  //clean cache
+	      $cache = FCache::getInstance('s');
+        $cache->invalidateGroup('mytags');
+	
+	  
+	  $cache = FCache::getInstance('f');
+	  $cache->invalidateGroup('items'); //TODO: check all places where items are cache so using this group
+
+    if(FItems::tag($itemId,$userId)) $ret = true;
+  }
+  
+	if($ret==true) $retData[] = array('target'=>'tag'.$itemId, 'property'=>'html', 'value'=>FItems::getTag($itemId,$userId));
+	return FAjax::buildResponse($retData, $data);
+  
+  
+  }
 }

@@ -14,6 +14,7 @@ if(isset($_GET['d'])) {
     fSystem::profile('START:'); 
 }
 
+//---TODO:remove tags here - should be handled in alternative function call in fajax
 if(isset($_GET['t'])) {
   //tag item
   $tagItem = $_GET['t'] * 1;
@@ -26,10 +27,13 @@ if(isset($_GET['rt'])) {
   fHTTP::redirect($user->getUri());
 }
 
+//---TODO:remove book here - should be handled in alternative function call in fajax
 if(isset($_REQUEST['book'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,1);
 if(isset($_REQUEST['unbook'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,0);
 
 if($user->idkontrol) {
+  //---TODO:remove xajax register fce after chechikng all are transported
+  /*
   fXajax::register('user_switchFriend');
   fXajax::register('user_tag');
   fXajax::register('fcalendar_monthSwitch');
@@ -53,7 +57,7 @@ if($user->idkontrol) {
   //blog
   fXajax::register('blog_blogEdit');
   fXajax::register('blog_processFormBloged');
-  
+  */
   fItems::setTagToolbar();
 }
 
