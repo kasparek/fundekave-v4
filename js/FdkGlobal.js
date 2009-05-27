@@ -135,7 +135,7 @@ function draftDoSave() {
     if(taText.length != arrDraft[x][1] && taText.length > 0) {
         addXMLRequest('place', $("#"+arrDraft[x][0]).attr("id"));
         addXMLRequest('text', taText);
-        addXMLRequest('call', 'draftSaved');
+        addXMLRequest('call', 'draftSaved;'+$("#"+arrDraft[x][0]).attr("id"));
         sendAjax('draft-save');        
         arrDraft[x][1] = taText.length;
         draftTimeoutCounter = 0;
@@ -241,7 +241,9 @@ function sendAjax(action) {
               eval( item.text() + "( data.responseText );" );
             break;
             case 'call':
-              eval( item.text() + "();" );
+              var arr = item.text().split(';');
+              var par=''; if(arr.length > 1) par = arr[1]; 
+              eval( arr[0] + "(" + par + ");" );
             break;
             case 'html':
               eval( '$("#'+item.attr('target')+'").' + item.attr('property') + '( item.text() );' );
