@@ -18,13 +18,12 @@ $(document).ready(function(){
 });
 
 function avatarfrominput(evt) {
-  var username = $("#prokoho").attr("value");
-  $.ajax({
-			type: "POST", url: "index.php", data: "m=post-avatarfrominput&username=" + username,
-			complete: function(data){
-				$("#recipientavatar").html(data.responseText);
-				initSupernote();
-				initSwitchFriend();
-			}
-		 });
+
+    addXMLRequest('username', $("#prokoho").attr("value"));
+    addXMLRequest('result', "recipientavatar");
+    addXMLRequest('resultProperty', 'html');
+    addXMLRequest('call', 'initSupernote');
+    addXMLRequest('call', 'initSwitchFriend');
+    sendAjax('post-avatarfrominput');
+
 }

@@ -96,13 +96,12 @@ class FAvatar {
 			array('url'=>'?k=finfo&who='.$avatarUserId,'text'=>FLang::$LABEL_INFO),
 			array('url'=>'?k=fpost&who='.$avatarUserId,'text'=>FLang::$LABEL_POST),
 			);
-			if($avatarUserId!=$user->userVO->userId) {
-				$arrLinks[] = array('url'=>FUser::getUri('switchUser='.$avatarUserId)
+			if($avatarUserId != $user->userVO->userId) {
+				$arrLinks[] = array('url'=>FUser::getUri('m=user-switchFriend&d='.$avatarUserId)
 				,'id'=>'avbook'.$avatarUserId
 				,'class'=>'switchFriend'
 				,'text'=>(($user->userVO->isFriend($avatarUserId))?(FLang::$LABEL_FRIEND_REMOVE):(FLang::$LABEL_FRIEND_ADD)));
 			}
-//TODO: ,'click'=>"xajax_user_switchFriend('".$avatarUserId."','avbook".$avatarUserId."');return(false);"
 				
 			foreach ($arrLinks as $tip) {
 				$tpl->setCurrentBlock('tip');
