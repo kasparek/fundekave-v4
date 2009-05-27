@@ -12,15 +12,13 @@ class FAjax {
 			exit();
 		}
 		//---process
+		$dataProcessed = array();
 		if($ajax == true) {
   		$dataXML = stripslashes($data);
   		$xml = new SimpleXMLElement($dataXML);
   		foreach($xml->Request->Item as $item) {
   			$dataProcessed[ (String)$item['name'] ] = (String)$item;
   		}
-    } else {
-      //---build alternative data for non javascript processing
-      $dataProcessed = array();
     }
 		//---dealing with ajax requests
 		$filename = ROOT.LIBSDIR.'FAjax/FAjax_'.$mod.'.php';
