@@ -2,8 +2,11 @@
 <FAjax>
 <Response>
 <!-- BEGIN callback -->
-<Item target="callback" property="function"><![CDATA[{FUNCTION}]]></Item>
+<Item target="function" property="callback"><![CDATA[{FUNCTION}]]></Item>
 <!-- END callback -->
+<!-- BEGIN call -->
+<Item target="function" property="call"><![CDATA[{FUNCTION}]]></Item>
+<!-- END call -->
 <!-- BEGIN data -->
 <Item target="{TARGET}" property="{PROP}"><![CDATA[{DATA}]]></Item>
 <!-- END data -->
