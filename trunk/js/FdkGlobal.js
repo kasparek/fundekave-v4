@@ -5,38 +5,42 @@ function gup(name, url) {
 };
 
 function initSupernote() {
-  supernote = new SuperNote('supernote', {});
+  //supernote = new SuperNote('supernote', {});
 }
 
 function initSwitchFriend() {
-  $(".switchFriend").click(function (evt) {
+  $(".switchFriend").unbind('click', switchFriendRequest);
+  $(".switchFriend").bind('click', switchFriendRequest);
+}
+
+function switchFriendRequest(evt) {
     evt.preventDefault();
-    addXMLRequest('userId', gup('switchUser',$(this).attr("href")));
+    addXMLRequest('userId', gup('d',$(this).attr("href")));
     addXMLRequest('result', $(this).attr("id"));
     addXMLRequest('resultProperty', 'html');
     addXMLRequest('call', 'initSwitchFriend');
-    sendAjax('user-switchFriend');
-  });
-}
+    sendAjax(gup('m',$(this).attr("href")));
+  }
 
 function sendAjax(action) {
+  var data = getXMLRequest();
   $.ajax({
-			type: "POST", url: "index.php", cache:false, data: "m="+action+"-x&data=" + getXMLRequest(),
+			type: "POST", url: "index.php", dataType:'xml', dataProcess:false, cache:false, data: "m="+action+"-x&d=" + data,
 			complete: function(data){
-        $(data.responseText).find("Item").each(function() {
+        $(data.responseXML).find("Item").each(function() {
           var item = $(this);
-          switch($(item).attr('property')) {
+          switch(item.attr('property')) {
             case 'callback':
-              eval( $(item).text() + "( data.responseText );" );
+              eval( item.text() + "( data.responseText );" );
             break;
             case 'call':
-              eval( $(item).text() + "();" );
+              eval( item.text() + "();" );
             break;
             case 'html':
-              eval( $(item).attr('target')+'.'+$(item).attr('property')+' = $(item).text();' );
+              eval( '$("#'+item.attr('target')+'").' + item.attr('property') + '( item.text() );' );
             break;
             default:
-              eval( $(item).attr('target')+'.attr("'+$(item).attr('property')+'", $(item).text());' );
+              eval( '$("#'+item.attr('target')+'").attr("' + item.attr('property') + '", item.text());' );
           }
         });
 			}
@@ -69,23 +73,4 @@ function getXMLRequest() {
   var str = '<FXajax><Request>' + xmlArray.join('') + '</Request></FXajax>';
   resetXMLRequest();
   return str;
-  //return jQuery.createXMLDocument(str);
-}
-
-// Name: createXMLDocument
-// Input: String
-// Output: XML Document
-jQuery.createXMLDocument = function(string)
-{
-var browserName = navigator.appName;
-var doc;
-if (browserName == 'Microsoft Internet Explorer')
-{
-doc = new ActiveXObject('Microsoft.XMLDOM');
-doc.async = 'false'
-doc.loadXML(string);
-} else {
-doc = (new DOMParser()).parseFromString(string, 'text/xml');
-}
-return doc;
 }
