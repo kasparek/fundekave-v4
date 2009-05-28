@@ -1,5 +1,5 @@
 <?php
-class fGalery {
+class FGalery {
 	//---from config file
 	var $_widthThumb = 0;
 	var $_heightThumb = 0;

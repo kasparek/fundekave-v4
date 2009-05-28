@@ -237,7 +237,7 @@ class FUser {
 					}
 				}
 				//check if user have access to page with current permissions needed - else redirect to error
-				if(!fRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
+				if(!FRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
 					$this->pageAccess = false;
 					fError::addError(FLang::$ERROR_ACCESS_DENIED);
 				} else {

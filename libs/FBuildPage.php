@@ -4,7 +4,7 @@ class FBuildPage {
 	
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new fTemplateIT('main.tpl.html');
+			self::$instance = &new FTemplateIT('main.tpl.html');
 		}
 		return self::$instance;
 	}
