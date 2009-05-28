@@ -151,6 +151,7 @@ class FGalery {
 		global $user;
 		print_r($arr);
 		die();
+		//TODO: fix me
 		if(isset($arr['pageParams'])) {
 			$this->parseXML($arr['pageParams'],$arr['pageId']);
 		}
