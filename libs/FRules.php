@@ -55,7 +55,7 @@ class FRules {
 	//---END---functions from user class
 	static function getCurrent($type=1) {
 	 $user = FUser::getInstance(); 
-	 fRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
+	 FRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
   }
 	
 	static function get($usr,$page,$type=1) {
@@ -140,7 +140,7 @@ class FRules {
 						$usrid = FUser::getUserIdByName($usrname);
 						if($usrid != $this->owner) { // if not owner of page
 							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
-							else fError::addError(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
+							else FError::addError(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
 						}
 					}
 				}

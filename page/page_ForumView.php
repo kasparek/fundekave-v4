@@ -30,7 +30,7 @@ class page_ForumView implements iPage {
 			$user->itemVO->checkItem();
 		}
 
-		if(fRules::get($userId,$pageId,2)) {
+		if(FRules::get($userId,$pageId,2)) {
 			if(empty($user->pageParam)) {
 				if($typeId=='blog') {
 					fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'a'), FLang::$LABEL_ADD, "xajax_blog_blogEdit('0');return false;",1);
@@ -49,7 +49,7 @@ class page_ForumView implements iPage {
 			fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 
 			if($user->pageParam=='') {
-				if(isset($_GET['s']) || fItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>fItems::getTagToolbar(false)));
+				if(isset($_GET['s']) || FItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>FItems::getTagToolbar(false)));
 				else {
 					fSystem::secondaryMenuAddItem($user->getUri('s=t'), FLang::$LABEL_THUMBS,"xajax_forum_toolbar();return false;");
 				}

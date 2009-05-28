@@ -10,13 +10,13 @@ class page_ItemsLive implements iPage {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
 
-		$validTypesArr = fItems::TYPES_VALID();
+		$validTypesArr = FItems::TYPES_VALID();
 
-		if(!in_array($typeId, $validTypesArr)) $typeId = fItems::TYPE_DEFAULT;
+		if(!in_array($typeId, $validTypesArr)) $typeId = FItems::TYPE_DEFAULT;
 
 		$localPerPage = LIVE_PERPAGE;
 
-		$fItems = new fItems();
+		$fItems = new FItems();
 		$fItems->showPageLabel = true;
 		$fItems->initData($typeId,$user->userVO->userId,true);
 		if($typeId=='blog') $fItems->addWhere('i.itemIdTop is null');

@@ -13,7 +13,7 @@ class page_GaleryDetail implements iPage {
 		$pageId = $user->pageVO->pageId;
 		$userId = $user->userVO->userId;
 		
-		if(fRules::getCurrent(2)) {
+		if(FRules::getCurrent(2)) {
 			if($user->pageParam == 'e') fSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),BUTTON_PAGE_BACK);
 			else fSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 		}
@@ -26,9 +26,9 @@ class page_GaleryDetail implements iPage {
 		if($user->pageParam == 'e') {
 			page_PageEdit::build();
 		} else {
-			$galery = new fGalery();
+			$galery = new FGalery();
 			$galery->getGaleryData($pageId);
-			if(fRules::getCurrent(2)) {
+			if(FRules::getCurrent(2)) {
 				//---run just wher owner access
 				$galery->refreshImgToDb($pageId);
 			}
@@ -36,7 +36,7 @@ class page_GaleryDetail implements iPage {
 
 			if($user->itemVO->itemId == 0) {
 
-				$fItems = new fItems();
+				$fItems = new FItems();
 
 				if($user->idkontrol) $fItems->xajaxSwitch = true; //---THINK ABOUT USABILITY AND BACK BUTTON
 				$fItems->showTooltip = false;

@@ -141,7 +141,7 @@ class FPages extends FDBTool {
         		if(!empty($arrForums[$category[0]])) {
         		    //---add category name to title
         		    $user->pageVO->name =  $category[1] . ' - ' . $user->pageVO->name; 
-        		    $tpl->setVariable("CATEGORYPAGELINKLIST",fPages::printPagelinkList($arrForums[$category[0]]));
+        		    $tpl->setVariable("CATEGORYPAGELINKLIST",FPages::printPagelinkList($arrForums[$category[0]]));
             	
         		}
             $tpl->setCurrentBlock('category');
@@ -198,15 +198,15 @@ class FPages extends FDBTool {
         $tpl = new fTemplateIT('forums.booked.tpl.html');
         
         //---srovnani klubu
-        fForum::clearUnreadedMess();
-        fForum::afavAll($user->userVO->userId,$this->type);
+        FForum::clearUnreadedMess();
+        FForum::afavAll($user->userVO->userId,$this->type);
           
         //vypis vlastnich
         $friendsBook = false;
         if(!empty($user->whoIs)){
             if($user->userVO->isFriend($user->whoIs)) {
             	$userId = $user->whoIs;
-            	$tpl->setVariable('AVATAR',$user->showAvatar($userId,array('showName'=>1)));
+            	$tpl->setVariable('AVATAR',FAvatar::showAvatar($userId,array('showName'=>1)));
             	$friendsBook = true;
             }
         } else $userId=$user->userVO->userId;

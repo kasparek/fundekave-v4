@@ -28,7 +28,7 @@ class page_UserSurf implements iPage {
 			$deleteId = $_GET['d']*1;
 			$doDelete = false;
 			if($deleteId>0) {
-				if(fRules::get($userId,$pageId,2)) $doDelete = true;
+				if(FRules::get($userId,$pageId,2)) $doDelete = true;
 				elseif($db->getOne("select userId from sys_surfinie where surfId='".$deleteId."'")==$userId) $doDelete = true;
 			}
 			if($doDelete===true) {
@@ -82,7 +82,7 @@ class page_UserSurf implements iPage {
 
 			foreach ($arr as $row){
 				$tpl->setCurrentBlock('result');
-				if($userId==$row[1] || fRules::get($userId,$pageId,2)) {
+				if($userId==$row[1] || FRules::get($userId,$pageId,2)) {
 					$tpl->setVariable('DELETELINK',FUser::getUri('d='.$row[0]));
 				}
 				if($userId!=$row[1]) {

@@ -4,7 +4,7 @@ class page_EventsEdit implements iPage {
 
 	static function process() {
 		$user = FUser::getInstance();
-		$fItems = new fItems();
+		$fItems = new FItems();
 
 		$itemId = &$user->itemVO->itemId;
 
@@ -81,7 +81,7 @@ class page_EventsEdit implements iPage {
 					$cachedThumb = fEvents::thumbUrl($filename);
 					if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
 
-					$fImg = new fImgProcess($conf['events']['flyer_source'] . $filename
+					$fImg = new FImgProcess($conf['events']['flyer_source'] . $filename
 					,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
 					,'width'=>$conf['events']['thumb_width'],'height'=>0));
 
@@ -96,7 +96,7 @@ class page_EventsEdit implements iPage {
 						$cachedThumb = fEvents::thumbUrl($_FILES['akceletak']['name']);
 						if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
 						//---create thumb
-						$fImg = new fImgProcess($conf['events']['flyer_source'] . $_FILES['akceletak']['name']
+						$fImg = new FImgProcess($conf['events']['flyer_source'] . $_FILES['akceletak']['name']
 						,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
 						,'width'=>$conf['events']['thumb_width'],'height'=>0));
 

@@ -7,11 +7,11 @@ class page_PollEdit implements iPage {
 
 		$selectedPageId = $user->pageVO->pageId;
 		
-		if($superAdmin = fRules::get($user->gid,'sadmi',1)) {
+		if($superAdmin = FRules::get($user->gid,'sadmi',1)) {
 			$cache = FCache::getInstance('s');
 			if(isset($_POST['selpageid'])) {
 				$tmpSelectedPageId = trim($_POST['selpageid']);
-				if(fPages::page_exist('pageId',$tmpSelectedPageId)) {
+				if(FPages::page_exist('pageId',$tmpSelectedPageId)) {
 					$cache->setData($tmpSelectedPageId, 'page','poll');
 				}
 				else fError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
@@ -30,7 +30,7 @@ class page_PollEdit implements iPage {
 			$arr['pageId'] = $selectedPageId;
 			if($superAdmin) {
 				$tmpSelectedPageId = $_POST['newpageid'];
-				if(fPages::page_exist('pageId',$tmpSelectedPageId)) $arr['pageId'] = $tmpSelectedPageId;
+				if(FPages::page_exist('pageId',$tmpSelectedPageId)) $arr['pageId'] = $tmpSelectedPageId;
 			}
 			$arr['votesperuser'] = $_POST['votesperuser']*1;
 			if(isset($_POST['publicresults'])) $arr['publicresults'] = 1; else $arr['publicresults'] = 0;
@@ -49,7 +49,7 @@ class page_PollEdit implements iPage {
 				$arr=array('pollId'=>$k);
 				if(isset($ank['aktiv'])) $arr['activ']=1; else $arr['activ']=0;
 				if($superAdmin) {
-					if(fPages::page_exist('pageId',$ank['idstr'])) $arr['pageId'] = $ank['idstr'];
+					if(FPages::page_exist('pageId',$ank['idstr'])) $arr['pageId'] = $ank['idstr'];
 				}
 				$arr['dateUpdated']='now()';
 				$sAnketa = new FDBTool('sys_poll','pollId');
@@ -118,7 +118,7 @@ class page_PollEdit implements iPage {
 		
 		$selectedPageId = $user->pageVO->pageId;
 		
-		if($superAdmin = fRules::get($user->gid,'sadmi',1)) {
+		if($superAdmin = FRules::get($user->gid,'sadmi',1)) {
 			$cache = FCache::getInstance('s');
 			if(false !== ($pageId = $cache->getData('page','poll'))) {
 				$selectedPageId = $pageId;

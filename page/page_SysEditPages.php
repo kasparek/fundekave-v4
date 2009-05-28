@@ -56,7 +56,7 @@ class page_SysEditPages implements iPage {
 
 		$tpl = new fTemplateIT('sys.edit.pages.tpl.html');
 
-		$fPages = new fPages($type,$user->userVO->userId);
+		$fPages = new FPages($type,$user->userVO->userId);
 		$fPages->sa = true;
 		if($arrParams['cate'] > 0) $fPages->addWhere("p.categoryId='".$arrParams['cate']."'");
 		if($typeLength>0) $fPages->addWhere("p.typeId='".$arrParams['type']."'");

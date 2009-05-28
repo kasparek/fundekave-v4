@@ -5,7 +5,7 @@ class page_PagePoll implements iPage {
 	static function process() {
 
 		//---administrace ankety
-		if (fRules::getCurrent(2)) {
+		if (FRules::getCurrent(2)) {
 			page_PollEdit::process();
 		}
 
@@ -32,7 +32,7 @@ class page_PagePoll implements iPage {
 					}
 					$tmptext.="</p>\n";
 				}
-				if (fRules::getCurrent(2)) {
+				if (FRules::getCurrent(2)) {
 					$tmptext .= FLang::$MESSAGE_POLL_RESULTSRESOURCE.'<br / ><textarea class="largetextarea">'.str_replace(array("<br />\r\n",'"'),array("\r\n",""),$tmptext).'</textarea>';
 				}
 			} else {
@@ -42,7 +42,7 @@ class page_PagePoll implements iPage {
 		FBuildPage::addTab(array("MAINHEAD"=>FLang::$LABEL_POLL_RESULTS,"MAINDATA"=>$tmptext));
 
 		//---administrace ankety
-		if (fRules::getCurrent(2)) {
+		if (FRules::getCurrent(2)) {
 			page_PollEdit::build();
 		}
 	}

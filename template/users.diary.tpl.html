@@ -49,7 +49,7 @@ function showDiaryForm() {
   <!-- BEGIN diarday -->
   <div class="diaryDay">
       <!-- BEGIN diaryevent --> 
-    <div class="vevent">
+    <div class="vevent radcon">
       <span class="abbr" title="{STARTDATETIMEISO}"><abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr></span>
   		<h2 class="entry-title summary"><!-- BEGIN labelink --><a href="{EVENTLINK}"><!-- END labelink -->{EVENTNAME}<!-- BEGIN eventlinkclose --></a><!-- END eventlinkclose --></h2>
   		<!-- BEGIN repeatyear --><strong>opakování ročně</strong><!-- END repeatyear -->
@@ -78,6 +78,5 @@ function showDiaryForm() {
 <!-- BEGIN formhidden -->
 <script type="text/javascript">
   document.getElementById('addform').style.display='none';
-  DD_roundies.addRule('.vevent', 5);
 </script>
 <!-- END formhidden -->

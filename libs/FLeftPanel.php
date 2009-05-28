@@ -146,7 +146,7 @@ class FLeftPanel extends FDBTool {
         		if(empty($panel['minimized'])) {
             		$letext = $panel['content'];
         		    try {
-            		  $letext = fLeftPanelPlugins::$fnc();
+            		  $letext = FLeftPanelPlugins::$fnc();
             		}
             		catch (Exception $e) {
             		    

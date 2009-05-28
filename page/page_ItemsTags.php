@@ -11,17 +11,17 @@ class page_ItemsTags implements iPage {
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
 
-		fItems::setTagToolbarDefaults(array('enabled'=>1,'order'=>3,'interval'=>3));
+		FItems::setTagToolbarDefaults(array('enabled'=>1,'order'=>3,'interval'=>3));
 		$perpage = GALERY_PERPAGE;
 
-		FBuildPage::addTab(array("MAINDATA"=>fItems::getTagToolbar()));
+		FBuildPage::addTab(array("MAINDATA"=>FItems::getTagToolbar()));
 
-		$fItems = new fItems();
+		$fItems = new FItems();
 		$fItems->showPageLabel = true;
 		$fItems->initData($user->pageVO->typeIdChild,$userId,true);
 		$fItems->setOrder('i.dateCreated desc');
 		$fItems->addWhere('i.itemIdTop is null');
-		fItems::setQueryTool(&$fItems);
+		FItems::setQueryTool(&$fItems);
 
 		$pager = fSystem::initPager(0,$perpage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perpage;

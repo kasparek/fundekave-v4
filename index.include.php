@@ -18,18 +18,18 @@ if(isset($_GET['d'])) {
 if(isset($_GET['t'])) {
   //tag item
   $tagItem = $_GET['t'] * 1;
-  if($tagItem > 0) fItems::tag($tagItem,$user->userVO->userId);
+  if($tagItem > 0) FItems::tag($tagItem,$user->userVO->userId);
 }
 if(isset($_GET['rt'])) {
   //remove tag item
   $tagItem = $_GET['rt'] * 1;
-  if($tagItem > 0) fItems::removeTag($tagItem,$user->userVO->userId);
+  if($tagItem > 0) FItems::removeTag($tagItem,$user->userVO->userId);
   fHTTP::redirect($user->getUri());
 }
 
 //---TODO:remove book here - should be handled in alternative function call in fajax
-if(isset($_REQUEST['book'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,1);
-if(isset($_REQUEST['unbook'])) fForum::setBooked($user->pageVO->pageID,$user->userVO->userId,0);
+if(isset($_REQUEST['book'])) FForum::setBooked($user->pageVO->pageID,$user->userVO->userId,1);
+if(isset($_REQUEST['unbook'])) FForum::setBooked($user->pageVO->pageID,$user->userVO->userId,0);
 
 if($user->idkontrol) {
   //---TODO:remove xajax register fce after chechikng all are transported
@@ -58,12 +58,12 @@ if($user->idkontrol) {
   fXajax::register('blog_blogEdit');
   fXajax::register('blog_processFormBloged');
   */
-  fItems::setTagToolbar();
+  FItems::setTagToolbar();
 }
 
 if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked==3)  {
 	fError::addError(MESSAGE_PAGE_LOCKED);
-	if(!fRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 }
 //---process post/get
 //TODO: do this as soon as possible, usually there is redirect

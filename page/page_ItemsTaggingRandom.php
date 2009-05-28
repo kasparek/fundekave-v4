@@ -16,14 +16,14 @@ class page_ItemsTaggingRandom implements iPage {
 							if(!empty($tag)) $arrTestedTags[] = $tag;
 						}
 						if(!empty($arrTestedTags)) { $v = implode(",",$arrTestedTags);
-						if(fItems::itemExists($k)) $itemTags[$k] = $v;
+						if(FItems::itemExists($k)) $itemTags[$k] = $v;
 						}
 					}
 				}
 				if(!empty($itemTags)) {
 					//---tags save
 					foreach ($itemTags as $k=>$v) {
-						fItems::tag($k,FUser::logon(),0,$v);
+						FItems::tag($k,FUser::logon(),0,$v);
 					}
 					fHTTP::redirect(FUser::getUri());
 				}
@@ -34,7 +34,7 @@ class page_ItemsTaggingRandom implements iPage {
 
 	static function build() {
 
-		$fItems = new fItems();
+		$fItems = new FItems();
 		$fItems->showPageLabel = true;
 		$fItems->showTag = false;
 		$fItems->showRating = false;

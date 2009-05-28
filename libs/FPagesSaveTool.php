@@ -68,7 +68,7 @@ class FPagesSaveTool extends FDBTool {
     }
     function savePage($cols,$notQuoted=array()) {
         if(empty($this->type)) {
-            fError::addError('fPageSaveTool: type not set');
+            FError::addError('fPageSaveTool: type not set');
             return false;
         }
         
@@ -76,7 +76,7 @@ class FPagesSaveTool extends FDBTool {
         if(!isset($cols[$this->primaryCol])) {
             //---insert
             $forceInsert=true;
-            $cols[$this->primaryCol] = fPages::newPageId();
+            $cols[$this->primaryCol] = FPages::newPageId();
             if(!isset($cols['dateCreated'])) {
                 $cols['dateCreated']='now()';
                 if(!in_array('dateCreated',$notQuoted)) $notQuoted[]='dateCreated';

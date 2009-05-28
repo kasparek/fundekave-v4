@@ -228,7 +228,7 @@ class FImgProcess {
     }
     
     function save() {
-      if(!empty($this->errorArr)) while($this->errorArr) fError::addError(array_shift($this->errorArr));
+      if(!empty($this->errorArr)) while($this->errorArr) FError::addError(array_shift($this->errorArr));
       
       if(!$this->image) return false;
         $ret = false;

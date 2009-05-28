@@ -31,7 +31,7 @@ class FCalendarPlugins {
     from sys_pages_items where dateStart like '".$year."-".$month."%'");
   }
   static function blogItems($year,$month,$userId,$pageId = '') {
-    $fPages = new fPages('blog',$userId);
+    $fPages = new FPages('blog',$userId);
     if($pageId!='') $fPages->addWhere('p.pageId="'.$pageId.'"');
     $fPages->setSelect("date_format(i.dateCreated,'%d') as den,
     concat('?k=',p.pageId,'&amp;i=',i.itemId) as link,
@@ -45,7 +45,7 @@ class FCalendarPlugins {
     return $fPages->getContent();
   }
   static function galeryItems($year,$month,$userId,$pageId = '') {
-    $fPages = new fPages('galery',$userId);
+    $fPages = new FPages('galery',$userId);
     $fPages->setSelect("date_format(i.dateCreated,'%d') as den,
     concat('?k=',p.pageId,'&amp;i=',i.itemId) as link,
     i.itemId,
@@ -60,7 +60,7 @@ class FCalendarPlugins {
     return $fPages->getContent();
   } 
   static function forums($year,$month,$userId,$pageId = '') {
-    $fPages = new fPages('forum',$userId);
+    $fPages = new FPages('forum',$userId);
     $fPages->setSelect("date_format(p.dateCreated,'%d') as den,
     concat('?k=',p.pageId) as link
     ,p.pageId,

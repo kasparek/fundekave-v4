@@ -48,14 +48,14 @@ class FTemplateIT extends FHTMLTemplateIT {
 	}
 	
 	function printErrorMsg(){
-		$arrerr = fError::getError();
+		$arrerr = FError::getError();
 		if(is_array($arrerr)){
 			foreach ($arrerr as $err) $str[]=$err;
 			if(isset($str)){
 				$this->setCurrentBlock("errormsg");
 				$this->setVariable("ERRORMSG",implode("<br />",$str));
 				$this->setCurrentBlock("errormsg");
-				fError::resetError();
+				FError::resetError();
 			}
 		}
 	}

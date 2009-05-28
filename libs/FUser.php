@@ -109,12 +109,12 @@ class FUser {
 				$cache->invalidateData('forumdesc');
 				$cache->invalidateData('loggedlist');
 				$cache->invalidateData('postwho');
-				fForum::afavAll($gid); //----srovnani-seznamu-klubu-----
+				FForum::afavAll($gid); //----srovnani-seznamu-klubu-----
 				FMessages::diaryNotifications(); //---remind from diary
 			} else {
-				fError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
+				FError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
 			}
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 	}
 
@@ -166,10 +166,10 @@ class FUser {
 			} else {
 				//---user was logged but is lost - do logout acction
 				$this->logout();
-				fError::addError(FLang::$ERROR_USER_KICKED);
+				FError::addError(FLang::$ERROR_USER_KICKED);
 				if($this->pageVO) {
 					//---do redirect
-					fHTTP::redirect(FUser::getUri());
+					FHTTP::redirect(FUser::getUri());
 				}
 			}
 		}
@@ -194,15 +194,15 @@ class FUser {
 			if( $this->pageVO->pageId == 'elogo') {
 				if($this->userVO->userId > 0) {
 					$this->logout();
-					fError::addError(FLang::$MESSAGE_LOGOUT_OK);
-					fHTTP::redirect('index.php');
+					FError::addError(FLang::$MESSAGE_LOGOUT_OK);
+					FHTTP::redirect('index.php');
 				}
 			}
 			//---try load current page
 			$this->pageVO->load();
 			if(empty($this->pageVO->pageId)) {
 				$this->pageAccess = false;
-				fError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
+				FError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
 			} else {
 				$this->pageAccess = true;
 			}
@@ -230,7 +230,7 @@ class FUser {
 					///check for i owner - permneeded=1 or permneeded= 2
 					$permissionNeeded = 2;
 					if(!empty($this->itemVO->itemId)) {
-						$userIdOwner = fItems::getItemUserId($this->itemVO->itemId);
+						$userIdOwner = FItems::getItemUserId($this->itemVO->itemId);
 						if($this->userVO->userId == $userIdOwner) {
 							$permissionNeeded = 1;
 						}
@@ -239,7 +239,7 @@ class FUser {
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
 					$this->pageAccess = false;
-					fError::addError(FLang::$ERROR_ACCESS_DENIED);
+					FError::addError(FLang::$ERROR_ACCESS_DENIED);
 				} else {
 					$this->pageAccess = true;
 					$cache = FCache::getInstance('s');
@@ -308,25 +308,25 @@ class FUser {
 			$jmenoreg = trim($_REQUEST["jmenoreg"]);
 			$pwdreg1 = trim($_REQUEST["pwdreg1"]);
 			$pwdreg2 = trim($_REQUEST["pwdreg2"]);
-			if(strlen($jmenoreg)<2) fError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
-			elseif(strlen($jmenoreg)>10) fError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
-			elseif (!fSystem::checkUsername($jmenoreg)) fError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
-			elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) fError::addError(FLang::$ERROR_REGISTER_NAMEEXISTS);
-			if($jmenoreg==$pwdreg1) fError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
-			if(strlen($pwdreg1)<2) fError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
-			if($pwdreg1!=$pwdreg2) fError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-			if(!fError::isError()){
+			if(strlen($jmenoreg)<2) FError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
+			elseif(strlen($jmenoreg)>10) FError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
+			elseif (!fSystem::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+			elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::addError(FLang::$ERROR_REGISTER_NAMEEXISTS);
+			if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
+			if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
+			if($pwdreg1!=$pwdreg2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
+			if(!FError::isError()){
 				$dot = 'insert into sys_users (name,password,dateCreated,skinId,info)
 					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->userVO->info.'")';
 				if(FDBTool::query($dot)) {
 					$newiduser = FDBTool::getOne("SELECT LAST_INSERT_ID()");
-					fError::addError(FLang::$MESSAGE_REGISTER_SUCCESS);
+					FError::addError(FLang::$MESSAGE_REGISTER_SUCCESS);
 					//---oznameni o registraci
 					FMessages::sendSAMessage(array('NEWUSERID'=>$newiduser,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
-					fHTTP::redirect(FUser::getUri('',HOME_PAGE));
+					FHTTP::redirect(FUser::getUri('',HOME_PAGE));
 				}
 			}
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 	}
 

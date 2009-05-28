@@ -27,7 +27,7 @@ class page_EventsView implements iPage {
 			$category = new fCategory('sys_pages_category','categoryId');
 			FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
 			
-			$fItems = new fItems();
+			$fItems = new FItems();
 			$fItems->initData('event',false,true);
 
 			$adruh = 0;

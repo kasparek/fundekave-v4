@@ -2,13 +2,13 @@
 class FSystem {
     static function &initPager($totalItems=0,$perPage=20,$inputParams=array()) {
         $conf = FConf::getInstance();
-        $params = $conf['pager'];
-		$params['prevImg'] = PAGER_PREVIOUS;
-		$params['nextImg'] = PAGER_NEXT;
+        $params = $conf->a['pager'];
+		$params['prevImg'] = FLang::$PAGER_PREVIOUS;
+		$params['nextImg'] = FLang::$PAGER_NEXT;
 		$params['totalItems'] = $totalItems;
 		$params['perPage'] = $perPage;
 		if(!empty($inputParams)) $params = array_merge($params,$inputParams);
-		$pager =& new fPager($params);
+		$pager =& new FPager($params);
 		return $pager;
     }
     function grndbanner($kam=0) {
@@ -297,12 +297,12 @@ class FSystem {
     /*---------------upload--------------*/
     function upload($file,$kam='',$size=20000,$rewrite=true,$types=array("image/pjpeg","image/jpeg","image/png","image/gif")) {
     	$ret = false;
-        if (!is_uploaded_file($file["tmp_name"])) fError::addError(ERROR_UPLOAD_NOTLOADED);
-    	else if($file['size'] > $size) fError::addError(ERROR_UPLOAD_TOBIG);
-    	else if (!in_array($file['type'],$types)) fError::addError(ERROR_UPLOAD_NOTALLOWEDTYPE);
-    	else if(file_exists($kam.'/'.$file["name"]) && $rewrite==false) fError::addError(ERROR_UPLOAD_FILEEXISTS);
-    	else if(!fSystem::checkFilename($file['name'])) fError::addError(ERROR_UPLOAD_NOTALLOWEDFILENAME);
-    	else if (!$res = move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) fError::addError(ERROR_UPLOAD_NOTSAVED);
+        if (!is_uploaded_file($file["tmp_name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTLOADED);
+    	else if($file['size'] > $size) FError::addError(FLang::$ERROR_UPLOAD_TOBIG);
+    	else if (!in_array($file['type'],$types)) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDTYPE);
+    	else if(file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::addError(FLang::$ERROR_UPLOAD_FILEEXISTS);
+    	else if(!fSystem::checkFilename($file['name'])) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
+    	else if (!$res = move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTSAVED);
     	else {
     	    chmod($kam.'/'.$file["name"],0777); //---upsesne ulozeno
     	    $ret["kam"] = $kam;
@@ -386,7 +386,7 @@ class FSystem {
                 while (($sf = readdir($dh)) !== false) {
                     if ($sf != '.' && $sf != '..') {
                       if (!fSystem::rm_recursive($filepath.'/'.$sf)) {
-                          fError::addError($filepath.'/'.$sf.' could not be deleted.');
+                          FError::addError($filepath.'/'.$sf.' could not be deleted.');
                       }
                     }
                 }
