@@ -2,7 +2,7 @@
 require("./local.php");
   require(INIT_FILENAME);
 $dir = './data/aico/';
-$arrFiles = fSystem::fileList($dir,'jpg|jpeg|gif|JPG|JPEG|GIF');
+$arrFiles = FSystem::fileList($dir,'jpg|jpeg|gif|JPG|JPEG|GIF');
 if(!empty($arrFiles)) {
   while ($arrFiles) {
     $file = array_shift($arrFiles);

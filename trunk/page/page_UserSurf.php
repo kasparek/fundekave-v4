@@ -13,8 +13,8 @@ class page_UserSurf implements iPage {
 			else {
 				$sLinx = new FDBTool('sys_surfinie','surfId');
 				$sLinx->addCol('userId',$userId);
-				$sLinx->addCol('url',fSystem::textins($url,array('plainText'=>1)));
-				$sLinx->addCol('name',fSystem::textins($_POST["surfdesc"],array('plainText'=>1)));
+				$sLinx->addCol('url',FSystem::textins($url,array('plainText'=>1)));
+				$sLinx->addCol('name',FSystem::textins($_POST["surfdesc"],array('plainText'=>1)));
 				$sLinx->addCol('public',($_POST["surfpublic"]*1));
 				$sLinx->addCol('categoryId',($_POST['selcat']*1));
 				$sLinx->addCol('dateCreated','NOW()',false);
@@ -72,7 +72,7 @@ class page_UserSurf implements iPage {
 
 			$od = 1;
 			if($total>DEFAULT_PERPAGE) {
-				$pager = fSystem::initPager($total,DEFAULT_PERPAGE,array('extraVars'=>array('sc'=>$kat,'sm'=>$showAll)));
+				$pager = FSystem::initPager($total,DEFAULT_PERPAGE,array('extraVars'=>array('sc'=>$kat,'sm'=>$showAll)));
 				$od = ($pager->getCurrentPageID()-1) * DEFAULT_PERPAGE;
 				$tpl->setVariable('BOTTOMPAGER',$pager->links);
 			}

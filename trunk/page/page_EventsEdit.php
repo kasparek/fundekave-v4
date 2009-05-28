@@ -34,25 +34,25 @@ class page_EventsEdit implements iPage {
 			$timeStart = '';
 			$timeEnd = '';
 			$timeStartTmp = trim($_POST['timestart']);
-			if(fSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
+			if(FSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
 			$timeEndTmp = trim($_POST['timeend']);
-			if(fSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
+			if(FSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
 			//---check time
-			$dateStart = fSystem::textins($_POST['datestart'],array('plainText'=>1));
-			$dateStart = fSystem::switchDate($dateStart);
-			if(fSystem::isDate($dateStart)) $dateStart .= $timeStart;
+			$dateStart = FSystem::textins($_POST['datestart'],array('plainText'=>1));
+			$dateStart = FSystem::switchDate($dateStart);
+			if(FSystem::isDate($dateStart)) $dateStart .= $timeStart;
 			else fError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			//---save array
-			$arrSave = array('location'=>fSystem::textins($_POST['place'],array('plainText'=>1))
-			,'addon'=>fSystem::textins($_POST['name'],array('plainText'=>1))
+			$arrSave = array('location'=>FSystem::textins($_POST['place'],array('plainText'=>1))
+			,'addon'=>FSystem::textins($_POST['name'],array('plainText'=>1))
 			,'dateStart'=>$dateStart
-			,'text'=>fSystem::textins($_POST['description'])
+			,'text'=>FSystem::textins($_POST['description'])
 			);
 
-			$dateEnd = fSystem::textins($_POST['dateend'],array('plainText'=>1));
-			$dateEnd = fSystem::switchDate($dateEnd);
-			if(fSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
+			$dateEnd = FSystem::textins($_POST['dateend'],array('plainText'=>1));
+			$dateEnd = FSystem::switchDate($dateEnd);
+			if(FSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
 
 			//print_r($arrSave);
 			//die();
@@ -78,7 +78,7 @@ class page_EventsEdit implements iPage {
 					if($file = file_get_contents($_POST['akceletakurl'])) {
 						file_put_contents($conf['events']['flyer_source'].$filename,$file);
 					}
-					$cachedThumb = fEvents::thumbUrl($filename);
+					$cachedThumb = FEvents::thumbUrl($filename);
 					if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
 
 					$fImg = new FImgProcess($conf['events']['flyer_source'] . $filename
@@ -92,8 +92,8 @@ class page_EventsEdit implements iPage {
 					$flypath = $conf['events']['flyer_source'];
 					$arr = explode('.',$_FILES['akceletak']['name']);
 					$_FILES['akceletak']['name'] = "flyer".$itemId.'.'.strtolower($arr[count($arr)-1]);
-					if(fSystem::upload($_FILES['akceletak'],$flypath,800000)) {
-						$cachedThumb = fEvents::thumbUrl($_FILES['akceletak']['name']);
+					if(FSystem::upload($_FILES['akceletak'],$flypath,800000)) {
+						$cachedThumb = FEvents::thumbUrl($_FILES['akceletak']['name']);
 						if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
 						//---create thumb
 						$fImg = new FImgProcess($conf['events']['flyer_source'] . $_FILES['akceletak']['name']
@@ -178,14 +178,14 @@ class page_EventsEdit implements iPage {
 		$tpl->setVariable('TIMESTART',$arr['timeStart']);
 		$tpl->setVariable('DATEEND',$arr['dateEnd']);
 		$tpl->setVariable('TIMEEND',$arr['timeEnd']);
-		$tpl->setVariable('DESCRIPTION',fSystem::textToTextarea($arr['description']));
+		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea($arr['description']));
 		$tpl->addTextareaToolbox('DESCRIPTIONTOOLBOX','event');
 		if($itemId > 0)
 		$tpl->touchBlock('delakce');
 
 		if(!empty($arr['flyer'])) {
-			$tpl->setVariable('FLYERURL',fEvents::flyerUrl($arr['flyer']));
-			$tpl->setVariable('FLYERTHUMBURL',fEvents::thumbUrl($arr['flyer']));
+			$tpl->setVariable('FLYERURL',FEvents::flyerUrl($arr['flyer']));
+			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl($arr['flyer']));
 		}
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 	}

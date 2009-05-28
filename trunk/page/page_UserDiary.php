@@ -8,8 +8,8 @@ class page_UserDiary implements iPage {
 			$user = FUser::getInstance();
 				
 			$arrd['recurrence'] = $_POST['drepeat'] * 1;
-			$arrd['name'] = fSystem::textins($_POST['dzkratka'],array('plainText'=>1));
-			$arrd['text'] = fSystem::textins($_POST['dtext']);
+			$arrd['name'] = FSystem::textins($_POST['dzkratka'],array('plainText'=>1));
+			$arrd['text'] = FSystem::textins($_POST['dtext']);
 
 			list($nden,$nmesic,$nrok)=explode(".",$_POST['addfdate']);
 			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else fError::addError(ERROR_DATA_FORMAT);

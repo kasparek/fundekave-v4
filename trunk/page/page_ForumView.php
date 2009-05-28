@@ -20,7 +20,7 @@ class page_ForumView implements iPage {
 		$typeId = $user->pageVO->typeId;
 
 		if(!empty($user->pageParam) || ($userId > 0 && $typeId == 'blog')) {
-			fSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''), FLang::$BUTTON_PAGE_BACK);
+			FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''), FLang::$BUTTON_PAGE_BACK);
 		}
 
 		//---backwards compatibility
@@ -33,31 +33,31 @@ class page_ForumView implements iPage {
 		if(FRules::get($userId,$pageId,2)) {
 			if(empty($user->pageParam)) {
 				if($typeId=='blog') {
-					fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'a'), FLang::$LABEL_ADD, "xajax_blog_blogEdit('0');return false;",1);
+					FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'a'), FLang::$LABEL_ADD, "xajax_blog_blogEdit('0');return false;",1);
 				}
 			}
-			fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'e'), FLang::$LABEL_SETTINGS,'',1);
+			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'e'), FLang::$LABEL_SETTINGS,'',1);
 		}
 
 		//tlacitko sledovat - jen pro nemajitele
 		if($user->idkontrol) {
 			if($user->pageParam=='' && $user->currentPage['userIdOwner'] != $userId) {
-				fSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?( FLang::$LABEL_BOOK ):( FLang::$LABEL_UNBOOK )),"xajax_forum_auditBook('".$pageId."','".$userId."');",0,'bookButt');
+				FSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?( FLang::$LABEL_BOOK ):( FLang::$LABEL_UNBOOK )),"xajax_forum_auditBook('".$pageId."','".$userId."');",0,'bookButt');
 			}
 
-			fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'p'), FLang::$LABEL_POLL);
-			fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'s'), FLang::$LABEL_STATS);
+			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'p'), FLang::$LABEL_POLL);
+			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 
 			if($user->pageParam=='') {
 				if(isset($_GET['s']) || FItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>FItems::getTagToolbar(false)));
 				else {
-					fSystem::secondaryMenuAddItem($user->getUri('s=t'), FLang::$LABEL_THUMBS,"xajax_forum_toolbar();return false;");
+					FSystem::secondaryMenuAddItem($user->getUri('s=t'), FLang::$LABEL_THUMBS,"xajax_forum_toolbar();return false;");
 				}
 			}
 
 		}
 		if($typeId=='forum') {
-			fSystem::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
+			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 		}
 
 		if($user->pageParam == 'e') {

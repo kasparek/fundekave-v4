@@ -10,7 +10,7 @@ class page_GaleryList implements iPage {
 		$user = FUser::getInstance();
 
 		//category list
-		$category = new fCategory('sys_pages_category','categoryId');
+		$category = new FCategory('sys_pages_category','categoryId');
 		FBuildPage::addTab(array("MAINDATA"=>$category->getList('galery')));
 
 		$fPages = new FPages('galery',$user->userVO->userId);
@@ -24,7 +24,7 @@ class page_GaleryList implements iPage {
 		$tpl = new fTemplateIT('galery.list.tpl.html');
 
 		if($totalItems > GALERY_PERPAGE) {
-			$pager = fSystem::initPager($totalItems,GALERY_PERPAGE);
+			$pager = FSystem::initPager($totalItems,GALERY_PERPAGE);
 			$from =($pager->getCurrentPageID()-1) * GALERY_PERPAGE;
 			$tpl->setVariable("PAGER",$pager->links);
 		}

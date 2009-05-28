@@ -174,7 +174,7 @@ class FPages extends FDBTool {
     		   }
     		}
     		$tpl->setVariable("PAGENAME", $forum[2]);
-    		$tpl->setVariable("PAGEID", $forum[0].'-'.fSystem::safetext($forum[2]));
+    		$tpl->setVariable("PAGEID", $forum[0].'-'.FSystem::safetext($forum[2]));
     		if($user->idkontrol) {
     		    if($forum[4]>0 && $forum[4]<100000) $tpl->setVariable("PAGEPOSTSNEW", $forum[4]);
     		    else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
@@ -292,7 +292,7 @@ class FPages extends FDBTool {
 	  $cache = FCache::getInstance('l');
 	  $row = $cache->getData($categoryId,'categories');
 	  if(!isset($arr[$categoryId])) {
-	    $row = $this->getRow("select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'");
+	    $row = FDBTool::getRow("select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'");
 	    $cache->setData($row);
 	  }
 	  return $row;
@@ -300,7 +300,7 @@ class FPages extends FDBTool {
 	
 	//---properties
     static function getProperty($pageId,$propertyName,$default=null) {
-         $arr = $this->getAll("select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'");
+         $arr = FDBTool::getAll("select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'");
          if(empty($arr)) {
              ///get default
              $value = $default;
@@ -310,6 +310,6 @@ class FPages extends FDBTool {
          return $value;
     }
     static function setProperty($pageId,$propertyName,$propertyValue) {
-        return $this->query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+        return FDBTool::query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
     }
 }

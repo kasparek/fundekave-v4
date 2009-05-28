@@ -3,7 +3,7 @@ include_once('iPage.php');
 class page_SysEditCategories implements iPage {
 
 	static function process() {
-		$category = new fCategory('sys_pages_category','categoryId');
+		$category = new FCategory('sys_pages_category','categoryId');
 		$category->process();
 		
 		if(isset($_REQUEST['f'])) {
@@ -28,7 +28,7 @@ class page_SysEditCategories implements iPage {
 		foreach ($arrType as $k=>$v) $tmptext.='<option value="'.$v.'"'.(($v==$type)?(' selected="selected" '):('')).'>'.$v.'</option>';
 		$tmptext.='</select></p><form action="" method="post" name="kateg">';
 
-		$category = new fCategory('sys_pages_category','categoryId');
+		$category = new FCategory('sys_pages_category','categoryId');
 
 		$category->addWhere("typeId='".$type."'");
 		$category->arrSaveAddon = array('typeId'=>$type);

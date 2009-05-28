@@ -9,19 +9,19 @@ class page_UserSettings implements iPage {
 			if($_POST['nav']=='infosave') {
 				$userVO = $user->userVO;
 				//--setxml elements
-				$userVO->icq = str_replace("-","",fSystem::textins($_POST['infoicq'],array('plainText'=>1)));
-				$userVO->email = fSystem::textins($_POST['infoemajl'],array('plainText'=>1));
+				$userVO->icq = str_replace("-","",FSystem::textins($_POST['infoicq'],array('plainText'=>1)));
+				$userVO->email = FSystem::textins($_POST['infoemajl'],array('plainText'=>1));
 
 				if($_POST['skin'] > 0) $userVO->skin = $_POST['skin'] * 1;
 				$userVO->setXMLVal('settings','bookedorder', $_POST['bookedorder']*1);
-				$userVO->setXMLVal('personal','www',fSystem::textins($_POST['infowww'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','place',fSystem::textins($_POST['infomisto'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','food',fSystem::textins($_POST['infojidlo'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','hobby',fSystem::textins($_POST['infohoby'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','motto',fSystem::textins($_POST['infomotto'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','about',fSystem::textins($_POST['infoabout']));
+				$userVO->setXMLVal('personal','www',FSystem::textins($_POST['infowww'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','place',FSystem::textins($_POST['infomisto'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','food',FSystem::textins($_POST['infojidlo'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','hobby',FSystem::textins($_POST['infohoby'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','motto',FSystem::textins($_POST['infomotto'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','about',FSystem::textins($_POST['infoabout']));
 				if(!empty($_POST['homepageid'])) {
-					$homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
+					$homePageId = FSystem::textins($_POST['homepageid'],array('plainText'=>1));
 					if(FPages::pageOwner($homePageId) == $userVO->userId) $userVO->setXMLVal('personal','HomePageId',$homePageId);
 				}
 				//---webcam
@@ -59,8 +59,8 @@ class page_UserSettings implements iPage {
 				$userVO->zgaltype = (($_POST["galtype"]=='1')?(1):(0));
 
 				//password
-				$pass1 = fSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
-				$pass2 = fSystem::textins($_POST["pwdreg2"],array('plainText'=>1));
+				$pass1 = FSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
+				$pass2 = FSystem::textins($_POST["pwdreg2"],array('plainText'=>1));
 				if($pass1!=''){
 					if(strlen($pass1)<3) fError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 					if($pass1!=$pass2) fError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
@@ -73,8 +73,8 @@ class page_UserSettings implements iPage {
 				//avatar
 				if ($_FILES["idfoto"]["error"] == 0){
 					$konc = Explode(".",$_FILES["idfoto"]["name"]);
-					$_FILES["idfoto"]['name'] = fSystem::safeText($userVO->name).".".$userVO->userId.".".$konc[(count($konc)-1)];
-					if($up = fSystem::upload($_FILES["idfoto"],WEB_REL_AVATAR,20000)) {
+					$_FILES["idfoto"]['name'] = FSystem::safeText($userVO->name).".".$userVO->userId.".".$konc[(count($konc)-1)];
+					if($up = FSystem::upload($_FILES["idfoto"],WEB_REL_AVATAR,20000)) {
 						//---resize and crop if needed
 						list($avatarWidth,$avatarHeight,$type) = getimagesize(WEB_REL_AVATAR.$up['name']);
 						if($avatarWidth!=AVATAR_WIDTH_PX || $avatarHeight!=AVATAR_HEIGHT_PX) {
@@ -128,7 +128,7 @@ class page_UserSettings implements iPage {
 		$tpl->setVariable("USERMISTO",$userVO->getXMLVal('personal','place'));
 		$tpl->setVariable("USERJIDLO",$userVO->getXMLVal('personal','food'));
 		$tpl->setVariable("USERHOBBY",$userVO->getXMLVal('personal','hobby'));
-		$tpl->setVariable("USERABOUT",fSystem::textToTextarea($userVO->getXMLVal('personal','about')));
+		$tpl->setVariable("USERABOUT",FSystem::textToTextarea($userVO->getXMLVal('personal','about')));
 		$tpl->addTextareaToolbox('USERABOUTTOOLBOX','userabout');
 
 		if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');

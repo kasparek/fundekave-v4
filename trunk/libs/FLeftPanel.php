@@ -301,7 +301,7 @@ class FLeftPanel extends FDBTool {
       
       $arr = $this->getAvailablePanels();
       if(!empty($arr)) {
-          $tpl->setVariable('AVAILABLEPANELS',fSystem::getOptions($arr,'',true,''));
+          $tpl->setVariable('AVAILABLEPANELS',FSystem::getOptions($arr,'',true,''));
       }
       
       return $tpl->get();

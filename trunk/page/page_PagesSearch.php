@@ -17,7 +17,7 @@ class page_PagesSearch implements iPage {
 
 		if(isset($_POST['filtr'])) {
 			if($_POST['filtr'] !== $pageSearchCache['filtrStr']) {
-				$pageSearchCache['filtrStr'] = fSystem::textins($_POST['filtr'],array('plainText'=>1));
+				$pageSearchCache['filtrStr'] = FSystem::textins($_POST['filtr'],array('plainText'=>1));
 				$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 			}
 		}
@@ -45,7 +45,7 @@ class page_PagesSearch implements iPage {
 		$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
 		$fPages->setOrder('p.dateContent',true);
 
-		$pager = fSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
+		$pager = FSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;
 		$fPages->setLimit($from,SEARCH_PERPAGE+1);
 

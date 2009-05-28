@@ -19,7 +19,7 @@ class page_SysEditLeftpanel implements iPage {
 			$cache->setData($sidebarGroup, 'grp', 'lp');
 		}
 
-		$category = new fCategory('sys_leftpanel','leftpanelId');
+		$category = new FCategory('sys_leftpanel','leftpanelId');
 		$category->ident = 'rhleftbar';
 		$category->setWhere("leftpanelGroup in (0".(($sidebarGroup>0)?(','.$sidebarGroup):('')).")");
 

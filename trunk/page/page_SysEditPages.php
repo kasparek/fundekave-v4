@@ -69,7 +69,7 @@ class page_SysEditPages implements iPage {
 		$perPage = ADMIN_PERPAGE;
 		$from = 0;
 		if($totalItems>$perPage) {
-			$pager = fSystem::initPager($totalItems,$perPage);
+			$pager = FSystem::initPager($totalItems,$perPage);
 			$from = ($pager->getCurrentPageID()-1) * $perPage;
 			$tpl->setVariable('PAGER',$pager->links);
 		}
