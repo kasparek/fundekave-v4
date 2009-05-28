@@ -293,7 +293,7 @@ class FHTMLTemplateIT
             return IT_OK;
         }
 
-        return fError::addError(
+        return FError::addError(
                 $this->errorMessage(IT_UNKNOWN_OPTION) . ": '{$option}'",
                 IT_UNKNOWN_OPTION
             );
@@ -350,7 +350,7 @@ class FHTMLTemplateIT
         }
 
         if (!isset($this->blocklist[$block])) {
-            $this->err[] = fError::addError(
+            $this->err[] = FError::addError(
                             $this->errorMessage(IT_BLOCK_NOT_FOUND) .
                             '"' . $block . "'",
                             IT_BLOCK_NOT_FOUND
@@ -390,7 +390,7 @@ class FHTMLTemplateIT
         static $regs, $values;
 
         if (!isset($this->blocklist[$block])) {
-            return fError::addError(
+            return FError::addError(
                 $this->errorMessage( IT_BLOCK_NOT_FOUND ) . '"' . $block . "'",
                         IT_BLOCK_NOT_FOUND
                 );
@@ -539,7 +539,7 @@ class FHTMLTemplateIT
     {
 
         if (!isset($this->blocklist[$block])) {
-            return fError::addError(
+            return FError::addError(
                 $this->errorMessage( IT_BLOCK_NOT_FOUND ) .
                 '"' . $block . "'", IT_BLOCK_NOT_FOUND
             );
@@ -562,7 +562,7 @@ class FHTMLTemplateIT
     function touchBlock($block)
     {
         if (!isset($this->blocklist[$block])) {
-            return fError::addError(
+            return FError::addError(
                 $this->errorMessage(IT_BLOCK_NOT_FOUND) .
                 '"' . $block . "'", IT_BLOCK_NOT_FOUND);
         }
@@ -753,7 +753,7 @@ class FHTMLTemplateIT
                 $blockcontent = $match[2];
 
                 if (isset($this->blocklist[$blockname])) {
-                    $this->err[] = fError::addError(
+                    $this->err[] = FError::addError(
                                             $this->errorMessage(
                                             IT_BLOCK_DUPLICATE, $blockname),
                                             IT_BLOCK_DUPLICATE
@@ -804,7 +804,7 @@ class FHTMLTemplateIT
         $filename = $this->fileRoot . $filename;
 
         if (!($fh = @fopen($filename, 'r'))) {
-            $this->err[] = fError::addError(
+            $this->err[] = FError::addError(
                         $this->errorMessage(IT_TPL_NOT_FOUND) .
                         ': "' .$filename .'"',
                         IT_TPL_NOT_FOUND

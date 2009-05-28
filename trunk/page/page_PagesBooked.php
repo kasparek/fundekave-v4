@@ -9,7 +9,7 @@ class page_PagesBooked implements iPage {
 	static function build() {
 		$user = FUser::getInstance();
 		
-		$validTypesArr = fItems::TYPES_VALID();
+		$validTypesArr = FItems::TYPES_VALID();
 
 		fXajax::register('forum_booked');
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';
@@ -20,9 +20,9 @@ class page_PagesBooked implements iPage {
 		$typeId = $user->pageVO->typeIdChild;
 		if(isset($_GET['t'])) $typeId = $_GET['t'];
 
-		if(!in_array($typeId, $validTypesArr)) $typeId = fItems::TYPE_DEFAULT;
+		if(!in_array($typeId, $validTypesArr)) $typeId = FItems::TYPE_DEFAULT;
 
-		$fPages = new fPages($typeId,$user->userVO->userId);
+		$fPages = new FPages($typeId,$user->userVO->userId);
 		$data = $fPages->printBookedList();
 
 		FBuildPage::addTab(array("MAINDATA"=>$data));

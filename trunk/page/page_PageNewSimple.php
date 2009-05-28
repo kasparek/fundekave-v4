@@ -14,7 +14,7 @@ class page_PagesList implements iPage {
 			$ocem= fSystem::textins($_POST["ocem"],array('plainText'=>1));
 			$nazev= fSystem::textins($_POST["nazev"],array('plainText'=>1));
 			if($nazev=='') fError::addError((($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEMPTY):(FLang::$ERROR_BLOG_NAMEEMPTY)));
-			if(fPages::page_exist('name',$nazev)) fError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
+			if(FPages::page_exist('name',$nazev)) fError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
 			if(!fError::isError()) {
 				$fPageSave = new fPagesSaveTool($typeId);
 				$newPageId = $fPageSave->savePage(array('name'=>$nazev,'categoryId'=>$arrDefaultCategory[$typeId],

@@ -35,7 +35,7 @@ class page_PagesSearch implements iPage {
 			$pageSearchCache = array('filtrStr'=>'','categoryId'=>0);
 		}
 
-		$fPages = new fPages($user->currentPage['typeIdChild'],$user->userVO->userId);
+		$fPages = new FPages($user->currentPage['typeIdChild'],$user->userVO->userId);
 		$fItems->cacheResults = 's';
 		if(!empty($pageSearchCache['categoryId'])) $fPages->addWhere("p.categoryId=".$pageSearchCache['categoryId']);
 
@@ -81,7 +81,7 @@ class page_PagesSearch implements iPage {
 			$pager->getPager();
 
 			//---results
-			$tpl->setVariable('PAGELINKS',fPages::printPagelinkList($arr));
+			$tpl->setVariable('PAGELINKS',FPages::printPagelinkList($arr));
 			//---pager
 			if($totalItems > SEARCH_PERPAGE) {
 				$tpl->setVariable('TOPPAGER',$pager->links);

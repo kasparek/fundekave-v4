@@ -45,7 +45,7 @@ class FLeftPanelPlugins {
             $arr = $fPages->getContent();
             $tmptext = '';
             if(!empty($arr)) {
-                $tmptext = fPages::printPagelinkList($arr);
+                $tmptext = FPages::printPagelinkList($arr);
             }
             $cache->setData($tmptext);
         }
@@ -56,7 +56,7 @@ class FLeftPanelPlugins {
     	$user = FUser::getInstance();
     	$cache = FCache::getInstance('f',86400);
        if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'pagesrelated')) {
-        $fPages = new fPages('',$user->userVO->userId);
+        $fPages = new FPages('',$user->userVO->userId);
         $fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
         $fPages->addWhere('r.pageId="'.$user->pageVO->pageId.'"');
         
@@ -65,7 +65,7 @@ class FLeftPanelPlugins {
         $arr = $fPages->getContent();
         $tmptext = '';
         if(!empty($arr)) {
-            $tmptext = fPages::printPagelinkList($arr);
+            $tmptext = FPages::printPagelinkList($arr);
         }
         $cache->setData($tmptext);
       }
@@ -90,7 +90,7 @@ class FLeftPanelPlugins {
           $tmptext='<div id="postRecipientsList">
           <ul>';
       	foreach ($arr as $row) {
-      		$tmptext .= '<li>'.$user->showAvatar($row[1]).'<a class="recLink" href="?k=fpost&filtr=1&prokoho='.$row[2].'">'.$row[2].' ['.$row[0].']</a><br /></li>';
+      		$tmptext .= '<li>'.FAvatar::showAvatar($row[1]).'<a class="recLink" href="?k=fpost&filtr=1&prokoho='.$row[2].'">'.$row[2].' ['.$row[0].']</a><br /></li>';
       	}
       	$tmptext.='</ul></div>';
       }
@@ -140,7 +140,7 @@ class FLeftPanelPlugins {
     	$user = FUser::getInstance();
     	$cache = FCache::getInstance('f',86400);
        if(false !== $data = $cache->getData($user->idkontrol,'eventtip') ) {
-        $fItems = new fItems();
+        $fItems = new FItems();
         $fItems->setCustomTemplate('sidebar.event.tpl.html');
         $fItems->initData('event',false,true);
         $fItems->addWhere('dateStart >= NOW() or (dateEnd is not null and dateEnd >= NOW())');
@@ -243,7 +243,7 @@ class FLeftPanelPlugins {
     static function rh_galerie_rnd(){
     	$cache = FCache::getInstance('f',86400);
   	  if(!$data = $cache->getData('fotornd')) {
-  	    $fItems = new fItems();
+  	    $fItems = new FItems();
   	    
   	    $fItems->openPopup = true;
         $fItems->showPageLabel = true;
@@ -269,26 +269,25 @@ class FLeftPanelPlugins {
     }
     static function rh_audit_popis(){
     	$cache = FCache::getInstance('f',86400);
+    	$user = FUser::getInstance();
     	if(!$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'forumdesc')) {
-      	$ret['klub'] = $db->getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->pageVO->pageId."'");
-      	if(!DB::iserror($ret['klub'])){
-      		$ret['admins'] = $db->getCol("SELECT userId FROM sys_users_perm WHERE rules=2 and pageId='".$user->pageVO->pageId."'");
+      	$ret['klub'] = FDBTool::getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->pageVO->pageId."'");
+      	if(!empty($ret['klub'])){
+      		$ret['admins'] = FDBTool::getCol("SELECT userId FROM sys_users_perm WHERE rules=2 and pageId='".$user->pageVO->pageId."'");
       	}
-      	$cache->setData(serialize($ret));
-    	} else {
-        $ret = unserialize($ret);
-      }
+      	$cache->setData($ret);
+    	} 
     	$klub = $ret['klub'];
       $admins = $ret['admins'];
     	$ret = '';
       if(!empty($klub)) {
         $tpl = new fTemplateIT('sidebar.page.description.tpl.html');
     		$tpl->setVariable('DESCRIPTION',$klub[1]);
-    		$tpl->setVariable('OWNERAVATAR',$user->showAvatar($klub[0]));
+    		$tpl->setVariable('OWNERAVATAR',FAvatar::showAvatar($klub[0]));
         if(!empty($admins))
     		foreach ($admins as $adm) {
           $tpl->setCurrentBlock('otheradminsavatars');
-          $tpl->setVariable('SMALLADMINAVATAR',$user->showAvatar($adm));
+          $tpl->setVariable('SMALLADMINAVATAR',FAvatar::showAvatar($adm));
           $tpl->parseCurrentBlock();
         }
         $ret = $tpl->get();
@@ -308,7 +307,7 @@ class FLeftPanelPlugins {
       		    $kde = $user->getLocation($pra[0]);
       			$username = $user->getgidname($pra[0]);
       			$ret.='<li>'
-      			. $user->showAvatar($pra[0])
+      			. FAvatar::showAvatar($pra[0])
                 .'<span class="vcard fn"><a href="?k=fpost&who='.$pra[0].'">'.$username.'</a></span><br />'
       			.'<a href="?k='.$kde['pageId'].$kde['param'].'" title="Prave sleduje: '.$kde['name'].'">'.$kde['nameshort'].'</a><br />'
       			.'<span title="Posledni aktivita">['.substr($pra[1],3,5).']</span>'
@@ -400,7 +399,7 @@ class FLeftPanelPlugins {
       	}
       	$arrQ = array();
       	foreach ($arrUsedPlugins as $pluginName) {
-      		$arrTmp = fCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
+      		$arrTmp = FCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
       		if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
       	}
       	$arrEventsForDay = array();

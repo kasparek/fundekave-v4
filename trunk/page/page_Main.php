@@ -7,14 +7,14 @@ class page_Main implements iPage {
 	}
 	
 	static function build() {
-		
+		$user = FUser::getInstance();
 		$tpl = new FTemplateIT('maina.tpl.html');
 
 		//--------------LAST-FORUM-POSTS
 		$cache = FCache::getInstance('f',3600);
 		$data = $cache->getData('lastForumPost');
 		if($data === false) {
-			$fItems = new fItems();
+			$fItems = new FItems();
 			$arr = FDBTool::getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
 			$data = '';
 			if(!empty($arr)) {
@@ -40,7 +40,7 @@ class page_Main implements iPage {
 			//$arr = $db->getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='blog' and itemIdTop is null group by pageId order by dateCreated desc limit 0,10");
 			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
 			if(!empty($arr)) {
-				$fItems = new fItems();
+				$fItems = new FItems();
 				$fItems->showPageLabel = true;
 				$fItems->initData('blog',$user->userVO->userId,true);
 				//$fItems->addWhere('itemIdTop is null');
@@ -68,7 +68,7 @@ class page_Main implements iPage {
 
 		//------LAST-CREATED-PAGES
 		if(($tmptext = $cache->getData('lastCreated')) !== false) {
-			$fPages = new fPages(array('blog','galery','forum'),$user->userVO->userId);
+			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
 			$fPages->setOrder('p.dateCreated desc');
 			$fPages->addWhere('p.locked < 2');
 			$fPages->setLimit(0,5);
@@ -93,7 +93,7 @@ class page_Main implements iPage {
 			$x = 0;
 			while($arr && $x < 6) {
 				$pageId = array_shift($arr);
-				if(fRules::get($user->userVO->userId,$pageId)) {
+				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostvisitedpage');
 					$tpl->setVariable('MOSTVISITEDEURL','?k='.$row[0]);
@@ -115,7 +115,7 @@ class page_Main implements iPage {
 			$x = 0;
 			while($arr && $x < 6) {
 				$pageId = array_shift($arr);
-				if(fRules::get($user->userVO->userId,$pageId)) {
+				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostactivepage');
 					$tpl->setVariable('MOSTACTIVEURL','?k='.$row[0]);
@@ -137,7 +137,7 @@ class page_Main implements iPage {
 			$x = 0;
 			while($arr && $x < 6) {
 				$pageId = array_shift($arr);
-				if(fRules::get($user->userVO->userId,$pageId)) {
+				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostfavouritepage');
 					$tpl->setVariable('MOSTFAVOURITEURL','?k='.$row[0]);

@@ -22,7 +22,7 @@ class page_UserSettings implements iPage {
 				$userVO->setXMLVal('personal','about',fSystem::textins($_POST['infoabout']));
 				if(!empty($_POST['homepageid'])) {
 					$homePageId = fSystem::textins($_POST['homepageid'],array('plainText'=>1));
-					if(fPages::pageOwner($homePageId) == $userVO->userId) $userVO->setXMLVal('personal','HomePageId',$homePageId);
+					if(FPages::pageOwner($homePageId) == $userVO->userId) $userVO->setXMLVal('personal','HomePageId',$homePageId);
 				}
 				//---webcam
 				$userVO->setXMLVal('webcam','public',(int) $_POST['campublic']);
@@ -81,7 +81,7 @@ class page_UserSettings implements iPage {
 							if($type!=2) $up['name'] = str_replace($konc[(count($konc)-1)],'jpg',$up['name']);
 							//---RESIZE
 							$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
-							$iProc = new fImgProcess(WEB_REL_AVATAR.$_FILES["idfoto"]['name'],WEB_REL_AVATAR.$up['name'],$resizeParams);
+							$iProc = new FImgProcess(WEB_REL_AVATAR.$_FILES["idfoto"]['name'],WEB_REL_AVATAR.$up['name'],$resizeParams);
 
 						}
 						$userVO->avatar = $up['name'];

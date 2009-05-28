@@ -104,7 +104,7 @@ class FGalery {
                 $this->gPublic = $user->currentPage['public'];
                 $this->gPageParams = $user->currentPage['pageParams'];
 		    } else {
-		        $fPage = new fPages('galery',$user->userVO->userId);
+		        $fPage = new FPages('galery',$user->userVO->userId);
 		        $fPage->primaryCol = 'p.pageId';
 		        $fPage->setSelect('p.categoryId,p.galeryDir,p.name,
 		        p.description,p.dateContent,p.userIdOwner,
@@ -163,14 +163,14 @@ class FGalery {
           //---check thumbnail
           if($this->_thumbInSysRes == true) {//---system resolution thumbnail
             $thumbPathArr = $this->getThumbPath($this->_cacheDirSystemResolution);
-    		    if(!fGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr); 
+    		    if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr); 
   	        $arr['thumbUrl'] = $thumbPathArr['url'];
           } else {
   				  if(!empty($arr['addon'])) {
   					    $arr['thumbUrl'] = $this->_rootImg . $arr['galeryDir'].'/'.$arr['addon'];
   					} else {
   					    $thumbPathArr = $this->getThumbPath();
-  					    if(!fGalery::isThumb($thumbPathArr['thumb'])) {
+  					    if(!FGalery::isThumb($thumbPathArr['thumb'])) {
   					      $this->createThumb($thumbPathArr); 
   					    }
   					    $arr['thumbUrl'] = $thumbPathArr['url'];
@@ -185,7 +185,7 @@ class FGalery {
   				  $arr['detailUrlToGalery'] = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'];
   				  $arr['detailUrlToPopup'] = '/pic.php?u='.$user->userVO->userId.'&amp;i='.$this->_fId.'&amp;width='.($width+60).'&amp;height='.($height+60);
 				  } else {
-            fError::addError('File not exists: '.$arr['detailUrl']);
+            FError::addError('File not exists: '.$arr['detailUrl']);
           }
 				  return $arr;
   }
@@ -204,7 +204,7 @@ class FGalery {
                 }
         
 		if($doLoad) {
-            $fItems = new fItems();
+            $fItems = new FItems();
             $fItems->initData('galery'); 
             
             if($allGalery) $fItems->setWhere("p.pageId='".$this->_galeryId."'");
@@ -282,7 +282,7 @@ class FGalery {
       //,'unsharpMask'=>1
 			);
 			if($thumbnailstyle==2) $processParams['crop'] = 1; else $processParams['proportional'] = 1;
-			$fProcess = new fImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
+			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
 		}
 	}
     function deleteThumb($path) {
@@ -306,8 +306,8 @@ class FGalery {
 	function printDetail($itemId) {
 		global $db,$conf,$user;
 		
-		fForum::process($itemId,"fGalery::callbackForumProcess");
-		$fItems = new fItems();
+		FForum::process($itemId,"FGalery::callbackForumProcess");
+		$fItems = new FItems();
 		$itemId = $fItems->initDetail($itemId);
 		
 		if(!empty($itemId)) $this->getFoto($itemId);
@@ -343,7 +343,7 @@ class FGalery {
   			
   			$tpl->setVariable("HITS",$this->_fHits);
   			if($user->idkontrol) {
-  			    $tpl->setVariable('TAG',fItems::getTag($itemId,$user->userVO->userId,'galery'));
+  			    $tpl->setVariable('TAG',FItems::getTag($itemId,$user->userVO->userId,'galery'));
   			    $tpl->setVariable('POCKET',fPocket::getLink($itemId));
   			}
   			
@@ -375,7 +375,7 @@ class FGalery {
   			}
   			
   			//TODO: comments in galery are switched offf in this release
-  			//$tpl->setVariable('COMMENTS',fForum::show($itemId,$user->idkontrol,$fItems->itemIdInside,array('formAtEnd'=>$true,'showHead'=>false)));
+  			//$tpl->setVariable('COMMENTS',FForum::show($itemId,$user->idkontrol,$fItems->itemIdInside,array('formAtEnd'=>$true,'showHead'=>false)));
         
   			$ret = $tpl->get();
         $user->cacheSave($ret);
@@ -452,7 +452,7 @@ class FGalery {
                 $this->gCountFotoNew++;
 
                 $thumbPathArr = $this->getThumbPath();
-                if(!fGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
+                if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
                 $this->_fId = $this->updateFoto();
 
             }
@@ -515,14 +515,14 @@ class FGalery {
 	}
 	function removeThumb() {
 	    $thumbPathArr = $this->getThumbPath();
-	    if(fGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) if(!unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) fError::addError('Cannot delete thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+	    if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) if(!unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) FError::addError('Cannot delete thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
 	    //---delete system thumb
 		$thumbPathArr = $this->getThumbPath($this->_cacheDirSystemResolution);
-	    if(fGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) { 
+	    if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) { 
         if(@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-          //fError::addError('Cannot delete system thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+          //FError::addError('Cannot delete system thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
         }
       }
-	    if(!fError::isError()) return true;
+	    if(!FError::isError()) return true;
 	}
 }

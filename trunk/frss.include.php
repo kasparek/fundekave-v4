@@ -23,7 +23,7 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
         		$arr['pageId'] = $user->currentPageId;
         		$arr['text'] = fSystem::textins($params['text']);
         		$arr['name'] = fSystem::textins($params['name'],array('plainText'=>1));
-        		if(fForum::messWrite($arr)) $processArr[] = 'I:insertOK';
+        		if(FForum::messWrite($arr)) $processArr[] = 'I:insertOK';
         	}
     	}
   	}
@@ -48,7 +48,7 @@ $items = array();
 
 //---FEED for any new page - galery,blog,forum
 if($user->currentPage['typeId']=='top') {
-    $fPages = new fPages('',$user->gid,$db);
+    $fPages = new FPages('',$user->gid,$db);
     $fPages->setLimit(0,15);
     $fPages->setOrder('dateCreated',true);
     $fPages->setSelect("p.pageId,name,description,authorContent,date_format(dateCreated,'%H:%i:%S %d.%m.%Y') as dcz,p.typeId");
@@ -67,7 +67,7 @@ if($user->currentPage['typeId']=='top') {
             );
             if($row[5] == 'galery') {
                 //---FIXME: use items
-                $fItems = new fItems();
+                $fItems = new FItems();
                 $fItems->initData('galery');
                 $fItems->addWhere("i.pageId='".$row[0]."'");
                 $totalItems = $fItems->getCount();
@@ -117,7 +117,7 @@ if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog'
 }
 if($user->currentPage['typeId']=='galery') {
     //$galery->getFoto($user->currentPageId,true,' order by f.dateCreated desc,f.detail ');
-    $galery = new fGalery();
+    $galery = new FGalery();
     $galeryData = $galery->getGaleryData($user->currentPageId);
     $totalItems = count($galeryData);
     $processArr[]='D:t_'.$totalItems;

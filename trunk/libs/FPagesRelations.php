@@ -37,7 +37,7 @@ class FPagesRelations {
         if(!empty($arrPageIdRelatives)) $strPageIdRelatives = "'".implode("','",$arrPageIdRelatives)."'";
         else $strPageIdRelatives = '';
         $user = FUser::getInstance();
-        $fpages = new fPages(array('galery','forum','blog'),$user->userVO->userId);
+        $fpages = new FPages(array('galery','forum','blog'),$user->userVO->userId);
         $fpages->setSelect('p.pageId,p.name,p.nameshort,p.authorContent');
         $fpages->setOrder('p.typeId,p.dateCreated desc,p.name');
         $fpages->setWhere('p.pageId!="'.$this->pageId.'"');
@@ -74,7 +74,7 @@ class FPagesRelations {
      *
     function getRoamerXML($userId=0) {
         global $db;
-        $fPages = new fPages(array('forum','galery','top','blog'),$userId,$db);
+        $fPages = new FPages(array('forum','galery','top','blog'),$userId,$db);
         $fPages->addJoin('left join sys_pages_relations as r1 on r1.pageId=p.pageId');
         $fPages->addJoin('left join sys_pages_relations as r2 on r2.pageIdRelative=p.pageId');
         $fPages->setGroup('p.pageId');

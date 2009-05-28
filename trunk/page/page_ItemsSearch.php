@@ -10,16 +10,16 @@ class page_ItemsSearch implements iPage {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
 
-		fItems::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
-		FBuildPage::addTab(array("MAINDATA"=>fItems::getTagToolbar()));
+		FItems::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
+		FBuildPage::addTab(array("MAINDATA"=>FItems::getTagToolbar()));
 
-		$fItems = new fItems();
+		$fItems = new FItems();
 		$fItems->cacheResults = 's';
 		$fItems->showPageLabel = true;
 		$fItems->initData($typeId,$user->userVO->userId,true);
 		//$fItems->setOrder('i.dateCreated desc');
 		$fItems->addWhere('i.itemIdTop is null');
-		fItems::setQueryTool(&$fItems);
+		FItems::setQueryTool(&$fItems);
 
 		$pager = fSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;

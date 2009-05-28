@@ -99,7 +99,7 @@ class FPocket extends FDBTool {
                     if(!empty($item[3])) {
     
                         $tpl->setVariable('ITEMIDTOOLTIP','pocket'.$item[3]);
-                        $fItems = new fItems();
+                        $fItems = new FItems();
                         $fItems->showTag = false;
                         $fItems->showPocketAdd = false;
                         $fItems->showComments = false;

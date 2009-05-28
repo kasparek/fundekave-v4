@@ -84,7 +84,7 @@ class FItems extends FDBTool {
     }
     static function getTag($itemId,$userId,$typeId='') {
         if($typeId=='') $typeId = $this->getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
-        $arrTemplates = fItems::itemTagTemplate();
+        $arrTemplates = FItems::itemTagTemplate();
         $templates = array_keys($arrTemplates);
         if(!in_array($typeId,$templates)) {
             $templateType = $arrTemplates['default'];
@@ -92,7 +92,7 @@ class FItems extends FDBTool {
             $templateType = $arrTemplates[$typeId];
         }
         $tpl = new fHTMLTemplateIT();
-        if(fItems::isTagged($itemId,$userId)) {
+        if(FItems::isTagged($itemId,$userId)) {
             $template = $templateType['used'];
             $tpl->setTemplate($template);
         } else {
@@ -165,11 +165,11 @@ class FItems extends FDBTool {
         }
         if($itemId > 0 && $this->showComments) {
     	    //---add discussion
-    	    fForum::process($itemId);
+    	    FForum::process($itemId);
     	}
         $this->addWhere("i.itemId='".$itemId."'");
         
-        if(!fRules::getCurrent(2)) {
+        if(!FRules::getCurrent(2)) {
           $this->addWhere('i.public = 1');
         }
         return $itemId;
@@ -232,7 +232,7 @@ class FItems extends FDBTool {
               $this->itemsRemoved = 0;
               foreach($arrTmp as $row) {
                 //---check premissions
-                if(fRules::get($this->byPermissions,$row[2],1)) {
+                if(FRules::get($this->byPermissions,$row[2],1)) {
                     $arr[] = $row;
                     $itemsCount++;
                     if($itemsCount == $count && $count!=0) break;
@@ -251,7 +251,7 @@ class FItems extends FDBTool {
         
         if(!empty($arr)) {
           if($this->typeId=='galery' || $this->typeId=='') {
-              $galery = new fGalery();
+              $galery = new FGalery();
               if($this->thumbInSysRes) $galery->_thumbInSysRes = true;
           }
           foreach($arr as $row) {
@@ -264,7 +264,7 @@ class FItems extends FDBTool {
             switch ($itemTypeId) {
               
               case 'forum':
-              if(fForum::isUnreadedMess($namedRow['itemId'])) $namedRow['unread'] = 1; else $namedRow['unread'] = 0;
+              if(FForum::isUnreadedMess($namedRow['itemId'])) $namedRow['unread'] = 1; else $namedRow['unread'] = 0;
               break;
               
               case 'galery':
@@ -274,7 +274,7 @@ class FItems extends FDBTool {
               
             }
             $user = FUser::getInstance();
-            if (($user->userVO->userId > 0 && $user->userVO->userId == $namedRow['userId']) || fRules::get($user->userVO->userId,$namedRow['pageId'],2)) $namedRow['editItemId'] = $namedRow['itemId'];
+            if (($user->userVO->userId > 0 && $user->userVO->userId == $namedRow['userId']) || FRules::get($user->userVO->userId,$namedRow['pageId'],2)) $namedRow['editItemId'] = $namedRow['itemId'];
             $this->arrData[] = $namedRow;
           }
         }
@@ -354,7 +354,7 @@ class FItems extends FDBTool {
   		if($arr = $this->pop()) {
   		    //chechk permissions to edit
   		    $this->enableEdit = false;
-  		    if(fRules::get($user->userVO->userId,$arr['pageId'],2) || $arr['userId']==$user->userVO->userId) {
+  		    if(FRules::get($user->userVO->userId,$arr['pageId'],2) || $arr['userId']==$user->userVO->userId) {
   		        $this->enableEdit=true;
   		    }
   	/*.........zacina vypis prispevku.........*/
@@ -386,7 +386,7 @@ class FItems extends FDBTool {
   	//---event only
   	if($arr['typeId']=='event') {
   	    if($arr['categoryId']>0) {
-  	      $categoryArr = fPages::getCategory($arr['categoryId']);
+  	      $categoryArr = FPages::getCategory($arr['categoryId']);
   	      $tpl->setVariable('CATEGORY',$categoryArr[2]);
   	    }
   	    $tpl->setVariable('LOCATION',$arr['location']);
@@ -404,7 +404,7 @@ class FItems extends FDBTool {
             if(!file_exists($flyerFilenameThumb)) {
             //---create thumb
               $conf = FConf::getInstance();
-            	$fImg = new fImgProcess($flyerFilename,$flyerFilenameThumb
+            	$fImg = new FImgProcess($flyerFilename,$flyerFilenameThumb
                 ,array('quality'=>$conf['events']['thumb_quality']
                 ,'width'=>$conf['events']['thumb_width'],'height'=>0));
             }
@@ -422,28 +422,28 @@ class FItems extends FDBTool {
   	     
   	     if($arr['tag_weight'] > 0) {
   	     
-  	         $arrTags = fItems::getItemTagList($arr['itemId']);
+  	         $arrTags = FItems::getItemTagList($arr['itemId']);
   	         
   	         foreach ($arrTags as $tag) {
   	             $tpl->setCurrentBlock('participant');
-  	             $tpl->setVariable('PARTICIPANTAVATAR',$user->showAvatar($tag[0],array('showName'=>1)));
+  	             $tpl->setVariable('PARTICIPANTAVATAR',FAvatar::showAvatar($tag[0],array('showName'=>1)));
   	             $tpl->parseCurrentBlock();
   	         }
   	     }
   	    }
   	    if($this->showFooter) {
-  	        if($user->userVO->userId == $arr['userId'] || fRules::getCurrent(2)) {
+  	        if($user->userVO->userId == $arr['userId'] || FRules::getCurrent(2)) {
   	            $tpl->setVariable('EDITLINK','?k=eventu&amp;i='.$arr['itemId']);
   	        }
   	    }
   	}
   	//---forum only
   	if($arr['typeId']=='forum') {
-      if(!empty($arr['enclosure'])) $tpl->setVariable('ENCLOSURE',fItems::proccessItemEnclosure($arr['enclosure']));
+      if(!empty($arr['enclosure'])) $tpl->setVariable('ENCLOSURE',FItems::proccessItemEnclosure($arr['enclosure']));
       
       if($user->userVO->zavatar == 1) {
           $avatarId = (int) $arr['userId'];
-          $avatar = $user->showAvatar($avatarId);
+          $avatar = FAvatar::showAvatar($avatarId);
           $tpl->setVariable('AVATAR',$avatar);
       }
   	}
@@ -452,10 +452,10 @@ class FItems extends FDBTool {
   	if ($user->idkontrol && $this->showFooter==true) {
      //---thumb tag link
   	 if($this->showTag==true) {
-        fItems::initTagXajax();
+        FItems::initTagXajax();
         $cache = FCache::getInstance('s',60);        
         if(false === $cache->getData($arr['itemId'],'itemTags')) $cache->setData($arr['tag_weight']);
-        $tpl->setVariable('TAG',fItems::getTag($arr['itemId'],$user->userVO->userId,$arr['typeId']));
+        $tpl->setVariable('TAG',FItems::getTag($arr['itemId'],$user->userVO->userId,$arr['typeId']));
   	 }
   	 if($this->showPocketAdd==true) {
   	     $tpl->setVariable('POCKET',fPocket::getLink($arr['itemId']));
@@ -492,10 +492,10 @@ class FItems extends FDBTool {
       }
       
       if($this->showComments == true) {
-        $writeRule = fPages::getProperty($arr['pageId'],'forumSet');
-        if(false !== $itemWriteRule = fItems::getProperty($arr['itemId'],'forumSet',2)) $writeRule = $itemWriteRule;
+        $writeRule = FPages::getProperty($arr['pageId'],'forumSet');
+        if(false !== $itemWriteRule = FItems::getProperty($arr['itemId'],'forumSet',2)) $writeRule = $itemWriteRule;
         
-        $tpl->setVariable('COMMENTS', fForum::show($arr['itemId'],$writeRule,$this->itemIdInside));
+        $tpl->setVariable('COMMENTS', FForum::show($arr['itemId'],$writeRule,$this->itemIdInside));
       } else {
           
           
@@ -540,7 +540,7 @@ class FItems extends FDBTool {
     //---linked item
     if($this->showBottomItem) {
         if($arr['itemIdBottom']>0) {
-            $fItem = new fItems();
+            $fItem = new FItems();
             $fItem->enableEdit = false;
             $fItem->showPageLabel = true;
             $fItem->initData('',$user->userVO->userId);
@@ -553,8 +553,8 @@ class FItems extends FDBTool {
             unset($fItem);
         }
         if(!empty($arr['pageIdBottom'])) {
-            if(fRules::get($user->userVO->userId,$arr['pageIdBottom'],1)) {
-                $tpl->setVariable('ITEMBOTTOM','<h3><a href="?k='.$arr['pageIdBottom'].'">'.fPages::pageAttribute($arr['pageIdBottom']).'</a></h3>');
+            if(FRules::get($user->userVO->userId,$arr['pageIdBottom'],1)) {
+                $tpl->setVariable('ITEMBOTTOM','<h3><a href="?k='.$arr['pageIdBottom'].'">'.FPages::pageAttribute($arr['pageIdBottom']).'</a></h3>');
             }
         }
         
@@ -606,11 +606,11 @@ class FItems extends FDBTool {
     }
     
     static function isToolbarEnabled() {
-        $toolbarData = &fItems::getTagToolbarData();
+        $toolbarData = &FItems::getTagToolbarData();
         return $toolbarData['enabled'];
     }
     static function setTagToolbarDefaults($array) {
-        $toolbarData = &fItems::getTagToolbarData();
+        $toolbarData = &FItems::getTagToolbarData();
         if($toolbarData['enabled']==0) {
             foreach ($array as $k=>$v) {
             	$toolbarData[$k] = $v;
@@ -629,7 +629,7 @@ class FItems extends FDBTool {
     }
         
     static function getTagToolbar($showHits=true,$params=array()) {
-      $toolbarData = &fItems::getTagToolbarData();
+      $toolbarData = &FItems::getTagToolbarData();
       $tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
       
       if(isset($toolbarData['search'])) {
@@ -645,7 +645,7 @@ class FItems extends FDBTool {
       if($toolbarData['order']>0) $tpl->touchBlock($orderBlocksArr[$toolbarData['order']]);
       if($toolbarData['interval']>1) $tpl->touchBlock($intervalBlocksArr[$toolbarData['interval']]);
       if($toolbarData['interval'] > 1) {
-          $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
+          $intConfArr = FItems::getIntervalConf($toolbarData['interval']);
           if(empty($toolbarData['date'])) {
               $toolbarData['date'] = Date($intConfArr['f']);
           }
@@ -708,7 +708,7 @@ class FItems extends FDBTool {
     }
     
     static function setTagToolbar() {
-      $toolbarData = &fItems::getTagToolbarData();
+      $toolbarData = &FItems::getTagToolbarData();
       if(isset($_POST['thumbupreset'])) $toolbarData = array();
       else {
         if(isset($_POST['searchText'])) {
@@ -725,7 +725,7 @@ class FItems extends FDBTool {
         if(isset($toolbarData['interval'])) {
           if($toolbarData['interval']>1 && (empty($toolbarData['date']) || $oldInterval!=$toolbarData['interval'])) {
               //---create default - current date
-              $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
+              $intConfArr = FItems::getIntervalConf($toolbarData['interval']);
               if(!empty($toolbarData['date'])) {
                 if($oldInterval==4) $date = str_replace('-','-W',$toolbarData['date']);
                 else $date = $toolbarData['date'];
@@ -736,7 +736,7 @@ class FItems extends FDBTool {
           } elseif ($toolbarData['interval']<2) unset($toolbarData['date']);
         }
         if(isset($_GET['tuda']) && $toolbarData['interval']>1) {
-            $intConfArr = fItems::getIntervalConf($toolbarData['interval']);
+            $intConfArr = FItems::getIntervalConf($toolbarData['interval']);
             if($_GET['tuda']=='next') $modifyCourse = '+';
             if($_GET['tuda']=='prev') $modifyCourse = '-';
             if(isset($modifyCourse)) {
@@ -752,7 +752,7 @@ class FItems extends FDBTool {
       FItems::setTagToolbarData($toolbarData);
     }
     static function setQueryTool(&$fQuery) {
-        $thumbupData = &fItems::getTagToolbarData();
+        $thumbupData = &FItems::getTagToolbarData();
         if($thumbupData['enabled']==1) {
             
             if(isset($thumbupData['searchStr'])) {
@@ -767,7 +767,7 @@ class FItems extends FDBTool {
                     	if($userId = FUser::getUserIdByName($userName)) {
                     	    $validatedUserId[] = $userId;
                     	}
-                    	else fError::addError(MESSAGE_USERNAME_NOTEXISTS.': '.$userName);
+                    	else FError::addError(MESSAGE_USERNAME_NOTEXISTS.': '.$userName);
                     }
                     if(!empty($validatedUserId)) {
                         if(count($validatedUserId)>1) {
@@ -799,7 +799,7 @@ class FItems extends FDBTool {
             //-----------------------------
             //---by date
             if(!empty($thumbupData['date'])) {
-              $intConfArr = fItems::getIntervalConf($thumbupData['interval']);
+              $intConfArr = FItems::getIntervalConf($thumbupData['interval']);
               $dateformat = $intConfArr['db'];
               $date = $thumbupData['date'];
               

@@ -22,7 +22,7 @@ if(!empty($arrFiles)) {
       
       $destinationFile = $dir.$destFile;
       echo $sourceFile.','.$destinationFile.'<br/>';
-      $iproc = new fImgProcess($sourceFile,$sourceFile,array('crop'=>1,'width'=>60,'height'=>25,'quality'=>90));
+      $iproc = new FImgProcess($sourceFile,$sourceFile,array('crop'=>1,'width'=>60,'height'=>25,'quality'=>90));
       
       if($sourceFile!=$destinationFile) {
         chmod($destinationFile,0777);

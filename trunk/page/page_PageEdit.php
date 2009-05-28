@@ -11,7 +11,7 @@ class page_PageEdit implements iPage {
 		if($user->pageParam=='a') $typeForSaveTool = $user->pageVO->typeIdChild;
 
 		if($typeForSaveTool == 'galery') {
-			$galery = new fGalery();
+			$galery = new FGalery();
 		}
 		
 		$deleteThumbs = false;
@@ -142,7 +142,7 @@ class page_PageEdit implements iPage {
 					if($file = @file_get_contents($_POST['audicourl'])) {
 						file_put_contents(WEB_REL_PAGE_AVATAR.$filename,$file);
 						$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-						$iProc = new fImgProcess(WEB_REL_PAGE_AVATAR.$filename,WEB_REL_PAGE_AVATAR.$filename,$resizeParams);
+						$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$filename,WEB_REL_PAGE_AVATAR.$filename,$resizeParams);
 					}
 					$arr["pageIco"] = $filename;
 
@@ -169,7 +169,7 @@ class page_PageEdit implements iPage {
 							if($type!=2) $up['name'] = str_replace($konc[(count($konc)-1)],'jpg',$up['name']);
 							//---RESIZE
 							$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-							$iProc = new fImgProcess(WEB_REL_PAGE_AVATAR.$_FILES["audico"]['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
+							$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$_FILES["audico"]['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
 						}
 						$arr["pageIco"] = $up['name'];
 					}
@@ -193,7 +193,7 @@ class page_PageEdit implements iPage {
 				}
 				//---set properties
 				if ($typeForSaveTool=='blog') {
-					if(isset($_POST['forumReact'])) fPages::setProperty($nid,'forumSet',(int) $_POST['forumReact']);
+					if(isset($_POST['forumReact'])) FPages::setProperty($nid,'forumSet',(int) $_POST['forumReact']);
 				}
 
 				//CLEAR DRAFT
@@ -278,7 +278,7 @@ class page_PageEdit implements iPage {
 					fSystem::rm_recursive($systemCachePath);
 				}
 			}
-			fPages::deletePage($user->pageVO->pageId);
+			FPages::deletePage($user->pageVO->pageId);
 			fHTTP::redirect($user->getUri('','galer'));
 		}
 
@@ -298,7 +298,7 @@ class page_PageEdit implements iPage {
 		if($user->pageParam=='a') $typeForSaveTool = $user->pageVO->typeIdChild;
 
 		if($typeForSaveTool == 'galery') {
-			$galery = new fGalery();
+			$galery = new FGalery();
 		}
 
 		//---SHOW TIME
@@ -385,7 +385,7 @@ class page_PageEdit implements iPage {
 			if($sPage->getXMLVal('enhancedsettings','thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
 			//$tpl->touchBlock('fforum'.($sPage->getXMLVal('enhancedsettings','fotoforum')*1));
 		} elseif ($typeForSaveTool=='blog') {
-			$tpl->touchBlock('fforum'.(fPages::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+			$tpl->touchBlock('fforum'.(FPages::getProperty($user->pageVO->pageId,'forumSet',1)*1));
 		}
 
 		if($typeForSaveTool == 'galery' && $user->pageParam != 'a') {

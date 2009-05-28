@@ -13,7 +13,7 @@ class page_GaleryList implements iPage {
 		$category = new fCategory('sys_pages_category','categoryId');
 		FBuildPage::addTab(array("MAINDATA"=>$category->getList('galery')));
 
-		$fPages = new fPages('galery',$user->userVO->userId);
+		$fPages = new FPages('galery',$user->userVO->userId);
 		if(!empty($category->selected)) {
 			$fPages->addWhere("p.categoryId='".$category->selected[0]."'");
 		}
@@ -35,7 +35,7 @@ class page_GaleryList implements iPage {
 		$arrgal = $fPages->getContent();
 
 		if(!empty($arrgal)) {
-			$fItems = new fItems();
+			$fItems = new FItems();
 			$fItems->initData('galery',$user->userVO->userId,true);
 			$fItems->setOrder('i.hit desc');
 			$fItems->showTooltip = false;

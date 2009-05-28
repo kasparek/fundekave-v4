@@ -179,7 +179,7 @@ class page_UserPost implements iPage {
 		if(!empty($arrpost)) {
 			foreach ($arrpost as $post) {
 				$tpl->setCurrentBlock("message");
-				if($post['userIdFrom'] != $user->userVO->userId) $tpl->setVariable("AVATAR", $user->showAvatar($post['userIdFrom']));
+				if($post['userIdFrom'] != $user->userVO->userId) $tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
 					$tpl->touchBlock("unreadmess");

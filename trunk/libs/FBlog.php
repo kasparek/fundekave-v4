@@ -12,7 +12,7 @@ class FBlog extends FDBTool  {
 	    $user = FUser::getInstance();
 	    $returnItemId = 0;
 	    $pageId = $aFormValues['pageid'];
-    	if(fRules::get($user->userVO->userId,$pageId,2) === true) {
+    	if(FRules::get($user->userVO->userId,$pageId,2) === true) {
           	$fsave = new FDBTool('sys_pages_items','itemId');
           	if(!isset($aFormValues['del'])) $aFormValues['del'] = 0; 
           	if($aFormValues['del'] == 0) {
@@ -35,19 +35,19 @@ class FBlog extends FDBTool  {
           		    $arrSave['userId'] = $user->userVO->userId;
           		    $arrSave['pageId'] = $pageId;
           		    $arrSave['typeId'] = $this->typeId;
-          		    fPages::cntSet($pageId);
+          		    FPages::cntSet($pageId);
           		}
           		//$fsave->debug=1;
           		$returnItemId = $fsave->save($arrSave);
           		
           		///properties
-          		fItems::setProperty($returnItemId,'forumSet',(int) $aFormValues['forumset']);
+          		FItems::setProperty($returnItemId,'forumSet',(int) $aFormValues['forumset']);
           		
           		fUserDraft::clear(fBlog::textAreaId());
           	} else {
-          	  $fItems = new fItems();
+          	  $fItems = new FItems();
           	  $fItems->deleteItem($aFormValues['nid']*1);
-          	  fPages::cntSet($pageId,false);
+          	  FPages::cntSet($pageId,false);
           	  $returnItemId = 0;
           	}
           	$cache = FCache::getInstance('f');
@@ -90,7 +90,7 @@ class FBlog extends FDBTool  {
         		    $tpl->touchBlock('statpublic');
         		}
         		///properties
-        		$tpl->touchBlock('fforum'.fItems::getProperty($itemId,'forumSet',fPages::getProperty($user->pageVO->pageId,'forumSet',2)));
+        		$tpl->touchBlock('fforum'.FItems::getProperty($itemId,'forumSet',FPages::getProperty($user->pageVO->pageId,'forumSet',2)));
         		///categories
         		if($opt = fSystem::getOptions($user->pageVO->pageId,$arr[5],true,''))
         		  $tpl->setVariable('CATEGORYOPTIONS',$opt);
@@ -114,7 +114,7 @@ class FBlog extends FDBTool  {
 		
 		//--edit mode
 		if($editMode === true) {
-		    if(fRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
+		    if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
 		        $tpl->setVariable('EDITFORM',$this->getEditForm($itemId));
 		    }
 		}
@@ -130,7 +130,7 @@ class FBlog extends FDBTool  {
 		
 		if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
 		
-		$fItems = new fItems();
+		$fItems = new FItems();
 		$fItems->initData('blog');
 		$fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
 		$fItems->addWhere('i.itemIdTop is null');
@@ -151,9 +151,9 @@ class FBlog extends FDBTool  {
 		$fItems->getData();
 		
 		if(!empty($fItems->arrData)){
-		    if($user->idkontrol) fItems::initTagXajax();
+		    if($user->idkontrol) FItems::initTagXajax();
 			while($fItems->arrData) $fItems->parse();
-			fForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+			FForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
             $tpl->setVariable('ITEMS',$fItems->show());
             if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
         }
