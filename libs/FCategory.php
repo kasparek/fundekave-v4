@@ -151,7 +151,7 @@ class FCategory extends FDBTool {
 		
 		$addToUrl = $rediraddon;
 		if($total > $this->perpage) {
-			$pager = fSystem::initPager($total,$this->perpage);
+			$pager = FSystem::initPager($total,$this->perpage);
 			$actualPid = $pager->getCurrentPageID();
 			$from=($actualPid-1) * $this->perpage;
 			$this->setLimit($from,$this->perpage);

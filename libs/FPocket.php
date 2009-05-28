@@ -85,8 +85,8 @@ class FPocket extends FDBTool {
                         else $index = 7;
                         $nameOnPocket = $item[$index];
                     }
-                    $tpl->setVariable('POCKETTITLE',fSystem::textins($item[5].((isset($index))?(' '.$item[$index]):('')),array('plainText'=>1)));
-                    $tpl->setVariable('POCKETNAME',fSystem::textins($nameOnPocket,array('plainText'=>1,'lengthLimit'=>20,'lengthLimitAddOnEnd'=>' ...')));
+                    $tpl->setVariable('POCKETTITLE',FSystem::textins($item[5].((isset($index))?(' '.$item[$index]):('')),array('plainText'=>1)));
+                    $tpl->setVariable('POCKETNAME',FSystem::textins($nameOnPocket,array('plainText'=>1,'lengthLimit'=>20,'lengthLimitAddOnEnd'=>' ...')));
                     $tpl->setVariable('POCKETTYPE',$pocketType);
                     $tpl->parseCurrentBlock();
     

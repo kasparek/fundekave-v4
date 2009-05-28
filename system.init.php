@@ -41,9 +41,12 @@ $user = FUser::getInstance();
 $user->pageVO = new PageVO();
 $user->itemVO = new ItemVO();
 $user->pageVO->pageId = HOME_PAGE;
+
+if(isset($_REQUEST['m'])) {
 $cache = FCache::getInstance('s');
 if(false !== ($pageId = $cache->getData('lastPage'))) {
 	$user->pageVO->pageId = $pageId;
+}
 }
 
 $user->pageParam = '';

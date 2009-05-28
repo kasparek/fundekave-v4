@@ -16,15 +16,15 @@ class page_EventsView implements iPage {
 		if($user->pageParam == 'archiv') $archiv = 1;
 
 		if($user->pageParam=='archiv' || $user->pageParam=='a' || $user->pageParam=='e') {
-			fSystem::secondaryMenuAddItem(FUser::getUri('','event',''),FLang::$BUTTON_PAGE_BACK);
+			FSystem::secondaryMenuAddItem(FUser::getUri('','event',''),FLang::$BUTTON_PAGE_BACK);
 		} else {
-			fSystem::secondaryMenuAddItem(FUser::getUri('','eventarchiv'),FLang::$LABEL_EVENTS_ARCHIV);
+			FSystem::secondaryMenuAddItem(FUser::getUri('','eventarchiv'),FLang::$LABEL_EVENTS_ARCHIV);
 		}
 
 		if($user->pageParam=='u') {
 			page_EventsEdit::build();
 		} else {
-			$category = new fCategory('sys_pages_category','categoryId');
+			$category = new FCategory('sys_pages_category','categoryId');
 			FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
 			
 			$fItems = new FItems();
@@ -63,7 +63,7 @@ class page_EventsView implements iPage {
 			$tpl = new fTemplateIT('events.tpl.html');
 			if($celkem > 0) {
 				if($celkem > $perPage) {
-					$pager = fSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
+					$pager = FSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
 					$od = ($pager->getCurrentPageID()-1) * $perPage;
 				} else $od=0;
 				 

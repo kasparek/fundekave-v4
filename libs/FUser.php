@@ -71,7 +71,7 @@ class FUser {
 	}
 
 	static function getToken($tokenizer) {
-		return md5( $tokenizer . FUser::LO . fSystem::getmicrotime() );
+		return md5( $tokenizer . FUser::LO . FSystem::getmicrotime() );
 	}
 
 	/**
@@ -93,7 +93,7 @@ class FUser {
 				$this->userVO->userId = $gid;
 				$this->userVO->load();
 				$this->userVO->idlogin = FUser::getToken($pass);
-				$this->userVO->ip = fSystem::getUserIp();
+				$this->userVO->ip = FSystem::getUserIp();
 				FUser::invalidateUsers($gid);
 				//---db logon
 				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
@@ -133,7 +133,7 @@ class FUser {
 	/**
 	 * check current user state
 	 * @param $ipkontrol
-	 * @return unknown_type
+	 * @return Boolean - true login / false out of system
 	 */
 	function check() {
 		if($this->userVO->userId > 0) { //---check only if user was logged
@@ -160,7 +160,7 @@ class FUser {
 			}
 
 			//---ip address checking
-			if(($this->userVO->ipcheck === false || $this->userVO->ip == fSystem::getUserIp()) && ($this->userVO->idlogin == $idloginInDb)) {
+			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp()) && ($this->userVO->idlogin == $idloginInDb)) {
 				//---user allright
 				$this->idkontrol = true;
 			} else {
@@ -310,7 +310,7 @@ class FUser {
 			$pwdreg2 = trim($_REQUEST["pwdreg2"]);
 			if(strlen($jmenoreg)<2) FError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
 			elseif(strlen($jmenoreg)>10) FError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
-			elseif (!fSystem::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+			elseif (!FSystem::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
 			elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::addError(FLang::$ERROR_REGISTER_NAMEEXISTS);
 			if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 			if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
@@ -416,7 +416,7 @@ class FUser {
 	 * @param $otherParams
 	 * @param $pageId
 	 * @param $pageParam
-	 * @return unknown_type
+	 * @return string - URL
 	 */
 	static function getUri($otherParams='',$pageId='',$pageParam=false) {
 		$user = FUser::getInstance();
@@ -435,7 +435,7 @@ class FUser {
 
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
-		if(isset($params)) $parStr = implode("&amp;",$params);
+		if(isset($params)) $parStr = '?'.implode("&amp;",$params);
 		return BASESCRIPTNAME.$parStr;
 	}
 }

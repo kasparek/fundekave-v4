@@ -6,10 +6,10 @@ class FEvents {
   }
   static function thumbUrl($flyerName) {
     $conf = FConf::getInstance(); 
-    return $conf['events']['flyer_cache'] . fEvents::thumbName($flyerName);
+    return $conf->a['events']['flyer_cache'] . FEvents::thumbName($flyerName);
   }
   static function flyerUrl($flyerName) {
     $conf = FConf::getInstance(); 
-    return $conf['events']['flyer_source'] . $flyerName;
+    return $conf->a['events']['flyer_source'] . $flyerName;
   }
 }

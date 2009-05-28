@@ -398,11 +398,11 @@ class DB_mysqli extends DB_common
             $this->transaction_opcount++;
         }
         
-        $start = fSystem::getmicrotime();
+        $start = FSystem::getmicrotime();
         
         $result = @mysqli_query($this->connection, $query);
         
-        $end = fSystem::getmicrotime();
+        $end = FSystem::getmicrotime();
 
         $fnameSlow = '/home/www/fundekave.net/tmp/query-slowlog.txt';
         $query = "#Q\n".$query . "\n#T\n" . ($end-$start);

@@ -21,8 +21,8 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
     	if(empty($processArr)) {
         	if($params['text']!='' && $params['name']!='') {
         		$arr['pageId'] = $user->currentPageId;
-        		$arr['text'] = fSystem::textins($params['text']);
-        		$arr['name'] = fSystem::textins($params['name'],array('plainText'=>1));
+        		$arr['text'] = FSystem::textins($params['text']);
+        		$arr['name'] = FSystem::textins($params['name'],array('plainText'=>1));
         		if(FForum::messWrite($arr)) $processArr[] = 'I:insertOK';
         	}
     	}
@@ -107,8 +107,8 @@ if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog'
                   'guid'        => md5($row[4]),
                   'pubDate'     => $row[1]
               );
-              if(preg_match("/((.jpeg)|(.jpg)|(.gif)$)/",$row[3])) $item['description'] .= fSystem::textins('<p>[img]'.$row[3].'[/img]</p>');
-              elseif(!empty($row[3])) $item['description'] .= fSystem::textins('<p>[link]'.$row[3].'[/link]</p>'); 
+              if(preg_match("/((.jpeg)|(.jpg)|(.gif)$)/",$row[3])) $item['description'] .= FSystem::textins('<p>[img]'.$row[3].'[/img]</p>');
+              elseif(!empty($row[3])) $item['description'] .= FSystem::textins('<p>[link]'.$row[3].'[/link]</p>'); 
               $items[] = $item;
           	
           }

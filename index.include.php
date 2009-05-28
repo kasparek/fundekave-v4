@@ -11,7 +11,7 @@ if(isset($_GET['d'])) {
     print_r($user->pageVO);
     //print_r($_SESSION);
     die(); 
-    fSystem::profile('START:'); 
+    FSystem::profile('START:'); 
 }
 
 //---TODO:remove tags here - should be handled in alternative function call in fajax

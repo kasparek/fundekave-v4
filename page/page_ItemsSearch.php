@@ -21,7 +21,7 @@ class page_ItemsSearch implements iPage {
 		$fItems->addWhere('i.itemIdTop is null');
 		FItems::setQueryTool(&$fItems);
 
-		$pager = fSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
+		$pager = FSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;
 		$fItems->getData($from,SEARCH_PERPAGE+1);
 		$totalItems = count($fItems->arrData);

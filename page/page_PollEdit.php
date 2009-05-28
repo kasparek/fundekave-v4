@@ -73,7 +73,7 @@ class page_PollEdit implements iPage {
 		
 		if(isset($_POST['saveodp'])){
 
-			$otazka=fSystem::textins($_POST['otazka'],array('plainText'=>1));
+			$otazka=FSystem::textins($_POST['otazka'],array('plainText'=>1));
 			$votesperuser = $_POST['votesperuser']*1;
 			$publicResults = ((isset($_POST['publicresults']))?(1):(0));
 			
@@ -84,7 +84,7 @@ class page_PollEdit implements iPage {
 
 			if(!empty($_POST['arr'])){
 				foreach ($_POST['arr'] as $k=>$odp) {
-					$arr=array('pollId'=>$ankid,'answer'=>fSystem::textins($odp['odpoved'],array('plainText'=>1)),'ord'=>$odp['poradi']*1);
+					$arr=array('pollId'=>$ankid,'answer'=>FSystem::textins($odp['odpoved'],array('plainText'=>1)),'ord'=>$odp['poradi']*1);
 					$sAnkOdp = new FDBTool('sys_poll_answers','pollAnswerId');
 					if($k!=0) {
 						$arr['pollAnswerId']=$k;

@@ -210,13 +210,13 @@ class FForum extends FDBTool {
         				$redirect = true;
         			}
         			if(!FError::isError()) {
-            			$jmeno = fSystem::textins($jmeno,array('plainText'=>1));
+            			$jmeno = FSystem::textins($jmeno,array('plainText'=>1));
             			if($logon) {
-            			 $zprava = fSystem::textins($zprava);
+            			 $zprava = FSystem::textins($zprava);
             			} else {
-            			 $zprava = fSystem::textins($zprava,array('formatOption'=>0));
+            			 $zprava = FSystem::textins($zprava,array('formatOption'=>0));
             			 if(isset($objekt)) {
-            			   $objekt = fSystem::textins($objekt,array('plainText'=>1));
+            			   $objekt = FSystem::textins($objekt,array('plainText'=>1));
             			 }
             			}
             		
@@ -252,7 +252,7 @@ class FForum extends FDBTool {
         //---filtrovani
         if(isset($_POST["filtr"])) {
         	$cache = FCache::getInstance('s',0);
-            $cache->setData(fSystem::textins($_POST["zprava"],array('plainText'=>1)), $pageId, 'filter');
+            $cache->setData(FSystem::textins($_POST["zprava"],array('plainText'=>1)), $pageId, 'filter');
         }
         //---per page
         $cache = FCache::getInstance('s',0);
@@ -360,7 +360,7 @@ class FForum extends FDBTool {
             if($itemIdInside > 0) $manualCurrentPage = FForum::getItemPage($itemIdInside,$user->pageVO->pageId,$perPage);
         }
         if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
-        $pager = fSystem::initPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+        $pager = FSystem::initPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
         $from = ($pager->getCurrentPageID()-1) * $perPage;
         $fItems->getData($from,$perPage+1);
         $total = count($fItems->arrData);

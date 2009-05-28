@@ -22,8 +22,8 @@ class page_UserPost implements iPage {
 		}
 
 		if (isset($_REQUEST["filtr"])) {
-			if(!empty($_REQUEST["zprava"])) $cache->setData(fSystem::textins($_REQUEST["zprava"]), 'text', 'filtrPost');
-			$cache->setData(fSystem::textins($_REQUEST["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
+			if(!empty($_REQUEST["zprava"])) $cache->setData(FSystem::textins($_REQUEST["zprava"]), 'text', 'filtrPost');
+			$cache->setData(FSystem::textins($_REQUEST["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
 			$redir = true;
 		}
 
@@ -42,7 +42,7 @@ class page_UserPost implements iPage {
 				fError::addError('postnoto');
 				fUserDraft::save('postText',$_POST["zprava"]);
 			} else {
-				$zprava = fSystem::textins($_POST["zprava"]);
+				$zprava = FSystem::textins($_POST["zprava"]);
 				if(!empty($zprava)) {
 					foreach ($arrto as $komu){
 						FMessages::send($komu,$zprava,$user->userVO->userId);
@@ -107,7 +107,7 @@ class page_UserPost implements iPage {
 
 		$od = 0;
 		if($totalItems > $perPage) {
-			$pager = fSystem::initPager($totalItems,$perPage,array('extraVars'=>$pagerExtraVars));
+			$pager = FSystem::initPager($totalItems,$perPage,array('extraVars'=>$pagerExtraVars));
 			$od=($pager->getCurrentPageID()-1) * $perPage;
 		}
 

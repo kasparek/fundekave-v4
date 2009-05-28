@@ -16,11 +16,11 @@ class FBlog extends FDBTool  {
           	$fsave = new FDBTool('sys_pages_items','itemId');
           	if(!isset($aFormValues['del'])) $aFormValues['del'] = 0; 
           	if($aFormValues['del'] == 0) {
-          		$arrSave = array('addon'=>fSystem::textins($aFormValues['nadpis'],array('plainText'=>1)),'text'=>fSystem::textins($aFormValues['textclanku'])); 
-          		$arrSave['name'] = fSystem::textins($aFormValues['autor'],array('plainText'=>1));
+          		$arrSave = array('addon'=>FSystem::textins($aFormValues['nadpis'],array('plainText'=>1)),'text'=>FSystem::textins($aFormValues['textclanku'])); 
+          		$arrSave['name'] = FSystem::textins($aFormValues['autor'],array('plainText'=>1));
           		if($arrSave['name']=='') $arrSave['name'] = $user->userVO->name;
-          		$aFormValues['datum'] = fSystem::switchDate($aFormValues['datum']);
-          		if(fSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = fSystem::textins($aFormValues['datum'],array('plainText'=>1));
+          		$aFormValues['datum'] = FSystem::switchDate($aFormValues['datum']);
+          		if(FSystem::isDate($aFormValues['datum'])) $arrSave['dateCreated'] = FSystem::textins($aFormValues['datum'],array('plainText'=>1));
           		if(isset($aFormValues['nid'])) $itemId = (int) $aFormValues['nid'];
           		else $itemId = 0;
           		
@@ -92,7 +92,7 @@ class FBlog extends FDBTool  {
         		///properties
         		$tpl->touchBlock('fforum'.FItems::getProperty($itemId,'forumSet',FPages::getProperty($user->pageVO->pageId,'forumSet',2)));
         		///categories
-        		if($opt = fSystem::getOptions($user->pageVO->pageId,$arr[5],true,''))
+        		if($opt = FSystem::getOptions($user->pageVO->pageId,$arr[5],true,''))
         		  $tpl->setVariable('CATEGORYOPTIONS',$opt);
         	}
         } else {
@@ -122,7 +122,7 @@ class FBlog extends FDBTool  {
 		$currentPage = 0;
 		if(empty($itemId)) {
     		if($user->pageVO->cnt > $this->perPage) {
-    			$pager = fSystem::initPager($user->pageVO->cnt,$this->perPage);
+    			$pager = FSystem::initPager($user->pageVO->cnt,$this->perPage);
     			$tpl->setVariable('BOTTOMPAGER',$pager->links);
     			$currentPage = $pager->getCurrentPageID()-1;
     		}

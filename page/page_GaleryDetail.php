@@ -14,14 +14,14 @@ class page_GaleryDetail implements iPage {
 		$userId = $user->userVO->userId;
 		
 		if(FRules::getCurrent(2)) {
-			if($user->pageParam == 'e') fSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),BUTTON_PAGE_BACK);
-			else fSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
+			if($user->pageParam == 'e') FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),BUTTON_PAGE_BACK);
+			else FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 		}
 		if($user->idkontrol) {
 			if($user->pageParam=='' && $user->pageVO->userIdOwner != $userId) {
-				fSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)),"xajax_forum_auditBook('".$pageId."','".$userId."');",0,'bookButt');
+				FSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)),"xajax_forum_auditBook('".$pageId."','".$userId."');",0,'bookButt');
 			}
-			fSystem::secondaryMenuAddItem(FUser::getUri('p=a'),FLang::$LABEL_POCKET_PUSH,"xajax_pocket_add('".$pageId."','1');return false;",0);
+			FSystem::secondaryMenuAddItem(FUser::getUri('p=a'),FLang::$LABEL_POCKET_PUSH,"xajax_pocket_add('".$pageId."','1');return false;",0);
 		}
 		if($user->pageParam == 'e') {
 			page_PageEdit::build();
@@ -55,7 +55,7 @@ class page_GaleryDetail implements iPage {
 					if($galery->gOrderItems==0) $fItems->setOrder('i.enclosure');
 					else $fItems->setOrder('i.dateCreated desc');
 
-					$pager = fSystem::initPager($totalItems,$perPage);
+					$pager = FSystem::initPager($totalItems,$perPage);
 					$od = ($pager->getCurrentPageID()-1) * $perPage;
 
 					$fItems->openPopup = ($user->userVO->zgaltype==0)?(false):(true);
@@ -66,7 +66,7 @@ class page_GaleryDetail implements iPage {
 					$tpl->setCurrentBlock("thumbnails");
 
 					/*
-					 $category = new fCategory('sys_pages_category','categoryId');
+					 $category = new FCategory('sys_pages_category','categoryId');
 					  
 					 $tpl->setVariable("MAINGALERYLINK",'?k=galer');
 					 $tpl->setVariable("CATEGORYLINK",'?k=galer&k='.$galery->gText);

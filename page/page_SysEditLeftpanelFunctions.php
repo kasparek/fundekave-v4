@@ -3,12 +3,12 @@ include_once('iPage.php');
 class page_SysEditLeftpanelFunctions implements iPage {
 
 	static function process() {
-		$category = new fCategory('sys_leftpanel_functions','functionId');
+		$category = new FCategory('sys_leftpanel_functions','functionId');
 		$category->process();
 	}
 
 	static function build() {
-		$category = new fCategory('sys_leftpanel_functions','functionId');
+		$category = new FCategory('sys_leftpanel_functions','functionId');
 		$category->ident = 'rhfunctions';
 
 		$category->arrHead=array(FLang::$LABEL_CATEGORY_FUNCTION,FLang::$LABEL_CATEGORY_NAME,FLang::$LABEL_CATEGORY_PUBLIC);

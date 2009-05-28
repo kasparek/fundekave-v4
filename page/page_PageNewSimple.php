@@ -11,8 +11,8 @@ class page_PagesList implements iPage {
 
 		//--creating action
 		if(isset($_REQUEST["add"])) {
-			$ocem= fSystem::textins($_POST["ocem"],array('plainText'=>1));
-			$nazev= fSystem::textins($_POST["nazev"],array('plainText'=>1));
+			$ocem= FSystem::textins($_POST["ocem"],array('plainText'=>1));
+			$nazev= FSystem::textins($_POST["nazev"],array('plainText'=>1));
 			if($nazev=='') fError::addError((($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEMPTY):(FLang::$ERROR_BLOG_NAMEEMPTY)));
 			if(FPages::page_exist('name',$nazev)) fError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
 			if(!fError::isError()) {

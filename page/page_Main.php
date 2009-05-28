@@ -78,7 +78,7 @@ class page_Main implements iPage {
 				$row = array_shift($arr);
 				$tpl->setCurrentBlock('newpage');
 				$tpl->setVariable('NEWPAGEURL','?k='.$row[0]);
-				$tpl->setVariable('NEWPAGETITLE',fSystem::textins($row[3],array('plainText'=>1)));
+				$tpl->setVariable('NEWPAGETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 				$tpl->setVariable('NEWPAGETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
 				$tpl->parseCurrentBlock();
 			}
@@ -97,7 +97,7 @@ class page_Main implements iPage {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostvisitedpage');
 					$tpl->setVariable('MOSTVISITEDEURL','?k='.$row[0]);
-					$tpl->setVariable('MOSTVISITEDTITLE',fSystem::textins($row[3],array('plainText'=>1)));
+					$tpl->setVariable('MOSTVISITEDTITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
 					$x++;
@@ -119,7 +119,7 @@ class page_Main implements iPage {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostactivepage');
 					$tpl->setVariable('MOSTACTIVEURL','?k='.$row[0]);
-					$tpl->setVariable('MOSTACTIVETITLE',fSystem::textins($row[3],array('plainText'=>1)));
+					$tpl->setVariable('MOSTACTIVETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
 					$x++;
@@ -141,7 +141,7 @@ class page_Main implements iPage {
 					$row = $db->getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostfavouritepage');
 					$tpl->setVariable('MOSTFAVOURITEURL','?k='.$row[0]);
-					$tpl->setVariable('MOSTFAVOURITETITLE',fSystem::textins($row[3],array('plainText'=>1)));
+					$tpl->setVariable('MOSTFAVOURITETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
 					$x++;

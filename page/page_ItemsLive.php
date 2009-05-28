@@ -23,7 +23,7 @@ class page_ItemsLive implements iPage {
 
 		$fItems->setOrder('i.dateCreated desc');
 
-		$pager = fSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
+		$pager = FSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
 
 		$fItems->getData($from,$localPerPage+1);

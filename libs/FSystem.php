@@ -214,8 +214,8 @@ class FSystem {
           $text = str_replace(array($br."\r\n",$br."\n"),array("\r\n","\r\n"),$text);
           $text = nl2br($text);
         }
-        elseif($endOfLine==2) $text = fSystem::textinsBr2nl($text);
-        if($breakLong==1) $text = fSystem::wordWrap($text);
+        elseif($endOfLine==2) $text = FSystem::textinsBr2nl($text);
+        if($breakLong==1) $text = FSystem::wordWrap($text);
         if(isset($paramsArr['lengthLimit'])) {
             if($paramsArr['lengthLimit'] > 0) {
                 if(mb_strlen($text) > $paramsArr['lengthLimit']) { $text = mb_substr($text,0,$paramsArr['lengthLimit']);
@@ -244,7 +244,7 @@ class FSystem {
        return str_replace(array($br."\r\n",$br."\n"),array("\n","\n"),$text);
     }
     function textToTextarea($text) {
-        return htmlspecialchars(fSystem::textinsBr2nl($text));
+        return htmlspecialchars(FSystem::textinsBr2nl($text));
     }
     //---kontrola vkladaneho datumu
     function den($date) {
@@ -301,7 +301,7 @@ class FSystem {
     	else if($file['size'] > $size) FError::addError(FLang::$ERROR_UPLOAD_TOBIG);
     	else if (!in_array($file['type'],$types)) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDTYPE);
     	else if(file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::addError(FLang::$ERROR_UPLOAD_FILEEXISTS);
-    	else if(!fSystem::checkFilename($file['name'])) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
+    	else if(!FSystem::checkFilename($file['name'])) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
     	else if (!$res = move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTSAVED);
     	else {
     	    chmod($kam.'/'.$file["name"],0777); //---upsesne ulozeno
@@ -320,7 +320,7 @@ class FSystem {
         return $arrFiles;
     }
     function fileCombo($name,$dir,$sel="",$type="",$empty=true,$class='tlacitko') {
-        $arrFiles = fSystem::fileList($dir,$type);
+        $arrFiles = FSystem::fileList($dir,$type);
     	$ret='<select name="'.$name.'" size="1" class="'.$class.'">'.(($empty)?('<option></option>'):(''));
     	foreach ($arrFiles as $file) $ret.='<option value="'.$file.'"'.(($sel==$file)?(' selected="selected"'):('')).'>'.$file.'</option>';
     	$ret.='</select>';
@@ -335,7 +335,7 @@ class FSystem {
     static function profile($comment='') {
         global $debugTime,$start;
         echo ((!empty($comment))?('<br>'.$comment):('')).'<br>memory peak:'.round(memory_get_peak_usage()/1024).'_usage:'.round(memory_get_usage()/1024).'<br>';
-        echo $debugTime = fSystem::getmicrotime()-$start.'<br>';
+        echo $debugTime = FSystem::getmicrotime()-$start.'<br>';
     }
     
     static function checkFilename($filename) {
@@ -385,7 +385,7 @@ class FSystem {
             if ($dh = opendir($filepath)) {
                 while (($sf = readdir($dh)) !== false) {
                     if ($sf != '.' && $sf != '..') {
-                      if (!fSystem::rm_recursive($filepath.'/'.$sf)) {
+                      if (!FSystem::rm_recursive($filepath.'/'.$sf)) {
                           FError::addError($filepath.'/'.$sf.' could not be deleted.');
                       }
                     }

@@ -28,7 +28,7 @@ class page_PageEdit implements iPage {
 		
 		//---categories
 		if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
-			$category = new fCategory('sys_pages_category','categoryId');
+			$category = new FCategory('sys_pages_category','categoryId');
 			$category->addWhere("typeId='".$user->pageVO->pageId."'");
 			$category->arrSaveAddon = array('typeId'=>$user->pageVO->pageId);
 			$category->process();
@@ -43,16 +43,16 @@ class page_PageEdit implements iPage {
 				$fLeft->process($_POST['leftpanel']);
 			}
 			$notQuoted = array();
-			$arr['name'] = fSystem::textins($_POST['name'],array('plainText'=>1));
+			$arr['name'] = FSystem::textins($_POST['name'],array('plainText'=>1));
 			if(empty($arr['name'])) fError::addError(ERROR_PAGE_ADD_NONAME);
-			$arr['description']=fSystem::textins($_POST['description'],array('plainText'=>1));
-			$arr['content']=fSystem::textins($_POST['content']);
+			$arr['description']=FSystem::textins($_POST['description'],array('plainText'=>1));
+			$arr['content']=FSystem::textins($_POST['content']);
 
 			if($typeForSaveTool == 'galery') {
 
 				$arr['galeryDir'] = Trim($_POST['galeryDir']);
 				if($arr['galeryDir']=='') fError::addError(ERROR_GALERY_DIREMPTY);
-				elseif (!fSystem::checkDirname($arr['galeryDir'])) fError::addError(ERROR_GALERY_DIRWRONG);
+				elseif (!FSystem::checkDirname($arr['galeryDir'])) fError::addError(ERROR_GALERY_DIRWRONG);
 				elseif($user->currentPageParam=='e' && $user->currentPage['galeryDir'] != $arr['galeryDir']) {
 					$deleteThumbs = true;
 				}
@@ -74,14 +74,14 @@ class page_PageEdit implements iPage {
 			}
 
 			if(isset($_POST['datecontent'])) {
-				$dateContent = fSystem::switchDate($_POST['datecontent']);
-				if(!empty($dateContent)) if(fSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
+				$dateContent = FSystem::switchDate($_POST['datecontent']);
+				if(!empty($dateContent)) if(FSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
 			}
 
 			if($user->currentPageParam=='sa') {
-				$arr['nameShort'] = fSystem::textins($_POST['nameshort'],array('plainText'=>1));
-				$arr['authorContent'] = fSystem::textins($_POST['authorcontent'],array('plainText'=>1));
-				$arr['template'] = fSystem::textins($_POST['template'],array('plainText'=>1));
+				$arr['nameShort'] = FSystem::textins($_POST['nameshort'],array('plainText'=>1));
+				$arr['authorContent'] = FSystem::textins($_POST['authorcontent'],array('plainText'=>1));
+				$arr['template'] = FSystem::textins($_POST['template'],array('plainText'=>1));
 				 
 					
 				if($user->currentPageParam=='a') $arr['locked'] = 'null';
@@ -115,7 +115,7 @@ class page_PageEdit implements iPage {
 			}
 
 			if(isset($_POST['forumhome'])) {
-				$sPage->setXMLVal('home',fSystem::textins($_POST['forumhome']));
+				$sPage->setXMLVal('home',FSystem::textins($_POST['forumhome']));
 			}
 
 			if(!fError::isError()) {
@@ -151,9 +151,9 @@ class page_PageEdit implements iPage {
 				if($deleteThumbs===true && $typeForSaveTool=='galery') {
 					$galery->getGaleryData($user->pageVO->pageId);
 					$cachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath();
-					fSystem::rm_recursive($cachePath);
+					FSystem::rm_recursive($cachePath);
 					$systemCachePath = ROOT.ROOT_WEB.$galery->getThumbCachePath($galery->_cacheDirSystemResolution);
-					fSystem::rm_recursive($systemCachePath);
+					FSystem::rm_recursive($systemCachePath);
 
 
 				}
@@ -162,7 +162,7 @@ class page_PageEdit implements iPage {
 				if ($_FILES["audico"]['error']==0) {
 					$konc = Explode(".",$_FILES["audico"]["name"]);
 					$_FILES["audico"]['name'] = "icoaudit".$user->pageVO->pageId.'.'.$konc[(count($konc)-1)];
-					if($up = fSystem::upload($_FILES["audico"],WEB_REL_PAGE_AVATAR,200000)) {
+					if($up = FSystem::upload($_FILES["audico"],WEB_REL_PAGE_AVATAR,200000)) {
 						//---resize and crop if needed
 						list($width,$height,$type) = getimagesize(WEB_REL_PAGE_AVATAR.$up['name']);
 						if($width!=PAGE_AVATAR_WIDTH_PX || $height!=PAGE_AVATAR_HEIGHT_PX) {
@@ -213,7 +213,7 @@ class page_PageEdit implements iPage {
 							$adr = $galery->get('rootImg').$user->currentPage['galeryDir'];
 
 							foreach ($_FILES as $foto) {
-								if ($foto["error"]==0) $up=fSystem::upload($foto,$adr,500000);
+								if ($foto["error"]==0) $up=FSystem::upload($foto,$adr,500000);
 							}
 						}
 					}
@@ -224,7 +224,7 @@ class page_PageEdit implements iPage {
 					if(isset($_POST['fot'])) {
 						foreach ($_POST['fot'] as $k=>$v) {
 							$changed = false;
-							$newDesc = fSystem::textins($v['comm'],array('plainText'=>1));
+							$newDesc = FSystem::textins($v['comm'],array('plainText'=>1));
 							$galery->getFoto($k);
 							$oldDesc = $galery->get('fComment');
 							$oldDate = $galery->get('fDate');
@@ -234,8 +234,8 @@ class page_PageEdit implements iPage {
 							}
 							$newDate = $v['date'];
 							if(!empty($newDate)) {
-								if(strpos($newDate,'.')===true) $newDate = fSystem::den($newDate);
-								elseif(!fSystem::isDate($newDate)) $newDate = '';
+								if(strpos($newDate,'.')===true) $newDate = FSystem::den($newDate);
+								elseif(!FSystem::isDate($newDate)) $newDate = '';
 								if(empty($newDate)) fError::addError(ERROR_DATE_FORMAT);
 								else {
 									$galery->set('fDate',$newDate);
@@ -270,12 +270,12 @@ class page_PageEdit implements iPage {
 				$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->pageVO->pageId."'");
 				foreach ($arrd as $df) $galery->removeFoto($df);
 				if(!empty($dir)) {
-					fSystem::rm_recursive($galery->_rootImg.$dir);
+					FSystem::rm_recursive($galery->_rootImg.$dir);
 					$galery->getGaleryData($user->pageVO->pageId);
 					$cachePath = $galery->getThumbCachePath();
-					fSystem::rm_recursive($cachePath);
+					FSystem::rm_recursive($cachePath);
 					$systemCachePath = $galery->getThumbCachePath($galery->_cacheDirSystemResolution);
-					fSystem::rm_recursive($systemCachePath);
+					FSystem::rm_recursive($systemCachePath);
 				}
 			}
 			FPages::deletePage($user->pageVO->pageId);
@@ -339,10 +339,10 @@ class page_PageEdit implements iPage {
 		if(isset($pageData['content'])) if(!$pageCont = fUserDraft::get($textareaIdContent)) $pageCont = $pageData['content'];
 
 		$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
-		$tpl->setVariable('PAGEDESCRIPTION',fSystem::textToTextarea($pageDesc));
+		$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
 
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
-		$tpl->setVariable('PAGECONTENT',fSystem::textToTextarea($pageCont));
+		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
 		$tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$textareaIdContent);
 
 		if(!empty($pageData['pageIco'])) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageData['pageIco']);
@@ -363,7 +363,7 @@ class page_PageEdit implements iPage {
 			$tpl->touchBlock('forumspecifictab');
 			//FORUM HOME
 			if(!$home = fUserDraft::get($textareaIdForumHome)) {
-		  $home = fSystem::textToTextarea($sPage->getXMLVal('home'));
+		  $home = FSystem::textToTextarea($sPage->getXMLVal('home'));
 			}
 			$tpl->setVariable('CONTENT',$home);
 			$tpl->setVariable('HOMEID',$textareaIdForumHome);
@@ -438,7 +438,7 @@ class page_PageEdit implements iPage {
 
 		$categoryId = (isset($pageData['categoryId']))?($pageData['categoryId']):(0);
 		$arrTmp = FDBTool::getAll('select categoryId,name from sys_pages_category where typeId="'.$typeForSaveTool.'"');
-		if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',fSystem::getOptions($arrTmp,$categoryId));
+		if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',FSystem::getOptions($arrTmp,$categoryId));
 
 
 
@@ -446,9 +446,9 @@ class page_PageEdit implements iPage {
 		//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
 		if($user->pageParam=='sa') {
 			$arrTmp = FDBTool::getAll('select menuSecondaryGroup,menuSecondaryGroup from sys_menu_secondary group by menuSecondaryGroup order by menuSecondaryGroup');
-			$tpl->setVariable('MENUSECOPTIONS',fSystem::getOptions($arrTmp,$pageData['menuSecondaryGroup']));
+			$tpl->setVariable('MENUSECOPTIONS',FSystem::getOptions($arrTmp,$pageData['menuSecondaryGroup']));
 
-			$tpl->setVariable('LOCKEDOPTIONS',fSystem::getOptions(FLang::$ARRLOCKED,$pageData['locked']));
+			$tpl->setVariable('LOCKEDOPTIONS',FSystem::getOptions(FLang::$ARRLOCKED,$pageData['locked']));
 			$tpl->setVariable('PAGEAUTHOR',$pageData['authorContent']);
 
 			$tpl->setVariable('PAGENAMESHORT',$pageData['nameshort']);
@@ -459,7 +459,7 @@ class page_PageEdit implements iPage {
 
 		if($typeForSaveTool=='blog' && $user->pageParam!='a') {
 			$tpl->touchBlock('categorytab');
-			$category = new fCategory('sys_pages_category','categoryId');
+			$category = new FCategory('sys_pages_category','categoryId');
 			$category->addWhere("typeId='".$user->pageVO->pageId."'");
 			$category->arrSaveAddon = array('typeId'=>$user->pageVO->pageId);
 			$tpl->setVariable('PAGECATEGORYEDIT',$category->getEdit());

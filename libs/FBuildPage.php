@@ -20,15 +20,15 @@ class FBuildPage {
 	}
 	
 	static function getTemplate($template) {
+	   $old = array(
+     'events.view.php'=>'page_EventsView',
+     'forum.view.php'=>'page_ForumView',
+     'bloged.main.php'=>'page_Main',
+     );
 //---temporary till database change
-		    		switch($template) {
-		    			case 'forum.view.php':
-		    				$template = 'page_ForumView';
-		    				break;
-		    			case 'bloged.main.php':
-		    				$template = 'page_Main';
-		    			break;
-		    		}
+  if(isset($old[$template])) {
+    $template = $old[$template];
+  }
 		    		return $template;
 	}
 	
@@ -79,11 +79,11 @@ class FBuildPage {
 		    		$staticTemplate = true;
 		    		if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
 		    			if($user->pageParam == 'e') {
-		    				fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
+		    				FSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
 		    				$staticTemplate = false;
 		    				$template = 'page_pageEdit';
 		    			}
-		        		else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),FLang::$BUTTON_EDIT);
+		        		else FSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),FLang::$BUTTON_EDIT);
 		    		}
 		    	}
 		
@@ -111,8 +111,8 @@ class FBuildPage {
 		    }
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 		    if(FRules::get($user->userVO->userId,'sadmi',1)) {
-		        if($user->pageParam=='sa') fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
-		        else fSystem::secondaryMenuAddItem(FUser::getUri('',$user->pageVO->pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
+		        if($user->pageParam=='sa') FSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
+		        else FSystem::secondaryMenuAddItem(FUser::getUri('',$user->pageVO->pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
 		    }
 		    
 		    /**/
@@ -121,12 +121,12 @@ class FBuildPage {
 	
 	static function show() {
 		//----DEBUG
-		if(isset($_GET['d'])) { fSystem::profile('BEFORE CONTENT'); }
+		if(isset($_GET['d'])) { FSystem::profile('BEFORE CONTENT'); }
 		
 		FBuildPage::baseContent();
 		
 		//----DEBUG
-		if(isset($_GET['d'])) { fSystem::profile('AFTER CONTENT'); }
+		if(isset($_GET['d'])) { FSystem::profile('AFTER CONTENT'); }
 		
 		
 		$tpl = FBuildPage::getInstance();
@@ -175,7 +175,7 @@ class FBuildPage {
 		$bodyAction .= (!empty($onunload))?(" onbeforeunload='".$onunload."' "):('');
 		$tpl->setVariable("BODYACTION", $bodyAction);
 		//---MAIN MENU
-		$arrMenuItems = fSystem::topMenu();
+		$arrMenuItems = FSystem::topMenu();
 		if(!empty($arrMenuItems)) {
 		  foreach($arrMenuItems as $menuItem) {
 		    $tpl->setCurrentBlock("topmenuitem");
@@ -190,7 +190,7 @@ class FBuildPage {
 
 		//---BANNER
 		if(!isset($_GET['nobanner'])) {
-		  $banner = fSystem::grndbanner();
+		  $banner = FSystem::grndbanner();
 		  if(!empty($banner)) {
 		    $tpl->setVariable("BANNER",$banner);
 		    $tpl->touchBlock('hasMainBanner');
@@ -228,7 +228,7 @@ class FBuildPage {
 		$start = $cache->getData('start','debug');
 		
 		$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
-		$tpl->setVariable("COUNTER", $pagesSum.'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((fSystem::getmicrotime()-$start),3));
+		$tpl->setVariable("COUNTER", $pagesSum.'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((FSystem::getmicrotime()-$start),3));
 		
 		//---user tooltips - one per user avatar displayed
 		$ttips = '';
@@ -263,7 +263,7 @@ class FBuildPage {
 
 
 		//----DEBUG
-		if(isset($_GET['d'])) { fSystem::profile('DONE:');die(); }
+		if(isset($_GET['d'])) { FSystem::profile('DONE:');die(); }
 		
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);

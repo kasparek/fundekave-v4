@@ -37,10 +37,10 @@ class page_SysEditBanner implements iPage {
 				$arr['dateCreated']='now()';
 			}
 
-			if(fSystem::isDate($_POST['eddatefrom'])) $arr['dateFrom']=$_POST['eddatefrom'];
+			if(FSystem::isDate($_POST['eddatefrom'])) $arr['dateFrom']=$_POST['eddatefrom'];
 			else fError::addError(FLang::$ERROR_DATE_FORMAT);
 
-			if(fSystem::isDate($_POST['eddateto'])) $arr['dateTo']=$_POST['eddateto'];
+			if(FSystem::isDate($_POST['eddateto'])) $arr['dateTo']=$_POST['eddateto'];
 			else fError::addError(ERROR_DATE_FORMAT);
 
 			if(isset($_POST['edstrict'])) $arr['strict'] = 1; else $arr['strict'] = 0;
@@ -166,7 +166,7 @@ FROM sys_banner ORDER BY dateFrom desc");
 			}
 		}
 
-		$arrFiles = fSystem::fileList(WEB_REL_BANNER,"swf|gif|jpg|JPG|GIF|SWF|JPEG|jpeg");
+		$arrFiles = FSystem::fileList(WEB_REL_BANNER,"swf|gif|jpg|JPG|GIF|SWF|JPEG|jpeg");
 
 		while($arrFiles) {
 			$file = array_shift($arrFiles);
