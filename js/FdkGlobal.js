@@ -1,3 +1,4 @@
+//http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 function setTagEventListeners(event) { setListeners('tagLink','click',function(evt) { addXMLRequest('item', $(this).attr("id")); sendAjax(gup('m',$(this).attr("href"))); evt.preventDefault(); }); };
 
 function setPocketAddEventListeners(event) { setListeners('pocketAdd','click',function(event) { 
@@ -19,6 +20,10 @@ evt.preventDefault(); }); };
 
 function datePickerInit() { datePickerController.create(); };
 
+function initSlimbox() {
+$("a[rel^='lightbox']").slimbox({overlayFadeDuration:100,resizeDuration:100,imageFadeDuration:100,captionAnimationDuration:100}, null, function(el) {		return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); });
+}
+
 function initSupernote() { supernote = new SuperNote('supernote', {}); }
 
 function draftSetEventListeners() { setListeners('draftable','keyup',draftEventHandler); };
@@ -32,6 +37,7 @@ function initSwitchFriend() {
  *main init
  **/ 
 $(document).ready(function(){
+  initSlimbox();
   //---set tag listeners
   setTagEventListeners();
   //---set poll
@@ -60,7 +66,8 @@ $('.domtabs').each(function() { $(this).css('display','block'); });
   initInsertToTextarea();
 //---draft set listeners
   draftSetEventListeners();
-  
+//---round corners
+DD_roundies.addRule('.radcon', 5);
 });
 
 //---textarea - text2cursor

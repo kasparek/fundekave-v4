@@ -81,16 +81,24 @@ if(!empty($_REQUEST["k"])) {
 }
 
 if(isset($user->pageVO->pageId{5})) {
+	//---remove the part behind - it is just nice link
+	if(false!==($pos=strpos($user->pageVO->pageId,'-'))) {
+		$textLink = substr($user->pageVO->pageId,$pos+1);
+		//TODO: security check if textlink match with pageid -  otherwise do redirect
+		$user->pageVO->pageId = substr($user->pageVO->pageId,0,$pos);
+	}
 	//---slice pageid on fiveid and params
-	if($user->pageVO->pageId{5}==';') {
-		$getArr = explode(";",substr($user->pageVO->pageId,5));
-		foreach ($getArr as $getVar) {
-			$getVarArr = explode("=",$getVar);
-			$_GET[$getVarArr[0]] = $getVarArr[1];
+	if(isset($user->pageVO->pageId{5})) {
+		if($user->pageVO->pageId{5}==';') {
+			$getArr = explode(";",substr($user->pageVO->pageId,5));
+			foreach ($getArr as $getVar) {
+				$getVarArr = explode("=",$getVar);
+				$_GET[$getVarArr[0]] = $getVarArr[1];
+			}
+		} else {
+			$user->pageParam = substr($user->pageVO->pageId,5);
+			$user->pageVO->pageId = substr($user->pageVO->pageId,0,5);
 		}
-	} else {
-		$user->pageParam = substr($user->pageVO->pageId,5);
-		$user->pageVO->pageId = substr($user->pageVO->pageId,0,5);
 	}
 }
 
