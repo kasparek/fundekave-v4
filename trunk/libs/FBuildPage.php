@@ -63,11 +63,11 @@ class FBuildPage {
 		    		$staticTemplate = true;
 		    		if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
 		    			if($user->pageParam == 'e') {
-		    				fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),BUTTON_PAGE_BACK);
+		    				fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
 		    				$staticTemplate = false;
 		    				$template = 'page_pageEdit';
 		    			}
-		        		else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),BUTTON_EDIT);
+		        		else fSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),FLang::$BUTTON_EDIT);
 		    		}
 		    	}
 		
@@ -179,7 +179,7 @@ class FBuildPage {
 
 		if($user->pageAccess === true) {
 			//---SECONDARY MENU
-			$lomenuItems = fSystem::secondaryMenu($user->pageVO->pageId);
+			$lomenuItems = FSystem::secondaryMenu($user->pageVO->pageId);
 			if(!empty($lomenuItems)) {
 			  foreach($lomenuItems as $menuItem) {
 			    $tpl->setCurrentBlock("secondary-menu-item");

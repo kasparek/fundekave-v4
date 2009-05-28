@@ -434,8 +434,8 @@ class FUser {
 		if(!empty($newPageId)) $params[] = 'k=' . $newPageId . $pageParam;
 
 		if($otherParams!='') $params[] = $otherParams;
-
-		$parStr = implode("&amp;",$params);
-		return BASESCRIPTNAME.(strlen($parStr)>0)?('?'.$parStr):('');
+		$parStr = '';
+		if(isset($params)) $parStr = implode("&amp;",$params);
+		return BASESCRIPTNAME.$parStr;
 	}
 }
