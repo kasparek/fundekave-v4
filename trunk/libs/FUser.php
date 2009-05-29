@@ -430,9 +430,7 @@ class FUser {
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}
-		
 		if(!empty($newPageId)) $params[] = 'k=' . $newPageId . $pageParam;
-
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) $parStr = '?'.implode("&amp;",$params);
