@@ -1,4 +1,10 @@
 <?php
+/**
+ * Database tool 
+ * 
+ * @author frantisek.kaspar
+ *
+ */
 class FDBTool {
 	/**
 	 *cacheResults - driver

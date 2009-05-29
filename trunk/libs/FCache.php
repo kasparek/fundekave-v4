@@ -1,46 +1,51 @@
 <?php
+/**
+ * FCache - 05/2009
+ * 
+ * PHP versions 4 and 5
+ * 
+ * Cache tool, support multiple cache methods
+ * - memory
+ * - session
+ * - database
+ * - file
+ * 
+ * @author frantisek.kaspar
+ *
+ */
 class FCache {
 
-	/**
-	 *types of cache
-	 *
-	 *load
-	 *session
-	 *database
-	 *file
-	 *
-	 **/
-	private $loadDriver;
-	private $sessionDriver;
-	private $databaseDriver;
-	private $fileDriver;
+	var $loadDriver;
+	var $sessionDriver;
+	var $databaseDriver;
+	var $fileDriver;
 
-	private $activeDriver;
-	private $activeId;
-	private $activeGroup;
+	var $activeDriver;
+	var $activeId;
+	var $activeGroup;
 
-	private static $instance;
-	static function &getInstance($driver='',$lifeTime=-1) {
-		if (!isset(self::$instance)) {
-			self::$instance = &new FCache();
+	function &getInstance($driver='',$lifeTime=-1) {
+		static $instance;
+		if (!isset($instance)) {
+			$instance = &new FCache();
 		}
 		if($driver!='') {
-			self::$instance->getDriver($driver);
+			$instance->getDriver($driver);
 		}
 		if($lifeTime > -1) {
-			self::$instance->activeDriver->setConf($lifeTime);
+			$instance->activeDriver->setConf( $lifeTime );
 		} else {
-			self::$instance->activeDriver->setConf(self::$instance->activeDriver->lifeTimeDefault);
+			$instance->activeDriver->setConf( $instance->activeDriver->lifeTimeDefault );
 		}
-		return self::$instance;
+		return $instance;
 	}
 
-	private function loadConnection() {
+	function loadConnection() {
 		require_once('FCache/LoadDriver.php');
 		return new LoadDriver();
 	}
 
-	private function sessionConnection() {
+	function sessionConnection() {
 		if(!isset($_SESSION)) {
 			return $this->dbConnection();
 		} else {
@@ -49,7 +54,7 @@ class FCache {
 		}
 	}
 
-	private function dbConnection() {
+	function dbConnection() {
 		if(FDBConn::getInstance() === false) {
 			return $this->fileConnection();
 		} else {
@@ -58,12 +63,12 @@ class FCache {
 		}
 	}
 
-	private function fileConnection() {
+	function fileConnection() {
 		require_once('FCache/FileDriver.php');
 		return new FileDriver();
 	}
 
-	public function getDriver($driver) {
+	function getDriver($driver) {
 		switch($driver) {
 			//---in session
 			case 's':
@@ -104,18 +109,18 @@ class FCache {
 		return $this->activeDriver;
 	}
 
-	public function setConf( $lifeTime ) {
+	function setConf( $lifeTime ) {
 		$this->activeDriver->setConf($lifeTime);
 	}
 
-	public function getGroup( $group='default', $driver='' ) {
+	function getGroup( $group='default', $driver='' ) {
 		if($driver!='') {
 			$this->getDriver($driver);
 		}
 		return $this->activeDriver->getGroup( $group );
 	}
 
-	public function getData( $id, $group='default', $driver='' ) {
+	function getData( $id, $group='default', $driver='' ) {
 		if($driver!='') {
 			$this->getDriver($driver);
 		}
@@ -127,7 +132,7 @@ class FCache {
 
 
 
-	public function setData( $data, $id='', $group='default', $driver='', $lifeTime=-1 ) {
+	function setData( $data, $id='', $group='default', $driver='', $lifeTime=-1 ) {
 		if($driver!='') {
 			$this->getDriver($driver);
 		}
@@ -144,19 +149,19 @@ class FCache {
 		}
 	}
 
-	public function invalidateData(  $id='', $group='default' ) {
+	function invalidateData(  $id='', $group='default' ) {
 		if($id!='') {
 			$this->activeDriver->invalidateData($id, $group);
 		}
 	}
 
-	public function invalidateGroup( $group='' ) {
+	function invalidateGroup( $group='' ) {
 	 if($group!='') {
 	 	$this->activeDriver->invalidateGroup( $group );
 	 }
 	}
 
-	public function invalidate() {
+	function invalidate() {
 		$this->activeDriver->invalidate();
 	}
 

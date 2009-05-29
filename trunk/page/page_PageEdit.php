@@ -1,4 +1,5 @@
 <?php
+//TODO: refactoring due to galery
 include_once('iPage.php');
 class page_PageEdit implements iPage {
 

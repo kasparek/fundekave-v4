@@ -1,17 +1,29 @@
 <?php
+/**
+ * memory driver for FCache
+ * 
+ * PHP versions 4 and 5
+ * 
+ * @author frantisek.kaspar
+ *
+ */
 class LoadDriver
 {
 
-	public $data;
+	var $data;
 
-	public $lifeTimeDefault = 0;
-	private $lifeTime = 0;
+	var $lifeTimeDefault = 0;
+	var $lifeTime = 0;
 
-	public function setConf( $lifeTime ) {
+	function LoadDriver() {
+		
+	}
+	
+	function setConf( $lifeTime ) {
 		$this->lifeTime = $lifeTime;
 	}
 
-	public function getGroup($group = 'default') {
+	function getGroup($group = 'default') {
 		if(isset($this->data[$group])) {
 			$arr = $this->data[$group];
 			while($row = array_shift($arr)) {
@@ -21,29 +33,27 @@ class LoadDriver
 		} else return false;
 	}
 
-	public function setData($id, $data, $group = 'default') {
+	function setData($id, $data, $group = 'default') {
 		$this->data[$group][$id] = serialize($data);
 	}
 
-	public function getData($id, $group = 'default') {
+	function getData($id, $group = 'default') {
 		if(isset($this->data[$group][$id])) {
 			return unserialize($this->data[$group][$id]);
 		} else return false;
 	}
 
-	public function invalidateData($id='',$group='default') {
+	function invalidateData($id='',$group='default') {
 		if(!empty($id)) {
 			unset($this->data[$group][$id]);
 		}
 	}
 
-	public function invalidateGroup( $group='default' ) {
+	function invalidateGroup( $group='default' ) {
 		$this->data[$group] = array();
 	}
 
-	public function invalidate( ) {
+	function invalidate( ) {
 		$this->data = array();
 	}
-
-
 }

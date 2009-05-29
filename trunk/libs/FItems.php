@@ -252,7 +252,8 @@ class FItems extends FDBTool {
             	if(!empty($arr)) {
             		if($this->typeId=='galery' || $this->typeId=='') {
             			$galery = new FGalery();
-            			if($this->thumbInSysRes) $galery->_thumbInSysRes = true;
+            			//---TODO: set itemVO - systhumb = true
+            			if($this->thumbInSysRes) $galery->thumbInSysRes = true;
             		}
             		foreach($arr as $row) {
             			$arrColsLength = count($arrCols);
@@ -279,6 +280,7 @@ class FItems extends FDBTool {
             		}
             	}
             	if($this->debug==1) print_r($this->arrData);
+            	return $this->arrData;
             }
             private $tpl;
             private $tplType;

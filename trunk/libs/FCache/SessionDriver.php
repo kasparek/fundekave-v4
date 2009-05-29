@@ -1,20 +1,28 @@
 <?php
+/**
+ * session driver for FCache
+ * 
+ * PHP versions 4 and 5
+ * 
+ * @author frantisek.kaspar
+ *
+ */
 class SessionDriver
 {
 
-	private $data;
-	public $lifeTimeDefault = 0;
-	private $lifeTime = 0;
+	var $data;
+	var $lifeTimeDefault = 0;
+	var $lifeTime = 0;
 
-	function __construct() {
+	function SessionDriver() {
 		$this->data = &$_SESSION['FCache_data'];
 	}
 
-	public function setConf( $lifeTime ) {
+	function setConf( $lifeTime ) {
 		$this->lifeTime = $lifeTime;
 	}
 
-	public function getGroup($group = 'default') {
+	function getGroup($group = 'default') {
 		if(isset($this->data[$group])) {
 			$arr = $this->data[$group];
 			while($row = array_shift($arr)) {
@@ -24,13 +32,13 @@ class SessionDriver
 		} else return false;
 	}
 
-	public function setData($id, $data, $group = 'default') {
+	function setData($id, $data, $group = 'default') {
 
 		$this->data[$group][$id] = array($this->lifeTime, date("U") , serialize($data));
-		 
+			
 	}
 
-	public function getData($id, $group = 'default') {
+	function getData($id, $group = 'default') {
 		if(isset($this->data[$group][$id])) {
 			if($this->data[$group][$id][0] + $this->data[$group][$id][1] > date("U") || $this->data[$group][$id][0]==0) {
 				return unserialize($this->data[$group][$id][2]);
@@ -42,18 +50,17 @@ class SessionDriver
 		}
 	}
 
-	public function invalidateData($id='',$group='default') {
+	function invalidateData($id='',$group='default') {
 		if(!empty($id)) {
 			unset($this->data[$group][$id]);
 		}
 	}
 
-	public function invalidateGroup( $group='default' ) {
+	function invalidateGroup( $group='default' ) {
 		$this->data[$group] = array();
 	}
 
-	public function invalidate( ) {
+	function invalidate( ) {
 		$this->data = array();
 	}
-
 }

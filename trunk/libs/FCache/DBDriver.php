@@ -1,25 +1,25 @@
 <?php
 /**
- *TODO: calculate difference between dataUpdate and now - compare with lifetime
- *line  23
- **/
+ * database driver for FCache
+ * 
+ * PHP versions 4 and 5
+ * 
+ * @author frantisek.kaspar
+ *
+ */
 class DBDriver
 {
-	private $tableName = 'sys_cache';
-	private $tableDef = "CREATE TABLE {TABLENAME} (
-     groupId VARCHAR(20) not null default 'default'
-    , nameId VARCHAR(20) not null
+	var $tableName = 'sys_cache';
+	var $tableDef = "CREATE TABLE {TABLENAME} (
+     groupId VARCHAR(20) not null default 'default', nameId VARCHAR(20) not null
     , value blob not null
-    , dateCreated DATETIME not null
-    , dateUpdated DATETIME not null
-    , lifeTime MEDIUMINT unsigned not null
-    , PRIMARY KEY (groupId,nameId)
-);";
+    , dateCreated DATETIME not null, dateUpdated DATETIME not null, lifeTime MEDIUMINT unsigned not null
+    , PRIMARY KEY (groupId,nameId) );";
 
-	public $lifeTimeDefault = 0;
-	private $lifetime = 0;
+	var $lifeTimeDefault = 0;
+	var $lifetime = 0;
 
-	function __construct() {
+	function DBDriver() {
 		$db = FDBConn::getInstance();
 		$res = $db->getAll("show tables like '".$this->tableName."'");
 		if(empty($res)) {
@@ -29,16 +29,16 @@ class DBDriver
 		$this->flushOld();
 	}
 
-	public function setConf( $lifeTime ) {
+	function setConf( $lifeTime ) {
 		$this->lifeTime = $lifeTime;
 	}
 
-	private function flushOld() {
+	function flushOld() {
 		$db = FDBConn::getInstance();
 		$db->query("delete from ".$this->tableName." where datediff(now()-dataUpdated) > lifeTime");
 	}
 
-	public function setData($id, $data, $group = 'default') {
+	function setData($id, $data, $group = 'default') {
 
 		$db = FDBConn::getInstance();
 		$db->query('insert into '.$this->tableName.' (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
@@ -47,7 +47,7 @@ class DBDriver
 
 	}
 
-	public function getGroup($group = 'default') {
+	function getGroup($group = 'default') {
 		$db = FDBConn::getInstance();
 		$arr = $db->getCol("select data from ".$this->tableName." where groupId='".$group."' and datediff(now()-dataUpdated) > lifeTime");
 		if(!empty($arr)) {
@@ -60,7 +60,7 @@ class DBDriver
 		}
 	}
 
-	public function getData($id, $group = 'default') {
+	function getData($id, $group = 'default') {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
 		if($value = $db->getOne("select value from ".$this->tableName." where nameId='".$id."' and nameId='".$id."' and datediff(now()-dataUpdated) > lifeTime")) {
@@ -72,21 +72,20 @@ class DBDriver
 		}
 	}
 
-	public function invalidateData($id='',$group='default') {
+	function invalidateData($id='',$group='default') {
 		if(!empty($id)) {
 			$db = FDBConn::getInstance();
 			$db->query("delete from ".$this->tableName." where groupId = '".$group."' and nameId='".$id."'");
 		}
 	}
 
-	public function invalidateGroup( $group='default' ) {
+	function invalidateGroup( $group='default' ) {
 		$db = FDBConn::getInstance();
 		$db->query("delete from ".$this->tableName." where groupId = '".$group."'");
 	}
 
-	public function invalidate( ) {
+	function invalidate( ) {
 		$db = FDBConn::getInstance();
 		$db->query("delete from ".$this->tableName);
 	}
-
 }
