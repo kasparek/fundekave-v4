@@ -5,11 +5,27 @@ class ItemVO {
   var $pageId;
   
   var $text;
+  var $addon;
   var $enclosure;
   var $dateStart;
   var $dateEnd;
   var $dateCreated;
   var $hit;
+  
+  var $thumbInSysRes = false;
+  var $thumbUrl;
+  var $detailUrl;
+  var $detailWidth;
+  var $detailHeight;
+  var $detailUrlToGalery;
+  var $detailUrlToPopup;
+  
+  function ItemVO($itemId=0, $autoLoad = false) {
+  	$this->itemId = $itemId;
+  	if($autoLoad == true) {
+  		$this->load();
+  	}
+  }
   
   function checkItem() {
 	    if($this->itemId > 0) {

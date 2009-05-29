@@ -7,198 +7,72 @@ class FGalery {
 	//---from config file - gallery part
 	var $conf;
 	
-	var $_fotoId = 0;
-	var $_galeryId = 0;
-	
-	//---system settings
-	var $_thumbInSysRes = false;
-	
-	//--- one foto
-	var $_fId = 0;
-	var $_fGaleryId = 0;
-	var $_fDir = '';
-	var $_fName = '';
-	var $_fDetail = '';
-	var $_fDate = '';
-	var $_fSize = 0; //filsize in B
-	var $_fGaleryName = '';
-	var $_fComment = '';
-	var $_fHits = '';
-	var $_fThumbDir = '';
-	
-	
-	//---one galery
-	var $gId = 0;
-	var $gCategory = 0;
-	var $gDir = '';
-	var $gName = '';
-	var $gText = '';
-	var $gDate = '';
-	var $gAuthorUsrId = 0;
-	var $gAuthorUsrname = '';
-	var $gPublic = 0;
-	var $gPerpage = 8;
-	var $gOrderItems = 0;
-	var $gPageParams = '';
-
 	function __construct($params=array()) {
 		$conf = FConf::getInstance();
 		$this->conf = $conf->a['galery'];
 		
 	}
 	
-	function getGaleryData($id) {
-		global $db,$user;
-		if(!empty($id) || $this->gId!=$id) {
-			$this->gId = $id;
-
-			if($id==$user->currentPageId) {
-				$this->gCategory = $user->currentPage['categoryId'];
-				$this->gDir = $user->currentPage['galeryDir'];
-				$this->gName = $user->currentPage['name'];
-				$this->gText = $user->currentPage['description'];
-				$this->gDate = $user->currentPage['dateContent'];
-				$this->gAuthorUsrId = $user->currentPage['userIdOwner'];
-				$this->gAuthorUsrname = $user->currentPage['authorContent'];
-				$this->gPublic = $user->currentPage['public'];
-				$this->gPageParams = $user->currentPage['pageParams'];
-			} else {
-				$fPage = new FPages('galery',$user->userVO->userId);
-				$fPage->primaryCol = 'p.pageId';
-				$fPage->setSelect('p.categoryId,p.galeryDir,p.name,
-		        p.description,p.dateContent,p.userIdOwner,
-		        p.public,p.authorContent,p.pageParams');
-				$arr = $fPage->get($id);
-				$this->gCategory = $arr[0];
-				$this->gDir = $arr[1];
-				$this->gName = $arr[2];
-				$this->gText = $arr[3];
-				$this->gDate = $arr[4];
-				$this->gAuthorUsrId = $arr[5];
-				$this->gAuthorUsrname = $arr[6];
-				$this->gPublic = $arr[7];
-				$this->gPageParams = $arr[8];
-			}
-
-			$this->parseXML($this->gPageParams);
-
-		}
+	/**
+	 * galery specific perpage
+	 * @return number
+	 */
+	function perPage() {
+		$perPage = (String) $this->pageVO->getPageParam('enhancedsettings/perpage');
+		if(empty($perPage)) $perPage = $this->conf['perpage'];
+		return $perPage;
 	}
-	function parseXML($xmlString,$pageId='') {
-		$parse = true;
-			
-		if($pageId!='') if($pageId == $this->gId) $parse = false;
-		
-			
-		
-			if($pageId!='') $this->gId = $pageId;
-
-			$xml = new SimpleXMLElement($xmlString);
-			$this->gPerpage = (String) $xml->enhancedsettings[0]->perpage;
-			if(empty($this->gPerpage)) $this->gPerpage = $this->conf['perpage'];
-
-			$this->gOrderItems = 0;
-			if($xml->enhancedsettings[0]->orderitems) $this->gOrderItems = (String) $xml->enhancedsettings[0]->orderitems;
-			
-			
-			
-		
-			
+	
+	/**
+	 * ordering in galery
+	 * @return number
+	 */
+	function orderBy() {
+		$orderBy = 0;
+		$orderByXML = (String) $this->pageVO->getPageParam('enhancedsettings/orderitems');
+		if( $orderByXML ) $orderBy = $orderByXML;
+		return $orderBy;
 	}
-
-	function prepare($arr) {
-		global $user;
-		print_r($arr);
-		die();
-		//TODO: fix me
-		if(isset($arr['pageParams'])) {
-			$this->parseXML($arr['pageParams'],$arr['pageId']);
-		}
-		$this->_fGaleryId = $arr['pageId'];
-		$this->_fDir = $arr['galeryDir'];
-		$this->_fGaleryName = $arr['pageName'];
-		$this->_fId = $arr['itemId'];
-		$this->_fDetail = $arr['enclosure'];
-
-		
-		
+	
+	/**
+	 * for FItems
+	 * prepare function - creating extra options for items type galery
+	 * @param $itemVO
+	 * @return itemVO
+	 */
+	function prepare($itemVO = null) {
+		if($itemVO) $this->itemVO = $itemVO;
 		//---check thumbnail
-		if($this->_thumbInSysRes == true) {//---system resolution thumbnail
+		if($this->itemVO->thumbInSysRes == true) {
+			//---system resolution thumbnail
 			$thumbPathArr = $this->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
 			if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
-			$arr['thumbUrl'] = $thumbPathArr['url'];
+			$this->itemVO->thumbUrl = $thumbPathArr['url'];
 		} else {
-			if(!empty($arr['addon'])) {
-				$arr['thumbUrl'] = WEB_REL_GALERY . $arr['galeryDir'].'/'.$arr['addon'];
+			if(!empty( $this->itemVO->addon )) {
+				$this->itemVO->thumbUrl = WEB_REL_GALERY . $this->pageVO->galeryDir.'/'.$this->itemVO->addon;
 			} else {
 				$thumbPathArr = $this->getThumbPath();
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) {
 					$this->createThumb($thumbPathArr);
 				}
-				$arr['thumbUrl'] = $thumbPathArr['url'];
+				$this->itemVO->thumbUrl = $thumbPathArr['url'];
 			}
 		}
-		$arr['detailUrl'] = WEB_REL_GALERY . $this->_fDir . '/' . $arr['enclosure'];
+		$this->itemVO->detailUrl = WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
 
-		if(file_exists($arr['detailUrl'])) {
-			list($width,$height) = getimagesize($arr['detailUrl']);
-			$arr['detailWidth'] = $width;
-			$arr['detailHeight'] = $height;
-			$arr['detailUrlToGalery'] = '?k='.$arr['pageId'].'&amp;i='.$arr['itemId'];
-			$arr['detailUrlToPopup'] = '/pic.php?u='.$user->userVO->userId.'&amp;i='.$this->_fId.'&amp;width='.($width+60).'&amp;height='.($height+60);
+		if(file_exists( $this->itemVO->detailUrl )) {
+			list($width,$height) = getimagesize( $this->itemVO->detailUrl );
+			$this->itemVO->detailWidth = $width;
+			$this->itemVO->detailHeight = $height;
+			$this->itemVO->detailUrlToGalery = FUser::getUri('i='.$this->itemVO->itemId,$this->itemVO->pageId);
+			$this->itemVO->detailUrlToPopup = '/pic.php?u='.FUser::logon().'&amp;i='.$this->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60);
 		} else {
-			FError::addError('File not exists: '.$arr['detailUrl']);
+			FError::addError('File not exists: '.$this->itemVO->detailUr);
 		}
-		return $arr;
+		return $this->itemVO;
 	}
-	function getFoto($id='',$allGalery=false,$orderBy='') {
-		global $db;
-		if(!empty($id)) {
-			if($allGalery) $this->_galeryId = $id;
-			else $this->_fotoId = $id;
-		}
-		$doLoad = true;
-		if($allGalery==false && !empty($this->arrData))
-		foreach($this->arrData as $item)
-		if($item['itemId']==$id) {
-			$doLoad = false;
-			break;
-		}
-
-		if($doLoad) {
-			$fItems = new FItems();
-			$fItems->initData('galery');
-
-			if($allGalery) $fItems->setWhere("p.pageId='".$this->_galeryId."'");
-			else $fItems->setWhere("i.itemId='".$this->_fotoId."'");
-			if($orderBy!='') $fItems->setOrder($orderBy);
-			$fItems->getData();
-
-			$this->arrData = &$fItems->arrData;
-
-			if(count($this->arrData)>0) {
-				$this->getGaleryData($this->arrData[0]['pageId']);
-				foreach ($this->arrData as $k=>$arr) {
-					$this->arrData[$k] = $item = $this->prepare($arr);
-				}
-			}
-		}
-		if($allGalery==false) {
-			$this->_fGaleryId = $item['pageId'];
-			$this->_fDir = $item['galeryDir'];
-			$this->_fGaleryName = $item['pageName'];
-			$this->_fId = $item['itemId'];
-			$this->_fDetail = $item['enclosure'];
-			
-			
-			$this->_fHits = $item['hit'];
-			$this->_fComment = $item['text'];
-			$this->_fDate = $item['dateLocal'];
-			$this->_fSize = $item['filesize'];
-			$this->_fThumbDir = $item['thumbUrl'];
-		}
-	}
-
+		
 	/**
 	 * return cache url
 	 *
@@ -226,16 +100,15 @@ class FGalery {
 	 */
 	function getThumbPath($cacheDir = '') {
 		$pathUrl = $this->getThumbCachePath($cacheDir);
-		$pathDir = $pathUrl;
-		 
+		
 		$arrFilename = explode('.',$this->itemVO->enclosure);
 		$filenameExtStriped = implode('.',array_slice($arrFilename,0,count($arrFilename)-1));
 		$filename = FSystem::safeText($filenameExtStriped) . '.jpg';
 
 		return array(
-    		'path' => $pathDir,
+    		'path' => $pathUrl,
     		'filename' => $filename,
-    		'thumb' => $pathDir . '/' . $filename,
+    		'thumb' => $pathUrl . '/' . $filename,
     		'url' => $pathUrl . '/' . $filename
 		);
 	}
@@ -250,6 +123,12 @@ class FGalery {
 		return file_exists($path);
 	}
 	
+	/**
+	 * generate thumb
+	 * @param $thumbPathArr
+	 * @param $params
+	 * @return void
+	 */
 	function createThumb($thumbPathArr,$params=array()) {
 		//check
 		if(!$this->isThumb($thumbPathArr['thumb'])) {
@@ -274,10 +153,11 @@ class FGalery {
 			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
 		}
 	}
-	function deleteThumb($path) {
-		if(isThumb($thumbPathArr['thumb'])) unlink($thumbPathArr['thumb']);
-	}
-
+	
+	/**
+	 * statistics for foto - item
+	 * @return void
+	 */
 	function fotoHit() {
 	 if(!empty($this->itemVO->itemId)){
 			FDBTool::query("update sys_pages_items set hit=hit+1 where itemId=".$this->itemVO->itemId);
@@ -285,71 +165,92 @@ class FGalery {
 			$this->itemVO->hit++;
 		}
 	}
+	
+	/**
+	 * callback function when processing forum attached to gallery
+	 * @return void
+	 */
 	static function callbackForumProcess() {
 		//---clear cache
 		$cache = FCache::getInstance('f');
 		$cache->invalidateGroup('lastForumPost');
 	}
 
-	function getPopup($fotoId) {
-		$this->getFoto($fotoId);
-		$this->fotoHit();
-		$tpl = new fTemplateIT('galery.popup.tpl.html');
-		$tpl->setVariable('FOTOURL',$this->getDetailUrl());
-		return $tpl->get();
-	}
-
-	function getRaw($fotoId) {
-		$this->getFoto($fotoId);
+	/**
+	 * get RAW detail img data
+	 * 
+	 * @param $fotoId - item
+	 * @return String - BINARY
+	 */
+	function getRaw($itemId) {
+		$this->itemVO = new ItemVO($itemId, true);
 		$this->fotoHit();
 		return file_get_contents( $this->getDetailUrl() );
 	}
 
-	function refreshImgToDb($galeryId){
-		if(!empty($galeryId)) {
+	/**
+	 * refresh data for galery in db by files in folder
+	 * @param $pageId
+	 * @return void
+	 */
+	function refreshImgToDb($pageId){
+		if(!empty($pageId)) {
 			$this->pageVO = new PageVO();
-			$this->pageVO->pageId = $galeryId;
+			$this->pageVO->pageId = $pageId;
 			$this->pageVO->load();
 		} else {
-			$galeryId = $this->pageVO->pageId;
+			$pageId = $this->pageVO->pageId;
 		}
 		
 		$gCountFoto = 0;
 		$gCountFotoNew = 0;
 		
-		$this->getFoto($galeryId,true);
-
+		$fItems = new FItems();
+		$fItems->initData('galery');
+		$fItems->setWhere('i.pageId="'.$pageId.'"');
+		$fItems->addWhere('i.itemIdTop is null');
+		$totalItems = $fItems->getCount();
+		$itemList = $fItems->getData();
+		
 		$arrFotoDetail = array();
+		$arrFotoSize = array();
 		$arrNames = array();
-		if(!empty($this->arrData)) {
-			foreach ($this->arrData as $arr) {
-				$arrFotoDetail[$arr['itemId']] = $arr['enclosure'];
-				$arrFotoSize[$arr['enclosure']] = $arr['filesize'];
-				$arrNames[$arr['enclosure']] = $arr['itemId'];
+		if(!empty($itemList)) {
+			foreach ($itemList as $itemVO) {
+				$arrFotoDetail[$itemVO->itemId] = $itemVO->enclosure;
+				$arrFotoSize[$itemVO->enclosure] = $itemVO->filesize;
+				$arrNames[$itemVO->enclosure] = $itemVO->itemId;
 			}
 		}
+		
+		//---search folder
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
 		$galdir = WEB_REL_GALERY . $this->pageVO->galeryDir.'/';
-		$handle=opendir($galdir.'/');
-		while (false!==($file = readdir($handle))){
+		$handle=opendir( $galdir . '/' );
+		while ( false !== ($file = readdir( $handle )) ){
 			if (preg_match("/((.jpeg)|(.jpg)|(.gif)|(.JPEG)|(.JPG)|(.GIF)$)/",$file)) {
 				$arrFiles[] = $file;
 			}
 		}
+		closedir($handle);
 
+		$change = false;
+		
 		$arrNotInDB = array_diff($arrFiles,$arrFotoDetail);
 		$arrItemIdsNotOnFtp = array_keys(array_diff($arrFotoDetail,$arrFiles));
+
+		//---remove foto no longer in folder
 		if(!empty($arrItemIdsNotOnFtp)) foreach ($arrItemIdsNotOnFtp as $itemId) {
 			$this->removeFoto($itemId);
+			$change = true;
 		}
 		
-		$change = false;
-
+		//---insert new foto to db
 		if(!empty($arrNotInDB)) {
 			foreach ($arrNotInDB as $file) {
 				$itemVO = new ItemVO();
-				$itemVO->pageId = $galeryId;
+				$itemVO->pageId = $pageId;
 				$itemVO->typeId = $this->pageVO->typeId;
 				$itemVO->enclosure = $file;
 				$itemVO->dateStart = 'now()'; //TODO: take from exif if availble
@@ -358,17 +259,14 @@ class FGalery {
 				$itemVO->text = '';
 				$itemVO->hit = 0;
 				$itemVO->save();
-								
 				$gCountFotoNew++;
-
 				$thumbPathArr = $this->getThumbPath();
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
-				
 				$change = true;
 			}
 		}
 
-
+		//--- check if filesize changed so update thumb
 		foreach ($arrFotoDetail as $k=>$v) {
 			if(file_exists($galdir.$v)) {
 				$newFilesize = filesize($galdir.$v);
@@ -381,27 +279,30 @@ class FGalery {
 					$itemVO->load();
 					$itemVO->filesize = $newFilesize;
 					$itemVO->save();
-					
 					$this->removeThumb();
-					
 					$change = true;
 				}
 			}
 		}
 		
+		//---invalidate all cache places
 		if($change == true) {
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
 		}
 
-		closedir($handle);
-		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',date_updated = now() where pageId='".$galeryId."'");
+		//---update foto count on page
+		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',date_updated = now() where pageId='".$pageId."'");
 	}
 
-
-	static function removeFoto($id) {
+	/**
+	 * remove foto from db
+	 * @param $id - itemId
+	 * @return void
+	 */
+	function removeFoto($id) {
 		if(!empty($id)){
-			$this->itemVO = new ItemVO();
+			$this->itemVO = new ItemVO($id, true);
 			$this->itemVO->itemId = $id;
 			$this->itemVO->load();
 			
@@ -409,8 +310,8 @@ class FGalery {
 			$this->pageVO->pageId = $this->itemVO->pageId;
 			$this->pageVO->load(); 
 			
-			if(!empty($this->_fThumbDir)) if(is_file($this->_fThumbDir)) unlink($this->_fThumbDir);
-			if(is_file(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure)) unlink(WEB_REL_GALERY . $this->_fDir . '/' . $this->_fDetail);
+			if(!empty($this->itemVO->thumbUrl)) if(is_file($this->itemVO->thumbUrl)) unlink($this->itemVO->thumbUrl);
+			if(is_file(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure)) unlink(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure);
 			$this->removeThumb();
 
 			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
@@ -422,8 +323,13 @@ class FGalery {
 			$cache->invalidateGroup('calendarlefthand');
 		}
 	}
-
-	static function removeThumb() {
+	
+	/**
+	 * delete temporary thumbnail
+	 * 
+	 * @return void
+	 */
+	function removeThumb() {
 		$thumbPathArr = $this->getThumbPath();
 		if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
 			if(!unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
@@ -431,11 +337,9 @@ class FGalery {
 			}
 		}
 		//---delete system thumb
-		$thumbPathArr = $this->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
+		$thumbPathArr = $this->getThumbPath( WEB_REL_CACHE_GALERY_SYSTEM );
 		if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-			if(@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-				//FError::addError('Cannot delete system thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
-			}
+			@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb']);
 		}
 	}
 }

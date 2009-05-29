@@ -128,7 +128,7 @@ class page_GaleryDetail implements iPage {
 
 						$tpl->setVariable("IMGALT", $this->_fGaleryName.' '.$this->_fDetail);
 						$tpl->setVariable("IMGDIR", $this->getDetailUrl());
-						if($this->_showComment && !empty($this->_fComment)) $tpl->setVariable("INFO",$this->_fComment);
+						if($this->_showComment && !empty($itemVO->text)) $tpl->setVariable("INFO",$this->_fComment);
 							
 						if(!empty($this->_fName)) {
 							$user->currentPage["name"] = $this->_fName . ' - ' . $user->currentPage["name"];
