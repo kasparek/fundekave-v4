@@ -4,6 +4,13 @@ class ItemVO {
   var $typeId;
   var $pageId;
   
+  var $text;
+  var $enclosure;
+  var $dateStart;
+  var $dateEnd;
+  var $dateCreated;
+  var $hit;
+  
   function checkItem() {
 	    if($this->itemId > 0) {
 	        $item = FDBTool::getRow("select typeId,pageId from sys_pages_items where itemId='".$this->itemId."'");

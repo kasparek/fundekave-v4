@@ -79,11 +79,12 @@ class FBuildPage {
 		    		$staticTemplate = true;
 		    		if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
 		    			if($user->pageParam == 'e') {
-		    				FSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
+		    				FSystem::secondaryMenuAddItem(FUser::getUri('',$user->pageVO->pageId,''),FLang::$BUTTON_PAGE_BACK);
 		    				$staticTemplate = false;
 		    				$template = 'page_pageEdit';
-		    			}
-		        		else FSystem::secondaryMenuAddItem($user->getUri('',$user->pageVO->pageId.'e'),FLang::$BUTTON_EDIT);
+		    			} else {
+		        		FSystem::secondaryMenuAddItem(FUser::getUri('',$user->pageVO->pageId.'e'),FLang::$BUTTON_EDIT);
+              }
 		    		}
 		    	}
 		
