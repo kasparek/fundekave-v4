@@ -9,6 +9,10 @@ class FTemplateIT extends FHTMLTemplateIT {
 		$this->loadTemplatefile($templatefile, $removeUnknownVariables, $removeEmptyBlocks); 
 	}
 	
+	static function templateExist($template) {
+		return file_exists(ROOT.ROOT_TEMPLATES.$template);
+	}
+	
 	function rejoice(){
 		$this->blockdata = '';
 		$this->flagGlobalParsed = false;
