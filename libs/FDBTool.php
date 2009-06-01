@@ -6,6 +6,13 @@
  *
  */
 class FDBTool {
+	
+	/**
+	 * 0 - number indexed data
+	 * 1 - name indexed
+	 * @var int
+	 */
+	var $fetchmode = 0;
 	/**
 	 *cacheResults - driver
 	 * 
@@ -28,6 +35,8 @@ class FDBTool {
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
+	var $tableDef;
+	var $columns;
 	
 	private $_where = array();
 	private $_order = array();
@@ -60,10 +69,30 @@ class FDBTool {
 	var $quoteType = "'";
 	
 	function __construct($tableName='',$primaryCol='') {
+		$this->debug = FConf::get('dboptions','debug');
 		$this->table = $tableName;
 		$this->variablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')' . $this->closingDelimiter . '@sm';
 		$this->replaceKeys = array_keys($this->replaceVars);
 		$this->primaryCol = $primaryCol;
+	}
+	
+	function parseTableDef() {
+		if(!empty($this->tableDef)) {
+			require_once('SQL/Parser.php');
+			$parser = new SQL_Parser($this->tableDef,'MySQL');
+			$parsed = $parser->parse();
+			$this->table = $parsed['table_names'][0];
+			foreach($parsed["column_defs"] as $k=>$v) {
+				$this->columns[] = $k;
+				if(isset($v["constraints"])) {
+					foreach($v["constraints"] as $constr) {
+						if($constr["type"]=='primary_key') {
+							$this->primaryCol = $k;
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	function queryReset() {
@@ -225,7 +254,7 @@ class FDBTool {
 		$query = str_replace('{ORDER}',$this->getOrder(),$query);
 		$query = str_replace('{LIMIT}',$this->getLimit(),$query);
 		$query = $this->replaceKeys($query);
-		if($this->debug==1) echo "BUILDED: ".$query." <br />\n";
+		if($this->debug == 1) echo "BUILDED: ".$query." <br />\n";
 		return $query;
 	}
 	function buildGetCount($count = '') {
@@ -240,43 +269,35 @@ class FDBTool {
 	//---query run functions
 	function getCount() {
 		$dot = $this->buildGetCount();
-		if($this->debug==1) echo "GETCOUNT RUN: ".$dot." <br />\n"; ;
-		if($this->cacheResults == true) {
-			$data = $this->getCachedData($dot);
-		} else {
-			$db = FDBConn::getInstance();
-			$data = $db->getAll($dot);
-		}
-		if(!DB::iserror($data)) {
-			if(isset($data[0][0])) return $data[0][0];
-		}
-		else {
-			die('Error in query: '.$dot);
-		}
+		if($this->debug == 1) echo "GETCOUNT RUN: ".$dot." <br />\n"; ;
+		return FDBTool::getOne($dot, md5($dot), 'fdb', $this->cacheResults, $this->lifeTime);
 	}
-	function getContent($from=0,$perPage=0) {
+	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
-		if($this->debug==1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
-		
-		$data = FDBTool::getAll($dot,md5($dot),'dbtool',$this->cacheResults,$this->lifeTime);
-		
-		if(!DB::iserror($data)) return $data;
-		else {
-			die('Error in query: '.$dot);
-		}
+		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
+		return FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
+	}
+	function getCacheId($id) {
+		return $this->table.'-'.$this->primaryCol.'-'.$id;
 	}
 	function get($id) {
+		if(empty($this->_select) && !empty($this->columns)) {
+			$this->setSelect(implode(',',$this->columns));
+		}
 		$this->addWhere($this->primaryCol.'="'.$id.'"');
-		$ret = $this->getContent();
-		if(!empty($ret)) return $ret[0];
+		$ret = $this->getContent(0,0,$this->getCacheId($id));
+		if(!empty($ret)) {
+			if($this->fetchmode == 1 && !empty($this->columns)) {
+				$len = count($arr);
+				for($i=0; $i<$len; $i++) {
+					$col = $this->columns[$i];
+					$this->$col = $arr[$i];
+				}
+			}
+			return $ret[0];	
+		}
 	}
 	
-	//---get one record
-	function getRecord($recordId) {
-		$this->setSelect( implode(',',$this->_cols) );
-		$this->setWhere($this->primaryCol ."='".$recordId."'");
-		return $this->getContent();
-	}
 	//---save functions
 	function addCol($name,$value,$quote=true) {
 		$this->_cols[$name] = $value;
@@ -315,8 +336,7 @@ class FDBTool {
 		return $ret;
 	}
 	function getLastId() {
-		$db = FDBConn::getInstance();
-		return $db->getOne("SELECT LAST_INSERT_ID()");
+		return FDBTool::getOne("SELECT LAST_INSERT_ID()");
 	}
 	function save( $cols=array(), $notQuoted=array(), $forceInsert=false ) {
 		if(!empty($cols)) $this->setCols($cols,$notQuoted);
@@ -328,18 +348,20 @@ class FDBTool {
 			$retId = $this->_cols[$this->primaryCol];
 			$dot = $this->buildUpdate();
 		}
-
-		$db = FDBConn::getInstance();
+		//---save
 		if($this->debug==1) echo $dot;
-		if($db->query($dot)) {
-			if(isset($cols[$this->primaryCol])) return $cols[$this->primaryCol];
-			elseif($insert) return $this->getLastId();
-			else return $retId;
+		if(FDBTool::query($dot)) {
+			if($insert) $retId = $this->getLastId();
 		}
+		//---invalidate cache
+		if($this->cacheResults!=0) {
+			$cache = FCache::getInstance($this->cacheResults);
+			$cache->invalidateData($this->getCacheId($retId),'fdb');
+		}
+		return $retId;
 	}
 	function delete($id) {
-		$db = FDBConn::getInstance();
-		return $db->query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
+		return FDBTool::query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
 	}
 	//---save support functions
 	function quote($str) {
@@ -361,14 +383,12 @@ class FDBTool {
 			$cache = FCache::getInstance($driver);
 			if($lifeTime > -1) $cache->setConf($lifeTime);
 			if(false === ($ret = $cache->getData($key,$grp))) {
-				$db = FDBConn::getInstance();
-				$ret = $db->getAll($query);
+				$ret = FDBTool::getData('getAll',$query);
 				$cache->setData( $ret );
 			}
 		} else {
 			//---no cache
-			$db = FDBConn::getInstance();
-			$ret = $db->getAll($query);
+			$ret = FDBTool::getData('getAll',$query);
 		}
 		return $ret;
 	}
@@ -379,14 +399,12 @@ class FDBTool {
 			$cache = FCache::getInstance($driver);
 			if($lifeTime > -1) $cache->setConf($lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
-				$db = FDBConn::getInstance();
-				$ret = $db->getRow($query);
+				$ret = FDBTool::getData('getRow',$query);
 				$cache->setData( $ret );
 			}
 		} else {
 			//---no cache
-			$db = FDBConn::getInstance();
-			$ret = $db->getRow($query);
+			$ret = FDBTool::getData('getRow',$query);
 		}
 		return $ret;
 	}
@@ -397,14 +415,12 @@ class FDBTool {
 			$cache = FCache::getInstance($driver);
 			if($lifeTime > -1) $cache->setConf($lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
-				$db = FDBConn::getInstance();
-				$ret = $db->getCol($query);
+				$ret = FDBTool::getData('getCol',$query);
 				$cache->setData( $ret );
 			}
 		} else {
 			//---no cache
-			$db = FDBConn::getInstance();
-			$ret = $db->getRow($query);
+			$ret = FDBTool::getData('getCol',$query);
 		}
 		return $ret;
 	}
@@ -415,21 +431,34 @@ class FDBTool {
 			$cache = FCache::getInstance($driver);
 			if($lifeTime > -1) $cache->setConf($lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
-				$db = FDBConn::getInstance();
-				$ret = $db->getOne($query);
+				$ret = FDBTool::getData('getOne',$query);
 				$cache->setData( $ret );
 			}
 		} else {
 			//---no cache
-			$db = FDBConn::getInstance();
-			$ret = $db->getOne($query);
+			$ret = FDBTool::getData('getOne',$query);
 		}
 		return $ret;
 	}
 
 	static function query($query) {
+		return FDBTool::getData('query',$query);
+	}
+	
+	private static function getData($function, $query) {
 		$db = FDBConn::getInstance();
-		return $db->query($query);
+		$ret = $db->$function($query);
+		if (PEAR::isError($ret)) {
+			echo $ret->getMessage();
+			if(FConf::get('dboptions','debug')==1) {
+				echo " <br />\n";
+			    echo 'Code: ' . $db->getCode() . " <br />\n";
+			    echo 'DBMS/User Message: ' . $db->getUserInfo() . " <br />\n";
+			    echo 'DBMS/Debug Message: ' . $db->getDebugInfo() . " <br />\n";
+			}
+			die();
+		}
+		return $ret;
 	}
 }
 

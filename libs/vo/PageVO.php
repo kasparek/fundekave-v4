@@ -25,13 +25,6 @@ class PageVO extends FDBvo {
      , pageParams text
 )  ;';
 
-
-	function PageVO() {
-			
-		parent::__construct();
-
-	}
-
 	//---db based
 	var $pageId;
 	var $pageIdTop;
@@ -67,6 +60,14 @@ class PageVO extends FDBvo {
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
+	
+	function PageVO($pageId=0, $autoLoad = false) {
+		parent::__construct();
+		$this->pageId = $pageId;
+		if($autoLoad == true) {
+			$this->load();
+		}
+	}
 
 	function getPageParam($paramName) {
 		if(!empty($this->pageParams)) {

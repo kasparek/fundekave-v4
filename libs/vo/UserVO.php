@@ -61,39 +61,30 @@ class UserVO extends FDBvo {
 	//---new post alerting
 	var $newPost = 0;
 	var $newPostFrom = '';
-
-
-	function PageVO() {
-		 
+	
+	function UserVO($userId=0, $autoLoad = false) {
 		parent::__construct();
-
+		$this->userId = $userId;
+		if($autoLoad == true) {
+			$this->load();
+		}
 	}
 
-	function loadVO() {
-		$this->setSelect( implode(',',$this->_cols) );
-		$this->setWhere($this->primaryCol ."='".$recordId."'");
+	function load() {
+		$this->setSelect(implode(',',$this->_cols));
 		$this->addJoinAuto('sys_skin','skinId','name');
-		$this->load();
+		parent::load();
 	}
 
-	function saveVO(){
-		$this->queryReset();
-		$sUser->addCol('email',$this->email);
-		$sUser->addCol('info',$this->info);
-		$sUser->addCol('skinId',$this->skin);
-		$sUser->addCol('icq',$this->icq);
-		$sUser->addCol('zbanner',$this->zbanner);
-		$sUser->addCol('zforumico',$this->zforumico);
-		$sUser->addCol('zavatar',$this->zavatar);
-		$sUser->addCol('zgalerytype',$this->zgalerytype);
-		$sUser->addCol('avatar',$this->avatar);
-		if(!empty($this->newPassword)) $sUser->addCol('password',$this->newPassword);
-		$sUser->addCol('userId',$this->userId);
-		$sUser->addCol('dateUpdated','now()',false);
-		$this->save();
-		
-		$cache = FCache::getInstance( 's' );
-		$cache->setData($this->userVO,'user');
+	function save(){
+		//TODO: parse which not to quote $this->addCol('dateUpdated','now()',false);
+		//TODO: add some to ignore
+		$this->setIgnore('dateCreated,dateLastVisit');
+		if(!empty($this->newPassword)) $this->password= $this->newPassword;
+		else $this->addIgnore('password');
+		$this->setNotQuote('dateUpdated');
+		$this->dateUpdated = 'now()';
+		parent::save();
 	}
 
 	function getXMLVal($branch,$node,$default='') {
