@@ -25,4 +25,13 @@ class FConf
     	die('Error: unable to locate config file');
     }
   }
+  
+  static function get($group, $prop) {
+  	$conf = FConf::getInstance();
+  	if(isset($this->a[$group][$conf])) {
+  		return $this->a[$group][$conf];	
+  	} else {
+  		return false;
+  	}
+  }
 }

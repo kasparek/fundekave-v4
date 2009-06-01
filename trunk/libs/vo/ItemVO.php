@@ -1,16 +1,54 @@
 <?php
 class ItemVO {
+	var $tableDef = 'CREATE TABLE sys_pages_items (
+       itemId mediumint unsigned NOT NULL
+     , itemIdTop mediumint unsigned default NULL
+     , itemIdBottom mediumint unsigned default NULL
+     , typeId VARCHAR(10) DEFAULT null
+     , pageId varchar(5) NOT NULL
+     , pageIdBottom varchar(5) default NULL
+     , categoryId SMALLINT unsigned DEFAULT null
+     , userId MEDIUMINT unsigned default null
+     , name VARCHAR(15) not null
+     , dateStart DATETIME default NULL
+     , dateEnd DATETIME default NULL
+     , dateCreated DATETIME NOT NULL
+     , text TEXT
+     , textLong TEXT DEFAULT NULL
+     , enclosure VARCHAR(255) default null
+     , addon VARCHAR(100) default null
+     , filesize mediumint unsigned default null
+     , hit mediumint unsigned default 0
+     , cnt smallint unsigned not null default 0
+     , tag_weight mediumint unsigned default 0
+     , location VARCHAR(100) default null
+     , public TINYINT unsigned NOT NULL DEFAULT 1
+     , PRIMARY KEY (itemId)
+)  ;
+	';
+
 	var $itemId = 0;
+	var $itemIdTop;
+	var $itemIdBottom;
 	var $typeId;
 	var $pageId;
-
-	var $text;
-	var $addon;
-	var $enclosure;
+	var $pageIdBottom;
+	var $categoryId;
+	var $userId;
+	var $name;
 	var $dateStart;
 	var $dateEnd;
 	var $dateCreated;
+	var $text;
+	var $textLong;
+	var $enclosure;
+	var $addon;
+	var $filesize;
 	var $hit;
+	var $cnt;
+	var $tag_weight;
+	var $location;
+	var $public;
 
 	var $thumbInSysRes = false;
 	var $thumbUrl;
@@ -21,6 +59,7 @@ class ItemVO {
 	var $detailUrlToPopup;
 
 	function ItemVO($itemId=0, $autoLoad = false) {
+		parent::__construct();
 		$this->itemId = $itemId;
 		if($autoLoad == true) {
 			$this->load();
@@ -50,19 +89,18 @@ class ItemVO {
 		$cache = FCache::getInstance('l');
 		$cache->invalidateData($itemId.'-'.$propertyName.'-prop','fitems');
 	}
-	
+
 	//TODO: refactor - getitem,saveitem - check where used
-			function getItem($itemId) {
-            	$this->setWhere("i.itemId='".$itemId."'");
-            	$arr = $this->getContent();
-            	if(!empty($arr)) return $arr[0];
-            }
-            function saveItem($arrData) {
-            	$sItem = new fSqlSaveTool('sys_pages_items','itemId');
-            	return $sItem->Save($arrData,array('dateCreated'));
-            }
-	
-	
+	function getItem($itemId) {
+		$this->setWhere("i.itemId='".$itemId."'");
+		$arr = $this->getContent();
+		if(!empty($arr)) return $arr[0];
+	}
+	function saveItem($arrData) {
+		$sItem = new fSqlSaveTool('sys_pages_items','itemId');
+		return $sItem->Save($arrData,array('dateCreated'));
+	}
+
 	//---delete
 	static function deleteItem($itemId) {
 		FDBTool::query("delete from sys_pages_items where itemId='".$itemId."'");
