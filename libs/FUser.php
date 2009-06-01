@@ -230,7 +230,7 @@ class FUser {
 					///check for i owner - permneeded=1 or permneeded= 2
 					$permissionNeeded = 2;
 					if(!empty($this->itemVO->itemId)) {
-						$userIdOwner = FItems::getItemUserId($this->itemVO->itemId);
+						$userIdOwner = $this->itemVO->userId;
 						if($this->userVO->userId == $userIdOwner) {
 							$permissionNeeded = 1;
 						}
