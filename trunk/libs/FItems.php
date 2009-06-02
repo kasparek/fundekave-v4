@@ -21,12 +21,46 @@ class FItems extends FDBTool {
 		return array('forum','galery','blog','event');
 	}
 
-	private $fQuerySelectDefault = array('itemId'=>'i.itemId','userId'=>'i.userId','pageId'=>'i.pageId','text'=>'i.text','enclosure'=>'i.enclosure','tag_weight'=>'i.tag_weight','pageIdBottom'=>'i.pageIdBottom','itemIdBottom'=>'i.itemIdBottom','public'=>'i.public');
+	private $fQuerySelectDefault = array('itemId' => 'i.itemId',
+	'itemIdTop' => 'i.itemIdTop',
+	'itemIdBottom' => 'i.itemIdBottom',
+	'typeId' => 'i.typeId',
+	'pageId' => 'i.pageId',
+	'pageIdBottom' => 'i.pageIdBottom',
+	'categoryId' => 'i.categoryId',
+	'userId' => 'i.userId',
+	'name' => 'i.name',
+	'dateStart' => 'i.dateStart',
+	'dateEnd' => 'i.dateEnd',
+	'dateCreated' => 'i.dateCreated',
+	'text' => 'i.text',
+	'textLong' => 'i.textLong',
+	'enclosure' => 'i.enclosure',
+	'addon' => 'i.addon',
+	'filesize' => 'i.filesize',
+	'hit' => 'i.hit',
+	'cnt' => 'i.cnt',
+	'tag_weight' => 'i.tag_weight',
+	'location' => 'i.location',
+	'public' => 'i.public'
+	);
 
-	private $fQuerySelectType = array('galery'=>array('galeryDir'=>'p.galeryDir','addon'=>'i.addon','hit'=>'i.hit','filesize'=>'i.filesize','pageParams'=>'p.pageParams','pageDateUpdated'=>'p.dateUpdated','pageName'=>'p.name','dateLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')",'dateIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')"),
-	'blog'=>array('name'=>'i.name','addon'=>'i.addon','commentsCnt'=>'i.cnt','dateLocal'=>"date_format(i.dateCreated ,'{#date_local#}')",'dateIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"),
-	'forum'=>array('name'=>'i.name','dateLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')",'dateIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')",),
-	'event'=>array('name'=>'i.name','addon'=>'i.addon','commentsCnt'=>'i.cnt','categoryId'=>'i.categoryId','location'=>'i.location','startDateLocal'=>"date_format(i.dateStart ,'{#date_local#}')",'startDateIso'=>"date_format(i.dateStart ,'{#date_iso#}')",'endDateLocal'=>"date_format(i.dateEnd ,'{#date_local#}')",'endDateIso'=>"date_format(i.dateEnd ,'{#date_iso#}')",'startTime'=>"date_format(i.dateStart ,'{#time_short#}')",'endTime'=>"date_format(i.dateEnd ,'{#time_short#}')",'dateLocal'=>"date_format(i.dateCreated ,'{#date_local#}')",'dateIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"));
+	//TODO: galery - 'galeryDir'=>'p.galeryDir','pageParams'=>'p.pageParams','pageDateUpdated'=>'p.dateUpdated','pageName'=>'p.name'
+	private $fQuerySelectType = array(
+		'galery'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')"),
+		'blog'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"),
+		'forum'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')",),
+		'event'=>array('dateStartLocal'=>"date_format(i.dateStart ,'{#date_local#}')"
+			,'dateStartIso'=>"date_format(i.dateStart ,'{#date_iso#}')"
+			,'dateEndLocal'=>"date_format(i.dateEnd ,'{#date_local#}')"
+			,'dateEndIso'=>"date_format(i.dateEnd ,'{#date_iso#}')"
+			,'dateStartTime'=>"date_format(i.dateStart ,'{#time_short#}')"
+			,'dateEndTime'=>"date_format(i.dateEnd ,'{#time_short#}')"
+			,'dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"));
 
 	function initDetail($itemId) {
 		$itemCheck = $this->getRow("select itemIdTop,typeId from sys_pages_items where itemId='".$itemId."'");
@@ -49,14 +83,18 @@ class FItems extends FDBTool {
 		$this->queryReset();
 		if(!empty($typeId)) $this->typeId = $typeId;
 		$doPagesJoin = true;
+		//---check permissions for given user
 		if($byPermissions!==false) { 
 			$this->byPermissions = $byPermissions; 
 		}
-		if(empty($typeId)) {
-			$this->fQuerySelectDefault['typeId'] = 'i.typeId';
-		} elseif($strictType==true) {
+		//---strict type
+		if(!empty($typeId) && $strictType==true) {
 			$this->addWhere("i.typeId='".$typeId."'");
 		}
+		
+		//---set select
+		$this->setSelect($this->getTypeColumns($typeId));
+		
 		if($this->showPageLabel==true || empty($typeId) || $typeId=='galery') {
 			$this->fQuerySelectDefault['pageName'] = 'p.name';
 			if($doPagesJoin) $this->addJoin("join sys_pages as p on p.pageId=i.pageId");
@@ -68,13 +106,12 @@ class FItems extends FDBTool {
 				$this->fQuerySelectDefault['readedCnt'] = 'u.cnt as readed';
 			}
 		}
-
+		
+		//---check for public
 		if(!FRules::getCurrent( 2 )) {
 			$this->addWhere('i.public = 1');
 		}
-
-		$this->setSelect($this->getTypeColumns($typeId));
-
+		
 	}
 	function getTypeColumns($typeId,$getKeysArray=false) {
 		if(!empty($typeId)) $arrSelect = array_merge($this->fQuerySelectDefault,$this->fQuerySelectType[$typeId]);
