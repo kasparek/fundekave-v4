@@ -49,6 +49,18 @@ class ItemVO {
 	var $tag_weight;
 	var $location;
 	var $public;
+	
+	var $dateStartIso;
+	var $dateStartLocal;
+	var $timeStart;
+	
+	var $dateEndIso;
+	var $dateEndLocal;
+	var $timeEnd;
+	
+	var $dateCreatedIso;
+	var $dateCreatedLocal;
+	var $timeCreated;
 
 	var $thumbInSysRes = false;
 	var $thumbUrl;
