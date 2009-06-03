@@ -81,24 +81,36 @@ class FForum extends FDBTool {
 	    return $this->query("insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
 	}
   
-	static function setUnreadedMess($arrMessId){
-		if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess'] = array();
-		if(is_array($arrMessId)) $_SESSION['aNotReadedMess']=array_merge($_SESSION['aNotReadedMess'],$arrMessId);
+	static function setUnreadedMess($arrMessId) {
+		$cache = FCache::getInstance('s');
+		$unread = $cache->getData('unreadItems');
+		if($unread===false) {
+			$unread = array();
+			$cache->setData($unread);
+		}
+		if(is_array($arrMessId)) {
+			$cache->setData(array_merge($unread,$arrMessId));
+		}
 	}
 	static function isUnreadedMess($messId,$unset=true){
 		$ret=false;
-		if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess'] = array();
-		if(in_array($messId,$_SESSION['aNotReadedMess'])) {
-			$ret=true;
-			if($unset) {
-				unset($_SESSION['aNotReadedMess'][array_search($messId, $_SESSION['aNotReadedMess'])]);
+		$cache = FCache::getInstance('s');
+		$unread = $cache->getData('unreadItems');
+		if($unread===false) $unread = array();
+		if(in_array($messId,$unread)) {
+			$ret = true;
+			if( $unset ) {
+				unset($unread[array_search($messId, $unread)]);
+				$cache->setData($unread);
 			}
 		}
 		return $ret;
 	}
 	static function clearUnreadedMess() {
-		$_SESSION['aNotReadedMess'] = array();
+		$cache = FCache::getInstance('s');
+		$cache->invalidateData('unreadItems');
 	}
+	
 	static function getSetUnreadedForum($id,$itemId){
 		$user = FUser::getInstance(); 
 		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
@@ -110,9 +122,11 @@ class FForum extends FDBTool {
 		if($unreadedCnt > 0 && $user->idkontrol) {
 			$arrIds = $this->getCol("select itemId from sys_pages_items 
 			where pageId='".$id."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(''))." order by itemId desc limit 0,".$unreadedCnt);
-			if(!empty($arrIds)){
-				if(empty($_SESSION['aNotReadedMess'])) $_SESSION['aNotReadedMess']=array();
-				foreach ($arrIds as $messId) if(!in_array($messId,$_SESSION['aNotReadedMess']))$arrTmp[]=$messId;
+			if(!empty($arrIds)) {
+				$cache = FCache::getInstance('s');
+				$unread = $cache->getData('unreadItems');
+				if($unread===false) $unread = array();
+				foreach ($arrIds as $messId) if(!in_array($messId,$unread)) $arrTmp[] = $messId;
 				if(!empty($arrTmp)) FForum::setUnreadedMess($arrTmp);
 			}
 		}

@@ -6,62 +6,25 @@ class FItems extends FDBTool {
 	//---current type
 	private $typeId;
 	//---list of ItemVOs
-	public $itemsList;
+	public $data;
 	//---using user permissions
 	private $byPermissions = false;
 	//---items removed because no access
 	public $itemsRemoved = 0;
+	
+	//---options
+	public $thumbInSysRes = false;
 
 
 	function __construct() {
 		parent::__construct('sys_pages_items as i','i.itemId');
+		$this->fetchmode = 1;
 	}
 
 	static function TYPES_VALID() {
 		return array('forum','galery','blog','event');
 	}
-
-	private $fQuerySelectDefault = array('itemId' => 'i.itemId',
-	'itemIdTop' => 'i.itemIdTop',
-	'itemIdBottom' => 'i.itemIdBottom',
-	'typeId' => 'i.typeId',
-	'pageId' => 'i.pageId',
-	'pageIdBottom' => 'i.pageIdBottom',
-	'categoryId' => 'i.categoryId',
-	'userId' => 'i.userId',
-	'name' => 'i.name',
-	'dateStart' => 'i.dateStart',
-	'dateEnd' => 'i.dateEnd',
-	'dateCreated' => 'i.dateCreated',
-	'text' => 'i.text',
-	'textLong' => 'i.textLong',
-	'enclosure' => 'i.enclosure',
-	'addon' => 'i.addon',
-	'filesize' => 'i.filesize',
-	'hit' => 'i.hit',
-	'cnt' => 'i.cnt',
-	'tag_weight' => 'i.tag_weight',
-	'location' => 'i.location',
-	'public' => 'i.public'
-	);
-
-	//TODO: galery - 'galeryDir'=>'p.galeryDir','pageParams'=>'p.pageParams','pageDateUpdated'=>'p.dateUpdated','pageName'=>'p.name'
-	private $fQuerySelectType = array(
-		'galery'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
-			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')"),
-		'blog'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
-			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"),
-		'forum'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
-			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')",),
-		'event'=>array('dateStartLocal'=>"date_format(i.dateStart ,'{#date_local#}')"
-			,'dateStartIso'=>"date_format(i.dateStart ,'{#date_iso#}')"
-			,'dateEndLocal'=>"date_format(i.dateEnd ,'{#date_local#}')"
-			,'dateEndIso'=>"date_format(i.dateEnd ,'{#date_iso#}')"
-			,'dateStartTime'=>"date_format(i.dateStart ,'{#time_short#}')"
-			,'dateEndTime'=>"date_format(i.dateEnd ,'{#time_short#}')"
-			,'dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
-			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"));
-
+	
 	function initDetail($itemId) {
 		$itemCheck = $this->getRow("select itemIdTop,typeId from sys_pages_items where itemId='".$itemId."'");
 		if($itemCheck[0] > 0) {
@@ -94,7 +57,8 @@ class FItems extends FDBTool {
 		
 		//---set select
 		$this->setSelect($this->getTypeColumns($typeId));
-		
+		/*
+		 * TODO: refactor
 		if($this->showPageLabel==true || empty($typeId) || $typeId=='galery') {
 			$this->fQuerySelectDefault['pageName'] = 'p.name';
 			if($doPagesJoin) $this->addJoin("join sys_pages as p on p.pageId=i.pageId");
@@ -106,22 +70,15 @@ class FItems extends FDBTool {
 				$this->fQuerySelectDefault['readedCnt'] = 'u.cnt as readed';
 			}
 		}
-		
+		*/
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
 			$this->addWhere('i.public = 1');
 		}
 		
 	}
-	function getTypeColumns($typeId,$getKeysArray=false) {
-		if(!empty($typeId)) $arrSelect = array_merge($this->fQuerySelectDefault,$this->fQuerySelectType[$typeId]);
-		else {
-			$arrSelect = $this->fQuerySelectDefault;
-			foreach($this->fQuerySelectType as $arrTmp) $arrSelect = array_merge($arrSelect,$arrTmp);
-		}
-		if($getKeysArray) return array_keys($arrSelect);
-		else return implode(",",$arrSelect);
-	}
+	
+	
 	function getData($from=0, $count=0) {
 		$this->arrData = array();
 		$itemTypeId = $this->typeId;
@@ -132,10 +89,8 @@ class FItems extends FDBTool {
 			$itemsCount = 0;
 			$page = 0;
 			$arr = array();
-
 			while(count($arr) < $count || $count==0) {
 				$arrTmp = $this->getContent($from + ($page*$count), $count);
-
 				$page++;
 				if(empty($arrTmp)) break; //---no records
 				else {
@@ -157,40 +112,18 @@ class FItems extends FDBTool {
 			}
 		}
 
-		$arrCols = $this->getTypeColumns($this->typeId,true);
-
 		if(!empty($arr)) {
-			if($this->typeId=='galery' || $this->typeId=='') {
-				$galery = new FGalery();
-				//---TODO: set itemVO - systhumb = true
-				if($this->thumbInSysRes) $galery->thumbInSysRes = true;
-			}
+			//---map items
 			foreach($arr as $row) {
-				$arrColsLength = count($arrCols);
-				for($x=0;$x<$arrColsLength;$x++) {
-					$namedRow[$arrCols[$x]] = $row[$x];
-				}
-				if(isset($namedRow['typeId'])) $itemTypeId = $namedRow['typeId'];
-				else $namedRow['typeId'] = $itemTypeId;
-				switch ($itemTypeId) {
-
-					case 'forum':
-						if(FForum::isUnreadedMess($namedRow['itemId'])) $namedRow['unread'] = 1; else $namedRow['unread'] = 0;
-						break;
-
-					case 'galery':
-						//--galery process
-						$namedRow = $galery->prepare($namedRow);
-						break;
-
-				}
-				$user = FUser::getInstance();
-				if (($user->userVO->userId > 0 && $user->userVO->userId == $namedRow['userId']) || FRules::get($user->userVO->userId,$namedRow['pageId'],2)) $namedRow['editItemId'] = $namedRow['itemId'];
-				$this->arrData[] = $namedRow;
+				$itemVO = new ItemVO();
+				$itemVO->map( $row );
+				if($this->thumbInSysRes) $itemVO->thumbInSysRes = true;
+				$this->data[] = $itemVO;
 			}
+			
 		}
-		if($this->debug==1) print_r($this->arrData);
-		return $this->arrData;
+		if($this->debug==1) print_r($this->data);
+		return $this->data;
 	}
 	private $tpl;
 	private $tplType;
