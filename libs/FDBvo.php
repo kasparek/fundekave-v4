@@ -18,11 +18,19 @@ class FDBvo extends FDBTool {
 		}
 	}
 	
+	function map($arr) {
+		if(!empty($arr)) {
+			foreach($arr as $k=>$v) {
+				$this->$k = $v;
+			}
+		}
+	}
+	
 	function save() {
 		$this->queryReset();
 		foreach($this->columns as $col) {
 			$this->addCol($col, $this->$col);
 		}
+		parent::save();
 	}
-
 }

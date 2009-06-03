@@ -1,5 +1,6 @@
 <?php
 class ItemVO {
+	
 	var $tableDef = 'CREATE TABLE sys_pages_items (
        itemId mediumint unsigned NOT NULL
      , itemIdTop mediumint unsigned default NULL
@@ -26,6 +27,47 @@ class ItemVO {
      , PRIMARY KEY (itemId)
 )  ;
 	';
+	
+	static $colsDefault = array('itemId' => 'i.itemId',
+	'itemIdTop' => 'i.itemIdTop',
+	'itemIdBottom' => 'i.itemIdBottom',
+	'typeId' => 'i.typeId',
+	'pageId' => 'i.pageId',
+	'pageIdBottom' => 'i.pageIdBottom',
+	'categoryId' => 'i.categoryId',
+	'userId' => 'i.userId',
+	'name' => 'i.name',
+	'dateStart' => 'i.dateStart',
+	'dateEnd' => 'i.dateEnd',
+	'dateCreated' => 'i.dateCreated',
+	'text' => 'i.text',
+	'textLong' => 'i.textLong',
+	'enclosure' => 'i.enclosure',
+	'addon' => 'i.addon',
+	'filesize' => 'i.filesize',
+	'hit' => 'i.hit',
+	'cnt' => 'i.cnt',
+	'tag_weight' => 'i.tag_weight',
+	'location' => 'i.location',
+	'public' => 'i.public'
+	);
+
+	//TODO: galery - 'galeryDir'=>'p.galeryDir','pageParams'=>'p.pageParams','pageDateUpdated'=>'p.dateUpdated','pageName'=>'p.name'
+	static $colsType = array(
+		'galery'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')"),
+		'blog'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"),
+		'forum'=>array('dateCreatedLocal'=>"date_format(i.dateCreated ,'{#datetime_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#datetime_iso#}')",),
+		'event'=>array('dateStartLocal'=>"date_format(i.dateStart ,'{#date_local#}')"
+			,'dateStartIso'=>"date_format(i.dateStart ,'{#date_iso#}')"
+			,'dateEndLocal'=>"date_format(i.dateEnd ,'{#date_local#}')"
+			,'dateEndIso'=>"date_format(i.dateEnd ,'{#date_iso#}')"
+			,'dateStartTime'=>"date_format(i.dateStart ,'{#time_short#}')"
+			,'dateEndTime'=>"date_format(i.dateEnd ,'{#time_short#}')"
+			,'dateCreatedLocal'=>"date_format(i.dateCreated ,'{#date_local#}')"
+			,'dateCreatedIso'=>"date_format(i.dateCreated ,'{#date_iso#}')"));
 
 	var $itemId = 0;
 	var $itemIdTop;
@@ -49,18 +91,21 @@ class ItemVO {
 	var $tag_weight;
 	var $location;
 	var $public;
-	
+
 	var $dateStartIso;
 	var $dateStartLocal;
 	var $timeStart;
-	
+
 	var $dateEndIso;
 	var $dateEndLocal;
 	var $timeEnd;
-	
+
 	var $dateCreatedIso;
 	var $dateCreatedLocal;
 	var $timeCreated;
+
+	var $editable = false;
+	var $unread = false;
 
 	var $thumbInSysRes = false;
 	var $thumbUrl;
@@ -72,10 +117,17 @@ class ItemVO {
 
 	function ItemVO($itemId=0, $autoLoad = false) {
 		parent::__construct();
+		$this->cacheResults = 0; //--- for items we cache localy
 		$this->itemId = $itemId;
 		if($autoLoad == true) {
 			$this->load();
 		}
+	}
+	
+	static function getTypeColumns($typeId,$getKeysArray=false) {
+		$arrSelect = array_merge(ItemVO::$colsDefault,ItemVO::$colsType[$typeId]);
+		if($getKeysArray) return array_keys($arrSelect);
+		else return implode(",",$arrSelect);
 	}
 
 	function checkItem() {
@@ -89,6 +141,49 @@ class ItemVO {
 			}
 		}
 	}
+	
+	function load() {
+		//---try load from cache cache
+		$cache = FCache::getInstance('l');
+		if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
+			parent::load();
+			$this->prepare();
+		} else {
+			$this = $itemVO;
+		}
+	}
+	
+	function map() {
+		parent::map();
+		$this->prepare();
+		//---save in cache
+		$cache = FCache::getInstance('l');
+		$cache->setData( $this, $this->itemId, 'fit');
+	}
+	
+	function save() {
+		parent::save();
+		//---update in cache
+		$cache = FCache::getInstance('l');
+		$cache->setData( $this, $this->itemId, 'fit');
+	}
+
+	function prepare() {
+		switch ($this->typeId) {
+			case 'galery':
+				FGalery::prepare(&$this);
+				break;
+			case 'forum':
+				$this->unread = FForum::isUnreadedMess($this->itemId);
+				break;
+		}
+		if(($userId = FUser::logon()) > 0) {
+			if($userId == $this->userId || FRules::get($userId,$this->pageId,2)) {
+				$this->editable = true;
+			}
+		}
+	}
+
 	//---special properties
 	static function getProperty($itemId,$propertyName,$default=false) {
 		$q = "select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'";

@@ -40,37 +40,38 @@ class FGalery {
 	 * @param $itemVO
 	 * @return itemVO
 	 */
-	function prepare($itemVO = null) {
-		if($itemVO) $this->itemVO = $itemVO;
+	static function prepare($itemVO = null) {
+		$fGalery = new FGalery(); 
+		$fGalery->itemVO = $itemVO;
 		//---check thumbnail
-		if($this->itemVO->thumbInSysRes == true) {
+		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
-			$thumbPathArr = $this->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
-			if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
-			$this->itemVO->thumbUrl = $thumbPathArr['url'];
+			$thumbPathArr = $fGalery->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
+			if(!FGalery::isThumb($thumbPathArr['thumb'])) $fGalery->createThumb($thumbPathArr);
+			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 		} else {
-			if(!empty( $this->itemVO->addon )) {
-				$this->itemVO->thumbUrl = WEB_REL_GALERY . $this->pageVO->galeryDir.'/'.$this->itemVO->addon;
+			if(!empty( $fGalery->itemVO->addon )) {
+				$fGalery->itemVO->thumbUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir.'/'.$fGalery->itemVO->addon;
 			} else {
-				$thumbPathArr = $this->getThumbPath();
+				$thumbPathArr = $fGalery->getThumbPath();
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) {
-					$this->createThumb($thumbPathArr);
+					$fGalery->createThumb($thumbPathArr);
 				}
-				$this->itemVO->thumbUrl = $thumbPathArr['url'];
+				$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			}
 		}
-		$this->itemVO->detailUrl = WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
+		$fGalery->itemVO->detailUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 
-		if(file_exists( $this->itemVO->detailUrl )) {
-			list($width,$height) = getimagesize( $this->itemVO->detailUrl );
-			$this->itemVO->detailWidth = $width;
-			$this->itemVO->detailHeight = $height;
-			$this->itemVO->detailUrlToGalery = FUser::getUri('i='.$this->itemVO->itemId,$this->itemVO->pageId);
-			$this->itemVO->detailUrlToPopup = '/pic.php?u='.FUser::logon().'&amp;i='.$this->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60);
+		if(file_exists( $fGalery->itemVO->detailUrl )) {
+			list($width,$height) = getimagesize( $fGalery->itemVO->detailUrl );
+			$fGalery->itemVO->detailWidth = $width;
+			$fGalery->itemVO->detailHeight = $height;
+			$fGalery->itemVO->detailUrlToGalery = FUser::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
+			$fGalery->itemVO->detailUrlToPopup = '/pic.php?u='.FUser::logon().'&amp;i='.$fGalery->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60);
 		} else {
-			FError::addError('File not exists: '.$this->itemVO->detailUr);
+			FError::addError('File not exists: '.$fGalery->itemVO->detailUr);
 		}
-		return $this->itemVO;
+		return $fGalery->itemVO;
 	}
 		
 	/**
