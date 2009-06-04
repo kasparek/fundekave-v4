@@ -81,7 +81,11 @@ class FDBTool {
 			require_once('SQL/Parser.php');
 			$parser = new SQL_Parser($this->tableDef,'MySQL');
 			$parsed = $parser->parse();
-			$this->table = $parsed['table_names'][0];
+			if (PEAR::isError($parsed)) {
+				die('SQL Parser Error');
+			}else {
+				$this->table = $parsed['table_names'][0];
+			}
 			foreach($parsed["column_defs"] as $k=>$v) {
 				$this->columns[] = $k;
 				if(isset($v["constraints"])) {
@@ -275,7 +279,22 @@ class FDBTool {
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
-		return FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
+		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
+		
+		if(!empty($arr)) {
+			if($this->fetchmode == 1 && !empty($this->columns)) {
+				$len = count( $this->columns );
+				foreach($arr as $ret) {
+					for($i=0; $i<$len; $i++) {
+						$col = $this->columns[$i];
+						$retNew[$col] = $ret[$i];
+					}
+					$arrNamed[]=$retNew;
+				}
+				return $arrNamed;
+			}
+			return $arr;
+		}
 	}
 	function getCacheId($id) {
 		return $this->table.'-'.$this->primaryCol.'-'.$id;
@@ -287,13 +306,6 @@ class FDBTool {
 		$this->addWhere($this->primaryCol.'="'.$id.'"');
 		$ret = $this->getContent(0,0,$this->getCacheId($id));
 		if(!empty($ret)) {
-			if($this->fetchmode == 1 && !empty($this->columns)) {
-				$len = count($arr);
-				for($i=0; $i<$len; $i++) {
-					$col = $this->columns[$i];
-					$this->$col = $arr[$i];
-				}
-			}
 			return $ret[0];	
 		}
 	}

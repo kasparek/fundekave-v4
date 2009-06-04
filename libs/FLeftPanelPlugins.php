@@ -243,16 +243,21 @@ class FLeftPanelPlugins {
 	static function rh_galerie_rnd(){
 		$cache = FCache::getInstance('f',86400);
 		if(!$data = $cache->getData((FUser::logon()>0)?('member'):('nonmember'),'fotornd')) {
+			
+			
+			$itemRenderer = new FItemsRenderer();
+			$itemRenderer->openPopup = true;
+			$itemRenderer->showPageLabel = true;
+			$itemRenderer->showTooltip = true;
+			$itemRenderer->showTag = true;
+			$itemRenderer->showText = true;
+			$itemRenderer->thumbInSysRes = true;
+			
 			$fItems = new FItems();
-			$fItems->openPopup = true;
-			$fItems->showPageLabel = true;
-			$fItems->showTooltip = true;
-			$fItems->showTag = true;
-			$fItems->showText = true;
-			$fItems->thumbInSysRes = true;
-			$fItems->initData('galery',false,true);
+			$fItems->fItemsRenderer = $itemRenderer; 
+			$fItems->initList('galery',false,true);
 			$total = $fItems->getCount();
-			$fItems->getData(rand(0,$total),1);
+			$fItems->getList(rand(0,$total),1);
 			$fItems->parse();
 			if(!$data = $fItems->show()) $data='';
 			$cache->setData($data);
