@@ -7,9 +7,13 @@ class page_Main implements iPage {
 	}
 	
 	static function build() {
+		
 		$user = FUser::getInstance();
 		$tpl = new FTemplateIT('maina.tpl.html');
 
+		$itemRenderer = new FItemsRenderer();
+		$itemRenderer->showPageLabel = true;
+		
 		//--------------LAST-FORUM-POSTS
 		$cache = FCache::getInstance('f',3600);
 		$data = $cache->getData('lastForumPost');
@@ -19,13 +23,15 @@ class page_Main implements iPage {
 			$data = '';
 			if(!empty($arr)) {
 				$strItemId = implode(',',$arr);
-				$fItems->showPageLabel = true;
-				$fItems->initData('forum',$user->userVO->userId,true);
+				
+				$fItems->fItemsRenderer = $itemRenderer; 
+				
+				$fItems->initList('forum',$user->userVO->userId,true);
 				$fItems->addWhere('i.itemId in ('.$strItemId.')');
 				$fItems->addOrder('i.dateCreated desc');
-				//$fItems->setGroup('i.pageId');
-				$fItems->getData(0,3);
-				while($fItems->arrData) $fItems->parse();
+				$fItems->getList(0,3);
+				
+				while($fItems->data) $fItems->parse();
 				$data = $fItems->show();
 			}
 			$cache->setData($data);
@@ -41,14 +47,13 @@ class page_Main implements iPage {
 			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
 			if(!empty($arr)) {
 				$fItems = new FItems();
-				$fItems->showPageLabel = true;
-				$fItems->initData('blog',$user->userVO->userId,true);
-				//$fItems->addWhere('itemIdTop is null');
+				$fItems->fItemsRenderer = $itemRenderer; 
+				$fItems->initList('blog',$user->userVO->userId,true);
 				$fItems->addWhere('i.itemId in ('.implode(',',$arr).')');
 				$fItems->addOrder('i.dateCreated desc');
-				$fItems->getData(0,5);
+				$fItems->getList(0,5);
 				$firstPost = true;
-				while($fItems->arrData) {
+				while($fItems->data) {
 					$fItems->parse();
 					if($firstPost==true) {
 						$firstPostStr = $fItems->show();

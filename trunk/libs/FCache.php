@@ -29,8 +29,8 @@ class FCache {
 		if (!isset($instance)) {
 			$instance = &new FCache();
 		}
-		if($driver!='') {
-			$instance->getDriver($driver);
+		if($instance->getDriver($driver) === false) {
+			return false;
 		}
 		if($lifeTime > -1) {
 			$instance->activeDriver->setConf( $lifeTime );
@@ -69,6 +69,7 @@ class FCache {
 	}
 
 	function getDriver($driver) {
+		$this->activeDriver = null;
 		switch($driver) {
 			//---in session
 			case 's':
@@ -106,7 +107,11 @@ class FCache {
 				$this->activeDriver = &$this->loadDriver;
 				break;
 		}
-		return $this->activeDriver;
+		if($this->activeDriver) {
+			return $this->activeDriver;
+		} else {
+			return false;
+		}
 	}
 
 	function setConf( $lifeTime ) {

@@ -28,8 +28,8 @@ class FConf
   
   static function get($group, $prop) {
   	$conf = FConf::getInstance();
-  	if(isset($this->a[$group][$conf])) {
-  		return $this->a[$group][$conf];	
+  	if(isset($conf->a[$group][$prop])) {
+  		return $conf->a[$group][$prop];	
   	} else {
   		return false;
   	}
