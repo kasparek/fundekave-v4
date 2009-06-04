@@ -87,7 +87,11 @@ class ItemVO {
 	var $addon;
 	var $filesize;
 	var $hit;
+	
+	//---comments on blog/forum
 	var $cnt;
+	var $cntReaded;
+	
 	var $tag_weight;
 	var $location;
 	var $public;
@@ -183,6 +187,14 @@ class ItemVO {
 			}
 		}
 	}
+	
+	/**
+	 * returns parsed html
+	 *
+	 */
+	function render() {
+		
+	}
 
 	//---special properties
 	static function getProperty($itemId,$propertyName,$default=false) {
@@ -195,6 +207,15 @@ class ItemVO {
 		FDBTool::query("insert into sys_pages_items_properties (itemId,name,value) values ('".$itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
 		$cache = FCache::getInstance('l');
 		$cache->invalidateData($itemId.'-'.$propertyName.'-prop','fitems');
+	}
+	
+	function getNumUnreadComments( $userId ) {
+		$q =' select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$userId.'"';
+		$this->cntReaded = FDBTool::getOne($q,$itemId.'-'.$userId.'-readed','fitems','l');
+		if(!empty($this->cnt)) $this->cnt = 0;
+		if(empty($this->cntReaded)) $this->cntReaded = $this->cnt;
+		$unreaded = $this->cnt - $this->cntReaded;
+		return $unreaded; 
 	}
 
 	//TODO: refactor - getitem,saveitem - check where used

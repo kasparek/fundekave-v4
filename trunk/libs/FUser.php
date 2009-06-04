@@ -430,7 +430,8 @@ class FUser {
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}
-		if(!empty($newPageId)) $params[] = 'k=' . $newPageId . $pageParam;
+		$pageVO  = new PageVO($itemVO->pageId,true);
+		if(!empty($newPageId)) $params[] = 'k=' . $newPageId . $pageParam . '-'.FSystem::safetext($pageVO->Name);
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) $parStr = '?'.implode("&amp;",$params);

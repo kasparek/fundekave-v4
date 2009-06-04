@@ -9,9 +9,6 @@ class page_PagesBooked implements iPage {
 	static function build() {
 		$user = FUser::getInstance();
 		
-		$validTypesArr = FItems::TYPES_VALID();
-
-		fXajax::register('forum_booked');
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';
 		FSystem::secondaryMenuAddItem($user->getUri($addUrl),FLang::$LABEL_FORUMS,"xajax_forum_booked('forum','".$user->whoIs."');return false;");
 		FSystem::secondaryMenuAddItem($user->getUri('t=blog'.$addUrl),FLang::$LABEL_BLOGS,"xajax_forum_booked('blog','".$user->whoIs."');return false;");
@@ -20,7 +17,7 @@ class page_PagesBooked implements iPage {
 		$typeId = $user->pageVO->typeIdChild;
 		if(isset($_GET['t'])) $typeId = $_GET['t'];
 
-		if(!in_array($typeId, $validTypesArr)) $typeId = FItems::TYPE_DEFAULT;
+		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
 
 		$fPages = new FPages($typeId,$user->userVO->userId);
 		$data = $fPages->printBookedList();

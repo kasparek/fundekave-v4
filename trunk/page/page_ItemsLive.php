@@ -10,9 +10,7 @@ class page_ItemsLive implements iPage {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
 
-		$validTypesArr = FItems::TYPES_VALID();
-
-		if(!in_array($typeId, $validTypesArr)) $typeId = FItems::TYPE_DEFAULT;
+		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
 
 		$localPerPage = LIVE_PERPAGE;
 
