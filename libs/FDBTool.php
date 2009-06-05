@@ -282,6 +282,9 @@ class FDBTool {
 		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
 		
 		if(!empty($arr)) {
+			
+			var_dump($arr);
+			var_dump($this->columns);
 			if($this->fetchmode == 1 && !empty($this->columns)) {
 				$len = count( $this->columns );
 				foreach($arr as $ret) {
@@ -290,6 +293,8 @@ class FDBTool {
 						$retNew[$col] = $ret[$i];
 					}
 					$arrNamed[]=$retNew;
+					
+					
 				}
 				return $arrNamed;
 			}

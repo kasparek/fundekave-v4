@@ -101,6 +101,7 @@ class FItems extends FDBTool {
 		}
 
 		if(!empty($arr)) {
+			var_dump($this->fetchmode);
 			print_r($arr);
 			die();
 			//---map items
