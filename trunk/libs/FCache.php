@@ -135,9 +135,7 @@ class FCache {
 
 	}
 
-
-
-	function setData( $data, $id='', $group='default', $driver='', $lifeTime=-1 ) {
+	function setData( $data, $id='', $group='', $driver='', $lifeTime=-1 ) {
 		if($driver!='') {
 			$this->getDriver($driver);
 		}
@@ -147,11 +145,11 @@ class FCache {
 		if($id=='') {
 			$id = $this->activeId;
 		}
-		$this->activeGroup = $group;
-
-		if(!empty($id)) {
-			$this->activeDriver->setData($id, $data, $this->activeGroup);
+		if($group=='') {
+			$group = $this->activeGroup;
 		}
+
+		return $this->activeDriver->setData($id, $data, $group);
 	}
 
 	function invalidateData(  $id='', $group='default' ) {

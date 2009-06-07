@@ -130,33 +130,31 @@ class FBlog extends FDBTool  {
 		
 		if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
 		
-		$fItems = new FItems();
-		$fItems->initData('blog');
-		$fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
-		$fItems->addWhere('i.itemIdTop is null');
-		
 		if($itemId > 0) {
 		
-		    $fItems->showComments = true;
-		    $fItems->showHeading = false;
-		    $fItems->initDetail($itemId);
-		    
+			$itemVO = new ItemVO($itemId,true,array('type'=>'blog','showComments'=>true));
+		    return $itemVO->render();
+			    
 		} else {
 		
+			$itemRenderer = new FItemsRenderer();
+				
+			$fItems = new FItems('blog',false,$itemRenderer);
+			$fItems->initData('blog');
+			$fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
+			$fItems->addWhere('i.itemIdTop is null');
+			
 		    $fItems->setLimit($currentPage * $this->perPage, $this->perPage);
 		    $fItems->setOrder("i.dateCreated desc");
-		    
+			$fItems->getData();
+			if(!empty($fItems->data)){
+				while($fItems->arrdata) $fItems->parse();
+				FForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+	            $tpl->setVariable('ITEMS',$fItems->show());
+	            if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
+	        }
+	        return $tpl->get();    
 		}
-		
-		$fItems->getData();
-		
-		if(!empty($fItems->arrData)){
-		    if($user->idkontrol) FItems::initTagXajax();
-			while($fItems->arrData) $fItems->parse();
-			FForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
-            $tpl->setVariable('ITEMS',$fItems->show());
-            if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
-        }
-		return $tpl->get();
+			
 	}
 }

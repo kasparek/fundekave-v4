@@ -9,7 +9,7 @@ class FItems extends FDBTool {
 	public $data;
 	//---renderer
 	public $fItemsRenderer;
-	
+
 	//---using user permissions
 	private $byPermissions = false;
 	//---items removed because no access
@@ -19,9 +19,12 @@ class FItems extends FDBTool {
 	public $thumbInSysRes = false;
 
 
-	function __construct() {
-		parent::__construct('sys_pages_items as i','i.itemId');
+	function __construct($typeId='',$byPremissions=false,$itemRenderer=null) {
+		parent::__construct('sys_pages_items','itemId');
 		$this->fetchmode = 1;
+		if($typeId!='') $this->initList($typeId,$byPremissions);
+		$this->columns = ItemVO::getTypeColumns($this->typeId, true);
+		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
 	}
 
 	static function isTypeValid($type) {
@@ -39,30 +42,29 @@ class FItems extends FDBTool {
 			//---add discussion
 			FForum::process($itemId);
 		}
-		$this->addWhere("i.itemId='".$itemId."'");
+		$this->addWhere("itemId='".$itemId."'");
 		if(!FRules::getCurrent(2)) {
-			$this->addWhere('i.public = 1');
+			$this->addWhere('public = 1');
 		}
 		return $itemId;
 	}
 
-	function initList($typeId='forum', $byPermissions = false, $strictType=false) {
+	function initList($typeId='forum', $byPermissions = false) {
 		$this->queryReset();
-		if(!empty($typeId)) $this->typeId = $typeId;
+		if(FItems::isTypeValid($typeId)) {
+			$this->typeId = $typeId;
+			$this->addWhere("typeId='".$typeId."'");
+		}
 		$doPagesJoin = true;
 		//---check permissions for given user
 		if($byPermissions!==false) {
 			$this->byPermissions = $byPermissions;
 		}
-		//---strict type
-		if(!empty($typeId) && $strictType==true) {
-			$this->addWhere("i.typeId='".$typeId."'");
-		}
 		//---set select
 		$this->setSelect( ItemVO::getTypeColumns( $typeId ));
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
-			$this->addWhere('i.public = 1');
+			$this->addWhere('public = 1');
 		}
 
 	}
@@ -85,7 +87,7 @@ class FItems extends FDBTool {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
 						//---check premissions
-						if(FRules::get($this->byPermissions,$row[2],1)) {
+						if(FRules::get($this->byPermissions,$row['pageId'],1)) {
 							$arr[] = $row;
 							$itemsCount++;
 							if($itemsCount == $count && $count!=0) break;
@@ -101,9 +103,6 @@ class FItems extends FDBTool {
 		}
 
 		if(!empty($arr)) {
-			var_dump($this->fetchmode);
-			print_r($arr);
-			die();
 			//---map items
 			foreach($arr as $row) {
 				$itemVO = new ItemVO();
@@ -111,8 +110,8 @@ class FItems extends FDBTool {
 				if($this->thumbInSysRes) $itemVO->thumbInSysRes = true;
 				$this->data[] = $itemVO;
 			}
-
 		}
+
 		if($this->debug==1) print_r($this->data);
 		return $this->data;
 	}
@@ -120,8 +119,9 @@ class FItems extends FDBTool {
 	function pop() {
 		if($this->data) return array_shift($this->data);
 	}
-	
+
 	function parse() {
+		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
 		if($itemVO = $this->pop()) {
 			$this->fItemsRenderer->render($itemVO);
@@ -131,6 +131,19 @@ class FItems extends FDBTool {
 
 	function show() {
 		return $this->fItemsRenderer->show();
+	}
+
+	function render($from=0, $perPage=0) {
+		$this->getList($from, $perPage);
+		//---items parsing
+		if(!empty($this->data)) {
+			while ($this->data) {
+				$this->parse();
+			}
+			return $this->show();
+		} else {
+			return false;
+		}
 	}
 
 

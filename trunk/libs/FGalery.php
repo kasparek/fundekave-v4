@@ -43,22 +43,31 @@ class FGalery {
 	static function prepare($itemVO = null) {
 		$fGalery = new FGalery(); 
 		$fGalery->itemVO = $itemVO;
+		$fGalery->pageVO = new PageVO($itemVO->pageId,true);
 		//---check thumbnail
 		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
 			$thumbPathArr = $fGalery->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
-			if(!FGalery::isThumb($thumbPathArr['thumb'])) $fGalery->createThumb($thumbPathArr);
+			if(!FGalery::isThumb($thumbPathArr['thumb'])) $fGalery->createThumb($thumbPathArr,array('width'=>$this->conf['widthThumb'],'height'=>$this->conf['heightThumb']));
 			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
+			$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
+			$fGalery->itemVO->heightWidth = $fGalery->conf['heightThumb'];
 		} else {
+			/*
 			if(!empty( $fGalery->itemVO->addon )) {
 				$fGalery->itemVO->thumbUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir.'/'.$fGalery->itemVO->addon;
+				$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
+				$fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 			} else {
-				$thumbPathArr = $fGalery->getThumbPath();
-				if(!FGalery::isThumb($thumbPathArr['thumb'])) {
-					$fGalery->createThumb($thumbPathArr);
-				}
-				$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
+*/
+			$thumbPathArr = $fGalery->getThumbPath();
+			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
+				$fGalery->createThumb($thumbPathArr);
 			}
+			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
+			$fGalery->itemVO->thumbWidth = (String) $fGalery->pageVO->getPageParam('enhancedsettings/widthpx');
+			$fGalery->itemVO->thumbHeight = (String) $fGalery->pageVO->getPageParam('enhancedsettings/heightpx');
+		
 		}
 		$fGalery->itemVO->detailUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 
@@ -90,7 +99,7 @@ class FGalery {
 	 * @return strinf url
 	 */
 	function  getDetailUrl() {
-		return WEB_REL_GALERY . $this->itemVO->galeryDir . '/' . $this->itemVO->enclosure;
+		return WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
 	}
 	
 	/**

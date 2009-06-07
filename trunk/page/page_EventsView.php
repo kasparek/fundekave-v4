@@ -24,73 +24,61 @@ class page_EventsView implements iPage {
 		if($user->pageParam=='u') {
 			page_EventsEdit::build();
 		} else {
-			$category = new FCategory('sys_pages_category','categoryId');
-			FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
 			
-			$fItems = new FItems();
-			$fItems->initData('event',false,true);
-
 			$adruh = 0;
 			$filtr = '';
 
-			if($user->itemVO->itemId>0) {
+			if($user->itemVO->itemId > 0) {
 
-				$fItems->showComments = true;
-				$fItems->initDetail($user->itemVO->ItemId);
+				$itemVO = new ItemVO($user->itemVO->itemId,true
+				,array('type'=>'event','showComments'=>true));
+				$tpl = new fTemplateIT('events.tpl.html');
+				$tpl->setVariable('ITEMS',$itemVO->render());
 
 			} else {
 				
+				$category = new FCategory('sys_pages_category','categoryId');
+				FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
+				
+				$fItems = new FItems('event',false);
 				if(isset($_REQUEST['kat'])) $adruh = (int) $_REQUEST['kat'];
 				if(isset($_REQUEST['filtr'])) $filtr = trim($_REQUEST['filtr']);
-				if($adruh>0) $fItems->addWhere('i.categoryId="'.$adruh.'"');
-				if(!empty($filtr)) $fItems->addWhereSearch(array('i.location','i.addon','i.text'),$filtr,'or');
+				if($adruh>0) $fItems->addWhere('categoryId="'.$adruh.'"');
+				if(!empty($filtr)) $fItems->addWhereSearch(array('location','addon','text'),$filtr,'or');
 
 				if(!isset($archiv)) {
 					//---future
-					$fItems->addWhere("(i.dateStart >= date_format(NOW(),'%Y-%m-%d') or (i.dateEnd is not null and i.dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
-					$fItems->setOrder('i.dateStart');
+					$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
+					$fItems->setOrder('dateStart');
 				} else {
 					//---archiv
-					$fItems->addWhere("i.dateStart < date_format(NOW(),'%Y-%m-%d')");
-					$fItems->setOrder('i.dateStart desc');
+					$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+					$fItems->setOrder('dateStart desc');
 				}
-			}
-
-			//--listovani
-			$celkem = $fItems->getCount();
-			$conf = FConf::getInstance();
-			$perPage = $conf->a['events']['perpage'];
-			$tpl = new fTemplateIT('events.tpl.html');
-			if($celkem > 0) {
-				if($celkem > $perPage) {
-					$pager = FSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
-					$od = ($pager->getCurrentPageID()-1) * $perPage;
-				} else $od=0;
-				 
-				$fItems->getData($od,$perPage);
-
-				if($user->itemVO->itemId == 0) {
 					
+
+				//--listovani
+				$celkem = $fItems->getCount();
+				$perPage = FConf::get('events','perpage');
+				
+				$tpl = new fTemplateIT('events.tpl.html');	
+				
+				if($celkem > 0) {
+					if($celkem > $perPage) {
+						$pager = FSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
+						$od = ($pager->getCurrentPageID()-1) * $perPage;
+					} else $od=0;
+
 					if($celkem > $perPage) {
 						$tpl->setVariable('LISTTOTAL',$celkem);
 						$tpl->setVariable('PAGER',$pager->links);
 					}
+																
+					$tpl->setVariable('ITEMS',$fItems->render($od,$perPage));
 					
 				} else {
-					
-					$fItems->showHeading = false;
-					
+					$tpl->touchBlock('notanyevents');
 				}
-				//---items parsing
-				while ($fItems->arrData) {
-					$fItems->parse();
-				}
-				 
-				if($user->itemVO->itemId > 0) $user->pageVO->name = $fItems->currentHeader;
-				 
-				$tpl->setVariable('ITEMS',$fItems->show());
-			} else {
-				$tpl->touchBlock('notanyevents');
 			}
 			FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 		}

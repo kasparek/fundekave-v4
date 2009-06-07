@@ -33,9 +33,8 @@ class SessionDriver
 	}
 
 	function setData($id, $data, $group = 'default') {
-
 		$this->data[$group][$id] = array($this->lifeTime, date("U") , serialize($data));
-			
+		return true;	
 	}
 
 	function getData($id, $group = 'default') {
