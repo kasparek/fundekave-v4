@@ -62,14 +62,14 @@ class FAjax_user {
 	}
 
 	static function pocketIn($data) {
-		$fPocket = new fPocket(FUser::logon());
+		$fPocket = new FPocket(FUser::logon());
 		$fPocket->saveItem(((isset($data['item']))?($data['item']):('')),((isset($data['page']))?($data['page']):('')));
 		$fajax = FAfax::getInstance();
 		$fajax->addResponse('pocket','html',$fPocket->show(true));
 	}
 
 	static function pocketAc($data) {
-		$fPocket = new fPocket(FUser::logon());
+		$fPocket = new FPocket(FUser::logon());
 		$fPocket->action($data['ac'],$data['pocket']);
 		$objResponse->assign('pocket', 'innerHTML', $fPocket->show(true));
 	}

@@ -10,8 +10,8 @@ class FPocket extends FDBTool {
         
     }
     static function getLink($itemId,$page=false) {
-        $conf = FConf::getInstance();
-        if($conf["pocket"]["enabled"] == 1)
+        
+        if(FConf::get("pocket","enabled") == 1)
             return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
     }
     function getItems() {

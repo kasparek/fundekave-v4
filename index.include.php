@@ -58,7 +58,7 @@ if($user->idkontrol) {
   fXajax::register('blog_blogEdit');
   fXajax::register('blog_processFormBloged');
   */
-  FItems::setTagToolbar();
+  FItemsToolbar::setTagToolbar();
 }
 
 if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked==3)  {

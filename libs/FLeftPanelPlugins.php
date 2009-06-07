@@ -2,7 +2,7 @@
 class FLeftPanelPlugins {
 	static function pocket() {
 		$user = FUser::getInstance();
-		$fPocket = new fPocket($user->userVO->userId);
+		$fPocket = new FPocket($user->userVO->userId);
 		return $fPocket->show();
 	}
 	static function pageCategories() {
