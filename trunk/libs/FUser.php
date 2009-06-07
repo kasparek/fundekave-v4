@@ -84,19 +84,16 @@ class FUser {
 		$name = trim($name);
 		$pass = trim($pass);
 		if (!empty($name) && !empty($pass) && $this->idkontrol==false) {
-			$db = FDBConn::getInstance();
 			//---login query
 			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
-			$gid = $db->getOne($dot);
-			if(!empty($gid)) {
-				$this->userVO = new UserVO();
-				$this->userVO->userId = $gid;
-				$this->userVO->load();
+			$gid = FDBTool::getOne($dot);
+			if( $gid > 0 ) {
+				$this->userVO = new UserVO($gid, true);
 				$this->userVO->idlogin = FUser::getToken($pass);
 				$this->userVO->ip = FSystem::getUserIp();
 				FUser::invalidateUsers($gid);
 				//---db logon
-				$db->query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
+				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
 				("'.$gid.'","'.$this->userVO->idlogin.'",NOW(),NOW(),"'.$this->pageVO->pageId.'","'.$this->userVO->ip.'")');
 				//---logon
 				$this->idkontrol = true;
@@ -185,7 +182,7 @@ class FUser {
 		if(!$this->userVO) {
 			//---try to load user from cache
 			$cache = FCache::getInstance('s');
-			if(false === $this->userVO = $cache->getData('user')) {
+			if(false === ($this->userVO = $cache->getData('user'))) {
 				$this->userVO = new UserVO();
 			}
 		}
@@ -437,7 +434,9 @@ class FUser {
 		}
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
-		if(isset($params)) $parStr = '?'.implode("&amp;",$params);
-		return BASESCRIPTNAME.$parStr;
+		if(isset($params)) {
+			$parStr = '?'.implode("&amp;",$params);
+		}
+		return BASESCRIPTNAME . $parStr;
 	}
 }

@@ -100,7 +100,7 @@ class FSystem {
 		}
 		 
 		foreach ($arrmenu as $ro) {
-			$menuItems[] = array("LINK"=>BASESCRIPTNAME.(($ro[0]!=HOME_PAGE)?('?k='.$ro[0]):('')),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
+			$menuItems[] = array("LINK"=>FUser::getUri('',$ro[0]),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
 			$user->topmenu[] = $ro[0];
 		}
 		 

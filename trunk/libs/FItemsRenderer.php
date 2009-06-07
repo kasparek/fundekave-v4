@@ -182,13 +182,12 @@ class FItemsRenderer {
 		if ($user->idkontrol && $this->showFooter==true) {
 			//---thumb tag link
 			if($this->showTag==true) {
-				FItems::initTagXajax();
 				$cache = FCache::getInstance('s',60);
 				if(false === $cache->getData($itemVO->itemId,'itemTags')) $cache->setData($itemVO->tag_weight);
-				$tpl->setVariable('TAG',FItems::getTag($itemVO->itemId,$user->userVO->userId,$itemVO->typeId));
+				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$user->userVO->userId,$itemVO->typeId));
 			}
 			if($this->showPocketAdd==true) {
-				$tpl->setVariable('POCKET',fPocket::getLink($itemVO->itemId));
+				$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
 			}
 			//---user link and location
 			if($itemVO->userId > 0) {

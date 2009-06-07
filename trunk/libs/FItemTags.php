@@ -45,7 +45,7 @@ class FItemTags {
 		$templateNameUsed = 'item.tag.{TYPE}.used.tpl.html';
 
 		$tpl = new FHTMLTemplateIT();
-		if(FItems::isTagged($itemId,$userId)) {
+		if(FItemTags::isTagged($itemId,$userId)) {
 
 			if(FTemplateIT::templateExist(str_replace('{TYPE}',$typeId,$templateNameUsed))) {
 				$templateNameUsed = str_replace('{TYPE}',$typeId,$templateNameUsed);
@@ -68,13 +68,13 @@ class FItemTags {
 
 		$tpl->setVariable('ITEMID',$itemId);
 		$tpl->setVariable('CSSSKINURL',FUser::getSkinCSSFilename());
-		$tpl->setVariable('SUM',FItems::totalTags($itemId));
+		$tpl->setVariable('SUM',FItemTags::totalTags($itemId));
 		$tpl->setVariable('URLREMOVE',FUser::getUri('rt='.$itemId));
 		return $tpl->get();
 	}
 
 	static function getItemTagList($itemId) {
-		$arr = $this->getAll("select userId,tag,weight from sys_pages_items_tag where itemId='".$itemId."'");
+		$arr = FDBTool::getAll("select userId,tag,weight from sys_pages_items_tag where itemId='".$itemId."'");
 		return $arr;
 	}
 }

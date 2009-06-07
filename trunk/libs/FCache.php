@@ -23,6 +23,8 @@ class FCache {
 	var $activeDriver;
 	var $activeId;
 	var $activeGroup;
+	
+	var $defaultGroup = 'default';
 
 	function &getInstance($driver='',$lifeTime=-1) {
 		static $instance;
@@ -147,6 +149,9 @@ class FCache {
 		}
 		if($group=='') {
 			$group = $this->activeGroup;
+		}
+		if(empty($group)) {
+			$group = $this->defaultGroup;
 		}
 
 		return $this->activeDriver->setData($id, $data, $group);

@@ -1,12 +1,12 @@
 <?php
 /**
- * Database tool 
- * 
+ * Database tool
+ *
  * @author frantisek.kaspar
  *
  */
 class FDBTool {
-	
+
 	/**
 	 * 0 - number indexed data
 	 * 1 - name indexed
@@ -15,11 +15,11 @@ class FDBTool {
 	var $fetchmode = 0;
 	/**
 	 *cacheResults - driver
-	 * 
+	 *
 	 * 0 - no cache
 	 * l - cache per load
 	 * s - cache per session
-	 * d - database 
+	 * d - database
 	 * f - cache in file
 	 **/
 	var $cacheResults = 0;
@@ -29,15 +29,15 @@ class FDBTool {
 	 * @var Number
 	 */
 	var $lifeTime = 0;
-	
+
 	var $debug = 0;
-	
+
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
 	var $tableDef;
 	var $columns;
-	
+
 	private $_where = array();
 	private $_order = array();
 	private $_select = array('*');
@@ -46,7 +46,7 @@ class FDBTool {
 	private $autojoin = false;
 	private $_join = '';
 	private $_limit = array();
-	
+
 	private $openingDelimiter = '{#';
 	private $closingDelimiter     = '#}';
 	private $variablenameRegExp    = '[\.0-9A-Za-z_-]+';
@@ -62,12 +62,12 @@ class FDBTool {
     'datetime_iso' => '%Y-%m-%dT%T',
     'datetime_local' => '%T %d.%m.%Y',
 	);
-	
+
 	//---save tool
 	var $_cols = array();
 	var $_notQuoted = array();
 	var $quoteType = "'";
-	
+
 	function __construct($tableName='',$primaryCol='') {
 		$this->debug = FConf::get('dboptions','debug');
 		$this->table = $tableName;
@@ -75,7 +75,7 @@ class FDBTool {
 		$this->replaceKeys = array_keys($this->replaceVars);
 		$this->primaryCol = $primaryCol;
 	}
-	
+
 	function parseTableDef() {
 		if(!empty($this->tableDef)) {
 			require_once('SQL/Parser.php');
@@ -98,7 +98,7 @@ class FDBTool {
 			}
 		}
 	}
-	
+
 	function queryReset() {
 		$this->_where = array();
 		$this->_join = '';
@@ -116,7 +116,7 @@ class FDBTool {
 			$where[] = '1';
 		} else if($this->autojoin===true) {
 			foreach($this->_where as $cond) {
-				if(!strpos($conf,'.')) {
+				if(!strpos($cond,'.')) {
 					$cond = $this->table.'.'.$cond;
 				}
 				$where[] = $cond;
@@ -140,8 +140,8 @@ class FDBTool {
 		$this->_join .= ' '.$condition;
 	}
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
-		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$column. '=' .$table.'.'.$column;
-		$this->autoJoin = true;
+		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$joinColumn. '=' .$table.'.'.$joinColumn;
+		$this->autojoin = true;
 		foreach($selectColumnsArray as $col) {
 			$this->addSelect($table.'.'.$col);
 		}
@@ -189,10 +189,19 @@ class FDBTool {
 	function addSelect($what='*') {
 		$this->_select[] = $what;
 	}
-	function replaceSelect($what,$with) {
-		$len=count($this->_select);
-		for($i=0;$i<$len;$i++){
-			$this->_select[$i] = str_replace($what,$with,$this->_select[$i]);
+	function replaceSelect($what, $with) {
+		$arrReplacement = explode(',',$with);
+		if(count($arrReplacement) > 0) {
+			foreach($this->_select as $v) {
+				if($v != $what) {
+					$select[] = $v;
+				} else {
+					foreach($arrReplacement as $r) {
+						$select[] = $r;
+					}
+				}
+			}
+			$this->_select = $select;
 		}
 	}
 	function getSelect() {
@@ -280,7 +289,7 @@ class FDBTool {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
 		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
-		
+
 		if(!empty($arr)) {
 			if($this->fetchmode == 1 && !empty($this->columns)) {
 				$len = count( $this->columns );
@@ -303,15 +312,15 @@ class FDBTool {
 	}
 	function get($id) {
 		if( !empty($this->columns) ) {
-			$this->setSelect(implode(',',$this->columns));
+			$this->replaceSelect('*', implode(',',$this->columns));
 		}
-		$this->addWhere($this->primaryCol.'="'.$id.'"');
+		$this->addWhere((($this->autojoin==true)?($this->table.'.'):('')).$this->primaryCol.'="'.$id.'"');
 		$ret = $this->getContent(0,0,$this->getCacheId($id));
 		if(!empty($ret)) {
-			return $ret[0];	
+			return $ret[0];
 		}
 	}
-	
+
 	//---save functions
 	function addCol($name,$value,$quote=true) {
 		$this->_cols[$name] = $value;
@@ -458,7 +467,7 @@ class FDBTool {
 	static function query($query) {
 		return FDBTool::getData('query',$query);
 	}
-	
+
 	private static function getData($function, $query) {
 		$db = FDBConn::getInstance();
 		$ret = $db->$function($query);
@@ -466,9 +475,9 @@ class FDBTool {
 			echo $ret->getMessage();
 			if(FConf::get('dboptions','debug')==1) {
 				echo " <br />\n";
-			    echo 'Code: ' . $ret->getCode() . " <br />\n";
-			    echo 'DBMS/User Message: ' . $ret->getUserInfo() . " <br />\n";
-			    echo 'DBMS/Debug Message: ' . $ret->getDebugInfo() . " <br />\n";
+				echo 'Code: ' . $ret->getCode() . " <br />\n";
+				echo 'DBMS/User Message: ' . $ret->getUserInfo() . " <br />\n";
+				echo 'DBMS/Debug Message: ' . $ret->getDebugInfo() . " <br />\n";
 			}
 			die();
 		}

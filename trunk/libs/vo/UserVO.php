@@ -71,8 +71,7 @@ class UserVO extends FDBvo {
 	}
 
 	function load() {
-		$this->setSelect(implode(',',$this->_cols));
-		$this->addJoinAuto('sys_skin','skinId','name');
+		$this->addJoinAuto('sys_skin','skinId',array('name'));
 		parent::load();
 	}
 
