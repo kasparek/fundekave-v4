@@ -24,6 +24,7 @@ class FBuildPage {
      'events.view.php'=>'page_EventsView',
      'forum.view.php'=>'page_ForumView',
      'bloged.main.php'=>'page_Main',
+	   'pages.list.php'=>'page_PagesList',
      );
 //---temporary till database change
   if(isset($old[$template])) {

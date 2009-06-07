@@ -35,6 +35,7 @@ class LoadDriver
 
 	function setData($id, $data, $group = 'default') {
 		$this->data[$group][$id] = serialize($data);
+		return true;
 	}
 
 	function getData($id, $group = 'default') {

@@ -25,17 +25,17 @@ class FItemsToolbar {
 	}
 
 	static function isToolbarEnabled() {
-		$toolbarData = &FItems::getTagToolbarData();
+		$toolbarData = &FItemsToolbar::getTagToolbarData();
 		return $toolbarData['enabled'];
 	}
 	static function setTagToolbarDefaults($array) {
-		$toolbarData = &FItems::getTagToolbarData();
+		$toolbarData = &FItemsToolbar::getTagToolbarData();
 		if($toolbarData['enabled']==0) {
 			foreach ($array as $k=>$v) {
 				$toolbarData[$k] = $v;
 			}
 		}
-		FItems::setTagToolbarData($toolbarData);
+		FItemsToolbar::setTagToolbarData($toolbarData);
 	}
 	static function getIntervalConf($par) {
 		$arr = array(
@@ -48,7 +48,7 @@ class FItemsToolbar {
 	}
 
 	static function getTagToolbar($showHits=true,$params=array()) {
-		$toolbarData = &FItems::getTagToolbarData();
+		$toolbarData = &FItemsToolbar::getTagToolbarData();
 		$tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
 
 		if(isset($toolbarData['search'])) {
@@ -121,13 +121,13 @@ class FItemsToolbar {
 		if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 
-		FItems::setTagToolbarData($toolbarData);
+		FItemsToolbar::setTagToolbarData($toolbarData);
 
 		return $tpl->get();
 	}
 
 	static function setTagToolbar() {
-		$toolbarData = &FItems::getTagToolbarData();
+		$toolbarData = &FItemsToolbar::getTagToolbarData();
 		if(isset($_POST['thumbupreset'])) $toolbarData = array();
 		else {
 			if(isset($_POST['searchText'])) {
@@ -168,11 +168,11 @@ class FItemsToolbar {
 				}
 			}
 		}
-		FItems::setTagToolbarData($toolbarData);
+		FItemsToolbar::setTagToolbarData($toolbarData);
 	}
 
 	static function setQueryTool(&$fQuery) {
-		$thumbupData = &FItems::getTagToolbarData();
+		$thumbupData = &FItemsToolbar::getTagToolbarData();
 		if($thumbupData['enabled']==1) {
 
 			if(isset($thumbupData['searchStr'])) {

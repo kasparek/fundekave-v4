@@ -87,7 +87,7 @@ class FDBTool {
 				$this->table = $parsed['table_names'][0];
 			}
 			foreach($parsed["column_defs"] as $k=>$v) {
-				$this->columns[] = $k;
+				$this->columns[$k] = $k;
 				if(isset($v["constraints"])) {
 					foreach($v["constraints"] as $constr) {
 						if($constr["type"]=='primary_key') {
@@ -282,19 +282,16 @@ class FDBTool {
 		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
 		
 		if(!empty($arr)) {
-			
-			var_dump($arr);
-			var_dump($this->columns);
 			if($this->fetchmode == 1 && !empty($this->columns)) {
 				$len = count( $this->columns );
+				$cols = array_keys( $this->columns );
 				foreach($arr as $ret) {
-					for($i=0; $i<$len; $i++) {
-						$col = $this->columns[$i];
+					$i = 0;
+					foreach($cols as $col) {
 						$retNew[$col] = $ret[$i];
+						$i++;
 					}
 					$arrNamed[]=$retNew;
-					
-					
 				}
 				return $arrNamed;
 			}
@@ -305,7 +302,7 @@ class FDBTool {
 		return $this->table.'-'.$this->primaryCol.'-'.$id;
 	}
 	function get($id) {
-		if(empty($this->_select) && !empty($this->columns)) {
+		if( !empty($this->columns) ) {
 			$this->setSelect(implode(',',$this->columns));
 		}
 		$this->addWhere($this->primaryCol.'="'.$id.'"');
@@ -469,9 +466,9 @@ class FDBTool {
 			echo $ret->getMessage();
 			if(FConf::get('dboptions','debug')==1) {
 				echo " <br />\n";
-			    echo 'Code: ' . $db->getCode() . " <br />\n";
-			    echo 'DBMS/User Message: ' . $db->getUserInfo() . " <br />\n";
-			    echo 'DBMS/Debug Message: ' . $db->getDebugInfo() . " <br />\n";
+			    echo 'Code: ' . $ret->getCode() . " <br />\n";
+			    echo 'DBMS/User Message: ' . $ret->getUserInfo() . " <br />\n";
+			    echo 'DBMS/Debug Message: ' . $ret->getDebugInfo() . " <br />\n";
 			}
 			die();
 		}

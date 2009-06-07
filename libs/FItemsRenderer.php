@@ -78,7 +78,7 @@ class FItemsRenderer {
 		$tpl->setVariable('DATELOCAL', $itemVO->dateCreatedLocal);
 		$tpl->setVariable('DATEISO', $itemVO->dateCreatedIso);
 
-		if($arr['public'] != 1) {
+		if($itemVO->public != 1) {
 			$tpl->touchBlock('notpublished');
 			$tpl->touchBlock('notpublishedheader');
 		}
@@ -100,20 +100,20 @@ class FItemsRenderer {
 				 *
 				 */
 				if($itemVO->categoryId > 0) {
-					$categoryArr = FPages::getCategory($arr['categoryId']);
+					$categoryArr = FPages::getCategory($itemVO->categoryId);
 					$tpl->setVariable('CATEGORY',$categoryArr[2]);
 				}
 				$tpl->setVariable('LOCATION',$itemVO->location);
-				$tpl->setVariable('STARTDATETIMEISO',$itemVO->startDateIso.(($itemVO->startTime!='00:00')?('T'.$itemVO->startTime):('')));
-				$tpl->setVariable('STARTDATETIMELOCAL',$itemVO->startDateLocal.(($itemVO->startTime!='00:00')?(' '.$itemVO->startTime):('')));
-				if(!empty($arr['endDateIso'])) {
-					$tpl->setVariable('ENDDATETIMEISO',$itemVO->endDateIso.(($itemVO->endTime!='00:00')?('T'.$itemVO->endTime):('')));
-					$tpl->setVariable('ENDDATETIMELOCAL',$itemVO->endDateLocal.(($itemVO->endTime!='00:00')?(' '.$itemVO->endTime):('')));
+				$tpl->setVariable('STARTDATETIMEISO',$itemVO->dateStartIso.(($itemVO->timeStart!='00:00')?('T'.$itemVO->timeStart):('')));
+				$tpl->setVariable('STARTDATETIMELOCAL',$itemVO->dateStartLocal.(($itemVO->timeStart!='00:00')?(' '.$itemVO->timeStart):('')));
+				if(!empty($itemVO->endDateIso)) {
+					$tpl->setVariable('ENDDATETIMEISO',$itemVO->dateEndIso.(($itemVO->timeEnd!='00:00')?('T'.$itemVO->timeEnd):('')));
+					$tpl->setVariable('ENDDATETIMELOCAL',$itemVO->dateEndLocal.(($itemVO->timeEnd!='00:00')?(' '.$itemVO->timeEnd):('')));
 				}
 
 				if(!empty($itemVO->enclosure)) {
 					$flyerFilename = FEvents::flyerUrl($itemVO->enclosure);
-					$flyerFilenameThumb = FEvents::thumbUrl($imageName);
+					$flyerFilenameThumb = FEvents::thumbUrl($itemVO->enclosure);
 					FEvents::createThumb($itemVO->enclosure);
 					if(file_exists($flyerFilename)) {
 						$arrSize = getimagesize($flyerFilename);
@@ -159,7 +159,7 @@ class FItemsRenderer {
 				$tpl->setVariable('IMGALT',$pageVO->name.' '.$itemVO->enclosure);
 				$tpl->setVariable('IMGTITLE',$pageVO->name.' '.$itemVO->enclosure);
 				$tpl->setVariable('IMGURLTHUMB',$itemVO->thumbUrl);
-				$tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$itemVO->width.'px;"');
+				$tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$itemVO->thumbWidth.'px;"');
 				//$tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$itemVO->height.'px;"');
 				if($this->showRating==true) $tpl->setVariable('HITS',$itemVO->hit);
 
@@ -191,14 +191,14 @@ class FItemsRenderer {
 				$tpl->setVariable('POCKET',fPocket::getLink($itemVO->itemId));
 			}
 			//---user link and location
-			if($arr['userId'] > 0) {
-				if($arr['typeId']!='galery') {
-					$tpl->setVariable('AUTHORLINK','?k=finfo&who='.$arr['userId']);
+			if($itemVO->userId > 0) {
+				if($itemVO->typeId!='galery') {
+					$tpl->setVariable('AUTHORLINK','?k=finfo&who='.$itemVO->userId);
 					$tpl->touchBlock('authorlinkclose');
 				}
-				if($arr['typeId']=='forum') {
-					if ($user->isOnline($arr['userId'])) {
-						$kde = $user->getLocation($arr['userId']);
+				if($itemVO->typeId == 'forum') {
+					if ($user->isOnline( $itemVO->userId )) {
+						$kde = $user->getLocation( $itemVO->userId );
 						$tpl->setVariable('USERLOCATION',$kde['name']);
 						$tpl->setVariable('USERLOCATIONLINK','?k='.$kde['pageId'].$kde['param']);
 					}
@@ -207,24 +207,23 @@ class FItemsRenderer {
 		}
 
 		//---PAGE NAME
-		//TODO: refactor
 		if($this->showPageLabel==true) {
 			$tpl->touchBlock('haspagelabel');
 			$pageVO  = new PageVO($itemVO->pageId,true);
-			$tpl->setVariable('PAGELINK',FUser::getUri((($arr['typeId']=='forum')?('&i='.$itemVO->itemId.'#i'.$itemVO->itemId):('')),$itemVO->pageId));
+			$tpl->setVariable('PAGELINK',FUser::getUri((($itemVO->typeId=='forum')?('&i='.$itemVO->itemId.'#i'.$itemVO->itemId):('')),$itemVO->pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 		}
 
 		//---BLOG / EVENT
-		if(isset($arr['addon'])) {
-			$link = FUser::getUri('i='.$itemVO->itemId.'-'.FSystem::safeText($arr['addon']),$itemVO->pageId);
-			if($this->showHeading==true || $itemVO->typeId=='event') {
+		if(isset($itemVO->addon)) {
+			$link = FUser::getUri('i='.$itemVO->itemId.'-'.FSystem::safeText($itemVO->addon),$itemVO->pageId);
+			if($this->showHeading==true) {
 				$tpl->setVariable('BLOGLINK',$link);
 				$tpl->setVariable('BLOGTITLE',$itemVO->addon);
 			}
 			if($this->showComments == true) {
 				$writeRule = FPages::getProperty($itemVO->pageId,'forumSet');
-				if(false !== $itemWriteRule = FItems::getProperty($itemVO->itemId,'forumSet',2)) $writeRule = $itemWriteRule;
+				if(false !== ($itemWriteRule = ItemVO::getProperty($itemVO->itemId,'forumSet',2))) $writeRule = $itemWriteRule;
 				$tpl->setVariable('COMMENTS', FForum::show($itemVO->itemId, $writeRule, $this->itemIdInside));
 			} else {
 				$tpl->setVariable('COMMENTLINK',$link);
@@ -239,23 +238,15 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem) {
 			if($itemVO->itemIdBottom > 0) {
-
 				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true);
-				//TODO: move rendering fully to connected with item
-				$fItem = new FItems();
-				$fItem->showPageLabel = true;
-				$fItem->initData('',$user->userVO->userId);
-				$fItem->getItem($arr['itemIdBottom']);
-				$fItem->getData();
-				if(!empty($fItem->arrData)) {
-					$fItem->parse();
-					$tpl->setVariable('ITEMBOTTOM',$fItem->show());
+				if(FRules::get($user->userVO->userId, $itemVOBottom->pageId,1)) {
+					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}
-				unset($fItem);
 			}
-			if(!empty($arr['pageIdBottom'])) {
-				if(FRules::get($user->userVO->userId,$arr['pageIdBottom'],1)) {
-					$tpl->setVariable('ITEMBOTTOM','<h3><a href="?k='.$arr['pageIdBottom'].'">'.FPages::pageAttribute($arr['pageIdBottom']).'</a></h3>');
+			if(!empty($itemVO->pageIdBottom)) {
+				if(FRules::get($user->userVO->userId,$itemVO->pageIdBottom,1)) {
+					$pageVO = new PageVO($itemVO->pageIdBottom,true);
+					$tpl->setVariable('ITEMBOTTOM','<h3><a href="'.FUser::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>');
 				}
 			}
 

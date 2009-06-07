@@ -31,7 +31,7 @@ class FileDriver
 	}
 
 	function setData($id, $data, $group = 'default') {
-		$this->cacheLite->save( serialize($data), $id, $group );
+		return $this->cacheLite->save( serialize($data), $id, $group );
 	}
 
 	function getGroup($group = 'default') {
