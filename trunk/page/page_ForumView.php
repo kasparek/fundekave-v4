@@ -41,12 +41,12 @@ class page_ForumView implements iPage {
 
 		//tlacitko sledovat - jen pro nemajitele
 		if($user->idkontrol) {
-			if($user->pageParam=='' && $user->currentPage['userIdOwner'] != $userId) {
+			if($user->pageParam=='' && $user->pageVO->userIdOwner != $userId) {
 				FSystem::secondaryMenuAddItem('#book',((0 == $user->isPageFavorite())?( FLang::$LABEL_BOOK ):( FLang::$LABEL_UNBOOK )),"xajax_forum_auditBook('".$pageId."','".$userId."');",0,'bookButt');
 			}
 
-			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'p'), FLang::$LABEL_POLL);
-			FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'s'), FLang::$LABEL_STATS);
+			FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
+			FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 
 			if($user->pageParam=='') {
 				if(isset($_GET['s']) || FItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>FItems::getTagToolbar(false)));

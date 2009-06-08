@@ -26,24 +26,23 @@ class page_GaleryDetail implements iPage {
 		if($user->pageParam == 'e') {
 			page_PageEdit::build();
 		} else {
-			$galery = new FGalery();
-			$galery->getGaleryData($pageId);
 			if(FRules::getCurrent(2)) {
 				//---run just wher owner access
+				$galery = new FGalery();
 				$galery->refreshImgToDb($pageId);
 			}
 
 
 			if($user->itemVO->itemId == 0) {
+			
+			$itemRenderer = new FItemsRenderer();
+      $itemRenderer->showTooltip = false;
 
-				$fItems = new FItems();
 
-				if($user->idkontrol) $fItems->xajaxSwitch = true; //---THINK ABOUT USABILITY AND BACK BUTTON
-				$fItems->showTooltip = false;
 
-				$fItems->initData('galery');
-				$fItems->setWhere('i.pageId="'.$pageId.'"');
-				$fItems->addWhere('i.itemIdTop is null');
+				$fItems = new FItems('galery',false,$itemRenderer);
+				$fItems->setWhere('pageId="'.$pageId.'"');
+				$fItems->addWhere('itemIdTop is null');
 				$totalItems = $fItems->getCount();
 				$perPage = $galery->gPerpage;
 

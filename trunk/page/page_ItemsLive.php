@@ -14,23 +14,23 @@ class page_ItemsLive implements iPage {
 
 		$localPerPage = LIVE_PERPAGE;
 
-		$fItems = new FItems();
-		$fItems->showPageLabel = true;
-		$fItems->initData($typeId,$user->userVO->userId,true);
-		if($typeId=='blog') $fItems->addWhere('i.itemIdTop is null');
-
-		$fItems->setOrder('i.dateCreated desc');
+		$itemRenderer = new FItemsRenderer();
+		$itemRenderer->showPageLabel = false;
+		
+		$fItems = new FItems($typeId,$user->userVO->userId,$itemRenderer);
+		if($typeId=='blog') $fItems->addWhere('itemIdTop is null');
+		$fItems->setOrder('dateCreated desc');
 
 		$pager = FSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
 
-		$fItems->getData($from,$localPerPage+1);
-		$totalItems = count($fItems->arrData);
+		$fItems->getList($from,$localPerPage+1);
+		$totalItems = count($fItems->data);
 
 		$maybeMore = false;
 		if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {
 			$maybeMore = true;
-			unset($fItems->arrData[(count($fItems->arrData)-1)]);
+			unset($fItems->data[(count($fItems->data)-1)]);
 		}
 		if($from > 0) $totalItems += $from;
 

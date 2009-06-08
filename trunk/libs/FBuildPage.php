@@ -25,6 +25,8 @@ class FBuildPage {
      'forum.view.php'=>'page_ForumView',
      'bloged.main.php'=>'page_Main',
 	   'pages.list.php'=>'page_PagesList',
+	   'galery.list.php'=>'page_GaleryList',
+	   'galery.detail.php'=>'page_GaleryDetail',
      );
 //---temporary till database change
   if(isset($old[$template])) {
