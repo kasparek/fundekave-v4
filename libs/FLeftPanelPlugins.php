@@ -13,7 +13,7 @@ class FLeftPanelPlugins {
 			$arr = $db->getAll("select categoryId,name from sys_pages_category where typeId = '".$user->pageVO->pageId."' order by ord,name");
 			$tmptext = '';
 			if(!empty($arr)) {
-				 
+					
 				$tpl = new fTemplateIT('sidebar.page.categories.tpl.html');
 				foreach ($arr as $category) {
 					$tpl->setCurrentBlock('item');
@@ -81,7 +81,7 @@ class FLeftPanelPlugins {
       	FROM sys_users_post AS p LEFT JOIN sys_users AS i ON i.userId=p.userIdFrom
       	WHERE p.userId=".$user->userVO->userId." AND p.userIdFrom!=".$user->userVO->userId." AND i.name is not null GROUP BY userIdFrom ORDER BY i.name";
 			$arr = $db->getAll($dot);
-			 
+
 			$user->setData($arr);
 		}
 
@@ -115,7 +115,7 @@ class FLeftPanelPlugins {
 			$tpl->setVariable('FORMACTION',$user->getUri());
 			if(REGISTRATION_ENABLED == 1) $tpl->touchBlock('reglink');
 		}
-		 
+			
 		$ret = $tpl->get();
 		return $ret;
 	}
@@ -151,20 +151,20 @@ class FLeftPanelPlugins {
 				$fItems->parse();
 				$data = $fItems->show();
 			}
-			 
+
 			$cache->setData($data);
 		}
 		return $data;
 	}
 	//---odpid je nastaveno jen kdyz se hlasuje
 	static function rh_anketa($ankid=0,$odpid=0,$calledFromXajax=false) {
-		 
+			
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
 
 		if($user->idkontrol) { ///anketa je jen pro registrovany
-			 
+
 			if(isset($_GET['poll']) && $user->idkontrol) {
 				$arrGet = explode(";",$_GET['poll']);
 				if($ankid==0) $ankid = $db->getOne("SELECT pollId FROM sys_poll WHERE activ=1 AND pageId='".$user->pageVO->pageId."'");
@@ -173,7 +173,7 @@ class FLeftPanelPlugins {
 			if ($odpid > 0) {
 				$cache->invalidateGroup('poll');
 			}
-			 
+
 			if(!$data = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'poll')) {
 				$data = '';
 				$arrVoted = array();
@@ -206,7 +206,7 @@ class FLeftPanelPlugins {
 							foreach($vk as $row) $sc[$row[0]]=$row[1];
 						}
 						/* ........... viditelna cast ........*/
-						 
+							
 						$tpl = new fTemplateIT('sidebar.poll.tpl.html');
 						$tpl->setVariable('QUESTION',$do[1]);
 						foreach($vv as $odp){
@@ -243,8 +243,8 @@ class FLeftPanelPlugins {
 	static function rh_galerie_rnd(){
 		$cache = FCache::getInstance('f',86400);
 		if(!$data = $cache->getData((FUser::logon()>0)?('member'):('nonmember'),'fotornd')) {
-			
-			
+				
+				
 			$itemRenderer = new FItemsRenderer();
 			$itemRenderer->openPopup = true;
 			$itemRenderer->showPageLabel = true;
@@ -252,9 +252,9 @@ class FLeftPanelPlugins {
 			$itemRenderer->showTag = true;
 			$itemRenderer->showText = true;
 			$itemRenderer->thumbInSysRes = true;
-			
+				
 			$fItems = new FItems();
-			$fItems->fItemsRenderer = $itemRenderer; 
+			$fItems->fItemsRenderer = $itemRenderer;
 			$fItems->initList('galery',false,true);
 			$total = $fItems->getCount();
 			$fItems->getList(rand(0,$total),1);
@@ -328,13 +328,13 @@ class FLeftPanelPlugins {
 			$dmesic = $month;
 			$xajax = true;
 		} else $xajax = false;
-		 
+			
 		if(empty($drok) || !checkdate($dmesic,$dden,$drok)) {
 			$dmesic = date("m");
 			$drok = date("Y");
 			$dden = date("j");
 		}
-		 
+			
 		//---cache by drok,dmesic
 		$cache = FCache::getInstance('f',3600);
 		$user = FUser::getInstance();
@@ -370,7 +370,7 @@ class FLeftPanelPlugins {
 			}
 			if(!checkdate($monthafter,$dden,$yearafter)) $dayafter='01'; else $dayafter = $dden;
 			if(!checkdate($monthbefore,$dden,$yearbefore)) $daybefore='01'; else $daybefore = $dden;
-			 
+
 			if($user->pageVO->typeId == 'top') {
 				$arrUsedPlugins = array(
   	    	'diaryItems',
@@ -395,77 +395,79 @@ class FLeftPanelPlugins {
 				if($typeId=='blog') $arrUsedPlugins = array('blogItems');
 			}
 			$arrQ = array();
-			foreach ($arrUsedPlugins as $pluginName) {
-				$arrTmp = FCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
-				if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
-			}
-			$arrEventsForDay = array();
-			$arrEventForDayKeys = array();
-			foreach ($arrQ as $row){
-				$arrEventsForDay[$row[0]][] = array('link'=>$row[1],'id'=>$row[2],'name'=>$row[3],'dateiso'=>$row[4],'datelocal'=>$row[5]);
-			}
-			$arrEventForDayKeys = array_keys($arrEventsForDay);
-			$tpl = new fTemplateIT('sidebar.calendar.tpl.html');
-			$tpl->setVariable('CURRENTMONTH',$MONTHS[$dmesic]);
-			$tpl->setVariable('CURRENTYEAR',$drok);
-			for ($x=1;$x<=$hor;$x++) {
-				$tpl->setCurrentBlock('daysheader');
-				$tpl->setVariable('DAYSHORTCUT',$DAYSSHORT[$x]);
-				$tpl->parseCurrentBlock();
-			}
-			for ($y=0;$y < ($ver);$y++) {
-				for ($x=0;$x<$hor;$x++) {
-					$tpl->setCurrentBlock('column');
+			if(!empty($arrUsedPlugins)) {
+				foreach ($arrUsedPlugins as $pluginName) {
+					$arrTmp = FCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
+					if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
+				}
+				$arrEventsForDay = array();
+				$arrEventForDayKeys = array();
+				foreach ($arrQ as $row){
+					$arrEventsForDay[$row[0]][] = array('link'=>$row[1],'id'=>$row[2],'name'=>$row[3],'dateiso'=>$row[4],'datelocal'=>$row[5]);
+				}
+				$arrEventForDayKeys = array_keys($arrEventsForDay);
+				$tpl = new fTemplateIT('sidebar.calendar.tpl.html');
+				$tpl->setVariable('CURRENTMONTH',$MONTHS[$dmesic]);
+				$tpl->setVariable('CURRENTYEAR',$drok);
+				for ($x=1;$x<=$hor;$x++) {
+					$tpl->setCurrentBlock('daysheader');
+					$tpl->setVariable('DAYSHORTCUT',$DAYSSHORT[$x]);
+					$tpl->parseCurrentBlock();
+				}
+				for ($y=0;$y < ($ver);$y++) {
+					for ($x=0;$x<$hor;$x++) {
+						$tpl->setCurrentBlock('column');
 
-					if($z>=$dentydnu && $den<=$dnumesice) {
-						if(date("j") == $den && $dmesic == date("m")) $tpl->touchBlock('dayCurrent');
-						if(in_array($den,$arrEventForDayKeys)) {
-							$tpl->touchBlock('dayEvent');
-							$tpl->setVariable('TAGDAYID','day'.$den);
+						if($z>=$dentydnu && $den<=$dnumesice) {
+							if(date("j") == $den && $dmesic == date("m")) $tpl->touchBlock('dayCurrent');
+							if(in_array($den,$arrEventForDayKeys)) {
+								$tpl->touchBlock('dayEvent');
+								$tpl->setVariable('TAGDAYID','day'.$den);
+							}
+							$tpl->setVariable('DIARYURL',sprintf("?k=fdiar&ddate=%04d-%02d-%02d",$drok,$dmesic,$den));
+							$tpl->setVariable('DAY',$den);
+							$den++;
+						} else {
+							$tpl->touchBlock('dayblank');
 						}
-						$tpl->setVariable('DIARYURL',sprintf("?k=fdiar&ddate=%04d-%02d-%02d",$drok,$dmesic,$den));
-						$tpl->setVariable('DAY',$den);
-						$den++;
-					} else {
-						$tpl->touchBlock('dayblank');
+						$z++;
+
+						$tpl->parseCurrentBlock();
 					}
-					$z++;
-					 
+					$tpl->setCurrentBlock('row');
 					$tpl->parseCurrentBlock();
 				}
-				$tpl->setCurrentBlock('row');
-				$tpl->parseCurrentBlock();
-			}
-			$tpl->setVariable('PREVIOUSMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
-			$tpl->setVariable('XYEARPREV',$yearbefore);
-			$tpl->setVariable('XMONTHPREV',$monthbefore);
-			$tpl->setVariable('PREVIOUSMONTH',$MONTHS[$monthbefore]);
-			$tpl->setVariable('NEXTMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
-			$tpl->setVariable('XYEARNEXT',$yearafter);
-			$tpl->setVariable('XMONTHNEXT',$monthafter);
-			$tpl->setVariable('NEXTMONTH',$MONTHS[$monthafter]);
-			 
-			foreach ($arrEventsForDay as $k=>$day) {
-				foreach ($day as $event) {
-					$tpl->setCurrentBlock('event');
-					$tpl->setVariable('EVENTLINK',$event['link']);
-					$tpl->setVariable('EVENTLABEL',$event['name']);
-					$tpl->setVariable('STARTDATETIMEISO',$event['dateiso']);
-					$tpl->setVariable('STARTDATETIMELOCAL',$event['datelocal']);
+				$tpl->setVariable('PREVIOUSMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
+				$tpl->setVariable('XYEARPREV',$yearbefore);
+				$tpl->setVariable('XMONTHPREV',$monthbefore);
+				$tpl->setVariable('PREVIOUSMONTH',$MONTHS[$monthbefore]);
+				$tpl->setVariable('NEXTMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
+				$tpl->setVariable('XYEARNEXT',$yearafter);
+				$tpl->setVariable('XMONTHNEXT',$monthafter);
+				$tpl->setVariable('NEXTMONTH',$MONTHS[$monthafter]);
+
+				foreach ($arrEventsForDay as $k=>$day) {
+					foreach ($day as $event) {
+						$tpl->setCurrentBlock('event');
+						$tpl->setVariable('EVENTLINK',$event['link']);
+						$tpl->setVariable('EVENTLABEL',$event['name']);
+						$tpl->setVariable('STARTDATETIMEISO',$event['dateiso']);
+						$tpl->setVariable('STARTDATETIMELOCAL',$event['datelocal']);
+						$tpl->parseCurrentBlock();
+					}
+					$tpl->setCurrentBlock('eventday');
+					$tpl->setVariable('DAYID','day'.($k*1));
 					$tpl->parseCurrentBlock();
 				}
-				$tpl->setCurrentBlock('eventday');
-				$tpl->setVariable('DAYID','day'.($k*1));
-				$tpl->parseCurrentBlock();
+				$data = $tpl->get();
+
+				$cache->setData($data);
+
 			}
-			$data = $tpl->get();
-			 
-			$cache->setData($data);
-			 
+				
+			if($xajax==true) return $data;
+			else return '<div id="fcalendar">'.$data.'</div>';
 		}
-		 
-		if($xajax==true) return $data;
-		else return '<div id="fcalendar">'.$data.'</div>';
 	}
 
 }

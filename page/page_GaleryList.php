@@ -14,6 +14,7 @@ class page_GaleryList implements iPage {
 		FBuildPage::addTab(array("MAINDATA"=>$category->getList('galery')));
 
 		$fPages = new FPages('galery',$user->userVO->userId);
+		
 		if(!empty($category->selected)) {
 			$fPages->addWhere("p.categoryId='".$category->selected[0]."'");
 		}
@@ -35,27 +36,27 @@ class page_GaleryList implements iPage {
 		$arrgal = $fPages->getContent();
 
 		if(!empty($arrgal)) {
-			$fItems = new FItems();
-			$fItems->initData('galery',$user->userVO->userId,true);
-			$fItems->setOrder('i.hit desc');
-			$fItems->showTooltip = false;
-			$fItems->showText = false;
-			$fItems->showTag = false;
-			$fItems->showPageLabel = false;
-			$fItems->showRating = false;
-			$fItems->showHentryClass = false;
-			$fItems->openPopup = false;
-			$fItems->showPocketAdd = false;
+		  
+		  $itemRenderer = new FItemsRenderer();
+      $itemRenderer->showTooltip = false;
+			$itemRenderer->showText = false;
+			$itemRenderer->showTag = false;
+			$itemRenderer->showPageLabel = false;
+			$itemRenderer->showRating = false;
+			$itemRenderer->showHentryClass = false;
+			$itemRenderer->openPopup = false;
+			$itemRenderer->showPocketAdd = false;
+		
+			$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
+      $fItems->setOrder('hit desc');
 
 			foreach ($arrgal as $gal) {
-				$fItems->setWhere('p.pageId="'.$gal[0].'"');
-				$fItems->getData(0,1);
-				$fItems->parse();
-				$fotoThumb = $fItems->show();
+				$fItems->setWhere('pageId="'.$gal[0].'"');
+				$fotoThumb = $fItems->render(0,1);
 				$tpl->setCurrentBlock('galery');
 				$tpl->setVariable("THUMB",$fotoThumb);
 				$tpl->setVariable("PAGEID",$gal[0]);
-				$tpl->setVariable("PAGELINK",'?k='.$gal[0]);
+				$tpl->setVariable("PAGELINK",FUser::getUri('',$gal[0]));
 				$tpl->setVariable("PAGENAME",$gal[1]);
 				$tpl->setVariable("DATELOCAL",$gal[3]);
 				$tpl->setVariable("DATEISO",$gal[5]);

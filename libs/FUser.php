@@ -138,7 +138,7 @@ class FUser {
 				$q = "SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
             	FROM sys_users_logged as ul  
             	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId 
-            	and pf.pageId = '".$this->pageVO->pageId."' 
+            	where pf.pageId = '".$this->pageVO->pageId."' 
             	and ul.userId = '".$this->userVO->userId."'";
 			} else {
 				$q = "SELECT loginId, invalidatePerm
