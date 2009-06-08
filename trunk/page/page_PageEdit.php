@@ -38,22 +38,22 @@ class page_PageEdit implements iPage {
 		if(isset($_POST["save"])) {
 			$sPage = new fPagesSaveTool($typeForSaveTool);
 			
-			fError::resetError();
+			FError::resetError();
 			if(isset($_POST['leftpanel'])) {
 				$fLeft = new fLeftPanel($user->pageVO->pageId,0,$user->currentPage['typeId']);
 				$fLeft->process($_POST['leftpanel']);
 			}
 			$notQuoted = array();
 			$arr['name'] = FSystem::textins($_POST['name'],array('plainText'=>1));
-			if(empty($arr['name'])) fError::addError(ERROR_PAGE_ADD_NONAME);
+			if(empty($arr['name'])) FError::addError(ERROR_PAGE_ADD_NONAME);
 			$arr['description']=FSystem::textins($_POST['description'],array('plainText'=>1));
 			$arr['content']=FSystem::textins($_POST['content']);
 
 			if($typeForSaveTool == 'galery') {
 
 				$arr['galeryDir'] = Trim($_POST['galeryDir']);
-				if($arr['galeryDir']=='') fError::addError(ERROR_GALERY_DIREMPTY);
-				elseif (!FSystem::checkDirname($arr['galeryDir'])) fError::addError(ERROR_GALERY_DIRWRONG);
+				if($arr['galeryDir']=='') FError::addError(ERROR_GALERY_DIREMPTY);
+				elseif (!FSystem::checkDirname($arr['galeryDir'])) FError::addError(ERROR_GALERY_DIRWRONG);
 				elseif($user->currentPageParam=='e' && $user->currentPage['galeryDir'] != $arr['galeryDir']) {
 					$deleteThumbs = true;
 				}
@@ -119,7 +119,7 @@ class page_PageEdit implements iPage {
 				$sPage->setXMLVal('home',FSystem::textins($_POST['forumhome']));
 			}
 
-			if(!fError::isError()) {
+			if(!FError::isError()) {
 
 				if($typeForSaveTool=='galery') {
 					$adr = $galery->get('rootImg').$arr['galeryDir'];
@@ -198,9 +198,9 @@ class page_PageEdit implements iPage {
 				}
 
 				//CLEAR DRAFT
-				fUserDraft::clear($textareaIdDescription);
-				fUserDraft::clear($textareaIdContent);
-				if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') fUserDraft::clear($textareaIdForumHome);
+				FUserDraft::clear($textareaIdDescription);
+				FUserDraft::clear($textareaIdContent);
+				if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') FUserDraft::clear($textareaIdForumHome);
 				if(isset($nid)) $user->pageVO->pageId = $nid;
 				if($user->currentPageParam=='a') $user->currentPageParam = '';
 				/**/
@@ -237,7 +237,7 @@ class page_PageEdit implements iPage {
 							if(!empty($newDate)) {
 								if(strpos($newDate,'.')===true) $newDate = FSystem::den($newDate);
 								elseif(!FSystem::isDate($newDate)) $newDate = '';
-								if(empty($newDate)) fError::addError(ERROR_DATE_FORMAT);
+								if(empty($newDate)) FError::addError(ERROR_DATE_FORMAT);
 								else {
 									$galery->set('fDate',$newDate);
 									$changed=true;
@@ -252,12 +252,12 @@ class page_PageEdit implements iPage {
 
 				/**/
 
-				fHTTP::redirect($user->getUri().$redirectAdd);
+				FHTTP::redirect($user->getUri().$redirectAdd);
 			} else {
 	   //---error during value check .. let the values stay in form - data remain in _POST
-				fUserDraft::save($textareaIdDescription,$_POST['description']);
-				fUserDraft::save($textareaIdContent,$_POST['content']);
-				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') fUserDraft::save($textareaIdForumHome,$_POST['forumhome']);
+				FUserDraft::save($textareaIdDescription,$_POST['description']);
+				FUserDraft::save($textareaIdContent,$_POST['content']);
+				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome,$_POST['forumhome']);
 				//---cache data
 				$cache = FCache::getInstance('l');
 				$cache->setData($arr,'pageForm');
@@ -280,7 +280,7 @@ class page_PageEdit implements iPage {
 				}
 			}
 			FPages::deletePage($user->pageVO->pageId);
-			fHTTP::redirect($user->getUri('','galer'));
+			FHTTP::redirect($user->getUri('','galer'));
 		}
 
 	}
@@ -325,7 +325,7 @@ class page_PageEdit implements iPage {
 			//FIXME: -- load xml properties if($user->currentPageParam!='a') $sPage->xmlProperties = $user->currentPage['pageParams'];
 		}
 
-		$tpl=new fTemplateIT('page.edit.tpl.html');
+		$tpl=new FTemplateIT('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',$user->getUri());
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK','?k=finfo&who='.$pageData['userIdOwner']);
@@ -336,8 +336,8 @@ class page_PageEdit implements iPage {
 		$pageCont = '';
 
 		if(isset($pageData['name'])) $tpl->setVariable('PAGENAME',$pageData['name']);
-		if(isset($pageData['description'])) if(!$pageDesc = fUserDraft::get($textareaIdDescription)) $pageDesc = $pageData['description'];
-		if(isset($pageData['content'])) if(!$pageCont = fUserDraft::get($textareaIdContent)) $pageCont = $pageData['content'];
+		if(isset($pageData['description'])) if(!$pageDesc = FUserDraft::get($textareaIdDescription)) $pageDesc = $pageData['description'];
+		if(isset($pageData['content'])) if(!$pageCont = FUserDraft::get($textareaIdContent)) $pageCont = $pageData['content'];
 
 		$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
 		$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
@@ -363,7 +363,7 @@ class page_PageEdit implements iPage {
 			//enable avatar
 			$tpl->touchBlock('forumspecifictab');
 			//FORUM HOME
-			if(!$home = fUserDraft::get($textareaIdForumHome)) {
+			if(!$home = FUserDraft::get($textareaIdForumHome)) {
 		  $home = FSystem::textToTextarea($sPage->getXMLVal('home'));
 			}
 			$tpl->setVariable('CONTENT',$home);

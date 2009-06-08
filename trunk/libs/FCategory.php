@@ -53,7 +53,7 @@ class FCategory extends FDBTool {
 		$this->setSelect('categoryId,name,description');
 		$arr = $this->getContent();
 		if(!empty($arr)) {
-			$this->tplObject = new fTemplateIT($this->templateList);
+			$this->tplObject = new FTemplateIT($this->templateList);
 			foreach ($arr as $row) {
 				if($row[0] == $selectedCat) {
           $this->tplObject->setVariable('CATEGORYNAME',$row[1]);
@@ -131,7 +131,7 @@ class FCategory extends FDBTool {
 			
 			if($redirect===true) {
 			   $user = FUser::getInstance();
-        fHTTP::redirect($user->getUri($rediraddon));
+        FHTTP::redirect($user->getUri($rediraddon));
       }
 		}
 	}
@@ -146,7 +146,7 @@ class FCategory extends FDBTool {
 		$this->setSelect($this->primaryCol.','.implode(',',$this->arrDbUsedCols));
 		$total = $this->getCount();
 		
-		$this->tplObject = new fTemplateIT($this->template);
+		$this->tplObject = new FTemplateIT($this->template);
 		$this->tplObject->setCurrentBlock("kateg");
 		
 		$addToUrl = $rediraddon;

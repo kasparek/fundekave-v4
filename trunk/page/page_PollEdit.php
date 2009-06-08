@@ -14,7 +14,7 @@ class page_PollEdit implements iPage {
 				if(FPages::page_exist('pageId',$tmpSelectedPageId)) {
 					$cache->setData($tmpSelectedPageId, 'page','poll');
 				}
-				else fError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
+				else FError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
 			if(false !== ($pageId = $cache->getData('page','poll'))) {
 				$selectedPageId = $pageId;
@@ -40,8 +40,8 @@ class page_PollEdit implements iPage {
 				$cache = FCache::getInstance('s');
 				$cach->invalidateGroup('poll');
 			}
-			else fError::addError(FLang::$ERROR_POLL_QUESTION);
-			fHTTP::redirect(FUser::getUri());
+			else FError::addError(FLang::$ERROR_POLL_QUESTION);
+			FHTTP::redirect(FUser::getUri());
 		}
 		
 		if(isset($_POST['saveank']) && !empty($_POST['arr'])){
@@ -68,7 +68,7 @@ class page_PollEdit implements iPage {
 				$cach->invalidateGroup('poll');
 			}
 			
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 		
 		if(isset($_POST['saveodp'])){
@@ -103,13 +103,13 @@ class page_PollEdit implements iPage {
 			
 			$cache = FCache::getInstance('s');
 			$cach->invalidateGroup('poll');
-			fHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
+			FHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
 		}
 		if(isset($_POST['letsnull'])){
 			FDBTool::query("DELETE FROM sys_poll_answers_users WHERE pollId='".$ankid."'");
 			$cache = FCache::getInstance('s');
 			$cach->invalidateGroup('poll');
-			fHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
+			FHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
 		}
 	}
 	
@@ -127,7 +127,7 @@ class page_PollEdit implements iPage {
 		
 		if(!empty($_REQUEST["ankid"])) $ankid = $_REQUEST["ankid"]*1; else $ankid=0;
 
-		$tpl = new fTemplateIT('poll.edit.tpl.html');
+		$tpl = new FTemplateIT('poll.edit.tpl.html');
 		if($superAdmin) {
 			$tpl->setVariable('FORMACTIONADM',FUser::getUri());
 			$tpl->setVariable('SELECTEDPAGEID',$selectedPageId);

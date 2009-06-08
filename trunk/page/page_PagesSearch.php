@@ -65,7 +65,7 @@ class page_PagesSearch implements iPage {
 		$q = "SELECT categoryId,name FROM sys_pages_category where typeId='".$typeId."'".(($user->idkontrol)?(''):(' and public=1 '))." ORDER BY name";
 		$arrkat = FDBTool::getAll($q,$user->pageVO->pageId.'-'.$typeId,'categ');
 
-		$tpl = new fTemplateIT('pages.search.tpl.html');
+		$tpl = new FTemplateIT('pages.search.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$categoryOptions='';

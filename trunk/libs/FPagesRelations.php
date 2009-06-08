@@ -50,7 +50,7 @@ class FPagesRelations {
             $arrRight = $fpages->getContent();
         }
               
-        $tpl = new fTemplateIT('pages.relations.tpl.html');
+        $tpl = new FTemplateIT('pages.relations.tpl.html');
         $optionsLeft = '';
         $optionsRight = '';
         if(!empty($arrLeft))

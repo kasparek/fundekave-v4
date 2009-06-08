@@ -13,8 +13,8 @@ class page_EventsEdit implements iPage {
 			$cache = FCache::getInstance('f');
 			$cache->invalidateDate('eventtip');
 			$cache->invalidateDate('calendarlefthand');
-			fError::addError(FLang::$LABEL_DELETED_OK);
-			fHTTP::redirect(FUser::getUri());
+			FError::addError(FLang::$LABEL_DELETED_OK);
+			FHTTP::redirect(FUser::getUri());
 		}
 
 		if(isset($_POST["nav"])) {
@@ -41,7 +41,7 @@ class page_EventsEdit implements iPage {
 			$dateStart = FSystem::textins($_POST['datestart'],array('plainText'=>1));
 			$dateStart = FSystem::switchDate($dateStart);
 			if(FSystem::isDate($dateStart)) $dateStart .= $timeStart;
-			else fError::addError(FLang::$ERROR_DATE_FORMAT);
+			else FError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			//---save array
 			$arrSave = array('location'=>FSystem::textins($_POST['place'],array('plainText'=>1))
@@ -58,7 +58,7 @@ class page_EventsEdit implements iPage {
 			//die();
 			if($_POST['category']*1>0) $arrSave['categoryId'] = $_POST['category']*1;
 
-			if($arrSave['addon']=="") fError::addError(FLang::$ERROR_NAME_EMPTY);
+			if($arrSave['addon']=="") FError::addError(FLang::$ERROR_NAME_EMPTY);
 
 			if(!empty($itemId)) {
 				$arrSave['itemId'] = $itemId;
@@ -70,7 +70,7 @@ class page_EventsEdit implements iPage {
 				$arrSave['pageId'] = $user->pageVO->pageId;
 			}
 
-			if(!fError::isError()) {
+			if(!FError::isError()) {
 
 				$itemId = $fItems->saveItem($arrSave);
 				if(!empty($_POST['akceletakurl'])) {
@@ -102,7 +102,7 @@ class page_EventsEdit implements iPage {
 
 						$fItems->saveItem(array("itemId"=>$itemId,'enclosure'=>$_FILES['akceletak']['name']));
 						$user->cacheRemove('eventtip','calendarlefthand');
-						fError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
+						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
 					}
 				}
 			} else {
@@ -110,7 +110,7 @@ class page_EventsEdit implements iPage {
 				$cache->setData($arrSave,$user->pageVO->pageId,'form');
 			}
 
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 
 
@@ -159,7 +159,7 @@ class page_EventsEdit implements iPage {
 			,'flyer'=>'');
 		}
 
-		$tpl = new fTemplateIT('events.edit.tpl.html');
+		$tpl = new FTemplateIT('events.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',$user->getUri());
 		$tpl->setVariable('HEADING',(($arr['itemId']>0)?($arr['name']):(LABEL_EVENT_NEW)));
 		$tpl->setVariable('ITEMID',$arr['itemId']);

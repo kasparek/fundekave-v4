@@ -36,7 +36,7 @@ class fdkForum {
     	$hash = md5($this->salt.$this->serverPageId);
       $_SESSION['toSend'] = $_POST['name'].$hash.$_POST['text'];
     	require($this->forumLibsPath."fHTTP.class.php");
-    	fHTTP::redirect($this->forumPageUri);
+    	FHTTP::redirect($this->forumPageUri);
     }
   }
   function dispatchRss() {

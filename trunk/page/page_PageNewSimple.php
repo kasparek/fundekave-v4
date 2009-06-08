@@ -13,15 +13,18 @@ class page_PagesList implements iPage {
 		if(isset($_REQUEST["add"])) {
 			$ocem= FSystem::textins($_POST["ocem"],array('plainText'=>1));
 			$nazev= FSystem::textins($_POST["nazev"],array('plainText'=>1));
-			if($nazev=='') fError::addError((($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEMPTY):(FLang::$ERROR_BLOG_NAMEEMPTY)));
-			if(FPages::page_exist('name',$nazev)) fError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
-			if(!fError::isError()) {
-				$fPageSave = new fPagesSaveTool($typeId);
-				$newPageId = $fPageSave->savePage(array('name'=>$nazev,'categoryId'=>$arrDefaultCategory[$typeId],
-      'description'=>$ocem,'userIdOwner'=>$user->userVO->userId));
+			if($nazev=='') {
+				FError::addError((($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEMPTY):(FLang::$ERROR_BLOG_NAMEEMPTY)));
+			}
+			if(FPages::page_exist('name',$nazev)) {
+				FError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
+			}
+			if(!FError::isError()) {
+				$fPageSave = new FPagesSaveTool($typeId);
+				$newPageId = $fPageSave->savePage(array('name'=>$nazev,'categoryId'=>$arrDefaultCategory[$typeId],'description'=>$ocem,'userIdOwner'=>$user->userVO->userId));
 				$user->cacheRemove('calendarlefthand');
-				fError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="?k='.$newPageId.'">'.$nazev.'</a>');
-				fHTTP::redirect(FUser::getUri());
+				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FUser::getUri('',$newPageId).'">'.$nazev.'</a>');
+				FHTTP::redirect(FUser::getUri());
 			} else {
 				$cache = FCache::getInstance('s');
 				$cache->setData(array($nazev,$ocem),'newP','form');
@@ -41,7 +44,7 @@ class page_PagesList implements iPage {
 		}
 
 
-		$tpl = new fTemplateIT('forum.new.tpl.html');
+		$tpl = new FTemplateIT('forum.new.tpl.html');
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$tpl->setVariable('NAME',$nazev);
 		$tpl->setVariable('DESC',$ocem);

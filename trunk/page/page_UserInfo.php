@@ -21,7 +21,7 @@ class page_UserInfo implements iPage {
 
 		}
 
-		$tpl = new fTemplateIT('users.info.tpl.html');
+		$tpl = new FTemplateIT('users.info.tpl.html');
 
 		$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 		$tpl->setVariable('NAME',$userVO->name);

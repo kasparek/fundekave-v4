@@ -102,7 +102,7 @@ class FBuildPage {
 		    		
 		    	} else {
 		    		//STATIC TEMPLATE
-		    		$tpl = new fTemplateIT($template);
+		    		$tpl = new FTemplateIT($template);
 		    		$tpl->vars = array_merge($user->pageVO, $_GET);
 		    		$tpl->edParseBlock();
 		    		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));

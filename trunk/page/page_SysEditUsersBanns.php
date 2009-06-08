@@ -31,7 +31,7 @@ class page_SysEditUsersBanns implements iPage {
 		$perpage = 40;
 		$total = FDBTool::getOne("SELECT count(1) ".$base);
 
-		$tpl = new fTemplateIT('sys.admin.bann.tpl.html');
+		$tpl = new FTemplateIT('sys.admin.bann.tpl.html');
 		$tpl->setVariable('TOTALITEMS',$total);
 		$dot = "SELECT s.userId,s.name,s.deleted,s.dateUpdated,s.dateCreated,s.hit,l.ip,s.ipcheck ".$base;
 		if($total>$perpage) {
@@ -48,7 +48,7 @@ class page_SysEditUsersBanns implements iPage {
 			$tpl->setCurrentBlock('user');
 			$tpl->setVariable('ID',$usr[0]);
 			$tpl->setVariable('NAME',$usr[1]);
-			$tpl->setVariable('URL','?k=finfo&who='.$usr[0]);
+			$tpl->setVariable('URL',FUser::getUri('who='.$usr[0],'finfo'));
 			$tpl->setVariable('CREATED',$usr[3]);
 			$tpl->setVariable('UPDATED',$usr[4]);
 			$tpl->setVariable('HIT',$usr[5]);

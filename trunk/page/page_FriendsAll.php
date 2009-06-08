@@ -20,7 +20,7 @@ WHERE u.dateLastVisit IS NOT NULL and f.userId is null AND u.userId!='".$userId.
 ORDER BY u.dateLastVisit desc
 ");
 
-		$tpl = new fTemplateIT('user.friends.all.tpl.html');
+		$tpl = new FTemplateIT('user.friends.all.tpl.html');
 		/*....zacatek vypisu booklych nebo vsech pratel podle podminky idb......*/
 		foreach ($arr as $pra) {
 			$tpl->setCurrentBlock('user');

@@ -7,7 +7,7 @@ class page_UserSettings implements iPage {
 		if(isset($_POST['nav'])) {
 			$user = FUser::getInstance();
 			if($_POST['nav']=='infosave') {
-				$userVO = $user->userVO;
+				$userVO = & $user->userVO;
 				//--setxml elements
 				$userVO->icq = str_replace("-","",FSystem::textins($_POST['infoicq'],array('plainText'=>1)));
 				$userVO->email = FSystem::textins($_POST['infoemajl'],array('plainText'=>1));
@@ -30,7 +30,7 @@ class page_UserSettings implements iPage {
 					$chosenUsernames = explode(',',$_POST['camchosen']);
 					foreach ($chosenUsernames as $username) {
 						$username = trim($username);
-						$userId = $user->getUserIdByName($username);
+						$userId = FUser::getUserIdByName($username);
 						if($userId > 0) $arrUserIdValidatedArr[$userId] = $userId;
 					}
 					if(!empty($arrUserIdValidatedArr)) {
@@ -62,11 +62,11 @@ class page_UserSettings implements iPage {
 				$pass1 = FSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
 				$pass2 = FSystem::textins($_POST["pwdreg2"],array('plainText'=>1));
 				if($pass1!=''){
-					if(strlen($pass1)<3) fError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
-					if($pass1!=$pass2) fError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-					if (!fError::isError()){
+					if(strlen($pass1)<3) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
+					if($pass1!=$pass2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
+					if (!FError::isError()){
 						$userVO->passwordNew = md5(trim($_POST["pwdreg1"]));
-						fError::addError(FLang::$MESSAGE_PASSWORD_SET);
+						FError::addError(FLang::$MESSAGE_PASSWORD_SET);
 					}
 				}
 
@@ -89,7 +89,7 @@ class page_UserSettings implements iPage {
 				}
 
 				$userVO->saveVO();
-				fHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FUser::getUri());
 			}
 		}
 	}
@@ -101,7 +101,7 @@ class page_UserSettings implements iPage {
 		$user = FUser::getInstance();
 		$userVO = $user->userVO;
 
-		$tpl = new fTemplateIT('users.personal.html');
+		$tpl = new FTemplateIT('users.personal.html');
 
 		$tpl->setVariable("FORMACTION",FUser::getUri());
 		$tpl->setVariable("USERNAME",$user->name);

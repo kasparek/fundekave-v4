@@ -26,7 +26,8 @@ class page_UserPost implements iPage {
 			$cache->setData(FSystem::textins($_REQUEST["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
 			$redir = true;
 		}
-
+		
+		//---SEND MESSAGE
 		if(isset($_POST["send"]) && $_POST["zprava"]!='') {
 			$cache->invalidateGroup('filtrPost');
 			if (!empty($_POST["prokoho"])) {
@@ -35,19 +36,19 @@ class page_UserPost implements iPage {
 					if($pro = FUser::getUserIdByName(Trim($usrname))) $arrto[] = $pro;
 					else $errjm[] = Trim($usrname);
 				}
-				if(!empty($errjm)) fError::addError(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
+				if(!empty($errjm)) FError::addError(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
 			}
 
 			if (empty($arrto)) {
-				fError::addError('postnoto');
-				fUserDraft::save('postText',$_POST["zprava"]);
+				FError::addError('postnoto');
+				FUserDraft::save('postText',$_POST["zprava"]);
 			} else {
 				$zprava = FSystem::textins($_POST["zprava"]);
 				if(!empty($zprava)) {
 					foreach ($arrto as $komu){
 						FMessages::send($komu,$zprava,$user->userVO->userId);
 					}
-					fUserDraft::clear('postText');
+					FUserDraft::clear('postText');
 					$redir = true;
 				}
 			}
@@ -71,15 +72,10 @@ class page_UserPost implements iPage {
 			FMessages::delete($arrdel);
 			$redir = true;
 		}
-		//---add remove friend
-		if (isset($_REQUEST["unbookpra"]) || isset($_REQUEST["bookpra"])) {
-			if (isset($_REQUEST["unbookpra"])) $user->userVO->removeFriend($_REQUEST["bookuser"]);
-			else $user->userVO->addFriend($_REQUEST["bookuser"]);
-			$redir = true;
-		}
 		
+		//---redirect				
 		if ($redir==true) {
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 		
 	}
@@ -94,7 +90,7 @@ class page_UserPost implements iPage {
 		if($perPage < 2) $perPage = POST_PERPAGE;
 
 		//load draft
-		$zprava = fUserDraft::get('postText');
+		$zprava = FUserDraft::get('postText');
 		//load from filter
 		if(($filterText = $cache->getData('text','filtrPost')) !== false) $zprava = $filterText;
 
@@ -134,7 +130,7 @@ class page_UserPost implements iPage {
 		if($filterUsername = $cache->getData('name','filtrPost')) $recipients = $filterUsername;
 
 
-		$tpl = new fTemplateIT('users.post.tpl.html');
+		$tpl = new FTemplateIT('users.post.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$tpl->touchBlock('selectedfriend');
@@ -188,10 +184,10 @@ class page_UserPost implements iPage {
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
 				$tpl->setVariable("DATEISO", $post["datum"]);
 				if($post["userIdFrom"]==$user->userVO->userId) {
-					$tpl->setVariable("SENTLINK", "34&who=".$post["userIdTo"]);
+					$tpl->setVariable("SENTLINK", FUser::getUri("who=".$post["userIdTo"],'finfo'));
 					$tpl->setVariable("SENTNAME", FUser::getgidname($post["userIdTo"]));
 				} else {
-					$tpl->setVariable("RECEIVEDLINK", "34&who=".$post["userIdTo"],FUser::getgidname($post["userIdTo"]));
+					$tpl->setVariable("RECEIVEDLINK", FUser::getUri("who=".$post["userIdTo"],'finfo'));
 					$tpl->setVariable("RECEIVEDNAME", FUser::getgidname($post["userIdFrom"]));
 				}
 				$tpl->setVariable("TEXT", $post["text"]);

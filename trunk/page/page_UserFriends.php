@@ -3,30 +3,19 @@ include_once('iPage.php');
 class page_UserFriends implements iPage {
 
 	static function process() {
-		$user = FUser::getInstance();
-		if(isset($_REQUEST["book_idpra"])){
-			$user->userVO->addFriend($_REQUEST["book_idpra"]);
-			fHTTP::redirect(FUser::getUri());
-		}
-		if(isset($_REQUEST["unbook_id"])) {
-			$user->userVO->removeFriend($_REQUEST["unbook_id"]);
-			fHTTP::redirect(FUser::getUri());
-		}
+		
 	}
 
 	static function build() {
 		$user = FUser::getInstance();
 
-		$tpl = new fTemplateIT('user.friends.tpl.html');
+		$tpl = new FTemplateIT('user.friends.tpl.html');
 
 		if ($user->whoIs > 0) {
 			$userId = $user->whoIs;
 			$tpl->setVariable('WHOISNAME',UserVO::getgidname($userId));
 			$tpl->setVariable('SELECTEDFRIENDAVATAR',FAvatar::showAvatar($userId));
 			$tpl->setVariable('SELECTEDFRIENDNAME',UserVO::getgidname($userId));
-			$tpl->setVariable('XAJAXDOFRIENDS',"xajax_user_switchFriend('".$userId."');return(false);");
-			$tpl->setVariable('XAJAXDOFRIENDSLABEL',($user->userVO->isFriend($userId))?(FLang::$LABEL_FRIEND_REMOVE):(FLang::$LABEL_FRIEND_ADD));
-
 		} else {
 			$userId = $user->userVO->userId;
 		}

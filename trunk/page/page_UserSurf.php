@@ -9,8 +9,9 @@ class page_UserSurf implements iPage {
 
 		if(isset($_POST["insert"]) && $user->idkontrol) {
 			$url = trim($_POST["surflink"]);
-			if($url=='') fError::addError(FLang::$ERROR_SURF_URL);
-			else {
+			if($url=='') {
+				FError::addError(FLang::$ERROR_SURF_URL);
+			} else {
 				$sLinx = new FDBTool('sys_surfinie','surfId');
 				$sLinx->addCol('userId',$userId);
 				$sLinx->addCol('url',FSystem::textins($url,array('plainText'=>1)));
@@ -18,22 +19,25 @@ class page_UserSurf implements iPage {
 				$sLinx->addCol('public',($_POST["surfpublic"]*1));
 				$sLinx->addCol('categoryId',($_POST['selcat']*1));
 				$sLinx->addCol('dateCreated','NOW()',false);
-				$dot = $sLinx->buildInsert();
-				$db->query($dot);
-				fHTTP::redirect(FUser::getUri());
+				$sLinx->save();
+				FHTTP::redirect(FUser::getUri());
 			}
 		}
 
+		//---DELETE link
 		if(isset($_GET['d'])) {
 			$deleteId = $_GET['d']*1;
 			$doDelete = false;
-			if($deleteId>0) {
-				if(FRules::get($userId,$pageId,2)) $doDelete = true;
-				elseif($db->getOne("select userId from sys_surfinie where surfId='".$deleteId."'")==$userId) $doDelete = true;
+			if($deleteId > 0) {
+				if(FRules::get($userId,$pageId,2)) {
+					$doDelete = true;
+				} elseif(FDBTool::getOne("select userId from sys_surfinie where surfId='".$deleteId."'")==$userId) {
+					$doDelete = true;
+				}
 			}
 			if($doDelete===true) {
-	   $db->query('delete from sys_surfinie where surfId= "'.$deleteId.'"');
-	   fHTTP::redirect(FUser::getUri());
+				FDBTool::query('delete from sys_surfinie where surfId= "'.$deleteId.'"');
+	   			FHTTP::redirect(FUser::getUri());
 			}
 		}
 
@@ -47,7 +51,7 @@ class page_UserSurf implements iPage {
 		if(isset($_REQUEST["sc"])) $kat = $_REQUEST["sc"]*1; else $kat=0;
 		if(isset($_REQUEST["sm"])) $showAll = $_REQUEST["sm"]*1; else $showAll=0;
 
-		$tpl = new fTemplateIT("user.surf.tpl.html");
+		$tpl = new FTemplateIT("user.surf.tpl.html");
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$tpl->setVariable('SELECTEDCATEGORY',$kat);
 
@@ -86,16 +90,15 @@ class page_UserSurf implements iPage {
 					$tpl->setVariable('DELETELINK',FUser::getUri('d='.$row[0]));
 				}
 				if($userId!=$row[1]) {
-					$tpl->setVariable('AUTHORLINK','?k=finfo&who='.$row[1]);
+					$tpl->setVariable('AUTHORLINK',FUser::getUri('who='.$row[1],'finfo'));
 					$tpl->setVariable('AUTHORNAME',FUser::getgidname($row[1]));
 				}
 				$tpl->setVariable('DESCRIPTION',$row[3]);
-				 
 				$tpl->setVariable('LINKPRINT',((strlen($row[2]>30)?(substr($row[2],0,30).'...'):($row[2]))));
 				$tpl->setVariable('LINKTITLE',$row[2]);
 				$tpl->setVariable('LINKURL',$row[2]);
 				$tpl->parseCurrentBlock();
-				 
+					
 			}
 		}
 

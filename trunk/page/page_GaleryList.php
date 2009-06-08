@@ -22,7 +22,7 @@ class page_GaleryList implements iPage {
 		$totalItems = $fPages->getCount();
 		$from = 0;
 
-		$tpl = new fTemplateIT('galery.list.tpl.html');
+		$tpl = new FTemplateIT('galery.list.tpl.html');
 
 		if($totalItems > GALERY_PERPAGE) {
 			$pager = FSystem::initPager($totalItems,GALERY_PERPAGE);

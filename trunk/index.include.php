@@ -9,7 +9,6 @@ if(isset($_REQUEST['m']) && $user->pageAccess == true) {
 //----DEBUG
 if(isset($_GET['d'])) {
     print_r($user->pageVO);
-    //print_r($_SESSION);
     die(); 
     FSystem::profile('START:'); 
 }
@@ -24,7 +23,7 @@ if(isset($_GET['rt'])) {
   //remove tag item
   $tagItem = $_GET['rt'] * 1;
   if($tagItem > 0) FItems::removeTag($tagItem,$user->userVO->userId);
-  fHTTP::redirect($user->getUri());
+  FHTTP::redirect($user->getUri());
 }
 
 //---TODO:remove book here - should be handled in alternative function call in fajax
@@ -62,7 +61,7 @@ if($user->idkontrol) {
 }
 
 if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked==3)  {
-	fError::addError(MESSAGE_PAGE_LOCKED);
+	FError::addError(MESSAGE_PAGE_LOCKED);
 	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 }
 //---process post/get

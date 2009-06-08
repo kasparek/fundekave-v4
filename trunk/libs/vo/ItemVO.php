@@ -27,7 +27,6 @@ class ItemVO extends FDBvo {
 	'public' => 'public'
 	);
 
-	//TODO: galery - 'galeryDir'=>'p.galeryDir','pageParams'=>'p.pageParams','pageDateUpdated'=>'p.dateUpdated','pageName'=>'p.name'
 	static $colsType = array(
 		'galery'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
 			,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')"),
@@ -161,6 +160,15 @@ class ItemVO extends FDBvo {
 		}
 
 		function save() {
+			$this->resetIgnore();
+			if($this->itemId > 0) {
+				//---update
+
+			} else {
+				//---insert
+				$this->dateCreated = 'now()';
+				$this->notQuote('dateCreated');
+			}
 			parent::save();
 			//---update in cache
 			$cache = FCache::getInstance('l');
@@ -221,17 +229,6 @@ class ItemVO extends FDBvo {
 			if(empty($this->cntReaded)) $this->cntReaded = $this->cnt;
 			$unreaded = $this->cnt - $this->cntReaded;
 			return $unreaded;
-		}
-
-		//TODO: refactor - getitem,saveitem - check where used
-		function getItem($itemId) {
-			$this->setWhere("itemId='".$itemId."'");
-			$arr = $this->getContent();
-			if(!empty($arr)) return $arr[0];
-		}
-		function saveItem($arrData) {
-			$sItem = new fSqlSaveTool('sys_pages_items','itemId');
-			return $sItem->Save($arrData,array('dateCreated'));
 		}
 
 		//---delete

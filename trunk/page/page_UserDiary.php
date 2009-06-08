@@ -3,6 +3,8 @@ include_once('iPage.php');
 class page_UserDiary implements iPage {
 
 	static function process() {
+		
+		//---nova udalost
 		if (isset($_POST['save'])){
 				
 			$user = FUser::getInstance();
@@ -12,35 +14,37 @@ class page_UserDiary implements iPage {
 			$arrd['text'] = FSystem::textins($_POST['dtext']);
 
 			list($nden,$nmesic,$nrok)=explode(".",$_POST['addfdate']);
-			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else fError::addError(ERROR_DATA_FORMAT);
+			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else FError::addError(ERROR_DATA_FORMAT);
 			$arrd['userId'] = $user->userVO->userId;
 			$arrd['reminder'] = $_POST['dpripomen'] * 1;
 			$arrd['dateCreated'] = 'NOW()';
 			if(isset($_POST['did'])) $arrd['diaryId'] = $_POST['did'] * 1;
-			if($arrd['name']=='') fError::addError(FLang::$ERROR_DIARY_NAME);
-			if($arrd['text']=='') fError::addError(FLang::$ERROR_DIARY_TEXT);
-			$arrd['everyday']= $_POST['dopakovat'] * 1;
-			$arrd['eventForAll']= $_POST['dpublic'] * 1;
-			if(!fError::isError()){
-				$sAnketa = new FDBTool('sys_users_diary','diaryId');
-				$sAnketa->Save($arrd,array('dateCreated'));
+			if($arrd['name']=='') FError::addError(FLang::$ERROR_DIARY_NAME);
+			if($arrd['text']=='') FError::addError(FLang::$ERROR_DIARY_TEXT);
+			$arrd['everyday'] = $_POST['dopakovat'] * 1;
+			$arrd['eventForAll'] = $_POST['dpublic'] * 1;
+			if(!FError::isError()){
+				$fdbtool = new FDBTool('sys_users_diary','diaryId');
+				$fdbtool->save($arrd,array('dateCreated'));
 				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('calendarlefthand');
-				fUserDraft::clear($user->pageVO->pageId);
+				FUserDraft::clear($user->pageVO->pageId);
 			} else {
-				$_SESSION['diar_arr'] = $arrd;
+				$cache = FCache::getInstance('s');
+				$cache->setData($arrd,'diary','form');
 			}
-			fHTTP::redirect(FUser::getUri('ddate='.$arrd['dateEvent']));
+			FHTTP::redirect(FUser::getUri('ddate='.$arrd['dateEvent']));
 		}
 
+		//---mazani udalosti
 		if(!empty($_REQUEST['del']) && FUser::logon()) {
 			$dot = 'delete from sys_users_diary where diaryId="'.($_REQUEST['del']*1).'"';
 			if(FDBTool::query($dot)) {
-				fError::addError(FLang::$LABEL_DELETED_OK);
+				FError::addError(FLang::$LABEL_DELETED_OK);
 				$cache = FCache::getInstance('f');
 				$user->invalidateGroup('calendarlefthand');
 			}
-			fHTTP::redirect(FUser::getUri('ddate='.$_REQUEST['ddate']));
+			FHTTP::redirect(FUser::getUri('ddate='.$_REQUEST['ddate']));
 		}
 	}
 
@@ -59,24 +63,24 @@ class page_UserDiary implements iPage {
 
 		if(!empty($_REQUEST['did'])) {
 			$eventId = $_REQUEST['did'] * 1;
-			$qDiar = new fQueryTool('sys_users_diary as d');
+			$qDiar = new FDBTool('sys_users_diary','diaryId');
 			$qDiar->setSelect("diaryId,name,text,date_format(dateEvent,'%d.%m.%Y') as devent,reminder,everyday,eventForAll,recurrence");
-			$qDiar->setWhere("userId='".$user->userVO->userId."'");
-			$qDiar->addWhere('diaryId="'.$eventId.'"');
-			$arrd = FDBTool::getRow($qDiar->buildQuery());
+			$arrd = $qDiar->get($eventId);
 		}
 		
-		if(isset($_SESSION['diar_arr'])) {
-			$arrd=$_SESSION['diar_arr'];
-			$da=explode("-",$arrd['datum']);
-			if(!empty($da[0])) $arrd['rok']=$da[0]; else $arrd['rok']=$drok;
-			if(!empty($da[1])) $arrd['mesic']=$da[1]; else $arrd['mesic']=$dmesic;
-			if(!empty($da[2])) $arrd['den']=$da[2]; else $arrd['den']=$dden;
-			unset($_SESSION['diar_arr']);
+		$cache = FCache::getInstance('s');
+				
+		if(($arrCache = $cache->getData('diary','form'))!==false) {
+			$arrd = $arrCache;
+			$da = explode("-",$arrd['datum']);
+			if(!empty($da[0])) $arrd['rok']=$da[0]; else $arrd['rok'] = $drok;
+			if(!empty($da[1])) $arrd['mesic']=$da[1]; else $arrd['mesic'] = $dmesic;
+			if(!empty($da[2])) $arrd['den']=$da[2]; else $arrd['den'] = $dden;
+			$cache->invalidateData('diary','form');
 		}
 		
 		//---show part
-		$tpl = new fTemplateIT('users.diary.tpl.html');
+		$tpl = new FTemplateIT('users.diary.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 		$tpl->setVariable('ADDFORMACTION',FUser::getUri());
@@ -101,7 +105,7 @@ class page_UserDiary implements iPage {
 			$tpl->touchBlock('formhidden');
 			$arrd[4]=0;
 			$arrd[7]=0;
-			$draftText = fUserDraft::get($user->pageVO->pageId);
+			$draftText = FUserDraft::get($user->pageVO->pageId);
 			if($draftText) $tpl->setVariable('DTEXT',$draftText);
 		}
 
@@ -120,8 +124,8 @@ class page_UserDiary implements iPage {
 		$tpl->setVariable('REPEATOPTIONS',$repeatOptions);
 
 		//--------------vypis udalosti
-		$qDiar = new FDBTool('sys_users_diary as d');
-		$qDiar->setSelect("date_format(d.dateEvent,'{#date_local#}') as datumcz,name,text,diaryId as id,userId,date_format(dateEvent,'{#date_iso#}') as dateEvent,dateCreated,0 as typ");
+		$qDiar = new FDBTool('sys_users_diary','diaryId');
+		$qDiar->setSelect("date_format(dateEvent,'{#date_local#}') as datumcz,name,text,diaryId as id,userId,date_format(dateEvent,'{#date_iso#}') as dateEvent,dateCreated,0 as typ");
 		if(!isset($_POST['search'])) {
 
 			$qDiar->addWhere("YEAR(dateEvent)='".$drok."' AND MONTH(dateEvent)='".$dmesic."'");
@@ -134,13 +138,17 @@ class page_UserDiary implements iPage {
 			if(trim($_POST['dsearch'])!="") $qDiar->addWhere("(LOWER(name) LIKE '%".strtolower(trim($_POST['dsearch']))."%' OR LOWER(text) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
 
 		}
-		if(isset($_REQUEST['l'])) $qDiar->addWhere("userId='".$user->userVO->userId."'");
-		else $qDiar->addWhere("(userId='".$user->userVO->userId."' or eventForAll='1')");
+		
+		if(isset($_REQUEST['l'])) {
+			$qDiar->addWhere("userId='".$user->userVO->userId."'");
+		} else {
+			$qDiar->addWhere("(userId='".$user->userVO->userId."' or eventForAll='1')");
+		}
 		$qDiar->addWhere("recurrence=0");
 		$dot1=$qDiar->buildQuery();
 
-		//---pripraveni druheho dotazu na union s akcema
-		$qAkce = new FDBTool('sys_pages_items as e');
+		//---pripraveni druheho dotazu na union s akcema - tipu
+		$qAkce = new FDBTool('sys_pages_items','itemId');
 		$qAkce->setSelect("date_format(dateStart,'{#date_local#}') as datumcz,addon,location,itemId as id,userId,date_format(dateStart,'{#date_iso#}') as dateEvent,dateCreated,3 as typ");
 		if(!isset($_POST['search'])) {
 			$qAkce->addWhere("YEAR(dateStart)='".$drok."' AND MONTH(dateStart)='".$dmesic."'");
@@ -154,18 +162,11 @@ class page_UserDiary implements iPage {
 	OR LOWER(location) LIKE '%".strtolower(trim($_POST['dsearch']))."%')");
 		}
 		if(isset($_REQUEST['l'])) $qAkce->addWhere("userId='".$user->userVO->userId."'");
-		$dot2=$qAkce->buildQuery();
+		$dot2 = $qAkce->buildQuery();
 
-		//---dotaz pro opakuj�c� se akce
+		//---dotaz pro opakujici se akce
 		$qDiarEvery = new FDBTool('sys_users_diary');
-		$qDiarEvery->setSelect("concat(date_format(dateEvent,'%d.%m.'),date_format(NOW(),'%Y')) as datumcz,
-name,
-text,
-diaryId as id,
-userId,
-concat(date_format(NOW(),'%Y'),date_format(dateEvent,'-%m-%d')) as dateEvent,
-dateCreated,
-recurrence as typ");
+		$qDiarEvery->setSelect("concat(date_format(dateEvent,'%d.%m.'),date_format(NOW(),'%Y')) as datumcz,name,text,diaryId as id,userId,concat(date_format(NOW(),'%Y'),date_format(dateEvent,'-%m-%d')) as dateEvent,dateCreated,recurrence as typ");
 		if(!isset($_POST['search'])) {
 			$qDiarEvery->addWhere("month(dateEvent)='".($dmesic*1)."'");
 			if(!$allmonth) $qDiarEvery->addWhere("dayofmonth(dateEvent)='".($dden*1)."'");
@@ -177,12 +178,11 @@ recurrence as typ");
 		if(isset($_REQUEST['l'])) $qDiarEvery->addWhere("userId='".$user->userVO->userId."'");
 		else $qDiarEvery->addWhere("(userId='".$user->userVO->userId."' or eventForAll='1')");
 		$qDiarEvery->addWhere("recurrence in (1,2)");
-		$dot3=$qDiarEvery->buildQuery();
+		$dot3 = $qDiarEvery->buildQuery();
 		//---konec a kompletace dotazu
 		$dot="(".$dot1.") union (".$dot2.") union (".$dot3.") order by dateEvent";
 
 		$arr = FDBTool::getAll($dot);
-
 
 		if(count($arr)>0) {
 			$oldDate = $arr[0][0];
@@ -205,7 +205,7 @@ recurrence as typ");
 				$tpl->setVariable('EVENTTEXT',nl2br($row[2]));
 				if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',FUser::getUri('i='.$row[3],'event'));
 				if($row[5]!=$user->userVO->userId && $row[7]!=0) {
-					$tpl->setVariable('AUTHORLINK','?k=finfo&who='.$row[4]);
+					$tpl->setVariable('AUTHORLINK',FUser::getUri('who='.$row[4],'finfo'));
 					$tpl->setVariable('AUTHOR',FUser::getgidname($row[4]));
 				} else {
 					$tpl->setVariable('EVENTEDITLINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));

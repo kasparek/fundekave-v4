@@ -47,7 +47,7 @@ class page_GaleryDetail implements iPage {
 				$perPage = $galery->gPerpage;
 
 				if($totalItems==0){
-					fError::addError(ERROR_GALERY_NOFOTO);
+					FError::addError(ERROR_GALERY_NOFOTO);
 					$user->pageAccess = false;
 				} else {
 
@@ -61,7 +61,7 @@ class page_GaleryDetail implements iPage {
 					$fItems->getData($od,$perPage);
 
 					//---nahledy
-					$tpl = new fTemplateIT('galery.thumbnails.tpl.html');
+					$tpl = new FTemplateIT('galery.thumbnails.tpl.html');
 					$tpl->setCurrentBlock("thumbnails");
 
 					/*
@@ -121,7 +121,7 @@ class page_GaleryDetail implements iPage {
 							}
 						}
 						
-						$tpl = new fTemplateIT('galery.detail.tpl.html');
+						$tpl = new FTemplateIT('galery.detail.tpl.html');
 						$backLink = '?k='.$user->currentPageId.'&amp;'.$conf['pager']['urlVar'].'='.$pid;
 						$tpl->setVariable("LINKBACKTOP",$backLink);
 

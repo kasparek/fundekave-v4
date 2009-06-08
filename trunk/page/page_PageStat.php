@@ -9,7 +9,7 @@ class page_PageStat implements iPage {
 	static function build() {
 		$user = FUser::getInstance();
 
-		$tpl = new fTemplateIT('forums.stat.tpl.html');
+		$tpl = new FTemplateIT('forums.stat.tpl.html');
 		$tpl->setVariable('OWNERLINK','?k=33&who='.$user->pageVO->userIdOwner);
 		$tpl->setVariable('OWNERNAME',FLang::$getgidname($user->pageVO->userIdOwner));
 		$tpl->setVariable('MESSAGESCOUNT',$user->pageVO->cnt);

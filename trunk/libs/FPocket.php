@@ -10,7 +10,6 @@ class FPocket extends FDBTool {
         
     }
     static function getLink($itemId,$page=false) {
-        
         if(FConf::get("pocket","enabled") == 1)
             return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
     }
@@ -56,17 +55,14 @@ class FPocket extends FDBTool {
         }
     }
     function show($xajax=false) {
-        $conf = FConf::getInstance();
-        if($conf->a["pocket"]["enabled"] == 1) {
+        if(FConf::get("pocket","enabled") == 1) {
             $nameLength = 10;
             $ret = '';
-            //$this->debug = 1;
             $arr = $this->getItems();
     
-            $tpl = new fTemplateIT($this->template);
+            $tpl = new FTemplateIT($this->template);
     
             if(!empty($arr)) {
-                //TODO:
                 //---parse
     
                 foreach ($arr as $item) {

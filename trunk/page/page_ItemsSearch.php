@@ -33,7 +33,7 @@ class page_ItemsSearch implements iPage {
 		}
 		if($from > 0) $totalItems += $from;
 
-		$tpl = new fTemplateIT('items.list.tpl.html');
+		$tpl = new FTemplateIT('items.list.tpl.html');
 
 		if($totalItems > 0) {
 
