@@ -32,7 +32,7 @@ class page_EventsView implements iPage {
 
 				$itemVO = new ItemVO($user->itemVO->itemId,true
 				,array('type'=>'event','showComments'=>true));
-				$tpl = new fTemplateIT('events.tpl.html');
+				$tpl = new FTemplateIT('events.tpl.html');
 				$tpl->setVariable('ITEMS',$itemVO->render());
 
 			} else {
@@ -61,7 +61,7 @@ class page_EventsView implements iPage {
 				$celkem = $fItems->getCount();
 				$perPage = FConf::get('events','perpage');
 				
-				$tpl = new fTemplateIT('events.tpl.html');	
+				$tpl = new FTemplateIT('events.tpl.html');	
 				
 				if($celkem > 0) {
 					if($celkem > $perPage) {

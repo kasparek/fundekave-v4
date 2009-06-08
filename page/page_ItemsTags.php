@@ -35,7 +35,7 @@ class page_ItemsTags implements iPage {
 		}
 		if($from > 0) $totalItems += $from;
 
-		$tpl = new fTemplateIT('items.list.tpl.html');
+		$tpl = new FTemplateIT('items.list.tpl.html');
 
 		if($totalItems > 0) {
 			$pager->totalItems = $totalItems;

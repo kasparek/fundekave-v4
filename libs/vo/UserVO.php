@@ -76,12 +76,16 @@ class UserVO extends FDBvo {
 	}
 
 	function save(){
-		//TODO: parse which not to quote $this->addCol('dateUpdated','now()',false);
-		//TODO: add some to ignore
-		$this->setIgnore('dateCreated,dateLastVisit');
-		if(!empty($this->newPassword)) $this->password= $this->newPassword;
-		else $this->addIgnore('password');
-		$this->setNotQuote('dateUpdated');
+		$this->addIgnore('dateLastVisit');
+		$this->addIgnore('dateCreated');
+		if(!empty($this->newPassword)) {
+			$this->password= $this->newPassword;
+		} else {
+			$this->addIgnore('password');
+		}
+		$this->addIgnore('name');
+		$this->addIgnore('userId');
+		$this->notQuote('dateUpdated');
 		$this->dateUpdated = 'now()';
 		parent::save();
 	}

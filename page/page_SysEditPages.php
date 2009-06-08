@@ -23,13 +23,12 @@ class page_SysEditPages implements iPage {
 					$oldCat = (int) $_POST['pcato'][$k];
 					$newCat = (int) $v;
 					if(in_array($newCat,$arrCategoryKeys) && $oldCat!=$newCat) {
-						//if($newCat == 0) $newCat = 'null';
 						$dot = "update sys_pages set categoryId=".$newCat." where pageId='".$k."'";
 						FDBTool::query($dot);
 					}
 				}
 			}
-			fHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FUser::getUri());
 		}
 
 	}
@@ -54,7 +53,7 @@ class page_SysEditPages implements iPage {
 		//---SHOW PART
 		$user = FUser::getInstance();
 
-		$tpl = new fTemplateIT('sys.edit.pages.tpl.html');
+		$tpl = new FTemplateIT('sys.edit.pages.tpl.html');
 
 		$fPages = new FPages($type,$user->userVO->userId);
 		$fPages->sa = true;
@@ -111,7 +110,7 @@ class page_SysEditPages implements iPage {
 			$tpl->setVariable('LCATEGORYID',$row[1]);
 			$tpl->setVariable('LCATOPTIONS',$options);
 			$tpl->setVariable('LNAME',$row[3]);
-			$tpl->setVariable('LLOCKED',$ARRLOCKED[$row[2]*1]);
+			$tpl->setVariable('LLOCKED',FLang::$ARRLOCKED[$row[2]*1]);
 			$tpl->parseCurrentBlock();
 		}
 

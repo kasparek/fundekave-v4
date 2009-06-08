@@ -32,7 +32,7 @@ class fHTTP
             return false;
         }
         
-        $url = fHTTP::absoluteURI($url);
+        $url = FHTTP::absoluteURI($url);
         header('Location: '. $url);
         
         if (    $rfc2616 && isset($_SERVER['REQUEST_METHOD']) &&

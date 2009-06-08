@@ -247,7 +247,7 @@ class FForum extends FDBTool {
 						$cache->invalidateData($pageId,'form');
 
 						//---on success
-						if(FUser::logon()) fUserDraft::clear('forum'.$pageId);
+						if(FUser::logon()) FUserDraft::clear('forum'.$pageId);
 						$redirect = true;
 					}
 
@@ -313,7 +313,7 @@ class FForum extends FDBTool {
 
 		/* ........ vypis nazvu auditka .........*/
 		//--FORM
-		$tpl = new fTemplateIT('forum.view.tpl.html');
+		$tpl = new FTemplateIT('forum.view.tpl.html');
 		if($showHead===true) {
 			$desc = $user->pageVO->content;
 			if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
@@ -321,7 +321,7 @@ class FForum extends FDBTool {
 		if($user->pageVO->locked == 0 && $publicWrite > 0) {
 			$tpl->setVariable('FORMACTION',FUser::getUri());
 			$name = "";
-			if($user->idkontrol) $zprava = fUserDraft::get('forum'.$user->pageVO->pageId);
+			if($user->idkontrol) $zprava = FUserDraft::get('forum'.$user->pageVO->pageId);
 			 
 			$cache = FCache::getInstance('s',0);
 			$formData = $cache->getData( $user->pageVO->pageId, 'form');

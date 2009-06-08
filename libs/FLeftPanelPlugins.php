@@ -14,7 +14,7 @@ class FLeftPanelPlugins {
 			$tmptext = '';
 			if(!empty($arr)) {
 					
-				$tpl = new fTemplateIT('sidebar.page.categories.tpl.html');
+				$tpl = new FTemplateIT('sidebar.page.categories.tpl.html');
 				foreach ($arr as $category) {
 					$tpl->setCurrentBlock('item');
 					$tpl->setVariable('PAGEID',$user->pageVO->pageId);
@@ -99,7 +99,7 @@ class FLeftPanelPlugins {
 	static function rh_login() {
 		$user = FUser::getInstance();
 		if($user->idkontrol) {
-			$tpl = new fTemplateIT('sidebar.user.logged.tpl.html');
+			$tpl = new FTemplateIT('sidebar.user.logged.tpl.html');
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',FSystem::getOnlineUsersCount());
@@ -111,7 +111,7 @@ class FLeftPanelPlugins {
 			}
 		} else {
 
-			$tpl = new fTemplateIT('sidebar.user.login.tpl.html');
+			$tpl = new FTemplateIT('sidebar.user.login.tpl.html');
 			$tpl->setVariable('FORMACTION',$user->getUri());
 			if(REGISTRATION_ENABLED == 1) $tpl->touchBlock('reglink');
 		}
@@ -124,7 +124,7 @@ class FLeftPanelPlugins {
 		 global $conf,$user,$DAYS;
 		 if(!$ret = $user->cacheGet('datelefthand')) {
 		 include(ROOT.$conf['language']['path'].'calendar.php');
-		 $tpl = new fTemplateIT('sidebar.today.tpl.html');
+		 $tpl = new FTemplateIT('sidebar.today.tpl.html');
 		 $tpl->setVariable('DAYWORD',$DAYS[Date("D")]);
 		 $tpl->setVariable('DATE',Date('d.'.'m.'.'Y'),$ret);
 		 $tpl->setVariable('TIME',date("H:i"),$ret);
@@ -207,7 +207,7 @@ class FLeftPanelPlugins {
 						}
 						/* ........... viditelna cast ........*/
 							
-						$tpl = new fTemplateIT('sidebar.poll.tpl.html');
+						$tpl = new FTemplateIT('sidebar.poll.tpl.html');
 						$tpl->setVariable('QUESTION',$do[1]);
 						foreach($vv as $odp){
 							$votedtmp = $voted;
@@ -278,7 +278,7 @@ class FLeftPanelPlugins {
 		$admins = $ret['admins'];
 		$ret = '';
 		if(!empty($klub)) {
-			$tpl = new fTemplateIT('sidebar.page.description.tpl.html');
+			$tpl = new FTemplateIT('sidebar.page.description.tpl.html');
 			$tpl->setVariable('DESCRIPTION',$klub[1]);
 			$tpl->setVariable('OWNERAVATAR',FAvatar::showAvatar($klub[0]));
 			if(!empty($admins))
@@ -406,7 +406,7 @@ class FLeftPanelPlugins {
 					$arrEventsForDay[$row[0]][] = array('link'=>$row[1],'id'=>$row[2],'name'=>$row[3],'dateiso'=>$row[4],'datelocal'=>$row[5]);
 				}
 				$arrEventForDayKeys = array_keys($arrEventsForDay);
-				$tpl = new fTemplateIT('sidebar.calendar.tpl.html');
+				$tpl = new FTemplateIT('sidebar.calendar.tpl.html');
 				$tpl->setVariable('CURRENTMONTH',$MONTHS[$dmesic]);
 				$tpl->setVariable('CURRENTYEAR',$drok);
 				for ($x=1;$x<=$hor;$x++) {

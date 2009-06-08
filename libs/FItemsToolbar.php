@@ -49,7 +49,7 @@ class FItemsToolbar {
 
 	static function getTagToolbar($showHits=true,$params=array()) {
 		$toolbarData = &FItemsToolbar::getTagToolbarData();
-		$tpl = new fTemplateIT("thumbup.toolbar.tpl.html");
+		$tpl = new FTemplateIT("thumbup.toolbar.tpl.html");
 
 		if(isset($toolbarData['search'])) {
 			$tpl->touchBlock('search');

@@ -8,8 +8,8 @@ class page_SysEditBanner implements iPage {
 		//upload
 		if(!empty($_FILES['bann'])) {
 			if($ak=upload($_FILES["bann"],WEB_REL_BANNER)) {
-				fError::addError(FLang::$MESSAGE_UPLOAD_SUCCESS);
-				fHTTP::redirect(FUser::getUri());
+				FError::addError(FLang::$MESSAGE_UPLOAD_SUCCESS);
+				FHTTP::redirect(FUser::getUri());
 			}
 		}
 		//delete file from ftp
@@ -17,10 +17,10 @@ class page_SysEditBanner implements iPage {
 			$banner =  WEB_REL_BANNER.trim($_GET['ibd']);
 			if(file_exists($banner)) {
 				if($ak = @unlink($banner)){
-					fError::addError(FLang::$LABEL_DELETED_OK);
-					fHTTP::redirect(FUser::getUri());
+					FError::addError(FLang::$LABEL_DELETED_OK);
+					FHTTP::redirect(FUser::getUri());
 				} else {
-					fError::addError(FLang::$LABEL_FILE.' '.FLang::$LABEL_NOTEXISTS.': '.$banner);
+					FError::addError(FLang::$LABEL_FILE.' '.FLang::$LABEL_NOTEXISTS.': '.$banner);
 				}
 			}
 		}
@@ -38,25 +38,25 @@ class page_SysEditBanner implements iPage {
 			}
 
 			if(FSystem::isDate($_POST['eddatefrom'])) $arr['dateFrom']=$_POST['eddatefrom'];
-			else fError::addError(FLang::$ERROR_DATE_FORMAT);
+			else FError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			if(FSystem::isDate($_POST['eddateto'])) $arr['dateTo']=$_POST['eddateto'];
-			else fError::addError(ERROR_DATE_FORMAT);
+			else FError::addError(ERROR_DATE_FORMAT);
 
 			if(isset($_POST['edstrict'])) $arr['strict'] = 1; else $arr['strict'] = 0;
 
 			$arr['linkUrl'] = Trim($_POST['edurl']);
-			if(empty($arr['linkUrl'])) fError::addError(FLang::$ERROR_BANNER_TARGETEMPTY);
+			if(empty($arr['linkUrl'])) FError::addError(FLang::$ERROR_BANNER_TARGETEMPTY);
 			$arr['imageUrl'] = Trim($_POST['edhtml']);
-			if(empty($arr['imageUrl'])) fError::addError(FLang::$ERROR_BANNER_EMPTY);
+			if(empty($arr['imageUrl'])) FError::addError(FLang::$ERROR_BANNER_EMPTY);
 
 
-			if(!fError::isError()) {
+			if(!FError::isError()) {
 				$bannerId = $sBanner->save($arr,array('dateCreated','dateUpdated'));
-				fError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
+				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
 			}
 
-			fHTTP::redirect(FUser::getUri('ebe='.$bannerId));
+			FHTTP::redirect(FUser::getUri('ebe='.$bannerId));
 		}
 
 		//delete banner from db
@@ -64,8 +64,8 @@ class page_SysEditBanner implements iPage {
 			$bannerId = $_GET['ebd'] * 1;
 			if($bannerId>0) {
 				$db->query("delete from sys_banner where bannerId=".$bannerId);
-				fError::addError(FLang::$LABEL_DELETED_OK);
-				fHTTP::redirect(FUser::getUri());
+				FError::addError(FLang::$LABEL_DELETED_OK);
+				FHTTP::redirect(FUser::getUri());
 			}
 		}
 	}
@@ -73,7 +73,7 @@ class page_SysEditBanner implements iPage {
 	static function build() {
 
 		//-----novy banner
-		$tpl = new fTemplateIT('sys.edit.banners.tpl.html');
+		$tpl = new FTemplateIT('sys.edit.banners.tpl.html');
 		$tpl->setVariable('FORMACTION',FUser::getUri());
 
 		if(isset($_GET['ebe'])) {

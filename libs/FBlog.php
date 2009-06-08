@@ -43,7 +43,7 @@ class FBlog extends FDBTool  {
           		///properties
           		FItems::setProperty($returnItemId,'forumSet',(int) $aFormValues['forumset']);
           		
-          		fUserDraft::clear(fBlog::textAreaId());
+          		FUserDraft::clear(fBlog::textAreaId());
           	} else {
           	  $fItems = new FItems();
           	  $fItems->deleteItem($aFormValues['nid']*1);
@@ -68,7 +68,7 @@ class FBlog extends FDBTool  {
 	    
 	    $textAreaId = fBlog::textAreaId();
 	    
-	    $tpl = new fTemplateIT('blog.editform.tpl.html');
+	    $tpl = new FTemplateIT('blog.editform.tpl.html');
         $tpl->setVariable('PAGEID',$user->pageVO->pageId);
         if($itemId>0) {
             $this->setSelect("text, date_format(dateCreated,'%d.%m.%Y'), name, addon, public, categoryId");
@@ -97,7 +97,7 @@ class FBlog extends FDBTool  {
         	}
         } else {
         	$tpl->setVariable('EDITDATE',Date("d.m.Y"));
-        	if($draft = fUserDraft::get($textAreaId)) $tpl->setVariable('EDITTEXT',$draft);	
+        	if($draft = FUserDraft::get($textAreaId)) $tpl->setVariable('EDITTEXT',$draft);	
         }
         
         $tpl->setVariable('TEXTID',$textAreaId);
@@ -109,7 +109,7 @@ class FBlog extends FDBTool  {
 	function listAll($itemId = 0,$editMode = false) {
 	    $user = FUser::getInstance();
 	    $itemId = (int) $itemId;
-		$tpl = new fTemplateIT('blog.list.tpl.html');
+		$tpl = new FTemplateIT('blog.list.tpl.html');
 		if($user->idkontrol) $tpl->touchBlock('logged');
 		
 		//--edit mode

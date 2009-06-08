@@ -96,7 +96,7 @@ class FTemplateIT extends FHTMLTemplateIT {
   function addTextareaToolbox($key,$textareaId) {
       global $user;
       if($user->idkontrol) {
-          $ftpl = new fTemplateIT('textarea.toolbox.tpl.html');
+          $ftpl = new FTemplateIT('textarea.toolbox.tpl.html');
           $ftpl->setVariable('TEXTAREAID',$textareaId);
           $ftpl->setVariable('TOOLID',$textareaId);
           $this->setVariable($key,$ftpl->get());

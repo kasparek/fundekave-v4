@@ -25,7 +25,7 @@ class page_ItemsTaggingRandom implements iPage {
 					foreach ($itemTags as $k=>$v) {
 						FItems::tag($k,FUser::logon(),0,$v);
 					}
-					fHTTP::redirect(FUser::getUri());
+					FHTTP::redirect(FUser::getUri());
 				}
 			}
 		}
@@ -47,7 +47,7 @@ class page_ItemsTaggingRandom implements iPage {
 		$fItems->setGroup('i.itemId');
 		$fItems->setOrder('tags,rand()');
 
-		$tpl = new fTemplateIT('items.tagging.tpl.html');
+		$tpl = new FTemplateIT('items.tagging.tpl.html');
 
 		$fItems->getData(0,15);
 

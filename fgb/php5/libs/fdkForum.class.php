@@ -35,7 +35,7 @@ class fdkForum {
     	$arrSend = array('name'=>$_POST['name'],'text'=>$_POST['text']);
         $_SESSION['toSend'] = base64_encode(serialize($arrSend));
     	require($this->forumLibsPath."fHTTP.class.php");
-    	fHTTP::redirect($this->forumPageUri);
+    	FHTTP::redirect($this->forumPageUri);
     }
   }
   function dispatchRss() {

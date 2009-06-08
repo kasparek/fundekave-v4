@@ -278,7 +278,7 @@ class FLeftPanel extends FDBTool {
 	}
 	function showEdit() {
 
-		$tpl = new fTemplateIT('leftpanel.page.set.tpl.html');
+		$tpl = new FTemplateIT('leftpanel.page.set.tpl.html');
 
 		$this->load(true);
 

@@ -46,7 +46,7 @@ class FAvatar {
 	 $cache = FCache::getInstance('l');
 
 	 if(!$ret = $cache->getData($avatarUserId,'Uavatar')) {
-	 	$tpl = new fTemplateIT('user.avatar.tpl.html');
+	 	$tpl = new FTemplateIT('user.avatar.tpl.html');
 
 	 	if($userId==-1 ) $avatarUserName = $user->userVO->name;
 	 	elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
@@ -86,7 +86,7 @@ class FAvatar {
 		&& ($tooltip=$cache->getData($avatarUserId, 'UavatarTip'))===false) {
 
 			$avatarUserName = ($userId==-1)?($user->userVO->name):(FUser::getgidname($userId));
-			if(!isset($tpl)) $tpl = new fTemplateIT('user.avatar.tpl.html');
+			if(!isset($tpl)) $tpl = new FTemplateIT('user.avatar.tpl.html');
 				
 			$tpl->setVariable('TOOLTIPID','supernote-note-avatar'.$avatarUserId);
 			$tpl->setVariable('TIPCLASS','snp-mouseoffset notemenu');

@@ -13,7 +13,7 @@ class page_Registration implements iPage {
 	
 	static function build() {
 		
-		$tpl = new fTemplateIT('user.registration.tpl.html');
+		$tpl = new FTemplateIT('user.registration.tpl.html');
 		if (!FUser::logon()) {
 			$tpl->setVariable('FORMACTION',FUser::getUri());
 		} else {

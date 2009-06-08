@@ -145,8 +145,8 @@ if($user->currentPage['typeId']=='galery') {
 }
 
 //---ERROR handling
-if(fError::isError()) {
-    $arrErr = fError::getError();
+if(FError::isError()) {
+    $arrErr = FError::getError();
     foreach ($arrErr as $err) {
         $items[] = array( 'title' => $user->currentPage['name'], 'link' => $baseLink.$user->currentPageId, 'description' => $err, 'author' => 'Fundekave.net', 'comments' => $baseLink.$errorCommentsPageId, 'guid' => $baseLink.$user->currentPageId, 'pubDate' => $rssNow );
     }

@@ -106,7 +106,7 @@ class FRules {
 	}
 	function printEditForm($idstr=0) {
 		$this->getList(true,$idstr);
-		$tpl = new fTemplateIT('pages.permissions.tpl.html');
+		$tpl = new FTemplateIT('pages.permissions.tpl.html');
 		$tpl->setVariable('HEADERLABEL',FLang::$TEXT_PERMISSIONS_SET);
 		$tpl->setVariable('SELECTLABEL',FLang::$LABEL_RULES_ACCESS);
 		$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);

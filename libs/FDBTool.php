@@ -65,6 +65,7 @@ class FDBTool {
 
 	//---save tool
 	var $_cols = array();
+	var $_ignore = array();
 	var $_notQuoted = array();
 	var $quoteType = "'";
 
@@ -254,7 +255,7 @@ class FDBTool {
 			$x = 0;
 			while($x < $length) {
 				if(in_array($regs[1][$x],$this->replaceKeys)) $query = str_replace($regs[0][$x],$this->replaceVars[$regs[1][$x]],$query);
-				else die('fQueryTool:key not exists:'.$regs[1][$x]);
+				else die('FDBTool::key not exists:'.$regs[1][$x]);
 				$x++;
 			}
 		}
@@ -322,9 +323,22 @@ class FDBTool {
 	}
 
 	//---save functions
+	function resetIgnore() {
+		$this->_ignore = array();
+	}
+	function addIgnore( $colName ) {
+		if(array_search($colName,$this->_ignore)===false) {
+			$this->_ignore[] = $colName;
+		}
+	}
 	function addCol($name,$value,$quote=true) {
 		$this->_cols[$name] = $value;
 		if(!$quote) $this->_notQuoted[]=$name;
+	}
+	function notQuote( $colName ) {
+		if(array_search($colName,$this->_notQuoted)===false) {
+			$this->_notQuoted[] = $colName;
+		}
 	}
 	function setCols($cols,$notQuoted=array()) {
 		$this->_cols = array();
@@ -349,7 +363,7 @@ class FDBTool {
 		$cols = $this->quoteCols();
 		$first = true;
 		foreach ($this->_cols as $k=>$v) {
-			if($k!=$this->primaryCol) {
+			if(!in_array($k,$this->_ignore) && $k != $this->primaryCol) {
 				$ret.=(($first)?(''):(',')).$k.'='.((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
 				$first = false;
 			}
@@ -394,7 +408,9 @@ class FDBTool {
 	}
 	function quoteCols() {
 		foreach ($this->_cols as $k=>$v) {
-			$arr[$k] = ((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
+			if(!in_array($k,$this->_ignore)) {
+				$arr[$k] = ((!in_array($k,$this->_notQuoted))?($this->quote($v)):($v));
+			}
 		}
 		return $arr;
 	}

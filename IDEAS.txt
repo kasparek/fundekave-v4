@@ -1,3 +1,8 @@
+kalendar - diary
+ - pro kazdou stranku
+ - kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
+ - rewrite page_UserDiary
+
 event page
 - kategorie
 - kalendar
