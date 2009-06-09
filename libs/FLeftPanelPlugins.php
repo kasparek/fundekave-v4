@@ -1,10 +1,12 @@
 <?php
 class FLeftPanelPlugins {
+	
 	static function pocket() {
 		$user = FUser::getInstance();
 		$fPocket = new FPocket($user->userVO->userId);
 		return $fPocket->show();
 	}
+	
 	static function pageCategories() {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
@@ -29,6 +31,7 @@ class FLeftPanelPlugins {
 		}
 		return $tmptext;
 	}
+	
 	static function bookedRelatedPagesList() {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
@@ -51,6 +54,7 @@ class FLeftPanelPlugins {
 		}
 		return $tmptext;
 	}
+	
 	static function relatedPagesList() {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
@@ -71,6 +75,7 @@ class FLeftPanelPlugins {
 		}
 		return $tmptext;
 	}
+	
 	static function rh_posta_kdo() {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
@@ -96,6 +101,7 @@ class FLeftPanelPlugins {
 		}
 		return($tmptext);
 	}
+	
 	static function rh_login() {
 		$user = FUser::getInstance();
 		if($user->idkontrol) {
@@ -119,6 +125,7 @@ class FLeftPanelPlugins {
 		$ret = $tpl->get();
 		return $ret;
 	}
+	
 	static function rh_datum() {
 		/*
 		 global $conf,$user,$DAYS;
@@ -136,6 +143,7 @@ class FLeftPanelPlugins {
 		 return($ret);
 		 */
 	}
+	
 	static function rh_akce_rnd() {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
@@ -156,6 +164,7 @@ class FLeftPanelPlugins {
 		}
 		return $data;
 	}
+	
 	//---odpid je nastaveno jen kdyz se hlasuje
 	static function rh_anketa($ankid=0,$odpid=0,$calledFromXajax=false) {
 			
@@ -240,6 +249,7 @@ class FLeftPanelPlugins {
 			return $data;
 		}
 	}
+	
 	static function rh_galerie_rnd(){
 		$cache = FCache::getInstance('f',86400);
 		if(!$data = $cache->getData((FUser::logon()>0)?('member'):('nonmember'),'fotornd')) {
@@ -261,6 +271,7 @@ class FLeftPanelPlugins {
 		}
 		return $data;
 	}
+	
 	static function rh_audit_popis(){
 		$cache = FCache::getInstance('f',86400);
 		$user = FUser::getInstance();
@@ -288,6 +299,7 @@ class FLeftPanelPlugins {
 		}
 		return $ret;
 	}
+	
 	static function rh_logged_list(){
 		$db = FDBConn::getInstance();
 		$cache = FCache::getInstance('s',10);
