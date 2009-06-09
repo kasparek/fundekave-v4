@@ -37,42 +37,26 @@ class FForum extends FDBTool {
 			FForum::statAudit($auditId, $user->userVO->userId);
 		}
 	}
-	static function messWrite($arr) {
-		$fSave = new FDBTool('sys_pages_items','itemId');
-		$arrNotQuoted = array('dateCreated');
-		$arr['dateCreated'] = 'NOW()';
-		if(empty($arr['itemIdTop'])) {
-			$arr['itemIdTop'] = 'null';
-			$arrNotQuoted[] = 'itemIdTop';
-		} else {
+	static function messWrite($itemVO) {
+		
+		if(!empty($itemVO->itemIdTop)) {
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('lastBlogPost');
 		}
-		if(empty($arr['userId'])) {
-			$arr['userId'] = 'null';
-			$arrNotQuoted[] = 'userId';
-		}
-		if(empty($arr['enclosure'])) {
-			$arr['enclosure'] = 'null';
-			$arrNotQuoted[] = 'enclosure';
-		}
-		if(empty($arr['addon'])) {
-			$arr['addon'] = 'null';
-			$arrNotQuoted[] = 'addon';
-		}
-		//$fSave->debug = 1;
-		$arr['typeId'] = 'forum';
+		
+		$itemVO->typeId = 'forum';
 
-		$ret = $fSave->save($arr,$arrNotQuoted);
+		$ret = $itemVO->save();
 			
-		if($arr['itemIdTop'] > 0) FForum::incrementReactionCount($arr['itemIdTop']);
-		else {
-			$dot = "update sys_pages set cnt=cnt+1 where pageId='".$arr['pageId']."'";
-			$this->query($dot);
+		if($itemVO->itemIdTop > 0) {
+			FForum::incrementReactionCount( $itemVO->itemIdTop );	
+		} else {
+			$dot = "update sys_pages set cnt=cnt+1 where pageId='".$itemVO->pageId."'";
+			FDBTool::query($dot);
 		}
-		$user = FUser::getInstance();
-		if($user->userVO->userId > 0) {
-			FForum::statAudit($arr['pageId'], $user->userVO->userId, false);
+		
+		if(($userId = FUser::logon()) > 0) {
+			FForum::statAudit($itemVO->pageId, $userId, false);
 		}
 			
 		return $ret;
@@ -116,11 +100,11 @@ class FForum extends FDBTool {
 		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
 		else {
 			$dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$itemId.'"';
-			$unreadedCnt = $this->getOne($dot);
+			$unreadedCnt = FDBTool::getOne($dot);
 		}
 		$unreadedCnt = (($unreadedCnt < POSTS_UNREAD_MAX)?($unreadedCnt):(POSTS_UNREAD_MAX));
 		if($unreadedCnt > 0 && $user->idkontrol) {
-			$arrIds = $this->getCol("select itemId from sys_pages_items
+			$arrIds = FDBTool::getCol("select itemId from sys_pages_items
 			where pageId='".$id."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(''))." order by itemId desc limit 0,".$unreadedCnt);
 			if(!empty($arrIds)) {
 				$cache = FCache::getInstance('s');
@@ -150,7 +134,7 @@ class FForum extends FDBTool {
 	static function aFav($pageId,$userId,$cnt,$booked=0) {
 		if(!empty($userId)){
 			$dot = "insert into sys_pages_favorites values ('".$userId."','".$pageId."','".$cnt."','".$booked."') on duplicate key update cnt='".$cnt."'";
-			$this->query($dot);
+			FDBTool::query($dot);
 		}
 	}
 	static function incrementReactionCount($itemId) {
@@ -233,15 +217,19 @@ class FForum extends FDBTool {
 						}
 
 						//---insert
-						$arrSave = array('pageId'=>$pageId,'userId'=>$user->userVO->userId,'name'=>$jmeno,'text'=>$zprava);
-						if(isset($objekt)) {
-							$arrSave['enclosure']=$objekt;
+						$itemVO = new ItemVO();
+						$itemVO->pageId = $pageId;
+						$itemVO->userId = $user->userVO->userId;
+						$itemVO->name = $jmeno;
+						$itemVO->text = $zprava;
+						if(!empty($objekt)) {
+							$itemVO->enclosure = $objekt;
 						}
-						if(!empty($itemIdBottom)) $arrSave['itemIdBottom'] = $itemIdBottom;
-						if(!empty($pageIdBottom)) $arrSave['pageIdBottom'] = $pageIdBottom;
-						if($itemId > 0) $arrSave['itemIdTop'] = $itemId;
+						if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
+						if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
+						if($itemId > 0) $itemVO->itemIdTop = $itemId;
 
-						FForum::messWrite($arrSave);
+						FForum::messWrite($itemVO);
 
 						$cache = FCache::getInstance('s',0);
 						$cache->invalidateData($pageId,'form');
@@ -250,7 +238,6 @@ class FForum extends FDBTool {
 						if(FUser::logon()) FUserDraft::clear('forum'.$pageId);
 						$redirect = true;
 					}
-
 				}
 			} else {
 				FError::adderror(ERROR_CAPTCHA);

@@ -48,18 +48,16 @@ class FGalery {
 		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
 			$thumbPathArr = $fGalery->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
-			if(!FGalery::isThumb($thumbPathArr['thumb'])) $fGalery->createThumb($thumbPathArr,array('width'=>$this->conf['widthThumb'],'height'=>$this->conf['heightThumb']));
+			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
+				$fGalery->createThumb($thumbPathArr
+					,array('width'=>$fGalery->conf['widthThumb']
+						,'height'=>$fGalery->conf['heightThumb'])
+					);	
+			}
 			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			$fGalery->itemVO->heightWidth = $fGalery->conf['heightThumb'];
 		} else {
-			/*
-			if(!empty( $fGalery->itemVO->addon )) {
-				$fGalery->itemVO->thumbUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir.'/'.$fGalery->itemVO->addon;
-				$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
-				$fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
-			} else {
-*/
 			$thumbPathArr = $fGalery->getThumbPath();
 			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
 				$fGalery->createThumb($thumbPathArr);
@@ -67,7 +65,8 @@ class FGalery {
 			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			$fGalery->itemVO->thumbWidth = (String) $fGalery->pageVO->getPageParam('enhancedsettings/widthpx');
 			$fGalery->itemVO->thumbHeight = (String) $fGalery->pageVO->getPageParam('enhancedsettings/heightpx');
-		
+			if(empty($fGalery->itemVO->thumbWidth)) $fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
+			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 		}
 		$fGalery->itemVO->detailUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 

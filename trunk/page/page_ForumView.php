@@ -49,7 +49,7 @@ class page_ForumView implements iPage {
 			FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 
 			if($user->pageParam=='') {
-				if(isset($_GET['s']) || FItems::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>FItems::getTagToolbar(false)));
+				if(isset($_GET['s']) || FItemsToolbar::isToolbarEnabled()) $TOPTPL->addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar(false)));
 				else {
 					FSystem::secondaryMenuAddItem($user->getUri('s=t'), FLang::$LABEL_THUMBS,"xajax_forum_toolbar();return false;");
 				}

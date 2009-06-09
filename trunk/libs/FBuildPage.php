@@ -27,6 +27,8 @@ class FBuildPage {
 	   'pages.list.php'=>'page_PagesList',
 	   'galery.list.php'=>'page_GaleryList',
 	   'galery.detail.php'=>'page_GaleryDetail',
+	   'pages.booked.php'=>'page_PagesBooked',
+	   'items.live.php'=>'page_ItemsLive',
      );
 //---temporary till database change
   if(isset($old[$template])) {

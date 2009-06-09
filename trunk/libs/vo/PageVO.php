@@ -73,7 +73,10 @@ class PageVO extends FDBvo {
 		if(!empty($this->pageParams)) {
 			$xml = new SimpleXMLElement($this->pageParams);
 			$result = $xml->xpath($paramName);
-			if(isset($result[0])) return (String) $result[0];
+			if(isset($result[0])) {
+				$ret = (String) $result[0];
+				return 	$ret;
+			}
 		}
 		return false;
 	}

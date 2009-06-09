@@ -18,7 +18,7 @@ class page_EventsView implements iPage {
 		if($user->pageParam=='archiv' || $user->pageParam=='a' || $user->pageParam=='e') {
 			FSystem::secondaryMenuAddItem(FUser::getUri('','event',''),FLang::$BUTTON_PAGE_BACK);
 		} else {
-			FSystem::secondaryMenuAddItem(FUser::getUri('','eventarchiv'),FLang::$LABEL_EVENTS_ARCHIV);
+			FSystem::secondaryMenuAddItem(FUser::getUri('','event','archiv'),FLang::$LABEL_EVENTS_ARCHIV);
 		}
 
 		if($user->pageParam=='u') {

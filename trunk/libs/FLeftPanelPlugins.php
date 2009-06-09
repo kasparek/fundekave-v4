@@ -37,8 +37,8 @@ class FLeftPanelPlugins {
 			$fPages = new FPages('',$user->userVO->userId);
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0,sum(f1.book) as booksum');
 			$fPages->addJoin('join sys_pages_favorites as f1 on p.pageId = f1.pageId');
-			$fPages->addJoin("join sys_pages_favorites as f2 on f1.userId=f2.userId and f2.pageId='".$user->currentPageId."' and f2.book = '1'");
-			$fPages->addWhere("f1.book=1 and f1.pageId!='".$user->currentPageId."'");
+			$fPages->addJoin("join sys_pages_favorites as f2 on f1.userId=f2.userId and f2.pageId='".$user->pageVO->pageId."' and f2.book = '1'");
+			$fPages->addWhere("f1.book=1 and f1.pageId!='".$user->pageVO->pageId."'");
 			$fPages->setGroup('f1.pageId');
 			$fPages->setOrder('booksum desc');
 			$fPages->setLimit(0,10);
@@ -244,18 +244,15 @@ class FLeftPanelPlugins {
 		$cache = FCache::getInstance('f',86400);
 		if(!$data = $cache->getData((FUser::logon()>0)?('member'):('nonmember'),'fotornd')) {
 				
-				
 			$itemRenderer = new FItemsRenderer();
 			$itemRenderer->openPopup = true;
 			$itemRenderer->showPageLabel = true;
 			$itemRenderer->showTooltip = true;
 			$itemRenderer->showTag = true;
 			$itemRenderer->showText = true;
-			$itemRenderer->thumbInSysRes = true;
 				
-			$fItems = new FItems();
-			$fItems->fItemsRenderer = $itemRenderer;
-			$fItems->initList('galery',false,true);
+			$fItems = new FItems('galery',false,$itemRenderer);
+			$fItems->thumbInSysRes = true;
 			$total = $fItems->getCount();
 			$fItems->getList(rand(0,$total),1);
 			$fItems->parse();
@@ -398,7 +395,7 @@ class FLeftPanelPlugins {
 			if(!empty($arrUsedPlugins)) {
 				foreach ($arrUsedPlugins as $pluginName) {
 					$arrTmp = FCalendarPlugins::$pluginName($drok,$dmesic,$user->userVO->userId,($userPageId==true)?($user->pageVO->pageId):(''));
-					if(!empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
+					if(is_array($arrTmp) && !empty($arrTmp)) $arrQ = array_merge($arrQ,$arrTmp);
 				}
 				$arrEventsForDay = array();
 				$arrEventForDayKeys = array();

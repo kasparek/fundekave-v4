@@ -10,9 +10,9 @@ class page_PagesBooked implements iPage {
 		$user = FUser::getInstance();
 		
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';
-		FSystem::secondaryMenuAddItem($user->getUri($addUrl),FLang::$LABEL_FORUMS,"xajax_forum_booked('forum','".$user->whoIs."');return false;");
-		FSystem::secondaryMenuAddItem($user->getUri('t=blog'.$addUrl),FLang::$LABEL_BLOGS,"xajax_forum_booked('blog','".$user->whoIs."');return false;");
-		FSystem::secondaryMenuAddItem($user->getUri('t=galery'.$addUrl),FLang::$LABEL_GALERIES,"xajax_forum_booked('galery','".$user->whoIs."');return false;");
+		FSystem::secondaryMenuAddItem(FUser::getUri($addUrl),FLang::$LABEL_FORUMS);
+		FSystem::secondaryMenuAddItem(FUser::getUri('t=blog'.$addUrl),FLang::$LABEL_BLOGS);
+		FSystem::secondaryMenuAddItem(FUser::getUri('t=galery'.$addUrl),FLang::$LABEL_GALERIES);
 
 		$typeId = $user->pageVO->typeIdChild;
 		if(isset($_GET['t'])) $typeId = $_GET['t'];

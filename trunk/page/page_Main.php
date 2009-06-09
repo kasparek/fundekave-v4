@@ -34,9 +34,10 @@ class page_Main implements iPage {
 		}
 		if(!empty($data)) $tpl->setVariable('LASTFORUMPOSTS',$data);
 		/**/
+		
 		//---------------LAST-BLOG-POSTS
-		$data = $cache->getData(FUser::logon(),'lastBlogPost');
-		if($data===false) {
+		$dataArr = $cache->getData(FUser::logon(),'lastBlogPost');
+		if($dataArr===false) {
 			$dataArr = array();
 			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
 			if(!empty($arr)) {
@@ -71,15 +72,16 @@ class page_Main implements iPage {
 			while($arr) {
 				$row = array_shift($arr);
 				$tpl->setCurrentBlock('newpage');
-				$tpl->setVariable('NEWPAGEURL','?k='.$row[0]);
+				$tpl->setVariable('NEWPAGEURL',FUser::getUri('',$row[0]));
 				$tpl->setVariable('NEWPAGETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 				$tpl->setVariable('NEWPAGETEXT',$row[2].' ['. FLang::$TYPEID[$row[1]].']');
 				$tpl->parseCurrentBlock();
 			}
 			$tmptext = $tpl->get('newpage');
 			$cache->setData( $tmptext );
+		} else {
+			$tpl->setVariable('NEWPAGECACHED',$tmptext);
 		}
-		$tpl->setVariable('NEWPAGECACHED',$tmptext);
 		
 		//------MOST-VISITED-PAGES
 		if(($tmptext = $cache->getData($user->userVO->userId,'mostVisited')) === false) {
@@ -91,7 +93,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostvisitedpage');
-					$tpl->setVariable('MOSTVISITEDEURL','?k='.$row[0]);
+					$tpl->setVariable('MOSTVISITEDEURL',FUser::getUri('',$row[0]));
 					$tpl->setVariable('MOSTVISITEDTITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
@@ -100,9 +102,9 @@ class page_Main implements iPage {
 			}
 			$tmptext = $tpl->get('mostvisitedpage');
 			$cache->setData( $tmptext );
+		} else {
+			$tpl->setVariable('MOSTVISITEDECACHED',$tmptext);
 		}
-		
-		$tpl->setVariable('MOSTVISITEDECACHED',$tmptext);
 		
 		//------MOST-ACTIVE-PAGES
 		if(($tmptext = $cache->getData($user->userVO->userId,'mostActive')) === false) {
@@ -114,7 +116,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostactivepage');
-					$tpl->setVariable('MOSTACTIVEURL','?k='.$row[0]);
+					$tpl->setVariable('MOSTACTIVEURL',FUser::getUri('',$row[0]));
 					$tpl->setVariable('MOSTACTIVETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
@@ -123,10 +125,9 @@ class page_Main implements iPage {
 			}
 			$tmptext = $tpl->get('mostactivepage');
 			$cache->setData( $tmptext );
+		} else {		
+			$tpl->setVariable('MOSTACTIVECACHED',$tmptext);
 		}
-		
-		$tpl->setVariable('MOSTACTIVECACHED',$tmptext);
-		
 
 		//------MOST-FAVOURITE-PAGES
 		if(($tmptext = $cache->getData($user->userVO->userId,'mostFavourite')) === false) {
@@ -147,9 +148,9 @@ class page_Main implements iPage {
 			}
 			$tmptext = $tpl->get('mostfavouritepage');
 			$cache->setData($tmptext);
-		} 
-		
-		$tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
+		} else {		
+			$tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
+		}
 
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 		
