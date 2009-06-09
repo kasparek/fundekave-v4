@@ -137,9 +137,8 @@ class FUser {
 			if($this->pageVO) {
 				$q = "SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
             	FROM sys_users_logged as ul  
-            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId 
-            	where pf.pageId = '".$this->pageVO->pageId."' 
-            	and ul.userId = '".$this->userVO->userId."'";
+            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageVO->pageId."'  
+            	where ul.userId = '".$this->userVO->userId."'";
 			} else {
 				$q = "SELECT loginId, invalidatePerm
             	FROM sys_users_logged    
@@ -157,7 +156,8 @@ class FUser {
 			}
 
 			//---ip address checking
-			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp()) && ($this->userVO->idlogin == $idloginInDb)) {
+			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp()) 
+				&& ($this->userVO->idlogin == $idloginInDb)) {
 				//---user allright
 				$this->idkontrol = true;
 			} else {
@@ -430,7 +430,8 @@ class FUser {
 		
 		if(!empty($newPageId)) {
 			$pageVO  = new PageVO($newPageId,true);
-			$params[] = 'k=' . $newPageId . $pageParam . '-'.FSystem::safetext($pageVO->name);
+			$safeName = FSystem::safetext($pageVO->name);
+			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
 		}
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';

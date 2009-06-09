@@ -43,7 +43,7 @@ class ItemVO extends FDBvo {
 			,'dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
 			,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"));
 
-		var $itemId = 0;
+		var $itemId = null;
 		var $itemIdTop;
 		var $itemIdBottom;
 		var $typeId;
@@ -96,7 +96,7 @@ class ItemVO extends FDBvo {
 		var $detailUrlToGalery;
 		var $detailUrlToPopup;
 
-		function ItemVO($itemId=0, $autoLoad = false, $options=array()) {
+		function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
 			$this->table = 'sys_pages_items';
 			$this->primaryCol = 'itemId';
 			if(isset($options['type'])) $this->typeId = $options['type'];

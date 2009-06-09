@@ -106,8 +106,8 @@ class FItems extends FDBTool {
 			//---map items
 			foreach($arr as $row) {
 				$itemVO = new ItemVO();
+				$itemVO->thumbInSysRes = $this->thumbInSysRes;
 				$itemVO->map( $row );
-				if($this->thumbInSysRes) $itemVO->thumbInSysRes = true;
 				$this->data[] = $itemVO;
 			}
 		}

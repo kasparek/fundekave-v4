@@ -80,7 +80,7 @@ if(!empty($_REQUEST["i"])) {
 if(!empty($_REQUEST["k"])) {
 	$user->pageVO->pageId = $_REQUEST['k'];
 } elseif ($user->itemVO->itemId > 0) {
-	$user->pageVO->pageId = $user->itemVO['pageId'];
+	$user->pageVO->pageId = $user->itemVO->pageId;
 }
 
 if(isset($user->pageVO->pageId{5})) {
