@@ -295,6 +295,12 @@ class FDBTool {
 			if($this->fetchmode == 1 && !empty($this->columns)) {
 				$len = count( $this->columns );
 				$cols = array_keys( $this->columns );
+				if(!is_array($arr)) {
+					$cache = FCache::getInstance($this->cacheResults);
+        print_r($cache);
+        var_dump($arr);
+        die();
+        }
 				foreach($arr as $ret) {
 					$i = 0;
 					foreach($cols as $col) {
@@ -419,8 +425,7 @@ class FDBTool {
 	static function getAll($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
 		if($key !== null || $driver != 0) {
 			//---cache results
-			$cache = FCache::getInstance($driver);
-			if($lifeTime > -1) $cache->setConf($lifeTime);
+			$cache = FCache::getInstance( $driver, $lifeTime);
 			if(false === ($ret = $cache->getData($key,$grp))) {
 				$ret = FDBTool::getData('getAll',$query);
 				$cache->setData( $ret );
@@ -435,8 +440,7 @@ class FDBTool {
 	static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
 		if($key!==null) {
 			//---cache results
-			$cache = FCache::getInstance($driver);
-			if($lifeTime > -1) $cache->setConf($lifeTime);
+			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
 				$ret = FDBTool::getData('getRow',$query);
 				$cache->setData( $ret );
@@ -451,8 +455,7 @@ class FDBTool {
 	static function getCol($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
 		if($key!==null) {
 			//---cache results
-			$cache = FCache::getInstance($driver);
-			if($lifeTime > -1) $cache->setConf($lifeTime);
+			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
 				$ret = FDBTool::getData('getCol',$query);
 				$cache->setData( $ret );
@@ -467,8 +470,7 @@ class FDBTool {
 	static function getOne($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
 		if($key!==null) {
 			//---cache results
-			$cache = FCache::getInstance($driver);
-			if($lifeTime > -1) $cache->setConf($lifeTime);
+			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
 				$ret = FDBTool::getData('getOne',$query);
 				$cache->setData( $ret );

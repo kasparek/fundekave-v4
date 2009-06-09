@@ -9,14 +9,17 @@
  */
 class LoadDriver
 {
-
 	var $data;
 
 	var $lifeTimeDefault = 0;
 	var $lifeTime = 0;
 
-	function LoadDriver() {
-		
+	private static $instance;
+	static function &getInstance() {
+		if (!isset(self::$instance)) {
+			self::$instance = &new LoadDriver();
+		}
+		return self::$instance;
 	}
 	
 	function setConf( $lifeTime ) {

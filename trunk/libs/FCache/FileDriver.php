@@ -24,6 +24,14 @@ class FileDriver
 		$cacheOptions['lifeTime'] = $this->lifeTime;
 		$this->cacheLite = new Cache_Lite($cacheOptions);
 	}
+	
+	private static $instance;
+	static function &getInstance() {
+		if (!isset(self::$instance)) {
+			self::$instance = &new FileDriver();
+		}
+		return self::$instance;
+	}
 
 	function setConf( $lifeTime ) {
 		$this->lifeTime = $lifeTime;
