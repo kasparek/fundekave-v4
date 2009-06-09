@@ -19,7 +19,7 @@ class DBDriver
 	var $lifeTimeDefault = 0;
 	var $lifetime = 0;
 
-	function DBDriver() {
+	function __construct() {
 		$db = FDBConn::getInstance();
 		$res = FDBTool::getAll("show tables like '".$this->tableName."'");
 		if(empty($res)) {
@@ -27,6 +27,14 @@ class DBDriver
 			FDBTool::query($q);
 		}
 		$this->flushOld();
+	}
+	
+	private static $instance;
+	static function &getInstance() {
+		if (!isset(self::$instance)) {
+			self::$instance = &new DBDriver();
+		}
+		return self::$instance;
 	}
 
 	function setConf( $lifeTime ) {

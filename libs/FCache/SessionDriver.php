@@ -14,8 +14,16 @@ class SessionDriver
 	var $lifeTimeDefault = 0;
 	var $lifeTime = 0;
 
-	function SessionDriver() {
+	function __construct() {
 		$this->data = &$_SESSION['FCache_data'];
+	}
+	
+	private static $instance;
+	static function &getInstance() {
+		if (!isset(self::$instance)) {
+			self::$instance = &new SessionDriver();
+		}
+		return self::$instance;
 	}
 
 	function setConf( $lifeTime ) {
