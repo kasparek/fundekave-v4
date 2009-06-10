@@ -290,17 +290,10 @@ class FDBTool {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
 		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
-
 		if(!empty($arr)) {
 			if($this->fetchmode == 1 && !empty($this->columns)) {
 				$len = count( $this->columns );
 				$cols = array_keys( $this->columns );
-				if(!is_array($arr)) {
-					$cache = FCache::getInstance($this->cacheResults);
-        print_r($cache);
-        var_dump($arr);
-        die();
-        }
 				foreach($arr as $ret) {
 					$i = 0;
 					foreach($cols as $col) {

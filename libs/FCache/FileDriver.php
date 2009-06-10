@@ -38,26 +38,24 @@ class FileDriver
 		$this->cacheLite->setLifeTime = $lifeTime;
 	}
 
-	function setData($id, $data, $group = 'default') {
-		return $this->cacheLite->save( serialize($data), $id, $group );
+	function setData($key, $data, $grp) {
+		return $this->cacheLite->save( serialize($data), $key, $grp );
 	}
 
-	function getGroup($group = 'default') {
+	function getGroup($grp) {
 		return false;
 	}
 
-	function getData($id, $group = 'default') {
-		return unserialize($this->cacheLite->get($id,$group));
+	function getData($key, $grp) {
+		return unserialize($this->cacheLite->get($key,$grp));
 	}
 
-	function invalidateData($id='',$group='default') {
-		if($id!='') {
-			$this->cacheLite->remove($id, $group);
-		}
+	function invalidateData($key, $grp) {
+		$this->cacheLite->remove($key, $grp);
 	}
 
-	function invalidateGroup( $group='default' ) {
-		$this->cacheLite->clean($group);
+	function invalidateGroup( $grp ) {
+		$this->cacheLite->clean($grp);
 	}
 
 	function invalidate( ) {

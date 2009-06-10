@@ -154,7 +154,7 @@ class FUser {
 				$this->pageVO->favorite = $vid[2]*1;
 				$this->pageVO->favoriteCnt = $vid[3]*1;
 			}
-
+			
 			//---ip address checking
 			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp()) 
 				&& ($this->userVO->idlogin == $idloginInDb)) {

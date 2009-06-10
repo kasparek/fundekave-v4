@@ -30,9 +30,9 @@ class SessionDriver
 		$this->lifeTime = $lifeTime;
 	}
 
-	function getGroup($group = 'default') {
-		if(isset($this->data[$group])) {
-			$arr = $this->data[$group];
+	function getGroup($grp) {
+		if(isset($this->data[$grp])) {
+			$arr = $this->data[$grp];
 			while($row = array_shift($arr)) {
 				$arrUnserialized[] = unserialize($row[2]);
 			}
@@ -40,31 +40,34 @@ class SessionDriver
 		} else return false;
 	}
 
-	function setData($id, $data, $group = 'default') {
-		$this->data[$group][$id] = array($this->lifeTime, date("U") , serialize($data));
+	function setData($key, $data, $grp) {
+		$time = 0;
+		if($this->lifeTime > 0) $time = date("U");
+		$this->data[$grp][$key] = array($this->lifeTime, $time , serialize($data));
 		return true;	
 	}
 
-	function getData($id, $group = 'default') {
-		if(isset($this->data[$group][$id])) {
-			if($this->data[$group][$id][0] + $this->data[$group][$id][1] > date("U") || $this->data[$group][$id][0]==0) {
-				return unserialize($this->data[$group][$id][2]);
+	function getData($key, $grp) {
+		if(isset($this->data[$grp][$key])) {
+			$data = $this->data[$grp][$key];
+			if($data[0] + $data[1] > date("U") || $data[0]==0) {
+				return unserialize($data[2]);
 			} else {
-				$this->invalidateData($id, $group);
+				$this->invalidateData($key, $grp);
 			}
 		} else {
 			return false;
 		}
 	}
 
-	function invalidateData($id='',$group='default') {
-		if(!empty($id)) {
-			unset($this->data[$group][$id]);
+	function invalidateData($key,$grp) {
+		if(isset($this->data[$grp][$key])) {
+			unset($this->data[$grp][$key]);
 		}
 	}
 
-	function invalidateGroup( $group='default' ) {
-		$this->data[$group] = array();
+	function invalidateGroup( $grp ) {
+		$this->data[$grp] = array();
 	}
 
 	function invalidate( ) {
