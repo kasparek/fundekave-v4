@@ -26,9 +26,9 @@ class LoadDriver
 		$this->lifeTime = $lifeTime;
 	}
 
-	function getGroup($group = 'default') {
-		if(isset($this->data[$group])) {
-			$arr = $this->data[$group];
+	function getGroup( $grp ) {
+		if(isset($this->data[$grp])) {
+			$arr = $this->data[$grp];
 			while($row = array_shift($arr)) {
 				$arrUnserialized[] = unserialize($row);
 			}
@@ -36,25 +36,25 @@ class LoadDriver
 		} else return false;
 	}
 
-	function setData($id, $data, $group = 'default') {
-		$this->data[$group][$id] = serialize($data);
+	function setData($key, $data, $grp ) {
+		$this->data[$grp][$key] = serialize($data);
 		return true;
 	}
 
-	function getData($id, $group = 'default') {
-		if(isset($this->data[$group][$id])) {
-			return unserialize($this->data[$group][$id]);
+	function getData($key, $grp) {
+		if(isset($this->data[$grp][$key])) {
+			return unserialize($this->data[$grp][$key]);
 		} else return false;
 	}
 
-	function invalidateData($id='',$group='default') {
-		if(!empty($id)) {
-			unset($this->data[$group][$id]);
+	function invalidateData($key,$grp) {
+		if(isset($this->data[$grp][$key])) {
+			unset($this->data[$grp][$key]);
 		}
 	}
 
-	function invalidateGroup( $group='default' ) {
-		$this->data[$group] = array();
+	function invalidateGroup( $grp ) {
+		$this->data[$grp] = array();
 	}
 
 	function invalidate( ) {
