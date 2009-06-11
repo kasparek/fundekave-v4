@@ -27,27 +27,6 @@ class FUser {
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
 
-	/* EXAMPLE OF SESSION HOLD SINGLETON
-	 public $initialized;
-
-	 private static $instance;
-
-	 static function &getInstance() {
-		if (!isset(self::$instance)) {
-		if(isset($_SESSION["user"])) {
-		if( !empty($_SESSION["user"]->initialized) ) {
-		self::$instance = &$_SESSION["user"];
-		}
-		}
-		}
-		if (!isset(self::$instance)) {
-		self::$instance = &new FUser();
-		self::$instance->initialized = true;
-		$_SESSION["user"] = &self::$instance;
-		}
-		return self::$instance;
-		}
-		*/
 	private static $instance;
 
 	static function &getInstance() {

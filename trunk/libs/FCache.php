@@ -168,7 +168,7 @@ class FCache {
 
 	function setData( $data, $key='', $grp='', $driverIdent='', $lifeTime=-1 ) {
 		if(null === ($driver = $this->getDriver($driverIdent))) return false;
-		$driver->setConf($lifeTime);
+		$this->setConf($lifeTime);
 		if(($key = $this->checkKey($key)) === false) return false;
 		if(($grp = $this->checkGrp($grp)) === false) return false;
 		return $driver->setData( $key, $data, $grp );
