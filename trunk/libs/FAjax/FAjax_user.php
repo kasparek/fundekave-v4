@@ -35,6 +35,23 @@ class FAjax_user {
 
 		}
 	}
+	
+	static function book($data) {
+		if(($userId = FUser::logon()) !==false) {
+			if (FDBTool::getOne("select book from sys_pages_favorites where pageId = '".$data['page']."' AND userId = '".$userId."'")) {
+				$book = 0;
+				$data = FLang::$LABEL_BOOK;
+			} else {
+				$book = 1;
+				$data = FLang::$LABEL_UNBOOK;
+			}
+			FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".$data['page']."' AND userId='" . $userId."'");
+			
+			//---create response
+			$fajax = FAfax::getInstance();
+			$fajax->addResponse($data['result'],$data['resultProperty'],$data);
+		}	
+	}
 
 	static function tag($data) {
 		//$itemId = substr($itemId,1);

@@ -56,7 +56,7 @@ class page_UserSettings implements iPage {
 				$userVO->zbanner = (($_POST["zbanner"]=='1')?(1):(0));
 				$userVO->zforumico = (($_POST["zaudico"]=='1')?(1):(0));
 				$userVO->zavatar = (($_POST["zidico"]=='1')?(1):(0));
-				$userVO->zgaltype = (($_POST["galtype"]=='1')?(1):(0));
+				$userVO->zgalerytype = (($_POST["galtype"]=='1')?(1):(0));
 
 				//password
 				$pass1 = FSystem::textins($_POST["pwdreg1"],array('plainText'=>1));
@@ -134,7 +134,7 @@ class page_UserSettings implements iPage {
 		if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
 		if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');
 		if($userVO->zavatar == 1) $tpl->touchBlock('zidico');
-		if($userVO->zgaltype == 1) $tpl->touchBlock('galtype');
+		if($userVO->zgalerytype == 1) $tpl->touchBlock('galtype');
 		if($userVO->getXMLVal('settings','bookedorder') == 1) $tpl->touchBlock('bookedorder');
 
 		//webcam
