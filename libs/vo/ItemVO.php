@@ -2,7 +2,7 @@
 class ItemVO extends FDBvo {
 
 	var $options = array();
-	
+
 	static $colsDefault = array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
 	'itemIdBottom' => 'itemIdBottom',
@@ -29,19 +29,19 @@ class ItemVO extends FDBvo {
 
 	static $colsType = array(
 		'galery'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
-			,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')"),
+		,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')"),
 		'blog'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
-			,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
+		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
 		'forum'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
-			,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')",),
+		,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')",),
 		'event'=>array('dateStartLocal'=>"date_format(dateStart ,'{#date_local#}')"
-			,'dateStartIso'=>"date_format(dateStart ,'{#date_iso#}')"
-			,'dateEndLocal'=>"date_format(dateEnd ,'{#date_local#}')"
-			,'dateEndIso'=>"date_format(dateEnd ,'{#date_iso#}')"
-			,'dateStartTime'=>"date_format(dateStart ,'{#time_short#}')"
-			,'dateEndTime'=>"date_format(dateEnd ,'{#time_short#}')"
-			,'dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
-			,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"));
+		,'dateStartIso'=>"date_format(dateStart ,'{#date_iso#}')"
+		,'dateEndLocal'=>"date_format(dateEnd ,'{#date_local#}')"
+		,'dateEndIso'=>"date_format(dateEnd ,'{#date_iso#}')"
+		,'dateStartTime'=>"date_format(dateStart ,'{#time_short#}')"
+		,'dateEndTime'=>"date_format(dateEnd ,'{#time_short#}')"
+		,'dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
+		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"));
 
 		var $itemId = null;
 		var $itemIdTop;
@@ -89,7 +89,7 @@ class ItemVO extends FDBvo {
 		var $thumbUrl;
 		var $thumbWidth;
 		var $thumbHeight;
-		
+
 		var $detailUrl;
 		var $detailWidth;
 		var $detailHeight;
@@ -128,13 +128,13 @@ class ItemVO extends FDBvo {
 		}
 
 		function load() {
-			
+
 			if(empty($this->typeId)) {
 				$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
 				$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
 			}
 			$this->columns = ItemVO::getTypeColumns($this->typeId,true);
-			
+
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
 			if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
@@ -208,6 +208,84 @@ class ItemVO extends FDBvo {
 			return $itemRenderer->show();
 		}
 
+		//---support
+		/**
+		 * statistics for foto - item
+		 * @return void
+		 */
+		function hit() {
+			if(!empty($this->itemId)){
+				FDBTool::query("update sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
+				FDBTool::query("insert into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->itemId.",".FUser::logon().",now())");
+				$this->hit++;
+			}
+		}
+		
+		function getPageItemsId() {
+			$cache = FCache::getInstance('l');
+			if(($arr = $cache->getData($this->itemId,'fitGrp'))===false) {
+				$pageVO = new PageVO($this->pageId,true);
+				$orderBy = $pageVO->getPageParam('enhancedsettings/orderitems');
+				$arr = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".((($orderBy==0)?('enclosure'):('dateCreated'))));
+			}
+			return $arr;
+		}
+
+		function onPageNum() {
+			$arrItemId = $this->getPageItemsId();
+			$arr = array_chunk($arrItemId,$pageVO->perPage());
+			$pid = 0;
+			foreach ($arr as $k=>$arrpage) {
+				if(in_array($this->itemId,$arrpage)) {
+					$pid = $k + 1;
+					break;
+				}
+			}
+			return $pid;
+		}
+		
+		function getNext() {
+			$itemId = $this->getSideItemId(1);
+			if($itemId > 0) {
+				$itemVO = new ItemVO($itemId, false);
+				$itemVO->typeId = $this->typeId;
+				return $itemVO; 
+			}
+			return false;
+		}
+		
+		function getPrev() {
+			$itemId = $this->getSideItemId(-1);
+			if($itemId > 0) {
+				$itemVO = new ItemVO($itemId, false);
+				$itemVO->typeId = $this->typeId;
+				return $itemVO;
+			}
+			return false;
+		}
+		
+		function getSideItemId($side=-1, $consecutively = false) {
+			$keys = $this->getPageItemsId();; //--- when key is value
+			$keyIndexes = array_flip($keys);
+			$return = array();
+			//--- previous
+			if($side == -1) {
+				if (isset($keys[$keyIndexes[$key]-1])) {
+					return $keys[$keyIndexes[$key]-1];
+				} else {
+					if($consecutively) return $keys[sizeof($keys)-1]; else return  0; //--- if not previous return last
+				}
+			} else {
+				//--- next
+				if (isset($keys[$keyIndexes[$key]+1])) {
+					return $keys[$keyIndexes[$key]+1];
+				} else {
+					if($consecutively) return $keys[0]; else return 0; //--- if not next return first
+				}
+			}
+		}
+		
+		
 		//---special properties
 		static function getProperty($itemId,$propertyName,$default=false) {
 			$q = "select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'";
@@ -215,7 +293,7 @@ class ItemVO extends FDBvo {
 			if($value === false || $value === null) $value = $default;
 			return $value;
 		}
-		
+
 		static function setProperty($itemId,$propertyName,$propertyValue) {
 			FDBTool::query("insert into sys_pages_items_properties (itemId,name,value) values ('".$itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
 			$cache = FCache::getInstance('l');

@@ -10,19 +10,8 @@ class FGalery {
 	function __construct($params=array()) {
 		$conf = FConf::getInstance();
 		$this->conf = $conf->a['galery'];
+	}
 		
-	}
-	
-	/**
-	 * galery specific perpage
-	 * @return number
-	 */
-	function perPage() {
-		$perPage = (String) $this->pageVO->getPageParam('enhancedsettings/perpage');
-		if(empty($perPage)) $perPage = $this->conf['perpage'];
-		return $perPage;
-	}
-	
 	/**
 	 * ordering in galery
 	 * @return number
@@ -162,19 +151,7 @@ class FGalery {
 			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
 		}
 	}
-	
-	/**
-	 * statistics for foto - item
-	 * @return void
-	 */
-	function fotoHit() {
-	 if(!empty($this->itemVO->itemId)){
-			FDBTool::query("update sys_pages_items set hit=hit+1 where itemId=".$this->itemVO->itemId);
-			FDBTool::query("insert into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->itemVO->itemId.",".FUser::logon().",now())");
-			$this->itemVO->hit++;
-		}
-	}
-	
+		
 	/**
 	 * callback function when processing forum attached to gallery
 	 * @return void
@@ -193,7 +170,7 @@ class FGalery {
 	 */
 	function getRaw($itemId) {
 		$this->itemVO = new ItemVO($itemId, true);
-		$this->fotoHit();
+		$this->itemVO->hit();
 		return file_get_contents( $this->getDetailUrl() );
 	}
 
