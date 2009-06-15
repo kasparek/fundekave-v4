@@ -119,7 +119,7 @@ class FSystem {
 		
 		if(!empty($arrmnuTmp)) {
 			foreach ($arrmnuTmp as $row) {
-				$arrmnu[]=array('pageId'=>$row[0],'name'=>$row[1],'typ'=>0,'opposite'=>0);
+				$arrmnu[]=array('LINK'=>FUser::getUri('',$row[0]),'TEXT'=>$row[1]);
 			}
 		} else $arrmnu = array();
 		 
@@ -127,24 +127,21 @@ class FSystem {
 		if(false !== ($secMenuCustom = $cache->getData('secMenu')) ) {
 			$arrmnu = array_merge($secMenuCustom,$arrmnu);
 		}
-		 
-		if(count($arrmnu)>0){
-			$x=0;
-			foreach ($arrmnu as $mnu){
-				$idlnk=""; $x++;
-				if (!empty($who)) $idlnk.='&who='.$user->whoIs;
-				$button = array("LINK"=>(($mnu['typ']==1)?($mnu['pageId'].$idlnk):(BASESCRIPTNAME.'?k='.$mnu["pageId"].$idlnk)),
-    			"ACTIVE"=>((preg_match("/".$user->pageVO->pageId.$user->pageParam."$/",$mnu["pageId"]))?(1):(0)),
-          "TEXT"=>$mnu["name"],"OPPOSITE"=>(($mnu['opposite']==1)?(1):(0)));    			
-				if(!empty($mnu['id'])) $button['ID'] = $mnu['id'];
-				$ret[] = $button;
+		
+		$len = count($arrmnu);
+		if($len>0){
+			for($i=0;$i<$len;$i++){
+				if(preg_match("/".$user->pageVO->pageId.$user->pageParam."$/",$arrmnu[$i]["LINK"])) $arrmnu[$i]['ACTIVE'] = 1;
 			}
 		}
 		 
-		return($ret);
+		return($arrmnu);
 	}
-	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='') {
-		$button = array('pageId'=>$link,'typ'=>1,'name'=>$text,'opposite'=>$opposite,'id'=>$buttonId);
+	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='',$buttonClass='') {
+		$button = array('LINK'=>$link,'TEXT'=>$text);
+		if($opposite!=0) $button['OPPOSITE'] = 1;
+		if($buttonId!='') $button['ID'] = $buttonId;
+		if($buttonClass!='') $button['CLASS'] = $buttonClass;
 		$cache = FCache::getInstance('l');
 		$secMenuCustom = $cache->getData('secMenu');
 		$secMenuCustom[] = $button;
