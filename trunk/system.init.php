@@ -58,6 +58,7 @@ if(isset($_GET['kam'])) {
 	for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
 	$_GET['k'] = $user->pageVO->pageId = $add . $els . $kam;
 }
+
 //---u=username
 if(isset($_GET['u'])) {
 	$userId = FUser::getUserIdByName($_GET['u']);
@@ -74,6 +75,10 @@ if(isset($_GET['u'])) {
 
 if(!empty($_REQUEST["i"])) {
 	$user->itemVO->itemId = (int) $_REQUEST['i'];
+	$user->itemVO->checkItem();
+} elseif(isset($_REQUEST['nid'])) {
+	//---backwards compatibility
+	$user->itemVO->itemId = (int) $_REQUEST['nid'];
 	$user->itemVO->checkItem();
 }
 

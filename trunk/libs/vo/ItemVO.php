@@ -143,6 +143,7 @@ class ItemVO extends FDBvo {
 			} else {
 				$this->reload($itemVO);
 			}
+			if($this->itemId > 0) return true;
 		}
 
 		function reload($itemVO) {
@@ -173,6 +174,10 @@ class ItemVO extends FDBvo {
 			//---update in cache
 			$cache = FCache::getInstance('l');
 			$cache->setData( $this, $this->itemId, 'fit');
+		}
+		
+		function delete($id) {
+			parent::save($this->itemId);
 		}
 
 		function prepare() {

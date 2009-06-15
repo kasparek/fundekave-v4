@@ -18,21 +18,8 @@ class page_ForumView implements iPage {
 		$pageId = $user->pageVO->pageId;
 
 		$typeId = $user->pageVO->typeId;
-
-		//---backwards compatibility
-		if(isset($_REQUEST['nid'])) {
-			$user->itemVO = new ItemVO();
-			$user->itemVO->itemId = (int) $_REQUEST['nid'];
-			$user->itemVO->checkItem();
-		}
-
-		if(FRules::get($userId,$pageId,2)) {
-			if(empty($user->pageParam)) {
-				if($typeId=='blog') {
-					FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'a'), FLang::$LABEL_ADD, "xajax_blog_blogEdit('0');return false;",1);
-				}
-			}
-		}
+		
+		
 
 		//TODO: refactor adding of palce toolbar
 		//tlacitko sledovat - jen pro nemajitele
@@ -53,7 +40,7 @@ class page_ForumView implements iPage {
 		if ($typeId=='blog') {
 
 			$fBlog = new FBlog();
-			FBuildPage::addTab(array("MAINDATA"=>$fBlog->listAll($user->itemVO->itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
+			FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($user->itemVO->itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
 
 		} else {
 

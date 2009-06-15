@@ -117,24 +117,28 @@ class FBuildPage {
 				//NOT TEMPLATE AT ALL
 				$contentData = array("MAINDATA"=>$user->pageVO->content);
 			}
-
-			//TODO: add back button if item is selected - blog
-			
+	
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
+			
+			if(!empty($user->pageParam) || $user->itemVO->itemId > 0) {
+				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
+			}
+			
 			if($user->pageVO->typeId == 'forum') {
 				FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 			}
+			
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
-				if(!empty($user->pageParam)) {
-					FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
-				} else {
+				if(empty($user->pageParam)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
 						FSystem::secondaryMenuAddItem(FUser::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt');
 					}
 					FSystem::secondaryMenuAddItem(FUser::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, 'pocketButt');
 					if(FRules::getCurrent(2)) {
+						
 						FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
+						
 					}
 				}
 				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
@@ -235,14 +239,10 @@ class FBuildPage {
 					$tpl->setCurrentBlock("secondary-menu-item");
 					$tpl->setVariable('LOLINK',$menuItem['LINK']);
 					$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
-					if(isset($menuItem['CLICK'])) $tpl->setVariable('LOCLICK',$menuItem['CLICK']);
-					if(isset($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
-					if($menuItem['ACTIVE']==1) {
-						$tpl->touchBlock('secondary-menu-activelink');
-					}
-					if($menuItem['OPPOSITE']==1) {
-						$tpl->touchBlock('secondary-menu-oppositebutton');
-					}
+					if(!empty($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
+					if(!empty($menuItem['CLASS'])) $tpl->setVariable('CLASS',$menuItem['CLASS']);
+					if(isset($menuItem['ACTIVE'])) $tpl->touchBlock('secondary-menu-activelink');
+					if(isset($menuItem['OPPOSITE']))  $tpl->touchBlock('secondary-menu-oppositebutton');
 					$tpl->parseCurrentBlock();
 				}
 			}
