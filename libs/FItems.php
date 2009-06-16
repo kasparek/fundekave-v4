@@ -128,6 +128,32 @@ class FItems extends FDBTool {
 			return false;
 		}
 	}
+	
+	//---aktualizace oblibenych / prectenych prispevku
+	/*.......aktualizace FAV KLUBU............*/
+	static function aFavAll($usrId,$typeId='forum') {
+		if(!empty($usrId)){
+			//file cache until somebody create new page
+			$q = "SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'";
+			$klo=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-1','aFavAll','f',0);
+			$q = "SELECT pageId FROM sys_pages where typeId = '".$typeId."'";
+			$kls=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-2','aFavAll','f',0);
+			if(!isset($klo[0])) $res=$kls;
+			else $res = array_diff($kls,$klo);
+			if(!empty($res)) {
+				foreach($res as $r) {
+					FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+				}
+			}
+		}
+	}
+	
+	static function aFav($pageId,$userId,$cnt,$booked=0) {
+		if(!empty($userId)){
+			$dot = "insert into sys_pages_favorites values ('".$userId."','".$pageId."','".$cnt."','".$booked."') on duplicate key update cnt='".$cnt."'";
+			FDBTool::query($dot);
+		}
+	}
 
 
 	/**

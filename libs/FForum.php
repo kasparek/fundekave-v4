@@ -1,57 +1,31 @@
 <?php
 class FForum extends FDBTool {
-	var $aMessCount;
-	var $aMessNewCount;
-	var $aId;
-	var $aName;
-	var $aInfo;
-	var $aOwner;
-	var $aLocked = 0;
-	var $aOwnerUsername;
-	var $aIdLastVisit;
-
-	static function setBooked($auditId,$userId,$book) {
-		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".($auditId)."' AND userId='" . $userId."'");
-	}
-
-	static function statAudit($pageId, $userId, $count=true){
-		$db = FDBConn::getInstance();
-		if($count) $str = $db->getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='".$userId."'");
-		else $str="ins+1";
-		$db->query("update sys_pages_counter set ins=".$str." WHERE pageId='".$pageId."'and dateStamp=now() AND userId='".$userId."'");
-	}
 
 	static function messDel($id,$auditId=0) {
-		if(!is_array($id)) $id= array($id);
+		if(!is_array($id)) $id = array($id);
 		if(!empty($id)) {
-			$user = FUser::getInstance();
-			if(empty($auditId)) $auditId = $this->getOne("select pageId from sys_pages_items where itemId='".$id[0]."'");
-			$fItems = new FItems();
+			$userId = FUser::logon();
 			foreach ($id as $delaud) {
-				if(FRules::getCurrent(2)
-				|| $user->userVO->userId == $this->getOne("SELECT userId FROM sys_pages_items WHERE itemId='".$delaud."'")) {
-					$fItems->deleteItem($delaud);
+				$itemVO = new ItemVO($delaud);
+				if($itemVO->load()) {
+					if(FRules::getCurrent(2) || $userId == $itemVO->userId) {
+						$itemVO->delete();
+					}
 				}
 			}
-			$this->query("update sys_pages set cnt=".$this->getOne("select count(1) from sys_pages_items where pageId='".$auditId."'")." where pageId='".$auditId."'");
-			FForum::statAudit($auditId, $user->userVO->userId);
 		}
 	}
 	
 	static function messWrite($itemVO) {
 		$itemVO->typeId = 'forum';
+		if(empty($itemVO->pageId)) {
+			$user = FUser::getInstance();
+			$itemVO->pageId = $user->pageVO->pageId;
+		}
 		$ret = $itemVO->save();
-		if($itemVO->itemIdTop > 0) {
-			FForum::incrementReactionCount( $itemVO->itemIdTop );	
-		} else {
-			$dot = "update sys_pages set cnt=cnt+1 where pageId='".$itemVO->pageId."'";
-			FDBTool::query($dot);
-		}
-		if(($userId = FUser::logon()) > 0) {
-			FForum::statAudit($itemVO->pageId, $userId, false);
-		}
 		return $ret;
 	}
+	
 	static function updateReadedReactions($itemId,$userId) {
 		return FDBTool::query("insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
 	}
@@ -67,6 +41,7 @@ class FForum extends FDBTool {
 			$cache->setData(array_merge($unread,$arrMessId));
 		}
 	}
+	
 	static function isUnreadedMess($messId,$unset=true){
 		$ret=false;
 		$cache = FCache::getInstance('s');
@@ -81,6 +56,7 @@ class FForum extends FDBTool {
 		}
 		return $ret;
 	}
+	
 	static function clearUnreadedMess() {
 		$cache = FCache::getInstance('s');
 		$cache->invalidateData('unreadItems');
@@ -107,31 +83,13 @@ class FForum extends FDBTool {
 		}
 		return $unreadedCnt;
 	}
-	//---aktualizace oblibenych
-	/*.......aktualizace FAV KLUBU............*/
-	static function aFavAll($usrId,$typeId='forum') {
-		if(!empty($usrId)){
-			$klo=FDBTool::getCol("SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'");
-			$kls=FDBTool::getCol("SELECT pageId FROM sys_pages where typeId = '".$typeId."'");
-			if(!isset($klo[0])) $res=$kls;
-			else $res = array_diff($kls,$klo);
-			if(!empty($res)) {
-				foreach($res as $r) {
-					FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
-				}
-			}
-		}
-	}
-	static function aFav($pageId,$userId,$cnt,$booked=0) {
-		if(!empty($userId)){
-			$dot = "insert into sys_pages_favorites values ('".$userId."','".$pageId."','".$cnt."','".$booked."') on duplicate key update cnt='".$cnt."'";
-			FDBTool::query($dot);
-		}
-	}
-	static function incrementReactionCount($itemId) {
-		$dot = "update sys_pages_items set cnt=cnt+1 where itemId='".$itemId."'";
-		return $this->query($dot);
-	}
+			
+	/**
+	 * process forum post
+	 *
+	 * @param array $data
+	 * @param string $callbackFunction - function name
+	 */
 	static function process( $data, $callbackFunction=false) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
@@ -246,7 +204,7 @@ class FForum extends FDBTool {
 		}
 		//---per page
 		$cache = FCache::getInstance('s',0);
-		if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = FORUM_PERPAGE;
+		if($perPage = $cache->getData($pageId,'pp') === false) $perPage = $user->pageVO->perPage();
 
 		if (isset($_POST["perpage"]) && $_POST["perpage"] != $perPage) {
 			$perPage = $_POST["perpage"]*1;
@@ -279,13 +237,25 @@ class FForum extends FDBTool {
 		if(FUser::logon() === false && $publicWrite > 0) { $captcha = FCaptcha::init(); }
 	  
 		$cache = FCache::getInstance('s',0);
-		if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = FORUM_PERPAGE;
+		if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = $user->pageVO->perPage();
 	  
 		if( FUser::logon() ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
 			if($unreadedCnt > 0) {
 				if($unreadedCnt > 20 || $perPage <= $unreadedCnt) $perPage = $unreadedCnt + 5;
 				elseif($unreadedCnt > 100) $perPage = 100;
+			}
+		}
+		
+		//---DEEPLINKING
+		$manualCurrentPage = 0;
+		if($user->itemVO->itemId > 0 || $itemIdInside > 0) {
+			if($user->itemVO->itemId > 0) $itemIdInside = $user->itemVO->itemId;
+			//---find a page of this item to have link to it
+			if($itemIdInside > 0) {
+				$itemVO = new ItemVO($itemIdInside,true);
+				$manualCurrentPage = $itemVO->onPageNum();
+				$perPage = $user->pageVO->perPage();
 			}
 		}
 
@@ -342,12 +312,7 @@ class FForum extends FDBTool {
 		}
 		$fItems->setOrder("dateCreated DESC");
 		FItemsToolbar::setQueryTool(&$fItems);
-		$manualCurrentPage = 0;
-		if($user->itemVO->itemId > 0 || $itemIdInside > 0) {
-			if($user->itemVO->itemId > 0) $itemIdInside = $user->itemVO->itemId;
-			//---find a page of this item to have link to it
-			if($itemIdInside > 0) $manualCurrentPage = FForum::getItemPage($itemIdInside,$user->pageVO->pageId,$perPage);
-		}
+		
 		if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
 		$pager = FSystem::initPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
@@ -384,31 +349,10 @@ class FForum extends FDBTool {
 			}
 			/*......aktualizace novych a prectenych......*/
 			if($itemId>0) FForum::updateReadedReactions($itemId,$user->userVO->userId);
-			else FForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+			else FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 		} else $tpl->touchBlock('messno');
 
 		return $tpl->get();
 	}
 
-	private function getItemPage($itemId,$pageId,$perPage) {
-		$ret = 0;
-		$page = 0;
-		$k = 0;
-	  
-		$query = 'pouzita problemova funkce';
-		$fname = '/home/www/fundekave.net/tmp/debug.txt';
-		if(file_exists($fname)) $queryWrite = file_get_contents($fname)."\n--------------------------------------------------------------------------------\n".$query;
-		else $queryWrite = $query;
-		file_put_contents($fname,$queryWrite);
-
-		/*
-		 while($ret==0) {
-		 $k++;
-		 $arr =$db->getCol("select itemId from sys_pages_items where pageId='".$pageId."' order by dateCreated desc limit ".$page.",".$perPage."");
-		 if(in_array($itemId,$arr)) $ret = $k;
-		 $page += $perPage;
-		 }
-		 */
-		return $ret;
-	}
 }

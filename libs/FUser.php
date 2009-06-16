@@ -5,7 +5,6 @@ class FUser {
 	const LO = 'fdk5.salt';
 
 	var $userVO;
-	var $loginVO;
 	var $pageVO;
 	var $itemVO;
 
@@ -20,7 +19,7 @@ class FUser {
 
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
-	'u'=>4, //event - podle majitele - nebo ten kdo ma dve pro stranku
+	'u'=>4, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
 	'p'=>1, //anketa nastaveni
@@ -85,7 +84,7 @@ class FUser {
 				$cache->invalidateData('forumdesc');
 				$cache->invalidateData('loggedlist');
 				$cache->invalidateData('postwho');
-				FForum::afavAll($gid); //----srovnani-seznamu-klubu-----
+				FItems::afavAll($gid); //----srovnani-seznamu-klubu-----
 				FMessages::diaryNotifications(); //---remind from diary
 			} else {
 				FError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);

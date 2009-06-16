@@ -43,10 +43,10 @@ $user->itemVO = new ItemVO();
 $user->pageVO->pageId = HOME_PAGE;
 
 if(isset($_REQUEST['m'])) {
-$cache = FCache::getInstance('s');
-if(false !== ($pageId = $cache->getData('lastPage'))) {
-	$user->pageVO->pageId = $pageId;
-}
+	$cache = FCache::getInstance('s');
+	if(false !== ($pageId = $cache->getData('lastPage'))) {
+		$user->pageVO->pageId = $pageId;
+	}
 }
 
 $user->pageParam = '';
@@ -65,7 +65,7 @@ if(isset($_GET['u'])) {
 	if($userId > 0) {
 		$userVO = new UserVO();
 		$userVO->userId = $userId;
-		$userVO->loadVO();
+		$userVO->load();
 		$usersPageId = $userVO->getXMLVal('personal','HomePageId');
 		if(!empty($usersPageId)) {
 			$user->pageVO->pageId = (string) $usersPageId;

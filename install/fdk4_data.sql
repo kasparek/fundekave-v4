@@ -13,7 +13,7 @@ INSERT INTO `sys_pages` VALUES ('galbe', null, 'top', 'galery', null, 4, 'page_I
 INSERT INTO `sys_pages` VALUES ('galse', null, 'top', 'galery', null, 4, 'page_PagesSearch', 'Hledani galerii', 'Vyhledavani', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('foall', null, 'top', 'forum', null, 5, 'page_PagesList', 'Kluby', 'Kluby', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('forne', null, 'top', 'forum', null, 5, 'page_NewSimple', 'Založení nového klubu', 'Nový klub', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('forne', null, 'top', 'forum', null, 5, 'page_PageNewSimple', 'Založení nového klubu', 'Nový klub', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('forli', null, 'top', 'forum', null, 5, 'page_ItemsLive', 'Poslední príspěvky do klubů', 'FunDeLive', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('forlw', null, 'top', 'forum', null, 5, 'page_PagesSearch', 'Vyhledavani klubů', 'Vyhledavani', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('forls', null, 'top', 'forum', null, 5, 'page_ItemsSearch', 'Hledani príspěvků', 'Vyhledavani', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;

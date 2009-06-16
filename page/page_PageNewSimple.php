@@ -1,6 +1,6 @@
 <?php
 include_once('iPage.php');
-class page_PagesList implements iPage {
+class page_PageNewSimple implements iPage {
 
 	static function process($data) {
 

@@ -10,7 +10,7 @@ class page_PagesList implements iPage {
 		$userId = FUser::logon();
 		if ( false !== $userId ) {
 			FForum::clearUnreadedMess();
-			FForum::afavAll($userId);
+			FItems::afavAll($userId);
 		}
 		$fPages = new FPages('',$userId);
 		FBuildPage::addTab(array("MAINDATA"=>$fPages->printCategoryList()));

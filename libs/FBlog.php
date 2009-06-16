@@ -35,7 +35,6 @@ class FBlog {
 					$itemVO->userId = $user->userVO->userId;
 					$itemVO->pageId = $pageId;
 					$itemVO->typeId = 'blog';
-					FPages::cntSet($pageId);
 				}
 				$returnItemId = $itemVO->save();
 
@@ -47,7 +46,6 @@ class FBlog {
 				$itemVO = new ItemVO();
 				$itemVO->itemId = (int) $aFormValues['nid'];
 				$itemVO->delete();
-				FPages::cntSet($pageId,false);
 				$returnItemId = 0;
 			}
 			$cache = FCache::getInstance('f');
@@ -156,7 +154,7 @@ class FBlog {
 			$fItems->getData();
 			if(!empty($fItems->data)){
 				while($fItems->arrdata) $fItems->parse();
-				FForum::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 				$tpl->setVariable('ITEMS',$fItems->show());
 				if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
 			}
