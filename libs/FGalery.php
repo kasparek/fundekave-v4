@@ -287,14 +287,10 @@ class FGalery {
 	 * @return void
 	 */
 	function removeFoto($id) {
-		if(!empty($id)){
+		if(!empty($id)) {
 			$this->itemVO = new ItemVO($id, true);
-			$this->itemVO->itemId = $id;
-			$this->itemVO->load();
 			
-			$this->pageVO = new PageVO();
-			$this->pageVO->pageId = $this->itemVO->pageId;
-			$this->pageVO->load(); 
+			$this->pageVO = new PageVO($this->itemVO->pageId, true);
 			
 			if(!empty($this->itemVO->thumbUrl)) if(is_file($this->itemVO->thumbUrl)) unlink($this->itemVO->thumbUrl);
 			if(is_file(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure)) unlink(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure);

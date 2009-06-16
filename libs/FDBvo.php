@@ -34,6 +34,6 @@ class FDBvo extends FDBTool {
 				$this->addCol($col, $this->$col);
 			}
 		}
-		parent::save();
+		return $this->{$this->primaryCol} = parent::save();
 	}
 }

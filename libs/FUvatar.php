@@ -132,10 +132,10 @@ class FUvatar {
     //---get list of online users
     function getLive() {
       //---get list of live
-      $db = FDBConn::getInstance();
+      
         $user = FUser::getInstance();
         
-      $arr = $db->getAll("select u.name,fu.refresh,fu.resolution from sys_users_fuvatar_live as fu join sys_users as u on u.userId=fu.userId where fu.pageId='".$user->pageVO->pageId."' and fu.filetime >= ".date("U")."-(fu.refresh*2) ");
+      $arr = FDBTool::getAll("select u.name,fu.refresh,fu.resolution from sys_users_fuvatar_live as fu join sys_users as u on u.userId=fu.userId where fu.pageId='".$user->pageVO->pageId."' and fu.filetime >= ".date("U")."-(fu.refresh*2) ");
       
       $ret = '';
       
