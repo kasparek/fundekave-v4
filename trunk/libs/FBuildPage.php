@@ -30,6 +30,7 @@ class FBuildPage {
 	   'pages.booked.php'=>'page_PagesBooked',
 	   'items.live.php'=>'page_ItemsLive',
 	   'user.post.php'=>'page_UserPost',
+		
 		);
 		//---temporary till database change
 		if(isset($old[$template])) {
@@ -42,7 +43,7 @@ class FBuildPage {
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
-			if($user->pageParam=='sa' || $user->pageParam == 'e') $template = 'page_pageEdit';
+			if($user->pageParam=='sa' || $user->pageParam == 'e') $template = 'page_PageEdit';
 			else $template = $user->pageVO->template;
 			if($template != '') {
 				if (!preg_match("/(.html)$/",$template)) {
@@ -61,20 +62,22 @@ class FBuildPage {
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
 			
+			$staticTemplate = false;
+			
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
-					$template = 'page_pageEdit';
+					$template = 'page_PageEdit';
 				break;
 				
 				/* poll */
 				case 'p':
-					$template = 'page_pagePoll';
+					$template = 'page_PagePoll';
 				break;
 				
 				/* stats */
 				case 's':
-					$template = 'page_pageStat';
+					$template = 'page_PageStat';
 				break;
 				
 				/* home */
@@ -88,7 +91,6 @@ class FBuildPage {
 				default:
 					$template = $user->pageVO->template;
 					if($template != '') {
-						$staticTemplate = false;
 						if (preg_match("/(.html)$/",$template)) {
 							$staticTemplate = true;
 						}

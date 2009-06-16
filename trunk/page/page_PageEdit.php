@@ -235,6 +235,7 @@ class page_PageEdit implements iPage {
 	}
 
 	static function build() {
+		
 		$user = FUser::getInstance();
 
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
@@ -279,9 +280,9 @@ class page_PageEdit implements iPage {
 		$pageDesc = '';
 		$pageCont = '';
 
-		if(isset($pageData['name'])) $tpl->setVariable('PAGENAME',$pageVO->name);
-		if(isset($pageData['description'])) if(!$pageDesc = FUserDraft::get($textareaIdDescription)) $pageDesc = $pageVO->description;
-		if(isset($pageData['content'])) if(!$pageCont = FUserDraft::get($textareaIdContent)) $pageCont = $pageVO->content;
+		if(isset($pageVO->name)) $tpl->setVariable('PAGENAME',$pageVO->name);
+		if(isset($pageVO->description)) if(!$pageDesc = FUserDraft::get($textareaIdDescription)) $pageDesc = $pageVO->description;
+		if(isset($pageVO->content)) if(!$pageCont = FUserDraft::get($textareaIdContent)) $pageCont = $pageVO->content;
 
 		$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
 		$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
@@ -290,7 +291,7 @@ class page_PageEdit implements iPage {
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
 		$tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$textareaIdContent);
 
-		if(!empty($pageData['pageIco'])) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
+		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
 
 		if($user->pageParam!='a') {
 			$tpl->touchBlock('permissionstab');
@@ -328,10 +329,14 @@ class page_PageEdit implements iPage {
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
 			$tpl->touchBlock('galeryspecifictabs');
 
+			
+			
 			$itemRenderer = new FItemsRenderer();
 			$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
 			
 			$fItems = new FItems('galery',false,$itemRenderer);
+			$fItems->setWhere("pageId='".$pageVO->pageId."'");
+			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 			if($pageVO->getPageParam('enhancedsettings/orderitems') == 1) {
 				$tpl->touchBlock('gorddate');
 				$fItems->setOrder('dateCreated desc');
@@ -339,7 +344,6 @@ class page_PageEdit implements iPage {
 				$fItems->setOrder('enclosure');
 			}
 			$tpl->setVariable('FOTOLIST',$fItems->render());
-			$tpl->setVariable('FOTOTOTAL',count($fItems->data));
 			
 			/* UPLOAD INPUTS */
 			$numInputs=7;
