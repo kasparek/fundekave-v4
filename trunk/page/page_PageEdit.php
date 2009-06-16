@@ -4,53 +4,61 @@ include_once('iPage.php');
 class page_PageEdit implements iPage {
 
 	static function process() {
+		
 		$user = FUser::getInstance();
 		/**
 		 * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
 		 */
-		$typeForSaveTool = $user->pageVO->typeId;
-		if($user->pageParam=='a') $typeForSaveTool = $user->pageVO->typeIdChild;
-
-		if($typeForSaveTool == 'galery') {
-			$galery = new FGalery();
+		
+		$redirectAdd = '';
+		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->currentPageParam!='sa') {
+			$user->pageParam = 'a' ;
+			$redirectAdd = 'e';
 		}
+		
+		$typeId = $user->pageVO->typeId;
+		if($user->pageParam=='a') $typeId = $user->pageVO->typeIdChild;
 		
 		$deleteThumbs = false;
 		
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
-		
-		$redirectAdd = '';
-		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->currentPageParam!='sa') {
-			$user->currentPageParam = 'a' ;
-			$redirectAdd = 'e';
-		}
-		
-		//---categories
-		if($typeForSaveTool=='blog' && $user->currentPageParam!='a') {
-			$category = new FCategory('sys_pages_category','categoryId');
-			$category->addWhere("typeId='".$user->pageVO->pageId."'");
-			$category->arrSaveAddon = array('typeId'=>$user->pageVO->pageId);
-			$category->process();
-		}
-		
+				
 		if(isset($_POST["save"])) {
-			$sPage = new fPagesSaveTool($typeForSaveTool);
-			
+			if($user->pageParam == 'a') {
+				//---new page
+				$pageVO = new PageVO();
+				$pageVO->typeId = $typeId;
+				$pageVO->setDefaults();
+				$pageVO->nameshort = (isset(FLang::$$typeId))?(FLang::$$typeId):('');
+			} else {
+				$pageVO = $user->pageVO;
+			}
 			FError::resetError();
+			
+			//---categories
+			if($typeId=='blog' && $user->pageParam!='a') {
+				$category = new FCategory('sys_pages_category','categoryId');
+				$category->addWhere("typeId = '".$pageVO->pageId."'");
+				$category->arrSaveAddon = array('typeId'=>$pageVO->pageId);
+				$category->process();
+			}
+			
+			//---leftpanel
 			if(isset($_POST['leftpanel'])) {
-				$fLeft = new fLeftPanel($user->pageVO->pageId,0,$user->currentPage['typeId']);
+				$fLeft = new FLeftPanel($pageVO->pageId,0,$pageVO->typeId);
 				$fLeft->process($_POST['leftpanel']);
 			}
-			$notQuoted = array();
-			$arr['name'] = FSystem::textins($_POST['name'],array('plainText'=>1));
-			if(empty($arr['name'])) FError::addError(ERROR_PAGE_ADD_NONAME);
-			$arr['description']=FSystem::textins($_POST['description'],array('plainText'=>1));
-			$arr['content']=FSystem::textins($_POST['content']);
-
-			if($typeForSaveTool == 'galery') {
-
+			
+			$pageVO->name = FSystem::textins($_POST['name'],array('plainText'=>1));
+			if(empty($pageVO->name)) FError::addError(ERROR_PAGE_ADD_NONAME);
+			$pageVO->description = FSystem::textins($_POST['description'],array('plainText'=>1));
+			$pageVO->content = FSystem::textins($_POST['content']);
+			
+			//TODO:save galery stuff on second run - need a pageid
+			if($typeId == 'galery') {
+				$pageVO->galeryDir = $user->name .'/'.'';
 				$arr['galeryDir'] = Trim($_POST['galeryDir']);
 				if($arr['galeryDir']=='') FError::addError(ERROR_GALERY_DIREMPTY);
 				elseif (!FSystem::checkDirname($arr['galeryDir'])) FError::addError(ERROR_GALERY_DIRWRONG);
@@ -76,47 +84,33 @@ class page_PageEdit implements iPage {
 
 			if(isset($_POST['datecontent'])) {
 				$dateContent = FSystem::switchDate($_POST['datecontent']);
-				if(!empty($dateContent)) if(FSystem::isDate($dateContent)) $arr['dateContent'] = $dateContent;
+				if(!empty($dateContent)) if(FSystem::isDate($dateContent)) $pageVO->dateContent = $dateContent;
 			}
 
 			if($user->currentPageParam=='sa') {
-				$arr['nameShort'] = FSystem::textins($_POST['nameshort'],array('plainText'=>1));
-				$arr['authorContent'] = FSystem::textins($_POST['authorcontent'],array('plainText'=>1));
-				$arr['template'] = FSystem::textins($_POST['template'],array('plainText'=>1));
-				 
-					
-				if($user->currentPageParam=='a') $arr['locked'] = 'null';
+				$pageVO->nameShort = FSystem::textins($_POST['nameshort'],array('plainText'=>1));
+				$pageVO->authorContent = FSystem::textins($_POST['authorcontent'],array('plainText'=>1));
+				$pageVO->template = FSystem::textins($_POST['template'],array('plainText'=>1));
 				if(isset($_POST['locked'])) {
-					$locked = $_POST['locked'] * 1;
-					$notQuoted[] = 'locked';
-					$arr['locked'] = $locked * 1;
+					$pageVO->locked = (int) $_POST['locked'];
 				}
-
-				if($user->currentPageParam=='a') $arr['menuSecondaryGroup'] = 'null';
 				if(isset($_POST['menusec'])) {
 					$menusec = $_POST['menusec'];
-					$notQuoted[] = 'menuSecondaryGroup';
 					if($menusec>0) {
-						$arr['menuSecondaryGroup'] = $menusec * 1;
-					} else {
-						$arr['menuSecondaryGroup'] = 'null';
+						$pageVO->menuSecondaryGroup = (int) $menusec;
 					}
 				}
 			}
 
-			if($user->currentPageParam=='a') $arr['categoryId'] = 'null';
 			if(isset($_POST['category'])) {
 				$cat = (int) $_POST['category'];
-				$notQuoted[] = 'categoryId';
 				if($cat > 0) {
-					$arr['categoryId'] = $cat;
-				} else {
-					$arr['categoryId'] = 'null';
+					$pageVO->categoryId = $cat;
 				}
 			}
 
 			if(isset($_POST['forumhome'])) {
-				$sPage->setXMLVal('home',FSystem::textins($_POST['forumhome']));
+				$pageVO->setXML('home', FSystem::textins($_POST['forumhome']));
 			}
 
 			if(!FError::isError()) {
@@ -125,29 +119,17 @@ class page_PageEdit implements iPage {
 					$adr = $galery->get('rootImg').$arr['galeryDir'];
 					if(!file_exists($adr)) {
 						if(mkdir ($adr, 0777)) {
-							mkdir ($adr."/nahled", 0777);
 							chmod ( $adr, 0777 );
-							chmod ( $adr.'/nahled', 0777 );
 						}
 					}
 				}
 
 				if($user->currentPageParam == 'a') {
-					$arr['userIdOwner'] = $user->userVO->userId;
+					$pageVO->userIdOwner = $user->userVO->userId;
 					$user->cacheRemove('calendarlefthand');
-				} else {
-					$arr['pageId'] = $user->pageVO->pageId;
 				}
-				if(!empty($_POST['audicourl'])) {
-					$filename = 'pageAvatar-'.$user->pageVO->pageId.'.jpg';
-					if($file = @file_get_contents($_POST['audicourl'])) {
-						file_put_contents(WEB_REL_PAGE_AVATAR.$filename,$file);
-						$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-						$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$filename,WEB_REL_PAGE_AVATAR.$filename,$resizeParams);
-					}
-					$arr["pageIco"] = $filename;
-
-				}
+				
+				
 					
 				if($deleteThumbs===true && $typeForSaveTool=='galery') {
 					$galery->getGaleryData($user->pageVO->pageId);
@@ -158,56 +140,55 @@ class page_PageEdit implements iPage {
 
 
 				}
-					
-					
-				if ($_FILES["audico"]['error']==0) {
-					$konc = Explode(".",$_FILES["audico"]["name"]);
-					$_FILES["audico"]['name'] = "icoaudit".$user->pageVO->pageId.'.'.$konc[(count($konc)-1)];
-					if($up = FSystem::upload($_FILES["audico"],WEB_REL_PAGE_AVATAR,200000)) {
-						//---resize and crop if needed
-						list($width,$height,$type) = getimagesize(WEB_REL_PAGE_AVATAR.$up['name']);
-						if($width!=PAGE_AVATAR_WIDTH_PX || $height!=PAGE_AVATAR_HEIGHT_PX) {
-							if($type!=2) $up['name'] = str_replace($konc[(count($konc)-1)],'jpg',$up['name']);
-							//---RESIZE
-							$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-							$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$_FILES["audico"]['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
-						}
-						$arr["pageIco"] = $up['name'];
-					}
+
+				//---first save - if new page to get pageId
+				if(empty($pageVO->pageId)) {
+					$pageVO->save();
 				}
-				if(isset($_POST['delpic'])) $arr['pageIco'] = '';
+				
+				/* PAGE AVATAR */
+				if(!empty($_POST['audicourl'])) {
+					$pageVO->pageIco = FPages::avatarFromUrl( $pageVO->pageId, $_POST['audicourl'] );
+				}	
+				if ($_FILES["audico"]['error']==0) {
+					$pageVO->pageIco = FPages::avatarUpload( $pageVO->pageId, $_FILES['audico'] );
+				}
+				if(isset($_POST['delpic'])) {
+					$pageVO->pageIco = FPages::avatarDelete( $pageVO->pageId );
+				}
 
-				$arr['pageParams'] = $sPage->xmlProperties;
-
-				$nid = $sPage->savePage($arr,$notQuoted);
-
-				$user->cacheRemove('forumdesc');
+				//---second save to save pageId related stuff
+				$pageVO->save();
 
 				if($user->currentPageParam != 'a') {
 					//---rules,relations update
-					$rules = new fRules((($user->currentPageParam != 'a')?($user->pageVO->pageId):('')),$user->currentPage['userIdOwner']);
+					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->public = $_POST['public'];
 					$rules->ruleText = $_POST['rule'];
 					$rules->update();
-					$fRelations = new fPagesRelations($user->pageVO->pageId);
+					$fRelations = new FPagesRelations($pageVO->pageId);
 					$fRelations->update();
 				}
 				//---set properties
 				if ($typeForSaveTool=='blog') {
-					if(isset($_POST['forumReact'])) FPages::setProperty($nid,'forumSet',(int) $_POST['forumReact']);
+					if(isset($_POST['forumReact'])) {
+						FPages::setProperty($pageVO->pageId, 'forumSet',(int) $_POST['forumReact']);
+					}
 				}
 
 				//CLEAR DRAFT
 				FUserDraft::clear($textareaIdDescription);
 				FUserDraft::clear($textareaIdContent);
 				if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') FUserDraft::clear($textareaIdForumHome);
-				if(isset($nid)) $user->pageVO->pageId = $nid;
-				if($user->currentPageParam=='a') $user->currentPageParam = '';
+				if(!empty($pageVO->pageId)) $user->pageVO->pageId = $pageVO->pageId;
+				if($user->pageParam=='a') $user->pageParam = '';
+				//CLEAR CACHE
+				$user->cacheRemove('forumdesc');
 				/**/
 
 				/*galery foto upload*/
 
-				if($user->currentPageParam!='a' && $typeForSaveTool=='galery') {
+				if($user->pageParam!='a' && $typeId=='galery') {
 
 					if(!empty($_FILES)) {
 						if(!empty($user->currentPage['galeryDir'])) {
@@ -217,6 +198,7 @@ class page_PageEdit implements iPage {
 								if ($foto["error"]==0) $up=FSystem::upload($foto,$adr,500000);
 							}
 						}
+						
 					}
 
 					//---foto description, foto deleteing
@@ -250,37 +232,38 @@ class page_PageEdit implements iPage {
 
 				}
 
-				/**/
-
-				FHTTP::redirect($user->getUri().$redirectAdd);
+				/* redirect */
+				FHTTP::redirect(FUser::getUri('','',$redirectAdd));
 			} else {
-	   //---error during value check .. let the values stay in form - data remain in _POST
-				FUserDraft::save($textareaIdDescription,$_POST['description']);
-				FUserDraft::save($textareaIdContent,$_POST['content']);
-				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome,$_POST['forumhome']);
+	   			//---error during value check .. let the values stay in form - data remain in _POST
+				FUserDraft::save($textareaIdDescription, $_POST['description']);
+				FUserDraft::save($textareaIdContent, $_POST['content']);
+				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome, $_POST['forumhome']);
 				//---cache data
 				$cache = FCache::getInstance('l');
-				$cache->setData($arr,'pageForm');
+				$cache->setData($pageVO, 'pageForm');
 			}
 		}
 
-		if (isset($_POST['del']) && $user->currentPageParam=='e') {
-			if($typeForSaveTool=='galery') {
-				//---delete photo
-				$dir = $user->currentPage['galeryDir'];
-				$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->pageVO->pageId."'");
-				foreach ($arrd as $df) $galery->removeFoto($df);
-				if(!empty($dir)) {
-					FSystem::rm_recursive($galery->_rootImg.$dir);
-					$galery->getGaleryData($user->pageVO->pageId);
-					$cachePath = $galery->getThumbCachePath();
-					FSystem::rm_recursive($cachePath);
-					$systemCachePath = $galery->getThumbCachePath($galery->_cacheDirSystemResolution);
-					FSystem::rm_recursive($systemCachePath);
-				}
+		/*  DELETE PAGE */
+		if (isset($_POST['del']) && $user->pageParam!='a') {
+			//---check if page has any related items
+			$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->pageVO->pageId."'");
+			
+			$delete = false;
+			if(empty($arrd)) $delete = true;
+			if($user->pageParam == 'sa') $delete = true;
+			
+			if($delete === false) {
+				//---lock & hide
+				$user->pageVO->locked=3;
+				$user->pageVO->save();
+			} else {
+				//---complete delete
+				FPages::deletePage($user->pageVO->pageId);
 			}
-			FPages::deletePage($user->pageVO->pageId);
-			FHTTP::redirect($user->getUri('','galer'));
+			
+			FHTTP::redirect($user->getUri('',''));
 		}
 
 	}
@@ -458,7 +441,7 @@ class page_PageEdit implements iPage {
 		$date = new DateTime((!empty($pageData['dateContent']))?($pageData['dateContent']):(''));
 		$tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
 
-		if($typeForSaveTool=='blog' && $user->pageParam!='a') {
+		if($typeId=='blog' && $user->pageParam!='a') {
 			$tpl->touchBlock('categorytab');
 			$category = new FCategory('sys_pages_category','categoryId');
 			$category->addWhere("typeId='".$user->pageVO->pageId."'");
@@ -467,9 +450,9 @@ class page_PageEdit implements iPage {
 		}
 
 		//---left panels configure
-		if($user->pageParam!='a') {
+		if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
-			$fLeft = new fLeftPanel($user->pageVO->pageId,0,$user->pageVO->typeId);
+			$fLeft = new FLeftPanel($user->pageVO->pageId,0,$user->pageVO->typeId);
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
 		}
 

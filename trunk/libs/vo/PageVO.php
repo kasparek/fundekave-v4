@@ -25,6 +25,12 @@ class PageVO extends FDBvo {
      , pageParams text
 )  ;';
 
+	var $defaults = array(
+    'forum'=>array('template'=>'page_ForumView','pageParams' => "<Page><home/></Page>"),
+    'blog'=>array('categoryId'=>'318','template'=>'page_ForumView','pageParams' => "<Page><home/></Page>"),
+    'galery'=>array('template'=>'page_GaleryDetail','pageParams' => "<Page><enhancedsettings><orderitems>0</orderitems><perpage>9</perpage><widthpx>170</widthpx><heightpx>170</heightpx><thumbnailstyle>2</thumbnailstyle><fotoforum>0</fotoforum></enhancedsettings></Page>"),
+    'culture'=>array('template'=>'culture.view.tpl.html'));
+
 	//---db based
 	var $pageId;
 	var $pageIdTop;
@@ -38,14 +44,14 @@ class PageVO extends FDBvo {
 	var $nameshort;
 	var $description;
 	var $content;
-	var $public;
+	var $public = 1;
 	var $userIdOwner;
 	var $ownerUserVO;
 	var $pageIco;
-	var $locked;
+	var $locked = 0;
 	var $authorContent;
 	var $galeryDir;
-	var $pageParams;
+	var $pageParams = "<Page></Page>";
 	var $cnt;
 	var $dateContent;
 	var $dateCreated;
@@ -60,7 +66,7 @@ class PageVO extends FDBvo {
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
-	
+
 	function PageVO($pageId=0, $autoLoad = false) {
 		parent::__construct();
 		$this->pageId = $pageId;
@@ -69,6 +75,10 @@ class PageVO extends FDBvo {
 		}
 	}
 	
+	function setDefaults() {
+		
+	}
+
 	/**
 	 * type specific perpage / galery has in xml
 	 * @return number
@@ -89,5 +99,14 @@ class PageVO extends FDBvo {
 			}
 		}
 		return false;
+	}
+	function setXML($branch,$node,$value=false) {
+	    $xml = new SimpleXMLElement($this->pageParams);
+	    if($value===false) {
+	     $xml->$branch = $node;
+	    } else {
+        $xml->$branch->$node = $value;
+	    }
+      $this->pageParams = $xml->asXML();
 	}
 }
