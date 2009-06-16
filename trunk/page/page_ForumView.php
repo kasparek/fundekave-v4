@@ -2,13 +2,21 @@
 include_once('iPage.php');
 class page_ForumView implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
 
-		if($user->pageVO->typeId=='forum' && empty($user->pageParam)) {
-			FForum::process();
+		if(empty($user->pageParam)) {
+			
+			if($user->pageVO->typeId=='blog') {
+				if(!$user->itemVO->itemId) return;
+				$data['itemIdTop'] = $user->itemVO->itemId;
+				FForum::process($data,"FBlog::callbackForumProcess");
+			}
+			
+			if($user->pageVO->typeId=='forum') {
+				FForum::process($data);
+			}
 		}
-
 
 	}
 

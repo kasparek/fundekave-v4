@@ -2,7 +2,7 @@
 include_once('iPage.php');
 class page_PagesList implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
@@ -11,8 +11,8 @@ class page_PagesList implements iPage {
 
 		//--creating action
 		if(isset($_REQUEST["add"])) {
-			$ocem= FSystem::textins($_POST["ocem"],array('plainText'=>1));
-			$nazev= FSystem::textins($_POST["nazev"],array('plainText'=>1));
+			$ocem= FSystem::textins($data["ocem"],array('plainText'=>1));
+			$nazev= FSystem::textins($data["nazev"],array('plainText'=>1));
 			if($nazev=='') {
 				FError::addError((($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEMPTY):(FLang::$ERROR_BLOG_NAMEEMPTY)));
 			}
@@ -20,9 +20,18 @@ class page_PagesList implements iPage {
 				FError::addError(($typeId=='forum')?(FLang::$ERROR_FORUM_NAMEEXISTS):(FLang::$ERROR_BLOG_NAMEEXISTS));
 			}
 			if(!FError::isError()) {
-				$fPageSave = new FPagesSaveTool($typeId);
-				$newPageId = $fPageSave->savePage(array('name'=>$nazev,'categoryId'=>$arrDefaultCategory[$typeId],'description'=>$ocem,'userIdOwner'=>$user->userVO->userId));
-				$user->cacheRemove('calendarlefthand');
+				$pageVO = new PageVO();
+				$pageVO->typeId = $typeId;
+				$pageVO->setDefaults();
+				$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
+				$pageVO->name = $nazev;
+				$pageVO->categoryId = $arrDefaultCategory[$typeId];
+				$pageVO->description = $ocem;
+				$pageVO->userIdOwner = $user->userVO->userId;
+				$newPageId = $pageVO->save();
+				$cache = FCache::getInstance('f');
+				$cache->invalidateGroup('calendarlefthand');
+				$cache->invalidateGroup('newpage');
 				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FUser::getUri('',$newPageId).'">'.$nazev.'</a>');
 				FHTTP::redirect(FUser::getUri());
 			} else {

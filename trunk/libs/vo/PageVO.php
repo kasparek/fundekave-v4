@@ -66,6 +66,9 @@ class PageVO extends FDBvo {
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
+	
+	//---watcher
+	var $xmlChanged = false;
 
 	function PageVO($pageId=0, $autoLoad = false) {
 		parent::__construct();
@@ -75,8 +78,26 @@ class PageVO extends FDBvo {
 		}
 	}
 	
+	function save() {
+		if($this->pageId > 0) {
+			$this->dateUpdated = 'now()';
+			$this->notQuote('dateUpdated');
+			$this->addIgnore('dateCreated');
+		} else {
+			$this->dateCreated = 'now()';
+			$this->notQuote('dateCreated');
+			$this->addIgnore('dateUpdated');
+		}
+		parent::save();
+		$this->xmlChanged = false;
+	}
+
 	function setDefaults() {
-		
+		if(isset($this->defaults[$this->typeId])) {
+			foreach($this->defaults[$this->typeId] as $k=>$v) {
+				$this->{$k} = $v;
+			}
+		}
 	}
 
 	/**
@@ -100,13 +121,16 @@ class PageVO extends FDBvo {
 		}
 		return false;
 	}
+
 	function setXML($branch,$node,$value=false) {
-	    $xml = new SimpleXMLElement($this->pageParams);
-	    if($value===false) {
-	     $xml->$branch = $node;
-	    } else {
-        $xml->$branch->$node = $value;
-	    }
-      $this->pageParams = $xml->asXML();
+		$xml = new SimpleXMLElement($this->pageParams);
+		if($value === false) {
+			if((String) $xml->$branch != $node) $this->xmlChanged = true;
+			$xml->$branch = $node;
+		} else {
+			if((String) $xml->$branch->$node != $value) $this->xmlChanged = true;
+			$xml->$branch->$node = $value;
+		}
+		$this->pageParams = $xml->asXML();
 	}
 }

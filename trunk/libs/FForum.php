@@ -37,28 +37,19 @@ class FForum extends FDBTool {
 			FForum::statAudit($auditId, $user->userVO->userId);
 		}
 	}
+	
 	static function messWrite($itemVO) {
-		
-		if(!empty($itemVO->itemIdTop)) {
-			$cache = FCache::getInstance('f');
-			$cache->invalidateGroup('lastBlogPost');
-		}
-		
 		$itemVO->typeId = 'forum';
-
 		$ret = $itemVO->save();
-			
 		if($itemVO->itemIdTop > 0) {
 			FForum::incrementReactionCount( $itemVO->itemIdTop );	
 		} else {
 			$dot = "update sys_pages set cnt=cnt+1 where pageId='".$itemVO->pageId."'";
 			FDBTool::query($dot);
 		}
-		
 		if(($userId = FUser::logon()) > 0) {
 			FForum::statAudit($itemVO->pageId, $userId, false);
 		}
-			
 		return $ret;
 	}
 	static function updateReadedReactions($itemId,$userId) {
@@ -141,7 +132,7 @@ class FForum extends FDBTool {
 		$dot = "update sys_pages_items set cnt=cnt+1 where itemId='".$itemId."'";
 		return $this->query($dot);
 	}
-	static function process( $itemId = 0, $callbackFunction=false) {
+	static function process( $data, $callbackFunction=false) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$logon = $user->idkontrol;
@@ -227,7 +218,7 @@ class FForum extends FDBTool {
 						}
 						if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
 						if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
-						if($itemId > 0) $itemVO->itemIdTop = $itemId;
+						if($data['itemIdTop'] > 0) $itemVO->itemIdTop = $data['itemIdTop'];
 
 						FForum::messWrite($itemVO);
 

@@ -66,7 +66,15 @@ if(($user->pageVO->locked==2 && $user->userVO->userId != $user->pageVO->userIdOw
 }
 //---process post/get
 //TODO: do this as soon as possible, usually there is redirect
-FBuildPage::process();
+$data = $_POST;
+if(!empty($_FILES)) {
+	$data['__files'] = $_FILES; 
+}
+if(!empty($_GET)) {
+	$data['__get'] = $_GET;
+}
+FBuildPage::process( $data );
+
 //----------------	generate page	----------------------------------------
 FBuildPage::show();
 

@@ -2,9 +2,9 @@
 include_once('iPage.php');
 class page_SysEditCategories implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$category = new FCategory('sys_pages_category','categoryId');
-		$category->process();
+		$category->process($data);
 		
 		if(isset($_REQUEST['f'])) {
 			$cache = FCache::getInstance('s');

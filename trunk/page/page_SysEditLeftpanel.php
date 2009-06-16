@@ -2,7 +2,7 @@
 include_once('iPage.php');
 class page_SysEditLeftpanel implements iPage {
 
-	static function process() {
+	static function process($data) {
 		//TODO: Icant see category process - page not tested
 	}
 

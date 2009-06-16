@@ -2,36 +2,36 @@
 include_once('iPage.php');
 class page_UserPost implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 		//---action part - cache -pp,filtr
 		$redir = false;
-		if(isset($_GET['filtr'])) {
-			if($_GET['filtr'] == 'cancel') {
+		if(isset($data['__get']['filtr'])) {
+			if($data['__get']['filtr'] == 'cancel') {
 				$cache->invalidateGroup('filtrPost');
 				$redir = true;
 			}
 		}
 
 		$perPage = $cache->getData($user->pageVO->pageId,'pp');
-		if (isset($_POST["perpage"]) && $_POST["perpage"] != $perPage) {
-			$perPage = $_REQUEST["perpage"]*1;
+		if (isset($data["perpage"]) && $data["perpage"] != $perPage) {
+			$perPage = $data["perpage"]*1;
 			$cache->setData($perPage, $user->pageVO->pageId,'pp');
 			$redir = true;
 		}
 
-		if (isset($_REQUEST["filtr"])) {
-			if(!empty($_REQUEST["zprava"])) $cache->setData(FSystem::textins($_REQUEST["zprava"]), 'text', 'filtrPost');
-			$cache->setData(FSystem::textins($_REQUEST["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
+		if (isset($data["filtr"])) {
+			if(!empty($data["zprava"])) $cache->setData(FSystem::textins($data["zprava"]), 'text', 'filtrPost');
+			$cache->setData(FSystem::textins($data["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
 			$redir = true;
 		}
 		
 		//---SEND MESSAGE
-		if(isset($_POST["send"]) && $_POST["zprava"]!='') {
+		if(isset($data["send"]) && $data["zprava"]!='') {
 			$cache->invalidateGroup('filtrPost');
-			if (!empty($_POST["prokoho"])) {
-				$protmp=Explode(",",$_POST["prokoho"]);
+			if (!empty($data["prokoho"])) {
+				$protmp=Explode(",",$data["prokoho"]);
 				foreach ($protmp as $usrname) {
 					if($pro = FUser::getUserIdByName(Trim($usrname))) $arrto[] = $pro;
 					else $errjm[] = Trim($usrname);
@@ -41,9 +41,9 @@ class page_UserPost implements iPage {
 
 			if (empty($arrto)) {
 				FError::addError('postnoto');
-				FUserDraft::save('postText',$_POST["zprava"]);
+				FUserDraft::save('postText',$data["zprava"]);
 			} else {
-				$zprava = FSystem::textins($_POST["zprava"]);
+				$zprava = FSystem::textins($data["zprava"]);
 				if(!empty($zprava)) {
 					foreach ($arrto as $komu){
 						FMessages::send($komu,$zprava,$user->userVO->userId);
@@ -55,19 +55,19 @@ class page_UserPost implements iPage {
 		}
 				
 		//---mazani zprav
-		if ((isset($_POST["delo"]) || isset($_POST["delbe"])) && !empty($_POST["del"])) {
-			if(isset($_POST["delbe"]) && Count($_POST["del"]) > 1){
+		if ((isset($data["delo"]) || isset($data["delbe"])) && !empty($data["del"])) {
+			if(isset($data["delbe"]) && Count($data["del"]) > 1){
 				$cache = FCache::getInstance('s');
 				$arrdelex = $cache->getData('displayed','post');
 				$cache->invalidateData('displayed','post');
 				$de=false;
 				for($x=0;$x<count($arrdelex);$x++){
-					if($arrdelex[$x]==$_POST["del"][0] && $de==false) $de=true;
+					if($arrdelex[$x]==$data["del"][0] && $de==false) $de=true;
 					if($de==true) $arrdel[]=$arrdelex[$x];
-					if($arrdelex[$x]==$_POST["del"][(Count($del)-1)]) {$de=false; break;}
+					if($arrdelex[$x]==$data["del"][(Count($del)-1)]) {$de=false; break;}
 				}
 			} else {
-				$arrdel = $_POST["del"];
+				$arrdel = $data["del"];
 			}
 			FMessages::delete($arrdel);
 			$redir = true;

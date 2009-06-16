@@ -176,10 +176,6 @@ class ItemVO extends FDBvo {
 			$cache->setData( $this, $this->itemId, 'fit');
 		}
 		
-		function delete($id) {
-			parent::save($this->itemId);
-		}
-
 		function prepare() {
 			switch ($this->typeId) {
 				case 'galery':

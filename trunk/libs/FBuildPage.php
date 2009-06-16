@@ -38,7 +38,7 @@ class FBuildPage {
 		return $template;
 	}
 
-	static function process() {
+	static function process( $data ) {
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
@@ -49,7 +49,7 @@ class FBuildPage {
 					$template = FBuildPage::getTemplate($template);
 					if( class_exists($template) ) {
 						$c = new $template;
-						$c->process();
+						$c->process( $data );
 					}
 				}
 			}

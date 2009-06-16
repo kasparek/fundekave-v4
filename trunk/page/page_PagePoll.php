@@ -2,11 +2,11 @@
 include_once('iPage.php');
 class page_PagePoll implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 		//---administrace ankety
 		if (FRules::getCurrent(2)) {
-			page_PollEdit::process();
+			page_PollEdit::process($data);
 		}
 
 	}

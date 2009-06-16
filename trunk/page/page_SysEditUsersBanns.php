@@ -2,17 +2,19 @@
 include_once('iPage.php');
 class page_SysEditUsersBanns implements iPage {
 
-	static function process() {
-		if(isset($_GET['du']) && FRules::getCurrent()) FUser::invalidateUsers($_GET['du']);
-		if(isset($_POST["usersstat"]) && FRules::getCurrent()) {
-			foreach ($_POST["usersstat"] as $k=>$v){
+	static function process($data) {
+		if(isset($data['__get']['du']) && FRules::getCurrent()) {
+			FUser::invalidateUsers($data['__get']['du']);	
+		}
+		if(isset($data["usersstat"]) && FRules::getCurrent()) {
+			foreach ($data["usersstat"] as $k=>$v){
 				FDBTool::query("update sys_users set deleted=".$v." where userId=".$k);
 			}
 			FHTTP::redirect(FUser::getUri());
 		}
-		if(isset($_REQUEST['usrfilter'])) {
+		if(isset($data['usrfilter'])) {
 			$cache = FCache::getInstance('s');
-			$cache->setData($_REQUEST['usrfilter'],'ubann','filtr');
+			$cache->setData($data['usrfilter'],'ubann','filtr');
 		}
 	}
 

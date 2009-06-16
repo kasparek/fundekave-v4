@@ -2,22 +2,22 @@
 include_once('iPage.php');
 class page_UserSurf implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
 		$pageId = $user->pageVO->pageId;
 
-		if(isset($_POST["insert"]) && $user->idkontrol) {
-			$url = trim($_POST["surflink"]);
+		if(isset($data["insert"]) && $user->idkontrol) {
+			$url = trim($data["surflink"]);
 			if($url=='') {
 				FError::addError(FLang::$ERROR_SURF_URL);
 			} else {
 				$sLinx = new FDBTool('sys_surfinie','surfId');
 				$sLinx->addCol('userId',$userId);
 				$sLinx->addCol('url',FSystem::textins($url,array('plainText'=>1)));
-				$sLinx->addCol('name',FSystem::textins($_POST["surfdesc"],array('plainText'=>1)));
-				$sLinx->addCol('public',($_POST["surfpublic"]*1));
-				$sLinx->addCol('categoryId',($_POST['selcat']*1));
+				$sLinx->addCol('name',FSystem::textins($data["surfdesc"],array('plainText'=>1)));
+				$sLinx->addCol('public',($data["surfpublic"]*1));
+				$sLinx->addCol('categoryId',($data['selcat']*1));
 				$sLinx->addCol('dateCreated','NOW()',false);
 				$sLinx->save();
 				FHTTP::redirect(FUser::getUri());
@@ -25,8 +25,8 @@ class page_UserSurf implements iPage {
 		}
 
 		//---DELETE link
-		if(isset($_GET['d'])) {
-			$deleteId = $_GET['d']*1;
+		if(isset($data['__get']['d'])) {
+			$deleteId = $data['__get']['d']*1;
 			$doDelete = false;
 			if($deleteId > 0) {
 				if(FRules::get($userId,$pageId,2)) {

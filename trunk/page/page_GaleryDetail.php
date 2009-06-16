@@ -2,13 +2,11 @@
 include_once('iPage.php');
 class page_GaleryDetail implements iPage {
 
-	static function process() {
-		if($user->pageParam == 'e') {
-			page_PageEdit::process();
-		}
-
+	static function process($data) {
+		
 		if($user->itemVO->itemId > 0) {
-			FForum::process($user->itemVO->itemId,"FGalery::callbackForumProcess");
+			$data['itemIdTop'] = $user->itemVO->itemId;
+			FForum::process($data, "FGalery::callbackForumProcess");
 		}
 
 	}

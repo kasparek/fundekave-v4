@@ -2,7 +2,7 @@
 include_once('iPage.php');
 class page_PagesList implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 	}
 

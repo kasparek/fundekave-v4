@@ -2,14 +2,14 @@
 include_once('iPage.php');
 class page_SysEditPages implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$cache = FCache::getInstance('s');
 		$arrParams = $cache->getData('Epages','filtr');
-		if(isset($_REQUEST['type'])) if(array_key_exists($_REQUEST['type'],$arrType)) $arrParams['type'] = $_REQUEST['type']; else $arrParams['type'] = '';
-		if(isset($_REQUEST['cate'])) $arrParams['cate'] = $_REQUEST['cate']*1;
-		if(isset($_REQUEST['orde'])) $arrParams['orde'] = $_REQUEST['orde']*1;
-		if(isset($_REQUEST['lock'])) $arrParams['lock'] = $_REQUEST['lock']*1;
-		if(isset($_REQUEST['sear'])) $arrParams['sear'] = trim($_REQUEST['sear']);
+		if(isset($data['type'])) if(array_key_exists($data['type'],$arrType)) $arrParams['type'] = $data['type']; else $arrParams['type'] = '';
+		if(isset($data['cate'])) $arrParams['cate'] = $data['cate']*1;
+		if(isset($data['orde'])) $arrParams['orde'] = $data['orde']*1;
+		if(isset($data['lock'])) $arrParams['lock'] = $data['lock']*1;
+		if(isset($data['sear'])) $arrParams['sear'] = trim($data['sear']);
 		$cache->setData($arrParams);
 
 		$typeLength = strlen($arrParams['type']);
