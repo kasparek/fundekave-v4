@@ -2,22 +2,22 @@
 include_once('iPage.php');
 class page_PagesSearch implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 		$cache = FCache::getInstance('s');
 		$pageSearchCache = $cache->getData($user->pageVO->pageId,'search');
 
-		if(isset($_POST['kat'])) {
-			$catId = (int) $_POST["kat"];
+		if(isset($data['kat'])) {
+			$catId = (int) $data["kat"];
 			if($catId != $pageSearchCache['categoryId']) {
 				$pageSearchCache['categoryId'] = $catId;
 				$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 			}
 		}
 
-		if(isset($_POST['filtr'])) {
-			if($_POST['filtr'] !== $pageSearchCache['filtrStr']) {
-				$pageSearchCache['filtrStr'] = FSystem::textins($_POST['filtr'],array('plainText'=>1));
+		if(isset($data['filtr'])) {
+			if($data['filtr'] !== $pageSearchCache['filtrStr']) {
+				$pageSearchCache['filtrStr'] = FSystem::textins($data['filtr'],array('plainText'=>1));
 				$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 			}
 		}

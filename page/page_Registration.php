@@ -2,11 +2,11 @@
 include_once('iPage.php');
 class page_Registration implements iPage {
 	
-	static function process() {
+	static function process($data) {
 
-		if(isset($_POST['addusr'])) {
+		if(isset($data['addusr'])) {
 			$user = FUser::getInstance();
-			$user->register();
+			$user->register($data);
 		}
 		
 	}

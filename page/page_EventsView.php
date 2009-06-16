@@ -2,10 +2,10 @@
 include_once('iPage.php');
 class page_EventsView implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
 		if($user->pageParam == 'u') {
-			page_EventsEdit::process();
+			page_EventsEdit::process($data);
 		}
 
 	}

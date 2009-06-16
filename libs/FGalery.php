@@ -228,7 +228,7 @@ class FGalery {
 
 		//---remove foto no longer in folder
 		if(!empty($arrItemIdsNotOnFtp)) foreach ($arrItemIdsNotOnFtp as $itemId) {
-			$this->removeFoto($itemId);
+			FGalery::removeFoto($itemId);
 			$change = true;
 		}
 		
@@ -239,8 +239,15 @@ class FGalery {
 				$itemVO->pageId = $pageId;
 				$itemVO->typeId = $this->pageVO->typeId;
 				$itemVO->enclosure = $file;
-				$itemVO->dateStart = 'now()'; //TODO: take from exif if availble
 				$itemVO->dateCreated = 'now()';
+				//---try exif
+				$exif = @exif_read_data( $galdir.$file );
+				if(!empty($exif)) {
+					$itemVO->dateCreated = date("Y-m-d",$exif['FileDateTime']);
+					if(isset($exif['DateTimeOriginal'])) {
+						$itemVO->dateCreated = date("Y-m-d",$exif['DateTimeOriginal']);
+					}
+				}
 				$itemVO->filesize = filesize($galdir.$file);
 				$itemVO->text = '';
 				$itemVO->hit = 0;
@@ -286,20 +293,20 @@ class FGalery {
 	 * @param $id - itemId
 	 * @return void
 	 */
-	function removeFoto($id) {
+	static function removeFoto($id) {
 		if(!empty($id)) {
-			$this->itemVO = new ItemVO($id, true);
+			$galery = new FGalery();
+			$galery->itemVO = new ItemVO($id, true);
+			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 			
-			$this->pageVO = new PageVO($this->itemVO->pageId, true);
-			
-			if(!empty($this->itemVO->thumbUrl)) if(is_file($this->itemVO->thumbUrl)) unlink($this->itemVO->thumbUrl);
-			if(is_file(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure)) unlink(WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure);
-			$this->removeThumb();
+			if(!empty($galery->itemVO->thumbUrl)) if(is_file($galery->itemVO->thumbUrl)) unlink($galery->itemVO->thumbUrl);
+			if(is_file(WEB_REL_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) unlink(WEB_REL_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			$galery->removeThumb();
 
 			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
 			FDBTool::query("delete from sys_pages_items_hit where itemId='".$id."'");
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");
-			FDBTool::query("update sys_pages set date_updated = now(),cnt=cnt-1 where pageId='".$this->itemVO->pageId."'");
+			FDBTool::query("update sys_pages set date_updated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");
 
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
@@ -324,4 +331,17 @@ class FGalery {
 			@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb']);
 		}
 	}
+	/**
+	 * delete all thumbs
+	 * 
+	*/
+	static function deleteThumbs( $pageId ) {
+		$galery = new FGalery();
+		$galery->pageVO = new PageVO($pageId, true);
+		$cachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath();
+		FSystem::rm_recursive($cachePath);
+		$systemCachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath( WEB_REL_CACHE_GALERY_SYSTEM );
+		FSystem::rm_recursive($systemCachePath);
+	} 
+	
 }

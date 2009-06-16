@@ -280,10 +280,10 @@ class FUser {
 	 */
 	function register(){
 		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
-		if(isset($_REQUEST["addusr"]) && $this->idkontrol === false) {
-			$jmenoreg = trim($_REQUEST["jmenoreg"]);
-			$pwdreg1 = trim($_REQUEST["pwdreg1"]);
-			$pwdreg2 = trim($_REQUEST["pwdreg2"]);
+		if(isset($data["addusr"]) && $this->idkontrol === false) {
+			$jmenoreg = trim($data["jmenoreg"]);
+			$pwdreg1 = trim($data["pwdreg1"]);
+			$pwdreg2 = trim($data["pwdreg2"]);
 			if(strlen($jmenoreg)<2) FError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
 			elseif(strlen($jmenoreg)>10) FError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
 			elseif (!FSystem::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);

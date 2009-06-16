@@ -2,9 +2,9 @@
 include_once('iPage.php');
 class page_SysEditLeftpanelFunctions implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$category = new FCategory('sys_leftpanel_functions','functionId');
-		$category->process();
+		$category->process($data, true);
 	}
 
 	static function build() {

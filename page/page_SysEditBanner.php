@@ -1,20 +1,22 @@
 <?php
+//TODO: refactor - sqlsavetool, _POST
 include_once('iPage.php');
 class page_SysEditBanner implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 
 		//upload
-		if(!empty($_FILES['bann'])) {
-			if($ak=upload($_FILES["bann"],WEB_REL_BANNER)) {
+		if(!empty($data['__files']['bann'])) {
+			if($ak=upload($data['__files']["bann"],WEB_REL_BANNER)) {
 				FError::addError(FLang::$MESSAGE_UPLOAD_SUCCESS);
 				FHTTP::redirect(FUser::getUri());
 			}
 		}
+		
 		//delete file from ftp
-		if(isset($_GET['ibd'])) {
-			$banner =  WEB_REL_BANNER.trim($_GET['ibd']);
+		if(isset($data['__get']['ibd'])) {
+			$banner =  WEB_REL_BANNER.trim($data['__get']['ibd']);
 			if(file_exists($banner)) {
 				if($ak = @unlink($banner)){
 					FError::addError(FLang::$LABEL_DELETED_OK);
@@ -25,11 +27,11 @@ class page_SysEditBanner implements iPage {
 			}
 		}
 		//save banner
-		if(isset($_POST['bid'])) {
+		if(isset($data['__files']['bid'])) {
 			$sBanner = new fSqlSaveTool('sys_banner','bannerId');
 
-			if($_POST['bid']>0) {
-				$arr['bannerId']= $_POST['bid'] * 1;
+			if($data['__files']['bid']>0) {
+				$arr['bannerId']= $data['__files']['bid'] * 1;
 				$arr['dateUpdated']='now()';
 			}	else {
 				$user = FUser::getInstance();
@@ -37,7 +39,7 @@ class page_SysEditBanner implements iPage {
 				$arr['dateCreated']='now()';
 			}
 
-			if(FSystem::isDate($_POST['eddatefrom'])) $arr['dateFrom']=$_POST['eddatefrom'];
+			if(FSystem::isDate($_POST['eddatefrom'])) $arr['dateFrom']=$data['__files']['eddatefrom'];
 			else FError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			if(FSystem::isDate($_POST['eddateto'])) $arr['dateTo']=$_POST['eddateto'];

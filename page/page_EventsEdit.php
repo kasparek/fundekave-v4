@@ -2,14 +2,22 @@
 include_once('iPage.php');
 class page_EventsEdit implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
-		$fItems = new FItems();
-
-		$itemId = &$user->itemVO->itemId;
+		
+		if($user->itemVO->itemId > 0) {
+			$itemVO = $user->itemVO; 
+		} else {
+			$itemVO = new ItemVO();
+			$this->typeId = 'event';
+			$itemVO->userId = $user->userVO->userId;
+			$itemVO->name = $user->userVO->name;
+			$itemVO->dateCreated = 'NOW()';
+			$itemVO->pageId = $user->pageVO->pageId;
+		}
 
 		if(isset($_POST['del']) && $itemId > 0) {
-			$fItems->deleteItem( $itemId );
+			$itemVO->delete();
 			$cache = FCache::getInstance('f');
 			$cache->invalidateDate('eventtip');
 			$cache->invalidateDate('calendarlefthand');
@@ -17,92 +25,77 @@ class page_EventsEdit implements iPage {
 			FHTTP::redirect(FUser::getUri());
 		}
 
-		if(isset($_POST["nav"])) {
-			$arrSave = array();
+		if(isset($data["nav"])) {
 			//---check flyer to upload
-			if(isset($_POST['delfly']) && !empty($itemId)){
-				$fItems->setSelect('enclosure');
-				$arr = $fItems->getItem($itemId);
-				$file = $arr[0];
-				if($file!='') {
-					if(file_exists($conf['events']['flyer_source'].$file)) unlink($conf['events']['flyer_source'].$file);
-					if(file_exists($conf['events']['flyer_cache'].$file)) unlink($conf['events']['flyer_cache'].$file);
+			if(isset($data['delfly']) && !empty($itemId)){
+				if($itemVO->enclosure!='') {
+					if(file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
+					if(file_exists(FConf::get('events','flyer_cache').$itemVO->enclosure)) unlink(FConf::get('events','flyer_cache').$itemVO->enclosure);
 				}
-				$arrSave['enclosure'] = '';
+				$itemVO->enclosure = '';
 			}
 			//---check time
 			$timeStart = '';
 			$timeEnd = '';
-			$timeStartTmp = trim($_POST['timestart']);
+			$timeStartTmp = trim($data['timestart']);
 			if(FSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
-			$timeEndTmp = trim($_POST['timeend']);
+			$timeEndTmp = trim($data['timeend']);
 			if(FSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
 			//---check time
-			$dateStart = FSystem::textins($_POST['datestart'],array('plainText'=>1));
+			$dateStart = FSystem::textins($data['datestart'],array('plainText'=>1));
 			$dateStart = FSystem::switchDate($dateStart);
 			if(FSystem::isDate($dateStart)) $dateStart .= $timeStart;
 			else FError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			//---save array
-			$arrSave = array('location'=>FSystem::textins($_POST['place'],array('plainText'=>1))
-			,'addon'=>FSystem::textins($_POST['name'],array('plainText'=>1))
-			,'dateStart'=>$dateStart
-			,'text'=>FSystem::textins($_POST['description'])
-			);
+			$itemVO->location = FSystem::textins($data['place'],array('plainText'=>1));
+			$itemVO->addon = FSystem::textins($data['name'],array('plainText'=>1));
+			$itemVO->dateStart = $dateStart;
+			$itemVO->text = FSystem::textins($data['description']);
 
-			$dateEnd = FSystem::textins($_POST['dateend'],array('plainText'=>1));
+			$dateEnd = FSystem::textins($data['dateend'],array('plainText'=>1));
 			$dateEnd = FSystem::switchDate($dateEnd);
-			if(FSystem::isDate($dateEnd)) $arrSave['dateEnd'] = $dateEnd.$timeEnd;
+			if(FSystem::isDate($dateEnd)) $itemVO->dateEnd = $dateEnd.$timeEnd;
 
-			//print_r($arrSave);
-			//die();
-			if($_POST['category']*1>0) $arrSave['categoryId'] = $_POST['category']*1;
+			if($data['category'] > 0) $itemVO->categoryId = (int) $data['category'];
 
-			if($arrSave['addon']=="") FError::addError(FLang::$ERROR_NAME_EMPTY);
-
-			if(!empty($itemId)) {
-				$arrSave['itemId'] = $itemId;
-			} else {
-				$arrSave['userId'] = $user->userVO->userId;
-				$arrSave['name'] = $user->userVO->name;
-				$arrSave['typeId'] = $user->pageVO->typeIdChild;
-				$arrSave['dateCreated'] = 'NOW()';
-				$arrSave['pageId'] = $user->pageVO->pageId;
-			}
+			if(empty($itemVO->addon)) FError::addError(FLang::$ERROR_NAME_EMPTY);
 
 			if(!FError::isError()) {
 
-				$itemId = $fItems->saveItem($arrSave);
-				if(!empty($_POST['akceletakurl'])) {
+				$itemId = $itemVO->save();
+				if(!empty($data['akceletakurl'])) {
 					$filename = "flyer".$itemId.'.jpg';
-					if($file = file_get_contents($_POST['akceletakurl'])) {
-						file_put_contents($conf['events']['flyer_source'].$filename,$file);
+					if($file = file_get_contents($data['akceletakurl'])) {
+						file_put_contents(FConf::get('events','flyer_source').$filename,$file);
 					}
 					$cachedThumb = FEvents::thumbUrl($filename);
 					if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
 
-					$fImg = new FImgProcess($conf['events']['flyer_source'] . $filename
-					,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
-					,'width'=>$conf['events']['thumb_width'],'height'=>0));
+					$fImg = new FImgProcess(FConf::get('events','flyer_source') . $filename
+					,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
+					,'width'=>FConf::get('events','thumb_width'),'height'=>0));
 
-					$fItems->saveItem(array("itemId"=>$itemId,'enclosure'=>$filename));
+					$itemVO->enclosure = $filename;
+					$itemVO->save();
 					$user->cacheRemove('eventtip','calendarlefthand');
-				}
-				elseif($_FILES['akceletak']['error'] == 0) {
-					$flypath = $conf['events']['flyer_source'];
-					$arr = explode('.',$_FILES['akceletak']['name']);
-					$_FILES['akceletak']['name'] = "flyer".$itemId.'.'.strtolower($arr[count($arr)-1]);
-					if(FSystem::upload($_FILES['akceletak'],$flypath,800000)) {
-						$cachedThumb = FEvents::thumbUrl($_FILES['akceletak']['name']);
-						if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
-						//---create thumb
-						$fImg = new FImgProcess($conf['events']['flyer_source'] . $_FILES['akceletak']['name']
-						,$cachedThumb, array('quality'=>$conf['events']['thumb_quality']
-						,'width'=>$conf['events']['thumb_width'],'height'=>0));
-
-						$fItems->saveItem(array("itemId"=>$itemId,'enclosure'=>$_FILES['akceletak']['name']));
-						$user->cacheRemove('eventtip','calendarlefthand');
-						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
+				} elseif(isset($data['__files'])) {
+					if($data['__files']['akceletak']['error'] == 0) {
+						$flypath = FConf::get('events','flyer_source');
+						$arr = explode('.',$data['__files']['akceletak']['name']);
+						$data['__files']['akceletak']['name'] = "flyer".$itemId.'.'.strtolower($arr[count($arr)-1]);
+						if(FSystem::upload($data['__files']['akceletak'],$flypath,800000)) {
+							$cachedThumb = FEvents::thumbUrl($data['__files']['akceletak']['name']);
+							if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
+							//---create thumb
+							$fImg = new FImgProcess(FConf::get('events','flyer_source') . $data['__files']['akceletak']['name']
+							,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
+							,'width'=>FConf::get('events','thumb_width'),'height'=>0));
+							$itemVO->enclosure = $data['__files']['akceletak']['name'];
+							$itemVO->save();
+							$user->cacheRemove('eventtip','calendarlefthand');
+							FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
+						}
 					}
 				}
 			} else {

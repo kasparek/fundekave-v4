@@ -2,7 +2,7 @@
 include_once('iPage.php');
 class page_ItemsSearch implements iPage {
 
-	static function process() {
+	static function process($data) {
 
 	}
 

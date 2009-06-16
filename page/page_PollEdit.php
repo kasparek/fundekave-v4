@@ -1,16 +1,17 @@
 <?php
+//TODO: refactor _POST _REQUEST
 include_once('iPage.php');
 class page_PollEdit implements iPage {
 
-	static function process() {
+	static function process($data) {
 		$user = FUser::getInstance();
 
 		$selectedPageId = $user->pageVO->pageId;
 		
-		if($superAdmin = FRules::get($user->gid,'sadmi',1)) {
+		if($superAdmin = FRules::get($user->userVO->userId,'sadmi',1)) {
 			$cache = FCache::getInstance('s');
-			if(isset($_POST['selpageid'])) {
-				$tmpSelectedPageId = trim($_POST['selpageid']);
+			if(isset($data['selpageid'])) {
+				$tmpSelectedPageId = trim($data['selpageid']);
 				if(FPages::page_exist('pageId',$tmpSelectedPageId)) {
 					$cache->setData($tmpSelectedPageId, 'page','poll');
 				}

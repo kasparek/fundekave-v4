@@ -32,23 +32,6 @@ class FItems extends FDBTool {
 		return in_array($type, $types);
 	}
 
-	function initDetail($itemId) {
-		$itemCheck = $this->getRow("select itemIdTop from sys_pages_items where itemId='".$itemId."'");
-		if($itemCheck[0] > 0) {
-			$this->itemIdInside = $itemId;
-			$itemId = $itemCheck[0];
-		}
-		if($itemId > 0 && $this->showComments) {
-			//---add discussion
-			FForum::process($itemId);
-		}
-		$this->addWhere("itemId='".$itemId."'");
-		if(!FRules::getCurrent(2)) {
-			$this->addWhere('public = 1');
-		}
-		return $itemId;
-	}
-
 	function initList($typeId='forum', $byPermissions = false) {
 		$this->queryReset();
 		if(FItems::isTypeValid($typeId)) {

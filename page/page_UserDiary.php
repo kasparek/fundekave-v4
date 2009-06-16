@@ -2,27 +2,27 @@
 include_once('iPage.php');
 class page_UserDiary implements iPage {
 
-	static function process() {
+	static function process($data) {
 		
 		//---nova udalost
-		if (isset($_POST['save'])){
+		if (isset($data['save'])){
 				
 			$user = FUser::getInstance();
 				
-			$arrd['recurrence'] = $_POST['drepeat'] * 1;
-			$arrd['name'] = FSystem::textins($_POST['dzkratka'],array('plainText'=>1));
-			$arrd['text'] = FSystem::textins($_POST['dtext']);
+			$arrd['recurrence'] = $data['drepeat'] * 1;
+			$arrd['name'] = FSystem::textins($data['dzkratka'],array('plainText'=>1));
+			$arrd['text'] = FSystem::textins($data['dtext']);
 
-			list($nden,$nmesic,$nrok)=explode(".",$_POST['addfdate']);
+			list($nden,$nmesic,$nrok)=explode(".",$data['addfdate']);
 			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else FError::addError(ERROR_DATA_FORMAT);
 			$arrd['userId'] = $user->userVO->userId;
-			$arrd['reminder'] = $_POST['dpripomen'] * 1;
+			$arrd['reminder'] = $data['dpripomen'] * 1;
 			$arrd['dateCreated'] = 'NOW()';
-			if(isset($_POST['did'])) $arrd['diaryId'] = $_POST['did'] * 1;
+			if(isset($data['did'])) $arrd['diaryId'] = $data['did'] * 1;
 			if($arrd['name']=='') FError::addError(FLang::$ERROR_DIARY_NAME);
 			if($arrd['text']=='') FError::addError(FLang::$ERROR_DIARY_TEXT);
-			$arrd['everyday'] = $_POST['dopakovat'] * 1;
-			$arrd['eventForAll'] = $_POST['dpublic'] * 1;
+			$arrd['everyday'] = $data['dopakovat'] * 1;
+			$arrd['eventForAll'] = $data['dpublic'] * 1;
 			if(!FError::isError()){
 				$fdbtool = new FDBTool('sys_users_diary','diaryId');
 				$fdbtool->save($arrd,array('dateCreated'));

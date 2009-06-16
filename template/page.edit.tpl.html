@@ -46,7 +46,6 @@
     <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
     
     <!-- BEGIN galeryspecific -->
-    <label>Adresář</label><input type="text" name="galeryDir" value="{GDIR}" class="short" /><br />
     <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
     <!-- BEGIN enhancendgalery -->
     <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
@@ -104,16 +103,7 @@
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
 </select><br />
-<table>
-<!-- BEGIN gfoto -->
-  <tr>
-  <td align="center"><img src="{FTHUMBURL}" title="{FNAME}" alt="{FNAME}"></td>
-  <td><textarea name="fot[{FID}][comm]" id="galfoto{FID}" class="draftable">{FCOMMENT}</textarea><br />
-  <label>Datum fotky:</label><input type="text" name="fot[{FID}][date]" id="foto{FID}" value="{FDATE}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
-  <label>Smazat:</label><input type="checkbox" name="delfoto[]" value="{FID}" class="checkbox" /></td>
-</tr>
-<!-- END gfoto -->
-</table>
+<table><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></table>
 <input type="submit" name="save" value="Uložit" class="button submit" />
 </fieldset>
 </div>

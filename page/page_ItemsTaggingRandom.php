@@ -2,11 +2,11 @@
 include_once('iPage.php');
 class page_ItemsTaggingRandom implements iPage {
 
-	static function process() {
+	static function process($data) {
 
-		if(isset($_POST['save'])) {
-			if(!empty($_POST['item'])) {
-				foreach ($_POST['item'] as $k=>$v) {
+		if(isset($data['save'])) {
+			if(!empty($data['item'])) {
+				foreach ($data['item'] as $k=>$v) {
 					$v = trim($v);
 					if(!empty($v) && $k>0) {
 						$arrV = explode(",",$v);

@@ -188,7 +188,6 @@ class FSystem {
 			$text = strip_tags($text);
 		}
 
-
 		if($paramsArr['formatOption']==1) {
 
 			require_once('HTML/BBCodeParser.php');
@@ -204,15 +203,13 @@ class FSystem {
 			require_once('PEAR.php');
 			require_once('HTML/Safe.php');
 			$safe = new HTML_Safe();
-			if($user->idkontrol) {
+			if($user->idkontrol && $paramsArr['formatOption']>0) {
 				$objectKey = array_search('object',$safe->deleteTags);
 				array_splice($safe->deleteTags, $objectKey, 1);
 				$objectKey = array_search('embed',$safe->deleteTags);
 				array_splice($safe->deleteTags, $objectKey, 1);
-
 				$objectKey = array_search('name',$safe->attributes);
 				array_splice($safe->attributes, $objectKey, 1);
-
 			}
 			$text = str_replace('\\','',$text);
 			$text = $safe->parse($text);
@@ -271,7 +268,7 @@ class FSystem {
 		}
 		return $date;
 	}
-	function isDate($datein) {
+	static function isDate($datein) {
 		$ret=false;
 		$arr = explode(" ",$datein);
 		$da = explode("-",$arr[0]);
