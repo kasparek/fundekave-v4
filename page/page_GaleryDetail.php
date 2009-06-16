@@ -3,7 +3,7 @@ include_once('iPage.php');
 class page_GaleryDetail implements iPage {
 
 	static function process($data) {
-		
+		$user = FUser::getInstance();
 		if($user->itemVO->itemId > 0) {
 			$data['itemIdTop'] = $user->itemVO->itemId;
 			FForum::process($data, "FGalery::callbackForumProcess");
@@ -39,9 +39,9 @@ class page_GaleryDetail implements iPage {
 				$perPage = $user->pageVO->perPage();
 
 				if($user->pageVO->getPageParam('enhancedsettings/orderitems') == 0) {
-					$fItems->setOrder('i.enclosure');	
+					$fItems->setOrder('enclosure');	
 				} else {
-					$fItems->setOrder('i.dateCreated desc');	
+					$fItems->setOrder('dateCreated desc');	
 				}
 
 				$pager = FSystem::initPager($totalItems,$perPage);
@@ -73,7 +73,7 @@ class page_GaleryDetail implements iPage {
 
 				$tmptext=$tpl->get();
 
-				$TOPTPL->addTab(array("MAINDATA"=>$tmptext,"MAINID"=>'fotoBox'));
+				FBuildPage::addTab(array("MAINDATA"=>$tmptext,"MAINID"=>'fotoBox'));
 			}
 		} else {
 
