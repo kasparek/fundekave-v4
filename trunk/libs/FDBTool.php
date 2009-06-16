@@ -64,6 +64,7 @@ class FDBTool {
 	);
 
 	//---save tool
+	var $forceInsert = false;
 	var $_cols = array();
 	var $_ignore = array();
 	var $_notQuoted = array();
@@ -345,6 +346,7 @@ class FDBTool {
 			$this->addCol($k,$v,((in_array($k,$notQuoted))?(false):(true)));
 		}
 	}
+	
 	function buildInsert($cols=array(),$notQuoted=array()) {
 		if(!empty($cols)) $this->setCols($cols,$notQuoted);
 		$cols = $this->quoteCols();
@@ -356,6 +358,7 @@ class FDBTool {
 		$this->_cols = array();
 		return $ret;
 	}
+	
 	function buildUpdate($cols=array(),$notQuoted=array()) {
 		if(!empty($cols)) $this->setCols($cols,$notQuoted);
 		$ret = 'update '.$this->table.' set ';
@@ -371,13 +374,15 @@ class FDBTool {
 		$this->_cols = array();
 		return $ret;
 	}
+	
 	function getLastId() {
 		return FDBTool::getOne("SELECT LAST_INSERT_ID()");
 	}
-	function save( $cols=array(), $notQuoted=array(), $forceInsert=false ) {
+	
+	function save( $cols=array(), $notQuoted=array() ) {
 		if(!empty($cols)) $this->setCols($cols,$notQuoted);
 		$insert = false;
-		if(empty($this->_cols[$this->primaryCol]) || $forceInsert) {
+		if(empty($this->_cols[$this->primaryCol]) || $this->forceInsert) {
 			$dot = $this->buildInsert();
 			$insert = true;
 		} else {
@@ -396,6 +401,7 @@ class FDBTool {
 		}
 		return $retId;
 	}
+	
 	function delete($id) {
 		return FDBTool::query("delete from ".$this->table." where ".$this->primaryCol."=".$this->quoteType.$id.$this->quoteType);
 	}

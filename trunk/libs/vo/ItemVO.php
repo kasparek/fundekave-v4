@@ -169,11 +169,34 @@ class ItemVO extends FDBvo {
 				//---insert
 				$this->dateCreated = 'now()';
 				$this->notQuote('dateCreated');
+				if($this->itemIdTop > 0) {
+					ItemVO::incrementReactionCount( $this->itemIdTop );
+				} else {
+					FPages::cntSet($this->pageId);
+				}
 			}
 			parent::save();
+			//---update stats
+			ItemVO::statPage($this->pageId, FUser::logon(), false);
 			//---update in cache
 			$cache = FCache::getInstance('l');
 			$cache->setData( $this, $this->itemId, 'fit');
+		}
+		
+		function delete() {
+			parent::delete();
+			if($this->itemIdTop > 0) {
+				ItemVO::incrementReactionCount( $itemVO->itemIdTop, false );
+			} else {
+				FPages::cntSet($this->pageId, false);
+			}
+			//---delete in other tables
+			FDBTool::query("delete from sys_users_pocket where itemId='".$itemId."'");
+			FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
+			FDBTool::query("delete from sys_pages_items_hit where itemId='".$itemId."'");
+			FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."'");
+			//---statistics
+			ItemVO::statPage($this->pageId, FUser::logon());
 		}
 		
 		function prepare() {
@@ -224,17 +247,18 @@ class ItemVO extends FDBvo {
 		
 		function getPageItemsId() {
 			$cache = FCache::getInstance('l');
-			if(($arr = $cache->getData($this->itemId,'fitGrp'))===false) {
+			if(($arr = $cache->getData($this->itemId,'fitGrp')) === false) {
 				$pageVO = new PageVO($this->pageId,true);
 				$orderBy = $pageVO->getPageParam('enhancedsettings/orderitems');
-				$arr = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".((($orderBy==0)?('enclosure'):('dateCreated'))));
+				$arr = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".((($orderBy == 0)?('enclosure'):('dateCreated'))));
 			}
 			return $arr;
 		}
 
 		function onPageNum() {
 			$arrItemId = $this->getPageItemsId();
-			$arr = array_chunk($arrItemId,$pageVO->perPage());
+			$pageVO = new PageVO($this->pageId,true);
+			$arr = array_chunk($arrItemId, $pageVO->perPage());
 			$pid = 0;
 			foreach ($arr as $k=>$arrpage) {
 				if(in_array($this->itemId,$arrpage)) {
@@ -309,13 +333,30 @@ class ItemVO extends FDBvo {
 			$unreaded = $this->cnt - $this->cntReaded;
 			return $unreaded;
 		}
-
-		//---delete
-		static function deleteItem($itemId) {
-			FDBTool::query("delete from sys_pages_items where itemId='".$itemId."'");
-			FDBTool::query("delete from sys_users_pocket where itemId='".$itemId."'");
-			FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
-			FDBTool::query("delete from sys_pages_items_hit where itemId='".$itemId."'");
-			FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."'");
+		
+		//---support functions
+		/**
+		 * items for page statistics
+		 *
+		 * @param string $pageId
+		 * @param int $userId
+		 * @param Boolean $count - if true num is refreshed by database
+		 */
+		static function statPage($pageId, $userId, $count=true){
+			if($count) $str = FDBTool::getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='". (int) $userId."'");
+			else $str="ins+1";
+			FDBTool::query("update sys_pages_counter set ins=".$str." WHERE pageId='".$pageId."'and dateStamp=now() AND userId='". (int) $userId."'");
+		}
+		
+		/**
+		 * stats for item reactions
+		 *
+		 * @param int $itemId
+		 * @param Boolean $increment
+		 * @return void
+		 */
+		static function incrementReactionCount($itemId, $increment=true) {
+			$dot = "update sys_pages_items set cnt=cnt".(($increment===true)?('+'):('-'))."1 where itemId='".$itemId."'";
+			return FDBTool::query($dot);
 		}
 }

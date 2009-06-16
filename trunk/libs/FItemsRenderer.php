@@ -100,7 +100,7 @@ class FItemsRenderer {
 				 *
 				 */
 				if($itemVO->categoryId > 0) {
-					$categoryArr = FPages::getCategory($itemVO->categoryId);
+					$categoryArr = FCategory::getCategory($itemVO->categoryId);
 					$tpl->setVariable('CATEGORY',$categoryArr[2]);
 				}
 				$tpl->setVariable('LOCATION',$itemVO->location);

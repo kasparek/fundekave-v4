@@ -38,6 +38,13 @@ class FCategory extends FDBTool {
 		$user = FUser::getInstance();
 		if(!$user->idkontrol) $this->addWhere('public=1');
 	}
+	
+	//STATIC FUNCTIONS
+	static function getCategory($categoryId) {
+		$q = "select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'";
+		return FDBTool::getRow($q,$categoryId,'categories','l');;
+	}
+	
 	/**
 	 * print list of categories to select from - static html for frontend
 	 *
@@ -86,6 +93,7 @@ class FCategory extends FDBTool {
 		$this->tplObject->setCurrentBlock("kategformelement".$this->formElement);
 		$this->tplObject->edParseBlock("kategformelement".$this->formElement);
 	}
+	
 	function getInput($blockname,$name,$value=''){
 		$this->tplObject->setCurrentBlock($blockname);
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['INPUT'.$k]=$v;
@@ -98,6 +106,7 @@ class FCategory extends FDBTool {
 		$this->tplObject->edParseBlock("kategformelement".$this->formElement);
 		$this->tplObject->edParseBlock($blockname);
 	}
+	
 	function getUriAddon() {
 		$user = FUser::getInstance();
 		$conf = FConf::getInstance();
@@ -106,6 +115,7 @@ class FCategory extends FDBTool {
 		if(!empty($this->arrRedirAddon)) foreach ($this->arrRedirAddon as $k=>$v) $rediraddon .= '&'.$k.'='.$v;
 		return $rediraddon;
 	}
+	
 	function process($data, $redirect=false) {
 		//---action part
 		if(isset($data["save"])){
@@ -132,6 +142,7 @@ class FCategory extends FDBTool {
 			}
 		}
 	}
+	
 	function getEdit() {
 
 		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;

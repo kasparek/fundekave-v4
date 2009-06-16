@@ -5,7 +5,6 @@ class FPages extends FDBTool {
 	var $permission = 1; //---read access / 2 - edit/admin access
 	var $sa = false; //---superadmin - selet true to list all pages
 	var $pagesTableName = 'sys_pages';
-	var $pagesFavoriteTableName = 'sys_pages_favorites';
 	var $pagesPermissionTableName = 'sys_users_perm';
 	var $pagesPrimaryCol = 'pageId';
 	var $availableTypeArr = array('forum','blog','galery');
@@ -21,27 +20,32 @@ class FPages extends FDBTool {
 
 		$this->getListPages();
 	}
+	
+	static function setBooked($pageId,$userId,$book) {
+		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".$pageId."' AND userId='" . $userId."'");
+	}
+	
 	static function newPageId($delka=5) {
-
 		$moznosti='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 		$lo="";
 		$lotmp="";
 		while($lo==""){
 			while(strlen($lotmp) < $delka) $lotmp .= $moznosti[mt_rand(0,strlen($moznosti)-1)];
-			if($this->getOne("SELECT count(1) FROM sys_pages WHERE pageId LIKE '".$lotmp."'")==0) { $lo=$lotmp; break; }
+			if(FDBTool::getOne("SELECT count(1) FROM sys_pages WHERE pageId LIKE '".$lotmp."'")==0) { $lo=$lotmp; break; }
 			else $lotmp = '';
 		}
 		return($lo);
 	}
+	
 	static function page_exist($col,$val) {
-		return $this->getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
+		return FDBTool::getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
 	}
+	
 	static function pageOwner($pageId) {
-		return $this->getOne("SELECT userIdOwner FROM sys_pages WHERE pageId= '".$pageId."'");
+		$q = "SELECT userIdOwner FROM sys_pages WHERE pageId= '".$pageId."'";
+		return FDBTool::getOne($q,$pageId,'pageOwn','s');
 	}
-	static function pageAttribute($pageId,$attribute='name') {
-		return $this->getOne("SELECT ".$attribute." FROM sys_pages WHERE pageId= '".$pageId."'");
-	}
+	
 	function getListPages() {
 		if($this->permission == 1) {
 			if($this->sa === true) {
@@ -102,50 +106,71 @@ class FPages extends FDBTool {
 		//TODO: ---delete avatar
 
 
-		$this->query("delete from sys_pages_relations where pageId='".$pageId."' or pageIdRelative='".$pageId."'");
-		$this->query("delete from sys_pages_favorites where pageId='".$pageId."'");
-		$this->query("delete from sys_pages_counter where pageId='".$pageId."'");
-		$this->query("delete from sys_users_perm where pageId='".$pageId."'");
-		$this->query("delete from sys_pages where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_pages_relations where pageId='".$pageId."' or pageIdRelative='".$pageId."'");
+		FDBTool::query("delete from sys_pages_favorites where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_pages_counter where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_users_perm where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_pages where pageId='".$pageId."'");
 		 
-		$this->query("delete from sys_leftpanel_pages where pageId='".$pageId."'");
-		$this->query("delete from sys_leftpanel_users where pageId='".$pageId."'");
-		$this->query("delete from sys_users_pocket where pageId='".$pageId."'");
-		$this->query("delete from sys_pages_properties where pageId='".$pageId."'");
-		$this->query("delete from sys_pages_items where pageId='".$pageId."'");
-		$this->query("delete from sys_menu where pageId='".$pageId."'");
-		$this->query("delete from sys_menu_secondary where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_leftpanel_pages where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_leftpanel_users where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_users_pocket where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_pages_properties where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_pages_items where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_menu where pageId='".$pageId."'");
+		FDBTool::query("delete from sys_menu_secondary where pageId='".$pageId."'");
 		 
 		$arrPoll = FDBTool::getCol("select pollId from sys_poll where pageId='".$pageId."'");
 		while($arrPoll) {
 			$pollId = array_shift($arrPoll);
-			$this->query("delete from sys_poll_answers_users where pollId='".$pollId."'");
-			$this->query("delete from sys_poll_answers where pollId='".$pollId."'");
-			$this->query("delete from sys_poll where pollId='".$pollId."'");
+			FDBTool::query("delete from sys_poll_answers_users where pollId='".$pollId."'");
+			FDBTool::query("delete from sys_poll_answers where pollId='".$pollId."'");
+			FDBTool::query("delete from sys_poll where pollId='".$pollId."'");
 		}
 	}
 
+	/**
+	 * update num items belongs to page
+	 *
+	 * @param string $pageId
+	 * @param Boolean $increment - if false cnt is decremented
+	 * @param Boolean $refresh - if true data are overriden with fresh query - slower 
+	 * @return void
+	 */
 	static function cntSet($pageId,$increment=true,$refresh=false) {
 		if($refresh==true) {
-			return $this->query('update sys_pages set cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
+			return FDBTool::query('update sys_pages set cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
 		} else {
-			return $this->query('update sys_pages set cnt = cnt '.(($increment==true)?('+'):('-')).' 1 where pageId="'.$pageId.'"');
+			return FDBTool::query('update sys_pages set cnt = cnt '.(($increment==true)?('+'):('-')).' 1 where pageId="'.$pageId.'"');
 		}
 	}
+	
+	/**
+	 * sets FDBTool to load just pages by category
+	 *
+	 * @param int $categoryId
+	 */
 	function category($categoryId) {
-		$user = FUser::getInstance();
-		if(empty($this->type)) $this->type = $db->getOne('select typeId from sys_pages_category where categoryId="'.$categoryId.'"');
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($user->idkontrol)?(',(p.cnt-f.cnt) as newMess'):(',0')));
-		$this->addWhere('p.locked<2');
-		if ($user->idkontrol) {
-			$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$user->userVO->userId.'"');
+		$userId = FUser::logon();
+		if(empty($this->type)) $this->type = FDBTool::getOne('select typeId from sys_pages_category where categoryId="'.$categoryId.'"');
+		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId)?(',(p.cnt-f.cnt) as newMess'):(',0')));
+		$this->addWhere('p.locked < 2');
+		if ($userId) {
+			$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 		}
 		$this->addWhere('p.categoryId='.$categoryId);
 		$this->setOrder('p.name');
 	}
+	
+	/**
+	 * print list of pages by category
+	 *
+	 * @param int $categoryId
+	 * @param Boolean $xajax - if true no top div
+	 * @return html string
+	 */
 	function printCategoryList($categoryId=0,$xajax=false) {
 		$user = FUser::getInstance();
-		 
 		$this->type = $user->pageVO->typeIdChild;
 		if(!empty($user->pageParam) || $categoryId>0) {
 			if($categoryId==0) $categoryId = $user->pageParam * 1;
@@ -167,10 +192,9 @@ class FPages extends FDBTool {
 					//---add category name to title
 					$user->pageVO->name =  $category[1] . ' - ' . $user->pageVO->name;
 					$tpl->setVariable("CATEGORYPAGELINKLIST",FPages::printPagelinkList($arrForums[$category[0]]));
-
 				}
 				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATEGORYLINK','?k='.$user->pageVO->pageId.$category[0]);
+				$tpl->setVariable('CATEGORYLINK',FUser::getUri('','',$category[0]));
 				$tpl->setVariable('CATEGORYID',$category[0]);
 				$tpl->setVariable('CATEGORYNAME',$category[1]);
 				$tpl->parseCurrentBlock();
@@ -182,6 +206,12 @@ class FPages extends FDBTool {
 		else return $tpl->get();
 	}
 
+	/**
+	 * leftpanel page links
+	 *
+	 * @param unknown_type $arrLinks
+	 * @return HTML String
+	 */
 	static function printPagelinkList($arrLinks=array()) {
 		$user = FUser::getInstance();
 		//---template init
@@ -209,22 +239,25 @@ class FPages extends FDBTool {
 		}
 		return $tpl->get();
 	}
-
-	function checkType() {
-		if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
-	}
+	
+	/**
+	 * list of own, booked and new pages
+	 *
+	 * @param Boolean $xajax - if true return html without top div
+	 * @return hmtl String
+	 */
 	function printBookedList($xajax=false) {
 		$user = FUser::getInstance();
 		$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
 		 
-		$this->checkType();
+		if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
 		 
 		//---template init
 		$tpl = new FTemplateIT('forums.booked.tpl.html');
 
 		//---srovnani klubu
 		FForum::clearUnreadedMess();
-		FForum::afavAll($user->userVO->userId,$this->type);
+		FItems::afavAll($user->userVO->userId,$this->type);
 
 		//vypis vlastnich
 		$friendsBook = false;
@@ -312,17 +345,8 @@ class FPages extends FDBTool {
 		} else return $tpl->get();
 		 
 	}
-
-	static function getCategory($categoryId) {
-		$cache = FCache::getInstance('l');
-		$row = $cache->getData($categoryId,'categories');
-		if(!isset($arr[$categoryId])) {
-			$row = FDBTool::getRow("select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'");
-			$cache->setData($row);
-		}
-		return $row;
-	}
-	/* AVATAR */
+	
+	/* AVATAR FOR PAGE */
 	//---load from url
 	static function avatarFromUrl($pageId, $avatarUrl) {
 		$filename = 'pageAvatar-'.$pageId.'.jpg';
@@ -358,7 +382,8 @@ class FPages extends FDBTool {
 			return '';
 		}
 	}
-	//---properties
+	
+	/* PAGE PROPERTIES */
 	static function getProperty($pageId,$propertyName,$default=null) {
 		$arr = FDBTool::getAll("select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'");
 		if(empty($arr)) {

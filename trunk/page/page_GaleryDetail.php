@@ -15,6 +15,8 @@ class page_GaleryDetail implements iPage {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$userId = $user->userVO->userId;
+		
+		FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 
 		if(empty($user->itemVO->itemId)) {
 			

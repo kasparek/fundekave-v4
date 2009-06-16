@@ -27,8 +27,8 @@ if(isset($_GET['rt'])) {
 }
 
 //---TODO:remove book here - should be handled in alternative function call in fajax
-if(isset($_REQUEST['book'])) FForum::setBooked($user->pageVO->pageID,$user->userVO->userId,1);
-if(isset($_REQUEST['unbook'])) FForum::setBooked($user->pageVO->pageID,$user->userVO->userId,0);
+if(isset($_REQUEST['book'])) FPages::setBooked($user->pageVO->pageId,$user->userVO->userId,1);
+if(isset($_REQUEST['unbook'])) FPages::setBooked($user->pageVO->pageId,$user->userVO->userId,0);
 
 if($user->idkontrol) {
   //---TODO:remove xajax register fce after chechikng all are transported

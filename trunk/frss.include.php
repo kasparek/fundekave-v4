@@ -20,10 +20,10 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
     	
     	if(empty($processArr)) {
         	if($params['text']!='' && $params['name']!='') {
-        		$arr['pageId'] = $user->currentPageId;
-        		$arr['text'] = FSystem::textins($params['text']);
-        		$arr['name'] = FSystem::textins($params['name'],array('plainText'=>1));
-        		if(FForum::messWrite($arr)) $processArr[] = 'I:insertOK';
+        		$itemVO = new ItemVO();
+        		$itemVO->text = FSystem::textins($params['text']);
+        		$itemVO->name = FSystem::textins($params['name'],array('plainText'=>1));
+        		if(FForum::messWrite($itemVO)) $processArr[] = 'I:insertOK';
         	}
     	}
   	}

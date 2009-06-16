@@ -79,11 +79,13 @@ class PageVO extends FDBvo {
 	}
 	
 	function save() {
-		if($this->pageId > 0) {
+		if(!empty($this->pageId)) {
 			$this->dateUpdated = 'now()';
 			$this->notQuote('dateUpdated');
 			$this->addIgnore('dateCreated');
 		} else {
+			$this->pageId = FPages::newPageId();
+			$this->forceInsert = true;
 			$this->dateCreated = 'now()';
 			$this->notQuote('dateCreated');
 			$this->addIgnore('dateUpdated');
