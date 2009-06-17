@@ -1,8 +1,6 @@
 <?php
 class FAjax {
 	
-	
-
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
@@ -29,14 +27,24 @@ class FAjax {
 			foreach($xml->Request->Item as $item) {
 				$dataProcessed[ (String)$item['name'] ] = (String)$item;
 			}
-			$fajax = FAjax::getInstance();
-			$fajax->data = $dataProcessed;
+			$dataProcessed['__ajaxResponse'] = true;
+		} else {
+			$arr = explode(';',$data);
+			foreach($arr as $row) {
+				list($k,$v) = explode(':',$row);
+				$dataProcessed[$k] = $v;
+			}
+			$dataProcessed['__ajaxResponse'] = false;
 		}
+		
+		$fajax = FAjax::getInstance();
+		$fajax->data = $dataProcessed;
+		
 		//---dealing with ajax requests
 		$filename = ROOT.LIBSDIR.'FAjax/FAjax_'.$mod.'.php';
 		require_once($filename);
-		if(class_exists('Fajax_'.$mod)) {
-			$className = 'Fajax_'.$mod;
+		$className = 'FAjax_'.$mod;
+		if(class_exists($className)) {
 			call_user_func(array($className,$action), $dataProcessed);
 			//---send response
 			if($ajax==true) {

@@ -1,21 +1,7 @@
 <?php
 class FAjax_user {
 	static function switchFriend($data) {
-		if(empty($data)) {
-			//---chech _GET for alternative
-			if(!empty($_GET['d'])) {
-				$dataArr = explode(';',$_GET['d']);
-				if(count($dataArr)>0) {
-					foreach($dataArr as $var) {
-						list($k,$v) = explode(':',$var);
-						$data[$k] = $v;
-					}
-				}
-			} else {
-				return false;
-			}
-		}
-		$userIdFriend = $data['userId'];
+		$userIdFriend = $data['user'];
 		if($userIdFriend > 0) {
 			$user = FUser::getInstance();
 			$user->userVO->getFriends();
@@ -30,9 +16,11 @@ class FAjax_user {
 			}
 
 			//---create response
-			$fajax = FAfax::getInstance();
-			$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
-
+			if($data['__ajaxResponse']==true) {
+				$fajax = FAjax::getInstance();
+				$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
+				$fajax->addResponse('call', 'fajaxa');
+			}
 		}
 	}
 	
@@ -46,10 +34,11 @@ class FAjax_user {
 				$data = FLang::$LABEL_UNBOOK;
 			}
 			FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".$data['page']."' AND userId='" . $userId."'");
-			
-			//---create response
-			$fajax = FAfax::getInstance();
-			$fajax->addResponse($data['result'],$data['resultProperty'],$data);
+			if($data['__ajaxResponse']==true) {
+				//---create response
+				$fajax = FAjax::getInstance();
+				$fajax->addResponse($data['result'],$data['resultProperty'],$data);
+			}
 		}	
 	}
 
@@ -63,31 +52,40 @@ class FAjax_user {
 			$cache->invalidateGroup('mytags');
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('items'); //TODO: check all places where items are cache so using this group
+			
+			if(!isset($data['a'])) $data['a'] = 'a';
+			
+			if($data['a']=='r') {
+				FItemTags::removeTag($itemId,$userId);
+			} else {
+				FItemTags::tag($itemId,$userId);	
+			}
 
-			if(FItems::tag($itemId,$userId)) {
-				//---create response
-				$fajax = FAfax::getInstance();
-				if($ret==true) $fajax->addResponse('tag'.$itemId,'html',FItems::getTag($itemId,$userId));
+			//---create response
+			if($data['__ajaxResponse']==true) { 
+				$fajax = FAjax::getInstance();
+				$fajax->addResponse('tag'.$itemId,'html',FItems::getTag($itemId,$userId));
 			}
 		}
 	}
 
 	static function poll($data) {
-		list($ankid,$odpid) = explode(":",$data['poll']);
-		$fajax = FAfax::getInstance();
-		$fajax->addResponse('poll','html',fLeftPanelPlugins::rh_anketa($ankid,$odpid,true));
+		$fajax = FAjax::getInstance();
+		$fajax->addResponse('poll','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an'],true));
+		$fajax->addResponse('call','setPollListeners');
 	}
 
 	static function pocketIn($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->saveItem(((isset($data['item']))?($data['item']):('')),((isset($data['page']))?($data['page']):('')));
-		$fajax = FAfax::getInstance();
+		$fajax = FAjax::getInstance();
 		$fajax->addResponse('pocket','html',$fPocket->show(true));
 	}
 
 	static function pocketAc($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->action($data['ac'],$data['pocket']);
-		$objResponse->assign('pocket', 'innerHTML', $fPocket->show(true));
+		$fajax = FAjax::getInstance();
+		$fajax->addResponse('pocket','html',$fPocket->show(true));
 	}
 }
