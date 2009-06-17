@@ -51,9 +51,8 @@ class FDBvo extends FDBTool {
 	function save() {
 		if($this->changed === true || $this->saveOnlyChanged === false) {
 			$this->queryReset();
-			$this->columns = ItemVO::getTypeColumns('',true);
 			foreach($this->columns as $col) {
-				if( $this->$col!==null ) {
+				if( $this->$col !== null ) {
 					if($this->$col == 'null') $this->notQuote($col);
 					$this->addCol($col, $this->$col);
 				}

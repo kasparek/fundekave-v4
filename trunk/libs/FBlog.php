@@ -108,9 +108,7 @@ class FBlog {
 	  
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
-				if($typeId=='blog') {
-					FSystem::secondaryMenuAddItem($user->getUri('m=blog-edit&d=item:0',$pageId,'a'), FLang::$LABEL_ADD, 1, '', 'blogEdit');
-				}
+				FSystem::secondaryMenuAddItem(FUser::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'blogEdit');
 			}
 		}
 	  
@@ -138,28 +136,28 @@ class FBlog {
 		if($itemId > 0) {
 
 			$itemVO = new ItemVO($itemId,true,array('type'=>'blog','showComments'=>true));
-			return $itemVO->render();
+			$tpl->setVariable('ITEMS', $itemVO->render());
 			 
 		} else {
 
 			$itemRenderer = new FItemsRenderer();
 
 			$fItems = new FItems('blog',false,$itemRenderer);
-			$fItems->initData('blog');
-			$fItems->addWhere("i.pageId='".$user->pageVO->pageId."'");
-			$fItems->addWhere('i.itemIdTop is null');
-				
-			$fItems->setLimit($currentPage * $perPage, $perPage);
-			$fItems->setOrder("i.dateCreated desc");
-			$fItems->getData();
-			if(!empty($fItems->data)){
-				while($fItems->arrdata) $fItems->parse();
+			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
+			$fItems->addWhere('itemIdTop is null');
+			$fItems->setOrder("dateCreated desc");
+
+			$render = $fItems->render($currentPage * $perPage, $perPage);
+			
+			if(!empty($render)){
 				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
-				$tpl->setVariable('ITEMS',$fItems->show());
-				if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
+				$tpl->setVariable('ITEMS', $render);
+				//TODO:refactor title, label, desc manipulation dependency on detail
+				//if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
 			}
-			return $tpl->get();
 		}
+		
+		return $tpl->get();
 			
 	}
 	
