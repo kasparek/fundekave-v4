@@ -63,13 +63,13 @@ class FItemTags {
 			}
 
 			$tpl->loadTemplatefile($templateNameActive);
-			$tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId));
+			$tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:a'));
 		}
 
 		$tpl->setVariable('ITEMID',$itemId);
 		$tpl->setVariable('CSSSKINURL',FUser::getSkinCSSFilename());
 		$tpl->setVariable('SUM',FItemTags::totalTags($itemId));
-		$tpl->setVariable('URLREMOVE',FUser::getUri('rt='.$itemId));
+		$tpl->setVariable('URLREMOVE',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:r'));
 		return $tpl->get();
 	}
 

@@ -1,22 +1,40 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
-function setTagEventListeners(event) { setListeners('tagLink','click',function(evt) { addXMLRequest('item', $(this).attr("id")); sendAjax(gup('m',$(this).attr("href"))); evt.preventDefault(); }); };
-
-function setPocketAddEventListeners(event) { setListeners('pocketAdd','click',function(event) { 
-if(gup("i",this.href)>0) {
-  addXMLRequest('item', gup("i",this.href));
-} else { 
-  addXMLRequest('page', gup("k",this.href));
+function fajaxform(event) {
+	setListeners('fajaxform','submit',function(event) {
+		var arr = $(this).formToArray(false);
+		var result=false;
+		var resultProperty=false;
+		while(arr.length > 0) {
+			var obj = arr.shift();
+			addXMLRequest(obj.name, obj.value);
+			if(obj.name=='result') result=true;
+			if(obj.name=='resultProperty') resultProperty=true;
+		}
+		if(result==false) addXMLRequest('result', $(this).attr("id"));
+	    if(resultProperty==false) addXMLRequest('resultProperty', 'html');
+		sendAjax( gup('m',this.action) );
+		event.preventDefault(); 
+	});
 }
-sendAjax('user-pocketIn'); 
-evt.preventDefault(); }); };
-
-function setPollListeners(event) { setListeners('pollAnswerLink','click',function(event) { 
-    addXMLRequest('poll', gup('poll',this.href));
-    addXMLRequest('result', $(this).attr("id"));
-    addXMLRequest('resultProperty', 'html');
-    addXMLRequest('call','setPollListeners');
-    sendAjax('user-poll');
-evt.preventDefault(); }); };
+function fajaxa(event) { 
+	setListeners('fajaxa','click',function(event) {
+		var str = gup('d',this.href);
+		var arr = str.split(';');
+		var result=false;
+		var resultProperty=false;
+		while(arr.length > 0) {
+			var rowStr = arr.shift();
+			var row = rowStr.split(':');
+			addXMLRequest(row[0], row[1]);
+			if(row[0]=='result') result=true;
+			if(row[0]=='resultProperty') resultProperty=true;
+		}
+		if(result==false) addXMLRequest('result', $(this).attr("id"));
+	    if(resultProperty==false) addXMLRequest('resultProperty', 'html');
+		sendAjax( gup('m',this.href) ); 
+		event.preventDefault(); 
+	}); 
+};
 
 function datePickerInit() { datePickerController.create(); };
 
@@ -28,28 +46,24 @@ function initSupernote() { supernote = new SuperNote('supernote', {}); }
 
 function draftSetEventListeners() { setListeners('draftable','keyup',draftEventHandler); };
 
-function initSwitchFriend() {
-  $(".switchFriend").unbind('click', switchFriendRequest);
-  $(".switchFriend").bind('click', switchFriendRequest);
+function markItUpInit() {
+	$('.markItUp').markItUp(mySettings);
 }
 
 /**
  *main init
  **/ 
 $(document).ready(function(){
-  initSlimbox();
-  //---set tag listeners
-  setTagEventListeners();
-  //---set poll
-  setPollListeners();
-  //---pocket
-  setPocketAddEventListeners();
-  //---popup
+//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
+fajaxa();
+//---init picture popup tool
+initSlimbox();
+//---popup
 setListeners('popupLink', 'click', function(evt) { openPopup(this.href); evt.preventDefault(); });
+//---tooltips
 initSupernote();
-initSwitchFriend();
+//---ajax textarea
 draftSetEventListeners();
-
 //---fuvatar
 $('.fuvatarswf').each(function() {
       var elmInst = $(this);
@@ -58,14 +72,10 @@ $('.fuvatarswf').each(function() {
       var height =  gup('h',elmImgInst.attr('src'));
       swfobject.embedSWF("/fuvatar/fuplay.swf", elmInst.id, width, height, "9.0.115", "expressInstall.swf",{u:elmInst.attr('id').replace('fuplay',''),time:gup('t',elmImgInst.src)},{allowFullScreen:"true"});    
     });
-
 //---temporary domtabs
 $('.domtabs').each(function() { $(this).css('display','block'); });
-
 //---textarea toolbox
-  initInsertToTextarea();
-//---draft set listeners
-  draftSetEventListeners();
+initInsertToTextarea();
 //---round corners
 DD_roundies.addRule('.radcon', 5);
 });
@@ -219,21 +229,6 @@ function gup(name, url) {
   var regex = new RegExp( "[\\?&]"+name+"=([^&#]*)" ), results = regex.exec( url );
   return (results === null)?(0):(results[1]);
 };
-
-//---ajax request functions
-function switchFriendRequest(evt) {
-    evt.preventDefault();
-    var data = gup('d',$(this).attr("href"));
-    var dataArr = data.split(';');
-    for(var i=0;i<dataArr.length;i++) {
-    var valueArr = dataArr[i].split(':');
-      addXMLRequest(valueArr[0], valueArr[1]);
-    }
-    addXMLRequest('result', $(this).attr("id"));
-    addXMLRequest('resultProperty', 'html');
-    addXMLRequest('call', 'initSwitchFriend');
-    sendAjax(gup('m',$(this).attr("href")));
-}
 
 //---send and process ajax request
 function sendAjax(action) {

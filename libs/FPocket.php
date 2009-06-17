@@ -11,7 +11,7 @@ class FPocket extends FDBTool {
     }
     static function getLink($itemId,$page=false) {
         if(FConf::get("pocket","enabled") == 1)
-            return '<a href="?'.(($page)?('k='.$itemId.'&p=a'):('i='.$itemId.'&p=p')).'" class="pocketAdd">'.LABEL_POCKET_PUSH.'</a>';
+            return '<a href="'.FUser::getUri('m=user-pocketIn&d='.(($page)?('page='.$itemId):('item='.$itemId))).'" class="fajaxa">'.LABEL_POCKET_PUSH.'</a>';
     }
     function getItems() {
         $this->setSelect("p.pocketId,p.userId,p.pageId,p.itemId,p.description,pa.name,i.typeId,i.addon,i.text,i.name,i.enclosure");

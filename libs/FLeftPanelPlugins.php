@@ -228,7 +228,7 @@ class FLeftPanelPlugins {
 									$tpl->setVariable('ANSWERID',$odp[0]);
 								}
 								$tpl->setVariable('NOTVOTEDANSWER',$odp[1]);
-								$tpl->setVariable('ANSWERURL','?k='.$user->pageVO->pageId.'&poll='.$do[0].':'.$odp[0]);
+								$tpl->setVariable('ANSWERURL',FUser::getUri('m=user-poll&d=po:'.$do[0].';an:'.$odp[0]));
 							} else {
 								$tpl->setVariable('ANSWER',$odp[1]);
 								$tpl->setVariable('COLUMNSIMGURL','/sloupec.gif');
@@ -326,6 +326,7 @@ class FLeftPanelPlugins {
 		return($ret);
 	}
 
+	//TODO: refactor links - fajax
 	static function rh_diar_kalendar($year='',$month='') {
 		global $MONTHS,$DAYSSHORT;
 		$dden = 1;
@@ -446,11 +447,11 @@ class FLeftPanelPlugins {
 					$tpl->setCurrentBlock('row');
 					$tpl->parseCurrentBlock();
 				}
-				$tpl->setVariable('PREVIOUSMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
+				$tpl->setVariable('PREVIOUSMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
 				$tpl->setVariable('XYEARPREV',$yearbefore);
 				$tpl->setVariable('XMONTHPREV',$monthbefore);
 				$tpl->setVariable('PREVIOUSMONTH',$MONTHS[$monthbefore]);
-				$tpl->setVariable('NEXTMONTHURL',$user->getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
+				$tpl->setVariable('NEXTMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
 				$tpl->setVariable('XYEARNEXT',$yearafter);
 				$tpl->setVariable('XMONTHNEXT',$monthafter);
 				$tpl->setVariable('NEXTMONTH',$MONTHS[$monthafter]);
