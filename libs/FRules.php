@@ -12,17 +12,17 @@ class FRules {
 	var $public = 1;
 	var $page = '';
 	var $owner = 0;
-	
+
 	function __construct($page=0,$owner=0) {
-	    global $ARRPUBLIC,$ARRPERMISSIONS;
+		global $ARRPUBLIC,$ARRPERMISSIONS;
 		$this->page = $page;
 		$this->_pubTypes = FLang::$ARRPUBLIC;
 		$this->ruleNames = FLang::$ARRPERMISSIONS;
 		$this->owner = $owner;
 	}
 	function setPageId($page) {
-    $this->page = $page;
-  }
+		$this->page = $page;
+	}
 	function set($usr,$page,$type){
 		$db = FDBConn::getInstance();
 		if($db->getOne("select count(1) from sys_users where userId='".$usr."'")==0) $this->_err='ins_noexistusr';
@@ -31,46 +31,44 @@ class FRules {
 		if(empty($this->_err)) {
 			$db->query('update '.$this->_table.' set invalidatePerm=1 where userId="'.$usr.'"');
 			$db->query("delete from ".$this->_table." where ".$this->_arrCols[0]."='".$usr."' and ".$this->_arrCols[1]."='".$page."'");
-			
-			if($db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].") 
+				
+			if($db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].")
 				values ('".$usr."','".$page."','".$type."')" )) 
-				return true;
+			return true;
 			else return false;
-			
+				
 		}
-		
+
 	}
 	function clear($page=0){
 		global $db;
 		if(empty($page)) $page=$this->page;
 		$db->query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
 	}
-	
-	
+
+
 	static function invalidate() {
 	 $cache = FCache::getInstance('s');
 	 $cache->invalidateGroup('fRules');
 	}
-	
+
 	//---END---functions from user class
 	static function getCurrent($type=1) {
-	 $user = FUser::getInstance(); 
-	 FRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
-  }
-	
+		$user = FUser::getInstance();
+		return FRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
+	}
+
 	static function get($usr,$page,$type=1) {
 		$db = FDBConn::getInstance();
 		$ret=false;
-		
 		$cache = FCache::getInstance('s');
 		if(!$rulez = $cache->getData($usr.'-'.$page.'-'.$type, 'fRules')) {
 			//---if is rules = 0 is ban
-			$dot = "select r.userId,r.rules,s.public,s.userIdOwner   
+			$dot = "select r.userId,r.rules,s.public,s.userIdOwner
 			from sys_pages as s 
 			left join sys_users_perm as r 
 			on r.pageId=s.pageId and r.userId='".$usr."'
 			where s.pageId='".$page."'";
-			
 			$arr = $db->getRow($dot);
 			if($arr[3] == $usr) $ret = true;
 			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
@@ -81,11 +79,11 @@ class FRules {
 				if($arr[2] == 2 && $usr > 0) $ret = true; //for registrated page
 			}
 			$cache->setData($ret, $usr.'-'.$page.'-'.$type, 'fRules');
-		
+
 		} else if($rulez==2) $ret = true;
-		return($ret);
+		return $ret;
 	}
-	
+
 	function getList($listPublic=true,$idstr=0) {
 		$db = FDBConn::getInstance();
 		if(!empty($idstr)) $this->page = $idstr;
@@ -95,7 +93,7 @@ class FRules {
 				$arr=$db->getAll("select p.userId,u.name from sys_users_perm as p left join sys_users as u on u.userId=p.userId where rules='".$k."' and pageId='".$this->page."' order by u.name");
 				foreach ($arr as $usr) $this->ruleList[$k][$usr[0]]=$usr[1];
 				if(!empty($this->ruleList[$k])) $this->ruleText[$k]=implode(",",$this->ruleList[$k]); else $this->ruleText[$k]='';
-			}	
+			}
 			if($listPublic) {
 				$arr = $db->getRow("select public,userIdOwner from sys_pages where pageId='".$this->page."'");
 				$this->public = $arr[0];
@@ -111,26 +109,26 @@ class FRules {
 		$tpl->setVariable('SELECTLABEL',FLang::$LABEL_RULES_ACCESS);
 		$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);
 		$tpl->setVariable('HELPTEXT',FLang::$LABEL_RULES_HELP_TEXT);
-		
+
 		$selectOptions = '';
 		foreach($this->_pubTypes as $k=>$v) $selectOptions.='<option value="'.$k.'"'.(($k==$this->public)?(' selected="selected"'):('')).'>'.$v.'</option>';
 		$tpl->setVariable('SELECTOPTIONS',$selectOptions);
 		$tpl->setVariable('SELECTNAME','public');
-		
+
 		foreach ($this->ruleText as $k=>$v) {
-		    $tpl->setCurrentBlock('rules');
-		    $tpl->setVariable('RULESNUM',$k);
-		    $tpl->setVariable('RULESCONTENT',$v);
-		    $tpl->setVariable('RULESNAME',$this->ruleNames[$k]);
+			$tpl->setCurrentBlock('rules');
+			$tpl->setVariable('RULESNUM',$k);
+			$tpl->setVariable('RULESCONTENT',$v);
+			$tpl->setVariable('RULESNAME',$this->ruleNames[$k]);
 			$tpl->parseCurrentBlock();
 		}
-		
+
 		return $tpl->get();
 	}
 	function update(){
 		//---set rules
 		$this->clear(); //delete perm for page
-		
+
 		foreach ($this->ruleText as $k=>$v){
 			if(!empty($v)) {
 				$arr=explode(",",$v);
@@ -149,13 +147,13 @@ class FRules {
 		//---public update
 		$this->getList(false);
 		if(count($this->ruleList['1']) != 0) $this->public=0;
-		
+
 		$dot = "update sys_pages set public='".$this->public."' where pageId='".$this->page."'";
 		FDBTool::query($dot);
-		
+
 		//---invalidate active users
 		FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
-		
+
 	}
-	
+
 }

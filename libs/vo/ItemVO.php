@@ -175,6 +175,7 @@ class ItemVO extends FDBvo {
 					FPages::cntSet($this->pageId);
 				}
 			}
+			$this->columns = ItemVO::getTypeColumns('',true);
 			parent::save();
 			//---update stats
 			ItemVO::statPage($this->pageId, FUser::logon(), false);
