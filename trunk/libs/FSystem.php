@@ -427,4 +427,8 @@ class FSystem {
 		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
 		return FDBTool::getOne($q,'uOnC','default','s',60);
 	}
+	
+	static function makeDir($dir,$mode=0777,$recursive=true) {
+		return mkdir($dir, $mode, $recursive);
+	}
 }

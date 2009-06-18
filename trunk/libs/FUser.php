@@ -393,7 +393,7 @@ class FUser {
 	 * @param $pageParam
 	 * @return string - URL
 	 */
-	static function getUri($otherParams='',$pageId='',$pageParam=false) {
+	static function getUri($otherParams='',$pageId='',$pageParam=false, $scriptName=BASESCRIPTNAME) {
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
@@ -416,6 +416,6 @@ class FUser {
 		if(isset($params)) {
 			$parStr = '?'.implode("&amp;",$params);
 		}
-		return BASESCRIPTNAME . $parStr;
+		return $scriptName . $parStr;
 	}
 }

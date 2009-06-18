@@ -11,6 +11,7 @@ class FDBvo extends FDBTool {
 	}
 	
 	function set($key, $value, $params=array()) {
+		$changed = false;
 		if(isset($this->{$key})) {
 			//---verify
 			if(isset($params['type'])) {
@@ -24,11 +25,13 @@ class FDBvo extends FDBTool {
 			//---check if changed
 			if($this->{$key} != $value) {
 				$changed = true;
+				$this->changed = $changed; 
 			}
 			//---set
-			$this->{$key} = true;
-			return true;
+			$this->{$key} = $value;
+			
 		}
+		return $changed;
 	}
 
 	function load() {

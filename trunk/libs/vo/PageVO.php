@@ -83,6 +83,7 @@ class PageVO extends FDBvo {
 			$this->dateUpdated = 'now()';
 			$this->notQuote('dateUpdated');
 			$this->addIgnore('dateCreated');
+			$this->forceInsert = false;
 		} else {
 			$this->pageId = FPages::newPageId();
 			$this->forceInsert = true;
@@ -111,6 +112,25 @@ class PageVO extends FDBvo {
 		$perPage = (String) $this->getPageParam('enhancedsettings/perpage');
 		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeId);
 		return $perPage;
+	}
+	
+	function itemsOrder() {
+		$orderBy = $this->getPageParam('enhancedsettings/orderitems');
+		//---legacy
+		if($orderBy==1 && $this->typeId=='galery') {
+			$orderBy = 'dateCreated desc';
+		}
+		if(empty($orderBy)) {
+			//---get default
+			switch($this->typeId) {
+				case 'galery':
+					$orderBy = 'enclosure';
+				break;
+				default:
+					$orderBy = 'dateCreated desc';
+			}
+		}
+		return $orderBy;
 	}
 
 	function getPageParam($paramName) {

@@ -41,9 +41,8 @@ class FRules {
 
 	}
 	function clear($page=0){
-		global $db;
 		if(empty($page)) $page=$this->page;
-		$db->query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
+		FDBTool::query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
 	}
 
 

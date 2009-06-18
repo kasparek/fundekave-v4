@@ -6,12 +6,9 @@ class page_PageEdit implements iPage {
 	static function process( $data ) {
 
 		$user = FUser::getInstance();
-		/**
-		 * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
-		 */
-
+		
 		$redirectAdd = '';
-		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->currentPageParam!='sa') {
+		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->pageParam!='sa') {
 			$user->pageParam = 'a' ;
 			$redirectAdd = 'e';
 		}
@@ -46,8 +43,15 @@ class page_PageEdit implements iPage {
 				$fLeft->process($data['leftpanel']);
 			}
 				
-			$pageVO->name = FSystem::textins($data['name'],array('plainText'=>1));
-			if(empty($pageVO->name)) FError::addError(ERROR_PAGE_ADD_NONAME);
+			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
+			if(empty($pageVO->name)) {
+				FError::addError(FLang::$ERROR_PAGE_ADD_NONAME);	
+			}
+			if($nameChanged) {
+				if(FPages::page_exist('name',$pageVO->name)) {
+					FError::addError(FLang::$ERROR_PAGE_NAMEEXISTS);	
+				}
+			}
 			$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
 			$pageVO->content = FSystem::textins($data['content']);
 				
@@ -77,9 +81,10 @@ class page_PageEdit implements iPage {
 
 			if(!FError::isError()) {
 
-				if($user->currentPageParam == 'a') {
+				if($user->pageParam == 'a') {
 					$pageVO->userIdOwner = $user->userVO->userId;
-					$user->cacheRemove('calendarlefthand');
+					$cache = FCache::getInstance('f');
+					$cache->invalidateGroup('calendarlefthand');
 				}
 
 				//---first save - if new page to get pageId
@@ -102,14 +107,12 @@ class page_PageEdit implements iPage {
 				if($pageVO->typeId == 'galery') {
 					//---create folder string if not set
 					if(empty($pageVO->galeryDir)) {
-						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . $pageVO->pageId;
+						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
+						//---create folder if not exits
+						$dir = WEB_REL_GALERY .$pageVO->galeryDir;
+						FSystem::makeDir($dir);						
 					}
-					//---create folder if not exits
-					if(!file_exists($pageVO->galeryDir)) {
-						if(mkdir ($pageVO->galeryDir, 0777)) {
-							chmod ( $pageVO->galeryDir, 0777 );
-						}
-					}
+
 					//---load settings from defaults if not in limits
 					if(($xperpage = $data['xperpage']*1) < 1) $xperpage = FConf::get('galery','perpage');
 					if(($xwidthpx = $data['xwidthpx']*1) < 10) $xwidthpx = FConf::get('galery','widthThumb');
@@ -121,7 +124,7 @@ class page_PageEdit implements iPage {
 					if(isset($data['galeryorder'])) $pageVO->setXML('enhancedsettings','orderitems',(int) $data['galeryorder']);
 					if(isset($data['forumReact'])) $pageVO->setXML('enhancedsettings','fotoforum',(int) $data['forumReact']);
 					//---if setting changed on edited galery delete thumbs
-					if($pageVO->xmlChanged === true && $user->currentPageParam!='a') {
+					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
 						FGalery::deleteThumbs( $pageVO->pageId );
 					}
 				}
@@ -130,7 +133,7 @@ class page_PageEdit implements iPage {
 				$pageVO->save();
 
 				//---page editing
-				if($user->currentPageParam != 'a') {
+				if($user->pageParam != 'a') {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->public = $data['public'];
@@ -151,7 +154,7 @@ class page_PageEdit implements iPage {
 				//CLEAR DRAFT
 				FUserDraft::clear($textareaIdDescription);
 				FUserDraft::clear($textareaIdContent);
-				if($user->currentPage['typeId']=='forum' || $user->currentPage['typeId']=='blog') {
+				if($pageVO->typeId=='forum' || $pageVO->typeId=='blog') {
 					FUserDraft::clear($textareaIdForumHome);
 				}
 				//---set current page for redirect
@@ -163,7 +166,8 @@ class page_PageEdit implements iPage {
 					$user->pageParam = '';
 				}
 				//---CLEAR CACHE
-				$user->cacheRemove('forumdesc');
+				$cache = FCache::getInstance('f'); 
+				$cache->invalidateGroup('forumdesc');
 
 				/* galery foto upload */
 				if($pageVO->typeId == 'galery') {
@@ -242,9 +246,6 @@ class page_PageEdit implements iPage {
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
 
-		/**
-		 * $user->currentPageParam == a - add from defaults, e - edit from user->currentPage
-		 */
 		$cache = FCache::getInstance('l');
 
 		if(false !== ($pageVOCached = $cache->getData('page','form'))) {

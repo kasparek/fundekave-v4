@@ -250,8 +250,8 @@ class ItemVO extends FDBvo {
 			$cache = FCache::getInstance('l');
 			if(($arr = $cache->getData($this->itemId,'fitGrp')) === false) {
 				$pageVO = new PageVO($this->pageId,true);
-				$orderBy = $pageVO->getPageParam('enhancedsettings/orderitems');
-				$arr = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".((($orderBy == 0)?('enclosure'):('dateCreated'))));
+				$q = "select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
+				$arr = FDBTool::getCol($q);
 			}
 			return $arr;
 		}
