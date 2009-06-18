@@ -28,11 +28,11 @@ class page_PageNewSimple implements iPage {
 				$pageVO->categoryId = $arrDefaultCategory[$typeId];
 				$pageVO->description = $ocem;
 				$pageVO->userIdOwner = $user->userVO->userId;
-				$newPageId = $pageVO->save();
+				$pageVO->save();
 				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('calendarlefthand');
 				$cache->invalidateGroup('newpage');
-				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FUser::getUri('',$newPageId).'">'.$nazev.'</a>');
+				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FUser::getUri('',$pageVO->pageId).'">'.$nazev.'</a>');
 				FHTTP::redirect(FUser::getUri());
 			} else {
 				$cache = FCache::getInstance('s');
@@ -50,6 +50,7 @@ class page_PageNewSimple implements iPage {
 		if(($arr = $cache->getData('newP','form')) !== false) {
 			$nazev = $arr[0];
 			$ocem = $arr[1];
+			$cache->invalidateData('newP','form');
 		}
 
 
