@@ -35,6 +35,14 @@ function fajaxa(event) {
 		event.preventDefault(); 
 	}); 
 };
+function avatarfrominput(evt) {
+    addXMLRequest('username', $("#prokoho").attr("value"));
+    addXMLRequest('result', "recipientavatar");
+    addXMLRequest('resultProperty', 'html');
+    addXMLRequest('call', 'initSupernote');
+    addXMLRequest('call', 'fajaxa');
+    sendAjax('post-avatarfrominput');
+}
 
 function datePickerInit() { 
 	$.datepicker.setDefaults($.extend({showMonthAfterYear: false}, $.datepicker.regional['']));
@@ -83,6 +91,9 @@ $('.domtabs').each(function() { $(this).css('display','block'); });
 initInsertToTextarea();
 //---round corners
 DD_roundies.addRule('.radcon', 5);
+//---message page
+$("#prokoho").change(avatarfrominput);
+$("#recipientcombo").change(function (evt) { var str = ""; $("#recipientcombo option:selected").each(function () { str += $(this).text() + " "; }); $("#prokoho").attr("value", str); $("#recipientcombo").attr("selectedIndex", 0); });
 });
 
 //---textarea - size/markitup switching

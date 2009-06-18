@@ -72,6 +72,7 @@ static $MESSAGE_FORUM_HOME_EMPTY = 'Nastenka je praznda';
 
 static $ERROR_NAME_EMPTY = 'Nezadali jste nazev';
 
+static $ERROR_PAGE_NAMEEXISTS = 'Takove jmeno stranky jiz existuje';
 static $ERROR_GALERY_NAMEEMPTY = 'Nezadali jste jmeno galerie';
 static $ERROR_GALERY_NAMEEXISTS = 'Takove jmeno galerie jiz existuje';
 static $ERROR_FORUM_NAMEEMPTY = 'Nezadali jste jmeno klubu';

@@ -64,7 +64,7 @@ class FGalery {
 			$fGalery->itemVO->detailWidth = $width;
 			$fGalery->itemVO->detailHeight = $height;
 			$fGalery->itemVO->detailUrlToGalery = FUser::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
-			$fGalery->itemVO->detailUrlToPopup = '/pic.php?u='.FUser::logon().'&amp;i='.$fGalery->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60);
+			$fGalery->itemVO->detailUrlToPopup = FUser::getUri('u='.FUser::logon().'&amp;i='.$fGalery->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60),'','','pic.php');
 		} else {
 			FError::addError('File not exists: '.$fGalery->itemVO->detailUr);
 		}
@@ -98,11 +98,9 @@ class FGalery {
 	 */
 	function getThumbPath($cacheDir = '') {
 		$pathUrl = $this->getThumbCachePath($cacheDir);
-		
 		$arrFilename = explode('.',$this->itemVO->enclosure);
 		$filenameExtStriped = implode('.',array_slice($arrFilename,0,count($arrFilename)-1));
 		$filename = FSystem::safeText($filenameExtStriped) . '.jpg';
-
 		return array(
     		'path' => $pathUrl,
     		'filename' => $filename,
@@ -132,7 +130,7 @@ class FGalery {
 		if(!$this->isThumb($thumbPathArr['thumb'])) {
 			if(!empty($thumbPathArr['path'])) {
 				if(!is_dir($thumbPathArr['path'])) {
-					mkdir($thumbPathArr['path'],0777);
+					FSystem::makeDir($thumbPathArr['path']);
 				}
 			}
 			//Create file
@@ -145,7 +143,7 @@ class FGalery {
 			$processParams = array(
 			'quality'=>$quality,'width'=>$width,'height'=>$height
 			//,'reflection'=>1
-			//,'unsharpMask'=>1
+			,'unsharpMask'=>1
 			);
 			if($thumbnailstyle==2) $processParams['crop'] = 1; else $processParams['proportional'] = 1;
 			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
@@ -168,10 +166,12 @@ class FGalery {
 	 * @param $fotoId - item
 	 * @return String - BINARY
 	 */
-	function getRaw($itemId) {
-		$this->itemVO = new ItemVO($itemId, true);
-		$this->itemVO->hit();
-		return file_get_contents( $this->getDetailUrl() );
+	static function getRaw($itemId) {
+		$galery = new FGalery();
+		$galery->itemVO = new ItemVO($itemId, true, array('type'=>'galery'));
+		$galery->pageVO = new PageVO($galery->itemVO->pageId,true);
+		$galery->itemVO->hit();
+		return file_get_contents( $galery->getDetailUrl() );
 	}
 
 	/**
@@ -191,12 +191,11 @@ class FGalery {
 		$gCountFoto = 0;
 		$gCountFotoNew = 0;
 		
-		$fItems = new FItems();
-		$fItems->initData('galery');
-		$fItems->setWhere('i.pageId="'.$pageId.'"');
-		$fItems->addWhere('i.itemIdTop is null');
+		$fItems = new FItems('galery',false);
+		$fItems->setWhere('pageId="'.$pageId.'"');
+		$fItems->addWhere('itemIdTop is null');
 		$totalItems = $fItems->getCount();
-		$itemList = $fItems->getData();
+		$itemList = $fItems->getList();
 		
 		$arrFotoDetail = array();
 		$arrFotoSize = array();
@@ -285,7 +284,7 @@ class FGalery {
 		}
 
 		//---update foto count on page
-		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',date_updated = now() where pageId='".$pageId."'");
+		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',dateUpdated = now() where pageId='".$pageId."'");
 	}
 
 	/**
