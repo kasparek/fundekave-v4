@@ -90,8 +90,9 @@ class PageVO extends FDBvo {
 			$this->notQuote('dateCreated');
 			$this->addIgnore('dateUpdated');
 		}
-		parent::save();
+		$pageId = parent::save();
 		$this->xmlChanged = false;
+		return $pageId;
 	}
 
 	function setDefaults() {

@@ -9,7 +9,7 @@ class page_EventsEdit implements iPage {
 			$itemVO = $user->itemVO; 
 		} else {
 			$itemVO = new ItemVO();
-			$this->typeId = 'event';
+			$itemVO->typeId = 'event';
 			$itemVO->userId = $user->userVO->userId;
 			$itemVO->name = $user->userVO->name;
 			$itemVO->dateCreated = 'NOW()';
@@ -154,7 +154,7 @@ class page_EventsEdit implements iPage {
 
 		$tpl = new FTemplateIT('events.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',$user->getUri());
-		$tpl->setVariable('HEADING',(($arr['itemId']>0)?($arr['name']):(LABEL_EVENT_NEW)));
+		$tpl->setVariable('HEADING',(($arr['itemId']>0)?($arr['name']):(FLang::$LABEL_EVENT_NEW)));
 		$tpl->setVariable('ITEMID',$arr['itemId']);
 
 		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';

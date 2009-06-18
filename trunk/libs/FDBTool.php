@@ -375,7 +375,7 @@ class FDBTool {
 		return $ret;
 	}
 	
-	function getLastId() {
+	static function getLastId() {
 		return FDBTool::getOne("SELECT LAST_INSERT_ID()");
 	}
 	
@@ -392,7 +392,9 @@ class FDBTool {
 		//---save
 		if($this->debug==1) echo $dot;
 		if(FDBTool::query($dot)) {
-			if($insert) $retId = $this->getLastId();
+			if($insert) {
+				$retId = (!empty($this->{$this->primaryCol}))?($this->{$this->primaryCol}):(FDBTool::getLastId());
+			}
 		}
 		//---invalidate cache
 		if($this->cacheResults!=0) {

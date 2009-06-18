@@ -36,7 +36,10 @@ function fajaxa(event) {
 	}); 
 };
 
-function datePickerInit() { datePickerController.create(); };
+function datePickerInit() { 
+	$.datepicker.setDefaults($.extend({showMonthAfterYear: false}, $.datepicker.regional['']));
+	$(".datepicker").datepicker($.datepicker.regional['cs']);
+};
 
 function initSlimbox() {
 $("a[rel^='lightbox']").slimbox({overlayFadeDuration:100,resizeDuration:100,imageFadeDuration:100,captionAnimationDuration:100}, null, function(el) {		return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); });
@@ -56,6 +59,8 @@ function markItUpInit() {
 $(document).ready(function(){
 //---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 fajaxa();
+//---calendar
+datePickerInit();
 //---init picture popup tool
 initSlimbox();
 //---popup
@@ -80,60 +85,17 @@ initInsertToTextarea();
 DD_roundies.addRule('.radcon', 5);
 });
 
-//---textarea - text2cursor
-var activeTextareaId = '';
-
-function setCsr(elem, caretPos) {
-  if(elem.createTextRange) {
-    var range = elem.createTextRange();
-    range.move('character', caretPos);
-    range.select();
-  } else {
-    if(elem.selectionStart) {
-      elem.focus();
-      elem.setSelectionRange(caretPos, caretPos);
-    } else {
-      elem.focus();
-    }
-  }
-};
-
-function insertAtCursor(myField, myValue) {
-  block = '';
-  //IE support
-  if (document.selection) {
-    myField.focus();
-    sel = document.selection.createRange();
-    block = sel.text;
-    sel.text = myValue;
-  }
-  //MOZILLA/NETSCAPE support
-  else if (myField.selectionStart || myField.selectionStart == '0') {
-    var startPos = myField.selectionStart, endPos = myField.selectionEnd;
-    block = myField.value.substring(startPos,endPos);
-    myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length);
-  } else {
-    myField.value += myValue;
-  }
-  caretPos = myField.value.indexOf('-cursor-')+block.length;
-  myField.value = myField.value.replace('-cursor-', block);
-  setCsr(myField,caretPos);
-};
-
-function insert2Area(what) {
-  var activeTextareaIdFromHref = gup('textid',what);
-  if(activeTextareaIdFromHref) { activeTextareaId = $("#"+gup('textid',what)).id; };
-  if(activeTextareaId) { insertAtCursor($("#"+activeTextareaId), gup('tag',what)); };
-};
-
-//---textarea - text2curosr init function
+//---textarea - size/markitup switching
 function initInsertToTextarea() {
-  setListeners('clickDaTag','click',function(evt) { insert2Area(this.href); evt.preventDefault(); });
-  setListeners('draftable','click',function(evt) { activeTextareaId = this.id; evt.preventDefault(); });
   setListeners('submit','click',function(evt) { if(draftTimeout) { clearTimeout(draftTimeout); } });
   setListeners('toggleToolSize','click',function(evt) { 
     $("#"+gup("textid",this.href)).toggleClass(gup("class",this.href));
     $("#"+gup('toolid',this.href)).toggleClass('textareaToolboxLarge');
+    if ($("#"+gup("textid",this.href)+".markItUpEditor").length === 1) {
+		$("#"+gup("textid",this.href)).markItUpRemove();
+	} else {
+		$("#"+gup("textid",this.href)).markItUp(mySettings);
+	}
     evt.preventDefault(); });
 }
 

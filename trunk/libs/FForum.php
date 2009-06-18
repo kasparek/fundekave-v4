@@ -97,27 +97,27 @@ class FForum extends FDBTool {
 	  
 		$redirect = false;
 
-		if(isset($_POST["send"])) {
+		if(isset($data["send"])) {
 
 			$cache = FCache::getInstance('s',0);
 			$cache->invalidateGroup('forumFilter');
 
-			if (!empty($_POST["del"])) {
-				FForum::messDel($_POST['del'],$pageId);
+			if (!empty($data["del"])) {
+				FForum::messDel($data['del'],$pageId);
 				$redirect = true;
 			}
 			if(!$logon) {
 				$captcha = fCaptcha::init();
-				if($captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) $cap = true; else $cap = false;
+				if($captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = true; else $cap = false;
 			} else $cap = true;
 			 
 			if(FUser::logon()) $jmeno = $user->userVO->name;
-			elseif(isset($_POST["jmeno"])) $jmeno = trim($_POST["jmeno"]);
+			elseif(isset($data["jmeno"])) $jmeno = trim($data["jmeno"]);
 			 
-			if(isset($_POST["zprava"])) $zprava = trim($_POST["zprava"]);
+			if(isset($data["zprava"])) $zprava = trim($data["zprava"]);
 			 
-			if(isset($_POST["objekt"])) {
-				$objekt = trim($_POST["objekt"]);
+			if(isset($data["objekt"])) {
+				$objekt = trim($data["objekt"]);
 			}
 			 
 			if($cap) {
@@ -176,7 +176,7 @@ class FForum extends FDBTool {
 						}
 						if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
 						if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
-						if($data['itemIdTop'] > 0) $itemVO->itemIdTop = $data['itemIdTop'];
+						if(!empty($data['itemIdTop'])) $itemVO->itemIdTop = $data['itemIdTop'];
 
 						FForum::messWrite($itemVO);
 
@@ -198,16 +198,16 @@ class FForum extends FDBTool {
 			}
 		}
 		//---filtrovani
-		if(isset($_POST["filtr"])) {
+		if(isset($data["filtr"])) {
 			$cache = FCache::getInstance('s',0);
-			$cache->setData(FSystem::textins($_POST["zprava"],array('plainText'=>1)), $pageId, 'filter');
+			$cache->setData(FSystem::textins($data["zprava"],array('plainText'=>1)), $pageId, 'filter');
 		}
 		//---per page
 		$cache = FCache::getInstance('s',0);
-		if($perPage = $cache->getData($pageId,'pp') === false) $perPage = $user->pageVO->perPage();
-
-		if (isset($_POST["perpage"]) && $_POST["perpage"] != $perPage) {
-			$perPage = $_POST["perpage"]*1;
+		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage();
+		
+		if (isset($data["perpage"]) && $data["perpage"] != $perPage) {
+			$perPage = $data["perpage"]*1;
 			if($perPage < 2) $perPage = 10;
 			$cache->setData($perPage, $pageId,'pp');
 		}
@@ -237,7 +237,7 @@ class FForum extends FDBTool {
 		if(FUser::logon() === false && $publicWrite > 0) { $captcha = FCaptcha::init(); }
 	  
 		$cache = FCache::getInstance('s',0);
-		if($perPage = $cache->getData($pageId,'pp') ===false) $perPage = $user->pageVO->perPage();
+		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage();
 	  
 		if( FUser::logon() ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
