@@ -394,6 +394,7 @@ class FUser {
 	 * @return string - URL
 	 */
 	static function getUri($otherParams='',$pageId='',$pageParam=false, $scriptName=BASESCRIPTNAME) {
+		$otherParams = str_replace('&',SEPARATOR,$otherParams);
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
@@ -407,14 +408,16 @@ class FUser {
 		}
 		
 		if(!empty($newPageId)) {
-			$pageVO  = new PageVO($newPageId,true);
-			$safeName = FSystem::safetext($pageVO->name);
+			if(empty($pageParam)) {
+				$pageVO  = new PageVO($newPageId,true);
+				$safeName = FSystem::safetext($pageVO->name);
+			}
 			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
 		}
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) {
-			$parStr = '?'.implode("&amp;",$params);
+			$parStr = '?'.implode(SEPARATOR,$params);
 		}
 		return $scriptName . $parStr;
 	}

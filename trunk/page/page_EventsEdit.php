@@ -13,10 +13,10 @@ class page_EventsEdit implements iPage {
 			$itemVO->userId = $user->userVO->userId;
 			$itemVO->name = $user->userVO->name;
 			$itemVO->dateCreated = 'NOW()';
-			$itemVO->pageId = $user->pageVO->pageId;
+			$itemVO->pageId = $user->pageVO->pageIdTop;
 		}
-
-		if(isset($_POST['del']) && $itemId > 0) {
+		
+		if(isset($data['del']) && $itemVO->itemId > 0) {
 			$itemVO->delete();
 			$cache = FCache::getInstance('f');
 			$cache->invalidateDate('eventtip');
@@ -51,9 +51,11 @@ class page_EventsEdit implements iPage {
 			$itemVO->location = FSystem::textins($data['place'],array('plainText'=>1));
 			$itemVO->addon = FSystem::textins($data['name'],array('plainText'=>1));
 			$itemVO->dateStart = $dateStart;
+			$itemVO->dateStartLocal = $data['datestart'];
 			$itemVO->text = FSystem::textins($data['description']);
 
 			$dateEnd = FSystem::textins($data['dateend'],array('plainText'=>1));
+			$itemVO->dateEndLocal = $data['dateend'];
 			$dateEnd = FSystem::switchDate($dateEnd);
 			if(FSystem::isDate($dateEnd)) $itemVO->dateEnd = $dateEnd.$timeEnd;
 
@@ -62,7 +64,6 @@ class page_EventsEdit implements iPage {
 			if(empty($itemVO->addon)) FError::addError(FLang::$ERROR_NAME_EMPTY);
 
 			if(!FError::isError()) {
-
 				$itemId = $itemVO->save();
 				if(!empty($data['akceletakurl'])) {
 					$filename = "flyer".$itemId.'.jpg';
@@ -100,7 +101,7 @@ class page_EventsEdit implements iPage {
 				}
 			} else {
 				$cache = FCache::getInstance('s');
-				$cache->setData($arrSave,$user->pageVO->pageId,'form');
+				$cache->setData($itemVO,$user->pageVO->pageId,'form');
 			}
 
 			FHTTP::redirect(FUser::getUri());
@@ -111,75 +112,8 @@ class page_EventsEdit implements iPage {
 
 	static function build() {
 
-		$cache = FCache::getInstance('s');
-		
 		$user = FUser::getInstance();
-		$itemId = &$user->itemVO->itemId;
-
-		if($itemId > 0) {
-			$fItems->setSelect("itemId,categoryId,location,addon
-    ,date_format(dateStart,'{#date_local#}'),date_format(dateStart,'{#time_short#}')
-    ,date_format(dateEnd,'{#date_local#}'),date_format(dateEnd,'{#time_short#}')
-    ,text,enclosure");
-			$arrTmp = $fItems->getItem($itemId);
-
-			$arr = array('itemId'=>$arrTmp[0]
-			,'categoryId'=>$arrTmp[1]
-			,'location'=>$arrTmp[2]
-			,'name'=>$arrTmp[3]
-			,'dateStart'=>$arrTmp[4]
-			,'timeStart'=>$arrTmp[5]
-			,'dateEnd'=>$arrTmp[6]
-			,'timeEnd'=>$arrTmp[7]
-			,'description'=>$arrTmp[8]
-			,'flyer'=>$arrTmp[9]);
-			if($arr['timeStart']=='00:00')  $arr['timeStart']='';
-			if($arr['timeEnd']=='00:00')  $arr['timeEnd']='';
-			if(empty($arr['dateEnd']) || $arr['dateEnd']=='0000-00-00')  $arr['dateEnd']='';
-		} elseif(false !== ($arrSave = $cache->getData($user->pageVO->pageId,'form'))) {
-			$arr = $arrSave;
-			$cache->invalidateData('eventForm');
-		} else {
-			$arr = array('itemId'=>0
-			,'categoryId'=>0
-			,'location'=>''
-			,'name'=>''
-			,'dateStart'=>Date("d.m.Y")
-			,'timeStart'=>''
-			,'dateEnd'=>''
-			,'timeEnd'=>''
-			,'description'=>''
-			,'flyer'=>'');
-		}
-
-		$tpl = new FTemplateIT('events.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',$user->getUri());
-		$tpl->setVariable('HEADING',(($arr['itemId']>0)?($arr['name']):(FLang::$LABEL_EVENT_NEW)));
-		$tpl->setVariable('ITEMID',$arr['itemId']);
-
-		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';
-		$arrOpt = FDBTool::getAll($q,'event','categ','s');
-		$options = '';
-		if(!empty($arrOpt)) foreach ($arrOpt as $row) {
-			$options .= '<option value="'.$row[0].'"'.(($row[0]==$arr['categoryId'])?(' selected="selected"'):('')).'>'.$row[1].'</option>';
-		}
-		$tpl->setVariable('CATOPTIONS',$options);
-
-		$tpl->setVariable('PLACE',$arr['location']);
-		$tpl->setVariable('NAME',$arr['name']);
-		$tpl->setVariable('DATESTART',$arr['dateStart']);
-		$tpl->setVariable('TIMESTART',$arr['timeStart']);
-		$tpl->setVariable('DATEEND',$arr['dateEnd']);
-		$tpl->setVariable('TIMEEND',$arr['timeEnd']);
-		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea($arr['description']));
-		$tpl->addTextareaToolbox('DESCRIPTIONTOOLBOX','event');
-		if($itemId > 0)
-		$tpl->touchBlock('delakce');
-
-		if(!empty($arr['flyer'])) {
-			$tpl->setVariable('FLYERURL',FEvents::flyerUrl($arr['flyer']));
-			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl($arr['flyer']));
-		}
-		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+		
+		FBuildPage::addTab( array("MAINDATA"=>FEvents::editForm( $user->itemVO->itemId ) ) );
 	}
 }

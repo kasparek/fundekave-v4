@@ -137,7 +137,7 @@ class FItemsRenderer {
 				}
 				if($this->showFooter) {
 					if($user->userVO->userId == $itemVO->userId || FRules::getCurrent(2)) {
-						$tpl->setVariable('EDITLINK',FUser::getUri('i='.$itemVO->itemId,'event','u'));
+						$tpl->setVariable('EDITLINK',FUser::getUri('m=event-edit&d=result:fajaxContent;item:'.$itemVO->itemId,'event','u'));
 					}
 				}
 				break;
@@ -192,14 +192,14 @@ class FItemsRenderer {
 			//---user link and location
 			if($itemVO->userId > 0) {
 				if($itemVO->typeId!='galery') {
-					$tpl->setVariable('AUTHORLINK','?k=finfo&who='.$itemVO->userId);
+					$tpl->setVariable('AUTHORLINK',FUser::getUri('who='.$itemVO->userId,'finfo'));
 					$tpl->touchBlock('authorlinkclose');
 				}
 				if($itemVO->typeId == 'forum') {
 					if ($user->isOnline( $itemVO->userId )) {
 						$kde = $user->getLocation( $itemVO->userId );
 						$tpl->setVariable('USERLOCATION',$kde['name']);
-						$tpl->setVariable('USERLOCATIONLINK','?k='.$kde['pageId'].$kde['param']);
+						$tpl->setVariable('USERLOCATIONLINK',FUser::getUri('',$kde['pageId'],$kde['param']));
 					}
 				}
 			}

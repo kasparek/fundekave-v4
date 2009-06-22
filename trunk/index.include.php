@@ -14,12 +14,7 @@ if(!empty($_FILES))  $data['__files'] = $_FILES;
 if(!empty($_GET))  $data['__get'] = $_GET;
 FBuildPage::process( $data );
 
-//----DEBUG
-if(isset($_GET['d'])) {
-    print_r($user->pageVO);
-    die(); 
-    FSystem::profile('START:'); 
-}
+$user->pageStat();
 
 if($user->idkontrol) {
   FItemsToolbar::setTagToolbar();

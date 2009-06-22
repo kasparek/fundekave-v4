@@ -15,14 +15,14 @@ class page_EventsView implements iPage {
 
 		if($user->pageParam == 'archiv') $archiv = 1;
 
-		if($user->pageParam=='archiv' || $user->pageParam=='a' || $user->pageParam=='e') {
-			FSystem::secondaryMenuAddItem(FUser::getUri('','event',''),FLang::$BUTTON_PAGE_BACK);
-		} else {
+		if(empty($user->pageParam)) {
 			FSystem::secondaryMenuAddItem(FUser::getUri('','event','archiv'),FLang::$LABEL_EVENTS_ARCHIV);
 		}
 
 		if($user->pageParam=='u') {
+			
 			page_EventsEdit::build();
+			
 		} else {
 			
 			$adruh = 0;
@@ -31,7 +31,8 @@ class page_EventsView implements iPage {
 			if($user->itemVO->itemId > 0) {
 
 				$itemVO = new ItemVO($user->itemVO->itemId,true
-				,array('type'=>'event','showComments'=>true));
+					,array('type'=>'event','showComments'=>true)
+				);
 				$tpl = new FTemplateIT('events.tpl.html');
 				$tpl->setVariable('ITEMS',$itemVO->render());
 
@@ -80,7 +81,7 @@ class page_EventsView implements iPage {
 					$tpl->touchBlock('notanyevents');
 				}
 			}
-			FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+			FBuildPage::addTab(array("MAINDATA"=>$tpl->get(),"MAINID"=>'fajaxContent'));
 		}
 	}
 }
