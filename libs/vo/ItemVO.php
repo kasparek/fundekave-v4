@@ -117,10 +117,9 @@ class ItemVO extends FDBvo {
 
 		function checkItem() {
 			if($this->itemId > 0) {
-				$item = FDBTool::getRow("select typeId,pageId from sys_pages_items where itemId='".$this->itemId."'");
-				if(FRules::get(FUser::logon(),$item[1])) {
-					$this->typeId = $item[0];
-					$this->pageId = $item[1];
+				$itemType = FDBTool::getOne("select typeId from sys_pages_items where itemId='".$this->itemId."'");
+				if(!empty($itemType)) {
+					$this->typeId = $itemType;
 				} else {
 					$this->itemId = 0;
 				}

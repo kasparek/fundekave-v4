@@ -35,7 +35,7 @@ INSERT INTO `sys_pages` VALUES ('ffall', null, 'top', 'friend', null, 2, 'page_U
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', 'friend', null, 2, 'page_UserSettings', 'Nastavení osobních údajů', 'Osobní', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 7, 'page_EventsView', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('evena', null, 'top', 'event', null, 7, 'page_EventsEdit', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('evena', 'event', 'top', 'event', null, 7, 'page_EventsEdit', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('sadmi', null, 'admin', null, null, 9, 'page_SysEdit', 'Tam jsou lvi', 'admin', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 9, 'page_SysEditUsersBanns', 'Kontrola nad uživateli - blokování', 'Banány', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;

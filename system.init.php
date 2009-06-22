@@ -42,6 +42,15 @@ $user->pageVO = new PageVO();
 $user->itemVO = new ItemVO();
 $user->pageVO->pageId = HOME_PAGE;
 
+if(!empty($_REQUEST["k"])) {
+	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
+	$user->pageVO->pageId = array_shift($kArr);
+	while(count($kArr)>0) {
+		list($k,$v) = explode(SEPARATOR,array_shift($kArr));
+		$_REQUEST[$k] = $v;
+	}
+}
+
 if(isset($_REQUEST['m'])) {
 	$cache = FCache::getInstance('s');
 	if(false !== ($pageId = $cache->getData('lastPage'))) {
@@ -75,16 +84,12 @@ if(isset($_GET['u'])) {
 
 if(!empty($_REQUEST["i"])) {
 	$user->itemVO->itemId = (int) $_REQUEST['i'];
-	$user->itemVO->checkItem();
 } elseif(isset($_REQUEST['nid'])) {
 	//---backwards compatibility
 	$user->itemVO->itemId = (int) $_REQUEST['nid'];
-	$user->itemVO->checkItem();
 }
-
-if(!empty($_REQUEST["k"])) {
-	$user->pageVO->pageId = $_REQUEST['k'];
-} elseif ($user->itemVO->itemId > 0) {
+if ($user->itemVO->itemId > 0) {
+	$user->itemVO->checkItem();
 	$user->pageVO->pageId = $user->itemVO->pageId;
 }
 
@@ -114,6 +119,3 @@ $user->whoIs = 0;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 
 $user->kde(); //---check user / load info / load page content / chechk page exist
-if(!isset($_POST['m'])) {
-	$user->pageStat();
-}

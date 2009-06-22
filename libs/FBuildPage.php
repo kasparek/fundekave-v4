@@ -156,14 +156,8 @@ class FBuildPage {
 	}
 
 	static function show() {
-		//----DEBUG
-		if(isset($_GET['d'])) { FSystem::profile('BEFORE CONTENT'); }
-
+		
 		FBuildPage::baseContent();
-
-		//----DEBUG
-		if(isset($_GET['d'])) { FSystem::profile('AFTER CONTENT'); }
-
 
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
@@ -292,10 +286,6 @@ class FBuildPage {
 		if($useDomTabs === true) {
 			$tpl->touchBlock("domtabs2"); //---javascript on the end of the page
 		}
-
-
-		//----DEBUG
-		if(isset($_GET['d'])) { FSystem::profile('DONE:');die(); }
 
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);
