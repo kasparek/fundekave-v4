@@ -117,9 +117,10 @@ class ItemVO extends FDBvo {
 
 		function checkItem() {
 			if($this->itemId > 0) {
-				$itemType = FDBTool::getOne("select typeId from sys_pages_items where itemId='".$this->itemId."'");
-				if(!empty($itemType)) {
-					$this->typeId = $itemType;
+				$itemArr = FDBTool::getRow("select typeId,pageId from sys_pages_items where itemId='".$this->itemId."'");
+				if(!empty($itemArr)) {
+					$this->typeId = $itemArr[0];
+					$this->pageId = $itemArr[1];
 				} else {
 					$this->itemId = 0;
 				}
@@ -166,8 +167,10 @@ class ItemVO extends FDBvo {
 
 			} else {
 				//---insert
-				$this->dateCreated = 'now()';
-				$this->notQuote('dateCreated');
+				if(empty($this->dateCreated)) {
+					$this->dateCreated = 'now()';
+					$this->notQuote('dateCreated');
+				}
 				if($this->itemIdTop > 0) {
 					ItemVO::incrementReactionCount( $this->itemIdTop );
 				} else {

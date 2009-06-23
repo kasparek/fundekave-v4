@@ -45,13 +45,13 @@ $user->pageVO->pageId = HOME_PAGE;
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
 	$user->pageVO->pageId = array_shift($kArr);
-	while(count($kArr)>0) {
-		list($k,$v) = explode(SEPARATOR,array_shift($kArr));
+	while($kArr) {
+		list($k,$v) = explode('=',array_shift($kArr));
 		$_REQUEST[$k] = $v;
 	}
 }
 
-if(isset($_REQUEST['m'])) {
+if(isset($_REQUEST['m']) && empty($user->pageVO->pageId)) {
 	$cache = FCache::getInstance('s');
 	if(false !== ($pageId = $cache->getData('lastPage'))) {
 		$user->pageVO->pageId = $pageId;
@@ -65,7 +65,7 @@ if(isset($_GET['kam'])) {
 	elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
 	$els='';
 	for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-	$_GET['k'] = $user->pageVO->pageId = $add . $els . $kam;
+	$user->pageVO->pageId = $add . $els . $kam;
 }
 
 //---u=username
@@ -90,7 +90,9 @@ if(!empty($_REQUEST["i"])) {
 }
 if ($user->itemVO->itemId > 0) {
 	$user->itemVO->checkItem();
-	$user->pageVO->pageId = $user->itemVO->pageId;
+	if(empty($user->pageVO->pageId)) {
+		$user->pageVO->pageId = $user->itemVO->pageId;
+	}
 }
 
 if(isset($user->pageVO->pageId{5})) {

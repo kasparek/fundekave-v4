@@ -96,12 +96,14 @@ class FAjax {
 		}
 		
 		//---create new data
-		foreach($data as $k=>$v) {
-			$tpl->setCurrentBlock('data');
-			$tpl->setVariable('TARGET', $v['target']);
-			$tpl->setVariable('PROP', $v['property']);
-			$tpl->setVariable('DATA', $v['value']);
-			$tpl->parseCurrentBlock();
+		if(!empty($data)) {
+			foreach($data as $k=>$v) {
+				$tpl->setCurrentBlock('data');
+				$tpl->setVariable('TARGET', $v['target']);
+				$tpl->setVariable('PROP', $v['property']);
+				$tpl->setVariable('DATA', $v['value']);
+				$tpl->parseCurrentBlock();
+			}
 		}
 		
 		$tpl->parse();

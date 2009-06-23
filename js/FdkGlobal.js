@@ -218,7 +218,7 @@ function sendAjax(action) {
             case 'call':
               var arr = item.text().split(';');
               var par=''; if(arr.length > 1) par = arr[1]; 
-              eval( arr[0] + "(" + par + ");" );
+              eval( arr[0] + "('" + par + "');" );
             break;
             case 'html':
               eval( '$("#'+item.attr('target')+'").' + item.attr('property') + '( item.text() );' );
@@ -230,7 +230,9 @@ function sendAjax(action) {
 			}
 		 });
 }
-
+function redirect(dir) {
+	window.location.replace(dir);
+}
 //---build xml request
 var xmlArray = [];
 var xmlStr = '<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';
