@@ -1,4 +1,4 @@
-<form action="{FORMACTION}" method="POST" enctype="multipart/form-data">
+<form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
 <fieldset>
 <legend>{HEADING}</legend>
 <label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select><br />
@@ -6,12 +6,14 @@
 <label>Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
 <label>Datum-Cas Od</label><input type="text" name="datestart" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timestart" value="{TIMESTART}" class="xShort" /><br />
 <label>Datum-Cas Do</label><input type="text" name="dateend" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timeend" value="{TIMEEND}" class="xShort" /><br />
-<label>Upload letáku</label><input type="file" name="akceletak" /><br />
+<label>Upload letáku</label><input type="file" name="akceletak" id="uploadify"/><br />
 <label> - nebo URL</label><input type="text" name="akceletakurl" /><br />
+<div id="flyerDiv">
 <!-- BEGIN flyer -->
 <label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
 <label>Odstranit letak</label><input type="checkbox" name="delfly" value="1" class="checkbox" /><br />
 <!-- END flyer -->
+</div>
 <label>Popis / Program</label><textarea id="event" name="description" class="draftable">{DESCRIPTION}</textarea>{DESCRIPTIONTOOLBOX}<br />
 <input type="submit" name="nav" value="Uložit" class="button submit"> 
 <!-- BEGIN delakce -->

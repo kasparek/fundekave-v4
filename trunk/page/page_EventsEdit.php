@@ -10,7 +10,7 @@ class page_EventsEdit implements iPage {
 
 	static function build() {
 		
-		FBuildPage::addTab( array("MAINDATA"=>FEvents::editForm() ) );
+		FBuildPage::addTab( array("MAINDATA"=>FEvents::editForm(),"MAINID"=>'fajaxContent' ) );
 		
 	}
 }

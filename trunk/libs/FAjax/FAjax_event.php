@@ -24,13 +24,14 @@ class FAjax_event {
 		
 		$fajax = FAjax::getInstance();
 		
-		if($itemId === false) {
+		if($itemVO === false) {
 			//---item deleted
 			$fajax->addResponse('function','call','redirect;'.FUser::getUri('','event'));
 			
 		} else {
-			
-			$fajax->addResponse($data['result'], 'html', FEvents::editForm($itemVO->itemId));
+			$itemId=0;
+			if($itemVO) $itemId = $itemVO->itemId;
+			$fajax->addResponse('fajaxContent', 'html', FEvents::editForm($itemId));
 					
 			$fajax->addResponse('function','call','draftSetEventListeners');
 			$fajax->addResponse('function','call','datePickerInit');
