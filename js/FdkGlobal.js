@@ -1,5 +1,9 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
+var buttonClicked = '';
 function fajaxform(event) {
+	setListeners('button','click',function(event) {
+		buttonClicked = $(this).attr('name');	
+	});
 	setListeners('fajaxform','submit',function(event) {
 		var arr = $(this).formToArray(false);
 		var result=false;
@@ -12,10 +16,21 @@ function fajaxform(event) {
 		}
 		if(result==false) addXMLRequest('result', $(this).attr("id"));
 	    if(resultProperty==false) addXMLRequest('resultProperty', 'html');
+	    if(buttonClicked.length>0) addXMLRequest('action', buttonClicked);
 		sendAjax( gup('m',this.action) );
 		event.preventDefault(); 
 	});
+	$("#uploadify").fileUpload({
+		'uploader': 'uploadify/uploader.swf',
+		'cancelImg': 'uploadify/cancel.png',
+		'script': 'uploadify/upload.php',
+		'fileExt': '*.jpg;*.jpeg;*.gif;*.png',
+		'multi': false,
+		'auto': true ,
+		'displayData': 'speed'
+	}); 
 }
+
 function fajaxa(event) { 
 	setListeners('fajaxa','click',function(event) {
 		var str = gup('d',this.href);
@@ -35,6 +50,7 @@ function fajaxa(event) {
 		event.preventDefault(); 
 	}); 
 };
+
 function avatarfrominput(evt) {
     addXMLRequest('username', $("#prokoho").attr("value"));
     addXMLRequest('result', "recipientavatar");
@@ -67,6 +83,8 @@ function markItUpInit() {
 $(document).ready(function(){
 //---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 fajaxa();
+fajaxform();
+
 //---calendar
 datePickerInit();
 //---init picture popup tool
@@ -199,7 +217,7 @@ function setListeners(className,eventName,functionDefinition) {
 };
 function gup(name, url) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regex = new RegExp( "[\\?&]"+name+"=([^&#]*)" ), results = regex.exec( url );
+  var regex = new RegExp( "[\\?&|]"+name+"=([^&#|]*)" ), results = regex.exec( url );
   return (results === null)?(0):(results[1]);
 };
 
@@ -207,7 +225,7 @@ function gup(name, url) {
 function sendAjax(action) {
   var data = getXMLRequest();
   $.ajax({
-			type: "POST", url: "index.php", dataType:'xml', dataProcess:false, cache:false, data: "m="+action+"-x&d=" + data,
+			type: "POST", url: "index.php", dataType:'xml', dataProcess:false, cache:false, data: "m="+action+"-x&d=" + data, 
 			complete: function(data){
         $(data.responseXML).find("Item").each(function() {
           var item = $(this);

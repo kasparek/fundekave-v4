@@ -54,7 +54,7 @@ class FEvents {
 		//die();
 
 		$tpl = new FTemplateIT('events.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FUser::getUri('m=event-submit'));
 		$tpl->setVariable('HEADING',(($itemVO->itemId>0)?($itemVO->addon):(FLang::$LABEL_EVENT_NEW)));
 
 		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';
@@ -97,7 +97,19 @@ class FEvents {
 			$itemVO->name = $user->userVO->name;
 		}
 		
-		if(isset($data['del']) && $itemVO->itemId > 0) {
+		$action = '';
+		if(isset($data['action'])) {
+			$action = $data['action'];
+		}
+		if(isset($data['del'])) {
+			$action = 'del';
+		}
+		if(isset($data['nav'])) {
+			$action = 'nav';
+		}
+		 
+		
+		if($action=='del' && $itemVO->itemId > 0) {
 			$itemVO->delete();
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('eventtip');
@@ -111,7 +123,7 @@ class FEvents {
 			}
 		}
 
-		if(isset($data["nav"])) {
+		if($action=='nav') {
 			//---check flyer to upload
 			if(isset($data['delfly']) && !empty($itemId)){
 				if($itemVO->enclosure!='') {
@@ -193,7 +205,7 @@ class FEvents {
 				$cache->setData($itemVO,$user->pageVO->pageId,'form');
 			}
 			
-			if($redirect==true) {
+			if($redirect === true) {
 				FHTTP::redirect(FUser::getUri());
 			} else {
 				return $itemVO;

@@ -178,12 +178,14 @@ class ItemVO extends FDBvo {
 				}
 			}
 			$this->columns = ItemVO::getTypeColumns('',true);
-			parent::save();
+			$itemId = parent::save();
 			//---update stats
 			ItemVO::statPage($this->pageId, FUser::logon(), false);
 			//---update in cache
 			$cache = FCache::getInstance('l');
 			$cache->setData( $this, $this->itemId, 'fit');
+			
+			return $itemId;
 		}
 		
 		function delete() {
