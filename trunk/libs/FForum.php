@@ -250,7 +250,9 @@ class FForum extends FDBTool {
 		//---DEEPLINKING
 		$manualCurrentPage = 0;
 		if($user->itemVO->itemId > 0 || $itemIdInside > 0) {
-			if($user->itemVO->itemId > 0) $itemIdInside = $user->itemVO->itemId;
+			if($user->itemVO->itemId > 0 && $user->itemVO->typeId=='forum') {
+				$itemIdInside = $user->itemVO->itemId;	
+			}
 			//---find a page of this item to have link to it
 			if($itemIdInside > 0) {
 				$itemVO = new ItemVO($itemIdInside,true);

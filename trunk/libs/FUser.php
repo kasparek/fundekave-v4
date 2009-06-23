@@ -413,6 +413,7 @@ class FUser {
 				$safeName = FSystem::safetext($pageVO->name);
 			}
 			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
+			$params = array_reverse($params);
 		}
 		if($otherParams!='') $params[] = $otherParams;
 		$parStr = '';
