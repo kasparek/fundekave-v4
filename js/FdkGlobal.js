@@ -4,6 +4,7 @@ function fajaxform(event) {
 	setListeners('button','click',function(event) {
 		buttonClicked = $(this).attr('name');	
 	});
+	
 	setListeners('fajaxform','submit',function(event) {
 		var arr = $(this).formToArray(false);
 		var result=false;
@@ -20,6 +21,7 @@ function fajaxform(event) {
 		sendAjax( gup('m',this.action) );
 		event.preventDefault(); 
 	});
+	
 	$("#uploadify").fileUpload({
 		'uploader': 'uploadify/uploader.swf',
 		'cancelImg': 'uploadify/cancel.png',
