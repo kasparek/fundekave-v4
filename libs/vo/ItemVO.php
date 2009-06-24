@@ -183,7 +183,8 @@ class ItemVO extends FDBvo {
 			ItemVO::statPage($this->pageId, FUser::logon(), false);
 			//---update in cache
 			$cache = FCache::getInstance('l');
-			$cache->setData( $this, $this->itemId, 'fit');
+			//$cache->setData( $this, $this->itemId, 'fit'); - doesnot work for custom data as dateStart
+			$cache->invalidateData($this->itemId, 'fit');
 			
 			return $itemId;
 		}

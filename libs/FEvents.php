@@ -9,14 +9,15 @@ class FEvents {
 		return $conf->a['events']['flyer_cache'] . FEvents::thumbName($flyerName);
 	}
 	static function flyerUrl($flyerName) {
-		$conf = FConf::getInstance();
-		return $conf->a['events']['flyer_source'] . $flyerName;
+		return FConf::get('events','flyer_source') . $flyerName;
 	}
 	static function createThumb($imageName) {
-		
+		//---create paths
 		$flyerFilename = FEvents::flyerUrl($imageName);
 		$flyerFilenameThumb = FEvents::thumbUrl($imageName);
-		
+		//---delete old
+		if(file_exists($flyerFilenameThumb)) { @unlink($flyerFilenameThumb); }
+		//---generate thumb
 		if(!file_exists($flyerFilenameThumb)) {
 			//---create thumb
 			FImgProcess::process($flyerFilename,$flyerFilenameThumb
@@ -24,23 +25,58 @@ class FEvents {
 			,'width'=>FConf::get('events','thumb_width'),'height'=>0));
 			return true;
 		} else {
-			return true;
+			return false;
 		}
 	}
-	
+
+	static function show($archiv=false) {
+		$adruh = 0;
+		$filtr = '';
+		
+		$category = new FCategory('sys_pages_category','categoryId');
+		FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
+
+		$fItems = new FItems('event',false);
+		if(isset($_REQUEST['kat'])) $adruh = (int) $_REQUEST['kat'];
+		if(isset($_REQUEST['filtr'])) $filtr = trim($_REQUEST['filtr']);
+		if($adruh>0) $fItems->addWhere('categoryId="'.$adruh.'"');
+		if(!empty($filtr)) $fItems->addWhereSearch(array('location','addon','text'),$filtr,'or');
+
+		if($archiv===false) {
+			//---future
+			$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
+			$fItems->setOrder('dateStart');
+		} else {
+			//---archiv
+			$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+			$fItems->setOrder('dateStart desc');
+		}
+
+		//--listovani
+		$celkem = $fItems->getCount();
+		$perPage = FConf::get('events','perpage');
+		$tpl = new FTemplateIT('events.tpl.html');
+		if($celkem > 0) {
+			if($celkem > $perPage) {
+				$pager = FSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
+				$od = ($pager->getCurrentPageID()-1) * $perPage;
+			} else $od=0;
+			if($celkem > $perPage) {
+				$tpl->setVariable('LISTTOTAL',$celkem);
+				$tpl->setVariable('PAGER',$pager->links);
+			}
+			$tpl->setVariable('ITEMS',$fItems->render($od,$perPage));
+		} else {
+			$tpl->touchBlock('notanyevents');
+		}
+		return $tpl->get();
+	}
+
 	static function editForm( $itemId=0, $tplBlock='' ) {
 		$cache = FCache::getInstance('s');
-		if($itemId > 0) {
-			$itemVO = new ItemVO();
-			$itemVO->itemId = $itemId;
-		} else {
-			$user = FUser::getInstance();
-			$itemVO = $user->itemVO;
-		}
 		
-		if($itemVO->itemId > 0) {
-			$itemVO->typeId = 'event';
-			$itemVO->load();
+		if($itemId > 0) {
+			$itemVO = new ItemVO($itemId,true,array('type'=>'event'));
 		} elseif(false !== ($itemVO = $cache->getData('event','form'))) {
 			$cache->invalidateData('event','form');
 		} else {
@@ -49,9 +85,6 @@ class FEvents {
 			$itemVO->categoryId = 0;
 			$itemVO->dateStartLocal = Date("d.m.Y");
 		}
-		
-		//print_r($itemVO);
-		//die();
 
 		$tpl = new FTemplateIT('events.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FUser::getUri('m=event-submit&u='.FUser::logon()));
@@ -83,7 +116,7 @@ class FEvents {
 			$tpl->setVariable('FLYERURL',FEvents::flyerUrl( $itemVO->enclosure ));
 			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
 		}
-		
+
 		if(!empty($tplBlock)) {
 			$tpl->parse($tplBlock);
 			return $tpl->get($tplBlock);
@@ -91,7 +124,7 @@ class FEvents {
 			return $tpl->get();
 		}
 	}
-	
+
 	static function processForm($data, $redirect=true) {
 		$user = FUser::getInstance();
 		if(isset($data['item'])) {
@@ -99,7 +132,7 @@ class FEvents {
 				$itemVO = new ItemVO($data['item'],true,array('type'=>'event'));
 			}
 		}
-		
+
 		if(!isset($itemVO)) {
 			$itemVO = new ItemVO();
 			$itemVO->typeId = 'event';
@@ -107,7 +140,7 @@ class FEvents {
 			$itemVO->userId = $user->userVO->userId;
 			$itemVO->name = $user->userVO->name;
 		}
-				
+
 		$action = '';
 		if(isset($data['action'])) {
 			$action = $data['action'];
@@ -118,8 +151,8 @@ class FEvents {
 		if(isset($data['nav'])) {
 			$action = 'nav';
 		}
-		 
-		
+			
+
 		if($action=='del' && $itemVO->itemId > 0) {
 			$itemVO->delete();
 			$cache = FCache::getInstance('f');
@@ -133,9 +166,9 @@ class FEvents {
 				return false;
 			}
 		}
-		
+
 		if($action=='nav') {
-			
+				
 			//---check time
 			$timeStart = '';
 			$timeEnd = '';
@@ -168,31 +201,30 @@ class FEvents {
 			if(!FError::isError()) {
 				$itemId = $itemVO->save();
 				if(!empty($data['akceletakurl'])) {
-					$filename = "flyer".$itemId.'.jpg';
-					if($file = file_get_contents($data['akceletakurl'])) {
-						file_put_contents(FConf::get('events','flyer_source').$filename,$file);
+					$ext = FSystem::fileExt($data['akceletakurl']);
+					if($ext=='gif' || $ext=='jpg' || $ext=='jpeg' || $ext=='png') {
+						$flyerName = FEvents::createFlyerName($itemVO->itemId, $data['akceletakurl']);
+						//---delete old files
+						if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
+						if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
+						//---save file
+						if($file = file_get_contents($data['akceletakurl'])) {
+							file_put_contents(FConf::get('events','flyer_source').$flyerName,$file);
+						}
+						FEvents::createThumb($flyerName);
+						
+						$itemVO->enclosure = $flyerName;
+						$itemVO->save();
 					}
-					$cachedThumb = FEvents::thumbUrl($filename);
-					if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
-
-					$fImg = new FImgProcess(FConf::get('events','flyer_source') . $filename
-					,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
-					,'width'=>FConf::get('events','thumb_width'),'height'=>0));
-
-					$itemVO->enclosure = $filename;
-					$itemVO->save();
 				} elseif(isset($data['__files'])) {
 					if($data['__files']['akceletak']['error'] == 0) {
-						$flypath = FConf::get('events','flyer_source');
-						$arr = explode('.',$data['__files']['akceletak']['name']);
-						$data['__files']['akceletak']['name'] = "flyer".$itemId.'.'.strtolower($arr[count($arr)-1]);
-						if(FSystem::upload($data['__files']['akceletak'],$flypath,800000)) {
-							$cachedThumb = FEvents::thumbUrl($data['__files']['akceletak']['name']);
-							if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
-							//---create thumb
-							$fImg = new FImgProcess(FConf::get('events','flyer_source') . $data['__files']['akceletak']['name']
-							,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
-							,'width'=>FConf::get('events','thumb_width'),'height'=>0));
+						$flyerName = $data['__files']['akceletak']['name'] = FEvents::createFlyerName($itemVO->itemId, $data['__files']['akceletak']['name']);
+						//---delete old files
+						if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
+						if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
+						//---upload file
+						if(FSystem::upload($data['__files']['akceletak'],FConf::get('events','flyer_source'),800000)) {
+							FEvents::createThumb($data['__files']['akceletak']['name']);
 							$itemVO->enclosure = $data['__files']['akceletak']['name'];
 							$itemVO->save();
 							FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
@@ -203,45 +235,48 @@ class FEvents {
 				$cache->invalidateGroup('eventtip');
 				$cache->invalidateGroup('calendarlefthand');
 				$user = FUser::getInstance();
-				$user->itemVO = $itemVO; 
+				$user->itemVO = $itemVO;
 			} else {
 				$cache = FCache::getInstance('s');
 				$cache->setData($itemVO,$user->pageVO->pageId,'form');
 			}
-			
+				
 			if($redirect === true) {
 				FHTTP::redirect(FUser::getUri());
 			} else {
 				return $itemVO;
 			}
 		}
-		
+
 		if(isset($data['uploadify'])) {
-			
+				
 			$user = FUser::getInstance();
-			
+				
 			$cache = FCache::getInstance('d');
 			$arr = $cache->getData($user->userVO->userId . '-event-submit','uploadify');
-			
+				
 			if(!empty($arr)) {
+				if(empty($itemVO->itemId)) {
+					$itemVO->dateStart = 'now()';
+					$itemVO->notQuote('dateStart');
+					$itemVO->save();
+				}
 				//---set flyer
-				$flypath = FConf::get('events','flyer_source');
-				$arrExt = explode('.',$arr['filenameOriginal']);
-				$flyerName = "flyer".$itemVO->itemId.'.'.strtolower($arrExt[count($arr)-1]);
+				$flyerName = FEvents::createFlyerName($itemVO->itemId, $arr['filenameOriginal']);
+				if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
 				if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
 				rename($arr['filenameTmp'],FConf::get('events','flyer_source').$flyerName);
 				chmod(FConf::get('events','flyer_source').$flyerName,0777);
-					
-				$cachedThumb = FEvents::thumbUrl($flyerName);
-				if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
-				//---create thumb
-				$fImg = new FImgProcess(FConf::get('events','flyer_source') . $flyerName
-					,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
-					,'width'=>FConf::get('events','thumb_width'),'height'=>0));
+				FEvents::createThumb($flyerName);
 				$itemVO->enclosure = $flyerName;
 				$itemVO->save();
-				return $itemVO;	
+				$cache->invalidateData($user->userVO->userId . '-event-submit','uploadify');
+				return $itemVO;
 			}
 		}
+	}
+		
+	static function createFlyerName($itemId, $origFilename) {
+		return "flyer-".$itemId.'-'.date("U").'.'.FSystem::fileExt($origFilename);
 	}
 }

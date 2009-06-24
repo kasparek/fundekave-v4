@@ -40,7 +40,6 @@ $user = FUser::getInstance();
 
 $user->pageVO = new PageVO();
 $user->itemVO = new ItemVO();
-$user->pageVO->pageId = HOME_PAGE;
 
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
@@ -88,12 +87,15 @@ if(!empty($_REQUEST["i"])) {
 	//---backwards compatibility
 	$user->itemVO->itemId = (int) $_REQUEST['nid'];
 }
+
 if ($user->itemVO->itemId > 0) {
 	$user->itemVO->checkItem();
 	if(empty($user->pageVO->pageId)) {
 		$user->pageVO->pageId = $user->itemVO->pageId;
 	}
 }
+
+if(empty($user->pageVO->pageId)) $user->pageVO->pageId = HOME_PAGE;
 
 if(isset($user->pageVO->pageId{5})) {
 	//---remove the part behind - it is just nice link
