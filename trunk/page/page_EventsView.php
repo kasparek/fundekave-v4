@@ -7,6 +7,10 @@ class page_EventsView implements iPage {
 		if($user->pageParam == 'u') {
 			page_EventsEdit::process($data);
 		}
+		else 
+		{
+			FForum::process($data);
+		}
 
 	}
 
