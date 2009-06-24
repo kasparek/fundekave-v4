@@ -91,10 +91,15 @@ class FForum extends FDBTool {
 	 * @param string $callbackFunction - function name
 	 */
 	static function process( $data, $callbackFunction=false) {
+		
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$logon = $user->idkontrol;
-	  
+	  		
+		if($user->itemVO->itemId > 0) {
+			$data['itemIdTop'] = $user->itemVO->itemId;
+		}
+		
 		$redirect = false;
 
 		if(isset($data["send"])) {
@@ -106,6 +111,7 @@ class FForum extends FDBTool {
 				FForum::messDel($data['del'],$pageId);
 				$redirect = true;
 			}
+			
 			if(!$logon) {
 				$captcha = fCaptcha::init();
 				if($captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = true; else $cap = false;
@@ -154,6 +160,7 @@ class FForum extends FDBTool {
 						FError::addError("Jmeno uz nekdo pouziva");
 						$redirect = true;
 					}
+					
 					if(!FError::isError()) {
 						$jmeno = FSystem::textins($jmeno,array('plainText'=>1));
 						if($logon) {
@@ -237,7 +244,7 @@ class FForum extends FDBTool {
 		if(FUser::logon() === false && $publicWrite > 0) { $captcha = FCaptcha::init(); }
 	  
 		$cache = FCache::getInstance('s',0);
-		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage();
+		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage('forum');
 	  
 		if( FUser::logon() ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
@@ -306,7 +313,8 @@ class FForum extends FDBTool {
 			$tpl->setVariable('READONLY',FLang::$MESSAGE_FORUM_READONLY);
 		}
 		//---END FORM
-		$fItems = new FItems('forum');
+		$itemRenderer = new FItemsRenderer();
+		$fItems = new FItems('forum',true,$itemRenderer);
 		$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 		if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
 		if(!empty($filterTxt)) {

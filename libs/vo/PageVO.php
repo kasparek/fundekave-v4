@@ -108,9 +108,9 @@ class PageVO extends FDBvo {
 	 * type specific perpage / galery has in xml
 	 * @return number
 	 */
-	function perPage() {
+	function perPage($typeId='') {
 		$perPage = (String) $this->getPageParam('enhancedsettings/perpage');
-		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeId);
+		if(empty($perPage)) $perPage = FConf::get('perpage',((!empty($typeId))?($typeId):($this->typeId)));
 		return $perPage;
 	}
 	
