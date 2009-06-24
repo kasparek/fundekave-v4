@@ -7,8 +7,8 @@ class page_EventsArchiv implements iPage {
 	}
 
 	static function build() {
-		$user = FUser::getInstance();
-		$user->pageParam = 'archiv';
-		page_EventsView::build();
+		
+		FBuildPage::addTab(array("MAINDATA"=>FEvents::show(true),"MAINID"=>'fajaxContent'));
+		
 	}
 }

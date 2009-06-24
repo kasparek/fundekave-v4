@@ -100,7 +100,7 @@ class FSystem {
 		}
 		 
 		foreach ($arrmenu as $ro) {
-			$menuItems[] = array("LINK"=>FUser::getUri('',$ro[0]),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
+			$menuItems[] = array("LINK"=>FUser::getUri('',$ro[0],''),"ACTIVE"=>(($user->pageVO->pageId == $ro[0])?(1):(0)),"TEXT"=>$ro[1]);
 			$user->topmenu[] = $ro[0];
 		}
 		 
@@ -430,5 +430,9 @@ class FSystem {
 	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
 		return mkdir($dir, $mode, $recursive);
+	}
+	static function fileExt($filename) {
+		$arr = explode('.',$filename);
+		return strtolower($arr[count($arr)-1]);
 	}
 }

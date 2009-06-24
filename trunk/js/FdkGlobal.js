@@ -5,7 +5,6 @@ var preventAjax = false;
 function fconfirm(event) { setListeners('confirm','click',function(event) { if(!confirm($(this).attr("title"))) { preventAjax=true; event.preventDefault(); } }); };
 
 function fajaxform(event) {
-	fconfirm();
 	setListeners('button','click',function(event) { buttonClicked = $(this).attr('name'); });
 	setListeners('fajaxform','submit',function(event) {
 		if(preventAjax==true) {
@@ -46,7 +45,6 @@ function fajaxform(event) {
 }
 
 function fajaxa(event) {
-	fconfirm();
 	setListeners('fajaxa','click',function(event) {
 		if(preventAjax==true) {
 			preventAjax=false;
@@ -103,7 +101,7 @@ $(document).ready(function(){
 //---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 fajaxa();
 fajaxform();
-
+fconfirm();
 //---calendar
 datePickerInit();
 //---init picture popup tool
@@ -268,7 +266,7 @@ function sendAjax(action) {
 		 });
 }
 function redirect(dir) {
-	window.location.replace(dir);
+	window.location.replace( dir );
 }
 //---build xml request
 var xmlArray = [];
