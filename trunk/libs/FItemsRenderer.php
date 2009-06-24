@@ -104,11 +104,11 @@ class FItemsRenderer {
 					$tpl->setVariable('CATEGORY',$categoryArr[2]);
 				}
 				$tpl->setVariable('LOCATION',$itemVO->location);
-				$tpl->setVariable('STARTDATETIMEISO',$itemVO->dateStartIso.(($itemVO->timeStart!='00:00')?('T'.$itemVO->timeStart):('')));
-				$tpl->setVariable('STARTDATETIMELOCAL',$itemVO->dateStartLocal.(($itemVO->timeStart!='00:00')?(' '.$itemVO->timeStart):('')));
-				if(!empty($itemVO->endDateIso)) {
-					$tpl->setVariable('ENDDATETIMEISO',$itemVO->dateEndIso.(($itemVO->timeEnd!='00:00')?('T'.$itemVO->timeEnd):('')));
-					$tpl->setVariable('ENDDATETIMELOCAL',$itemVO->dateEndLocal.(($itemVO->timeEnd!='00:00')?(' '.$itemVO->timeEnd):('')));
+				$tpl->setVariable('STARTDATETIMEISO',$itemVO->dateStartIso.(($itemVO->dateStartTime!='00:00')?('T'.$itemVO->dateStartTime):('')));
+				$tpl->setVariable('STARTDATETIMELOCAL',$itemVO->dateStartLocal.(($itemVO->dateStartTime!='00:00')?(' '.$itemVO->dateStartTime):('')));
+				if(!empty($itemVO->dateEndIso)) {
+					$tpl->setVariable('ENDDATETIMEISO',$itemVO->dateEndIso.(($itemVO->dateEndTime!='00:00')?('T'.$itemVO->dateEndTime):('')));
+					$tpl->setVariable('ENDDATETIMELOCAL',$itemVO->dateEndLocal.(($itemVO->dateEndTime!='00:00')?(' '.$itemVO->dateEndTime):('')));
 				}
 
 				if(!empty($itemVO->enclosure)) {

@@ -1,11 +1,17 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
+
 var buttonClicked = '';
+var preventAjax = false;
+function fconfirm(event) { setListeners('confirm','click',function(event) { if(!confirm($(this).attr("title"))) { preventAjax=true; event.preventDefault(); } }); };
+
 function fajaxform(event) {
-	setListeners('button','click',function(event) {
-		buttonClicked = $(this).attr('name');	
-	});
-	
+	fconfirm();
+	setListeners('button','click',function(event) { buttonClicked = $(this).attr('name'); });
 	setListeners('fajaxform','submit',function(event) {
+		if(preventAjax==true) {
+			preventAjax = false;
+			return;
+		}
 		var arr = $(this).formToArray(false);
 		var result=false;
 		var resultProperty=false;
@@ -27,14 +33,25 @@ function fajaxform(event) {
 		'cancelImg': 'uploadify/cancel.png',
 		'script': 'uploadify/upload.php',
 		'fileExt': '*.jpg;*.jpeg;*.gif;*.png',
+		'scriptData' : {'u':gup('u',$(".fajaxform").attr('action')),'m':gup('m',$(".fajaxform").attr('action'))},
+		'onAllComplete': function(event) {
+		    addXMLRequest('uploadify', 'complete');
+		    addXMLRequest('item', gup('i',$(".fajaxform").attr('action')) );
+		   sendAjax( gup('m',$(".fajaxform").attr('action')) );
+    },
 		'multi': false,
 		'auto': true ,
 		'displayData': 'speed'
 	}); 
 }
 
-function fajaxa(event) { 
+function fajaxa(event) {
+	fconfirm();
 	setListeners('fajaxa','click',function(event) {
+		if(preventAjax==true) {
+			preventAjax=false;
+			return;
+		}
 		var str = gup('d',this.href);
 		var arr = str.split(';');
 		var result=false;

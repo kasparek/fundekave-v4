@@ -72,11 +72,11 @@ class ItemVO extends FDBvo {
 
 		var $dateStartIso;
 		var $dateStartLocal;
-		var $timeStart;
+		var $dateStartTime;
 
 		var $dateEndIso;
 		var $dateEndLocal;
-		var $timeEnd;
+		var $dateEndTime;
 
 		var $dateCreatedIso;
 		var $dateCreatedLocal;
@@ -189,6 +189,7 @@ class ItemVO extends FDBvo {
 		}
 		
 		function delete() {
+			$itemId = $this->itemId;
 			parent::delete();
 			if($this->itemIdTop > 0) {
 				ItemVO::incrementReactionCount( $itemVO->itemIdTop, false );

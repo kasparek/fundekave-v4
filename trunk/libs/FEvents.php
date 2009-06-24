@@ -28,7 +28,7 @@ class FEvents {
 		}
 	}
 	
-	static function editForm( $itemId=0 ) {
+	static function editForm( $itemId=0, $tplBlock='' ) {
 		$cache = FCache::getInstance('s');
 		if($itemId > 0) {
 			$itemVO = new ItemVO();
@@ -54,8 +54,9 @@ class FEvents {
 		//die();
 
 		$tpl = new FTemplateIT('events.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri('m=event-submit'));
+		$tpl->setVariable('FORMACTION',FUser::getUri('m=event-submit&u='.FUser::logon()));
 		$tpl->setVariable('HEADING',(($itemVO->itemId>0)?($itemVO->addon):(FLang::$LABEL_EVENT_NEW)));
+		$tpl->setVariable('ITEMID',$itemVO->itemId);
 
 		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';
 		$arrOpt = FDBTool::getAll($q,'event','categ','s');
@@ -68,9 +69,9 @@ class FEvents {
 		$tpl->setVariable('PLACE',$itemVO->location);
 		$tpl->setVariable('NAME',$itemVO->addon);
 		$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
-		$tpl->setVariable('TIMESTART',$itemVO->timeStart);
+		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
-		$tpl->setVariable('TIMEEND',$itemVO->timeEnd);
+		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
 		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( $itemVO->text ));
 		$tpl->addTextareaToolbox('DESCRIPTIONTOOLBOX','event');
 		if($itemVO->itemId > 0) {
@@ -78,25 +79,35 @@ class FEvents {
 		}
 
 		if(!empty( $itemVO->enclosure )) {
+			$tpl->setVariable('DELFLY',FUser::getUri('m=event-delFlyer&d=item:'.$itemVO->itemId));
 			$tpl->setVariable('FLYERURL',FEvents::flyerUrl( $itemVO->enclosure ));
 			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
 		}
-		return $tpl->get();
+		
+		if(!empty($tplBlock)) {
+			$tpl->parse($tplBlock);
+			return $tpl->get($tplBlock);
+		} else {
+			return $tpl->get();
+		}
 	}
 	
 	static function processForm($data, $redirect=true) {
 		$user = FUser::getInstance();
+		if(isset($data['item'])) {
+			if($data['item']>0) {
+				$itemVO = new ItemVO($data['item'],true,array('type'=>'event'));
+			}
+		}
 		
-		if($user->itemVO->itemId > 0) {
-			$itemVO = $user->itemVO; 
-		} else {
+		if(!isset($itemVO)) {
 			$itemVO = new ItemVO();
 			$itemVO->typeId = 'event';
 			$itemVO->pageId = 'event';
 			$itemVO->userId = $user->userVO->userId;
 			$itemVO->name = $user->userVO->name;
 		}
-		
+				
 		$action = '';
 		if(isset($data['action'])) {
 			$action = $data['action'];
@@ -122,16 +133,9 @@ class FEvents {
 				return false;
 			}
 		}
-
+		
 		if($action=='nav') {
-			//---check flyer to upload
-			if(isset($data['delfly']) && !empty($itemId)){
-				if($itemVO->enclosure!='') {
-					if(file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-					if(file_exists(FConf::get('events','flyer_cache').$itemVO->enclosure)) unlink(FConf::get('events','flyer_cache').$itemVO->enclosure);
-				}
-				$itemVO->enclosure = '';
-			}
+			
 			//---check time
 			$timeStart = '';
 			$timeEnd = '';
@@ -209,6 +213,34 @@ class FEvents {
 				FHTTP::redirect(FUser::getUri());
 			} else {
 				return $itemVO;
+			}
+		}
+		
+		if(isset($data['uploadify'])) {
+			
+			$user = FUser::getInstance();
+			
+			$cache = FCache::getInstance('d');
+			$arr = $cache->getData($user->userVO->userId . '-event-submit','uploadify');
+			
+			if(!empty($arr)) {
+				//---set flyer
+				$flypath = FConf::get('events','flyer_source');
+				$arrExt = explode('.',$arr['filenameOriginal']);
+				$flyerName = "flyer".$itemVO->itemId.'.'.strtolower($arrExt[count($arr)-1]);
+				if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
+				rename($arr['filenameTmp'],FConf::get('events','flyer_source').$flyerName);
+				chmod(FConf::get('events','flyer_source').$flyerName,0777);
+					
+				$cachedThumb = FEvents::thumbUrl($flyerName);
+				if(file_exists($cachedThumb)) { @unlink($cachedThumb); }
+				//---create thumb
+				$fImg = new FImgProcess(FConf::get('events','flyer_source') . $flyerName
+					,$cachedThumb, array('quality'=>FConf::get('events','thumb_quality')
+					,'width'=>FConf::get('events','thumb_width'),'height'=>0));
+				$itemVO->enclosure = $flyerName;
+				$itemVO->save();
+				return $itemVO;	
 			}
 		}
 	}
