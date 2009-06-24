@@ -1,4 +1,5 @@
 <form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
+<input type="hidden" name="item" id="item" value="{ITEMID}"/>
 <fieldset>
 <legend>{HEADING}</legend>
 <label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select><br />
@@ -11,13 +12,13 @@
 <div id="flyerDiv">
 <!-- BEGIN flyer -->
 <label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
-<label>Odstranit letak</label><input type="checkbox" name="delfly" value="1" class="checkbox" /><br />
+<label>Odstranit letak</label><a href="{DELFLY}" title="Opravdu chcete smazat letak?" class="fajaxa confirm">Smazat</a><br />
 <!-- END flyer -->
 </div>
 <label>Popis / Program</label><textarea id="event" name="description" class="draftable">{DESCRIPTION}</textarea>{DESCRIPTIONTOOLBOX}<br />
 <input type="submit" name="nav" value="Uložit" class="button submit"> 
 <!-- BEGIN delakce -->
-<input type="submit" name="del" value="Smazat tip" onClick="if(confirm('Opravdu chcete mazat?')) return(true); else return(false);" class="button" />
+<input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button confirm" />
 <!-- END delakce -->
 </fieldset>
 </form>

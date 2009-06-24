@@ -56,8 +56,11 @@ class FDBvo extends FDBTool {
 			$this->queryReset();
 			foreach($this->columns as $col) {
 				if( $this->$col !== null ) {
-					if($this->$col == 'null') $this->notQuote($col);
 					$this->addCol($col, $this->$col);
+					if($this->$col == 'null') {
+						$this->notQuote($col);
+						$this->$col = null;
+					}
 				}
 			}
 			$this->changed = false;

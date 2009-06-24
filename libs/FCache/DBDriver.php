@@ -42,18 +42,18 @@ class DBDriver
 	}
 
 	function flushOld() {
-		FDBTool::query("delete from ".$this->tableName." where datediff(now()-dataUpdated) > lifeTime");
+		FDBTool::query("delete from ".$this->tableName." where datediff(now(),dateUpdated) > lifeTime");
 	}
 
 	function setData($key, $data, $grp) {
 		$dataSerialized = serialize($data);
-		return FDBTool::query('insert into '.$this->tableName.' (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
-			values ("'.$grp.'","'.$key.'","'.$dataSerialized.'",now(),now(),"'.$this->lifeTime.'") 
-			on duplicate key update dateUpdated=now(), lifeTime="'.$this->lifeTime.'", value = "'.$dataSerialized.'"');
+		return FDBTool::query("insert into ".$this->tableName." (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
+			values ('".$grp."','".$key."','".$dataSerialized."',now(),now(),'".$this->lifeTime."') 
+			on duplicate key update dateUpdated=now(), lifeTime='".$this->lifeTime."', value = '".$dataSerialized."'");
 	}
 
 	function getGroup($grp) {
-		$arr = FDBTool::getCol("select data from ".$this->tableName." where groupId='".$grp."' and datediff(now()-dataUpdated) > lifeTime");
+		$arr = FDBTool::getCol("select data from ".$this->tableName." where groupId='".$grp."' and datediff(now(),dateUpdated) > lifeTime");
 		if(!empty($arr)) {
 			while($row = array_shift($arr)) {
 				$arrUnserialized[] = unserialize($row);
@@ -65,7 +65,8 @@ class DBDriver
 	}
 
 	function getData( $key, $grp ) {
-		if($value = FDBTool::getOne("select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and datediff(now()-dataUpdated) > lifeTime")) {
+		$q = "select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
+		if($value = FDBTool::getOne($q)) {
 			if(!empty($value)) {
 				return unserialize($value);
 			} else {
