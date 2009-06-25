@@ -238,7 +238,7 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem) {
 			if($itemVO->itemIdBottom > 0) {
-				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true);
+				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showPageLabel'=>true));
 				if(FRules::get($user->userVO->userId, $itemVOBottom->pageId,1)) {
 					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}

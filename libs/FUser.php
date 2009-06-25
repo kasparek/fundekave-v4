@@ -414,7 +414,7 @@ class FUser {
 			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
 			$params = array_reverse($params);
 		}
-		if($otherParams!='') $params[] = $otherParams;
+		if(!empty($otherParams)) $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) {
 			$parStr = '?'.implode(SEPARATOR,$params);
