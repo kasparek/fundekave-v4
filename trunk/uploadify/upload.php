@@ -4,6 +4,7 @@ if (!empty($_FILES)) {
 	require("./local.php");
 	require(INIT_FILENAME);
 	$targetPath = ROOT . ROOT_UPLOADIFY;
+	FSystem::makeDir($targetPath);
 
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	$uId = uniqid();
