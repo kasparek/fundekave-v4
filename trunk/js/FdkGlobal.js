@@ -26,7 +26,6 @@ function fajaxform(event) {
 		sendAjax( gup('m',this.action) );
 		event.preventDefault(); 
 	});
-	
 	$("#uploadify").fileUpload({
 		'uploader': 'uploadify/uploader.swf',
 		'cancelImg': 'uploadify/cancel.png',

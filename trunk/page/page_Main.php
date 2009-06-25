@@ -13,7 +13,7 @@ class page_Main implements iPage {
 		
 		$cache = FCache::getInstance('f',3600);
 		//--------------LAST-FORUM-POSTS
-		$data = $cache->getData(FUser::logon(),'lastForumPost');
+		$data = $cache->getData(($user->userVO->userId*1).'-main','lastForumPost');
 		if($data === false) {
 			
 			$arr = FDBTool::getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
@@ -36,7 +36,7 @@ class page_Main implements iPage {
 		/**/
 		
 		//---------------LAST-BLOG-POSTS
-		$dataArr = $cache->getData(FUser::logon(),'lastBlogPost');
+		$dataArr = $cache->getData(($user->userVO->userId*1).'-main','lastBlogPost');
 		if($dataArr===false) {
 			$dataArr = array();
 			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
@@ -61,7 +61,7 @@ class page_Main implements iPage {
 		}
 
 		//------LAST-CREATED-PAGES
-		if(($tmptext = $cache->getData($user->userVO->userId,'lastCreated')) === false) {
+		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','lastCreated')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
 			$fPages->setOrder('p.dateCreated desc');
 			$fPages->addWhere('p.locked < 2');
@@ -84,7 +84,7 @@ class page_Main implements iPage {
 		}
 		
 		//------MOST-VISITED-PAGES
-		if(($tmptext = $cache->getData($user->userVO->userId,'mostVisited')) === false) {
+		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostVisited')) === false) {
 			$arr = FDBTool::getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(hit) desc limit 0,10");
 			//---cache result
 			$x = 0;
@@ -107,7 +107,7 @@ class page_Main implements iPage {
 		}
 		
 		//------MOST-ACTIVE-PAGES
-		if(($tmptext = $cache->getData($user->userVO->userId,'mostActive')) === false) {
+		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostActive')) === false) {
 			$arr = FDBTool::getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(ins) desc limit 0,10");
 			//---cache result
 			$x = 0;
@@ -130,7 +130,7 @@ class page_Main implements iPage {
 		}
 
 		//------MOST-FAVOURITE-PAGES
-		if(($tmptext = $cache->getData($user->userVO->userId,'mostFavourite')) === false) {
+		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostFavourite')) === false) {
 			$arr = FDBTool::getCol("select pageId from sys_pages_favorites where book=1 group by pageId order by sum(book) desc limit 0,10");
 			//---cache result
 			$x = 0;
