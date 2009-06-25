@@ -174,7 +174,7 @@ class ItemVO extends FDBvo {
 				if($this->itemIdTop > 0) {
 					ItemVO::incrementReactionCount( $this->itemIdTop );
 				} else {
-					FPages::cntSet($this->pageId);
+					FPages::cntSet( $this->pageId );
 				}
 				$cache = FCache::getInstance('f');
 			   $cache->invalidateData($this->pageId.'-page', 'fitGrp');
@@ -257,7 +257,7 @@ class ItemVO extends FDBvo {
 			$cache = FCache::getInstance('f');
 			if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
 				$pageVO = new PageVO($this->pageId,true);
-				$q = "select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
+				$q = "select itemId from sys_pages_items where itemIdTop is null and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
 				$arr = FDBTool::getCol($q);
 				$cache->setData($arr);
 			}
@@ -304,15 +304,15 @@ class ItemVO extends FDBvo {
 			$return = array();
 			//--- previous
 			if($side == -1) {
-				if (isset($keys[$keyIndexes[$key]-1])) {
-					return $keys[$keyIndexes[$key]-1];
+				if (isset($keys[$keyIndexes[$this->itemId]-1])) {
+					return $keys[$keyIndexes[$this->itemId]-1];
 				} else {
 					if($consecutively) return $keys[sizeof($keys)-1]; else return  0; //--- if not previous return last
 				}
 			} else {
 				//--- next
-				if (isset($keys[$keyIndexes[$key]+1])) {
-					return $keys[$keyIndexes[$key]+1];
+				if (isset($keys[$keyIndexes[$this->itemId]+1])) {
+					return $keys[$keyIndexes[$this->itemId]+1];
 				} else {
 					if($consecutively) return $keys[0]; else return 0; //--- if not next return first
 				}

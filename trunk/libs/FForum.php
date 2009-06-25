@@ -354,7 +354,8 @@ class FForum extends FDBTool {
 			$tpl->setVariable('MESSAGES',$fItems->show());
 			if($formAtEnd===true) {
 				//---remove posts block and place it on POSTSONTOP
-				$tpl->moveBlock('posts','POSTSONTOP');
+				//TODO: think if needed form on end
+				//$tpl->moveBlock('posts','POSTSONTOP');
 				 
 			}
 			/*......aktualizace novych a prectenych......*/

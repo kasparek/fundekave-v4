@@ -275,6 +275,7 @@ class FLeftPanelPlugins {
 	static function rh_audit_popis(){
 		$cache = FCache::getInstance('f',86400);
 		$user = FUser::getInstance();
+		if($user->pageAccess==true) {
 		if(!$ret = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1),'forumdesc')) {
 			$ret['klub'] = FDBTool::getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->pageVO->pageId."'");
 			if(!empty($ret['klub'])){
@@ -298,6 +299,7 @@ class FLeftPanelPlugins {
 			$ret = $tpl->get();
 		}
 		return $ret;
+		}
 	}
 	
 	static function rh_logged_list(){

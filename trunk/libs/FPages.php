@@ -139,9 +139,9 @@ class FPages extends FDBTool {
 	 */
 	static function cntSet($pageId,$increment=true,$refresh=false) {
 		if($refresh==true) {
-			return FDBTool::query('update sys_pages set cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
+			return FDBTool::query('update sys_pages set dateUpdated=now(),cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
 		} else {
-			return FDBTool::query('update sys_pages set cnt = cnt '.(($increment==true)?('+'):('-')).' 1 where pageId="'.$pageId.'"');
+			return FDBTool::query('update sys_pages set dateUpdated=now(),cnt = cnt '.(($increment==true)?('+'):('-')).' 1 where pageId="'.$pageId.'"');
 		}
 	}
 	
@@ -162,6 +162,12 @@ class FPages extends FDBTool {
 		$this->setOrder('p.name');
 	}
 	
+	function getListByCategory($categoryId) {
+		$user = FUser::getInstance();
+		$this->type = $user->pageVO->typeIdChild;
+		$this->category($categoryId);
+		return $this->getContent();
+	}
 	/**
 	 * print list of pages by category
 	 *
