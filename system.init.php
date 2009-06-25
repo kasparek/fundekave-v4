@@ -45,8 +45,10 @@ if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
 	$user->pageVO->pageId = array_shift($kArr);
 	while($kArr) {
-		list($k,$v) = explode('=',array_shift($kArr));
-		$_REQUEST[$k] = $v;
+		$kvArr = explode('=',array_shift($kArr));
+		if(isset($kvArr[1])) {
+			$_REQUEST[$kvArr[0]] = $kvArr[1];
+		}
 	}
 }
 

@@ -127,7 +127,7 @@ class FItemsRenderer {
 				}
 				if($this->showComments == true) {
 					if($itemVO->tag_weight > 0) {
-						$arrTags = FItems::getItemTagList($itemVO->itemId);
+						$arrTags = FItemTags::getItemTagList($itemVO->itemId);
 						foreach ($arrTags as $tag) {
 							$tpl->setCurrentBlock('participant');
 							$tpl->setVariable('PARTICIPANTAVATAR',FAvatar::showAvatar($tag[0],array('showName'=>1)));
@@ -183,8 +183,9 @@ class FItemsRenderer {
 			//---thumb tag link
 			if($this->showTag==true) {
 				$cache = FCache::getInstance('s',60);
-				if(false === $cache->getData($itemVO->itemId,'itemTags')) $cache->setData($itemVO->tag_weight);
-				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$user->userVO->userId,$itemVO->typeId));
+				if(false === $cache->getData($itemVO->itemId,'iTags')) $cache->setData($itemVO->tag_weight);
+				$tag = FItemTags::getTag($itemVO->itemId,$user->userVO->userId,$itemVO->typeId);
+				$tpl->setVariable('TAG', $tag);
 			}
 			if($this->showPocketAdd==true) {
 				$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
