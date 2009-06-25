@@ -10,26 +10,25 @@ class page_ItemsSearch implements iPage {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
 
-		FItems::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
-		FBuildPage::addTab(array("MAINDATA"=>FItems::getTagToolbar()));
+		FItemsToolbar::setTagToolbarDefaults(array('enabled'=>1,'search'=>1,'perpage'=>SEARCH_PERPAGE));
+		FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar()));
 
-		$fItems = new FItems();
+    $itemRenderer = new FItemsRenderer();
+    $itemRenderer->showPageLabel = true;
+
+		$fItems = new FItems('forum', $user->userVO->userId, $itemRenderer);
 		$fItems->cacheResults = 's';
-		$fItems->showPageLabel = true;
-		$fItems->initData($typeId,$user->userVO->userId,true);
-		//$fItems->setOrder('i.dateCreated desc');
-		$fItems->addWhere('i.itemIdTop is null');
-		FItems::setQueryTool(&$fItems);
-
+		$fItems->addWhere('itemIdTop is null');
+		FItemsToolbar::setQueryTool(&$fItems);
 		$pager = FSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;
-		$fItems->getData($from,SEARCH_PERPAGE+1);
-		$totalItems = count($fItems->arrData);
+		$fItems->getList($from,SEARCH_PERPAGE+1);
+		$totalItems = count($fItems->data);
 
 		$maybeMore = false;
 		if($totalItems > SEARCH_PERPAGE) {
 			$maybeMore = true;
-			unset($fItems->arrData[(count($fItems->arrData)-1)]);
+			unset($fItems->data[(count($fItems->data)-1)]);
 		}
 		if($from > 0) $totalItems += $from;
 
@@ -42,7 +41,7 @@ class page_ItemsSearch implements iPage {
 			$pager->getPager();
 			$tpl->setVariable("PAGER",$pager->links);
 
-			while ($fItems->arrData) {
+			while ($fItems->data) {
 				$fItems->parse();
 			}
 			$tpl->setVariable("RESULTS",$fItems->show());

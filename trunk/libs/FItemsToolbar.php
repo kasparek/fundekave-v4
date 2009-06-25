@@ -177,7 +177,7 @@ class FItemsToolbar {
 
 			if(isset($thumbupData['searchStr'])) {
 				if(!empty($thumbupData['searchStr'])) {
-					$fQuery->addFulltextSearch('i.text,i.enclosure,i.addon',$thumbupData['searchStr']);
+					$fQuery->addFulltextSearch('text,enclosure,addon',$thumbupData['searchStr']);
 				}
 			}
 			if(isset($thumbupData['usersWho'])) {
@@ -196,24 +196,24 @@ class FItemsToolbar {
 					}
 				}
 			}
-			if($thumbupData['order']==5) $fQuery->setOrder('i.dateCreated desc');
+			if($thumbupData['order']==5) $fQuery->setOrder('dateCreated desc');
 			elseif ($thumbupData['order'] > 2) {
 				if($thumbupData['interval']>1) {
 					$fQuery->setOrder('ihistory.valueSum desc');
-					$fQuery->replaceSelect('i.hit','ihistory.valueSum as hitsum');
+					$fQuery->replaceSelect('hit','ihistory.valueSum as hitsum');
 					$fQuery->addWhere('ihistory.historyType = '.$thumbupData['order']);
-				} else $fQuery->setOrder('i.hit desc');
+				} else $fQuery->setOrder('hit desc');
 			} elseif ($thumbupData['order'] > 0) {
 				$fQuery->setOrder('thumbs desc');
 				if($thumbupData['interval']>1) {
-					$fQuery->replaceSelect('i.tag_weight','ihistory.valueSum as thumbs');
+					$fQuery->replaceSelect('tag_weight','ihistory.valueSum as thumbs');
 					$fQuery->addWhere('ihistory.historyType = 1');
-				} else $fQuery->replaceSelect('i.tag_weight','i.tag_weight as thumbs');
+				} else $fQuery->replaceSelect('tag_weight','tag_weight as thumbs');
 				if(isset($thumbupData['filter']))
 				if($thumbupData['filter'] == 2) {
 					$user = FUser::getInstance();
 					$fQuery->addWhere('it.userId="'.$user->userVO->userId.'"');
-					$fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=i.itemId');
+					$fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=itemId');
 				}
 			}
 			//-----------------------------
@@ -230,14 +230,14 @@ class FItemsToolbar {
 
 				if($thumbupData['order']==0) {
 					if($thumbupData['interval']==4) $date = sprintf("%04d-%02d",$year,$week);
-					$fQuery->addWhere("date_format( i.dateCreated, '".$dateformat."' ) = '".$date."'");
+					$fQuery->addWhere("date_format( dateCreated, '".$dateformat."' ) = '".$date."'");
 				} else {
 					if($thumbupData['interval']==4) $date = sprintf("%04d-W%02d",$year,$week);
 					$fQuery->addWhere("ihistory.dateInt = '".$date."'");
 				}
 			}
 			if($thumbupData['order']>0 && $thumbupData['interval']>1) {
-				$fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=i.itemId');
+				$fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=itemId');
 			}
 		}
 	}

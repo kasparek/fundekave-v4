@@ -176,6 +176,8 @@ class ItemVO extends FDBvo {
 				} else {
 					FPages::cntSet($this->pageId);
 				}
+				$cache = FCache::getInstance('f');
+			   $cache->invalidateData($this->pageId.'-page', 'fitGrp');
 			}
 			$this->columns = ItemVO::getTypeColumns('',true);
 			$itemId = parent::save();
@@ -185,7 +187,6 @@ class ItemVO extends FDBvo {
 			$cache = FCache::getInstance('l');
 			//$cache->setData( $this, $this->itemId, 'fit'); - doesnot work for custom data as dateStart
 			$cache->invalidateData($this->itemId, 'fit');
-			
 			return $itemId;
 		}
 		
@@ -253,11 +254,12 @@ class ItemVO extends FDBvo {
 		}
 		
 		function getPageItemsId() {
-			$cache = FCache::getInstance('l');
-			if(($arr = $cache->getData($this->itemId,'fitGrp')) === false) {
+			$cache = FCache::getInstance('f');
+			if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
 				$pageVO = new PageVO($this->pageId,true);
 				$q = "select itemId from sys_pages_items where pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
 				$arr = FDBTool::getCol($q);
+				$cache->setData($arr);
 			}
 			return $arr;
 		}

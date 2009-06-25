@@ -32,7 +32,8 @@ class FBuildPage {
 	   'user.post.php'=>'page_UserPost',
 		'events.edit.php'=>'page_EventsEdit',
 		'user.friends.php'=>'page_UserFriends',
-		'user.friends.all.php'=>'page_FriendsAll'
+		'user.friends.all.php'=>'page_FriendsAll',
+		'items.search.php'=>'page_ItemsSearch'
 		
 		);
 		//---temporary till database change

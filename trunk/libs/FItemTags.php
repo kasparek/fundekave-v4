@@ -61,7 +61,6 @@ class FItemTags {
 		$template = str_replace('{TYPE}',$typeId,$template);
 		
 		$tpl = new FTemplateIT($template);
-		
 		if($isTagged !== true) {
 			$tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:a'));
 		}
