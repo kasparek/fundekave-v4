@@ -2,18 +2,13 @@
 error_reporting(E_ALL);
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
-
 	if(strpos($c,'page_')!==false) {
 		$c = ROOT.ROOT_CODE . $c ;
 	} else {
-		if(strpos($c,'VO')!==false) {
-			$c = 'vo/'.$c;
-		}
+		if(strpos($c,'VO')!==false) { $c = 'vo/'.$c; }
 		$c = LIBSDIR . $c ;
 	}
-
 	include  $c . '.php';
-
 }
 spl_autoload_register("class_autoloader");
 setlocale(LC_ALL,'cs_CZ.utf-8');

@@ -30,7 +30,9 @@ class FBuildPage {
 	   'pages.booked.php'=>'page_PagesBooked',
 	   'items.live.php'=>'page_ItemsLive',
 	   'user.post.php'=>'page_UserPost',
-		'events.edit.php'=>'page_EventsEdit'
+		'events.edit.php'=>'page_EventsEdit',
+		'user.friends.php'=>'page_UserFriends',
+		'user.friends.all.php'=>'page_FriendsAll'
 		
 		);
 		//---temporary till database change
@@ -247,7 +249,7 @@ class FBuildPage {
 		}
 		
 		//---LEFT PANEL POPULATING
-		$fLeftpanel = new FLeftPanel($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->typeId);
+		$fLeftpanel = new FLeftPanel($user->pageVO->pageId, $user->userVO->userId, $user->pageVO->typeId);
 		$fLeftpanel->load();
 		$fLeftpanel->show();
 
@@ -275,7 +277,7 @@ class FBuildPage {
 		$useFajaxform = false;
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
-			if(strpos($item, 'markItUp') !== false) { $useMarkItUp = true; }
+			if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'uploadify') !== false) { $useUploadify = true; }
 			if(strpos($item, 'domtabs') !== false) { $useDomTabs = true; }

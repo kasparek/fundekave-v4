@@ -161,6 +161,6 @@ class FItems extends FDBTool {
 	 */
 	static function itemExists($itemId) {
 		$q = "select count(1) from sys_pages_items where itemId='".$itemId."'";
-		return $this->getOne($q,$itemId.'exist','fitems','l');
+		return FDBTool::getOne($q,$itemId.'exist','fitems','l');
 	}
 }

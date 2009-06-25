@@ -30,7 +30,7 @@ class FLeftPanel extends FDBTool {
 		$this->panelsUsed = array();
 
 		$cache = FCache::getInstance( 's' );
-		if( !$arrTmp = $cache->getData($this->pageId.'-'.$this->userId,'sidebarSet') ) {
+		if( !$arrTmp = $cache->getData($this->pageId.'-'.($this->userId*1),'sidebarSet') ) {
 
 			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
 			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");

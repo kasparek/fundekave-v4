@@ -68,7 +68,7 @@ class FAvatar {
 	 		}
 	 		if($user->userVO->zavatar) {
 	 			$tpl->setVariable('AVATARLINK',$avatarUrl);
-	 			if($noTooltip==false) $tpl->setVariable('AVATARLINKCLASS','supernote-hover-avatar'.$avatarUserId);
+	 			if($noTooltip == false) $tpl->setVariable('AVATARLINKCLASS','supernote-hover-avatar'.$avatarUserId);
 	 			$tpl->touchBlock('linkavatarend');
 	 		}
 
@@ -105,10 +105,10 @@ class FAvatar {
 				
 			foreach ($arrLinks as $tip) {
 				$tpl->setCurrentBlock('tip');
-				$tpl->setVariable('TIPURL',$tip['url']);
-				if(isset($tip['id'])) $tpl->setVariable('TIPID',$tip['id']);
-				if(isset($tip['class'])) $tpl->setVariable('TIPCLASS',$tip['class']);
-				$tpl->setVariable('TIPTEXT',$tip['text']);
+				$tpl->setVariable('TIPROWURL',$tip['url']);
+				if(isset($tip['id'])) $tpl->setVariable('TIPROWID',$tip['id']);
+				if(isset($tip['class'])) $tpl->setVariable('TIPROWCLASS',$tip['class']);
+				$tpl->setVariable('TIPROWTEXT',$tip['text']);
 				$tpl->parseCurrentBlock();
 			}
 			$tpl->parse('tooltip');
