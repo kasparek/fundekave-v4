@@ -19,7 +19,7 @@ class FAjax_user {
 			if($data['__ajaxResponse']==true) {
 				$fajax = FAjax::getInstance();
 				$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
-				$fajax->addResponse('call', 'fajaxa');
+				$fajax->addResponse('function','call','fajaxa');
 			}
 		}
 	}
@@ -64,7 +64,8 @@ class FAjax_user {
 			//---create response
 			if($data['__ajaxResponse']==true) { 
 				$fajax = FAjax::getInstance();
-				$fajax->addResponse('tag'.$itemId,'html',FItems::getTag($itemId,$userId));
+				$fajax->addResponse('tag'.$itemId,'html',FItemTags::getTag($itemId,$userId));
+				$fajax->addResponse('function','call','fajaxa');
 			}
 		}
 	}
@@ -72,7 +73,7 @@ class FAjax_user {
 	static function poll($data) {
 		$fajax = FAjax::getInstance();
 		$fajax->addResponse('poll','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an'],true));
-		$fajax->addResponse('call','setPollListeners');
+		$fajax->addResponse('function','call','setPollListeners');
 	}
 
 	static function pocketIn($data) {
