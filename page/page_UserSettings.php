@@ -104,7 +104,7 @@ class page_UserSettings implements iPage {
 		$tpl = new FTemplateIT('users.personal.html');
 
 		$tpl->setVariable("FORMACTION",FUser::getUri());
-		$tpl->setVariable("USERNAME",$user->name);
+		$tpl->setVariable("USERNAME",$userVO->name);
 		$options='';
 		$arrOpt = FDBTool::getAll('select skinId,name from sys_skin order by name','skin','categ','s');
 		if(!empty($arrOpt)) foreach ($arrOpt as $row) {

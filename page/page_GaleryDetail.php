@@ -35,8 +35,10 @@ class page_GaleryDetail implements iPage {
 			$totalItems = $fItems->getCount();
 
 			if($totalItems==0){
+				
 				FError::addError(FLang::$ERROR_GALERY_NOFOTO);
 				$user->pageAccess = false;
+				
 			} else {
 				$perPage = $user->pageVO->perPage();
 
@@ -80,12 +82,12 @@ class page_GaleryDetail implements iPage {
 		} else {
 
 			//---detail foto
-			$itemVO = $user->itemVO->itemId;
+			$itemVO = $user->itemVO;
 			$itemVO->typeId = 'galery';
 			$itemVO->hit();
 
-			$cache = FCache::getInstance('s',120);
-			if(($ret = $cache->getData($itemVO->itemId,'fotoDetail')) === false) {
+			//$cache = FCache::getInstance('s',120);
+			//if(($ret = $cache->getData($itemVO->itemId,'fotoDetail')) === false) {
 					
 				$itemVO->load();
 					
@@ -102,12 +104,12 @@ class page_GaleryDetail implements iPage {
 				if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
 
 				if(!empty($itemVO->addon)) {
-					$user->pageVO->name = $this->addon . ' - ' . $user->pageVO->name;
+					$user->pageVO->name = $itemVO->addon . ' - ' . $user->pageVO->name;
 				} else {
-					$user->pageVO->name = $this->enclosure . ' - ' . $user->pageVO->name;
+					$user->pageVO->name = $itemVO->enclosure . ' - ' . $user->pageVO->name;
 				}
 
-				$tpl->setVariable("HITS",$itemVO->hits);
+				$tpl->setVariable("HITS",$itemVO->hit);
 				if($user->idkontrol) {
 					$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'));
 					$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
@@ -129,18 +131,19 @@ class page_GaleryDetail implements iPage {
 					
 				if(($itemVONext = $itemVO->getNext())!==false) {
 					$itemVONext->load();
-					$tpl->setVariable("THUMBNEXT",$itemVOPrev->render($itemRenderer));
+					$tpl->setVariable("THUMBNEXT",$itemVONext->render($itemRenderer));
 
 					$tpl->touchBlock('nextlinkclose');
 					$tpl->setVariable('NEXTLINK',FUser::getUri('i='.$itemVONext->itemId));
 				}
-
-				//TODO: comments in galery are switched offf in this release
-				//$tpl->setVariable('COMMENTS',FForum::show($itemId,$user->idkontrol,$fItems->itemIdInside,array('formAtEnd'=>$true,'showHead'=>false)));
+				
+				//TODO: deeplinking for comments
+				$itemIdForum = 0;
+				$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$user->idkontrol,$itemIdForum,array('formAtEnd'=>true,'showHead'=>false)));
 
 				$ret = $tpl->get();
-				$cache->setData($ret);
-			}
+				//$cache->setData($ret);
+			//}
 
 
 			FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));

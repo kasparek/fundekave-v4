@@ -53,7 +53,7 @@ class FCategory extends FDBTool {
 	 */
 	function getList($typeId='') {
 		$user = FUser::getInstance();
-		if(isset($_GET['kat'])) $selectedCat = (int) $_GET['kat'];
+		if(isset($_REQUEST['kat'])) $selectedCat = (int) $_REQUEST['kat'];
 		else $selectedCat = 0;
 		if(!empty($typeId)) $this->addWhere("typeId='".$typeId."'");
 		$this->addOrder('name');

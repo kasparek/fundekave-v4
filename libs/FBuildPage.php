@@ -33,7 +33,8 @@ class FBuildPage {
 		'events.edit.php'=>'page_EventsEdit',
 		'user.friends.php'=>'page_UserFriends',
 		'user.friends.all.php'=>'page_FriendsAll',
-		'items.search.php'=>'page_ItemsSearch'
+		'items.search.php'=>'page_ItemsSearch',
+		'registration.php'=>'page_Registration'
 		
 		);
 		//---temporary till database change
