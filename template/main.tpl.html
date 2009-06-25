@@ -105,19 +105,25 @@
 <!-- javascript section -->
 <!-- BEGIN wrappedjs --><script src="{WRAPPEDJS}"></script><!-- END wrappedjs -->
 <script type="text/javascript" src="js/jquery.min.js"></script>
-<!-- BEGIN fajaxformEND --><script type="text/javascript" src="js/jquery.form.fcut.min.js"></script><!-- END fajaxformEND -->
-<!-- BEGIN uploadifyEND --><script type="text/javascript" src="js/jquery.uploadify.js"></script><!-- END uploadifyEND -->
 <!-- BEGIN markitupEND --><script type="text/javascript" src="js/markitup/jquery.markitup.pack.js"></script>
 <script type="text/javascript" src="js/markitup/sets/default/set.js"></script><!-- END markitupEND -->
 <script type="text/javascript" src="js/DD_roundies_0.0.1a-min.js"></script>
-<!-- BEGIN slimboxEND --><script type="text/javascript" src="js/slimbox2.js"></script><!-- END slimboxEND -->
 <!-- BEGIN juiEND --><script type="text/javascript" src="js/jquery-ui.core.js"></script><!-- END juiEND -->
-<!-- BEGIN datepickerEND --><script type="text/javascript" src="js/jquery-ui.datepicker.js"></script>
-<script type="text/javascript" src="js/i18n/ui.datepicker-cs.js"></script><!-- END datepickerEND -->
-<!-- BEGIN domtabsEND --><script type="text/javascript" src="./js/domtab.js"></script><!-- END domtabsEND -->
+<!-- BEGIN domtabsEND --><script type="text/javascript" src="./js/domtab.js"></script>
+<script type="text/javascript">$(document).ready(function(){ $('.domtabs').each(function() { $(this).css('display','block'); }); };</script><!-- END domtabsEND -->
 <!-- BEGIN swfobject --><script type="text/javascript" src="fuvatar/swfobject.js"></script><!-- END swfobject -->
-<!-- BEGIN supernoteEND --><script type="text/javascript" src="js/supernote.js"></script><!-- END supernoteEND -->
 <script type="text/javascript" src="js/FdkGlobal.js"></script>
+<!-- BEGIN slimboxEND --><script type="text/javascript" src="js/slimbox2.js"></script>
+<script type="text/javascript">$(document).ready(function(){ initSlimbox(); });</script><!-- END slimboxEND -->
+<!-- BEGIN supernoteEND --><script type="text/javascript" src="js/supernote.js"></script>
+<script type="text/javascript">$(document).ready(function(){ initSupernote(); });</script><!-- END supernoteEND -->
+<!-- BEGIN uploadifyEND --><script type="text/javascript" src="js/jquery.uploadify.js"></script>
+<script type="text/javascript">$(document).ready(function(){ uploadifyInit(); });</script><!-- END uploadifyEND -->
+<!-- BEGIN datepickerEND --><script type="text/javascript" src="js/jquery-ui.datepicker.js"></script>
+<script type="text/javascript" src="js/i18n/ui.datepicker-cs.js"></script>
+<script type="text/javascript">$(document).ready(function(){ datePickerInit(); });</script><!-- END datepickerEND -->
+<!-- BEGIN fajaxformEND --><script type="text/javascript" src="js/jquery.form.fcut.min.js"></script>
+<script type="text/javascript">$(document).ready(function(){ fajaxform(); });</script><!-- END fajaxformEND -->
 
 <!-- google anal -->
 <script type="text/javascript">

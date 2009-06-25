@@ -19,7 +19,6 @@ class FAjax_user {
 			if($data['__ajaxResponse']==true) {
 				$fajax = FAjax::getInstance();
 				$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
-				$fajax->addResponse('function','call','fajaxa');
 			}
 		}
 	}

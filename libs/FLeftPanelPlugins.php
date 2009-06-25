@@ -87,7 +87,7 @@ class FLeftPanelPlugins {
       	WHERE p.userId=".$user->userVO->userId." AND p.userIdFrom!=".$user->userVO->userId." AND i.name is not null GROUP BY userIdFrom ORDER BY i.name";
 			$arr = $db->getAll($dot);
 
-			$user->setData($arr);
+			$cache->setData($arr);
 		}
 
 		$tmptext = '';
@@ -328,7 +328,6 @@ class FLeftPanelPlugins {
 
 	//TODO: refactor links - fajax
 	static function rh_diar_kalendar($year='',$month='') {
-		global $MONTHS,$DAYSSHORT;
 		$dden = 1;
 		if(!empty($_REQUEST['ddate'])) {
 			list($drok,$dmesic,$dden)=explode("-",$_REQUEST['ddate']);
@@ -417,11 +416,11 @@ class FLeftPanelPlugins {
 				}
 				$arrEventForDayKeys = array_keys($arrEventsForDay);
 				$tpl = new FTemplateIT('sidebar.calendar.tpl.html');
-				$tpl->setVariable('CURRENTMONTH',$MONTHS[$dmesic]);
+				$tpl->setVariable('CURRENTMONTH',FLang::$MONTHS[$dmesic]);
 				$tpl->setVariable('CURRENTYEAR',$drok);
 				for ($x=1;$x<=$hor;$x++) {
 					$tpl->setCurrentBlock('daysheader');
-					$tpl->setVariable('DAYSHORTCUT',$DAYSSHORT[$x]);
+					$tpl->setVariable('DAYSHORTCUT',FLang::$DAYSSHORT[$x]);
 					$tpl->parseCurrentBlock();
 				}
 				for ($y=0;$y < ($ver);$y++) {
@@ -450,11 +449,11 @@ class FLeftPanelPlugins {
 				$tpl->setVariable('PREVIOUSMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
 				$tpl->setVariable('XYEARPREV',$yearbefore);
 				$tpl->setVariable('XMONTHPREV',$monthbefore);
-				$tpl->setVariable('PREVIOUSMONTH',$MONTHS[$monthbefore]);
+				$tpl->setVariable('PREVIOUSMONTH',FLang::$MONTHS[$monthbefore]);
 				$tpl->setVariable('NEXTMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
 				$tpl->setVariable('XYEARNEXT',$yearafter);
 				$tpl->setVariable('XMONTHNEXT',$monthafter);
-				$tpl->setVariable('NEXTMONTH',$MONTHS[$monthafter]);
+				$tpl->setVariable('NEXTMONTH',FLang::$MONTHS[$monthafter]);
 
 				foreach ($arrEventsForDay as $k=>$day) {
 					foreach ($day as $event) {
@@ -470,11 +469,9 @@ class FLeftPanelPlugins {
 					$tpl->parseCurrentBlock();
 				}
 				$data = $tpl->get();
-
-				$cache->setData($data);
-
+				$cache->setData( $data );
 			}
-				
+			
 			if($xajax==true) return $data;
 			else return '<div id="fcalendar">'.$data.'</div>';
 		}

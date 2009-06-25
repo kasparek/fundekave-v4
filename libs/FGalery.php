@@ -64,7 +64,7 @@ class FGalery {
 			$fGalery->itemVO->detailWidth = $width;
 			$fGalery->itemVO->detailHeight = $height;
 			$fGalery->itemVO->detailUrlToGalery = FUser::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
-			$fGalery->itemVO->detailUrlToPopup = FUser::getUri('u='.FUser::logon().'&amp;i='.$fGalery->itemVO->itemId.'&amp;width='.($width+60).'&amp;height='.($height+60),'','','pic.php');
+			$fGalery->itemVO->detailUrlToPopup = FUser::getUri('u='.FUser::logon().'&i='.$fGalery->itemVO->itemId.'&width='.($width+60).'&height='.($height+60),'','','pic.php');
 		} else {
 			FError::addError('File not exists: '.$fGalery->itemVO->detailUr);
 		}

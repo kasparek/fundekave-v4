@@ -26,6 +26,8 @@ function fajaxform(event) {
 		sendAjax( gup('m',this.action) );
 		event.preventDefault(); 
 	});
+}
+function uploadifyInit() {
 	$("#uploadify").fileUpload({
 		'uploader': 'uploadify/uploader.swf',
 		'cancelImg': 'uploadify/cancel.png',
@@ -40,7 +42,7 @@ function fajaxform(event) {
 		'multi': false,
 		'auto': true ,
 		'displayData': 'speed'
-	}); 
+	});
 }
 
 function fajaxa(event) {
@@ -99,16 +101,8 @@ function markItUpInit() {
 $(document).ready(function(){
 //---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 fajaxa();
-fajaxform();
 fconfirm();
-//---calendar
-datePickerInit();
-//---init picture popup tool
-initSlimbox();
-//---popup
 setListeners('popupLink', 'click', function(evt) { openPopup(this.href); evt.preventDefault(); });
-//---tooltips
-initSupernote();
 //---ajax textarea
 draftSetEventListeners();
 //---fuvatar
@@ -119,8 +113,6 @@ $('.fuvatarswf').each(function() {
       var height =  gup('h',elmImgInst.attr('src'));
       swfobject.embedSWF("/fuvatar/fuplay.swf", elmInst.id, width, height, "9.0.115", "expressInstall.swf",{u:elmInst.attr('id').replace('fuplay',''),time:gup('t',elmImgInst.src)},{allowFullScreen:"true"});    
     });
-//---temporary domtabs
-$('.domtabs').each(function() { $(this).css('display','block'); });
 //---textarea toolbox
 initInsertToTextarea();
 //---round corners
