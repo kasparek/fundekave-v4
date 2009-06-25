@@ -429,7 +429,9 @@ class FSystem {
 	}
 	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
-		return mkdir($dir, $mode, $recursive);
+		if(!file_exists($dir)) {
+			return mkdir($dir, $mode, $recursive);
+		}
 	}
 	static function fileExt($filename) {
 		$arr = explode('.',$filename);

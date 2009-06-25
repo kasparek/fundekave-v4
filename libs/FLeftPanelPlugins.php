@@ -11,7 +11,7 @@ class FLeftPanelPlugins {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
-		if(!$tmptext = $cache->getData($user->pageVO->pageId, 'pagescategories')) {
+		if(!$tmptext = $cache->getData(($user->userVO->userId*1).'-user', 'pagescategories')) {
 			$arr = $db->getAll("select categoryId,name from sys_pages_category where typeId = '".$user->pageVO->pageId."' order by ord,name");
 			$tmptext = '';
 			if(!empty($arr)) {
@@ -36,7 +36,7 @@ class FLeftPanelPlugins {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
-		if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'bookedpagesrelated')) {
+		if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1),'bookedpagesrelated')) {
 			$fPages = new FPages('',$user->userVO->userId);
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0,sum(f1.book) as booksum');
 			$fPages->addJoin('join sys_pages_favorites as f1 on p.pageId = f1.pageId');
@@ -59,7 +59,7 @@ class FLeftPanelPlugins {
 		$db = FDBConn::getInstance();
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
-		if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'pagesrelated')) {
+		if(!$tmptext = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1),'pagesrelated')) {
 			$fPages = new FPages('',$user->userVO->userId);
 			$fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
 			$fPages->addWhere('r.pageId="'.$user->pageVO->pageId.'"');
@@ -147,7 +147,7 @@ class FLeftPanelPlugins {
 	static function rh_akce_rnd() {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('f',86400);
-		if(false !== $data = $cache->getData($user->idkontrol,'eventtip') ) {
+		if(false !== $data = $cache->getData((($user->idkontrol==true)?('1'):('0')).'-logged','eventtip') ) {
 			$fItems = new FItems();
 			$fItems->setCustomTemplate('sidebar.event.tpl.html');
 			$fItems->initData('event',false,true);
@@ -183,7 +183,7 @@ class FLeftPanelPlugins {
 				$cache->invalidateGroup('poll');
 			}
 
-			if(!$data = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'poll')) {
+			if(!$data = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1),'poll')) {
 				$data = '';
 				$arrVoted = array();
 
@@ -275,7 +275,7 @@ class FLeftPanelPlugins {
 	static function rh_audit_popis(){
 		$cache = FCache::getInstance('f',86400);
 		$user = FUser::getInstance();
-		if(!$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'forumdesc')) {
+		if(!$ret = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1),'forumdesc')) {
 			$ret['klub'] = FDBTool::getRow("SELECT userIdOwner,description FROM sys_pages WHERE pageId='".$user->pageVO->pageId."'");
 			if(!empty($ret['klub'])){
 				$ret['admins'] = FDBTool::getCol("SELECT userId FROM sys_users_perm WHERE rules=2 and pageId='".$user->pageVO->pageId."'");
@@ -348,7 +348,7 @@ class FLeftPanelPlugins {
 		//---cache by drok,dmesic
 		$cache = FCache::getInstance('f',3600);
 		$user = FUser::getInstance();
-		$data = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId.'-'.$drok.$dmesic,'calendarlefthand');
+		$data = $cache->getData($user->pageVO->pageId.'-'.($user->userVO->userId*1).'-'.$drok.$dmesic,'calendarlefthand');
 
 		if(!$data) {
 

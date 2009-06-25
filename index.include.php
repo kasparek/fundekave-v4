@@ -8,16 +8,19 @@ if(isset($_REQUEST['m']) && $user->pageAccess == true) {
 }
 
 //---process post/get for page
-//TODO: do this as soon as possible, usually there is redirect
 $data = $_POST;
 if(!empty($_FILES))  $data['__files'] = $_FILES; 
 if(!empty($_GET))  $data['__get'] = $_GET;
 FBuildPage::process( $data );
 
-$user->pageStat();
-
-if($user->idkontrol) {
-  FItemsToolbar::setTagToolbar();
+if($user->pageAccess == true) {
+	//---page stats counted just if not any redirect
+	$user->pageStat();
+	
+	//---tag toolbar set up
+	if($user->idkontrol) {
+	  FItemsToolbar::setTagToolbar();
+	}
 }
 
 //---shows message that page is locked

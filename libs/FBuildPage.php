@@ -30,6 +30,7 @@ class FBuildPage {
 	   'pages.booked.php'=>'page_PagesBooked',
 	   'items.live.php'=>'page_ItemsLive',
 	   'user.post.php'=>'page_UserPost',
+		'events.edit.php'=>'page_EventsEdit'
 		
 		);
 		//---temporary till database change
@@ -190,7 +191,7 @@ class FBuildPage {
 		 $tpl->setVariable("WRAPPEDJS", $wrap);
 		 }
 		 */
-		if($user->pageAccess) {
+		if($user->pageAccess == true) {
 			$pageTitle = $user->pageVO->name;
 			$pageHeading = $user->pageVO->name;
 		}
@@ -243,11 +244,12 @@ class FBuildPage {
 				}
 			}
 
-			//---LEFT PANEL POPULATING
-			$fLeftpanel = new FLeftPanel($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->typeId);
-			$fLeftpanel->load();
-			$fLeftpanel->show();
 		}
+		
+		//---LEFT PANEL POPULATING
+		$fLeftpanel = new FLeftPanel($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->typeId);
+		$fLeftpanel->load();
+		$fLeftpanel->show();
 
 		//---FOOTER INFO
 		$cache = FCache::getInstance('l');
@@ -263,28 +265,49 @@ class FBuildPage {
 		$tpl->setVariable('USERTOOLTIPS',$ttips);
 
 		//--- last check
-		//if calendar js and css is needed
-		$useCalendar = false;
+		//--- js and css included just when needed
+		$useDatePicker = false;
+		$useMarkItUp = false;
 		$useDomTabs = false;
+		$useSlimbox = false;
+		$useUploadify = false;
+		$useSupernote = false;
+		$useFajaxform = false;
 		foreach ($tpl->blockdata as $item) {
-			if(strpos($item, 'format-') !== false) {
-				$useCalendar = true;
-			}
-			if(strpos($item, 'domtabs') !== false) {
-				$useDomTabs = true;
-			}
+			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
+			if(strpos($item, 'markItUp') !== false) { $useMarkItUp = true; }
+			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
+			if(strpos($item, 'uploadify') !== false) { $useUploadify = true; }
+			if(strpos($item, 'domtabs') !== false) { $useDomTabs = true; }
+			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
+			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 		}
-		if($user->pageVO->typeId=='blog') {
-			if(FRules::get($user->userVO->userId,$user->pageVO->pageId,2)) {
-				$useCalendar = true;
-			}
+		
+		if($useDatePicker === true) {
+			$tpl->touchBlock("juiHEAD"); //---js in the header
+			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
+			$tpl->touchBlock("datepickerEND"); //---javascript on the end of the page
 		}
-		if($useCalendar === true) {
-			$tpl->setVariable("CSSSKINCALENDAR", $cssPath);
-			$tpl->touchBlock("calendar2"); //---javascript on the end of the page
+		if($useMarkItUp === true) {
+			$tpl->touchBlock("markitupHEAD");
+			$tpl->touchBlock("markitupEND");
+		}
+		if($useSlimbox === true) {
+			$tpl->touchBlock("slimboxHEAD");
+			$tpl->touchBlock("slimboxEND");
+		}
+		if($useUploadify === true) {
+			$tpl->touchBlock("uploadifyHEAD");
+			$tpl->touchBlock("uploadifyEND");
 		}
 		if($useDomTabs === true) {
-			$tpl->touchBlock("domtabs2"); //---javascript on the end of the page
+			$tpl->touchBlock("domtabsEND");
+		}
+		if($useSupernote === true) {
+			$tpl->touchBlock("supernoteEND");
+		}
+		if($useFajaxform === true) {
+			$tpl->touchBlock("fajaxformEND");
 		}
 
 		//---PRINT PAGE
