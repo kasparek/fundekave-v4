@@ -66,7 +66,7 @@ class FGalery {
 			$fGalery->itemVO->detailUrlToGalery = FUser::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
 			$fGalery->itemVO->detailUrlToPopup = FUser::getUri('u='.FUser::logon().'&i='.$fGalery->itemVO->itemId.'&width='.($width+60).'&height='.($height+60),'','','pic.php');
 		} else {
-			FError::addError('File not exists: '.$fGalery->itemVO->detailUr);
+			FError::addError('File not exists: '.$fGalery->itemVO->detailUrl);
 		}
 		return $fGalery->itemVO;
 	}
@@ -181,9 +181,7 @@ class FGalery {
 	 */
 	function refreshImgToDb($pageId){
 		if(!empty($pageId)) {
-			$this->pageVO = new PageVO();
-			$this->pageVO->pageId = $pageId;
-			$this->pageVO->load();
+			$this->pageVO = new PageVO($pageId,true);
 		} else {
 			$pageId = $this->pageVO->pageId;
 		}
@@ -238,20 +236,25 @@ class FGalery {
 				$itemVO->pageId = $pageId;
 				$itemVO->typeId = $this->pageVO->typeId;
 				$itemVO->enclosure = $file;
+				/*
 				$itemVO->dateCreated = 'now()';
 				//---try exif
+				
 				$exif = @exif_read_data( $galdir.$file );
 				if(!empty($exif)) {
 					$itemVO->dateCreated = date("Y-m-d",$exif['FileDateTime']);
-					if(isset($exif['DateTimeOriginal'])) {
-						$itemVO->dateCreated = date("Y-m-d",$exif['DateTimeOriginal']);
+					if(!empty($exif['DateTimeOriginal'])) {
+						//TODO: find a way to fix all exif formats
+						//$itemVO->dateCreated = date("Y-m-d",$exif['DateTimeOriginal']);
 					}
 				}
+				*/
 				$itemVO->filesize = filesize($galdir.$file);
 				$itemVO->text = '';
 				$itemVO->hit = 0;
 				$itemVO->save();
 				$gCountFotoNew++;
+				$this->itemVO = $itemVO;
 				$thumbPathArr = $this->getThumbPath();
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
 				$change = true;
@@ -306,7 +309,7 @@ class FGalery {
 			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
 			FDBTool::query("delete from sys_pages_items_hit where itemId='".$id."'");
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");
-			FDBTool::query("update sys_pages set date_updated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");
+			FDBTool::query("update sys_pages set dateUpdated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");
 
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
