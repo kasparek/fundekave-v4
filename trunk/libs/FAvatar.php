@@ -120,4 +120,20 @@ class FAvatar {
 		}
 		return $ret;
 	}
+	
+	static function createName($fileOrig) {
+		$user = FUser::getInstance();
+		return FSystem::safeText($user->userVO->name).".".$user->userVO->userId.".".date('U').".".FSystem::fileExt($fileOrig);
+	}
+	static function processAvatar($avatarName) {
+		//---resize and crop if needed
+		list($avatarWidth,$avatarHeight,$type) = getimagesize(WEB_REL_AVATAR . $avatarName);
+		if($avatarWidth != AVATAR_WIDTH_PX || $avatarHeight != AVATAR_HEIGHT_PX) {
+			if($type != 2) $avatarName = str_replace(FSystem::fileExt($avatarName),'jpg',$avatarName);
+			//---RESIZE
+			$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
+			$iProc = new FImgProcess(WEB_REL_AVATAR.$avatarName,WEB_REL_AVATAR.$avatarName,$resizeParams);
+		}
+		return $avatarName;
+	}
 }

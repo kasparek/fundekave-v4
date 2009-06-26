@@ -1,4 +1,4 @@
-<form action="{FORMACTION}" method="post" enctype="multipart/form-data">
+<form action="{FORMACTION}" method="post" enctype="multipart/form-data" class="fajaxform">
 
 <div class="domtab">
   <ul class="domtabs">
@@ -34,7 +34,7 @@
     <!-- END categories -->
     <!-- BEGIN pageavatarupload -->
     <label>Ikona (60x25px)</label>
-    <input type="file" name="audico" /><br />
+    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /><br />
     <label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
     <!-- END pageavatarupload -->
     <!-- BEGIN pageavatar -->
@@ -99,11 +99,12 @@
 <legend>Seznam fotografii</legend>
 <input type="submit" name="save" value="Uložit" class="button submit" /><br />
 <label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
+<script type="text/javascript"> var fotoTotal={FOTOTOTAL};</script>
 <label>Řadit:</label><select name="galeryorder">
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
 </select><br />
-<table><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></table>
+<table id="fotoList"><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></table>
 <input type="submit" name="save" value="Uložit" class="button submit" />
 </fieldset>
 </div>
@@ -112,10 +113,12 @@
 <a name="ft6" id="ft6"></a>
 <fieldset>
 <legend>Nahrat fotografie</legend>
+<div id="fotosUploadify" class="uploadify multi">
 <!-- BEGIN uploadinput -->
 <label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br />
 <!-- END uploadinput -->
-<input type="submit" name="save" value="Uložit" class="button submit" />
+</div>
+<input type="submit" name="save" value="Uložit" class="submitUploadify button submit" />
 </fieldset>
 </div>
 <!-- END galeryspecificcontent -->

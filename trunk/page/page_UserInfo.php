@@ -43,9 +43,9 @@ class page_UserInfo implements iPage {
 
 		$tpl->setVariable("SKINNAME",$userVO->skinName);
 		$tpl->setVariable("DATECREATED",$userVO->dateCreated);
-		$tpl->setVariable("DATEUPDATED",$userVO->dateLast);
+		$tpl->setVariable("DATEUPDATED",$userVO->dateLastVisit);
 
-		$fUvatar = new fUvatar($userVO->name,array('targetFtp'=>ROOT.'tmp/fuvatar/','refresh'=> $userVO->getXMLVal('webcam','interval'),'resolution'=> $userVO->getXMLVal('webcam','resolution')));
+		$fUvatar = new FUvatar($userVO->name,array('targetFtp'=>ROOT.'tmp/fuvatar/','refresh'=> $userVO->getXMLVal('webcam','interval'),'resolution'=> $userVO->getXMLVal('webcam','resolution')));
 		//check if has any image from webcam
 		if($fUvatar->hasData()) {
 			$tpl->setVariable("WEBCAM",$fUvatar->getSwf());

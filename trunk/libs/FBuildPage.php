@@ -22,18 +22,35 @@ class FBuildPage {
 	static function getTemplate($template) {
 		$old = array(
      'events.view.php'=>'page_EventsView',
+		'events.edit.php'=>'page_EventsEdit',
+		
      'forum.view.php'=>'page_ForumView',
      'bloged.main.php'=>'page_Main',
-	   'pages.list.php'=>'page_PagesList',
-	   'galery.list.php'=>'page_GaleryList',
+	   
+		'pages.booked.php'=>'page_PagesBooked',
+     'pages.list.php'=>'page_PagesList',
+		'pages.search.php'=>'page_PagesSearch',
+		'pages.stat.php'=>'page_PagesStat',
+		'pages.poll.php'=>'page_PagePoll',
+		'page.new.simple.php'=>'page_PageNewSimple',
+		'page.edit.php'=>'page_PageEdit',
+
+		'galery.list.php'=>'page_GaleryList',
 	   'galery.detail.php'=>'page_GaleryDetail',
-	   'pages.booked.php'=>'page_PagesBooked',
+	   
 	   'items.live.php'=>'page_ItemsLive',
+		'items.search.php'=>'page_ItemsSearch',
+		'items.tags.php'=>'page_ItemsTags',
+		'items.tagging.randoms.php'=>'page_ItemsTaggingRandom',
+	   
 	   'user.post.php'=>'page_UserPost',
-		'events.edit.php'=>'page_EventsEdit',
 		'user.friends.php'=>'page_UserFriends',
 		'user.friends.all.php'=>'page_FriendsAll',
-		'items.search.php'=>'page_ItemsSearch',
+		'user.surf.php'=>'page_UserSurf',
+		'user.settings.php'=>'page_UserSettings',
+		'user.info.php'=>'page_UserInfo',
+		'user.diary.php'=>'page_UserDiary',
+		
 		'registration.php'=>'page_Registration'
 		
 		);

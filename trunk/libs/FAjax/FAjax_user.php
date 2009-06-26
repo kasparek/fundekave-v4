@@ -17,8 +17,7 @@ class FAjax_user {
 
 			//---create response
 			if($data['__ajaxResponse']==true) {
-				$fajax = FAjax::getInstance();
-				$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
+				FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 			}
 		}
 	}
@@ -35,8 +34,7 @@ class FAjax_user {
 			FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".$data['page']."' AND userId='" . $userId."'");
 			if($data['__ajaxResponse']==true) {
 				//---create response
-				$fajax = FAjax::getInstance();
-				$fajax->addResponse($data['result'],$data['resultProperty'],$data);
+				FAjax::addResponse($data['result'],$data['resultProperty'],$data);
 			}
 		}	
 	}
@@ -62,30 +60,45 @@ class FAjax_user {
 
 			//---create response
 			if($data['__ajaxResponse']==true) { 
-				$fajax = FAjax::getInstance();
-				$fajax->addResponse('tag'.$itemId,'html',FItemTags::getTag($itemId,$userId));
-				$fajax->addResponse('function','call','fajaxa');
+				FAjax::addResponse('tag'.$itemId,'html',FItemTags::getTag($itemId,$userId));
+				FAjax::addResponse('function','call','fajaxa');
 			}
 		}
 	}
 
 	static function poll($data) {
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse('poll','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an'],true));
-		$fajax->addResponse('function','call','setPollListeners');
+		FAjax::addResponse('poll','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an'],true));
+		FAjax::addResponse('function','call','setPollListeners');
 	}
 
 	static function pocketIn($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->saveItem(((isset($data['item']))?($data['item']):('')),((isset($data['page']))?($data['page']):('')));
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse('pocket','html',$fPocket->show(true));
+		FAjax::addResponse('pocket','html',$fPocket->show(true));
 	}
 
 	static function pocketAc($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->action($data['ac'],$data['pocket']);
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse('pocket','html',$fPocket->show(true));
+		FAjax::addResponse('pocket','html',$fPocket->show(true));
+	}
+	static function settings($data) {
+		if(isset($data['uploadify'])) {
+			//---get new avatar
+			$user = FUser::getInstance();
+			$cache = FCache::getInstance('d');
+			$arr = $cache->getData($user->userVO->userId . '-' .$data['modul'],'uploadify');
+			if(!empty($arr)) {
+				$avatarName = FAvatar::createName($arr["filenameOriginal"]);
+				if(file_exists(WEB_REL_AVATAR.$avatarName)) unlink(WEB_REL_AVATAR.$avatarName);
+				rename($arr['filenameTmp'],WEB_REL_AVATAR.$avatarName);
+				chmod(WEB_REL_AVATAR.$avatarName,0777);
+				$user->userVO->avatar = FAvatar::processAvatar($avatarName);
+				$user->userVO->save();
+				//---create response
+				//---return new avatar
+				FAjax::addResponse('rh_login','html',FLeftPanelPlugins::rh_login());
+			}
+		}
 	}
 }

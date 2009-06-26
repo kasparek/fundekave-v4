@@ -203,6 +203,10 @@ class page_UserPost implements iPage {
 			$cache = FCache::getInstance('s');
 			$cache->setData($displayedPostsArr,'displayed','post');
 		}
+		
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+		
+		$tpl = FBuildPage::getInstance();
+		$tpl->touchBlock('userPostEND');
 	}
 }

@@ -28,11 +28,11 @@
 <input type="hidden" name="newRight" id="newRight" value="" />
 <input type="submit" name="save" value="Ulozit" class="button submit" />
 </fieldset>
-
+<!-- 
 <script language="javascript" src="js/OptionTransfer.js"></script>
 <script language="javascript">
 var optionTransfer;
-function optInit() {
+$(document).ready(function(){
   optionTransfer = new OptionTransfer(elm("listLeft"),elm("listRight"));
   optionTransfer.setAutoSort(true);
   optionTransfer.setDelimiter(";");
@@ -51,6 +51,6 @@ function optInit() {
   addEvent(elm("moveRightButt"),'click',function(){ optionTransfer.transferRight(); });
   addEvent(elm("moveLeftAllButt"),'click',function(){ optionTransfer.transferAllLeft() });
   addEvent(elm("moveLeftButt"),'click',function(){ optionTransfer.transferLeft(); });
-}
-DOMReady(optInit);
+});
 </script>
+-->

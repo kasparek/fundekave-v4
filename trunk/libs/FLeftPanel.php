@@ -167,6 +167,7 @@ class FLeftPanel extends FDBTool {
 						 $TOPTPL->setVariable('MINIMIZE',$user->getUri('b='.$fnc.'&amp;a=m'));
 						 */
 						if(!empty($panel['name']))$TOPTPL->setVariable('SIDEBARHEAD',$panel['name']);
+						$TOPTPL->setVariable('SIDEBARBLOCKID',$fnc);
 						$TOPTPL->setVariable('SIDEBARDATA',$letext);
 						$TOPTPL->parseCurrentBlock();
 					}

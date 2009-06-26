@@ -66,7 +66,7 @@ class FMessages {
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom)
 		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
 		FDBTool::query($dot);
-		$maxid = $db->getOne("SELECT LAST_INSERT_ID()");
+		$maxid = FDBTool::getOne("SELECT LAST_INSERT_ID()");
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed)
 		values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)";
 		FDBTool::query($dot);
