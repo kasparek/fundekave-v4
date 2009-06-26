@@ -71,23 +71,13 @@ class page_UserSettings implements iPage {
 				}
 
 				//avatar
-				if ($data['__files']["idfoto"]["error"] == 0){
-					$konc = Explode(".",$data['__files']["idfoto"]["name"]);
-					$data['__files']["idfoto"]['name'] = FSystem::safeText($userVO->name).".".$userVO->userId.".".$konc[(count($konc)-1)];
-					if($up = FSystem::upload($data['__files']["idfoto"],WEB_REL_AVATAR,20000)) {
-						//---resize and crop if needed
-						list($avatarWidth,$avatarHeight,$type) = getimagesize(WEB_REL_AVATAR.$up['name']);
-						if($avatarWidth!=AVATAR_WIDTH_PX || $avatarHeight!=AVATAR_HEIGHT_PX) {
-							if($type!=2) $up['name'] = str_replace($konc[(count($konc)-1)],'jpg',$up['name']);
-							//---RESIZE
-							$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
-							$iProc = new FImgProcess(WEB_REL_AVATAR.$data['__files']["idfoto"]['name'],WEB_REL_AVATAR.$up['name'],$resizeParams);
-
-						}
-						$userVO->avatar = $up['name'];
+				$avatarFile = $data['__files']["idfoto"];
+				if ($avatarFile["error"] == 0){
+					$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
+					if(FSystem::upload($avatarFile, WEB_REL_AVATAR, 20000)) {
+						$userVO->avatar = FAvatar::processAvatar($avatarFile['name']);
 					}
 				}
-
 				$userVO->save();
 				FHTTP::redirect(FUser::getUri());
 			}
@@ -103,7 +93,7 @@ class page_UserSettings implements iPage {
 
 		$tpl = new FTemplateIT('users.personal.html');
 
-		$tpl->setVariable("FORMACTION",FUser::getUri());
+		$tpl->setVariable("FORMACTION",FUser::getUri('m=user-settings&u='.$userVO->userId));
 		$tpl->setVariable("USERNAME",$userVO->name);
 		$options='';
 		$arrOpt = FDBTool::getAll('select skinId,name from sys_skin order by name','skin','categ','s');

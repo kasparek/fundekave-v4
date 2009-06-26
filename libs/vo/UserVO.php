@@ -88,6 +88,13 @@ class UserVO extends FDBvo {
 		$this->notQuote('dateUpdated');
 		$this->dateUpdated = 'now()';
 		parent::save();
+		//---check logged user
+		$user = FUser::getInstance();
+		if($this->userId == $user->userVO->userId) {
+			//---update cache
+			$cache = FCache::getInstance( 's' );
+			$cache->setData($this->userVO,'user');
+		}
 	}
 
 	function getXMLVal($branch,$node,$default='') {

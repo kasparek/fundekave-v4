@@ -285,6 +285,7 @@ class FGalery {
 
 		//---update foto count on page
 		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',dateUpdated = now() where pageId='".$pageId."'");
+		return $gCountFotoNew;
 	}
 
 	/**

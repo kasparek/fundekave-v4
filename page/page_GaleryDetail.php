@@ -42,11 +42,7 @@ class page_GaleryDetail implements iPage {
 			} else {
 				$perPage = $user->pageVO->perPage();
 
-				if($user->pageVO->getPageParam('enhancedsettings/orderitems') == 0) {
-					$fItems->setOrder('enclosure');	
-				} else {
-					$fItems->setOrder('dateCreated desc');	
-				}
+				$fItems->setOrder($user->pageVO->itemsOrder());	
 
 				$pager = FSystem::initPager($totalItems,$perPage);
 				$od = ($pager->getCurrentPageID()-1) * $perPage;

@@ -9,7 +9,7 @@ class FAjax_pages {
 			$data = LABEL_UNBOOK;
 		}
 		FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".($data['page'])."' AND userId='" . $data['user']."'");
-		$fajax = FAfax::getInstance();
+		$fajax = FAjax::getInstance();
 		$fajax->addResponse('bookButt','html',$data);
 	}
 
@@ -17,7 +17,7 @@ class FAjax_pages {
 		$user = FUser::getInstance();
 		if($user->$userVO->isFriend($data['user'])) $user->whoIs = $data['user'];
 		$fPages = new FPages($typeId,$user->$userVO->userId);
-		$fajax = FAfax::getInstance();
+		$fajax = FAjax::getInstance();
 		$fajax->addResponse('bookedContent','html',$fPages->printBookedList(true));
 	}
 

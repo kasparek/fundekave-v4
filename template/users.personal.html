@@ -1,4 +1,4 @@
-<form enctype="multipart/form-data" action="{FORMACTION}" method="post">
+<form enctype="multipart/form-data" action="{FORMACTION}" method="post" class="fajaxform">
 <input type="hidden" name="nav" value="infosave">
 <fieldset>
 <legend>Heslo</legend>
@@ -9,7 +9,7 @@
 <fieldset>
 <legend>Osobni nastaveni</legend>
 <label for="idfoto">Avatar</label>
-<input type="file" name="idfoto" id="uploadify" />
+<input type="file" name="idfoto" id="avatarUploadify" class="uploadify" />
 <p>obrázek musí být menší než 20kb; může být .gif nebo .jpg; ideální rozměry 40x50pix nebo podobný poměr</p>
 <label>Skin</label><select name="skin">{SKINOPTIONS}</select><br />
 <label>Bannery</label>
@@ -75,13 +75,6 @@
 </select><br />
 <div id="camChosenBox">
 <label for="camchosen">Vybrani</label><input type="text" id="camchosen" name="camchosen" value="{CAMCHOSEN}" />
-<script type="text/javascript">
-function localOnReady() {
-  if(elm("campublic").selectedIndex !== 3) elm("camChosenBox").style.display = 'none';
-  addEvent(elm("campublic"),'change',function() { elm("camChosenBox").style.display = (elm("campublic").selectedIndex === 3)?('block'):('none'); });
-}
-DOMReady(localOnReady);
-</script>
 </div> 
 <label for="camavatar">Jako avatar</label>
 <select id="camavatar" name="camavatar">

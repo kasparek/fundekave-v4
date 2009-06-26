@@ -272,7 +272,7 @@ class page_PageEdit implements iPage {
 		 **/
 			
 		$tpl=new FTemplateIT('page.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FUser::getUri('m=page-edit&u='.$user->userVO->userId));
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FUser::getUri('who='.$pageVO->userIdOwner,'finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
@@ -330,8 +330,13 @@ class page_PageEdit implements iPage {
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
 			$tpl->touchBlock('galeryspecifictabs');
 
-			
-			
+			if($pageVO->itemsOrder()=='dateCreated desc') {
+				$tpl->touchBlock('gorddate');
+			}
+			$fItems = new FItems('galery',false);
+			$fItems->setWhere("pageId='".$pageVO->pageId."'");
+			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
+			/*
 			$itemRenderer = new FItemsRenderer();
 			$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
 			
@@ -340,12 +345,12 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 			if($pageVO->getPageParam('enhancedsettings/orderitems') == 1) {
 				$tpl->touchBlock('gorddate');
-				$fItems->setOrder('dateCreated desc');
+				$fItems->setOrder($pageVO->itemsOrder());
 			} else {
 				$fItems->setOrder('enclosure');
 			}
 			$tpl->setVariable('FOTOLIST',$fItems->render());
-			
+			*/
 			/* UPLOAD INPUTS */
 			$numInputs=7;
 			for ($x=1;$x<$numInputs;$x++) {

@@ -62,7 +62,7 @@ class FAjax {
 	}
 	public $data;
 	public $responseData; 
-	public function addResponse($target, $property, $value) {
+	static public function addResponse($target, $property, $value) {
 		$fajax = FAjax::getInstance();
 		$fajax->responseData[] = array('target'=>$target,'property'=>$property,'value'=>$value);
 	}

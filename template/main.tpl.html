@@ -84,7 +84,9 @@
     	<!-- BEGIN sidebar-block -->
     	<div class="sidebarBlock radcon<!-- BEGIN sidebar-block-login --> loginBlock<!-- END sidebar-block-login -->">
     	<!-- BEGIN sidebar-heading --><h2>{SIDEBARHEAD}</h2><!-- END sidebar-heading -->
-    	{SIDEBARDATA}
+    	 <div id="{SIDEBARBLOCKID}" class="sidebarBlockContent">
+    	 {SIDEBARDATA}
+    	 </div>
     	</div>
     	<!-- END sidebar-block -->
     </div>
@@ -110,7 +112,7 @@
 <script type="text/javascript" src="js/DD_roundies_0.0.1a-min.js"></script>
 <!-- BEGIN juiEND --><script type="text/javascript" src="js/jquery-ui.core.js"></script><!-- END juiEND -->
 <!-- BEGIN domtabsEND --><script type="text/javascript" src="./js/domtab.js"></script>
-<script type="text/javascript">$(document).ready(function(){ $('.domtabs').each(function() { $(this).css('display','block'); }); };</script><!-- END domtabsEND -->
+<script type="text/javascript">$(document).ready(function(){ $('.domtabs').each(function() { $(this).css('display','block'); }); });</script><!-- END domtabsEND -->
 <!-- BEGIN swfobject --><script type="text/javascript" src="fuvatar/swfobject.js"></script><!-- END swfobject -->
 <script type="text/javascript" src="js/FdkGlobal.js"></script>
 <!-- BEGIN slimboxEND --><script type="text/javascript" src="js/slimbox2.js"></script>
@@ -124,6 +126,7 @@
 <script type="text/javascript">$(document).ready(function(){ datePickerInit(); });</script><!-- END datepickerEND -->
 <!-- BEGIN fajaxformEND --><script type="text/javascript" src="js/jquery.form.fcut.min.js"></script>
 <script type="text/javascript">$(document).ready(function(){ fajaxform(); });</script><!-- END fajaxformEND -->
+<!-- BEGIN userPostEND --><script type="text/javascript">$(document).ready(function(){ initUserPost(); });</script><!-- END userPostEND -->
 
 <!-- google anal -->
 <script type="text/javascript">
