@@ -93,7 +93,7 @@ class UserVO extends FDBvo {
 		if($this->userId == $user->userVO->userId) {
 			//---update cache
 			$cache = FCache::getInstance( 's' );
-			$cache->setData($this->userVO,'user');
+			$cache->setData($this,'user');
 		}
 	}
 
