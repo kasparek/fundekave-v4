@@ -3,25 +3,27 @@ include_once('iPage.php');
 class page_PagesSearch implements iPage {
 
 	static function process($data) {
-
+		$user = FUser::getInstance();
+		
 		$cache = FCache::getInstance('s');
 		$pageSearchCache = $cache->getData($user->pageVO->pageId,'search');
+		if(!isset($pageSearchCache['filtrStr'])) $pageSearchCache['filtrStr']='';
+		if(!isset($pageSearchCache['categoryId'])) $pageSearchCache['categoryId']='0';
 
 		if(isset($data['kat'])) {
 			$catId = (int) $data["kat"];
 			if($catId != $pageSearchCache['categoryId']) {
 				$pageSearchCache['categoryId'] = $catId;
-				$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 			}
 		}
 
 		if(isset($data['filtr'])) {
 			if($data['filtr'] !== $pageSearchCache['filtrStr']) {
 				$pageSearchCache['filtrStr'] = FSystem::textins($data['filtr'],array('plainText'=>1));
-				$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 			}
 		}
 		
+		$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
 	}
 
 	static function build() {
@@ -30,13 +32,9 @@ class page_PagesSearch implements iPage {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 		$pageSearchCache = $cache->getData($user->pageVO->pageId,'search');
-
-		if(empty($pageSearchCache)) {
-			$pageSearchCache = array('filtrStr'=>'','categoryId'=>0);
-		}
-
-		$fPages = new FPages($user->currentPage['typeIdChild'],$user->userVO->userId);
-		$fItems->cacheResults = 's';
+		
+		$fPages = new FPages($user->pageVO->typeIdChild, $user->userVO->userId);
+		$fPages->cacheResults = 's';
 		if(!empty($pageSearchCache['categoryId'])) $fPages->addWhere("p.categoryId=".$pageSearchCache['categoryId']);
 
 		if(!empty($pageSearchCache['filtrStr'])){

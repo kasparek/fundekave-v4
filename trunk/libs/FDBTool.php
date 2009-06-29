@@ -145,22 +145,8 @@ class FDBTool {
 		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$joinColumn. '=' .$table.'.'.$joinColumn;
 		$this->autojoin = true;
 		$len = count($this->_select);
-		/*
-		for($i=0;$i<$len;$i++) {
-			if($this->_select[$i] == $joinColumn) {
-				$this->_select[$i] = $this->table .'.'. $this->_select[$i];
-			}
-		}
-*/
 		if(!empty($selectColumnsArray)) {
 			foreach($selectColumnsArray as $col) {
-				/*
-				for($i=0;$i<$len;$i++) {
-					if($this->_select[$i] == $col) {
-						$this->_select[$i] = $this->table .'.'. $this->_select[$i];
-					}
-				}
-*/
 				$this->addSelect($table.'.'.$col);
 			}
 		}
@@ -203,7 +189,11 @@ class FDBTool {
 	 if(!empty($order)) return ' order by '.implode(',',$order);
 	}
 	function setSelect($what='*') {
-		$this->_select = explode(',',$what);
+		if(is_array($what)) {
+			$this->_select = $what;
+		} else {
+			$this->_select = explode(',',$what);
+		}
 	}
 	function addSelect($what='*') {
 		$this->_select[] = $what;
@@ -226,9 +216,7 @@ class FDBTool {
 	function getSelect() {
 	 if($this->autojoin) {
 	 	foreach($this->_select as $col) {
-	 		
-	 		if(!strpos($col,'.') && !strpos($col,'(') ) $col = $this->table.'.'.$col;
-	 		
+	 		if(strpos($col,'.')===false && strpos($col,'(')===false ) $col = $this->table.'.'.$col;
 	 		$arrCols[] = $col;
 	 	}
 	 } else {

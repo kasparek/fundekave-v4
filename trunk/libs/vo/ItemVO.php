@@ -109,10 +109,9 @@ class ItemVO extends FDBvo {
 			}
 		}
 
-		static function getTypeColumns($typeId,$getKeysArray=false) {
+		static function getTypeColumns( $typeId='' ) {
 			$arrSelect = array_merge(ItemVO::$colsDefault, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
-			if($getKeysArray) return $arrSelect;
-			else return implode(",",$arrSelect);
+			return $arrSelect;
 		}
 
 		function checkItem() {
@@ -133,7 +132,7 @@ class ItemVO extends FDBvo {
 				$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
 				$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
 			}
-			$this->columns = ItemVO::getTypeColumns($this->typeId,true);
+			$this->columns = ItemVO::getTypeColumns($this->typeId);
 
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
@@ -179,7 +178,7 @@ class ItemVO extends FDBvo {
 				$cache = FCache::getInstance('f');
 			   $cache->invalidateData($this->pageId.'-page', 'fitGrp');
 			}
-			$this->columns = ItemVO::getTypeColumns('',true);
+			$this->columns = ItemVO::getTypeColumns();
 			$itemId = parent::save();
 			//---update stats
 			ItemVO::statPage($this->pageId, FUser::logon(), false);

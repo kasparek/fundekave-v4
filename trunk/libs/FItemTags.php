@@ -1,14 +1,16 @@
 <?php
 /**
- * TAGGING section
- *
- * @param number $itemId
- * @param number $userId
- * @param tinyint $weight
- * @param varchar(255) $tag
- * @return boolean
+ * TAGGING ITEMS
  */
 class FItemTags {
+	/**
+	 * tag item 
+	 * @param number $itemId
+ 	 * @param number $userId
+ 	 * @param tinyint $weight
+ 	 * @param varchar(255) $tag
+ 	 * @return boolean
+	 */
 	static function tag($itemId,$userId,$weight=1,$tag='') {
 		if(0 == FDBTool::getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
 			FItemTags::invalidateCache();
@@ -27,15 +29,15 @@ class FItemTags {
 	static function isTagged($itemId,$userId) {
 		if($itemId > 0 && $userId > 0) {
 			$q = "select count(1) from sys_pages_items_tag where userId='".$userId."' and itemId='".$itemId."'";
-			$tagged = FDBTool::getOne($q,$userId.'-'.$itemId,'myTags','s',60);
+			$tagged = FDBTool::getOne($q,$userId.'-'.$itemId,'myTags','s',120);
 			return (($tagged>0)?(true):(false));
 		}
 	}
 	static function totalTags($itemId) {
 		if($itemId > 0) {
 			$q = "select sum(weight) from sys_pages_items_tag where itemId='".$itemId."'";
-			$ret = FDBTool::getOne($q,$itemId, 'iTags','s',60);
-			return $ret;
+			$ret = FDBTool::getOne($q,$itemId, 'iTags','s',120);
+			return (int) $ret;
 		}
 	}
 
@@ -75,6 +77,10 @@ class FItemTags {
 		return $arr;
 	}
 	
+	/**
+	 * invalidate tag cache
+	 * @return void
+	 */
 	static function invalidateCache() {
 		$cache = FCache::getInstance('s');
 		$cache->invalidateGroup('iTags');
