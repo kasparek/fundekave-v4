@@ -11,27 +11,28 @@ class page_ItemsTags implements iPage {
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
 
-		FItems::setTagToolbarDefaults(array('enabled'=>1,'order'=>3,'interval'=>3));
-		$perpage = GALERY_PERPAGE;
+		FItemsToolbar::setTagToolbarDefaults(array('enabled'=>1,'order'=>3,'interval'=>3));
+		$perpage = $user->pageVO->perPage();
 
-		FBuildPage::addTab(array("MAINDATA"=>FItems::getTagToolbar()));
+		FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar()));
 
-		$fItems = new FItems();
-		$fItems->showPageLabel = true;
-		$fItems->initData($user->pageVO->typeIdChild,$userId,true);
-		$fItems->setOrder('i.dateCreated desc');
-		$fItems->addWhere('i.itemIdTop is null');
-		FItems::setQueryTool(&$fItems);
+		$itemRenderer = new FItemsRenderer();
+		$itemRenderer->showPageLabel = true;
+		
+		$fItems = new FItems($user->pageVO->typeIdChild,$userId,$itemRenderer);
+		$fItems->setOrder('dateCreated desc');
+		$fItems->addWhere('itemIdTop is null');
+		FItemsToolbar::setQueryTool(&$fItems);
 
 		$pager = FSystem::initPager(0,$perpage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perpage;
-		$fItems->getData($from,$perpage+1);
-		$totalItems = count($fItems->arrData);
+		$fItems->getList($from,$perpage+1);
+		$totalItems = $fItems->total();
 
 		$maybeMore = false;
 		if($totalItems > $perpage) {
 			$maybeMore = true;
-			unset($fItems->arrData[(count($fItems->arrData)-1)]);
+			array_pop($fItems->data);
 		}
 		if($from > 0) $totalItems += $from;
 
@@ -42,8 +43,7 @@ class page_ItemsTags implements iPage {
 			$pager->maybeMore = $maybeMore;
 			$pager->getPager();
 			$tpl->setVariable("PAGER",$pager->links);
-			while ($fItems->arrData) $fItems->parse();
-			$tpl->setVariable("RESULTS",$fItems->show());
+			$tpl->setVariable("RESULTS",$fItems->render());
 		} else {
 			$tpl->touchBlock('noitems');
 		}

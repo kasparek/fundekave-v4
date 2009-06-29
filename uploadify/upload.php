@@ -12,12 +12,13 @@ if (!empty($_FILES)) {
 
 	$toCache = array(
 	   'filenameTmp'=> $targetFile,
-	   'filenameOriginal'=> $_FILES['Filedata']['name']
+	   'filenameOriginal'=> $_FILES['Filedata']['name'],
+		'uid'=>$uId
 	);
 
 	$cache = FCache::getInstance('d');
 	$user = FUser::getInstance();
-	$cache->setData($toCache,$_GET['u'].'-'.$_GET['m'],'uploadify');
+	$cache->setData($toCache,$uId,$_GET['u'].'-'.$_GET['m'].'-upload');
 
 	move_uploaded_file($tempFile,$targetFile);
 }

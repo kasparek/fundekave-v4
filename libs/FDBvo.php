@@ -12,7 +12,7 @@ class FDBvo extends FDBTool {
 	
 	function set($key, $value, $params=array()) {
 		$changed = false;
-		if(isset($this->{$key})) {
+		if(property_exists($this,$key)) {
 			//---verify
 			if(isset($params['type'])) {
 				switch($params['type']) {

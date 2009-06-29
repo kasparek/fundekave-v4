@@ -11,7 +11,7 @@ function class_autoloader($c) {
 	include  $c . '.php';
 }
 spl_autoload_register("class_autoloader");
-setlocale(LC_ALL,'cs_CZ.utf-8');
+setlocale(LC_ALL,'cs_CZ.UTF-8');
 
 //--------------------------------------------------------config + constant init
 FConf::getInstance();

@@ -51,7 +51,11 @@ class FItems extends FDBTool {
 		}
 
 	}
-
+	
+	function total() {
+		return count($this->data);
+	}
+	
 	function getList($from=0, $count=0) {
 		$this->arrData = array();
 		$itemTypeId = $this->typeId;
@@ -117,7 +121,7 @@ class FItems extends FDBTool {
 	}
 
 	function render($from=0, $perPage=0) {
-		$this->getList($from, $perPage);
+		if(empty($this->data)) $this->getList($from, $perPage);
 		//---items parsing
 		if(!empty($this->data)) {
 			while ($this->data) {
@@ -141,6 +145,8 @@ class FItems extends FDBTool {
 			if(!isset($klo[0])) $res=$kls;
 			else $res = array_diff($kls,$klo);
 			if(!empty($res)) {
+				$cache = FCache::getInstance('f');
+				$cache->invalidateGroup('aFavAll');
 				foreach($res as $r) {
 					FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
 				}
