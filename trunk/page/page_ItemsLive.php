@@ -12,25 +12,25 @@ class page_ItemsLive implements iPage {
 
 		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
 
-		$localPerPage = LIVE_PERPAGE;
+		$localPerPage = $user->pageVO->perPage();
 
 		$itemRenderer = new FItemsRenderer();
-		$itemRenderer->showPageLabel = false;
+		$itemRenderer->showPageLabel = true;
 		
 		$fItems = new FItems($typeId,$user->userVO->userId,$itemRenderer);
-		if($typeId=='blog') $fItems->addWhere('itemIdTop is null');
+		$fItems->addWhere('itemIdTop is null');
 		$fItems->setOrder('dateCreated desc');
-
+		
 		$pager = FSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
 
 		$fItems->getList($from,$localPerPage+1);
-		$totalItems = count($fItems->data);
+		$totalItems = $fItems->total();
 
 		$maybeMore = false;
 		if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {
 			$maybeMore = true;
-			unset($fItems->data[(count($fItems->data)-1)]);
+			array_pop($fItems->data);
 		}
 		if($from > 0) $totalItems += $from;
 
@@ -39,13 +39,8 @@ class page_ItemsLive implements iPage {
 			$pager->maybeMore = $maybeMore;
 			$pager->getPager();
 
-			while ($fItems->arrData) {
-				$fItems->parse();
-			}
-
-			$tmptext = '<div class="hfeed">'.$fItems->show().'</div>';
-
-			if ($totalItems > LIVE_PERPAGE) $tmptext .= $pager->links;
+			$tmptext = $fItems->render();
+			if ($totalItems > $localPerPage) $tmptext .= $pager->links;
 
 			FBuildPage::addTab(array("MAINDATA"=>$tmptext));
 		}

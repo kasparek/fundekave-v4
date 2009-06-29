@@ -80,6 +80,7 @@ static $ERROR_FORUM_NAMEEXISTS = 'Takove jmeno klubu jiz existuje';
 static $ERROR_BLOG_NAMEEMPTY = 'Nezadali jste jmeno blogu';
 static $ERROR_BLOG_NAMEEXISTS = 'Takove jmeno blogu jiz existuje';
 
+static $REGISTER_WELCOME = '<strong>REGISTRACE PROBĚHLA ÚSPĚŠNĚ</strong><br />Vitejte na Fundekave. Zde si muzete nastavit svuj profil.';
 static $ERROR_REGISTER_TOSHORTNAME = 'Jméno je příliš krátké';
 static $ERROR_REGISTER_TOLONGNAME = 'Jméno je příliš dlouhé';
 static $ERROR_REGISTER_NOTALLOWEDNAME = 'Jméno muze obsahovat pouze pismena, cisla a znaky bez diakritiky';
@@ -89,7 +90,6 @@ static $ERROR_REGISTER_PASSWORDNOTSAFE = 'Heslo se shoduje se jménem a to není
 static $ERROR_REGISTER_PASSWORDTOSHORT = 'Heslo je příliš krátké';
 static $ERROR_REGISTER_PASSWORDDONTMATCH = 'Hesla se neshodují';
 static $MESSAGE_PASSWORD_SET = 'Nove heslo nastaveno';
-static $MESSAGE_REGISTER_SUCCESS = '<strong>REGISTRACE PROBĚHLA ÚSPĚŠNĚ</strong><br />Nyní se již okamžitě můžete přihlásit.';
 static $ERROR_LOGIN_WRONGUSERORPASS = 'Zadali jste spatne jmeno nebo heslo';
 static $ERROR_PAGE_NOTEXISTS = 'Stranka neexistuje';
 static $ERROR_ACCESS_DENIED = 'Nemate prava pro pristup na tuto stranku';

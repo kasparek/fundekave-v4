@@ -37,7 +37,6 @@ class page_GaleryDetail implements iPage {
 			if($totalItems==0){
 				
 				FError::addError(FLang::$ERROR_GALERY_NOFOTO);
-				$user->pageAccess = false;
 				
 			} else {
 				$perPage = $user->pageVO->perPage();

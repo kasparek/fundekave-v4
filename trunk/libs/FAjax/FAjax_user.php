@@ -26,15 +26,15 @@ class FAjax_user {
 		if(($userId = FUser::logon()) !==false) {
 			if (FDBTool::getOne("select book from sys_pages_favorites where pageId = '".$data['page']."' AND userId = '".$userId."'")) {
 				$book = 0;
-				$data = FLang::$LABEL_BOOK;
+				$ret = FLang::$LABEL_BOOK;
 			} else {
 				$book = 1;
-				$data = FLang::$LABEL_UNBOOK;
+				$ret = FLang::$LABEL_UNBOOK;
 			}
 			FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".$data['page']."' AND userId='" . $userId."'");
 			if($data['__ajaxResponse']==true) {
 				//---create response
-				FAjax::addResponse($data['result'],$data['resultProperty'],$data);
+				FAjax::addResponse($data['result'], $data['resultProperty'], $ret);
 			}
 		}	
 	}

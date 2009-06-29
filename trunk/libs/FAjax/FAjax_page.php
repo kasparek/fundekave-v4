@@ -10,20 +10,30 @@ class FAjax_page {
 			FSystem::makeDir($dir);
 			if($dir{count($dir)-1}!='/') $dir.='/';
 			$cache = FCache::getInstance('d');
-			$arr = $cache->getData($user->userVO->userId . '-' .$data['modul'],'uploadify');
-			if(!empty($arr)) {
-				$fileTarget = $dir.$arr['filenameOriginal'];
-				if(file_exists($fileTarget)) unlink($fileTarget);
-				rename($arr['filenameTmp'],$fileTarget);
-				chmod($fileTarget,0777);
+			$grpName = $user->userVO->userId . '-' .$data['modul'].'-upload';
+			$arrData = $cache->getGroup($grpName);
+			if(!empty($arrData)) {
+				
+				while($arrData) {
+					$arr = array_shift($arrData);
+					$fileTarget = $dir.$arr['filenameOriginal'];
+					if(file_exists($fileTarget)) unlink($fileTarget);
+					rename($arr['filenameTmp'],$fileTarget);
+					chmod($fileTarget,0777);
+					$cache->invalidateData($arr['uid'],$grpName);
+				}
 				//---call galery refresh
 				$galery = new FGalery();
 				$numNewFoto = $galery->refreshImgToDb($user->pageVO->pageId);
-				FAjax::addResponse('call','function','galeryLoadThumb;'.$numNewFoto);
+				if($numNewFoto > 0) {
+					FAjax::addResponse('function','call','galeryLoadThumb;'.$numNewFoto);
+				}
 			}
 			
 			
 		}
+		
+		page_PageEdit::process($data);
 		
 	}
 

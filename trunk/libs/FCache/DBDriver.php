@@ -53,7 +53,8 @@ class DBDriver
 	}
 
 	function getGroup($grp) {
-		$arr = FDBTool::getCol("select data from ".$this->tableName." where groupId='".$grp."' and datediff(now(),dateUpdated) > lifeTime");
+		$q = "select value from ".$this->tableName." where groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
+		$arr = FDBTool::getCol($q);
 		if(!empty($arr)) {
 			while($row = array_shift($arr)) {
 				$arrUnserialized[] = unserialize($row);

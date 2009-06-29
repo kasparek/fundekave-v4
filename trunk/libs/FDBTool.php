@@ -144,8 +144,25 @@ class FDBTool {
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
 		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$joinColumn. '=' .$table.'.'.$joinColumn;
 		$this->autojoin = true;
-		foreach($selectColumnsArray as $col) {
-			$this->addSelect($table.'.'.$col);
+		$len = count($this->_select);
+		/*
+		for($i=0;$i<$len;$i++) {
+			if($this->_select[$i] == $joinColumn) {
+				$this->_select[$i] = $this->table .'.'. $this->_select[$i];
+			}
+		}
+*/
+		if(!empty($selectColumnsArray)) {
+			foreach($selectColumnsArray as $col) {
+				/*
+				for($i=0;$i<$len;$i++) {
+					if($this->_select[$i] == $col) {
+						$this->_select[$i] = $this->table .'.'. $this->_select[$i];
+					}
+				}
+*/
+				$this->addSelect($table.'.'.$col);
+			}
 		}
 	}
 	function getJoin() {
@@ -209,7 +226,9 @@ class FDBTool {
 	function getSelect() {
 	 if($this->autojoin) {
 	 	foreach($this->_select as $col) {
-	 		if(!strpos($col,'.')) $col = $this->table.'.'.$col;
+	 		
+	 		if(!strpos($col,'.') && !strpos($col,'(') ) $col = $this->table.'.'.$col;
+	 		
 	 		$arrCols[] = $col;
 	 	}
 	 } else {
@@ -492,11 +511,11 @@ class FDBTool {
 		$ret = $db->$function($query);
 		if (PEAR::isError($ret)) {
 			echo $ret->getMessage();
-			if(FConf::get('dboptions','debug')==1) {
+			if(FConf::get('dboptions','debug') > 0) {
 				echo " <br />\n";
-				echo 'Code: ' . $ret->getCode() . " <br />\n";
-				echo 'DBMS/User Message: ' . $ret->getUserInfo() . " <br />\n";
-				echo 'DBMS/Debug Message: ' . $ret->getDebugInfo() . " <br />\n";
+				echo 'Code: ' . $ret->getCode() . " <br />\n\n";
+				echo 'DBMS/User Message: ' . $ret->getUserInfo() . " <br />\n\n";
+				echo 'DBMS/Debug Message: ' . $ret->getDebugInfo() . " <br />\n\n";
 			}
 			die();
 		}

@@ -932,6 +932,18 @@ color: #000;
 background-color: #eee;
 text-decoration: none;
 }
+/*error msgs*/
+#errormsgJS {
+	display:none;
+}
+.errormsg {
+	color: #000;
+	font-size: 1.2em;
+	background-color: #fdd;
+	margin: 0 1em 0 1em;
+	padding: 1em;
+}
+.
 /*FUVATAR*/
 div.fuvatarbox {
   float: right;

@@ -64,7 +64,7 @@ class FItemsToolbar {
 		if($toolbarData['order']>0) $tpl->touchBlock($orderBlocksArr[$toolbarData['order']]);
 		if($toolbarData['interval']>1) $tpl->touchBlock($intervalBlocksArr[$toolbarData['interval']]);
 		if($toolbarData['interval'] > 1) {
-			$intConfArr = FItems::getIntervalConf($toolbarData['interval']);
+			$intConfArr = FItemsToolbar::getIntervalConf($toolbarData['interval']);
 			if(empty($toolbarData['date'])) {
 				$toolbarData['date'] = Date($intConfArr['f']);
 			}
@@ -110,12 +110,12 @@ class FItemsToolbar {
 			}
 			if(isset($previous)) {
 				$tpl->setVariable('PREVIOUSLINK',FUser::getUri('tuda=prev'));
-				$tpl->setVariable('PREVIOUSTEXT',PAGER_PREVIOUS . (($previous!='')?(' ' .$previous):('')));
+				$tpl->setVariable('PREVIOUSTEXT',FLang::$PAGER_PREVIOUS . (($previous!='')?(' ' .$previous):('')));
 			}
 			if(isset($current)) $tpl->setVariable('CURRENTDATE',$current);
 			if(isset($next)) {
 				$tpl->setVariable('NEXTLINK',FUser::getUri('tuda=next'));
-				$tpl->setVariable('NEXTTEXT',(($next!='')?($next .' '):('')). PAGER_NEXT);
+				$tpl->setVariable('NEXTTEXT',(($next!='')?($next .' '):('')). FLang::$PAGER_NEXT);
 			}
 		}
 		if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
@@ -144,7 +144,7 @@ class FItemsToolbar {
 			if(isset($toolbarData['interval'])) {
 				if($toolbarData['interval']>1 && (empty($toolbarData['date']) || $oldInterval!=$toolbarData['interval'])) {
 					//---create default - current date
-					$intConfArr = FItems::getIntervalConf($toolbarData['interval']);
+					$intConfArr = FItemsToolbar::getIntervalConf($toolbarData['interval']);
 					if(!empty($toolbarData['date'])) {
 						if($oldInterval==4) $date = str_replace('-','-W',$toolbarData['date']);
 						else $date = $toolbarData['date'];
@@ -155,7 +155,7 @@ class FItemsToolbar {
 				} elseif ($toolbarData['interval']<2) unset($toolbarData['date']);
 			}
 			if(isset($_GET['tuda']) && $toolbarData['interval']>1) {
-				$intConfArr = FItems::getIntervalConf($toolbarData['interval']);
+				$intConfArr = FItemsToolbar::getIntervalConf($toolbarData['interval']);
 				if($_GET['tuda']=='next') $modifyCourse = '+';
 				if($_GET['tuda']=='prev') $modifyCourse = '-';
 				if(isset($modifyCourse)) {
@@ -199,27 +199,28 @@ class FItemsToolbar {
 			if($thumbupData['order']==5) $fQuery->setOrder('dateCreated desc');
 			elseif ($thumbupData['order'] > 2) {
 				if($thumbupData['interval']>1) {
-					$fQuery->setOrder('ihistory.valueSum desc');
-					$fQuery->replaceSelect('hit','ihistory.valueSum as hitsum');
-					$fQuery->addWhere('ihistory.historyType = '.$thumbupData['order']);
+					$fQuery->setOrder('sys_pages_items_history.valueSum desc');
+					$fQuery->replaceSelect('hit','sys_pages_items_history.valueSum as hitsum');
+					$fQuery->addWhere('sys_pages_items_history.historyType = '.$thumbupData['order']);
 				} else $fQuery->setOrder('hit desc');
 			} elseif ($thumbupData['order'] > 0) {
 				$fQuery->setOrder('thumbs desc');
 				if($thumbupData['interval']>1) {
-					$fQuery->replaceSelect('tag_weight','ihistory.valueSum as thumbs');
-					$fQuery->addWhere('ihistory.historyType = 1');
+					$fQuery->replaceSelect('tag_weight','sys_pages_items_history.valueSum as thumbs');
+					$fQuery->addWhere('sys_pages_items_history.historyType = 1');
 				} else $fQuery->replaceSelect('tag_weight','tag_weight as thumbs');
 				if(isset($thumbupData['filter']))
 				if($thumbupData['filter'] == 2) {
 					$user = FUser::getInstance();
 					$fQuery->addWhere('it.userId="'.$user->userVO->userId.'"');
-					$fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=itemId');
+					//$fQuery->addJoin('join sys_pages_items_tag as it on it.itemId=itemId');
+					$fQuery->addJoinAuto('sys_pages_items_tag','itemId','');
 				}
 			}
 			//-----------------------------
 			//---by date
 			if(!empty($thumbupData['date'])) {
-				$intConfArr = FItems::getIntervalConf($thumbupData['interval']);
+				$intConfArr = FItemsToolbar::getIntervalConf($thumbupData['interval']);
 				$dateformat = $intConfArr['db'];
 				$date = $thumbupData['date'];
 
@@ -233,11 +234,12 @@ class FItemsToolbar {
 					$fQuery->addWhere("date_format( dateCreated, '".$dateformat."' ) = '".$date."'");
 				} else {
 					if($thumbupData['interval']==4) $date = sprintf("%04d-W%02d",$year,$week);
-					$fQuery->addWhere("ihistory.dateInt = '".$date."'");
+					$fQuery->addWhere("sys_pages_items_history.dateInt = '".$date."'");
 				}
 			}
 			if($thumbupData['order']>0 && $thumbupData['interval']>1) {
-				$fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=itemId');
+				//$fQuery->addJoin('join sys_pages_items_history as ihistory on ihistory.itemId=itemId');
+				$fQuery->addJoinAuto('sys_pages_items_history','itemId','');
 			}
 		}
 	}

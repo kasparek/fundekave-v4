@@ -58,7 +58,7 @@ class FUser {
 	 * @param $pass - string
 	 * @return void
 	 */
-	function login($name,$pass){
+	function login($name,$pass,$redirect=true){
 		$name = trim($name);
 		$pass = trim($pass);
 		if (!empty($name) && !empty($pass) && $this->idkontrol==false) {
@@ -89,7 +89,7 @@ class FUser {
 			} else {
 				FError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
 			}
-			FHTTP::redirect(FUser::getUri());
+			if($redirect===true) FHTTP::redirect(FUser::getUri());
 		}
 	}
 
@@ -276,9 +276,9 @@ class FUser {
 	 * register new user to system
 	 * @return void
 	 */
-	function register(){
+	function register( $data ){
 		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
-		if(isset($data["addusr"]) && $this->idkontrol === false) {
+		if($this->idkontrol === false) {
 			$jmenoreg = trim($data["jmenoreg"]);
 			$pwdreg1 = trim($data["pwdreg1"]);
 			$pwdreg2 = trim($data["pwdreg2"]);
@@ -294,13 +294,18 @@ class FUser {
 					values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->userVO->info.'")';
 				if(FDBTool::query($dot)) {
 					$newiduser = FDBTool::getOne("SELECT LAST_INSERT_ID()");
-					FError::addError(FLang::$MESSAGE_REGISTER_SUCCESS);
+					//login user
+					FUser::login($data['jmenoreg'],md5($pwdreg1),false);
 					//---oznameni o registraci
 					FMessages::sendSAMessage(array('NEWUSERID'=>$newiduser,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
-					FHTTP::redirect(FUser::getUri('',HOME_PAGE));
+					FError::addError(FLang::$REGISTER_WELCOME);
+					FHTTP::redirect(FUser::getUri('',POSTREGISTRATION_PAGE));
 				}
+			} else {
+				//cache data
+				$cache = FCache::getInstance('s');
+				$cache->setData($data,'reg','form');
 			}
-			FHTTP::redirect(FUser::getUri());
 		}
 	}
 

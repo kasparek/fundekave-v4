@@ -16,6 +16,7 @@ function fajaxform(event) {
 		buttonClicked = $(this).attr('name');
 	});
 	setListeners('fajaxform', 'submit', function(event) {
+		$("#errormsgJS").hide();
 		if (preventAjax == true) {
 			preventAjax = false;
 			return;
@@ -51,6 +52,13 @@ function uploadifyInit() {
 			'scriptData' : {
 				'u' : gup('u', $(".fajaxform").attr('action')),
 				'm' : gup('m', $(".fajaxform").attr('action'))
+			},
+			'onComplete' : function(event) {
+				addXMLRequest('uploadify', 'oneDone');
+				addXMLRequest('modul', gup('m', $(".fajaxform").attr('action')));
+				addXMLRequest('item', gup('i', $(".fajaxform").attr('action')));
+				addXMLRequest('ident', $(this).attr('id'));
+				sendAjax(gup('m', $(".fajaxform").attr('action')));
 			},
 			'onAllComplete' : function(event) {
 				addXMLRequest('uploadify', 'complete');
@@ -153,6 +161,8 @@ function markItUpInit() {
  *main init
  **/
 $(document).ready( function() {
+$("#errormsgJS").css('display','block');
+$("#errormsgJS").hide();
 	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 		fajaxa();
 		fconfirm();
@@ -202,9 +212,10 @@ $(document).ready( function() {
 	});
 var fotoLoaded = 0;
 function galeryLoadThumb(toTotal) {
-	if(toTotal>0) fotoTotal = fotoTotal + toTotal;
+	if(toTotal>0) fotoTotal = fotoTotal + parseInt(toTotal);
 	if(fotoLoaded < fotoTotal) {
 		//---send ajax call
+		addXMLRequest('total', fotoTotal);
 		addXMLRequest('seq', fotoLoaded);
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', 'append');
@@ -346,7 +357,11 @@ function gup(name, url) {
 			.exec(url);
 	return (results === null) ? (0) : (results[1]);
 };
-
+function errmsg(msg) {
+	$("#errormsgJS").html(msg);
+	$("#errormsgJS").show('slow');
+	
+}
 // ---send and process ajax request
 function sendAjax(action) {
 	var data = getXMLRequest();

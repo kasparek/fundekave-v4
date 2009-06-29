@@ -365,15 +365,15 @@ class FPages extends FDBTool {
 	}
 
 	//---load from upload
-	function avatarUpload() {
-		$_FILES["audico"]['name'] = "pageAvatar-".$user->pageVO->pageId.'.jpg';
-		if($up = FSystem::upload($_FILES["audico"], WEB_REL_PAGE_AVATAR, 40000)) {
+	function avatarUpload($pageId, $filesData) {
+		$filesData['name'] = "pageAvatar-".$pageId.'.jpg';
+		if($up = FSystem::upload($filesData, WEB_REL_PAGE_AVATAR, 40000)) {
 			//---resize and crop if needed
 			list($width,$height,$type) = getimagesize(WEB_REL_PAGE_AVATAR.$up['name']);
 			if($width != PAGE_AVATAR_WIDTH_PX || $height!= PAGE_AVATAR_HEIGHT_PX) {
 				//---RESIZE
 				$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-				$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$_FILES["audico"]['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
+				$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$filesData['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
 			}
 			return $up['name'];
 		}

@@ -4,7 +4,11 @@ include_once('iPage.php');
 class page_PageEdit implements iPage {
 
 	static function process( $data ) {
-
+		//---action
+		$action = '';
+		if(isset($data['action'])) $action = $data['action']; 
+		if(isset($data["save"])) $action = 'save';
+				
 		$user = FUser::getInstance();
 		
 		$redirectAdd = '';
@@ -17,7 +21,7 @@ class page_PageEdit implements iPage {
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
 
-		if(isset($data["save"])) {
+		if($action == "save") {
 			if($user->pageParam == 'a') {
 				//---new page
 				$pageVO = new PageVO();
@@ -96,8 +100,10 @@ class page_PageEdit implements iPage {
 				if(!empty($data['audicourl'])) {
 					$pageVO->pageIco = FPages::avatarFromUrl( $pageVO->pageId, $data['audicourl'] );
 				}
-				if ($_FILES["audico"]['error']==0) {
-					$pageVO->pageIco = FPages::avatarUpload( $pageVO->pageId, $_FILES['audico'] );
+				if(isset($data['_files'])) {
+					if ($data['_files']["audico"]['error']==0) {
+						$pageVO->pageIco = FPages::avatarUpload( $pageVO->pageId, $data['_files']['audico'] );
+					}
 				}
 				if(isset($data['delpic'])) {
 					$pageVO->pageIco = FPages::avatarDelete( $pageVO->pageId );
@@ -203,15 +209,27 @@ class page_PageEdit implements iPage {
 				}
 
 				/* redirect */
-				FHTTP::redirect(FUser::getUri('','',$redirectAdd));
+				if($data['__ajaxResponse']) {
+					FAjax::addResponse('function','call','redirect;'.FUser::getUri('',$pageVO->pageId,$redirectAdd));
+				} else {
+					FHTTP::redirect(FUser::getUri('','',$redirectAdd));
+				}
 			} else {
 				//---error during value check .. let the values stay in form - data remain in _POST
-				FUserDraft::save($textareaIdDescription, $_POST['description']);
-				FUserDraft::save($textareaIdContent, $_POST['content']);
-				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome, $_POST['forumhome']);
+				FUserDraft::save($textareaIdDescription, $data['description']);
+				FUserDraft::save($textareaIdContent, $data['content']);
+				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome, $data['forumhome']);
 				//---cache data
 				$cache = FCache::getInstance('l');
 				$cache->setData($pageVO, 'page', 'form');
+				
+				if($data['__ajaxResponse']) {
+					$arr = FError::getError();
+					FError::resetError();
+					while($arr) {
+						FAjax::addResponse('function','call','errmsg;'.array_shift($arr).'');
+					}
+				}
 			}
 		}
 
