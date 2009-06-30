@@ -80,8 +80,10 @@ class FBuildPage {
 	}
 
 	static function baseContent() {
+		FSystem::profile('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
+		
 		if($user->pageAccess == true) {
 			
 			$staticTemplate = false;
@@ -119,15 +121,17 @@ class FBuildPage {
 					}
 				break;
 			}
-			
+			FSystem::profile('FBuildPage::baseContent--TPL READY');
 			if($template != '') {
 				if ($staticTemplate === false) {
 					//DYNAMIC TEMPLATE
 					$template = FBuildPage::getTemplate($template);
+					FSystem::profile('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
 						$c = new $template;
 						$c->build();
 					}
+					FSystem::profile('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
 					//STATIC TEMPLATE
 					$tpl = new FTemplateIT($template);
@@ -136,11 +140,11 @@ class FBuildPage {
 					FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 					unset($tpl);
 				}
-				 
 			} else {
 				//NOT TEMPLATE AT ALL
 				$contentData = array("MAINDATA"=>$user->pageVO->content);
 			}
+			FSystem::profile('FBuildPage::baseContent--CONTENT DONE');
 	
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
@@ -172,7 +176,7 @@ class FBuildPage {
 			if(FRules::get($user->userVO->userId,'sadmi',1)) {
 				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
 			}
-
+			FSystem::profile('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/
 		}
 	}
@@ -180,6 +184,7 @@ class FBuildPage {
 	static function show() {
 		
 		FBuildPage::baseContent();
+		FSystem::profile('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
@@ -222,10 +227,6 @@ class FBuildPage {
 		if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 
 		//---BODY PARAMETERS
-		$bodyAction = '';
-		$bodyAction .= (!empty($onload))?(' onload="'.$onload.'" '):('');
-		$bodyAction .= (!empty($onunload))?(" onbeforeunload='".$onunload."' "):('');
-		$tpl->setVariable("BODYACTION", $bodyAction);
 		//---MAIN MENU
 		$arrMenuItems = FSystem::topMenu();
 		if(!empty($arrMenuItems)) {
@@ -239,6 +240,7 @@ class FBuildPage {
 				$tpl->parseCurrentBlock();
 			}
 		}
+		FSystem::profile('FBuildPage--FSystem::topMenu');
 
 		//---BANNER
 		if(!isset($_GET['nobanner'])) {
@@ -248,6 +250,7 @@ class FBuildPage {
 				$tpl->touchBlock('hasMainBanner');
 			}
 		}
+		FSystem::profile('FBuildPage--FSystem::grndbanner');
 
 		if($user->pageAccess === true) {
 			//---SECONDARY MENU
@@ -264,27 +267,29 @@ class FBuildPage {
 					$tpl->parseCurrentBlock();
 				}
 			}
-
 		}
+		FSystem::profile('FBuildPage--FSystem::secondaryMenu');
 		
 		//---LEFT PANEL POPULATING
 		$fLeftpanel = new FLeftPanel($user->pageVO->pageId, $user->userVO->userId, $user->pageVO->typeId);
 		$fLeftpanel->load();
 		$fLeftpanel->show();
+		FSystem::profile('FBuildPage--FLeftPanel');
 
 		//---FOOTER INFO
 		$cache = FCache::getInstance('l');
-		$start = $cache->getData('start','debug');
+		$cachedArr = $cache->getData('profile','FSystem');
+		$start = $cachedArr[0]['time'];
 
 		$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
-		$tpl->setVariable("COUNTER", $pagesSum.'::'.((isset($debugTime))?('<strong>'.$debugTime.'</strong>::'):('')).round((FSystem::getmicrotime()-$start),3));
-
+		$tpl->setVariable("COUNTER", $pagesSum.'::'.round((FSystem::getmicrotime()-$start),3));
+		FSystem::profile('FBuildPage--footer');
 		//---user tooltips - one per user avatar displayed
 		$ttips = '';
 		$cache = FCache::getInstance('l');
 		if(($arrUserAvatarTips = $cache->getGroup('UavatarTip')) !==false ) $ttips .= implode("\n", $arrUserAvatarTips);
 		$tpl->setVariable('USERTOOLTIPS',$ttips);
-
+		FSystem::profile('FBuildPage--user tooltips');
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
@@ -330,7 +335,7 @@ class FBuildPage {
 		if($useFajaxform === true) {
 			$tpl->touchBlock("fajaxformEND");
 		}
-
+		FSystem::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);
 		$tpl->show();

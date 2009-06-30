@@ -26,28 +26,32 @@ class page_PagesList implements iPage {
 		}
 		$fPages = new FPages($user->pageVO->typeIdChild,$user->userVO->userId);
 		if($catId > 0) {
+			//---category selected
 			$arrForums = $fPages->getListByCategory($catId);
 			FBuildPage::addTab(array("MAINDATA"=>FPages::printPagelinkList($arrForums)));
 		} else {
-				
-			$totalItems = $fPages->getCount();
-			$from = 0;
-			
-			$pagerStr = '';
-			if($totalItems > DEFAULT_PERPAGE) {
-				$pager = FSystem::initPager($totalItems,DEFAULT_PERPAGE);
-				$from =($pager->getCurrentPageID()-1) * DEFAULT_PERPAGE;
-				$pagerStr = $pager->links;
-			}
-
+			//---NO category
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId>0)?(',(p.cnt-f.cnt) as newMess'):(',0')));
 			$fPages->addWhere('p.locked < 2');
 			if ($userId>0) {
 				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 			}
+			
+			$totalItems = $fPages->getCount();
+			$from = 0;
+			
+			$pagerStr = '';
+			$perPage = $user->pageVO->perPage();
+			if($totalItems > $perPage) {
+				$pager = FSystem::initPager($totalItems,$perPage);
+				$from =($pager->getCurrentPageID()-1) * $perPage;
+				$pagerStr = $pager->links;
+			}
+
+			
 			$fPages->setOrder("p.dateUpdated desc,p.name");
 			
-			$arrForums = $fPages->getContent($from,DEFAULT_PERPAGE);
+			$arrForums = $fPages->getContent($from,$perPage);
 				
 			FBuildPage::addTab(array("MAINDATA"=>FPages::printPagelinkList($arrForums).$pagerStr));
 		}
