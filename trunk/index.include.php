@@ -35,20 +35,7 @@ FSystem::profile('PAGE DONE');
 //---profiling
 FSystem::profile('END');
 FSystem::profileLog();
-
-//---db stats
-$cache = FCache::getInstance('s');
-$statArr = $cache->getdata('stat','FDBTool');
-$text = '';
-$total = 0;
-$queries = 0;
-foreach($statArr as $query) {
-	$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
-	$total += $query['time'];
-	$queries++; 
-}
-file_put_contents(ROOT.'tmp/FDBTool::query::times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
-$cache->invalidatedata('stat','FDBTool');
+FDBTool::profileLog();
 
 //---close resources
 session_write_close();

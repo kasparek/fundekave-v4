@@ -504,7 +504,7 @@ class FDBTool {
 
 		//---stats
 		$qTime = FSystem::getmicrotime()-$start;
-		$cache = FCache::getInstance('s');
+		$cache = FCache::getInstance('l');
 		$statArr = $cache->getdata('stat','FDBTool');
 		if($statArr===false) $statArr = array();
 		$statArr[] = array('time'=>$qTime, 'q'=>$query);
@@ -521,6 +521,22 @@ class FDBTool {
 			die();
 		}
 		return $ret;
+	}
+	
+	private static function profileLog() {
+		//---db stats
+		$cache = FCache::getInstance('l');
+		$statArr = $cache->getdata('stat','FDBTool');
+		$text = '';
+		$total = 0;
+		$queries = 0;
+		foreach($statArr as $query) {
+			$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
+			$total += $query['time'];
+			$queries++; 
+		}
+		file_put_contents(ROOT.'tmp/FDBTool::query::times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
+		$cache->invalidatedata('stat','FDBTool');
 	}
 }
 
