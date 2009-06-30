@@ -6,9 +6,7 @@ class FAjax_post {
 		$recipientId = FUser::getUserIdByName($data['username']) * 1;
 		$ret = FAvatar::showAvatar($recipientId,array('showName'=>true,'withTooltip'=>true));
 		
-		//---create response
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse($data['result'],$data['resultProperty'],$ret);
+		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 	}
 	
 }

@@ -67,7 +67,7 @@ class FAjax_user {
 	}
 
 	static function poll($data) {
-		FAjax::addResponse('poll','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an'],true));
+		FAjax::addResponse('rh_anketa','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an']));
 		FAjax::addResponse('function','call','setPollListeners');
 	}
 
@@ -98,6 +98,21 @@ class FAjax_user {
 				//---create response
 				//---return new avatar
 				FAjax::addResponse('rh_login','html',FLeftPanelPlugins::rh_login());
+			}
+		}
+	}
+	static function postFilter($data) {
+		if(!empty($data['user'])) {
+			$userId = (int) $data['user'];
+			if(FUser::isUserIdRegistered($userId)) {
+				//---set filter for post
+				$cache = FCache::getInstance('s');
+				$cache->setData(FUser::getgidname($userId), 'name', 'filtrPost');
+				if(isset($data['s'])) {
+					if($data['s']=='s:received' || $data['s']=='s:sent') {
+						$cache->setData($data['s'], 'select', 'filtrPost');
+					}	
+				}
 			}
 		}
 	}
