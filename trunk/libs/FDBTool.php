@@ -523,7 +523,7 @@ class FDBTool {
 		return $ret;
 	}
 	
-	private static function profileLog() {
+	static function profileLog() {
 		//---db stats
 		$cache = FCache::getInstance('l');
 		$statArr = $cache->getdata('stat','FDBTool');
