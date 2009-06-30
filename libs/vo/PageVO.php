@@ -72,6 +72,7 @@ class PageVO extends FDBvo {
 
 	function PageVO($pageId=0, $autoLoad = false) {
 		parent::__construct();
+		$this->cacheResults = 's';
 		$this->pageId = $pageId;
 		if($autoLoad == true) {
 			$this->load();

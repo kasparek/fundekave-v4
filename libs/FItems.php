@@ -111,7 +111,8 @@ class FItems extends FDBTool {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
 		if($itemVO = $this->pop()) {
-			$this->fItemsRenderer->render($itemVO);
+			$this->fItemsRenderer->render( $itemVO );
+			FSystem::profile('FItems::parse--ITEM PARSED');
 			return true;
 		}
 	}

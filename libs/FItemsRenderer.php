@@ -66,6 +66,7 @@ class FItemsRenderer {
 		if(FRules::get($user->userVO->userId,$itemVO->pageId,2) || $itemVO->userId == $user->userVO->userId) {
 			$enableEdit=true;
 		}
+		FSystem::profile('FItemsRenderer::render--EDITABLE CHECKED',true);
 		/*.........zacina vypis prispevku.........*/
 		$tpl = $this->itemTpl($itemVO->typeId);
 		if($this->debug) print_r($this->tpl);
@@ -92,6 +93,8 @@ class FItemsRenderer {
 			}
 		}
 		if($this->showText==true && !empty($itemVO->text)) $tpl->setVariable('TEXT',$itemVO->text);
+		
+		FSystem::profile('FItemsRenderer::render--BASE DATA',true);
 
 		switch($itemVO->typeId) {
 			case 'event':
@@ -145,7 +148,9 @@ class FItemsRenderer {
 				/**
 				 * FORUM RENDERER
 				 */
-				if(!empty($itemVO->enclosure)) $tpl->setVariable('ENCLOSURE',FSystem::proccessItemEnclosure($itemVO->enclosure));
+				if(!empty($itemVO->enclosure)) {
+					$tpl->setVariable('ENCLOSURE',FSystem::proccessItemEnclosure($itemVO->enclosure));	
+				}
 				if($user->userVO->zavatar == 1) {
 					$avatar = FAvatar::showAvatar( (int) $itemVO->userId);
 					$tpl->setVariable('AVATAR',$avatar);
@@ -177,12 +182,14 @@ class FItemsRenderer {
 				}
 				break;
 		}
+		
+		FSystem::profile('FItemsRenderer::render--TYPE CUSTOM',true);
 
 		//---for logged users
 		if ($user->idkontrol && $this->showFooter==true) {
 			//---thumb tag link
 			if($this->showTag==true) {
-				$cache = FCache::getInstance('s',60);
+				$cache = FCache::getInstance('s',180);
 				if(false === $cache->getData($itemVO->itemId,'iTags')) $cache->setData($itemVO->tag_weight);
 				$tag = FItemTags::getTag($itemVO->itemId,$user->userVO->userId,$itemVO->typeId);
 				$tpl->setVariable('TAG', $tag);
@@ -197,14 +204,15 @@ class FItemsRenderer {
 					$tpl->touchBlock('authorlinkclose');
 				}
 				if($itemVO->typeId == 'forum') {
-					if ($user->isOnline( $itemVO->userId )) {
-						$kde = $user->getLocation( $itemVO->userId );
+					if (FUser::isOnline( $itemVO->userId )) {
+						$kde = FUser::getLocation( $itemVO->userId );
 						$tpl->setVariable('USERLOCATION',$kde['name']);
 						$tpl->setVariable('USERLOCATIONLINK',FUser::getUri('',$kde['pageId'],$kde['param']));
 					}
 				}
 			}
 		}
+		FSystem::profile('FItemsRenderer::render--REGISTERED USERS',true);
 
 		//---PAGE NAME
 		if($this->showPageLabel==true) {
@@ -213,6 +221,7 @@ class FItemsRenderer {
 			$tpl->setVariable('PAGELINK',FUser::getUri((($itemVO->typeId=='forum')?('&i='.$itemVO->itemId.'#i'.$itemVO->itemId):('')),$itemVO->pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 		}
+		FSystem::profile('FItemsRenderer::render--PAGE NAME',true);
 
 		//---BLOG / EVENT
 		if(isset($itemVO->addon)) {
@@ -234,6 +243,7 @@ class FItemsRenderer {
 				$tpl->setVariable('CNTCOMMENTS',$itemVO->cnt);
 			}
 		}
+		FSystem::profile('FItemsRenderer::render--ADDON PRESENT',true);
 
 		//---linked item
 		if($this->showBottomItem) {
@@ -249,11 +259,12 @@ class FItemsRenderer {
 					$tpl->setVariable('ITEMBOTTOM','<h3><a href="'.FUser::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>');
 				}
 			}
-
 		}
+		FSystem::profile('FItemsRenderer::render--LINK BOTTOM ITEM',true);
 
 		//---FINAL PARSE
 		$tpl->parseCurrentBlock();
+		FSystem::profile('FItemsRenderer::render--PARSE',true);
 
 		if($this->debug) {
 			print_r($tpl);

@@ -22,7 +22,8 @@ class page_ForumView implements iPage {
 
 	static function build() {
 		$user = FUser::getInstance();
-
+		FSystem::profile('page_ForumView--START');
+		
 		/* PALCE FILTER TOOLBAR */
 		if($user->idkontrol) {
 			if($user->pageParam=='') {
@@ -48,10 +49,10 @@ class page_ForumView implements iPage {
 			/* WEBCAMS */
 			$fuvatar =  new FUvatar();
 			FBuildPage::addTab(array("MAINDATA"=>$fuvatar->getLive()));
-
+			FSystem::profile('page_ForumView--FForum::show-BEFORE');
 			/* FORUM */
 			FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
-
+			FSystem::profile('page_ForumView--FForum::show-DONE');
 		}
 
 	}

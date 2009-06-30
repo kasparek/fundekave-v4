@@ -17,10 +17,7 @@ setlocale(LC_ALL,'cs_CZ.UTF-8');
 FConf::getInstance();
 
 //-------------------------------------------------------------time for debuging
-list($usec, $sec) = explode(" ",microtime());
-$start = ((float)$usec + (float)$sec);
-$cache = FCache::getInstance('l');
-$cache->setData($start,'start','debug');
+FSystem::profile('START');
 
 //---session settings - stored in db
 //require_once("fSession.php");
@@ -118,5 +115,6 @@ if(isset($user->pageVO->pageId{5})) {
 
 $user->whoIs = 0;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
-
+FSystem::profile('PARAMS/SESSION INIT DONE');
 $user->kde(); //---check user / load info / load page content / chechk page exist
+FSystem::profile('USER/PAGE CHECK DONE');

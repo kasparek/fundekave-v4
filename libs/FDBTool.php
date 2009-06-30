@@ -496,7 +496,20 @@ class FDBTool {
 
 	private static function getData($function, $query) {
 		$db = FDBConn::getInstance();
+		
+		//---stats
+		$start = FSystem::getmicrotime();
+		
 		$ret = $db->$function($query);
+
+		//---stats
+		$qTime = FSystem::getmicrotime()-$start;
+		$cache = FCache::getInstance('s');
+		$statArr = $cache->getdata('stat','FDBTool');
+		if($statArr===false) $statArr = array();
+		$statArr[] = array('time'=>$qTime, 'q'=>$query);
+		$cache->setdata($statArr);
+		
 		if (PEAR::isError($ret)) {
 			echo $ret->getMessage();
 			if(FConf::get('dboptions','debug') > 0) {
