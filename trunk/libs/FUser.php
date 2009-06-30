@@ -336,17 +336,11 @@ class FUser {
 	 * @return array[pageId,param,nameshort,name]
 	 */
 	static function getLocation($userId) {
-		$cache = FCache::getInstance('l');
-		if(($loc = $cache->getData($userId, 'Uloc')) !== false) {
-			$query = "SELECT s.location,s.params,ss.nameshort,ss.name
-    		FROM sys_users_logged as s join sys_pages as ss on s.location=ss.pageId and s.userId='".$userId."'";
-			$rid = $db->getRow($query);
-			if (!empty($rid)) {
-				$loc = array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
-				$cache->setData( $loc );
-			} else $cache->setData( '' );
+		$query = "SELECT s.location,s.params,ss.nameshort,ss.name FROM sys_users_logged as s join sys_pages as ss on s.location=ss.pageId and s.userId='".$userId."'";
+		$rid = FDBTool::getRow($query,'Uloc', 'user','l');
+		if (!empty($rid)) {
+			return array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
 		}
-		return $loc;
 	}
 
 	/**
@@ -356,7 +350,7 @@ class FUser {
 	 */
 	static function isUserIdRegistered($userId) {
 		$q = "select count(1) from sys_users where userId='".$userId."'";
-		return FDBTool::getOne($q, $userId, 'isId', 'l');
+		return ((FDBTool::getOne($q, $userId, 'isId', 'l')>0)?(true):(false));
 	}
 
 	/**
@@ -366,7 +360,7 @@ class FUser {
 	 */
 	static function isUsernameRegistered($name){
 		$q = "select count(1) from sys_users where (deleted=0 or deleted is null) and name like '".$name."'";
-		return FDBTool::getOne($q, $name, 'isReg', 'l');
+		return ((FDBTool::getOne($q, $name, 'isReg', 'l')>0)?(true):(false));;
 	}
 
 	/**

@@ -9,16 +9,16 @@ class FAjax_pages {
 			$data = LABEL_UNBOOK;
 		}
 		FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".($data['page'])."' AND userId='" . $data['user']."'");
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse('bookButt','html',$data);
+		
+		FAjax::addResponse('bookButt','html',$data);
 	}
 
 	static function booked($data) {
 		$user = FUser::getInstance();
 		if($user->$userVO->isFriend($data['user'])) $user->whoIs = $data['user'];
 		$fPages = new FPages($typeId,$user->$userVO->userId);
-		$fajax = FAjax::getInstance();
-		$fajax->addResponse('bookedContent','html',$fPages->printBookedList(true));
+		
+		FAjax::addResponse('bookedContent','html',$fPages->printBookedList(true));
 	}
 
 }

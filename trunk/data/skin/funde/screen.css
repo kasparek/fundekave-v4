@@ -73,23 +73,23 @@ div#sidebar h2 {
 	margin-bottom: 0.5em;
 }
 
-div#sidebar ul.onlineUsersList {
+div#sidebar ul.sidebarUsersList {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
-div#sidebar ul.onlineUsersList span.fn {
+div#sidebar ul.sidebarUsersList span.fn {
 	padding: 0 2px;
 	font-weight: bold;
 }
-div#sidebar ul.onlineUsersList span.fn a {
+div#sidebar ul.sidebarUsersList span.fn a {
   text-decoration: none;
 }
-div#sidebar ul.onlineUsersList img.userAvatar {
+div#sidebar ul.sidebarUsersList img.userAvatar {
   float: left;
   margin: 0 0.5em 0 0;
 }
-div#sidebar ul.onlineUsersList li {
+div#sidebar ul.sidebarUsersList li {
 	clear: left;
 overflow: hidden;
 	background: none;

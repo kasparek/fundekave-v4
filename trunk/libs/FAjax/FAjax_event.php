@@ -10,8 +10,7 @@ class FAjax_event {
 			$itemVO->enclosure = 'null';
 			$itemVO->save();
 			
-			$fajax = FAjax::getInstance();
-			$fajax->addResponse('flyerDiv', 'html', '');
+			FAjax::addResponse('flyerDiv', 'html', '');
 		}
 	}
 	static function edit($data) {
@@ -22,43 +21,40 @@ class FAjax_event {
 			return;
 		}
 
-		$fajax = FAjax::getInstance();
 		
-		$fajax->addResponse($data['result'], 'html', FEvents::editForm());
-
-		$fajax->addResponse('function','call','draftSetEventListeners');
-		$fajax->addResponse('function','call','datePickerInit');
-		$fajax->addResponse('function','call','fajaxform');
-		$fajax->addResponse('function','call','markItUpInit');
+		
+		FAjax::addResponse($data['result'], 'html', FEvents::editForm());
+		FAjax::addResponse('function','call','draftSetEventListeners');
+		FAjax::addResponse('function','call','datePickerInit');
+		FAjax::addResponse('function','call','fajaxform');
+		FAjax::addResponse('function','call','markItUpInit');
 		
 	}
 	static function submit($data) {
 		
 		$itemVO = FEvents::processForm( $data, false );
 		
-		$fajax = FAjax::getInstance();
-		
 		if(isset($data['uploadify'])) {
 			//---handle flyer upload
 			if($itemVO) {
 				$itemId = $itemVO->itemId;
-				$fajax->addResponse('flyerDiv', 'html', FEvents::editForm($itemId,'flyer'));
-				$fajax->addResponse('function','call','fajaxa');
-				$fajax->addResponse('item', 'value', $itemId);
+				FAjax::addResponse('flyerDiv', 'html', FEvents::editForm($itemId,'flyer'));
+				FAjax::addResponse('function','call','fajaxa');
+				FAjax::addResponse('item', 'value', $itemId);
 			}
 		} elseif($itemVO === false) {
 			//---item deleted
-			$fajax->addResponse('function','call','redirect;'.FUser::getUri('','event'));
+			FAjax::addResponse('function','call','redirect;'.FUser::getUri('','event'));
 			
 		} else {
 			$itemId=0;
 			if($itemVO) $itemId = $itemVO->itemId;
-			$fajax->addResponse('fajaxContent', 'html', FEvents::editForm($itemId));
+			FAjax::addResponse('fajaxContent', 'html', FEvents::editForm($itemId));
 					
-			$fajax->addResponse('function','call','draftSetEventListeners');
-			$fajax->addResponse('function','call','datePickerInit');
-			$fajax->addResponse('function','call','fajaxform');
-			$fajax->addResponse('function','call','markItUpInit');
+			FAjax::addResponse('function','call','draftSetEventListeners');
+			FAjax::addResponse('function','call','datePickerInit');
+			FAjax::addResponse('function','call','fajaxform');
+			FAjax::addResponse('function','call','markItUpInit');
 			
 		}
 	}

@@ -74,7 +74,7 @@ class page_UserPost implements iPage {
 		}
 		
 		//---redirect				
-		if ($redir==true) {
+		if ($redir == true) {
 			FHTTP::redirect(FUser::getUri());
 		}
 		
@@ -152,6 +152,9 @@ class page_UserPost implements iPage {
 		}
 		if ($filterUsername) {
 			$tpl->setVariable('FILTERUSERNAME',$filterUsername);
+		}
+		if ($filterText || $filterUsername) {
+			$tpl->setVariable('FILTRCANCELLINK',FUser::getUri('filtr=cancel'));
 		}
 		
 		if($totalItems > $perPage) {
