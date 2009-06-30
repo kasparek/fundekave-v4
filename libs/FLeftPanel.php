@@ -30,7 +30,7 @@ class FLeftPanel extends FDBTool {
 		$this->panelsUsed = array();
 
 		$cache = FCache::getInstance( 's' );
-		if( !$arrTmp = $cache->getData($this->pageId.'-'.($this->userId*1),'sidebarSet') ) {
+		if( false === ($arrSidebar = $cache->getData($this->pageId.'-page-'.($this->userId*1).'-user','sidebarSet')) ) {
 
 			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
 			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
@@ -54,8 +54,7 @@ class FLeftPanel extends FDBTool {
 				$this->queryReset();
 			}
 
-			$cache->setData( $arrTmp );
-		}
+			
 
 		$arrGrouped = array();
 		//---group
@@ -112,8 +111,6 @@ class FLeftPanel extends FDBTool {
 
 		}
 
-		$arrTmp = array();
-
 		//---sort
 		foreach($arrGrouped as $k=>$row) {
 			$arrSorted[$k] = $row['ord'];
@@ -128,13 +125,13 @@ class FLeftPanel extends FDBTool {
 			$arrUsed[] = $functionName;
 
 		}
-
-		$arrSorted = array();
-		$arrGrouped = array();
+		$arrSidebar=array('arrFinal'=>$arrFinal,'arrUsed'=>$arrUsed);
+		$cache->setData( $arrSidebar );
+		}
 
 		//---sorted visible panels for given page and user if logged in
-		$this->panels = $arrFinal;
-		$this->panelsUsed = $arrUsed;
+		$this->panels = $arrSidebar['arrFinal'];
+		$this->panelsUsed = $arrSidebar['arrUsed'];
 	}
 
 	function show() {

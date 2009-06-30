@@ -225,21 +225,17 @@ class FBuildPage {
 		$tpl->setVariable("TITLE", (!empty($pageTitle)?($pageTitle.' - '):('')).BASEPAGETITLE);
 		if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 		if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
-
 		//---BODY PARAMETERS
 		//---MAIN MENU
 		$arrMenuItems = FSystem::topMenu();
-		if(!empty($arrMenuItems)) {
-			foreach($arrMenuItems as $menuItem) {
+			while($arrMenuItems) {
+			 $menuItem = array_shift($arrMenuItems);
 				$tpl->setCurrentBlock("topmenuitem");
 				$tpl->setVariable('LINK',$menuItem['LINK']);
 				$tpl->setVariable('TEXT',$menuItem['TEXT']);
-				if($menuItem['ACTIVE']==1) {
-					$tpl->touchBlock('topmenuactivelink');
-				}
+				if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
 				$tpl->parseCurrentBlock();
 			}
-		}
 		FSystem::profile('FBuildPage--FSystem::topMenu');
 
 		//---BANNER
@@ -262,7 +258,6 @@ class FBuildPage {
 					$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
 					if(!empty($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
 					if(!empty($menuItem['CLASS'])) $tpl->setVariable('CLASS',$menuItem['CLASS']);
-					if(isset($menuItem['ACTIVE'])) $tpl->touchBlock('secondary-menu-activelink');
 					if(isset($menuItem['OPPOSITE']))  $tpl->touchBlock('secondary-menu-oppositebutton');
 					$tpl->parseCurrentBlock();
 				}
