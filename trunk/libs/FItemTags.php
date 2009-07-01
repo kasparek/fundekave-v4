@@ -41,7 +41,7 @@ class FItemTags {
 		}
 	}
 
-	static function getTag($itemId,$userId,$typeId='') {
+	static function getTag($itemId,$userId,$typeId='',$sum=false) {
 		if($typeId=='') {
 			$typeId = FDBTool::getOne("select typeId from sys_pages_items where itemId='".$itemId."'");
 		}
@@ -60,16 +60,25 @@ class FItemTags {
 		}
 		$template = str_replace('{TYPE}',$typeId,$template);
 		
-		$tpl = new FTemplateIT($template);
+		//$tpl = new FTemplateIT($template);
+		
+		$tpl = file_get_contents(ROOT.ROOT_TEMPLATES.$template);
 		if($isTagged !== true) {
-			$tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:a'));
+			//$tpl->setVariable('URLACCEPT',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:a'));
+			$tpl = str_replace('{URLACCEPT}',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:a'),$tpl);
 		} else {
-			$tpl->setVariable('URLREMOVE',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:r'));
+			$tpl = str_replace('{URLREMOVE}',FUser::getUri('m=user-tag&d=item:'.$itemId.';a:r'),$tpl);
 		}
+		/*
 		$tpl->setVariable('ITEMID',$itemId);
 		$tpl->setVariable('CSSSKINURL',FUser::getSkinCSSFilename());
 		$tpl->setVariable('SUM',FItemTags::totalTags($itemId));
 		return $tpl->get();
+		*/
+		$tpl = str_replace('{ITEMID}',$itemId,$tpl);
+		$tpl = str_replace('{CSSSKINURL}',FUser::getSkinCSSFilename(),$tpl);
+		$tpl = str_replace('{SUM}',(($sum!==false)?($sum):(FItemTags::totalTags($itemId))),$tpl);
+		return $tpl;
 	}
 
 	static function getItemTagList($itemId) {
