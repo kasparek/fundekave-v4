@@ -326,8 +326,9 @@ class FUser {
 	 * @return [0,1]
 	 */
 	function isOnline($userId){
-		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated AND userId=".$userId;
-		return FDBTool::getOne($q, $userId, 'isOn', 'l');
+		$q = "select userId from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
+		$arr = FDBTool::getCol($q, 'isOn', 'user', 'l');
+		return in_array($userId,$arr);
 	}
 
 	/**

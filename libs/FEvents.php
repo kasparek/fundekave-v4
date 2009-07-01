@@ -1,16 +1,18 @@
 <?php
 class FEvents {
+
 	static function thumbName($flyerName) {
-		$arrTmp = explode('.',$flyerName);
-		return str_replace($arrTmp[count($arrTmp)-1],'jpg',$flyerName);
+		return str_replace(FSystem::fileExt($flyerName),'jpg',$flyerName);
 	}
+	
 	static function thumbUrl($flyerName) {
-		$conf = FConf::getInstance();
-		return $conf->a['events']['flyer_cache'] . FEvents::thumbName($flyerName);
+		return FConf::get('events','flyer_cache') . FEvents::thumbName($flyerName);
 	}
+	
 	static function flyerUrl($flyerName) {
 		return FConf::get('events','flyer_source') . $flyerName;
 	}
+	
 	static function createThumb($imageName) {
 		//---create paths
 		$flyerFilename = FEvents::flyerUrl($imageName);
