@@ -27,15 +27,13 @@ ini_set('session.gc_probability',1);
 ini_set('session.save_path', ROOT.'tmp/');
 
 session_start();
-
+FSystem::profile('FUse::before instance');
 $user = FUser::getInstance();
-
-$user->pageVO = new PageVO();
-$user->itemVO = new ItemVO();
+FSystem::profile('FUse::after instance');
 
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
-	$user->pageVO->pageId = array_shift($kArr);
+	$pageId = array_shift($kArr);
 	while($kArr) {
 		$kvArr = explode('=',array_shift($kArr));
 		if(isset($kvArr[1])) {
@@ -44,10 +42,10 @@ if(!empty($_REQUEST["k"])) {
 	}
 }
 
-if(isset($_REQUEST['m']) && empty($user->pageVO->pageId)) {
+if(isset($_REQUEST['m']) && empty($pageId)) {
 	$cache = FCache::getInstance('s');
-	if(false !== ($pageId = $cache->getData('lastPage'))) {
-		$user->pageVO->pageId = $pageId;
+	if(false !== ($pageIdTmp = $cache->getData('lastPage'))) {
+		$pageId = $pageIdTmp;
 	}
 }
 
@@ -58,10 +56,12 @@ if(isset($_GET['kam'])) {
 	elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
 	$els='';
 	for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-	$user->pageVO->pageId = $add . $els . $kam;
+	$pageId = $add . $els . $kam;
 }
 
 //---u=username
+//TODO:refactor
+/*
 if(isset($_GET['u'])) {
 	$userId = FUser::getUserIdByName($_GET['u']);
 	if($userId > 0) {
@@ -70,45 +70,51 @@ if(isset($_GET['u'])) {
 		$userVO->load();
 		$usersPageId = $userVO->getXMLVal('personal','HomePageId');
 		if(!empty($usersPageId)) {
-			$user->pageVO->pageId = (string) $usersPageId;
+			$pageId = (string) $usersPageId;
 		}
 	}
-}
+}*/
+$itemId = 0;
 
 if(!empty($_REQUEST["i"])) {
-	$user->itemVO->itemId = (int) $_REQUEST['i'];
+	$itemId = (int) $_REQUEST['i'];
 } elseif(isset($_REQUEST['nid'])) {
 	//---backwards compatibility
-	$user->itemVO->itemId = (int) $_REQUEST['nid'];
+	$itemId = (int) $_REQUEST['nid'];
 }
 
-if ($user->itemVO->itemId > 0) {
+if ($itemId > 0) {
+  $user->itemVO = new ItemVO($itemId);
 	$user->itemVO->checkItem();
-	if(empty($user->pageVO->pageId)) {
-		$user->pageVO->pageId = $user->itemVO->pageId;
-	}
+	if($user->itemVO->itemId > 0) {
+  	if(empty($pageId)) {
+  		$pageId = $user->itemVO->pageId;
+  	}
+	} else {
+    $user->itemVO = false;
+  }
 }
 
-if(empty($user->pageVO->pageId)) $user->pageVO->pageId = HOME_PAGE;
+if(empty($pageId)) $pageId = HOME_PAGE;
 
-if(isset($user->pageVO->pageId{5})) {
+if(isset($pageId{5})) {
 	//---remove the part behind - it is just nice link
-	if(false!==($pos=strpos($user->pageVO->pageId,'-'))) {
-		$textLink = substr($user->pageVO->pageId,$pos+1);
+	if(false!==($pos=strpos($pageId,'-'))) {
+		$textLink = substr($pageId,$pos+1);
 		//TODO: security check if textlink match with pageid -  otherwise do redirect
-		$user->pageVO->pageId = substr($user->pageVO->pageId,0,$pos);
+		$pageId = substr($pageId,0,$pos);
 	}
 	//---slice pageid on fiveid and params
-	if(isset($user->pageVO->pageId{5})) {
-		if($user->pageVO->pageId{5}==';') {
-			$getArr = explode(";",substr($user->pageVO->pageId,5));
+	if(isset($pageId{5})) {
+		if($pageId{5}==';') {
+			$getArr = explode(";",substr($pageId,5));
 			foreach ($getArr as $getVar) {
 				$getVarArr = explode("=",$getVar);
 				$_GET[$getVarArr[0]] = $getVarArr[1];
 			}
 		} else {
-			$user->pageParam = substr($user->pageVO->pageId,5);
-			$user->pageVO->pageId = substr($user->pageVO->pageId,0,5);
+			$user->pageParam = substr($pageId,5);
+			$pageId = substr($pageId,0,5);
 		}
 	}
 }
@@ -116,5 +122,6 @@ if(isset($user->pageVO->pageId{5})) {
 $user->whoIs = 0;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 FSystem::profile('PARAMS/SESSION INIT DONE');
+$user->pageId = $pageId;
 $user->kde(); //---check user / load info / load page content / chechk page exist
 FSystem::profile('USER/PAGE CHECK DONE');

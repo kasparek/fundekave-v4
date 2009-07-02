@@ -96,7 +96,7 @@ class FForum extends FDBTool {
 		$pageId = $user->pageVO->pageId;
 		$logon = $user->idkontrol;
 	  		
-		if($user->itemVO->itemId > 0) {
+		if($user->itemVO) {
 			$data['itemIdTop'] = $user->itemVO->itemId;
 		}
 		
@@ -259,7 +259,7 @@ class FForum extends FDBTool {
 		
 		//---DEEPLINKING
 		$manualCurrentPage = 0;
-		if($user->itemVO->itemId > 0 || $itemIdInside > 0) {
+		if($user->itemVO || $itemIdInside > 0) {
 			if($user->itemVO->itemId > 0 && $user->itemVO->typeId=='forum') {
 				$itemIdInside = $user->itemVO->itemId;	
 			}
@@ -319,7 +319,7 @@ class FForum extends FDBTool {
 		FSystem::profile('FForum::show--FORM');
 		//---END FORM
 		$itemRenderer = new FItemsRenderer();
-		$fItems = new FItems('forum',true,$itemRenderer);
+		$fItems = new FItems('forum',false,$itemRenderer);
 		$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 		if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
 		if(!empty($filterTxt)) {
@@ -354,11 +354,8 @@ class FForum extends FDBTool {
 				$tpl->setVariable('BOTTOMPAGER',$pager->links);
 			}
 			$mess = '';
-			while ($fItems->data) {
-				$fItems->parse();
-			}
 			 
-			$tpl->setVariable('MESSAGES',$fItems->show());
+			$tpl->setVariable('MESSAGES',$fItems->render());
 			if($formAtEnd===true) {
 				//---remove posts block and place it on POSTSONTOP
 				//TODO: think if needed form on end
@@ -372,7 +369,12 @@ class FForum extends FDBTool {
 			FSystem::profile('FForum::show--READED UPDATE');
 		} else $tpl->touchBlock('messno');
 
-		return $tpl->get();
+    $ret = $tpl->get();
+    $tpl = false;
+    $itemRenderer = false;
+    $fItems = false;
+    $pager = false;
+		return $ret;
 	}
 
 }

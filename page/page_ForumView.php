@@ -29,7 +29,7 @@ class page_ForumView implements iPage {
 			if($user->pageParam=='') {
 				if(isset($_GET['s']) || FItemsToolbar::isToolbarEnabled()) {
 					//---show enabled toolbar
-					$TOPTPL->addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar(false)));	
+					FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar(false)));	
 				} else {
 					//---button to enable toolbar
 					FSystem::secondaryMenuAddItem(FUser::getUri('m=items-tool'), FLang::$LABEL_THUMBS,0,'itemsTool');
@@ -49,6 +49,7 @@ class page_ForumView implements iPage {
 			/* WEBCAMS */
 			$fuvatar =  new FUvatar();
 			FBuildPage::addTab(array("MAINDATA"=>$fuvatar->getLive()));
+			$fuvatar = false;
 			FSystem::profile('page_ForumView--FForum::show-BEFORE');
 			/* FORUM */
 			FBuildPage::addTab(array("MAINDATA"=>FForum::show()));

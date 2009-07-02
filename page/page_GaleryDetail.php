@@ -4,7 +4,7 @@ class page_GaleryDetail implements iPage {
 
 	static function process($data) {
 		$user = FUser::getInstance();
-		if($user->itemVO->itemId > 0) {
+		if($user->itemVO) {
 			$data['itemIdTop'] = $user->itemVO->itemId;
 			FForum::process($data, "FGalery::callbackForumProcess");
 		}

@@ -333,7 +333,7 @@ $user = FUser::getInstance();
 	}
 
 	static function profile($comment='',$group=false) {
-		$arr = array('group'=>$group,'comment'=>$comment,'time'=>FSystem::getmicrotime(),'memUsage'=>round(memory_get_usage()/1024),'memPeak'=>round(memory_get_usage()/1024));
+		$arr = array('group'=>$group,'comment'=>$comment,'time'=>FSystem::getmicrotime(),'memUsage'=>round(memory_get_usage()/1024),'memPeak'=>round(memory_get_peak_usage()/1024));
 		$cache = FCache::getInstance('l');
 		$cachedArr = $cache->getData('profile','FSystem');
 		if($cachedArr===false) $cachedArr = array();
@@ -348,6 +348,7 @@ $user = FUser::getInstance();
 		$total = 0;
 		$startTime = $statArr[0]['time'];
 		$lastTime = $startTime;
+		$lastMemUsage = 0;
 		foreach($statArr as $profil) {
 			if($profil['group']==true) {
 				if(!isset($groupLastTime)) $groupLastTime = $lastTime;
@@ -356,9 +357,11 @@ $user = FUser::getInstance();
 				$groupLastTime = $profil['time'];
 			} else {
 				$text .= round($profil['time']-$lastTime,4) . ' :: ' . round($profil['time']-$startTime,4)
+				. ' :: ' . ($profil['memUsage']-$lastMemUsage)
 				. ' :: ' . $profil['comment'] 
 				. ' :: ' . $profil['memUsage']. ' :: ' .$profil['memPeak']. "\n";
 				$lastTime = $profil['time'];
+				$lastMemUsage = $profil['memUsage'];
 			}
 		}
 		$text .= "\n---GROUPED----\n\n";

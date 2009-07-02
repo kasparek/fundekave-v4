@@ -1,5 +1,8 @@
 <?php
-class ItemVO extends FDBvo {
+class ItemVO {
+
+var $table = 'sys_pages_items';
+			var $primaryCol = 'itemId';
 
 	var $options = array();
 
@@ -95,14 +98,14 @@ class ItemVO extends FDBvo {
 		var $detailHeight;
 		var $detailUrlToGalery;
 		var $detailUrlToPopup;
+		
+		//---watcher
+		var $saveOnlyChanged = false;
+	 var $changed = false;
 
 		function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
-			$this->table = 'sys_pages_items';
-			$this->primaryCol = 'itemId';
 			if(isset($options['type'])) $this->typeId = $options['type'];
 			$this->options = $options;
-			parent::__construct();
-			$this->cacheResults = 0; //--- for items we cache localy
 			$this->itemId = $itemId;
 			if($autoLoad == true) {
 				$this->load();
@@ -137,7 +140,12 @@ class ItemVO extends FDBvo {
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
 			if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
-				parent::load();
+			
+				$vo = new FDBvo( $this );
+      $vo->load();
+    $vo->vo = false;
+    $vo = false;
+				
 				$this->prepare();
 			} else {
 				$this->reload($itemVO);
@@ -152,7 +160,11 @@ class ItemVO extends FDBvo {
 		}
 
 		function map($arr) {
-			parent::map($arr);
+			if(!empty($arr)) {
+			foreach($arr as $k=>$v) {
+				$this->{$k} = $v;
+			}
+		}
 			$this->prepare();
 			//---save in cache
 			$cache = FCache::getInstance('l');
@@ -160,7 +172,8 @@ class ItemVO extends FDBvo {
 		}
 
 		function save() {
-			$this->resetIgnore();
+		$vo = new FDBvo( $this );
+			$vo->resetIgnore();
 			if($this->itemId > 0) {
 				//---update
 
@@ -168,7 +181,7 @@ class ItemVO extends FDBvo {
 				//---insert
 				if(empty($this->dateCreated)) {
 					$this->dateCreated = 'now()';
-					$this->notQuote('dateCreated');
+					$vo->notQuote('dateCreated');
 				}
 				if($this->itemIdTop > 0) {
 					ItemVO::incrementReactionCount( $this->itemIdTop );
@@ -178,8 +191,8 @@ class ItemVO extends FDBvo {
 				$cache = FCache::getInstance('f');
 			   $cache->invalidateData($this->pageId.'-page', 'fitGrp');
 			}
-			$this->columns = ItemVO::getTypeColumns();
-			$itemId = parent::save();
+			$vo->columns = ItemVO::getTypeColumns();
+			$itemId = $vo->save();
 			//---update stats
 			ItemVO::statPage($this->pageId, FUser::logon(), false);
 			//---update in cache
@@ -191,7 +204,12 @@ class ItemVO extends FDBvo {
 		
 		function delete() {
 			$itemId = $this->itemId;
-			parent::delete();
+			
+			$vo = new FDBvo( $this );
+    $vo->delete();
+    $vo->vo = false;
+    $vo = false;
+			
 			if($this->itemIdTop > 0) {
 				ItemVO::incrementReactionCount( $itemVO->itemIdTop, false );
 			} else {

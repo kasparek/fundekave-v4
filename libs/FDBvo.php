@@ -1,18 +1,23 @@
 <?php
 class FDBvo extends FDBTool {
-	var $saveOnlyChanged = false;
-	var $changed = false;
+
+	var $vo;
 	
-	function __construct() {
-		parent::__construct($this->table, $this->primaryCol);
-		$this->parseTableDef();
+	function __construct( &$vo ) {
+	 $this->columns = $vo->columns;
+		parent::__construct($vo->table, $vo->primaryCol);
 		$this->fetchmode = 1;
+		if(!isset($vo->cacheResults)) {
 		$this->cacheResults = 'l';
+		} else {
+		$this->cacheResults = $vo->cacheResults;
+    }
+    $this->vo = $vo;
 	}
 	
 	function set($key, $value, $params=array()) {
 		$changed = false;
-		if(property_exists($this,$key)) {
+		if(property_exists($this->vo,$key)) {
 			//---verify
 			if(isset($params['type'])) {
 				switch($params['type']) {
@@ -23,22 +28,22 @@ class FDBvo extends FDBTool {
 				}
 			}
 			//---check if changed
-			if($this->{$key} != $value) {
+			if($this->vo->{$key} != $value) {
 				$changed = true;
-				$this->changed = $changed; 
+				$this->vo->changed = $changed; 
 			}
 			//---set
-			$this->{$key} = $value;
+			$this->vo->{$key} = $value;
 			
 		}
 		return $changed;
 	}
 
 	function load() {
-		$arr = $this->get( $this->{$this->primaryCol} );
+		$arr = $this->get( $this->vo->{$this->primaryCol} );
 		if(!empty($arr)) {
 			foreach($arr as $k=>$v) {
-				$this->$k = $v;
+				$this->vo->{$k} = $v;
 			}
 		}
 	}
@@ -46,29 +51,29 @@ class FDBvo extends FDBTool {
 	function map($arr) {
 		if(!empty($arr)) {
 			foreach($arr as $k=>$v) {
-				$this->$k = $v;
+				$this->vo->{$k} = $v;
 			}
 		}
 	}
 	
 	function save() {
-		if($this->changed === true || $this->saveOnlyChanged === false) {
+		if($this->vo->changed === true || $this->vo->saveOnlyChanged === false) {
 			$this->queryReset();
 			foreach($this->columns as $col) {
-				if( $this->$col !== null ) {
+				if( $this->vo->$col !== null ) {
 					$this->addCol($col, $this->$col);
-					if($this->$col == 'null') {
+					if($this->vo->$col == 'null') {
 						$this->notQuote($col);
-						$this->$col = null;
+						$this->vo->$col = null;
 					}
 				}
 			}
-			$this->changed = false;
-			return $this->{$this->primaryCol} = parent::save();
+			$this->vo->changed = false;
+			return $this->vo->{$this->primaryCol} = parent::save();
 		}
 	}
 	
 	function delete() {
-		parent::delete($this->{$this->primaryCol});
+		parent::delete($this->vo->{$this->primaryCol});
 	}
 }

@@ -77,7 +77,8 @@ class FAjax {
 		$data = $fajax->responseData;
 		$originalData = $fajax->data;
 		
-		$tpl = new FTemplateIT('fajax.xml');
+		$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+		$tpl->loadTemplatefile('fajax.xml');
 		
 		//---process original data
 		foreach($originalData as $k=>$v) {

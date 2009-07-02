@@ -58,7 +58,6 @@ class FRules {
 	}
 
 	static function get($usr,$page,$type=1) {
-		$db = FDBConn::getInstance();
 		$ret=false;
 		$cache = FCache::getInstance('s');
 		if(false === ($retVal = $cache->getData($usr.'-'.$page.'-'.$type, 'fRules'))) {
@@ -68,7 +67,7 @@ class FRules {
 			left join sys_users_perm as r 
 			on r.pageId=s.pageId and r.userId='".$usr."'
 			where s.pageId='".$page."'";
-			$arr = $db->getRow($dot);
+			$arr = FDBTool::getRow($dot);
 			if($arr[3] == $usr) $ret = true;
 			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
 			elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher

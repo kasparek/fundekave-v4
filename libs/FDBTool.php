@@ -35,7 +35,6 @@ class FDBTool {
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
 	var $primaryCol = '';
-	var $tableDef;
 	var $columns;
 
 	private $_where = array();
@@ -76,29 +75,6 @@ class FDBTool {
 		$this->variablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')' . $this->closingDelimiter . '@sm';
 		$this->replaceKeys = array_keys($this->replaceVars);
 		$this->primaryCol = $primaryCol;
-	}
-
-	function parseTableDef() {
-		if(!empty($this->tableDef)) {
-			require_once('SQL/Parser.php');
-			$parser = new SQL_Parser($this->tableDef,'MySQL');
-			$parsed = $parser->parse();
-			if (PEAR::isError($parsed)) {
-				die('SQL Parser Error');
-			}else {
-				$this->table = $parsed['table_names'][0];
-			}
-			foreach($parsed["column_defs"] as $k=>$v) {
-				$this->columns[$k] = $k;
-				if(isset($v["constraints"])) {
-					foreach($v["constraints"] as $constr) {
-						if($constr["type"]=='primary_key') {
-							$this->primaryCol = $k;
-						}
-					}
-				}
-			}
-		}
 	}
 
 	function queryReset() {
@@ -501,6 +477,8 @@ class FDBTool {
 		$start = FSystem::getmicrotime();
 		
 		$ret = $db->$function($query);
+		$db->freePrepared($query);
+		$db = false;
 
 		//---stats
 		$qTime = FSystem::getmicrotime()-$start;
