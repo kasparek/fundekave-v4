@@ -1,6 +1,7 @@
 <?php
 class FBuildPage {
 	private static $instance;
+	private static $tabsArr;
 
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
@@ -10,14 +11,13 @@ class FBuildPage {
 	}
 
 	static function addTab($arrVars) {
-		$tpl = FBuildPage::getInstance();
-		$tpl->addTab($arrVars);
+	   self::$tabsArr[] = $arrVars;
+		//$tpl = FBuildPage::getInstance();
+		//$tpl->addTab($arrVars);
 	}
-
-	static function printErrorMsg() {
-		$tpl = FBuildPage::getInstance();
-		$tpl->printErrorMsg();
-	}
+	static function getTabs() {
+	 return self::$tabsArr;
+  }
 
 	static function getTemplate($template) {
 		$old = array(
@@ -62,7 +62,6 @@ class FBuildPage {
 	}
 
 	static function process( $data ) {
-		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
 			if($user->pageParam=='sa' || $user->pageParam == 'e') $template = 'page_PageEdit';
@@ -73,6 +72,9 @@ class FBuildPage {
 					if( class_exists($template) ) {
 						$c = new $template;
 						$c->process( $data );
+						//---destruct
+            $c = false;
+						$template = false;
 					}
 				}
 			}
@@ -130,6 +132,7 @@ class FBuildPage {
 					if( class_exists($template) ) {
 						$c = new $template;
 						$c->build();
+						$c = false;
 					}
 					FSystem::profile('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
@@ -149,7 +152,7 @@ class FBuildPage {
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 			
-			if(!empty($user->pageParam) || $user->itemVO->itemId > 0) {
+			if(!empty($user->pageParam) || $user->itemVO > 0) {
 				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
 			
@@ -187,9 +190,17 @@ class FBuildPage {
 		FSystem::profile('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
+		
+		$tabsArr = FBuildPage::getTabs();
+		if($tabsArr) {
+		foreach($tabsArr as $tab) {
+		  $tpl->addTab($tab);
+		}
+		}
+		
 		$user = FUser::getInstance();
 		//---ERROR MESSAGES
-		FBuildPage::printErrorMsg();
+		$tpl->printErrorMsg();
 		//---HEADER
 		$cssPath = $user->getSkinCSSFilename();
 		$tpl->setVariable("CSSSKIN", $cssPath);
@@ -270,6 +281,7 @@ class FBuildPage {
 		$fLeftpanel->load();
 		$fLeftpanel->show();
 		FSystem::profile('FBuildPage--FLeftPanel');
+		$fLeftpanel = false;
 
 		//---FOOTER INFO
 		$cache = FCache::getInstance('l');

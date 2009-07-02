@@ -128,7 +128,9 @@ class FItems extends FDBTool {
 			while ($this->data) {
 				$this->parse();
 			}
-			return $this->show();
+			$ret = $this->show();
+			$this->fItemsRenderer = false;
+			return $ret;
 		} else {
 			return false;
 		}

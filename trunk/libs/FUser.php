@@ -8,6 +8,7 @@ class FUser {
 	var $pageVO;
 	var $itemVO;
 
+  var $pageId;
 	var $pageParam; //---replacing ->currentPageParam
 
 	//---used when looking after someone informations
@@ -164,9 +165,10 @@ class FUser {
 				$this->userVO = new UserVO();
 			}
 		}
-		if($this->pageVO) {
+		FSystem::profile('FUser::kde::1');
+		if($this->pageId) {
 			//---logout action
-			if( $this->pageVO->pageId == 'elogo') {
+			if( $this->pageId == 'elogo') {
 				if($this->userVO->userId > 0) {
 					$this->logout();
 					FError::addError(FLang::$MESSAGE_LOGOUT_OK);
@@ -174,13 +176,16 @@ class FUser {
 				}
 			}
 			//---try load current page
-			$this->pageVO->load();
+			$this->pageVO = new PageVO($this->pageId,true);
+			FSystem::profile('FUser::kde::2');
 			if(empty($this->pageVO->pageId)) {
 				$this->pageAccess = false;
+				$this->pageId = false;
 				FError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
 			} else {
 				$this->pageAccess = true;
 			}
+			FSystem::profile('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
 		if($this->pageAccess == true) {
@@ -188,6 +193,7 @@ class FUser {
 			if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 			//---check if user is logged
 			$this->check();
+			FSystem::profile('FUser::kde::4');
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if(!empty($this->pageParam)) {
@@ -195,6 +201,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
+			FSystem::profile('FUser::kde::5');
 			if($this->pageVO) {
 				$permPage = $this->pageVO->pageId;
 				if($permissionNeeded==3) {
@@ -210,6 +217,7 @@ class FUser {
 						}
 					}
 				}
+				FSystem::profile('FUser::kde::6');
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
 					$this->pageAccess = false;
@@ -220,6 +228,7 @@ class FUser {
 					$cache->setData($this->pageVO->pageId,'lastPage');
 				}
 			}
+			FSystem::profile('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
@@ -233,9 +242,10 @@ class FUser {
 			where loginId='".$this->userVO->idlogin."'");
 					
 				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
-
+FSystem::profile('FUser::kde::8');
 			}
 		}
+		$cache = false;
 	}
 	
 	function pageStat() {
@@ -401,7 +411,7 @@ class FUser {
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
 
-		if( empty($pageId) && $user->itemVO->itemId > 0 ) {
+		if( empty($pageId) && $user->itemVO ) {
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}

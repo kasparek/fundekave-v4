@@ -39,22 +39,22 @@ class FItemsRenderer {
 		}
 	}
 
+
 	function &itemTpl($typeId='') {
 		
-		if($this->tpl && $typeId!='' && $typeId!=$this->tplType) {
+		if($this->tpl && $typeId!='' && $typeId != $this->tplType) {
 			$this->tplParsed .= $this->tpl->get();
 			$this->tpl = false;
 		}
 		
 		if(!$this->tpl && $typeId!='') {
-			$this->tpl = new FTemplateIT($this->getTemplateName($typeId));
+			$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$this->tpl->loadTemplatefile($this->getTemplateName($typeId));
 			$this->tplType = $typeId;
 		}
 		
 		return $this->tpl;
 	}
-
-
 
 	function render( $itemVO ) {
 		$user = FUser::getInstance();
@@ -75,7 +75,7 @@ class FItemsRenderer {
 		}
 		FSystem::profile('FItemsRenderer::render--EDITABLE CHECKED',true);
 		/*.........zacina vypis prispevku.........*/
-		$tpl = $this->itemTpl($typeId);
+		$tpl = $this->itemTpl( $typeId );
 		
 		$tpl->setCurrentBlock('item');
 		//---common for all items
@@ -250,7 +250,7 @@ class FItemsRenderer {
 		FSystem::profile('FItemsRenderer::render--ADDON PRESENT',true);
 
 		//---linked item
-		if($this->showBottomItem) {
+		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
 				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showPageLabel'=>true));
 				if(FRules::get($userId, $itemVOBottom->pageId,1)) {
@@ -270,17 +270,15 @@ class FItemsRenderer {
 		$tpl->parseCurrentBlock();
 		FSystem::profile('FItemsRenderer::render--PARSE',true);
 
-		
-
 	}
 
 	function show() {
-		$tpl = & $this->itemTpl();
+		$tpl = $this->tpl;
 		$ret = $this->tplParsed;
 		$this->tplParsed = '';
 		if($tpl) {
 			$ret .= $tpl->get();
-			$tpl = false;
+			$this->tpl = false;
 		}
 		return $ret;
 	}

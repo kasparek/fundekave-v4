@@ -276,10 +276,12 @@ class FLeftPanel extends FDBTool {
 	}
 	function showEdit() {
 
-		$tpl = new FTemplateIT('leftpanel.page.set.tpl.html');
+		//$tpl = new FTemplateIT('leftpanel.page.set.tpl.html');
+		$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$this->tpl->loadTemplatefile('leftpanel.page.set.tpl.html');
+
 
 		$this->load(true);
-
 
 		foreach ($this->panels as $panel) {
 			$tpl->setCurrentBlock('panelrow');
@@ -301,8 +303,9 @@ class FLeftPanel extends FDBTool {
 		if(!empty($arr)) {
 			$tpl->setVariable('AVAILABLEPANELS',FSystem::getOptions($arr,'',true,''));
 		}
-
-		return $tpl->get();
+    $rer = $tpl->get();
+    $tpl=false;
+		return $ret;
 	}
 
 }

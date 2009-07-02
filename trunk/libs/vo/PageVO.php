@@ -1,29 +1,33 @@
 <?php
-class PageVO extends FDBvo {
-	var $tableDef = 'CREATE TABLE sys_pages (
-     pageId varchar(5) NOT NULL PRIMARY KEY
-     , pageIdTop varchar(5) DEFAULT NULL
-     , typeId VARCHAR(10) DEFAULT null
-     , typeIdChild VARCHAR(10) DEFAULT null
-     , categoryId SMALLINT unsigned DEFAULT null
-     , menuSecondaryGroup VARCHAR(10) DEFAULT null
-     , template VARCHAR(50) DEFAULT null
-     , name VARCHAR(100) NOT NULL
-     , nameshort VARCHAR(20) NOT NULL
-     , description TEXT
-     , content TEXT
-     , public tinyint unsigned NOT NULL DEFAULT 1
-     , dateCreated DATETIME not null
-     , dateUpdated DATETIME default null
-     , dateContent DATETIME DEFAULT null
-     , userIdOwner MEDIUMINT unsigned NOT NULL
-     , pageIco VARCHAR(30)
-     , cnt MEDIUMINT DEFAULT 0
-     , locked TINYINT DEFAULT 0
-     , authorContent VARCHAR(100)
-     , galeryDir VARCHAR(100) DEFAULT null
-     , pageParams text
-)  ;';
+class PageVO {
+
+    var $cacheResults = 's';
+		var $table = 'sys_pages';
+		var $primaryCol = 'pageId';
+	
+var $columns = array('pageId' => 'pageId',
+	'pageIdTop' => 'pageIdTop',
+	'typeId' => 'typeId',
+	'typeIdChild' => 'typeIdChild',
+	'categoryId' => 'categoryId',
+	'menuSecondaryGroup' => 'menuSecondaryGroup',
+	'template' => 'template',
+	'name' => 'name',
+	'nameshort' => 'nameshort',
+	'description' => 'description',
+	'content' => 'content',
+	'public' => 'public',
+	'dateCreated' => 'dateCreated',
+	'dateUpdated' => 'dateUpdated',
+	'dateContent' => 'dateContent',
+	'userIdOwner' => 'userIdOwner',
+	'pageIco' => 'pageIco',
+	'cnt' => 'cnt',
+	'locked' => 'locked',
+	'authorContent' => 'authorContent',
+	'galeryDir' => 'galeryDir',
+	'pageParams' => 'pageParams'
+	);
 
 	var $defaults = array(
     'forum'=>array('template'=>'page_ForumView','pageParams' => "<Page><home/></Page>"),
@@ -68,32 +72,43 @@ class PageVO extends FDBvo {
 	var $htmlKeywords;
 	
 	//---watcher
+	var $saveOnlyChanged = false;
+	var $changed = false;
 	var $xmlChanged = false;
+	
 
 	function PageVO($pageId=0, $autoLoad = false) {
-		parent::__construct();
-		$this->cacheResults = 's';
-		$this->pageId = $pageId;
+	 $this->pageId = $pageId;
 		if($autoLoad == true) {
 			$this->load();
 		}
 	}
 	
+	function load() {
+    $vo = new FDBvo( $this );
+    $vo->load();
+    $vo->vo = false;
+    $vo = false;
+  }
+	
 	function save() {
+	 $vo = new FDBvo( $this );
 		if(!empty($this->pageId)) {
 			$this->dateUpdated = 'now()';
-			$this->notQuote('dateUpdated');
-			$this->addIgnore('dateCreated');
-			$this->forceInsert = false;
+			$vo->notQuote('dateUpdated');
+			$vo->addIgnore('dateCreated');
+			$vo->forceInsert = false;
 		} else {
 			$this->pageId = FPages::newPageId();
-			$this->forceInsert = true;
+			$vo->forceInsert = true;
 			$this->dateCreated = 'now()';
-			$this->notQuote('dateCreated');
-			$this->addIgnore('dateUpdated');
+			$vo->notQuote('dateCreated');
+			$vo->addIgnore('dateUpdated');
 		}
 		$pageId = parent::save();
 		$this->xmlChanged = false;
+		$vo->vo = false;
+    $vo = false;
 		return $pageId;
 	}
 

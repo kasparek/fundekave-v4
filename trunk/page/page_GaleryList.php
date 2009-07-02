@@ -65,5 +65,8 @@ class page_GaleryList implements iPage {
 			}
 		}
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+		
+		$fItems = false;
+		$fPages = false;
 	}
 }

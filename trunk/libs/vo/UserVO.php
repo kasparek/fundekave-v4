@@ -1,32 +1,33 @@
 <?php
-class UserVO extends FDBvo {
+class UserVO {
 
 	//---token is changed every check
 	//---if true user can NOT work in multiple windows
 	//---use true for webservice - more secure
 	var $strictLogin = false;
+	
+	var $table = 'sys_users';
+			var $primaryCol = 'userId';
 
-	var $tableDef = 'CREATE TABLE sys_users (
-       userId MEDIUMINT unsigned NOT NULL PRIMARY KEY
-     , skinId SMALLINT unsigned DEFAULT null
-     , name VARCHAR(20) NOT NULL
-     , password VARCHAR(32) NOT NULL
-     , ipcheck BOOLEAN 
-     , dateCreated DATETIME NOT NULL
-     , dateUpdated DATETIME default null
-     , dateLastVisit DATETIME default null
-     , email VARCHAR(100) DEFAULT null
-     , icq VARCHAR(20) DEFAULT null
-     , info TEXT
-     , avatar VARCHAR(100) DEFAULT null
-     , zbanner TINYINT  
-     , zavatar TINYINT  
-     , zforumico TINYINT  
-     , zgalerytype TINYINT  
-     , deleted TINYINT  
-     , hit INT  
-)  ;';
-
+	var $columns = array('userId'=>'userId',
+	'skinId'=>'skinId',
+	'name'=>'name',
+	'password'=>'password',
+	'ipcheck'=>'ipcheck',
+	'dateCreated'=>'dateCreated',
+	'dateUpdated'=>'dateUpdated',
+	'dateLastVisit'=>'dateLastVisit',
+	'email'=>'email',
+	'icq'=>'icq',
+	'info'=>'info',
+	'avatar'=>'avatar',
+	'zbanner'=>'zbanner',
+	'zavatar'=>'zavatar',
+	'zforumico'=>'zforumico',
+	'zgalerytype'=>'zgalerytype',
+	'deleted'=>'deleted',
+	'hit'=>'hit');
+    
 	var $userId = 0;
 	var $skinId;
 	var $name;
@@ -63,7 +64,6 @@ class UserVO extends FDBvo {
 	var $newPostFrom = '';
 	
 	function UserVO($userId=0, $autoLoad = false) {
-		parent::__construct();
 		$this->userId = $userId;
 		if($autoLoad == true) {
 			$this->load();
@@ -71,23 +71,32 @@ class UserVO extends FDBvo {
 	}
 
 	function load() {
-		$this->addJoinAuto('sys_skin','skinId',array('name'));
-		parent::load();
+		
+		$vo = new FDBvo( $this );
+		$vo->addJoinAuto('sys_skin','skinId',array('name'));
+      $vo->load();
+    $vo->vo = false;
+    $vo = false;
 	}
 
 	function save(){
-		$this->addIgnore('dateLastVisit');
-		$this->addIgnore('dateCreated');
+	$vo = new FDBvo( $this );
+		$vo->addIgnore('dateLastVisit');
+		$vo->addIgnore('dateCreated');
 		if(!empty($this->newPassword)) {
 			$this->password= $this->newPassword;
 		} else {
-			$this->addIgnore('password');
+			$vo->addIgnore('password');
 		}
-		$this->addIgnore('name');
-		$this->addIgnore('userId');
-		$this->notQuote('dateUpdated');
+		$vo->addIgnore('name');
+		$vo->addIgnore('userId');
+		$vo->notQuote('dateUpdated');
 		$this->dateUpdated = 'now()';
-		parent::save();
+		
+		$this->userId = $vo->save();
+		$vo->vo = false;
+		$vo = false;
+		
 		//---check logged user
 		$user = FUser::getInstance();
 		if($this->userId == $user->userVO->userId) {
