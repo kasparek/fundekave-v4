@@ -152,7 +152,7 @@ class FBuildPage {
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 			
-			if(!empty($user->pageParam) || $user->itemVO > 0) {
+			if(!empty($user->pageParam) || $user->itemVO) {
 				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
 			
