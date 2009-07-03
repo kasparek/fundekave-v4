@@ -70,11 +70,7 @@ class FBuildPage {
 				if (!preg_match("/(.html)$/",$template)) {
 					$template = FBuildPage::getTemplate($template);
 					if( class_exists($template) ) {
-						$c = new $template;
-						$c->process( $data );
-						//---destruct
-            $c = false;
-						$template = false;
+						call_user_func(array($template, 'process'),$data); 
 					}
 				}
 			}
@@ -130,9 +126,7 @@ class FBuildPage {
 					$template = FBuildPage::getTemplate($template);
 					FSystem::profile('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
-						$c = new $template;
-						$c->build();
-						$c = false;
+						call_user_func(array($template, 'build'));
 					}
 					FSystem::profile('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
