@@ -885,4 +885,3 @@ class FHTMLTemplateIT
                 $errorMessages[$value] : $errorMessages[IT_ERROR];
     }
 } // end class IntegratedTemplate
-?>

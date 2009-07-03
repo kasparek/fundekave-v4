@@ -130,7 +130,7 @@ class UserVO {
 
 		if(count($npost)>0) {
 			$this->newPost = count($npost);
-			$this->newPostFrom = $this->getgidname($npost[0]);
+			$this->newPostFrom = FUser::getgidname($npost[0]);
 			return(true);
 		} else {
 			$this->newPost = 0;

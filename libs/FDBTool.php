@@ -273,6 +273,7 @@ class FDBTool {
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
+		
 		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
 		if(!empty($arr)) {
 			if($this->fetchmode == 1 && !empty($this->columns)) {
@@ -287,6 +288,7 @@ class FDBTool {
 					$arrNamed[]=$retNew;
 				}
 				return $arrNamed;
+				
 			}
 			return $arr;
 		}
@@ -477,9 +479,8 @@ class FDBTool {
 		$start = FSystem::getmicrotime();
 		
 		$ret = $db->$function($query);
-		$db->freePrepared($query);
 		$db = false;
-
+		
 		//---stats
 		$qTime = FSystem::getmicrotime()-$start;
 		$cache = FCache::getInstance('l');
@@ -487,7 +488,7 @@ class FDBTool {
 		if($statArr===false) $statArr = array();
 		$statArr[] = array('time'=>$qTime, 'q'=>$query);
 		$cache->setdata($statArr);
-		
+		/*
 		if (PEAR::isError($ret)) {
 			echo $ret->getMessage();
 			if(FConf::get('dboptions','debug') > 0) {
@@ -498,6 +499,7 @@ class FDBTool {
 			}
 			die();
 		}
+		*/
 		return $ret;
 	}
 	
