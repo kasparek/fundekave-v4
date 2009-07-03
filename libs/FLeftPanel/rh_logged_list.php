@@ -5,8 +5,7 @@ static function show(){
 		if(false === ($ret = $cache->getData('loggedlist'))) {
 			$ret = '';
 			$user = FUser::getInstance();
-			$arrpra = FDBTool::getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->userVO->userId." AND f.userIdFriend!='".$user->userVO->userId."' GROUP BY f.userIdFriend ORDER BY casklik");
-			if (count($arrpra)>0){
+			if (false !== ($arrpra = FDBTool::getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->userVO->userId." AND f.userIdFriend!='".$user->userVO->userId."' GROUP BY f.userIdFriend ORDER BY casklik"))) {
 				$tpl = new FTemplateIT('sidebar.users.tpl.html');
 				foreach ($arrpra as $pra){
 					$kde = FUser::getLocation($pra[0]);

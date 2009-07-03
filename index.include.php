@@ -39,4 +39,4 @@ FDBTool::profileLog();
 //---close resources
 session_write_close();
 $db = FDBConn::getInstance();
-$db->disconnect();
+$db->kill();
