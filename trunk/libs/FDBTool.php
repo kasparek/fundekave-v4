@@ -476,13 +476,13 @@ class FDBTool {
 		$db = FDBConn::getInstance();
 		
 		//---stats
-		$start = FSystem::getmicrotime();
+		$start = FProfiler::getmicrotime();
 		
 		$ret = $db->$function($query);
 		$db = false;
 		
 		//---stats
-		$qTime = FSystem::getmicrotime()-$start;
+		$qTime = FProfiler::getmicrotime() - $start;
 		$cache = FCache::getInstance('l');
 		$statArr = $cache->getdata('stat','FDBTool');
 		if($statArr===false) $statArr = array();
@@ -515,7 +515,7 @@ class FDBTool {
 			$total += $query['time'];
 			$queries++; 
 		}
-		file_put_contents(ROOT.'tmp/FDBTool::query::times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
+		file_put_contents(ROOT.'tmp/FDBTool-query-times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
 		$cache->invalidatedata('stat','FDBTool');
 	}
 }

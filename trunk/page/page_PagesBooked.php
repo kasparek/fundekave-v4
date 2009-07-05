@@ -10,9 +10,9 @@ class page_PagesBooked implements iPage {
 		$user = FUser::getInstance();
 		
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';
-		FSystem::secondaryMenuAddItem(FUser::getUri($addUrl),FLang::$LABEL_FORUMS);
-		FSystem::secondaryMenuAddItem(FUser::getUri('t=blog'.$addUrl),FLang::$LABEL_BLOGS);
-		FSystem::secondaryMenuAddItem(FUser::getUri('t=galery'.$addUrl),FLang::$LABEL_GALERIES);
+		FMenu::secondaryMenuAddItem(FUser::getUri($addUrl),FLang::$LABEL_FORUMS);
+		FMenu::secondaryMenuAddItem(FUser::getUri('t=blog'.$addUrl),FLang::$LABEL_BLOGS);
+		FMenu::secondaryMenuAddItem(FUser::getUri('t=galery'.$addUrl),FLang::$LABEL_GALERIES);
 
 		$typeId = $user->pageVO->typeIdChild;
 		if(isset($_GET['t'])) $typeId = $_GET['t'];

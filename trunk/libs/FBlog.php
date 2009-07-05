@@ -88,7 +88,7 @@ class FBlog {
 				///properties
 				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',FPages::getProperty($user->pageVO->pageId,'forumSet',2)));
 				///categories
-				if($opt = FSystem::getOptions($user->pageVO->pageId,$itemVO->categoryId,true,''))
+				if($opt = FCategory::getOptions($user->pageVO->pageId,$itemVO->categoryId,true,''))
 				$tpl->setVariable('CATEGORYOPTIONS',$opt);
 			}
 		} else {
@@ -125,7 +125,7 @@ class FBlog {
 		$currentPage = 0;
 		if(empty($itemId)) {
 			if($user->pageVO->cnt > $perPage) {
-				$pager = FSystem::initPager($user->pageVO->cnt,$perPage);
+				$pager = new FPager($user->pageVO->cnt,$perPage);
 				$tpl->setVariable('BOTTOMPAGER',$pager->links);
 				$currentPage = $pager->getCurrentPageID()-1;
 			}

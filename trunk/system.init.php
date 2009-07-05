@@ -17,7 +17,7 @@ setlocale(LC_ALL,'cs_CZ.UTF-8');
 FConf::getInstance();
 
 //-------------------------------------------------------------time for debuging
-FSystem::profile('START');
+FProfiler::profile('START');
 
 //---session settings - stored in db
 //require_once("fSession.php");
@@ -27,9 +27,9 @@ ini_set('session.gc_probability',1);
 ini_set('session.save_path', ROOT.'tmp/');
 
 session_start();
-FSystem::profile('FUse::before instance');
+FProfiler::profile('FUse::before instance');
 $user = FUser::getInstance();
-FSystem::profile('FUse::after instance');
+FProfiler::profile('FUse::after instance');
 
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
@@ -121,7 +121,7 @@ if(isset($pageId{5})) {
 
 $user->whoIs = 0;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
-FSystem::profile('PARAMS/SESSION INIT DONE');
+FProfiler::profile('PARAMS/SESSION INIT DONE');
 $user->pageId = $pageId;
 $user->kde(); //---check user / load info / load page content / chechk page exist
-FSystem::profile('USER/PAGE CHECK DONE');
+FProfiler::profile('USER/PAGE CHECK DONE');

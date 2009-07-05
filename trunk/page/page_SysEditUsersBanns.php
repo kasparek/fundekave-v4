@@ -37,7 +37,7 @@ class page_SysEditUsersBanns implements iPage {
 		$tpl->setVariable('TOTALITEMS',$total);
 		$dot = "SELECT s.userId,s.name,s.deleted,s.dateUpdated,s.dateCreated,s.hit,l.ip,s.ipcheck ".$base;
 		if($total>$perpage) {
-			$pager = FSystem::initPager($total,$perpage);
+			$pager = new FPager($total,$perpage);
 			$od=($pager->getCurrentPageID()-1) * $perpage;
 			$dot .=" limit ".$od.",".$perpage;
 			$tpl->setVariable('PAGER',$pager->links);

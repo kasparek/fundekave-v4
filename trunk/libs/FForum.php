@@ -113,7 +113,7 @@ class FForum extends FDBTool {
 			}
 			
 			if(!$logon) {
-				$captcha = fCaptcha::init();
+				$captcha = new FCaptcha();
 				if($captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = true; else $cap = false;
 			} else $cap = true;
 			 
@@ -234,7 +234,7 @@ class FForum extends FDBTool {
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
-		FSystem::profile('FForum::show--INSTANCES');
+		FProfiler::profile('FForum::show--INSTANCES');
 	  
 		$zprava = '';
 		//---available params
@@ -242,11 +242,11 @@ class FForum extends FDBTool {
 		$showHead = true;
 		extract($paramsArr);
 	  
-		if(FUser::logon() === false && $publicWrite > 0) { $captcha = FCaptcha::init(); }
+		if(FUser::logon() === false && $publicWrite > 0) { $captcha = new FCaptcha(); }
 	  
 		$cache = FCache::getInstance('s',0);
 		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage('forum');
-		FSystem::profile('FForum::show--PERPAGE');
+		FProfiler::profile('FForum::show--PERPAGE');
 	  
 		if( FUser::logon() ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
@@ -255,7 +255,7 @@ class FForum extends FDBTool {
 				elseif($unreadedCnt > 100) $perPage = 100;
 			}
 		}
-		FSystem::profile('FForum::show--UNREADED');
+		FProfiler::profile('FForum::show--UNREADED');
 		
 		//---DEEPLINKING
 		$manualCurrentPage = 0;
@@ -270,7 +270,7 @@ class FForum extends FDBTool {
 				$perPage = $user->pageVO->perPage();
 			}
 		}
-		FSystem::profile('FForum::show--DEEPLINKING');
+		FProfiler::profile('FForum::show--DEEPLINKING');
 
 		/* ........ vypis nazvu auditka .........*/
 		//--FORM
@@ -316,7 +316,7 @@ class FForum extends FDBTool {
 		} else {
 			$tpl->setVariable('READONLY',FLang::$MESSAGE_FORUM_READONLY);
 		}
-		FSystem::profile('FForum::show--FORM');
+		FProfiler::profile('FForum::show--FORM');
 		//---END FORM
 		$itemRenderer = new FItemsRenderer();
 		$fItems = new FItems('forum',false,$itemRenderer);
@@ -329,7 +329,7 @@ class FForum extends FDBTool {
 		FItemsToolbar::setQueryTool(&$fItems);
 		
 		if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
-		$pager = FSystem::initPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 		$fItems->getList($from,$perPage+1);
 		$total = count($fItems->data);
@@ -342,7 +342,7 @@ class FForum extends FDBTool {
 
 		if($from > 0) $total += $from;
 		
-		FSystem::profile('FForum::show--ITEMS INIT');
+		FProfiler::profile('FForum::show--ITEMS INIT');
 
 		if($total > 0) {
 			/*.........zacina vypis prispevku.........*/
@@ -362,11 +362,11 @@ class FForum extends FDBTool {
 				//$tpl->moveBlock('posts','POSTSONTOP');
 				 
 			}
-			FSystem::profile('FForum::show--ITEMS DONE');
+			FProfiler::profile('FForum::show--ITEMS DONE');
 			/*......aktualizace novych a prectenych......*/
 			if($itemId>0) FForum::updateReadedReactions($itemId,$user->userVO->userId);
 			else FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
-			FSystem::profile('FForum::show--READED UPDATE');
+			FProfiler::profile('FForum::show--READED UPDATE');
 		} else $tpl->touchBlock('messno');
 
     $ret = $tpl->get();

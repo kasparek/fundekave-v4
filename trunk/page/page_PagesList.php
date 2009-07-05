@@ -43,7 +43,7 @@ class page_PagesList implements iPage {
 			$pagerStr = '';
 			$perPage = $user->pageVO->perPage();
 			if($totalItems > $perPage) {
-				$pager = FSystem::initPager($totalItems,$perPage);
+				$pager = new FPager($totalItems,$perPage);
 				$from =($pager->getCurrentPageID()-1) * $perPage;
 				$pagerStr = $pager->links;
 			}

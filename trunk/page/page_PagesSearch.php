@@ -43,7 +43,7 @@ class page_PagesSearch implements iPage {
 		$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
 		$fPages->setOrder('p.dateContent',true);
 
-		$pager = FSystem::initPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
+		$pager = new FPager(0,SEARCH_PERPAGE,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * SEARCH_PERPAGE;
 		$fPages->setLimit($from,SEARCH_PERPAGE+1);
 

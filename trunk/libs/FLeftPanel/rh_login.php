@@ -6,7 +6,7 @@ static function show() {
 			$tpl = new FTemplateIT('sidebar.user.logged.tpl.html');
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
-			$tpl->setVariable('ONLINE',FSystem::getOnlineUsersCount());
+			$tpl->setVariable('ONLINE',FUser::getOnlineUsersCount());
 			$recentEvent = $user->userVO->getDiaryCnt();
 			if($recentEvent>0) $tpl->setVariable('DIARY',$recentEvent);
 			if($user->userVO->hasNewMessages()) {

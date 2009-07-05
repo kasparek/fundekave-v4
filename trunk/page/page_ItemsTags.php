@@ -24,7 +24,7 @@ class page_ItemsTags implements iPage {
 		$fItems->addWhere('itemIdTop is null');
 		FItemsToolbar::setQueryTool(&$fItems);
 
-		$pager = FSystem::initPager(0,$perpage,array('noAutoparse'=>1));
+		$pager = new FPager(0,$perpage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perpage;
 		$fItems->getList($from,$perpage+1);
 		$totalItems = $fItems->total();

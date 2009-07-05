@@ -22,7 +22,7 @@ class page_ItemsSearch implements iPage {
 		$fItems->cacheResults = 's';
 		$fItems->addWhere('itemIdTop is null');
 		FItemsToolbar::setQueryTool(&$fItems);
-		$pager = FSystem::initPager(0,$perPage,array('noAutoparse'=>1));
+		$pager = new FPager(0,$perPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 		$fItems->getList($from,$perPage+1);
 		$totalItems = $fItems->total();

@@ -103,7 +103,7 @@ class page_UserPost implements iPage {
 
 		$od = 0;
 		if($totalItems > $perPage) {
-			$pager = FSystem::initPager($totalItems,$perPage,array('extraVars'=>$pagerExtraVars));
+			$pager = new FPager($totalItems,$perPage,array('extraVars'=>$pagerExtraVars));
 			$od=($pager->getCurrentPageID()-1) * $perPage;
 		}
 

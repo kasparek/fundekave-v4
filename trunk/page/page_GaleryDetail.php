@@ -43,7 +43,7 @@ class page_GaleryDetail implements iPage {
 
 				$fItems->setOrder($user->pageVO->itemsOrder());	
 
-				$pager = FSystem::initPager($totalItems,$perPage);
+				$pager = new FPager($totalItems,$perPage);
 				$od = ($pager->getCurrentPageID()-1) * $perPage;
 
 				$fItems->openPopup = ($user->userVO->zgalerytype==0)?(false):(true);

@@ -165,7 +165,7 @@ class FUser {
 				$this->userVO = new UserVO();
 			}
 		}
-		FSystem::profile('FUser::kde::1');
+		FProfiler::profile('FUser::kde::1');
 		if($this->pageId) {
 			//---logout action
 			if( $this->pageId == 'elogo') {
@@ -177,7 +177,7 @@ class FUser {
 			}
 			//---try load current page
 			$this->pageVO = new PageVO($this->pageId,true);
-			FSystem::profile('FUser::kde::2');
+			FProfiler::profile('FUser::kde::2');
 			if(empty($this->pageVO->pageId)) {
 				$this->pageAccess = false;
 				$this->pageId = false;
@@ -185,7 +185,7 @@ class FUser {
 			} else {
 				$this->pageAccess = true;
 			}
-			FSystem::profile('FUser::kde::3');
+			FProfiler::profile('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
 		if($this->pageAccess == true) {
@@ -193,7 +193,7 @@ class FUser {
 			if(isset($_POST['lgn'])) $this->login($_POST['fna'],$_POST['fpa']);
 			//---check if user is logged
 			$this->check();
-			FSystem::profile('FUser::kde::4');
+			FProfiler::profile('FUser::kde::4');
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if(!empty($this->pageParam)) {
@@ -201,7 +201,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-			FSystem::profile('FUser::kde::5');
+			FProfiler::profile('FUser::kde::5');
 			if($this->pageVO) {
 				$permPage = $this->pageVO->pageId;
 				if($permissionNeeded==3) {
@@ -217,7 +217,7 @@ class FUser {
 						}
 					}
 				}
-				FSystem::profile('FUser::kde::6');
+				FProfiler::profile('FUser::kde::6');
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($this->userVO->userId,$permPage,$permissionNeeded)) {
 					$this->pageAccess = false;
@@ -228,7 +228,7 @@ class FUser {
 					$cache->setData($this->pageVO->pageId,'lastPage');
 				}
 			}
-			FSystem::profile('FUser::kde::7');
+			FProfiler::profile('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
@@ -242,7 +242,7 @@ class FUser {
 			where loginId='".$this->userVO->idlogin."'");
 					
 				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
-FSystem::profile('FUser::kde::8');
+FProfiler::profile('FUser::kde::8');
 			}
 		}
 		$cache = false;
@@ -294,7 +294,7 @@ FSystem::profile('FUser::kde::8');
 			$pwdreg2 = trim($data["pwdreg2"]);
 			if(strlen($jmenoreg)<2) FError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
 			elseif(strlen($jmenoreg)>10) FError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
-			elseif (!FSystem::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+			elseif (!FUser::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
 			elseif($this->isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::addError(FLang::$ERROR_REGISTER_NAMEEXISTS);
 			if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 			if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
@@ -317,6 +317,10 @@ FSystem::profile('FUser::kde::8');
 				$cache->setData($data,'reg','form');
 			}
 		}
+	}
+	
+	static function checkUsername($name) {
+		return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z0-9]*))$/" , $name);
 	}
 
 	/**
@@ -393,6 +397,16 @@ FSystem::profile('FUser::kde::8');
 		//---TODO: from userVO load custom skin name
 		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
 		return(WEB_REL_CSS.$skin);
+	}
+	
+	/**
+	 * get count of active users
+	 *
+	 * @return int
+	 */
+	static function getOnlineUsersCount() {
+		$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
+		return FDBTool::getOne($q,'uOnC','default','s',60);
 	}
 
 	/**

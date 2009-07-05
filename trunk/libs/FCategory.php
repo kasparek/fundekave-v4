@@ -39,6 +39,36 @@ class FCategory extends FDBTool {
 		if(!$user->idkontrol) $this->addWhere('public=1');
 	}
 	
+	/**
+	 * get list of options for select HTML input
+	 *
+	 * @param unknown_type $arr
+	 * @param unknown_type $selected
+	 * @param unknown_type $firstEmpty
+	 * @param unknown_type $firstText
+	 * @return unknown
+	 */
+	static function getOptions($arr,$selected='',$firstEmpty=true,$firstText='') {
+		if(!is_array($arr)) {
+			$arr = FDBTool::getAll('select categoryId,name from sys_pages_category where typeId="'.$arr.'"');
+		}
+		$options = '';
+		if(!empty($arr)) {
+			$arrkeys = array_keys($arr);
+			if(is_array($arr[$arrkeys[0]])) {
+				foreach ($arr as $row) {
+					$newArr[$row[0]] = $row[1];
+				}
+				$arr = $newArr;
+			}
+			if($firstEmpty==true) $options .= '<option value="">'.$firstText.'</option>';
+			foreach ($arr as $k=>$v) {
+				$options .= '<option value="'.$k.'"'.(($k==$selected)?(' selected="selected"'):('')).'>'.((!empty($v))?($v):($k)).'</option>';
+			}
+		}
+		return $options;
+	}
+	
 	//STATIC FUNCTIONS
 	static function getCategory($categoryId) {
 		$q = "select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'";
@@ -159,7 +189,7 @@ class FCategory extends FDBTool {
 
 		$addToUrl = $rediraddon;
 		if($total > $this->perpage) {
-			$pager = FSystem::initPager($total,$this->perpage);
+			$pager = new FPager($total,$this->perpage);
 			$actualPid = $pager->getCurrentPageID();
 			$from=($actualPid-1) * $this->perpage;
 			$this->setLimit($from,$this->perpage);

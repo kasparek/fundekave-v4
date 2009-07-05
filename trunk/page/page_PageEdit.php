@@ -381,7 +381,7 @@ class page_PageEdit implements iPage {
 
 		$categoryId = (isset($pageVO->categoryId))?($pageVO->categoryId):(0);
 		$arrTmp = FDBTool::getAll('select categoryId,name from sys_pages_category where typeId="'.$pageVO->typeId.'"');
-		if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',FSystem::getOptions($arrTmp,$categoryId));
+		if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',FCategory::getOptions($arrTmp,$categoryId));
 
 		//---if pageParam = sa - more options to edit on page
 		//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent

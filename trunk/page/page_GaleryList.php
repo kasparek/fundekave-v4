@@ -25,7 +25,7 @@ class page_GaleryList implements iPage {
 		$tpl = new FTemplateIT('galery.list.tpl.html');
 
 		if($totalItems > GALERY_PERPAGE) {
-			$pager = FSystem::initPager($totalItems,GALERY_PERPAGE);
+			$pager = new FPager($totalItems,GALERY_PERPAGE);
 			$from =($pager->getCurrentPageID()-1) * GALERY_PERPAGE;
 			$tpl->setVariable("PAGER",$pager->links);
 		}

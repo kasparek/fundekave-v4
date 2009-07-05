@@ -26,12 +26,17 @@ class FConf
     }
   }
   
-  static function get($group, $prop) {
+  static function get($group, $prop='') {
   	$conf = FConf::getInstance();
-  	if(isset($conf->a[$group][$prop])) {
-  		return $conf->a[$group][$prop];	
+  	if($prop == '') {
+  		if(isset($conf->a[$group])) {
+  			return $conf->a[$group];
+  		}
   	} else {
-  		return false;
+  		if(isset($conf->a[$group][$prop])) {
+  			return $conf->a[$group][$prop];
+  		}	
   	}
+  	return false;
   }
 }
