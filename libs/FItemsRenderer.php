@@ -66,14 +66,14 @@ class FItemsRenderer {
 		$typeId = $itemVO->typeId;
 		$addon = $itemVO->addon;
     
-    FSystem::profile('FItemsRenderer::render--InSTANCES',true);
+    FProfiler::profile('FItemsRenderer::render--InSTANCES',true);
 		
     //---check permissions to edit
 		$enableEdit = false;
 		if(FRules::get($userId,$pageId,2) || $itemUserId == $userId) {
 			$enableEdit=true;
 		}
-		FSystem::profile('FItemsRenderer::render--EDITABLE CHECKED',true);
+		FProfiler::profile('FItemsRenderer::render--EDITABLE CHECKED',true);
 		/*.........zacina vypis prispevku.........*/
 		$tpl = $this->itemTpl( $typeId );
 		
@@ -101,7 +101,7 @@ class FItemsRenderer {
 		}
 		if($this->showText==true && !empty($itemVO->text)) $tpl->setVariable('TEXT',$itemVO->text);
 		
-		FSystem::profile('FItemsRenderer::render--BASE DATA',true);
+		FProfiler::profile('FItemsRenderer::render--BASE DATA',true);
 
 		switch($typeId) {
 			case 'event':
@@ -190,7 +190,7 @@ class FItemsRenderer {
 				break;
 		}
 		
-		FSystem::profile('FItemsRenderer::render--TYPE CUSTOM',true);
+		FProfiler::profile('FItemsRenderer::render--TYPE CUSTOM',true);
 
 		//---for logged users
 		if ($user->idkontrol === true && $this->showFooter === true) {
@@ -216,7 +216,7 @@ class FItemsRenderer {
 				}
 			}
 		}
-		FSystem::profile('FItemsRenderer::render--REGISTERED USERS',true);
+		FProfiler::profile('FItemsRenderer::render--REGISTERED USERS',true);
 
 		//---PAGE NAME
 		if($this->showPageLabel==true) {
@@ -225,7 +225,7 @@ class FItemsRenderer {
 			$tpl->setVariable('PAGELINK',FUser::getUri((($typeId=='forum')?('&i='.$itemId.'#i'.$itemId):('')),$pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 		}
-		FSystem::profile('FItemsRenderer::render--PAGE NAME',true);
+		FProfiler::profile('FItemsRenderer::render--PAGE NAME',true);
 
 		//---BLOG / EVENT
 		if(!empty($addon)) {
@@ -247,7 +247,7 @@ class FItemsRenderer {
 				$tpl->setVariable('CNTCOMMENTS',$itemVO->cnt);
 			}
 		}
-		FSystem::profile('FItemsRenderer::render--ADDON PRESENT',true);
+		FProfiler::profile('FItemsRenderer::render--ADDON PRESENT',true);
 
 		//---linked item
 		if($this->showBottomItem === true) {
@@ -264,11 +264,11 @@ class FItemsRenderer {
 				}
 			}
 		}
-		FSystem::profile('FItemsRenderer::render--LINK BOTTOM ITEM',true);
+		FProfiler::profile('FItemsRenderer::render--LINK BOTTOM ITEM',true);
 
 		//---FINAL PARSE
 		$tpl->parseCurrentBlock();
-		FSystem::profile('FItemsRenderer::render--PARSE',true);
+		FProfiler::profile('FItemsRenderer::render--PARSE',true);
 
 	}
 

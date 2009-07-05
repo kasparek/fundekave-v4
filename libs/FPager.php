@@ -14,10 +14,20 @@ class FPager {
     var $adjacents = 1;
     //result
     var $links;
-    function __construct($conf=array()) {
-        if(!empty($conf))
-        foreach ($conf as $k=>$v) {
-        	$this->$k = $v;
+    function __construct($totalItems=0,$perPage=20,$conf=array()) {
+    	//---defaults from config
+    	$conf = FConf::getInstance();
+		$params = $conf->a['pager'];
+		$params['prevImg'] = FLang::$PAGER_PREVIOUS;
+		$params['nextImg'] = FLang::$PAGER_NEXT;
+		$params['totalItems'] = $totalItems;
+		$params['perPage'] = $perPage;
+		if(!empty($conf)) $params = array_merge($params,$conf);
+    	
+        if(!empty($conf)){
+	        foreach ($conf as $k=>$v) {
+	        	$this->$k = $v;
+	        }
         }
         foreach ($_GET as $k=>$v) {
         	if($k!=$this->urlVar && !in_array($k,$this->bannvars)) $this->extraVars[$k]=$v;

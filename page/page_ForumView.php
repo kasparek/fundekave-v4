@@ -22,7 +22,7 @@ class page_ForumView implements iPage {
 
 	static function build() {
 		$user = FUser::getInstance();
-		FSystem::profile('page_ForumView--START');
+		FProfiler::profile('page_ForumView--START');
 		
 		/* PALCE FILTER TOOLBAR */
 		if($user->idkontrol) {
@@ -32,7 +32,7 @@ class page_ForumView implements iPage {
 					FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar(false)));	
 				} else {
 					//---button to enable toolbar
-					FSystem::secondaryMenuAddItem(FUser::getUri('m=items-tool'), FLang::$LABEL_THUMBS,0,'itemsTool');
+					FMenu::secondaryMenuAddItem(FUser::getUri('m=items-tool'), FLang::$LABEL_THUMBS,0,'itemsTool');
 				}
 			}
 		}
@@ -50,10 +50,10 @@ class page_ForumView implements iPage {
 			$fuvatar =  new FUvatar();
 			FBuildPage::addTab(array("MAINDATA"=>$fuvatar->getLive()));
 			$fuvatar = false;
-			FSystem::profile('page_ForumView--FForum::show-BEFORE');
+			FProfiler::profile('page_ForumView--FForum::show-BEFORE');
 			/* FORUM */
 			FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
-			FSystem::profile('page_ForumView--FForum::show-DONE');
+			FProfiler::profile('page_ForumView--FForum::show-DONE');
 		}
 
 	}

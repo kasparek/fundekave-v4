@@ -76,7 +76,7 @@ class page_UserSurf implements iPage {
 
 			$od = 1;
 			if($total>DEFAULT_PERPAGE) {
-				$pager = FSystem::initPager($total,DEFAULT_PERPAGE,array('extraVars'=>array('sc'=>$kat,'sm'=>$showAll)));
+				$pager = new FPager($total,DEFAULT_PERPAGE,array('extraVars'=>array('sc'=>$kat,'sm'=>$showAll)));
 				$od = ($pager->getCurrentPageID()-1) * DEFAULT_PERPAGE;
 				$tpl->setVariable('BOTTOMPAGER',$pager->links);
 			}

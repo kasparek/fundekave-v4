@@ -127,7 +127,7 @@ function panelInsert($type,$functionName,$sequence,$visible=1) {
 
 		$arr = $this->getAvailablePanels();
 		if(!empty($arr)) {
-			$tpl->setVariable('AVAILABLEPANELS',FSystem::getOptions($arr,'',true,''));
+			$tpl->setVariable('AVAILABLEPANELS',FCategory::getOptions($arr,'',true,''));
 		}
     $rer = $tpl->get();
     $tpl=false;

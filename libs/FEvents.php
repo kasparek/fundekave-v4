@@ -60,7 +60,7 @@ class FEvents {
 		$tpl = new FTemplateIT('events.tpl.html');
 		if($celkem > 0) {
 			if($celkem > $perPage) {
-				$pager = FSystem::initPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
+				$pager = new FPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
 				$od = ($pager->getCurrentPageID()-1) * $perPage;
 			} else $od=0;
 			if($celkem > $perPage) {

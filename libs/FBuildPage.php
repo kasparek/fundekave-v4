@@ -78,7 +78,7 @@ class FBuildPage {
 	}
 
 	static function baseContent() {
-		FSystem::profile('FBuildPage::baseContent--START');
+		FProfiler::profile('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		
@@ -119,16 +119,16 @@ class FBuildPage {
 					}
 				break;
 			}
-			FSystem::profile('FBuildPage::baseContent--TPL READY');
+			FProfiler::profile('FBuildPage::baseContent--TPL READY');
 			if($template != '') {
 				if ($staticTemplate === false) {
 					//DYNAMIC TEMPLATE
 					$template = FBuildPage::getTemplate($template);
-					FSystem::profile('FBuildPage::baseContent--TPL LOADED');
+					FProfiler::profile('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
 						call_user_func(array($template, 'build'));
 					}
-					FSystem::profile('FBuildPage::baseContent--TPL PROCESSED');
+					FProfiler::profile('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
 					//STATIC TEMPLATE
 					$tpl = new FTemplateIT($template);
@@ -141,39 +141,39 @@ class FBuildPage {
 				//NOT TEMPLATE AT ALL
 				$contentData = array("MAINDATA"=>$user->pageVO->content);
 			}
-			FSystem::profile('FBuildPage::baseContent--CONTENT DONE');
+			FProfiler::profile('FBuildPage::baseContent--CONTENT DONE');
 	
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 			
 			if(!empty($user->pageParam) || $user->itemVO) {
-				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
+				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
 			
 			if($user->pageVO->typeId == 'forum') {
-				FSystem::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
+				FMenu::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 			}
 			
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
-						FSystem::secondaryMenuAddItem(FUser::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt','fajaxa');
+						FMenu::secondaryMenuAddItem(FUser::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt','fajaxa');
 					}
-					FSystem::secondaryMenuAddItem(FUser::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
+					FMenu::secondaryMenuAddItem(FUser::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
 					if(FRules::getCurrent(2)) {
 						
-						FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
+						FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 						
 					}
 				}
-				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
-				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
+				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
+				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 			if(FRules::get($user->userVO->userId,'sadmi',1)) {
-				FSystem::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
+				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
 			}
-			FSystem::profile('FBuildPage::baseContent--BUTTONS ADDED');
+			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/
 		}
 	}
@@ -181,7 +181,7 @@ class FBuildPage {
 	static function show() {
 		
 		FBuildPage::baseContent();
-		FSystem::profile('FBuildPage--FBuildPage::baseContent');
+		FProfiler::profile('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
 		
@@ -232,7 +232,7 @@ class FBuildPage {
 		if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		//---BODY PARAMETERS
 		//---MAIN MENU
-		$arrMenuItems = FSystem::topMenu();
+		$arrMenuItems = FMenu::topMenu();
 			while($arrMenuItems) {
 			 $menuItem = array_shift($arrMenuItems);
 				$tpl->setCurrentBlock("topmenuitem");
@@ -241,21 +241,21 @@ class FBuildPage {
 				if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
 				$tpl->parseCurrentBlock();
 			}
-		FSystem::profile('FBuildPage--FSystem::topMenu');
+		FProfiler::profile('FBuildPage--FSystem::topMenu');
 
 		//---BANNER
 		if(!isset($_GET['nobanner'])) {
-			$banner = FSystem::grndbanner();
+			$banner = FBanner::getBanner();
 			if(!empty($banner)) {
 				$tpl->setVariable("BANNER",$banner);
 				$tpl->touchBlock('hasMainBanner');
 			}
 		}
-		FSystem::profile('FBuildPage--FSystem::grndbanner');
+		FProfiler::profile('FBuildPage--FSystem::grndbanner');
 
 		if($user->pageAccess === true) {
 			//---SECONDARY MENU
-			$lomenuItems = FSystem::secondaryMenu($user->pageVO->pageId);
+			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
 			if(!empty($lomenuItems)) {
 				foreach($lomenuItems as $menuItem) {
 					$tpl->setCurrentBlock("secondary-menu-item");
@@ -268,13 +268,13 @@ class FBuildPage {
 				}
 			}
 		}
-		FSystem::profile('FBuildPage--FSystem::secondaryMenu');
+		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
 		
 		//---LEFT PANEL POPULATING
 		$fLeftpanel = new FLeftPanel($user->pageVO->pageId, $user->userVO->userId, $user->pageVO->typeId);
 		$fLeftpanel->load();
 		$fLeftpanel->show();
-		FSystem::profile('FBuildPage--FLeftPanel');
+		FProfiler::profile('FBuildPage--FLeftPanel');
 		$fLeftpanel = false;
 
 		//---FOOTER INFO
@@ -283,14 +283,14 @@ class FBuildPage {
 		$start = $cachedArr[0]['time'];
 
 		$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
-		$tpl->setVariable("COUNTER", $pagesSum.'::'.round((FSystem::getmicrotime()-$start),3));
-		FSystem::profile('FBuildPage--footer');
+		$tpl->setVariable("COUNTER", $pagesSum.'::'.round((FProfiler::getmicrotime()-$start),3));
+		FProfiler::profile('FBuildPage--footer');
 		//---user tooltips - one per user avatar displayed
 		$ttips = '';
 		$cache = FCache::getInstance('l');
 		if(($arrUserAvatarTips = $cache->getGroup('UavatarTip')) !==false ) $ttips .= implode("\n", $arrUserAvatarTips);
 		$tpl->setVariable('USERTOOLTIPS',$ttips);
-		FSystem::profile('FBuildPage--user tooltips');
+		FProfiler::profile('FBuildPage--user tooltips');
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
@@ -336,7 +336,7 @@ class FBuildPage {
 		if($useFajaxform === true) {
 			$tpl->touchBlock("fajaxformEND");
 		}
-		FSystem::profile('FBuildPage--custom js sections');
+		FProfiler::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);
 		$tpl->show();

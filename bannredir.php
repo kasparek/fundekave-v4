@@ -7,4 +7,4 @@
  **/
 require("./local.php");
 require(INIT_FILENAME);
-FSystem::bannerRedirect($_GET["bid"]);
+FBanner::bannerRedirect($_GET["bid"]);

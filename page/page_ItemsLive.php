@@ -21,7 +21,7 @@ class page_ItemsLive implements iPage {
 		$fItems->addWhere('itemIdTop is null');
 		$fItems->setOrder('dateCreated desc');
 		
-		$pager = FSystem::initPager(0,$localPerPage,array('noAutoparse'=>1));
+		$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
 
 		$fItems->getList($from,$localPerPage+1);
