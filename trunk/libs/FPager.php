@@ -16,12 +16,12 @@ class FPager {
     var $links;
     function __construct($totalItems=0,$perPage=20,$conf=array()) {
     	//---defaults from config
-    	$conf = FConf::getInstance();
-		$params = $conf->a['pager'];
+		$params = FConf::get('pager');
 		$params['prevImg'] = FLang::$PAGER_PREVIOUS;
 		$params['nextImg'] = FLang::$PAGER_NEXT;
 		$params['totalItems'] = $totalItems;
 		$params['perPage'] = $perPage;
+		
 		if(!empty($conf)) $params = array_merge($params,$conf);
     	
         if(!empty($conf)){
