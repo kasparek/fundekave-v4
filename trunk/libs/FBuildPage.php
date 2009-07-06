@@ -11,22 +11,22 @@ class FBuildPage {
 	}
 
 	static function addTab($arrVars) {
-	   self::$tabsArr[] = $arrVars;
+		self::$tabsArr[] = $arrVars;
 		//$tpl = FBuildPage::getInstance();
 		//$tpl->addTab($arrVars);
 	}
 	static function getTabs() {
 	 return self::$tabsArr;
-  }
+	}
 
 	static function getTemplate($template) {
 		$old = array(
      'events.view.php'=>'page_EventsView',
 		'events.edit.php'=>'page_EventsEdit',
-		
+
      'forum.view.php'=>'page_ForumView',
      'bloged.main.php'=>'page_Main',
-	   
+
 		'pages.booked.php'=>'page_PagesBooked',
      'pages.list.php'=>'page_PagesList',
 		'pages.search.php'=>'page_PagesSearch',
@@ -37,12 +37,12 @@ class FBuildPage {
 
 		'galery.list.php'=>'page_GaleryList',
 	   'galery.detail.php'=>'page_GaleryDetail',
-	   
+
 	   'items.live.php'=>'page_ItemsLive',
 		'items.search.php'=>'page_ItemsSearch',
 		'items.tags.php'=>'page_ItemsTags',
 		'items.tagging.randoms.php'=>'page_ItemsTaggingRandom',
-	   
+
 	   'user.post.php'=>'page_UserPost',
 		'user.friends.php'=>'page_UserFriends',
 		'user.friends.all.php'=>'page_FriendsAll',
@@ -50,7 +50,7 @@ class FBuildPage {
 		'user.settings.php'=>'page_UserSettings',
 		'user.info.php'=>'page_UserInfo',
 		'user.diary.php'=>'page_UserDiary',
-		
+
 		'registration.php'=>'page_Registration'
 		
 		);
@@ -70,7 +70,7 @@ class FBuildPage {
 				if (!preg_match("/(.html)$/",$template)) {
 					$template = FBuildPage::getTemplate($template);
 					if( class_exists($template) ) {
-						call_user_func(array($template, 'process'),$data); 
+						call_user_func(array($template, 'process'),$data);
 					}
 				}
 			}
@@ -81,35 +81,35 @@ class FBuildPage {
 		FProfiler::profile('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
-		
+
 		if($user->pageAccess == true) {
-			
+				
 			$staticTemplate = false;
-			
+				
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
 					$template = 'page_PageEdit';
-				break;
-				
-				/* poll */
+					break;
+
+					/* poll */
 				case 'p':
 					$template = 'page_PagePoll';
-				break;
-				
-				/* stats */
+					break;
+
+					/* stats */
 				case 's':
 					$template = 'page_PageStat';
-				break;
-				
-				/* home */
+					break;
+
+					/* home */
 				case 'h':
 					$homePage = $user->pageVO->getPageParam('home');
 					if(empty($homePage)) $homePage = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					$template='';
 					$user->pageVO->content = $homePage;
-				break;
-				
+					break;
+
 				default:
 					$template = $user->pageVO->template;
 					if($template != '') {
@@ -117,7 +117,7 @@ class FBuildPage {
 							$staticTemplate = true;
 						}
 					}
-				break;
+					break;
 			}
 			FProfiler::profile('FBuildPage::baseContent--TPL READY');
 			if($template != '') {
@@ -142,18 +142,18 @@ class FBuildPage {
 				$contentData = array("MAINDATA"=>$user->pageVO->content);
 			}
 			FProfiler::profile('FBuildPage::baseContent--CONTENT DONE');
-	
+
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
-			
+				
 			if(!empty($user->pageParam) || $user->itemVO) {
 				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
-			
+				
 			if($user->pageVO->typeId == 'forum') {
 				FMenu::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 			}
-			
+				
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
@@ -161,9 +161,9 @@ class FBuildPage {
 					}
 					FMenu::secondaryMenuAddItem(FUser::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
 					if(FRules::getCurrent(2)) {
-						
+
 						FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
-						
+
 					}
 				}
 				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
@@ -179,19 +179,19 @@ class FBuildPage {
 	}
 
 	static function show() {
-		
+
 		FBuildPage::baseContent();
 		FProfiler::profile('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
-		
+
 		$tabsArr = FBuildPage::getTabs();
 		if($tabsArr) {
-		foreach($tabsArr as $tab) {
-		  $tpl->addTab($tab);
+			foreach($tabsArr as $tab) {
+				$tpl->addTab($tab);
+			}
 		}
-		}
-		
+
 		$user = FUser::getInstance();
 		//---ERROR MESSAGES
 		$tpl->printErrorMsg();
@@ -233,14 +233,14 @@ class FBuildPage {
 		//---BODY PARAMETERS
 		//---MAIN MENU
 		$arrMenuItems = FMenu::topMenu();
-			while($arrMenuItems) {
-			 $menuItem = array_shift($arrMenuItems);
-				$tpl->setCurrentBlock("topmenuitem");
-				$tpl->setVariable('LINK',$menuItem['LINK']);
-				$tpl->setVariable('TEXT',$menuItem['TEXT']);
-				if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
-				$tpl->parseCurrentBlock();
-			}
+		while($arrMenuItems) {
+			$menuItem = array_shift($arrMenuItems);
+			$tpl->setCurrentBlock("topmenuitem");
+			$tpl->setVariable('LINK',$menuItem['LINK']);
+			$tpl->setVariable('TEXT',$menuItem['TEXT']);
+			if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
+			$tpl->parseCurrentBlock();
+		}
 		FProfiler::profile('FBuildPage--FSystem::topMenu');
 
 		//---BANNER
@@ -269,7 +269,7 @@ class FBuildPage {
 			}
 		}
 		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
-		
+
 		//---LEFT PANEL POPULATING
 		$fLeftpanel = new FLeftPanel($user->pageVO->pageId, $user->userVO->userId, $user->pageVO->typeId);
 		$fLeftpanel->load();
@@ -309,7 +309,7 @@ class FBuildPage {
 			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 		}
-		
+
 		if($useDatePicker === true) {
 			$tpl->touchBlock("juiHEAD"); //---js in the header
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page

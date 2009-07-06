@@ -130,7 +130,7 @@ class FGalery {
 		if(!$this->isThumb($thumbPathArr['thumb'])) {
 			if(!empty($thumbPathArr['path'])) {
 				if(!is_dir($thumbPathArr['path'])) {
-					FSystem::makeDir($thumbPathArr['path']);
+					FFile::makeDir($thumbPathArr['path']);
 				}
 			}
 			//Create file

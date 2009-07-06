@@ -1,12 +1,8 @@
 <?php
 class rh_posta_kdo {
-static function show() {
-	$cache = FCache::getInstance('s',86400);
-if(false === ($tmptext = $cache->getData('who','post'))) {
+	static function show() {
 		$user = FUser::getInstance();
-
 		$arrPost = array();
-
 
 		$dot = "SELECT count(p.postId),userIdFrom,u.name
       	FROM sys_users_post as p join sys_users as u on u.userId=p.userIdFrom 
@@ -32,7 +28,8 @@ if(false === ($tmptext = $cache->getData('who','post'))) {
 
 		$tmptext = '';
 		if(!empty($arr)) {
-			$tpl = new FTemplateIT('sidebar.users.tpl.html');
+			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$tpl->loadTemplatefile('sidebar.users.tpl.html');
 			foreach ($arrPost as $userId=>$userPost) {
 				$tpl->setCurrentBlock('user');
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userId));
@@ -45,8 +42,6 @@ if(false === ($tmptext = $cache->getData('who','post'))) {
 				$tpl->parseCurrentBlock();
 			}
 			$tmptext = $tpl->get();
-		}
-		$cache->setData($tmptext);
 		}
 		return($tmptext);
 	}

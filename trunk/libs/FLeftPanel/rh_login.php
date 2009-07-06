@@ -3,7 +3,8 @@ class rh_login {
 static function show() {
 		$user = FUser::getInstance();
 		if($user->idkontrol) {
-			$tpl = new FTemplateIT('sidebar.user.logged.tpl.html');
+			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$tpl->loadTemplatefile('sidebar.user.logged.tpl.html');
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',FUser::getOnlineUsersCount());
@@ -14,13 +15,11 @@ static function show() {
 				$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
 			}
 		} else {
-
-			$tpl = new FTemplateIT('sidebar.user.login.tpl.html');
+			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$tpl->loadTemplatefile('sidebar.user.login.tpl.html');
 			$tpl->setVariable('FORMACTION',$user->getUri());
 			if(REGISTRATION_ENABLED == 1) $tpl->touchBlock('reglink');
 		}
-			
-		$ret = $tpl->get();
-		return $ret;
+		return $tpl->get();
 	}
 }
