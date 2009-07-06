@@ -34,6 +34,10 @@ class FItems extends FDBTool {
 		
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
 	}
+	
+	function __destruct() {
+	 unset($this->fItemsRenderer);
+  }
 
 	static function isTypeValid($type) {
 		$types = array('forum','galery','blog','event');
