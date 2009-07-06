@@ -12,6 +12,7 @@ class FForum extends FDBTool {
 						$itemVO->delete();
 					}
 				}
+				unset($itemVO);
 			}
 		}
 	}
@@ -115,6 +116,7 @@ class FForum extends FDBTool {
 			if(!$logon) {
 				$captcha = new FCaptcha();
 				if($captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = true; else $cap = false;
+				unset($captcha);
 			} else $cap = true;
 			 
 			if(FUser::logon()) $jmeno = $user->userVO->name;
@@ -193,6 +195,7 @@ class FForum extends FDBTool {
 						//---on success
 						if(FUser::logon()) FUserDraft::clear('forum'.$pageId);
 						$redirect = true;
+						unset($itemVO);
 					}
 				}
 			} else {
@@ -267,6 +270,7 @@ class FForum extends FDBTool {
 			if($itemIdInside > 0) {
 				$itemVO = new ItemVO($itemIdInside,true);
 				$manualCurrentPage = $itemVO->onPageNum();
+				unset($itemVO);
 				$perPage = $user->pageVO->perPage();
 			}
 		}
@@ -275,6 +279,7 @@ class FForum extends FDBTool {
 		/* ........ vypis nazvu auditka .........*/
 		//--FORM
 		$tpl = new FTemplateIT('forum.view.tpl.html');
+		
 		if($showHead===true) {
 			$desc = $user->pageVO->content;
 			if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
@@ -297,6 +302,7 @@ class FForum extends FDBTool {
 			} else {
 				$tpl->setVariable('USERNAMENOTLOGGED',$name);
 				$src = $captcha->get_b2evo_captcha();
+				unset($captcha);
 				$tpl->setVariable('CAPTCHASRC',$src);
 			}
 			$tpl->setVariable('TEXTAREAID','forum'.$user->pageVO->pageId);
@@ -370,10 +376,10 @@ class FForum extends FDBTool {
 		} else $tpl->touchBlock('messno');
 
     $ret = $tpl->get();
-    $tpl = false;
-    $itemRenderer = false;
-    $fItems = false;
-    $pager = false;
+    unset($itemRenderer);
+    unset($fItems);
+    unset($pager);
+    unset($tpl);
 		return $ret;
 	}
 

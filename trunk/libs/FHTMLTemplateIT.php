@@ -1,18 +1,23 @@
 <?php
-define('IT_OK',                         1);
-define('IT_ERROR',                     -1);
-define('IT_TPL_NOT_FOUND',             -2);
-define('IT_BLOCK_NOT_FOUND',           -3);
-define('IT_BLOCK_DUPLICATE',           -4);
-define('IT_UNKNOWN_OPTION',            -6);
-/*
- *
- * @author   Ulf Wendel <uw@netuse.de>
- * @version  $Id: IT.php,v 1.20 2006/08/17 15:47:22 dsp Exp $
- * @access   public
- * @package  HTML_Template_IT
+/**
+ * Integrated Template - IT
+ * PHP version 4
  *  fundekave - kasparek - local version of IT .. removed pear dependecies
- */
+ * @category HTML
+ * @package  HTML_Template_IT
+ * @author   Ulf Wendel <uw@netuse.de>
+ * @license  BSD http://www.opensource.org/licenses/bsd-license.php
+ * @version  CVS: $Id: IT.php,v 1.27 2008/11/14 23:57:17 kguest Exp $
+ * @link     http://pear.php.net/packages/HTML_Template_IT
+ * @access   public
+ */ 
+define('IT_OK', 1);
+define('IT_ERROR', -1);
+define('IT_TPL_NOT_FOUND', -2);
+define('IT_BLOCK_NOT_FOUND', -3);
+define('IT_BLOCK_DUPLICATE', -4);
+define('IT_UNKNOWN_OPTION', -6);
+
 class FHTMLTemplateIT
 {
     /**
@@ -25,7 +30,9 @@ class FHTMLTemplateIT
 
     /**
      * Clear cache on get()?
+
      * @var      boolean
+     * @acces    public
      */
     var $clearCache = false;
 
@@ -43,7 +50,7 @@ class FHTMLTemplateIT
      * @access   public
      * @see      $openingDelimiter, $blocknameRegExp, $variablenameRegExp
      */
-    var $closingDelimiter     = '}';
+    var $closingDelimiter = '}';
 
     /**
      * RegExp matching a block in the template.
@@ -53,7 +60,7 @@ class FHTMLTemplateIT
      * @access   public
      * @see      $variablenameRegExp, $openingDelimiter, $closingDelimiter
      */
-    var $blocknameRegExp    = '[\.0-9A-Za-z_-]+';
+    var $blocknameRegExp = '[\.0-9A-Za-z_-]+';
 
     /**
      * RegExp matching a variable placeholder in the template.
@@ -63,18 +70,19 @@ class FHTMLTemplateIT
      * @access   public
      * @see      $blocknameRegExp, $openingDelimiter, $closingDelimiter
      */
-    var $variablenameRegExp    = '[\.0-9A-Za-z_-]+';
+    var $variablenameRegExp = '[\.0-9A-Za-z_-]+';
 
     /**
      * RegExp used to find variable placeholder, filled by the constructor.
      * @var      string    Looks somewhat like @(delimiter varname delimiter)@
-     * @access   public
+     * @access   private
      * @see      IntegratedTemplate()
      */
     var $variablesRegExp = '';
 
     /**
      * RegExp used to strip unused variable placeholder.
+     * @access  private
      * @brother  $variablesRegExp
      */
     var $removeVariablesRegExp = '';
@@ -97,18 +105,21 @@ class FHTMLTemplateIT
      * RegExp used to find blocks an their content, filled by the constructor.
      * @var      string
      * @see      IntegratedTemplate()
+     * @access   private
      */
     var $blockRegExp = '';
 
     /**
      * Name of the current block.
      * @var      string
+     * @access   private
      */
     var $currentBlock = '__global__';
 
     /**
      * Content of the template.
      * @var      string
+     * @access   private
      */
     var $template = '';
 
@@ -117,6 +128,7 @@ class FHTMLTemplateIT
      *
      * @var      array
      * @see      findBlocks()
+     * @access   private
      */
     var $blocklist = array();
 
@@ -124,45 +136,30 @@ class FHTMLTemplateIT
      * Array with the parsed content of a block.
      *
      * @var      array
+     * @access   private
      */
     var $blockdata = array();
 
     /**
      * Array of variables in a block.
      * @var      array
+     * @access   private
      */
     var $blockvariables = array();
 
     /**
      * Array of inner blocks of a block.
      * @var      array
+     * @access   private
      */
     var $blockinner = array();
 
     /**
      * List of blocks to preverse even if they are "empty".
      *
-     * This is something special. Sometimes you have blocks that
-     * should be preserved although they are empty (no placeholder replaced).
-     * Think of a shopping basket. If it's empty you have to drop a message to
-     * the user. If it's filled you have to show the contents of
-     * the shopping baseket. Now where do you place the message that the basket
-     * is empty? It's no good idea to place it in you applications as customers
-     * tend to like unecessary minor text changes. Having another template file
-     * for an empty basket means that it's very likely that one fine day
-     * the filled and empty basket templates have different layout. I decided
-     * to introduce blocks that to not contain any placeholder but only
-     * text such as the message "Your shopping basked is empty".
-     *
-     * Now if there is no replacement done in such a block the block will
-     * be recognized as "empty" and by default ($removeEmptyBlocks = true) be
-     * stripped off. To avoid thisyou can now call touchBlock() to avoid this.
-     *
-     * The array $touchedBlocks stores a list of touched block which must not
-     * be removed even if they are empty.
-     *
      * @var  array    $touchedBlocks
      * @see  touchBlock(), $removeEmptyBlocks
+     * @access private
      */
      var $touchedBlocks = array();
 
@@ -170,6 +167,7 @@ class FHTMLTemplateIT
      * List of blocks which should not be shown even if not "empty"
      * @var  array    $_hiddenBlocks
      * @see  hideBlock(), $removeEmptyBlocks
+     * @access private
      */
     var $_hiddenBlocks = array();
 
@@ -182,6 +180,7 @@ class FHTMLTemplateIT
      *
      * @var    array
      * @see    setVariable(), $clearCacheOnParse
+     * @access private
      */
     var $variableCache = array();
 
@@ -193,6 +192,7 @@ class FHTMLTemplateIT
      * add lots of values for unknown placeholder.
      *
      * @var    boolean
+     * @access public
      */
     var $clearCacheOnParse = false;
 
@@ -201,18 +201,21 @@ class FHTMLTemplateIT
      * The string gets prefixed to all filenames given.
      * @var    string
      * @see    HTML_Template_IT(), setRoot()
+     * @access private
      */
     var $fileRoot = '';
 
     /**
      * Internal flag indicating that a blockname was used multiple times.
      * @var    boolean
+     * @access private
      */
     var $flagBlocktrouble = false;
 
     /**
      * Flag indicating that the global block was parsed.
      * @var    boolean
+     * @access private
      */
     var $flagGlobalParsed = false;
 
@@ -227,11 +230,13 @@ class FHTMLTemplateIT
      * Now IT could notice this and skip the preparse.
      *
      * @var    boolean
+     * @access private
      */
     var $flagCacheTemplatefile = true;
 
     /**
      * EXPERIMENTAL! FIXME!
+     * @access private
      */
     var $lastTemplatefile = '';
 
@@ -242,10 +247,14 @@ class FHTMLTemplateIT
      * $_options['use_preg'] Whether to use preg_replace instead of
      * str_replace in parse()
      * (this is a backwards compatibility feature, see also bugs #21951, #20392)
+     *
+     * @var    array
+     * @access private
      */
     var $_options = array(
         'preserve_data' => false,
-        'use_preg'      => true
+        'use_preg'      => true,
+        'preserve_input'=> true
     );
 
     /**
@@ -255,18 +264,23 @@ class FHTMLTemplateIT
      * Make sure that you call this constructor if you derive your template
      * class from this one.
      *
-     * @param    string    File root directory, prefix for all filenames
-     *                     given to the object.
+     * @param string $root    File root directory, prefix for all filenames
+     *                        given to the object.
+     * @param mixed  $options Unknown
+     *
      * @see      setRoot()
+     * @access   public
      */
-    function __construct($root = '', $options = null)
+    function FHTMLTemplateIT($root = '', $options = null)
     {
         if (!is_null($options)) {
             $this->setOptions($options);
         }
+
         $this->variablesRegExp = '@' . $this->openingDelimiter .
                                  '(' . $this->variablenameRegExp . ')' .
                                  $this->closingDelimiter . '@sm';
+
         $this->removeVariablesRegExp = '@' . $this->openingDelimiter .
                                        "\s*(" . $this->variablenameRegExp .
                                        ")\s*" . $this->closingDelimiter .'@sm';
@@ -281,53 +295,48 @@ class FHTMLTemplateIT
     /**
      * Sets the option for the template class
      *
+     * @param string $option option name
+     * @param mixed  $value  option value
+     *
      * @access public
-     * @param  string  option name
-     * @param  mixed   option value
      * @return mixed   IT_OK on success, error object on failure
      */
     function setOption($option, $value)
     {
         if (array_key_exists($option, $this->_options)) {
             $this->_options[$option] = $value;
-            return IT_OK;
         }
-
-        return FError::addError(
-                $this->errorMessage(IT_UNKNOWN_OPTION) . ": '{$option}'",
-                IT_UNKNOWN_OPTION
-            );
+        $this->err[] = $this->errorMessage(IT_UNKNOWN_OPTION) . ": '{$option}'";
     }
 
     /**
      * Sets the options for the template class
      *
+     * @param string[] $options options array of options
+     *                           default value:
+     *                           'preserve_data' => false,
+     *                           'use_preg'      => true
+     *
      * @access public
-     * @param  string  options array of options
-     *                 default value:
-     *                   'preserve_data' => false,
-     *                   'use_preg'      => true
-     * @param  mixed   option value
-     * @return mixed   IT_OK on success, error object on failure
      * @see $options
      */
     function setOptions($options)
     {
         if (is_array($options)) {
             foreach ($options as $option => $value) {
-                $error = $this->setOption($option, $value);
-                if ($error < 0) {
-                    return $error;
-                }
+                $this->setOption($option, $value);
             }
         }
-
-        return IT_OK;
     }
 
     /**
      * Print a certain block with all replacements done.
+     *
+     * @param string $block block
+     *
      * @brother get()
+     * @access public
+     * @return null
      */
     function show($block = '__global__')
     {
@@ -337,7 +346,8 @@ class FHTMLTemplateIT
     /**
      * Returns a block with all replacements done.
      *
-     * @param    string     name of the block
+     * @param string $block name of the block
+     *
      * @return   string
      * @throws   PEAR_Error
      * @access   public
@@ -350,26 +360,25 @@ class FHTMLTemplateIT
         }
 
         if (!isset($this->blocklist[$block])) {
-            $this->err[] = FError::addError(
-                            $this->errorMessage(IT_BLOCK_NOT_FOUND) .
-                            '"' . $block . "'",
-                            IT_BLOCK_NOT_FOUND
-                        );
+            $this->err[] = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
             return '';
         }
 
         if (isset($this->blockdata[$block])) {
             $ret = $this->blockdata[$block];
+
             if ($this->clearCache) {
                 unset($this->blockdata[$block]);
+                if ($block == '__global__') {
+                    $this->flagGlobalParsed = false;
+                }
             }
+
             if ($this->_options['preserve_data']) {
-                $ret = str_replace(
-                        $this->openingDelimiter .
-                        '%preserved%' . $this->closingDelimiter,
-                        $this->openingDelimiter,
-                        $ret
-                    );
+                $ret = str_replace($this->openingDelimiter .
+                                    '%preserved%' . $this->closingDelimiter,
+                                    $this->openingDelimiter,
+                                    $ret);
             }
             return $ret;
         }
@@ -380,20 +389,21 @@ class FHTMLTemplateIT
     /**
      * Parses the given block.
      *
-     * @param    string    name of the block to be parsed
+     * @param string $block          name of the block to be parsed
+     * @param bool   $flag_recursion unknown
+     *
      * @access   public
      * @see      parseCurrentBlock()
      * @throws   PEAR_Error
+     * @return null
      */
     function parse($block = '__global__', $flag_recursion = false)
     {
         static $regs, $values;
 
         if (!isset($this->blocklist[$block])) {
-            return FError::addError(
-                $this->errorMessage( IT_BLOCK_NOT_FOUND ) . '"' . $block . "'",
-                        IT_BLOCK_NOT_FOUND
-                );
+            $this->err[] = $err = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
+            return $err;
         }
 
         if ($block == '__global__') {
@@ -407,73 +417,63 @@ class FHTMLTemplateIT
         $outer = $this->blocklist[$block];
         $empty = true;
 
+        $variablelist = array();
         if ($this->clearCacheOnParse) {
             foreach ($this->variableCache as $name => $value) {
-                $regs[] = $this->openingDelimiter .
-                          $name . $this->closingDelimiter;
+                $regs[] = $this->openingDelimiter . $name . $this->closingDelimiter;
                 $values[] = $value;
                 $empty = false;
+                $variablelist[] = $name;
             }
             $this->variableCache = array();
         } else {
             foreach ($this->blockvariables[$block] as $allowedvar => $v) {
-
                 if (isset($this->variableCache[$allowedvar])) {
-                   $regs[]   = $this->openingDelimiter .
-                               $allowedvar . $this->closingDelimiter;
-                   $values[] = $this->variableCache[$allowedvar];
-                   unset($this->variableCache[$allowedvar]);
-                   $empty = false;
+                    $regs[]   = $this->openingDelimiter . $allowedvar . $this->closingDelimiter;
+                    $values[] = $this->variableCache[$allowedvar];
+                    unset($this->variableCache[$allowedvar]);
+                    $empty = false;
+                    $variablelist[] = $allowedvar;
                 }
             }
         }
 
         if (isset($this->blockinner[$block])) {
             foreach ($this->blockinner[$block] as $k => $innerblock) {
-
                 $this->parse($innerblock, true);
                 if ($this->blockdata[$innerblock] != '') {
                     $empty = false;
                 }
-
-                $placeholder = $this->openingDelimiter . "__" .
-                                $innerblock . "__" . $this->closingDelimiter;
-                $outer = str_replace(
-                                    $placeholder,
-                                    $this->blockdata[$innerblock], $outer
-                        );
+                $placeholder = $this->openingDelimiter . "__" . $innerblock . "__" . $this->closingDelimiter;
+                $outer = str_replace($placeholder, $this->blockdata[$innerblock], $outer);
                 $this->blockdata[$innerblock] = "";
             }
-
         }
 
         if (!$flag_recursion && 0 != count($values)) {
             if ($this->_options['use_preg']) {
-                $regs        = array_map(array(
-                                    &$this, '_addPregDelimiters'),
-                                    $regs
-                                );
+                $regs   = array_map(array(&$this, '_addPregDelimiters'), $regs);
+                $values = array_map(array(&$this, '_escapeBackreferences'), $values);
                 $funcReplace = 'preg_replace';
             } else {
                 $funcReplace = 'str_replace';
             }
 
             if ($this->_options['preserve_data']) {
-                $values = array_map(
-                            array(&$this, '_preserveOpeningDelimiter'), $values
-                        );
+                $values = array_map(array(&$this, '_preserveOpeningDelimiter'),
+                    $values);
             }
 
             $outer = $funcReplace($regs, $values, $outer);
+        }
 
-            if ($this->removeUnknownVariables) {
-                $outer = preg_replace($this->removeVariablesRegExp, "", $outer);
-            }
+        if ($this->removeUnknownVariables) {
+            $outer = $this->removeUnknownVariablesFromBlock($block, $outer, $variablelist);
         }
 
         if ($empty) {
             if (!$this->removeEmptyBlocks) {
-                $this->blockdata[$block ].= $outer;
+                $this->blockdata[$block ] .= $outer;
             } else {
                 if (isset($this->touchedBlocks[$block])) {
                     $this->blockdata[$block] .= $outer;
@@ -492,9 +492,43 @@ class FHTMLTemplateIT
     } // end func parse
 
     /**
+     * Removes unknown variables from block. If preserve_input is set to true
+     * only unknown variables that were present during setTemplate or
+     * loadTemplatefile are removed. Thus you can set a variable to
+     * "{SOMEINPUTDATA}" which is preserved.
+     *
+     * @param string $blockname    block
+     * @param string $blockinner   unknown
+     * @param string $variableList unknown
+     *
+     * @see parse()
+     * @access private
+     * @return null
+     */
+    function removeUnknownVariablesFromBlock ($blockname, $blockinner, $variableList)
+    {
+        if ($this->_options['preserve_input']) {
+            foreach ($this->blockvariables[$blockname] as $var => $setted) {
+                if (!in_array($var, $variableList)) {
+                    $blockinner = str_replace($this->openingDelimiter .
+                        $var . $this->closingDelimiter, '', $blockinner);
+                }
+            }
+        } else {
+            $blockinner = preg_replace($this->removeVariablesRegExp,
+                '',
+                $blockinner);
+        }
+
+        return $blockinner;
+    }
+
+    /**
      * Parses the current block
+     *
      * @see      parse(), setCurrentBlock(), $currentBlock
      * @access   public
+     * @return null
      */
     function parseCurrentBlock()
     {
@@ -508,19 +542,18 @@ class FHTMLTemplateIT
      * or with one array $variables["varname"] = "value"
      * given setVariable($variables) quite like phplib templates set_var().
      *
-     * @param    mixed     string with the variable name or an array
-     *                     %variables["varname"] = "value"
-     * @param    string    value of the variable or empty if $variable
-     *                     is an array.
-     * @param    string    prefix for variable names
-     * @access   public
+     * @param mixed  $variable string with the variable name or an array
+     *                         %variables["varname"] = "value"
+     * @param string $value    value of the variable or empty if $variable
+     *                         is an array.
+     *
+     * @access public
+     * @return null
      */
     function setVariable($variable, $value = '')
     {
         if (is_array($variable)) {
-            $this->variableCache = array_merge(
-                                            $this->variableCache, $variable
-                                    );
+            $this->variableCache = array_merge($this->variableCache, $variable);
         } else {
             $this->variableCache[$variable] = $value;
         }
@@ -530,7 +563,8 @@ class FHTMLTemplateIT
      * Sets the name of the current block that is the block where variables
      * are added.
      *
-     * @param    string      name of the block
+     * @param string $block name of the block
+     *
      * @return   boolean     false on failure, otherwise true
      * @throws   PEAR_Error
      * @access   public
@@ -539,10 +573,8 @@ class FHTMLTemplateIT
     {
 
         if (!isset($this->blocklist[$block])) {
-            return FError::addError(
-                $this->errorMessage( IT_BLOCK_NOT_FOUND ) .
-                '"' . $block . "'", IT_BLOCK_NOT_FOUND
-            );
+            $this->err[] = $err = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
+            return $err;
         }
 
         $this->currentBlock = $block;
@@ -553,7 +585,8 @@ class FHTMLTemplateIT
     /**
      * Preserves an empty block even if removeEmptyBlocks is true.
      *
-     * @param    string      name of the block
+     * @param string $block name of the block
+     *
      * @return   boolean     false on false, otherwise true
      * @throws   PEAR_Error
      * @access   public
@@ -562,9 +595,8 @@ class FHTMLTemplateIT
     function touchBlock($block)
     {
         if (!isset($this->blocklist[$block])) {
-            return FError::addError(
-                $this->errorMessage(IT_BLOCK_NOT_FOUND) .
-                '"' . $block . "'", IT_BLOCK_NOT_FOUND);
+            $this->err[] = $err = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
+            return $err;
         }
 
         $this->touchedBlocks[$block] = true;
@@ -579,8 +611,9 @@ class FHTMLTemplateIT
      * when a new template is given. Don't use this function
      * unless you know what you're doing.
      *
-     * @access   public
+     * @access   private
      * @see      free()
+     * @return null
      */
     function init()
     {
@@ -596,8 +629,9 @@ class FHTMLTemplateIT
      *
      * Don't use this function unless you know what you're doing.
      *
-     * @access   public
+     * @access   private
      * @see      init()
+     * @return null
      */
     function free()
     {
@@ -605,9 +639,9 @@ class FHTMLTemplateIT
 
         $this->currentBlock = '__global__';
 
-        $this->variableCache    = array();
-        $this->blocklist        = array();
-        $this->touchedBlocks    = array();
+        $this->variableCache = array();
+        $this->blocklist     = array();
+        $this->touchedBlocks = array();
 
         $this->flagBlocktrouble = false;
         $this->flagGlobalParsed = false;
@@ -619,9 +653,10 @@ class FHTMLTemplateIT
      * You can eighter load a template file from disk with
      * LoadTemplatefile() or set the template manually using this function.
      *
-     * @param        string      template content
-     * @param        boolean     remove unknown/unused variables?
-     * @param        boolean     remove empty blocks?
+     * @param string $template               template content
+     * @param bool   $removeUnknownVariables how to handle unknown variables.
+     * @param bool   $removeEmptyBlocks      how to handle empty blocks.
+     *
      * @see          LoadTemplatefile(), $template
      * @access       public
      * @return       boolean
@@ -630,13 +665,14 @@ class FHTMLTemplateIT
                           $removeEmptyBlocks = true)
     {
         $this->removeUnknownVariables = $removeUnknownVariables;
+
         $this->removeEmptyBlocks = $removeEmptyBlocks;
 
         if ($template == '' && $this->flagCacheTemplatefile) {
             $this->variableCache = array();
-            $this->blockdata = array();
+            $this->blockdata     = array();
             $this->touchedBlocks = array();
-            $this->currentBlock = '__global__';
+            $this->currentBlock  = '__global__';
         } else {
             $this->template = '<!-- BEGIN __global__ -->' . $template .
                               '<!-- END __global__ -->';
@@ -653,9 +689,10 @@ class FHTMLTemplateIT
     /**
      * Reads a template file from the disk.
      *
-     * @param    string      name of the template file
-     * @param    bool        how to handle unknown variables.
-     * @param    bool        how to handle empty blocks.
+     * @param string $filename               name of the template file
+     * @param bool   $removeUnknownVariables how to handle unknown variables.
+     * @param bool   $removeEmptyBlocks      how to handle empty blocks.
+     *
      * @access   public
      * @return   boolean    false on failure, otherwise true
      * @see      $template, setTemplate(), $removeUnknownVariables,
@@ -674,9 +711,9 @@ class FHTMLTemplateIT
         $this->lastTemplatefile = $filename;
 
         return $template != '' ?
-                $this->setTemplate(
-                        $template,$removeUnknownVariables, $removeEmptyBlocks
-                    ) : false;
+                $this->setTemplate($template,
+                    $removeUnknownVariables,
+                    $removeEmptyBlocks) : false;
     } // end func LoadTemplatefile
 
     /**
@@ -686,9 +723,11 @@ class FHTMLTemplateIT
      * Make sure that you override this function when using the class
      * on windows.
      *
-     * @param    string
+     * @param string $root File root
+     *
      * @see      HTML_Template_IT()
      * @access   public
+     * @return null
      */
     function setRoot($root)
     {
@@ -701,6 +740,9 @@ class FHTMLTemplateIT
 
     /**
      * Build a list of all variables within of a block
+     *
+     * @access private
+     * @return null
      */
     function buildBlockvariablelist()
     {
@@ -719,6 +761,9 @@ class FHTMLTemplateIT
 
     /**
      * Returns a list of all global variables
+     *
+     * @access public
+     * @return array
      */
     function getGlobalvariables()
     {
@@ -740,8 +785,11 @@ class FHTMLTemplateIT
     /**
      * Recusively builds a list of all blocks within the template.
      *
-     * @param    string    string that gets scanned
+     * @param string $string string that gets scanned
+     *
+     * @access   private
      * @see      $blocklist
+     * @return   array
      */
     function findBlocks($string)
     {
@@ -749,15 +797,11 @@ class FHTMLTemplateIT
 
         if (preg_match_all($this->blockRegExp, $string, $regs, PREG_SET_ORDER)) {
             foreach ($regs as $k => $match) {
-                $blockname         = $match[1];
+                $blockname    = $match[1];
                 $blockcontent = $match[2];
 
                 if (isset($this->blocklist[$blockname])) {
-                    $this->err[] = FError::addError(
-                                            $this->errorMessage(
-                                            IT_BLOCK_DUPLICATE, $blockname),
-                                            IT_BLOCK_DUPLICATE
-                                    );
+                    $this->err[] = $msg = $this->errorMessage(IT_BLOCK_DUPLICATE, $blockname);
                     $this->flagBlocktrouble = true;
                 }
 
@@ -767,21 +811,18 @@ class FHTMLTemplateIT
                 $blocklist[] = $blockname;
 
                 $inner = $this->findBlocks($blockcontent);
+                $regex = '@<!--\s+BEGIN\s+%s\s+-->(.*)<!--\s+END\s+%s\s+-->@sm';
                 foreach ($inner as $k => $name) {
-                    $pattern = sprintf(
-                        '@<!--\s+BEGIN\s+%s\s+-->(.*)<!--\s+END\s+%s\s+-->@sm',
-                        $name,
-                        $name
-                    );
+                    $pattern = sprintf($regex, preg_quote($name), preg_quote($name));
 
-                    $this->blocklist[$blockname] = preg_replace(
-                                        $pattern,
-                                        $this->openingDelimiter .
-                                        '__' . $name . '__' .
-                                        $this->closingDelimiter,
-                                        $this->blocklist[$blockname]
-                               );
+                    $this->blocklist[$blockname] = preg_replace($pattern,
+                        $this->openingDelimiter .
+                        '__' . $name . '__' .
+                        $this->closingDelimiter,
+                        $this->blocklist[$blockname]);
+
                     $this->blockinner[$blockname][] = $name;
+
                     $this->blockparents[$name] = $blockname;
                 }
             }
@@ -792,8 +833,11 @@ class FHTMLTemplateIT
 
     /**
      * Reads a file from disk and returns its content.
-     * @param    string    Filename
+     *
+     * @param string $filename Filename
+     *
      * @return   string    Filecontent
+     * @access   private
      */
     function getFile($filename)
     {
@@ -804,63 +848,81 @@ class FHTMLTemplateIT
         $filename = $this->fileRoot . $filename;
 
         if (!($fh = @fopen($filename, 'r'))) {
-            $this->err[] = FError::addError(
-                        $this->errorMessage(IT_TPL_NOT_FOUND) .
-                        ': "' .$filename .'"',
-                        IT_TPL_NOT_FOUND
-                    );
+            $this->err[] = $this->errorMessage(IT_TPL_NOT_FOUND) . ': "' .$filename .'"';
             return "";
         }
 
-		$fsize = filesize($filename);
+        $fsize = filesize($filename);
         if ($fsize < 1) {
-			fclose($fh);
+            fclose($fh);
             return '';
         }
 
         $content = fread($fh, $fsize);
         fclose($fh);
 
-        return preg_replace(
-            "#<!-- INCLUDE (.*) -->#ime", "\$this->getFile('\\1')", $content
-        );
+        return preg_replace("#<!-- INCLUDE (.*) -->#ime",
+                            "\$this->getFile('\\1')",
+                            $content);
     } // end func getFile
 
     /**
      * Adds delimiters to a string, so it can be used as a pattern
      * in preg_* functions
      *
-     * @param string
+     * @param string $str input
+     *
      * @return string
+     * @access private
      */
     function _addPregDelimiters($str)
     {
-        return '@' . $str . '@';
+        return '@' . preg_quote($str) . '@';
     }
 
-   /**
-    * Replaces an opening delimiter by a special string
-    *
-    * @param  string
-    * @return string
-    */
+    /**
+     * Escapes $ and \ as preg_replace will treat
+     * them as a backreference and not literal.
+     * See bug #9501
+     *
+     * @param string $str String to escape
+     *
+     * @since 1.2.2
+     * @return string
+     * @access private
+     */
+    function _escapeBackreferences($str)
+    {
+        $str = str_replace('\\', '\\\\', $str);
+        $str = preg_replace('@\$([0-9]{1,2})@', '\\\$${1}', $str);
+        return $str;
+    }
+
+    /**
+     * Replaces an opening delimiter by a special string
+     *
+     * @param string $str special string
+     *
+     * @return string
+     * @access private
+     */
     function _preserveOpeningDelimiter($str)
     {
         return (false === strpos($str, $this->openingDelimiter))?
                 $str:
-                str_replace(
-                    $this->openingDelimiter,
-                    $this->openingDelimiter .
-                    '%preserved%' . $this->closingDelimiter,
-                    $str
-                );
+                str_replace($this->openingDelimiter,
+                            $this->openingDelimiter .
+                            '%preserved%' . $this->closingDelimiter,
+                            $str);
     }
 
     /**
      * Return a textual error message for a IT error code
      *
-     * @param integer $value error code
+     * @param integer $value     error code
+     * @param string  $blockname unknown
      *
+     * @access private
      * @return string error message, or false if the error code was
      * not recognized
      */
@@ -881,7 +943,6 @@ class FHTMLTemplateIT
                 IT_UNKNOWN_OPTION           => 'Unknown option'
             );
         }
-        return isset($errorMessages[$value]) ?
-                $errorMessages[$value] : $errorMessages[IT_ERROR];
+        return isset($errorMessages[$value]) ? $errorMessages[$value] : $errorMessages[IT_ERROR];
     }
 } // end class IntegratedTemplate

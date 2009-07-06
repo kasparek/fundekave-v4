@@ -44,7 +44,7 @@ class FItemsRenderer {
 		
 		if($this->tpl && $typeId!='' && $typeId != $this->tplType) {
 			$this->tplParsed .= $this->tpl->get();
-			$this->tpl = false;
+			unset($this->tpl);
 		}
 		
 		if(!$this->tpl && $typeId!='') {
@@ -77,7 +77,7 @@ class FItemsRenderer {
 		/*.........zacina vypis prispevku.........*/
 		$tpl = $this->itemTpl( $typeId );
 		
-		$tpl->setCurrentBlock('item');
+		$tpl->setCurrentBlock();
 		//---common for all items
 		if($this->showHentryClass==true) $tpl->touchBlock('hentry');
 		$tpl->setVariable('ITEMIDHTML', 'i'.$itemId);
@@ -187,6 +187,7 @@ class FItemsRenderer {
 					$tpl->setVariable('PAGEIDTOOLTIP',$pageId);
 					$tpl->setVariable('LINKPOPUP',$itemVO->detailUrlToPopup);
 				}
+				unset($pageVO);
 				break;
 		}
 		
@@ -224,6 +225,7 @@ class FItemsRenderer {
 			$pageVO = new PageVO($pageId,true);
 			$tpl->setVariable('PAGELINK',FUser::getUri((($typeId=='forum')?('&i='.$itemId.'#i'.$itemId):('')),$pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
+			unset($pageVO);
 		}
 		FProfiler::profile('FItemsRenderer::render--PAGE NAME',true);
 
@@ -256,11 +258,13 @@ class FItemsRenderer {
 				if(FRules::get($userId, $itemVOBottom->pageId,1)) {
 					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}
+				unset($itemVOBottom);
 			}
 			if(!empty($itemVO->pageIdBottom)) {
 				if(FRules::get($userId,$itemVO->pageIdBottom,1)) {
 					$pageVO = new PageVO($itemVO->pageIdBottom,true);
 					$tpl->setVariable('ITEMBOTTOM','<h3><a href="'.FUser::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>');
+					unset($pageVO);
 				}
 			}
 		}
@@ -278,7 +282,7 @@ class FItemsRenderer {
 		$this->tplParsed = '';
 		if($tpl) {
 			$ret .= $tpl->get();
-			$this->tpl = false;
+			unset($this->tpl);
 		}
 		return $ret;
 	}
