@@ -8,7 +8,7 @@ class FUser {
 	var $pageVO;
 	var $itemVO;
 
-  var $pageId;
+	var $pageId;
 	var $pageParam; //---replacing ->currentPageParam
 
 	//---used when looking after someone informations
@@ -50,7 +50,7 @@ class FUser {
 	}
 
 	static function getToken($tokenizer) {
-		return md5( $tokenizer . FUser::LO . FSystem::getmicrotime() );
+		return md5( $tokenizer . FUser::LO . uniqid('U') );
 	}
 
 	/**
@@ -133,10 +133,10 @@ class FUser {
 				$this->pageVO->favorite = $vid[2]*1;
 				$this->pageVO->favoriteCnt = $vid[3]*1;
 			}
-			
+				
 			//---ip address checking
-			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp()) 
-				&& ($this->userVO->idlogin == $idloginInDb)) {
+			if(($this->userVO->ipcheck === false || $this->userVO->ip == FSystem::getUserIp())
+			&& ($this->userVO->idlogin == $idloginInDb)) {
 				//---user allright
 				$this->idkontrol = true;
 			} else {
@@ -242,12 +242,12 @@ class FUser {
 			where loginId='".$this->userVO->idlogin."'");
 					
 				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$this->userVO->userId."'");
-FProfiler::profile('FUser::kde::8');
+				FProfiler::profile('FUser::kde::8');
 			}
 		}
 		$cache = false;
 	}
-	
+
 	function pageStat() {
 		FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
 	}
@@ -318,7 +318,7 @@ FProfiler::profile('FUser::kde::8');
 			}
 		}
 	}
-	
+
 	static function checkUsername($name) {
 		return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z0-9]*))$/" , $name);
 	}
@@ -398,7 +398,7 @@ FProfiler::profile('FUser::kde::8');
 		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
 		return(WEB_REL_CSS.$skin);
 	}
-	
+
 	/**
 	 * get count of active users
 	 *
@@ -429,7 +429,7 @@ FProfiler::profile('FUser::kde::8');
 			$params[] = 'i='.$user->itemVO->itemId;
 			if(empty($pageParam)) $newPageId = '';
 		}
-		
+
 		if(!empty($newPageId)) {
 			if(empty($pageParam)) {
 				$pageVO  = new PageVO($newPageId,true);

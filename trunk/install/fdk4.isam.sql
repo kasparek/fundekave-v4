@@ -4,7 +4,8 @@ CREATE TABLE sys_leftpanel_functions (
      , public TINYINT unsigned NOT NULL DEFAULT 0
      , userId MEDIUMINT unsigned NOT NULL
      , pageId varchar(5) DEFAULT NULL
-     , content TEXT 
+     , content TEXT
+     , options  varchar(50) DEFAULT NULL  
      , PRIMARY KEY (functionName)
 );
 

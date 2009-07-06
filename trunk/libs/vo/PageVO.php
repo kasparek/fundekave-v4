@@ -1,11 +1,11 @@
 <?php
-class PageVO {
+class PageVO extends FVO {
 
-    var $cacheResults = 's';
-		var $table = 'sys_pages';
-		var $primaryCol = 'pageId';
-	
-var $columns = array('pageId' => 'pageId',
+	var $cacheResults = 's';
+	var $table = 'sys_pages';
+	var $primaryCol = 'pageId';
+
+	var $columns = array('pageId' => 'pageId',
 	'pageIdTop' => 'pageIdTop',
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
@@ -70,12 +70,12 @@ var $columns = array('pageId' => 'pageId',
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
-	
+
 	//---watcher
 	var $saveOnlyChanged = false;
 	var $changed = false;
 	var $xmlChanged = false;
-	
+
 
 	function PageVO($pageId=0, $autoLoad = false) {
 	 $this->pageId = $pageId;
@@ -83,14 +83,14 @@ var $columns = array('pageId' => 'pageId',
 			$this->load();
 		}
 	}
-	
+
 	function load() {
-    $vo = new FDBvo( $this );
-    $vo->load();
-    $vo->vo = false;
-    $vo = false;
-  }
-	
+		$vo = new FDBvo( $this );
+		$vo->load();
+		$vo->vo = false;
+		$vo = false;
+	}
+
 	function save() {
 	 $vo = new FDBvo( $this );
 		if(!empty($this->pageId)) {
@@ -108,7 +108,7 @@ var $columns = array('pageId' => 'pageId',
 		$pageId = parent::save();
 		$this->xmlChanged = false;
 		$vo->vo = false;
-    $vo = false;
+		$vo = false;
 		return $pageId;
 	}
 
@@ -141,7 +141,7 @@ var $columns = array('pageId' => 'pageId',
 		if(empty($perPage)) $perPage = FConf::get('perpage','default');
 		return $perPage;
 	}
-	
+
 	function itemsOrder() {
 		$orderBy = $this->getPageParam('enhancedsettings/orderitems');
 		//---legacy
@@ -153,7 +153,7 @@ var $columns = array('pageId' => 'pageId',
 			switch($this->typeId) {
 				case 'galery':
 					$orderBy = 'enclosure';
-				break;
+					break;
 				default:
 					$orderBy = 'dateCreated desc';
 			}

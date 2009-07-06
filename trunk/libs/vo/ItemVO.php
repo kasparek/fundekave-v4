@@ -1,12 +1,12 @@
 <?php
-class ItemVO {
+class ItemVO extends FVO {
 
-var $table = 'sys_pages_items';
-			var $primaryCol = 'itemId';
+	var $table = 'sys_pages_items';
+	var $primaryCol = 'itemId';
 
 	var $options = array();
 
-	static $colsDefault = array('itemId' => 'itemId',
+	var $columns = array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
 	'itemIdBottom' => 'itemIdBottom',
 	'typeId' => 'typeId',
@@ -98,10 +98,6 @@ var $table = 'sys_pages_items';
 		var $detailHeight;
 		var $detailUrlToGalery;
 		var $detailUrlToPopup;
-		
-		//---watcher
-		var $saveOnlyChanged = false;
-	 var $changed = false;
 
 		function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
 			if(isset($options['type'])) $this->typeId = $options['type'];
@@ -112,9 +108,13 @@ var $table = 'sys_pages_items';
 			}
 		}
 
-		static function getTypeColumns( $typeId='' ) {
-			$arrSelect = array_merge(ItemVO::$colsDefault, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
-			return $arrSelect;
+		function getTypeColumns( $typeId='' ) {
+			if($typeId=='') $typeId = $this->typeId;
+			if(!empty($typeId)) {
+				return $this->columns = array_merge($this->columns, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
+			} else {
+				return $this->columns;
+			}
 		}
 
 		function checkItem() {
@@ -135,17 +135,17 @@ var $table = 'sys_pages_items';
 				$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
 				$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
 			}
-			$this->columns = ItemVO::getTypeColumns($this->typeId);
+			$this->columns = $this->getTypeColumns();
 
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
 			if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
-			
+					
 				$vo = new FDBvo( $this );
-      $vo->load();
-    $vo->vo = false;
-    $vo = false;
-				
+				$vo->load();
+				$vo->vo = false;
+				$vo = false;
+
 				$this->prepare();
 			} else {
 				$this->reload($itemVO);
@@ -161,10 +161,10 @@ var $table = 'sys_pages_items';
 
 		function map($arr) {
 			if(!empty($arr)) {
-			foreach($arr as $k=>$v) {
-				$this->{$k} = $v;
+				foreach($arr as $k=>$v) {
+					$this->{$k} = $v;
+				}
 			}
-		}
 			$this->prepare();
 			//---save in cache
 			$cache = FCache::getInstance('l');
@@ -172,7 +172,7 @@ var $table = 'sys_pages_items';
 		}
 
 		function save() {
-		$vo = new FDBvo( $this );
+			$vo = new FDBvo( $this );
 			$vo->resetIgnore();
 			if($this->itemId > 0) {
 				//---update
@@ -189,9 +189,9 @@ var $table = 'sys_pages_items';
 					FPages::cntSet( $this->pageId );
 				}
 				$cache = FCache::getInstance('f');
-			   $cache->invalidateData($this->pageId.'-page', 'fitGrp');
+				$cache->invalidateData($this->pageId.'-page', 'fitGrp');
 			}
-			$vo->columns = ItemVO::getTypeColumns();
+				
 			$itemId = $vo->save();
 			//---update stats
 			ItemVO::statPage($this->pageId, FUser::logon(), false);
@@ -201,15 +201,15 @@ var $table = 'sys_pages_items';
 			$cache->invalidateData($this->itemId, 'fit');
 			return $itemId;
 		}
-		
+
 		function delete() {
 			$itemId = $this->itemId;
-			
+				
 			$vo = new FDBvo( $this );
-    $vo->delete();
-    $vo->vo = false;
-    $vo = false;
-			
+			$vo->delete();
+			$vo->vo = false;
+			$vo = false;
+				
 			if($this->itemIdTop > 0) {
 				ItemVO::incrementReactionCount( $itemVO->itemIdTop, false );
 			} else {
@@ -223,7 +223,7 @@ var $table = 'sys_pages_items';
 			//---statistics
 			ItemVO::statPage($this->pageId, FUser::logon());
 		}
-		
+
 		function prepare() {
 			switch ($this->typeId) {
 				case 'galery':
@@ -269,7 +269,7 @@ var $table = 'sys_pages_items';
 				$this->hit++;
 			}
 		}
-		
+
 		function getPageItemsId() {
 			$cache = FCache::getInstance('f');
 			if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
@@ -294,17 +294,17 @@ var $table = 'sys_pages_items';
 			}
 			return $pid;
 		}
-		
+
 		function getNext() {
 			$itemId = $this->getSideItemId(1);
 			if($itemId > 0) {
 				$itemVO = new ItemVO($itemId, false);
 				$itemVO->typeId = $this->typeId;
-				return $itemVO; 
+				return $itemVO;
 			}
 			return false;
 		}
-		
+
 		function getPrev() {
 			$itemId = $this->getSideItemId(-1);
 			if($itemId > 0) {
@@ -314,7 +314,7 @@ var $table = 'sys_pages_items';
 			}
 			return false;
 		}
-		
+
 		function getSideItemId($side=-1, $consecutively = false) {
 			$keys = $this->getPageItemsId();; //--- when key is value
 			$keyIndexes = array_flip($keys);
@@ -335,8 +335,8 @@ var $table = 'sys_pages_items';
 				}
 			}
 		}
-		
-		
+
+
 		//---special properties
 		static function getProperty($itemId,$propertyName,$default=false) {
 			$q = "select value from sys_pages_items_properties where itemId='".$itemId."' and name='".$propertyName."'";
@@ -359,7 +359,7 @@ var $table = 'sys_pages_items';
 			$unreaded = $this->cnt - $this->cntReaded;
 			return $unreaded;
 		}
-		
+
 		//---support functions
 		/**
 		 * items for page statistics
@@ -373,7 +373,7 @@ var $table = 'sys_pages_items';
 			else $str="ins+1";
 			FDBTool::query("update sys_pages_counter set ins=".$str." WHERE pageId='".$pageId."'and dateStamp=now() AND userId='". (int) $userId."'");
 		}
-		
+
 		/**
 		 * stats for item reactions
 		 *
