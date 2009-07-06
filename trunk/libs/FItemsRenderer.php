@@ -42,12 +42,12 @@ class FItemsRenderer {
 
 	function &itemTpl($typeId='') {
 		
-		if($this->tpl && $typeId!='' && $typeId != $this->tplType) {
+		if(!empty($this->tpl) && $typeId!='' && $typeId != $this->tplType) {
 			$this->tplParsed .= $this->tpl->get();
 			unset($this->tpl);
 		}
 		
-		if(!$this->tpl && $typeId!='') {
+		if(empty($this->tpl) && $typeId!='') {
 			$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
 			$this->tpl->loadTemplatefile($this->getTemplateName($typeId));
 			$this->tplType = $typeId;
