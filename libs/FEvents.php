@@ -2,7 +2,7 @@
 class FEvents {
 
 	static function thumbName($flyerName) {
-		return str_replace(FSystem::fileExt($flyerName),'jpg',$flyerName);
+		return str_replace(FFile::fileExt($flyerName),'jpg',$flyerName);
 	}
 	
 	static function thumbUrl($flyerName) {
@@ -203,7 +203,7 @@ class FEvents {
 			if(!FError::isError()) {
 				$itemId = $itemVO->save();
 				if(!empty($data['akceletakurl'])) {
-					$ext = FSystem::fileExt($data['akceletakurl']);
+					$ext = FFile::fileExt($data['akceletakurl']);
 					if($ext=='gif' || $ext=='jpg' || $ext=='jpeg' || $ext=='png') {
 						$flyerName = FEvents::createFlyerName($itemVO->itemId, $data['akceletakurl']);
 						//---delete old files
@@ -279,6 +279,6 @@ class FEvents {
 	}
 		
 	static function createFlyerName($itemId, $origFilename) {
-		return "flyer-".$itemId.'-'.date("U").'.'.FSystem::fileExt($origFilename);
+		return "flyer-".$itemId.'-'.date("U").'.'.FFile::fileExt($origFilename);
 	}
 }

@@ -81,10 +81,10 @@ class FUser {
 				$cache->invalidate();
 				$cache->setData($this->userVO,'user');
 				//---file cache
+				
 				$cache = FCache::getInstance( 'f' );
-				$cache->invalidateData('forumdesc');
-				$cache->invalidateData('loggedlist');
-				$cache->invalidateData('postwho');
+				//TODO:invalidate user dependent groups
+				
 				FItems::afavAll($gid); //----srovnani-seznamu-klubu-----
 				FMessages::diaryNotifications(); //---remind from diary
 			} else {

@@ -104,7 +104,10 @@ static function rh_datum() {
 					$arrEventsForDay[$row[0]][] = array('link'=>$row[1],'id'=>$row[2],'name'=>$row[3],'dateiso'=>$row[4],'datelocal'=>$row[5]);
 				}
 				$arrEventForDayKeys = array_keys($arrEventsForDay);
-				$tpl = new FTemplateIT('sidebar.calendar.tpl.html');
+				
+				$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+				$tpl->loadTemplatefile('sidebar.calendar.tpl.html');
+				
 				$tpl->setVariable('CURRENTMONTH',FLang::$MONTHS[$dmesic]);
 				$tpl->setVariable('CURRENTYEAR',$drok);
 				for ($x=1;$x<=$hor;$x++) {

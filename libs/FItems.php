@@ -22,13 +22,14 @@ class FItems extends FDBTool {
 	function __construct($typeId='',$byPremissions=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
 		$this->fetchmode = 1;
+		if($typeId!='') $this->typeId = $typeId;
 		
 		$itemVO = new ItemVO();
 		$this->columns = $itemVO->getTypeColumns( $this->typeId );
 		$itemVO = false;
 		
-		if($typeId!='') {
-			$this->initList($typeId,$byPremissions);
+		if($this->typeId!='') {
+			$this->initList($this->typeId,$byPremissions);
 		}
 		
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
