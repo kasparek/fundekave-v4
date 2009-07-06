@@ -32,13 +32,13 @@ class FLeftPanel extends FDBTool {
 		$cache = FCache::getInstance( 's' );
 		if( false === ($arrSidebar = $cache->getData($this->pageId.'-page-'.($this->userId*1).'-user','sidebarSet')) ) {
 
-			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,fd.leftpanelGroup,'','',fd.ord,fd.visible");
+			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible");
 			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 			$arrTmp = $this->getContent();
 			$this->queryReset();
 
-			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'',fp.pageId,'',fp.ord,fp.visible");
+			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible");
 			$this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='".$this->pageId."'");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 			$arr2 = $this->getContent();
@@ -46,7 +46,7 @@ class FLeftPanel extends FDBTool {
 			$this->queryReset();
 
 			if($this->userId > 0) {
-				$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,'','',fu.userId,fu.ord,1,fu.minimized");
+				$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,'','',fu.userId,fu.ord,1,fu.minimized");
 				$this->addJoin("join sys_leftpanel_users as fu on fu.functionName = f.functionName and fu.pageId='".$this->pageId."' and fu.userId='".$this->userId."'");
 				if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 				$arr2 = $this->getContent();
@@ -72,6 +72,7 @@ class FLeftPanel extends FDBTool {
 				$newRow['userIdOwner'] = $row[3];
 				$newRow['pageIdOrigin'] = $row[4];
 				$newRow['content'] = $row[5];
+				$newRow['options'] = $row[6];
 
 			} else {
 				$newRow = $arrGrouped[$row[0]];
@@ -82,28 +83,28 @@ class FLeftPanel extends FDBTool {
 
 			}
 
-			if(empty($newRow['group']) && !empty($row[6])) $newRow['group'] = $row[6];
-			if(empty($newRow['pageId']) && !empty($row[7])) $newRow['pageId'] = $row[7];
-			if(empty($newRow['userId']) && !empty($row[8])) $newRow['userId'] = $row[8];
+			if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[6];
+			if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[7];
+			if(empty($newRow['userId']) && !empty($row[9])) $newRow['userId'] = $row[8];
 
 			if(!empty($newRow['group']) && $setByPage===false && $setByUser===false) {
 				//---defaults
-				$newRow['ord'] = $row[9];
-				$newRow['visible'] = $row[10];
+				$newRow['ord'] = $row[10];
+				$newRow['visible'] = $row[11];
 				$newRow['origin'] = 'system';
 			}
 
 			if(!empty($newRow['pageId']) && $setByUser===false) {
 				//---bigger priority
-				$newRow['ord'] = $row[9];
-				$newRow['visible'] = $row[10];
+				$newRow['ord'] = $row[10];
+				$newRow['visible'] = $row[11];
 				$newRow['origin'] = 'page';
 			}
 
 			//---biggest priority
 			if(!empty($newRow['userId'])) {
-				$newRow['ord'] = $row[9];
-				$newRow['minimized'] = $row[11];
+				$newRow['ord'] = $row[10];
+				$newRow['minimized'] = $row[12];
 				$newRow['origin'] = 'user';
 			}
 			 
@@ -142,6 +143,19 @@ class FLeftPanel extends FDBTool {
 					$letext = '';
 					if(empty($panel['minimized'])) {
 						if(!empty($fnc)) {
+							if($panel['public']==0 || strpos($pane['options'],'member')!==false) {
+								$user = FUser::getInstance();
+								$group .= '-'.($user->idkontrol*1).'-member';
+							}
+							if(strpos($pane['options'],'page')!==false) {
+								$user = FUser::getInstance();
+								$group .= '-'.($user->idkontrol*1).'-member';
+							}
+							//page
+							//user
+							//time
+							//type
+							//die();
 							$cache = FCache::getInstance('f');
 							if(false===($letext=$cache->getData($fnc,'lp'))) {
 								include('FLeftPanel/'.$fnc.'.php');

@@ -22,8 +22,15 @@ class FItems extends FDBTool {
 	function __construct($typeId='',$byPremissions=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
 		$this->fetchmode = 1;
-		if($typeId!='') $this->initList($typeId,$byPremissions);
-		$this->columns = ItemVO::getTypeColumns($this->typeId);
+		
+		$itemVO = new ItemVO();
+		$this->columns = $itemVO->getTypeColumns( $this->typeId );
+		$itemVO = false;
+		
+		if($typeId!='') {
+			$this->initList($typeId,$byPremissions);
+		}
+		
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
 	}
 
@@ -44,7 +51,7 @@ class FItems extends FDBTool {
 			$this->byPermissions = $byPermissions;
 		}
 		//---set select
-		$this->setSelect( ItemVO::getTypeColumns( $typeId ));
+		$this->setSelect( $this->columns );
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
 			$this->addWhere('public = 1');
@@ -57,7 +64,7 @@ class FItems extends FDBTool {
 	}
 	
 	function getList($from=0, $count=0) {
-		$this->arrData = array();
+		$this->data = array();
 		$itemTypeId = $this->typeId;
 
 		if($this->byPermissions === false) {

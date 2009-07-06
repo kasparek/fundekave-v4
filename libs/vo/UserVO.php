@@ -1,13 +1,13 @@
 <?php
-class UserVO {
+class UserVO extends FVO {
 
 	//---token is changed every check
 	//---if true user can NOT work in multiple windows
 	//---use true for webservice - more secure
 	var $strictLogin = false;
-	
+
 	var $table = 'sys_users';
-			var $primaryCol = 'userId';
+	var $primaryCol = 'userId';
 
 	var $columns = array('userId'=>'userId',
 	'skinId'=>'skinId',
@@ -27,7 +27,7 @@ class UserVO {
 	'zgalerytype'=>'zgalerytype',
 	'deleted'=>'deleted',
 	'hit'=>'hit');
-    
+
 	var $userId = 0;
 	var $skinId;
 	var $name;
@@ -62,7 +62,7 @@ class UserVO {
 	//---new post alerting
 	var $newPost = 0;
 	var $newPostFrom = '';
-	
+
 	function UserVO($userId=0, $autoLoad = false) {
 		$this->userId = $userId;
 		if($autoLoad == true) {
@@ -71,16 +71,16 @@ class UserVO {
 	}
 
 	function load() {
-		
+
 		$vo = new FDBvo( $this );
 		$vo->addJoinAuto('sys_skin','skinId',array('name'));
-      $vo->load();
-    $vo->vo = false;
-    $vo = false;
+		$vo->load();
+		$vo->vo = false;
+		$vo = false;
 	}
 
 	function save(){
-	$vo = new FDBvo( $this );
+		$vo = new FDBvo( $this );
 		$vo->addIgnore('dateLastVisit');
 		$vo->addIgnore('dateCreated');
 		if(!empty($this->newPassword)) {
@@ -92,11 +92,11 @@ class UserVO {
 		$vo->addIgnore('userId');
 		$vo->notQuote('dateUpdated');
 		$this->dateUpdated = 'now()';
-		
+
 		$this->userId = $vo->save();
 		$vo->vo = false;
 		$vo = false;
-		
+
 		//---check logged user
 		$user = FUser::getInstance();
 		if($this->userId == $user->userVO->userId) {
