@@ -1,18 +1,6 @@
 <?php
 class FSystem {
 	
-	static function proccessItemEnclosure($enclosure) {
-		$ret = false;
-		if($enclosure!='') {
-			if (preg_match("/(jpeg|jpg|gif|bmp|png|JPEG|JPG|GIF|BMP|PNG)$/",$enclosure)) {
-				$ret = '<a href="'.$enclosure.'" rel="lightbox"><img src="' . $enclosure . '"></a>';
-			} elseif (preg_match("/^(http:\/\/)/",$enclosure)) {
-				$ret = '<a href="' . $enclosure . '" rel="external">' . $enclosure . '</a>';
-			} else $ret = $enclosure;
-		}
-		return $ret;
-	}
-
 	/**
 	 * option - 0 - remove html, safe text 1 - remove html, safe text, parse bb, 2- nothing - just trim
 	 *
