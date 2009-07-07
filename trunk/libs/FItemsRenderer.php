@@ -66,9 +66,9 @@ class FItemsRenderer {
 		$typeId = $itemVO->typeId;
 		$addon = $itemVO->addon;
     
-    FProfiler::profile('FItemsRenderer::render--InSTANCES',true);
+		FProfiler::profile('FItemsRenderer::render--InSTANCES',true);
 		
-    //---check permissions to edit
+    	//---check permissions to edit
 		$enableEdit = false;
 		if(FRules::get($userId,$pageId,2) || $itemUserId == $userId) {
 			$enableEdit=true;
@@ -156,11 +156,10 @@ class FItemsRenderer {
 				 * FORUM RENDERER
 				 */
 				if(!empty($itemVO->enclosure)) {
-					$tpl->setVariable('ENCLOSURE',FSystem::proccessItemEnclosure($itemVO->enclosure));	
+					$tpl->setVariable('ENCLOSURE',FItemsRenderer::proccessItemEnclosure($itemVO->enclosure));	
 				}
 				if($user->userVO->zavatar == 1) {
-					$avatar = FAvatar::showAvatar( (int) $itemUserId);
-					$tpl->setVariable('AVATAR',$avatar);
+					$tpl->setVariable('AVATAR', FAvatar::showAvatar( (int) $itemUserId));
 				}
 				break;
 			case 'galery':
@@ -286,4 +285,20 @@ class FItemsRenderer {
 		}
 		return $ret;
 	}
+	
+	/**
+	 * SUPPORT
+	 * */
+	static function proccessItemEnclosure($enclosure) {
+		$ret = false;
+		if($enclosure!='') {
+			if (preg_match("/(jpeg|jpg|gif|bmp|png|JPEG|JPG|GIF|BMP|PNG)$/",$enclosure)) {
+				$ret = '<a href="'.$enclosure.'" rel="lightbox"><img src="' . $enclosure . '"></a>';
+			} elseif (preg_match("/^(http:\/\/)/",$enclosure)) {
+				$ret = '<a href="' . $enclosure . '" rel="external">' . $enclosure . '</a>';
+			} else $ret = $enclosure;
+		}
+		return $ret;
+	}
+	 
 }
