@@ -1,24 +1,24 @@
 <form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
-<input type="hidden" name="item" id="item" value="{ITEMID}"/>
-<fieldset>
-<legend>{HEADING}</legend>
-<label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select><br />
-<label>Název</label><input type="text" name="name" value="{NAME}" /><br />
-<label>Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
-<label>Datum-Cas Od</label><input type="text" name="datestart" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timestart" value="{TIMESTART}" class="xShort" /><br />
-<label>Datum-Cas Do</label><input type="text" name="dateend" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timeend" value="{TIMEEND}" class="xShort" /><br />
-<label>Upload letáku</label><input type="file" name="akceletak" id="uploadify"/><br />
-<label> - nebo URL</label><input type="text" name="akceletakurl" /><br />
-<div id="flyerDiv">
-<!-- BEGIN flyer -->
-<label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
-<label>Odstranit letak</label><a href="{DELFLY}" title="Opravdu chcete smazat letak?" class="fajaxa confirm">Smazat</a><br />
-<!-- END flyer -->
-</div>
-<label>Popis / Program</label><textarea id="event" name="description" class="draftable">{DESCRIPTION}</textarea>{DESCRIPTIONTOOLBOX}<br />
-<input type="submit" name="nav" value="Uložit" class="button submit"> 
-<!-- BEGIN delakce -->
-<input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button confirm" />
-<!-- END delakce -->
-</fieldset>
+  <input type="hidden" name="item" id="item" value="{ITEMID}"/>
+  <fieldset>
+    <legend>{HEADING}</legend>
+    <label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select><br />
+    <label>Název</label><input type="text" name="name" value="{NAME}" /><br />
+    <label>Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
+    <label>Datum-Cas Od</label><input type="text" name="datestart" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timestart" value="{TIMESTART}" class="xShort" /><br />
+    <label>Datum-Cas Do</label><input type="text" name="dateend" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="timeend" value="{TIMEEND}" class="xShort" /><br />
+    <label>Upload letáku</label><input type="file" name="akceletak" id="flyerUpload" class="uploadify"/><br />
+    <label> - nebo URL</label><input type="text" name="akceletakurl" /><br />
+    <div id="flyerDiv">
+      <!-- BEGIN flyer -->
+      <label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
+      <label>Odstranit letak</label><a href="{DELFLY}" title="Opravdu chcete smazat letak?" class="fajaxa confirm">Smazat</a><br />
+      <!-- END flyer -->
+    </div>
+    <label>Popis / Program</label><textarea id="event" name="description" class="draftable">{DESCRIPTION}</textarea>{DESCRIPTIONTOOLBOX}<br />
+    <input type="submit" name="nav" value="Uložit" class="button submit"> 
+    <!-- BEGIN delakce -->
+    <input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button confirm" />
+    <!-- END delakce -->
+  </fieldset>
 </form>

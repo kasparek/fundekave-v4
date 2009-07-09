@@ -113,7 +113,7 @@ class FForum extends FDBTool {
 				$redirect = true;
 			}
 			
-			if(!$logon) {
+			if($logon !== true) {
 				$captcha = new FCaptcha();
 				if($captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = true; else $cap = false;
 				unset($captcha);
@@ -131,49 +131,43 @@ class FForum extends FDBTool {
 			if($cap) {
 
 				if(isset($objekt)) {
-
-					if(preg_match("/^link:([0-9a-zA-Z]*)$/" , $objekt)) {
-						$itemIdBottom = str_replace('link:','',$objekt);
-						$objekt = '';
-						//check $itemIdBottom
-						$pageIdBottom = '';
-						if(strlen($itemIdBottom)==5) {
-							//check if it is page
-							if(FPages::page_exist('pageId',$itemIdBottom)) {
-								$pageIdBottom  = $itemIdBottom;
-								$itemIdBottom = '';
-							}
+					//---check for item
+					if(preg_match("/[&?|]i=([0-9]*)/" , $objekt, $matches)) {
+						//check if it is item
+						if(FItems::itemExists($matches[1])) {
+							$itemIdBottom = $matches[1];
+							$objekt = '';
 						}
-						if($pageIdBottom=='') {
-							//check if it is item
-							if(!FItems::itemExists($itemIdBottom)) {
-								$itemIdBottom = '';
-							}
+					} else if(preg_match("/[&?|]k=([0-9a-zA-Z]*)/" , $objekt, $matches)) {
+						if(FPages::page_exist('pageId',$matches[1])) {
+							$pageIdBottom = $matches[1];
+							$objekt = '';
 						}
-
 					}
 				}
+			
 				if((!empty($zprava) || !empty($objekt))) {
 					if(empty($jmeno)){
-						FError::addError("Nezadali jste jmeno");
+						FError::addError(FLang::$MESSAGE_NAME_EMPTY);
 						$redirect = true;
 					}
-					if (FUser::isUsernameRegistered($jmeno) && !$logon){
-						FError::addError("Jmeno uz nekdo pouziva");
+					if (FUser::isUsernameRegistered($jmeno) && $logon !== true){
+						FError::addError(FLang::$MESSAGE_NAME_USED);
 						$redirect = true;
 					}
 					
 					if(!FError::isError()) {
 						$jmeno = FSystem::textins($jmeno,array('plainText'=>1));
-						if($logon) {
+						if($logon === true) {
 							$zprava = FSystem::textins($zprava);
-						} else {
-							$zprava = FSystem::textins($zprava,array('formatOption'=>0));
 							if(isset($objekt)) {
 								$objekt = FSystem::textins($objekt,array('plainText'=>1));
 							}
+						} else {
+							$zprava = FSystem::textins($zprava,array('plainText'=>1));
+							unset($objekt);
 						}
-
+				
 						//---insert
 						$itemVO = new ItemVO();
 						$itemVO->pageId = $pageId;
@@ -199,7 +193,7 @@ class FForum extends FDBTool {
 					}
 				}
 			} else {
-				FError::adderror(ERROR_CAPTCHA);
+				FError::adderror(FLang::$ERROR_CAPTCHA);
 			}
 			if(FError::isError()) {
 				$formData = array("zprava"=>$zprava,"objekt"=>(isset($objekt))?($objekt):(''),"name"=>$jmeno);
@@ -380,7 +374,8 @@ class FForum extends FDBTool {
     unset($fItems);
     unset($pager);
     unset($tpl);
-		return $ret;
+	return $ret;
+		
 	}
 
 }

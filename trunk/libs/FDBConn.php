@@ -41,7 +41,7 @@ class FDBConn extends mysqli
 	}
 	
 	public function getRow($q) {
-		$ret = false;
+		$ret = array();
 		if ($result = $this->query($q)) {
 			if($result->num_rows > 0) {
 				$ret = $result->fetch_row();
@@ -52,7 +52,7 @@ class FDBConn extends mysqli
 	}
 	
 	public function getCol($q) {
-		$ret = false;
+		$ret = array();
 		if ($result = $this->query($q)) {
 			if($result->num_rows > 0) {
 				while($row = $result->fetch_row()) {
@@ -65,7 +65,7 @@ class FDBConn extends mysqli
 	}
 	
 	public function getAll($q) {
-		$ret = false;
+		$ret = array();
 		if ($result = $this->query($q)) {
 			if($result->num_rows > 0) {
 				while($row = $result->fetch_row()) {

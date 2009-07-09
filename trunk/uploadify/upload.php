@@ -4,7 +4,7 @@ if (!empty($_FILES)) {
 	require("./local.php");
 	require(INIT_FILENAME);
 	$targetPath = ROOT . ROOT_UPLOADIFY;
-	FSystem::makeDir($targetPath);
+	FFile::makeDir($targetPath);
 
 	$tempFile = $_FILES['Filedata']['tmp_name'];
 	$uId = uniqid();
@@ -18,7 +18,7 @@ if (!empty($_FILES)) {
 
 	$cache = FCache::getInstance('d');
 	$user = FUser::getInstance();
-	$cache->setData($toCache,$uId,$_GET['u'].'-'.$_GET['m'].'-upload');
+	$cache->setData($toCache,$uId,$_GET['u'].'-'.$_GET['m'].'-up');
 
 	move_uploaded_file($tempFile,$targetFile);
 }

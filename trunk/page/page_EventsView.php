@@ -27,7 +27,7 @@ class page_EventsView implements iPage {
 			
 		} else {
 			
-			if($user->itemVO->itemId > 0) {
+			if( $user->itemVO ) {
 
 				$itemVO = new ItemVO($user->itemVO->itemId,true ,array('type'=>'event','showComments'=>true) );
 				$tpl = new FTemplateIT('events.tpl.html');

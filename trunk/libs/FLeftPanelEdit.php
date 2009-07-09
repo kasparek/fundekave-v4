@@ -1,15 +1,28 @@
 <?php
-class FLeftPanelEdit {
-function getAvailablePanels() {
+class FLeftPanelEdit extends FDBTool {
+	private $pageId;
+	private $pageType;
+	private $userId;
+	
+	function __construct($pageId, $userId='0', $pageType='top') {
+		parent::__construct('sys_leftpanel_functions as f','f.functionName');
+		$this->pageId = $pageId;
+		$this->pageType = $pageType;
+		$this->userId = $userId;
+	}
+	
+	function getAvailablePanels() {
 		$user = FUser::getInstance();
-
-		$this->load(true);
 		//---1. not used, 2.user has access to use (system panels only sa,other by pageid)
 		$this->setSelect('f.functionName,f.name,f.pageId');
 		$this->setOrder('f.name');
 		$arr = $this->getContent();
+		
+		$lPanel = new FLeftPanel($this->pageId, $this->userId, $this->pageType);
+		$lPanel->load(true);
+		
 		foreach ($arr as $row) {
-			if(!in_array($row[0],$this->panelsUsed)) {
+			if(!in_array($row[0],$lPanel->panelsUsed)) {
 				//not used panel
 				if(!empty($row[2])) {
 					//check for pageid
@@ -26,9 +39,9 @@ function getAvailablePanels() {
 		}
 		if(!empty($arrAvailable)) return $arrAvailable;
 	}
-	
-function panelInsert($type,$functionName,$sequence,$visible=1) {
-		 
+
+	function panelInsert($type,$functionName,$sequence,$visible=1) {
+			
 		if($type=='page') {
 			$dot = "insert into sys_leftpanel_pages (pageId,functionName,ord,visible) values ('".$this->pageId."','".$functionName."',".$sequence.",".$visible.")";
 		}
@@ -86,7 +99,6 @@ function panelInsert($type,$functionName,$sequence,$visible=1) {
 		}
 	}
 	function process($postArr) {
-		$this->load(true);
 		foreach ($postArr as $k=>$panel) {
 			if($k=='new') {
 				if(!empty($panel['name'])) {
@@ -101,15 +113,13 @@ function panelInsert($type,$functionName,$sequence,$visible=1) {
 
 	}
 	function showEdit() {
+		$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+		$tpl->loadTemplatefile('leftpanel.page.set.tpl.html');
 
-		//$tpl = new FTemplateIT('leftpanel.page.set.tpl.html');
-		$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$this->tpl->loadTemplatefile('leftpanel.page.set.tpl.html');
+		$lPanel = new FLeftPanel($this->pageId, $this->userId, $this->pageType);
+		$lPanel->load(true);
 
-
-		$this->load(true);
-
-		foreach ($this->panels as $panel) {
+		foreach ($lPanel->panels as $panel) {
 			$tpl->setCurrentBlock('panelrow');
 			$tpl->setVariable('NAMESYS',$panel['functionName']);
 			$tpl->setVariable('NAME',$panel['name']);
@@ -129,8 +139,6 @@ function panelInsert($type,$functionName,$sequence,$visible=1) {
 		if(!empty($arr)) {
 			$tpl->setVariable('AVAILABLEPANELS',FCategory::getOptions($arr,'',true,''));
 		}
-    $rer = $tpl->get();
-    $tpl=false;
-		return $ret;
+		return $tpl->get();
 	}
 }

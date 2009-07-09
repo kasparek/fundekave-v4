@@ -14,7 +14,6 @@ class FRules {
 	var $owner = 0;
 
 	function __construct($page=0,$owner=0) {
-		global $ARRPUBLIC,$ARRPERMISSIONS;
 		$this->page = $page;
 		$this->_pubTypes = FLang::$ARRPUBLIC;
 		$this->ruleNames = FLang::$ARRPERMISSIONS;
@@ -83,17 +82,22 @@ class FRules {
 	}
 
 	function getList($listPublic=true,$idstr=0) {
-		$db = FDBConn::getInstance();
 		if(!empty($idstr)) $this->page = $idstr;
 		if(!empty($this->page)) {
 			foreach ($this->_rules as $k=>$v) {
 				$this->ruleList[$k]=array();
-				$arr=$db->getAll("select p.userId,u.name from sys_users_perm as p left join sys_users as u on u.userId=p.userId where rules='".$k."' and pageId='".$this->page."' order by u.name");
-				foreach ($arr as $usr) $this->ruleList[$k][$usr[0]]=$usr[1];
-				if(!empty($this->ruleList[$k])) $this->ruleText[$k]=implode(",",$this->ruleList[$k]); else $this->ruleText[$k]='';
+				$arr = FDBTool::getAll("select p.userId,u.name from sys_users_perm as p left join sys_users as u on u.userId=p.userId where rules='".$k."' and pageId='".$this->page."' order by u.name");
+				foreach ($arr as $usr) {
+					$this->ruleList[$k][$usr[0]] = $usr[1];
+				}
+				if(!empty($this->ruleList[$k])) {
+					$this->ruleText[$k] = implode(",",$this->ruleList[$k]); 	
+				} else {
+					$this->ruleText[$k]='';	
+				}
 			}
 			if($listPublic) {
-				$arr = $db->getRow("select public,userIdOwner from sys_pages where pageId='".$this->page."'");
+				$arr = FDBTool::getRow("select public,userIdOwner from sys_pages where pageId='".$this->page."'");
 				$this->public = $arr[0];
 				$this->owner = $arr[1];
 				if($this->public=='') $this->public=1;

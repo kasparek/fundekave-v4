@@ -7,7 +7,7 @@ class FAjax_page {
 			$user = FUser::getInstance();
 			//---copy foto
 			$dir = WEB_REL_GALERY . $user->pageVO->galeryDir;
-			FSystem::makeDir($dir);
+			FFile::makeDir($dir);
 			if($dir{count($dir)-1}!='/') $dir.='/';
 			$cache = FCache::getInstance('d');
 			$grpName = $user->userVO->userId . '-' .$data['modul'].'-upload';

@@ -139,7 +139,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostfavouritepage');
-					$tpl->setVariable('MOSTFAVOURITEURL',FUser::getUri($row[0]));
+					$tpl->setVariable('MOSTFAVOURITEURL',FUser::getUri('',$row[0]));
 					$tpl->setVariable('MOSTFAVOURITETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();

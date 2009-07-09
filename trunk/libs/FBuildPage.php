@@ -171,7 +171,7 @@ class FBuildPage {
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 			if(FRules::get($user->userVO->userId,'sadmi',1)) {
-				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,'',1);
+				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
 			}
 			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/

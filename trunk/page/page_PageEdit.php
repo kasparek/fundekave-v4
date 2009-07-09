@@ -116,7 +116,7 @@ class page_PageEdit implements iPage {
 						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
 						$dir = WEB_REL_GALERY .$pageVO->galeryDir;
-						FSystem::makeDir($dir);						
+						FFile::makeDir($dir);						
 					}
 
 					//---load settings from defaults if not in limits
@@ -387,9 +387,9 @@ class page_PageEdit implements iPage {
 		//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
 		if($user->pageParam=='sa') {
 			$arrTmp = FDBTool::getAll('select menuSecondaryGroup,menuSecondaryGroup from sys_menu_secondary group by menuSecondaryGroup order by menuSecondaryGroup');
-			$tpl->setVariable('MENUSECOPTIONS',FSystem::getOptions($arrTmp,$pageVO->menuSecondaryGroup));
+			$tpl->setVariable('MENUSECOPTIONS',FCategory::getOptions($arrTmp,$pageVO->menuSecondaryGroup));
 
-			$tpl->setVariable('LOCKEDOPTIONS',FSystem::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
+			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGEAUTHOR',$pageVO->authorContent);
 
 			$tpl->setVariable('PAGENAMESHORT',$pageVO->nameshort);
@@ -409,7 +409,7 @@ class page_PageEdit implements iPage {
 		//---left panels configure
 		if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
-			$fLeft = new FLeftPanel($pageVO->pageId,0,$pageVO->typeId);
+			$fLeft = new FLeftPanelEdit($pageVO->pageId,0,$pageVO->typeId);
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
 		}
 

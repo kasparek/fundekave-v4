@@ -82,6 +82,7 @@ class FItemsRenderer {
 		if($this->showHentryClass==true) $tpl->touchBlock('hentry');
 		$tpl->setVariable('ITEMIDHTML', 'i'.$itemId);
 		$tpl->setVariable('ITEMID', $itemId);
+		$tpl->setVariable('ITEMLINK', FUser::getUri('i='.$itemId,''));
 		$tpl->setVariable('PAGEID', $pageId);
 		$tpl->setVariable('DATELOCAL', $itemVO->dateCreatedLocal);
 		$tpl->setVariable('DATEISO', $itemVO->dateCreatedIso);
@@ -222,7 +223,7 @@ class FItemsRenderer {
 		if($this->showPageLabel==true) {
 			$tpl->touchBlock('haspagelabel');
 			$pageVO = new PageVO($pageId,true);
-			$tpl->setVariable('PAGELINK',FUser::getUri((($typeId=='forum')?('&i='.$itemId.'#i'.$itemId):('')),$pageId));
+			$tpl->setVariable('PAGELINK',FUser::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 			unset($pageVO);
 		}

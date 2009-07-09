@@ -13,7 +13,7 @@ class page_UserInfo implements iPage {
 
 			$userVO = new UserVO();
 			$userVO->userId = $who;
-			$userVO->loadVO();
+			$userVO->load();
 
 		} else {
 

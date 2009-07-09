@@ -20,7 +20,7 @@ static $LABEL_YES = 'Ano';
 static $LABEL_NO = 'Ne';
 static $LABEL_NOTREGISTEREDUSERS = 'Neprihlaseni';
 
-static $BUTTON_PAGE_SETTINGS = 'Nastavení stránky';
+static $BUTTON_PAGE_SETTINGS = 'Admin';
 static $BUTTON_PAGE_BACK = 'Zpět';
 static $BUTTON_EDIT = 'Upravit';
 static $MESSAGE_PAGE_LOCKED = 'Stránka je zamčena administrátory. Připadné dotazy: <a href="?k=fl168">.:--<< FUN.de.KAVE >>--:. typy, rady, chyby</a>';
@@ -69,6 +69,8 @@ static $MESSAGE_SUCCESS_SAVED = 'Úspěšně uloženo';
 static $MESSAGE_FORUM_READONLY = 'Klub je zamčený pro zápis';
 static $MESSAGE_FORUM_REGISTEREDONLY = 'Pro zapis do diskuze musite byt registrovani';
 static $MESSAGE_FORUM_HOME_EMPTY = 'Nastenka je praznda';
+static $MESSAGE_NAME_EMPTY = 'Nezadali jste jmeno';
+static $MESSAGE_NAME_USED = 'Jmeno uz nekdo pouziva';
 
 static $ERROR_NAME_EMPTY = 'Nezadali jste nazev';
 
