@@ -54,11 +54,13 @@ function uploadifyInit() {
 				'm' : gup('m', $(".fajaxform").attr('action'))
 			},
 			'onComplete' : function(event) {
-				addXMLRequest('uploadify', 'oneDone');
-				addXMLRequest('modul', gup('m', $(".fajaxform").attr('action')));
-				addXMLRequest('item', gup('i', $(".fajaxform").attr('action')));
-				addXMLRequest('ident', $(this).attr('id'));
-				sendAjax(gup('m', $(".fajaxform").attr('action')));
+				if($(this).hasClass('multi')) {
+					addXMLRequest('uploadify', 'oneDone');
+					addXMLRequest('modul', gup('m', $(".fajaxform").attr('action')));
+					addXMLRequest('item', gup('i', $(".fajaxform").attr('action')));
+					addXMLRequest('ident', $(this).attr('id'));
+					sendAjax(gup('m', $(".fajaxform").attr('action')));
+				}
 			},
 			'onAllComplete' : function(event) {
 				addXMLRequest('uploadify', 'complete');
@@ -377,6 +379,17 @@ function sendAjax(action) {
 					function() {
 						var item = $(this);
 						switch (item.attr('property')) {
+						case 'css':
+							$('head').append( 
+			                        'link', { 
+			                                type: 'text/css', 
+			                                src: item.text() 
+			                        }); 
+			                 break;
+						case 'getScript':
+							var arr = item.text().split(';');
+							eval("$.getScript('"+arr[0]+"',"+arr[1]+");");
+							break;
 						case 'callback':
 							eval(item.text() + "( data.responseText );");
 							break;

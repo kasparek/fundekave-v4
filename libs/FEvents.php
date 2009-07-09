@@ -18,7 +18,7 @@ class FEvents {
 		$flyerFilename = FEvents::flyerUrl($imageName);
 		$flyerFilenameThumb = FEvents::thumbUrl($imageName);
 		//---delete old
-		if(file_exists($flyerFilenameThumb)) { @unlink($flyerFilenameThumb); }
+		if(file_exists($flyerFilenameThumb)) { unlink($flyerFilenameThumb); }
 		//---generate thumb
 		if(!file_exists($flyerFilenameThumb)) {
 			//---create thumb
@@ -255,24 +255,28 @@ class FEvents {
 			$user = FUser::getInstance();
 				
 			$cache = FCache::getInstance('d');
-			$arr = $cache->getData($user->userVO->userId . '-event-submit','uploadify');
-				
+			$cacheGrpId = $user->userVO->userId.'-event-submit-up';
+			
+			$arr = $cache->getGroup( $cacheGrpId );
+			
 			if(!empty($arr)) {
+				//---for flyer just one file
+				$arr = $arr[0];
 				if(empty($itemVO->itemId)) {
-					$itemVO->dateStart = 'now()';
-					$itemVO->notQuote('dateStart');
 					$itemVO->save();
 				}
 				//---set flyer
 				$flyerName = FEvents::createFlyerName($itemVO->itemId, $arr['filenameOriginal']);
 				if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-				if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
-				rename($arr['filenameTmp'],FConf::get('events','flyer_source').$flyerName);
-				chmod(FConf::get('events','flyer_source').$flyerName,0777);
-				FEvents::createThumb($flyerName);
+				$flyerTarget = FConf::get('events','flyer_source').$flyerName;
+				if(file_exists($flyerTarget)) unlink($flyerTarget);
+				rename($arr['filenameTmp'], $flyerTarget);
+				chmod($flyerTarget, 0777);
+				FFile::makeDir(FConf::get('events','flyer_cache'));
+				FEvents::createThumb( $flyerName );
 				$itemVO->enclosure = $flyerName;
 				$itemVO->save();
-				$cache->invalidateData($user->userVO->userId . '-event-submit','uploadify');
+				$cache->invalidateGroup( $cacheGrpId );
 				return $itemVO;
 			}
 		}

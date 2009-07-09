@@ -19,8 +19,8 @@ class FMenu {
 	}
 	static function secondaryMenu($menu) {
 		$cache = FCache::getInstance('s');
-			
-		if(false === ($menuItems=$cache->getData('second','menu'))) {
+		$user = FUser::getInstance();
+		if(false === ($menuItems = $cache->getData('second-'.$user->pageId,'menu'))) {
 			$user = FUser::getInstance();
 			$q = "SELECT s.pageId, s.name
       	FROM sys_menu_secondary as s 
@@ -33,22 +33,27 @@ class FMenu {
 					$menuItems[]=array('LINK'=>FUser::getUri('',$row[0]),'TEXT'=>$row[1]);
 				}
 			} else $menuItems = array();
-			$cache->setData($menuItems);
+			
+			$cache->setData($menuItems,'second-'.$user->pageId,'menu');
 		}
+	
 		$cache = FCache::getInstance('l');
-		if(false !== ($secMenuCustom = $cache->getData('secMenu')) ) {
+		if(false !== ($secMenuCustom = $cache->getData('user-'.$user->pageId,'menu')) ) {
+			
 			$menuItems = array_merge($secMenuCustom,$menuItems);
+			
 		}
 			
 		return($menuItems);
 	}
 	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='',$buttonClass='') {
 		$button = array('LINK'=>$link,'TEXT'=>$text);
-		if($opposite!=0) $button['OPPOSITE'] = 1;
-		if($buttonId!='') $button['ID'] = $buttonId;
-		if($buttonClass!='') $button['CLASS'] = $buttonClass;
+		if( $opposite != 0 ) $button['OPPOSITE'] = 1;
+		if( $buttonId != "" ) $button['ID'] = $buttonId;
+		if( $buttonClass != "" ) $button['CLASS'] = $buttonClass;
+		$user = FUser::getInstance();
 		$cache = FCache::getInstance('l');
-		$secMenuCustom = $cache->getData('secMenu');
+		$secMenuCustom = $cache->getData('user-'.$user->pageId,'menu');
 		$secMenuCustom[] = $button;
 		$cache->setData($secMenuCustom);
 	}

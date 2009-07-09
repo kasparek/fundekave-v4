@@ -424,12 +424,15 @@ class FUser {
 		$newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
-
-		if( empty($pageId) && $user->itemVO ) {
-			$params[] = 'i='.$user->itemVO->itemId;
+		
+		if(preg_match("/i=([0-9]*)/" , $otherParams)) {
 			if(empty($pageParam)) $newPageId = '';
+		} else {
+			if( empty($pageId) && $user->itemVO ) {
+				$params[] = 'i='.$user->itemVO->itemId;
+				if(empty($pageParam)) $newPageId = '';
+			}
 		}
-
 		if(!empty($newPageId)) {
 			if(empty($pageParam)) {
 				$pageVO  = new PageVO($newPageId,true);

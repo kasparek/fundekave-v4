@@ -11,7 +11,9 @@ class page_EventsEdit implements iPage {
 	static function build() {
 		
 		$user = FUser::getInstance();
-		FBuildPage::addTab( array("MAINDATA"=>FEvents::editForm($user->itemVO->itemId),"MAINID"=>'fajaxContent' ) );
+		$itemId=0;
+		if($user->itemVO) $itemId = $user->itemVO->itemId;
+		FBuildPage::addTab( array("MAINDATA"=>FEvents::editForm($itemId),"MAINID"=>'fajaxContent' ) );
 		
 	}
 }

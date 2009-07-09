@@ -20,14 +20,16 @@ class FAjax_event {
 		if($data['__ajaxResponse']==false) {
 			return;
 		}
-
-		
 		
 		FAjax::addResponse($data['result'], 'html', FEvents::editForm());
 		FAjax::addResponse('function','call','draftSetEventListeners');
-		FAjax::addResponse('function','call','datePickerInit');
+		
+		FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;datePickerInit');
+		//FAjax::addResponse('function','css','css/themes/base/ui.all.css');
+		
+		FAjax::addResponse('function','getScript','js/jquery.uploadify.js;uploadifyInit');
 		FAjax::addResponse('function','call','fajaxform');
-		FAjax::addResponse('function','call','markItUpInit');
+		//FAjax::addResponse('function','call','markItUpInit');
 		
 	}
 	static function submit($data) {

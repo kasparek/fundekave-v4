@@ -4,8 +4,8 @@ class FLeftPanel extends FDBTool {
 	private $pageType;
 	private $userId;
 
-	private $panels; //---array of sorted visible panels for given page and user if logged in
-	private $panelsUsed; //---list of used panel names
+	public $panels; //---array of sorted visible panels for given page and user if logged in
+	public $panelsUsed; //---list of used panel names
 
 	function __construct($pageId, $userId='0', $pageType='top') {
 		parent::__construct('sys_leftpanel_functions as f','f.functionName');
@@ -152,7 +152,6 @@ class FLeftPanel extends FDBTool {
 		return $ret;
 	}
 
-	//TODO:pageAccess = false - display only public
 	function show() {
 		if(!empty($this->panels)) {
 			foreach ($this->panels as $panel) {
@@ -194,25 +193,24 @@ class FLeftPanel extends FDBTool {
 								} else {
 									$cache = FCache::getInstance('f');
 								}
-									
+								
 								//---try cache
 								if($showBlock===true) {
 									$letext=$cache->getData($cacheId,$cacheGrp);
 								}
-									
 							}
 								
-							if($showBlock===true) {
-								if($letext===false) {
+							if($showBlock === true) {
+								if($letext === false) {
 									include('FLeftPanel/'.$fnc.'.php');
 									$letext = call_user_func(array($fnc, 'show'));
 									if(isset($cache)) {
-										$cache->setData($letext);
+										$cache->setData($letext,$cacheId,$cacheGrp);
 										unset($cache);
 									}
 								}
 							}
-								
+							
 						} else {
 							$letext = $panel['content'];
 						}
