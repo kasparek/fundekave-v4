@@ -8,7 +8,7 @@ class page_ForumView implements iPage {
 		if(empty($user->pageParam)) {
 			
 			if($user->pageVO->typeId=='blog') {
-				if(!$user->itemVO->itemId) return;
+				if(!$user->itemVO) return;
 				$data['itemIdTop'] = $user->itemVO->itemId;
 				FForum::process($data,"FBlog::callbackForumProcess");
 			}
@@ -42,7 +42,9 @@ class page_ForumView implements iPage {
 		if ($user->pageVO->typeId=='blog') {
 
 			/* BLOG */
-			FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($user->itemVO->itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
+			$itemId = 0;
+			if($user->itemVO) $itemId = $user->itemVO->itemId;
+			FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
 
 		} else {
 			

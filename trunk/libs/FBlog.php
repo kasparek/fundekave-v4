@@ -108,7 +108,7 @@ class FBlog {
 	  
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
-				FSystem::secondaryMenuAddItem(FUser::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'fajaxa');
+				FMenu::secondaryMenuAddItem(FUser::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'fajaxa');
 			}
 		}
 	  
