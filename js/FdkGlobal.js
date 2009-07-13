@@ -380,15 +380,29 @@ function sendAjax(action) {
 						var item = $(this);
 						switch (item.attr('property')) {
 						case 'css':
-							$('head').append( 
-			                        'link', { 
-			                                type: 'text/css', 
-			                                src: item.text() 
-			                        }); 
+							el = createEl('link',{'type':'text/css','rel':'stylesheet','href':item.text()});
+					        if ($.browser.msie) el.onreadystatechange = function() { /loaded|complete/.test(el.readyState) && call(); };
+					        else if ($.browser.opera) el.onload = call;
+					        else { //FF, Safari, Chrome
+					          (function(){
+					            try {
+						            el.sheet.cssRule;
+					            } catch(e){
+						            setTimeout(arguments.callee, 20);
+						            return;
+					            };
+					            call();
+					          })();
+					        }
+						  $('head').get(0).appendChild(el);
 			                 break;
 						case 'getScript':
 							var arr = item.text().split(';');
-							eval("$.getScript('"+arr[0]+"',"+arr[1]+");");
+							if(arr[1]) {
+								eval("$.getScript('"+arr[0]+"',"+arr[1]+");");
+							} else {
+								eval("$.getScript('"+arr[0]+"');");
+							}
 							break;
 						case 'callback':
 							eval(item.text() + "( data.responseText );");
@@ -435,3 +449,12 @@ function getXMLRequest() {
 	resetXMLRequest();
 	return str;
 }
+
+var call = function(){ return true; };
+var createEl = function(type,attr){
+    var el = document.createElement(type);
+    $.each(attr,function(key){
+      if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]);
+    });
+    return el;
+  };
