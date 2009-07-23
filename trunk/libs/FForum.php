@@ -364,8 +364,11 @@ class FForum extends FDBTool {
 			}
 			FProfiler::profile('FForum::show--ITEMS DONE');
 			/*......aktualizace novych a prectenych......*/
-			if($itemId>0) FForum::updateReadedReactions($itemId,$user->userVO->userId);
-			else FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+			if($itemId>0) {
+				FForum::updateReadedReactions($itemId,$user->userVO->userId);	
+			} else {
+				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);	
+			}
 			FProfiler::profile('FForum::show--READED UPDATE');
 		} else $tpl->touchBlock('messno');
 
