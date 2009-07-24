@@ -137,7 +137,7 @@ class FPages extends FDBTool {
 	 * @param Boolean $refresh - if true data are overriden with fresh query - slower 
 	 * @return void
 	 */
-	static function cntSet($pageId,$increment=true,$refresh=false) {
+	static function cntSet($pageId, $increment=true, $refresh=false) {
 		if($refresh==true) {
 			return FDBTool::query('update sys_pages set dateUpdated=now(),cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
 		} else {
