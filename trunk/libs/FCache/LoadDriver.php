@@ -17,7 +17,7 @@ class LoadDriver
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new LoadDriver();
+			self::$instance = new LoadDriver();
 		}
 		return self::$instance;
 	}
