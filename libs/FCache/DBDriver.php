@@ -32,7 +32,7 @@ class DBDriver
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new DBDriver();
+			self::$instance = new DBDriver();
 		}
 		return self::$instance;
 	}

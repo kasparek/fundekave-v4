@@ -36,7 +36,6 @@ class page_PagesSearch implements iPage {
 		$fPages = new FPages($user->pageVO->typeIdChild, $user->userVO->userId);
 		$fPages->cacheResults = 's';
 		if(!empty($pageSearchCache['categoryId'])) $fPages->addWhere("p.categoryId=".$pageSearchCache['categoryId']);
-
 		if(!empty($pageSearchCache['filtrStr'])){
 			$fPages->addWhereSearch(array('p.name','p.description','p.authorContent','p.dateContent'),$pageSearchCache['filtrStr'],'OR');
 		}

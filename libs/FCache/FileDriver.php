@@ -28,7 +28,7 @@ class FileDriver
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new FileDriver();
+			self::$instance = new FileDriver();
 		}
 		return self::$instance;
 	}

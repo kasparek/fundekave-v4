@@ -21,7 +21,7 @@ class SessionDriver
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new SessionDriver();
+			self::$instance = new SessionDriver();
 		}
 		return self::$instance;
 	}

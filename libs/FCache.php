@@ -24,7 +24,7 @@ class FCache {
 	private $grp = self::DEFAULT_GRP;
 
 	static function &getInstance($driverIdent='',$lifeTime=-1) {
-		$cache = &new FCache();
+		$cache = new FCache();
 		if( $driverIdent != '') {
 			if(false !== $cache->getDriver( $driverIdent )) {
 				if($lifeTime > -1) {
