@@ -143,7 +143,7 @@ class FGalery {
 			$processParams = array(
 			'quality'=>$quality,'width'=>$width,'height'=>$height
 			//,'reflection'=>1
-			,'unsharpMask'=>1
+			//,'unsharpMask'=>1
 			);
 			if($thumbnailstyle==2) $processParams['crop'] = 1; else $processParams['proportional'] = 1;
 			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);

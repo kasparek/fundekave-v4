@@ -35,7 +35,7 @@ class FBuildPage {
 		'page.new.simple.php'=>'page_PageNewSimple',
 		'page.edit.php'=>'page_PageEdit',
 
-		'galery.list.php'=>'page_GaleryList',
+		'galery.list.php'=>'page_PagesList',
 	   'galery.detail.php'=>'page_GaleryDetail',
 
 	   'items.live.php'=>'page_ItemsLive',
