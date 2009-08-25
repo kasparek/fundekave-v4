@@ -1,6 +1,4 @@
-galerie - list - nahledy s spatnym nastavenim krome prvniho
 pratele - odkazy - vylepsit na bookmarky - kategorie, styl, smazat nefuguje
-kluby - seznam/hledani - spojit
 
 tipy - do kategorii - misto - breadcrumbs
 
