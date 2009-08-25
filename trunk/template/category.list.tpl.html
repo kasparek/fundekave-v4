@@ -1,22 +1,8 @@
 <h2>Kategorie {CATEGORYNAME}</h2>
-<script language="javascript">
-function switchOpen()
-{
-  var idcat = 'categories'; 
-	var id = document.getElementById(idcat);
-	if((id.style.display=='') || (id.style.display=='none')) {
-		id.style.display = 'block';
-	} else {
-		id.style.display = 'none';
-	}
-}
-</script>
-<p><a href="#" style="display:block" onclick="switchOpen();return false;">Vyber kategorii</a></p>
-<div id="categories" style="display:none">
+<a href="#" class="switchOpen" rel="categories">Vyber kategorii</a>
+<div id="categories" class="hidden">
 <!-- BEGIN category -->
-<h3><a href="{CATLINK}" style="display:block">{CATNAME}</a></h3>
-<!-- BEGIN categorydescription -->
-<p class="row">{DESC}</p>
-<!-- END categorydescription -->
+<h3><a href="{CATLINK}">{CATNAME}</a></h3>
+<!-- BEGIN categorydescription --><p class="row">{DESC}</p><!-- END categorydescription -->
 <!-- END category -->
 </div>
