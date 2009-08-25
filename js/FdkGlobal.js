@@ -159,6 +159,13 @@ function markItUpInit() {
 	$('.markItUp').markItUp(mySettings);
 }
 
+function switchOpen() {
+	setListeners('switchOpen', 'click', 
+			function(evt){ 
+		      $('#'+this.rel).toggleClass('hidden');
+		     }
+		);
+}
 /**
  *main init
  **/
@@ -168,6 +175,7 @@ $("#errormsgJS").hide();
 	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 		fajaxa();
 		fconfirm();
+		switchOpen();
 		setListeners('popupLink', 'click', function(evt) {
 			openPopup(this.href);
 			evt.preventDefault();

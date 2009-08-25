@@ -106,6 +106,13 @@ class FCategory extends FDBTool {
 			return $this->tplObject->get();
 		}
 	}
+	function getCats($typeId='') {
+		$user = FUser::getInstance();
+		if(!empty($typeId)) $this->addWhere("typeId='".$typeId."'");
+		$this->addOrder('name');
+		$this->setSelect('categoryId,name,description');
+		return $this->getContent();
+	}
 
 	function parseComboBox($blockname,$selectname,$arr,$selected=0){
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['SELECT'.$k]=$v;
