@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute"
+	creationComplete="{facade.startup(this);}" 
+	xmlns:components="net.fundekave.fuup.view.components.*"
+	width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import net.fundekave.fuup.ApplicationFacade;
+			
+			public static const NAME:String = "fudeup";
+			private var facade:ApplicationFacade = ApplicationFacade.getInstance( NAME );
+		]]>
+	</mx:Script>
+	
+	<components:MainDisplay id="mainDisplay" />
+	
+</mx:Application>
