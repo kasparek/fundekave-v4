@@ -516,29 +516,33 @@ div.mainpanel-content div#categories h3 a{
 div.mainpanel-content div#categories ul {
 	margin-left: 30px;
 }
-div#mainbar ul.showPageAvatar {
+div#mainbar ul.pageList {
 }
-div#mainbar ul.showPageAvatar li a img {
+div#mainbar ul.pageList li a img {
  padding: 0;
  margin: 0;
  float: left;
  margin-right: 0.5em;
 }
-div#mainbar ul.showPageAvatar li {
+div#mainbar ul.pageList li {
+	margin-top: 1em;
 	clear: left;
 	padding-left: 0;
 	background: none;
-	line-height: 25px;
 }
-div#mainbar ul.showPageAvatar li a {
+div#mainbar ul.pageList li a.pageLink {
+	line-height: 25px;
 	display: block;
 	background: #eeeeee;
 	text-decoration: none;
   margin-top: 2px; 
   font-weight: bold;
 }
-div#mainbar ul.showPageAvatar li a:hover {
+div#mainbar ul.pageList li a:hover {
 	background: #bbbbbb
+}
+div#mainbar ul.pageList li div.hentry {
+	margin-top: 0.8em;
 }
 
 div#mainbar li span.postsNew {

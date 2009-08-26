@@ -53,7 +53,7 @@ class page_PagesList implements iPage {
 			$fPages->setOrder("dateContent desc,pageId desc");
 			$fPages->addWhere('p.locked < 2');
 		} else {
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')));
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',typeIdChild');
 			if($user->idkontrol!==true) {
 				$fPages->addWhere('p.locked < 2');
 			} else {
