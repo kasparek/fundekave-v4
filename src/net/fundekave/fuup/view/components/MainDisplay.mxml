@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	xmlns:components="net.fundekave.fuup.view.components.*"
+	width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			
+			public static const STATE_COMPLETE:String   = 'state_complete';
+			
+			public static const STATE_NAME_LOADER:String	= 'stateNameLoader';
+			public static const STATE_NAME_LOGIN:String		= 'stateNameLogin';
+			public static const STATE_NAME_FILES:String		= 'stateNameFiles';
+			
+			public function setState(stateName:String):void {
+				switch( stateName ) {
+					case STATE_NAME_LOADER:
+						mainStack.selectedIndex = 0;
+					break;
+					case STATE_NAME_LOGIN:
+						mainStack.selectedIndex = 1;
+					break;
+					case STATE_NAME_FILES:
+						mainStack.selectedIndex = 2;
+					break;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!-- VIEW STACK WITH CUSTOM VIEW COMPONENTS -->
+    <mx:ViewStack id="mainStack" 
+    			  creationPolicy="auto" 
+    			  width="100%" 
+    			  height="100%">
+    
+       <components:LoaderView id="loaderView" /> <!-- Used incase any problems loading the rest of the view states -->	  
+       <components:LoginView creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/>
+       <components:FilesView creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/>
+       
+    </mx:ViewStack>
+	
+</mx:Canvas>
