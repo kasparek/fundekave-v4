@@ -225,21 +225,29 @@ class FPages extends FDBTool {
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			$tpl->touchBlock('showicons');
-			foreach ($arrLinks as $forum) {
+			foreach ($arrLinks as $page) {
 				$tpl->setCurrentBlock('item');
 				if($user->userVO->zforumico) {
-					if(!empty($forum[3])) {
-						$tpl->setVariable("AVATARURL", WEB_REL_PAGE_AVATAR.$forum[3]);
-						$tpl->setVariable("AVATARNAME", $forum[2]);
-						$tpl->setVariable("AVATARALT", $forum[2]);
+					if(!empty($page[3])) {
+						$tpl->setVariable("AVATARURL", WEB_REL_PAGE_AVATAR.$page[3]);
+						$tpl->setVariable("AVATARNAME", $page[2]);
+						$tpl->setVariable("AVATARALT", $page[2]);
 					}
 				}
-				$tpl->setVariable("PAGENAME", $forum[2]);
-				$tpl->setVariable("PAGEID", $forum[0].'-'.FSystem::safetext($forum[2]));
+				$tpl->setVariable("PAGENAME", $page[2]);
+				$tpl->setVariable("PAGEID", $page[0].'-'.FSystem::safetext($page[2]));
 				if($user->idkontrol) {
-					if($forum[4]>0 && $forum[4]<100000) $tpl->setVariable("PAGEPOSTSNEW", $forum[4]);
+					if($page[4]>0 && $page[4]<100000) $tpl->setVariable("PAGEPOSTSNEW", $page[4]);
 					else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
 				}
+				
+				//---show last item
+				$itemRenderer = new FItemsRenderer();
+				$fItems = new FItems($page[5],$user->userVO->userId,$itemRenderer);
+      			$fItems->setOrder('dateCreated desc');
+      			$fItems->setWhere('itemIdTop is null and pageId="'.$page[0].'"');
+				$tpl->setVariable("ITEM", $fItems->render(0,1));
+				
 				$tpl->parseCurrentBlock();
 			}
 		}
