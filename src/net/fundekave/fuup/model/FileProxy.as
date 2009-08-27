@@ -1,15 +1,18 @@
 package net.fundekave.fuup.model
 {    
 
-      import com.adobe.images.JPGEncoder;
+      import cmodule.as3_jpeg_wrapper.CLibInit;
+      
       import com.dynamicflash.util.Base64;
       
       import flash.display.BitmapData;
       import flash.display.Loader;
       import flash.events.Event;
       import flash.geom.Matrix;
+      import flash.geom.Rectangle;
+      import flash.utils.ByteArray;
       import flash.utils.setTimeout;
-            
+      
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
@@ -20,6 +23,8 @@ package net.fundekave.fuup.model
       public class FileProxy extends Proxy implements IProxy
       {
 		public static const NAME:String = 'fileProxy';
+        
+        private var as3_jpeg_wrapper: Object;
         
         //---global settings
         [Bindable]
@@ -90,13 +95,24 @@ package net.fundekave.fuup.model
         	var ratio:Number = fileVO.widthNew / fileVO.widthOriginal;
         	var matrix:Matrix = new Matrix();
   			matrix.scale( ratio, ratio );
+  			
+  			fileVO.widthNew = Math.round(fileVO.widthNew);
+  			fileVO.heightNew = Math.round(fileVO.heightNew);
  
   			var bmpd:BitmapData = new BitmapData( fileVO.widthNew, fileVO.heightNew );	
-  			bmpd.draw( image, matrix, null, null, null, true );
-
-        	var jpgEnc:JPGEncoder = new JPGEncoder( fileVO.outputQuality );
+  			bmpd.draw( image.content, matrix, null, null, null, true );
+			var baSource: ByteArray = bmpd.clone().getPixels( new Rectangle( 0, 0, fileVO.widthNew, fileVO.heightNew) );			
+			
+			// init alchemy library
+			var loader:CLibInit = new CLibInit;
+			as3_jpeg_wrapper = loader.init();
+			var w:Number = Number(fileVO.widthNew);
+			var h:Number = Number(fileVO.heightNew);
+			fileVO.encodedJPG =  as3_jpeg_wrapper.write_jpeg_file(baSource, w, h, 3, 2, fileVO.outputQuality);
+			/*
+        	var jpgEnc:JPEGEncoder = new JPEGEncoder( fileVO.outputQuality );
         	fileVO.encodedJPG = jpgEnc.encode( bmpd );
-        	
+        	*/
         	image.parent.removeChild( image );
         	
         	currentFile++;
