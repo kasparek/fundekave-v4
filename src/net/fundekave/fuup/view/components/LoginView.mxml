@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" 
-		  height="100%" width="100%" 
-		  horizontalAlign="center" 
-    	  verticalAlign="middle">
-	
-	<mx:Script>
+<fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:fu="net.fundekave.*" 
+	xmlns:bit101="com.bit101.components.*"
+	xmlns:components="net.fundekave.fuup.view.components.*">
+    	  <fx:Script>
 		<![CDATA[
 			
 			public static const SUBMIT:String = "submit";
@@ -13,21 +12,23 @@
 			public var loginPassword:String
 			
 		]]>
-	</mx:Script>	  
+	</fx:Script>	  
 	
-	<mx:Binding source="loginUsernameInput.text as String" destination="loginUsername" />
-	<mx:Binding source="loginPasswordInput.text as String" destination="loginPassword" />
+	<fx:Binding source="loginUsernameInput.text as String" destination="loginUsername" />
+	<fx:Binding source="loginPasswordInput.text as String" destination="loginPassword" />
 	
-	<mx:Form>
-		<mx:FormItem label="Username:">
-			<mx:TextInput id="loginUsernameInput"/>
-		</mx:FormItem>
-		<mx:FormItem label="Password:">
-			<mx:TextInput id="loginPasswordInput" displayAsPassword="true" />
-		</mx:FormItem>
-		<mx:FormItem>
-			<mx:Button label="Login" click="{ if( loginUsernameInput.text.length > 0 ) dispatchEvent( new Event( SUBMIT ) ) }" />
-		</mx:FormItem>
-	</mx:Form>
+	<bit101:VBox>
+		<bit101:HBox>
+			<bit101:Label text="Username" />
+			<bit101:InputText id="loginUsernameInput"/>
+		</bit101:HBox>
+		<bit101:HBox>
+			<bit101:Label text="Password" />
+			<bit101:InputText id="loginPasswordInput" />
+		</bit101:HBox>
 	
-</mx:Box>
+		<bit101:PushButton label="Login" click="{ if( loginUsernameInput.text.length > 0 ) dispatchEvent( new Event( SUBMIT ) ) }" />
+		
+	</bit101:VBox>
+	
+</fu:Container>

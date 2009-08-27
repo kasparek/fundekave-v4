@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="150" backgroundColor="0x444444"
-	verticalScrollPolicy="off"
-	horizontalScrollPolicy="off">
-	<mx:Script>
+<fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:fu="net.fundekave.*"
+	xmlns:bit101="com.bit101.components.*"
+	width="{Fuup.WIDTH}" height="150">
+	<fx:Script>
 		<![CDATA[
+			import gs.easing.Quad;
+			import gs.TweenLite;
 			import net.fundekave.lib.BitmapDataProcess;
 			import net.fundekave.fuup.model.vo.FileVO;
-			import caurina.transitions.Tweener;
 			
-			import mx.controls.Image;
+			import flash.utils.setTimeout;
+			import flash.display.Loader;
 			
 			public static const FILE_CREATED:String = 'fileCreated';
 			public static const SETTINGS_INHERIT:String = 'settingsInherit';
@@ -44,10 +47,10 @@
 				var file:FileReference = e.target as FileReference;
 				file.removeEventListener(Event.COMPLETE, imageLoaded);
 				var byteData:ByteArray = file.data as ByteArray;
-				var thumb:Image = new Image();
-				thumb.source = byteData;
+				var thumb:Loader = new Loader();
+				thumb.loadBytes( byteData );
 				thumbUI.addChild(thumb);
-				thumb.addEventListener(Event.COMPLETE, drawLater);
+				thumb.contentLoaderInfo.addEventListener( Event.COMPLETE, drawLater);
 			}
 			
 			/**
@@ -58,11 +61,11 @@
 			[Bindable]
 			private var hThumb:Number;
 			private function drawLater(e:Event):void {
-				var thumb:Image = e.target as Image;
-				thumb.removeEventListener(Event.COMPLETE, drawLater);
+				var thumb:Loader = e.target.loader as Loader;
+				thumb.contentLoaderInfo.removeEventListener( Event.COMPLETE, drawLater);
 								
-				_fileVO.widthOriginal = thumb.contentWidth;
-				_fileVO.heightOriginal = thumb.contentHeight;
+				_fileVO.widthOriginal = (thumb.content as Bitmap).width;
+				_fileVO.heightOriginal = (thumb.content as Bitmap).height;
 				
 				/* The size of the output image */
 				var scaled:Object = BitmapDataProcess.scaleCalc(_fileVO.widthOriginal,_fileVO.heightOriginal,thumbMaxWidth,thumbMaxHeight);
@@ -92,7 +95,7 @@
 			private function rotate(dgDiff:Number):void {
 				rotateTo += dgDiff;
 				
-				Tweener.addTween( _fileVO, {rotation:rotateTo, time:0.5, transition:'easeOutQuart'} );
+				TweenLite.to( _fileVO, 0.5, {rotation:rotateTo, ease:Quad.easeInOut} );
 				
 				if(rotateTo > 360) rotateTo -= 360;
 				if(rotateTo < -360) rotateTo += 360;  
@@ -102,7 +105,7 @@
 			private var inheritWasTrue:Boolean = false;
 			private function onInheritChange():void {
 				if(resizeInheritCheckbox.selected == true && inheritWasTrue==true) {
-					callLater( laterOnInheritChange );
+					setTimeout( laterOnInheritChange, 1 );
 				} else {
 					inheritWasTrue = true;
 				}
@@ -113,50 +116,51 @@
 			
 			private function showResized():void {
 				if(fileVO.encodedJPG) {
-					var image:Image = new Image();
-					image.source = fileVO.encodedJPG;
+					var image:Loader = new Loader();
+					image.loadBytes( fileVO.encodedJPG );
 					this.addChild( image );
-					this.clipContent = false;
 					image.addEventListener( MouseEvent.CLICK, onPreviewClick ); 
 				}
 			}
 			
 			private function onPreviewClick(e:Event):void {
-				var image:Image = e.currentTarget as Image;
+				var image:Loader = e.currentTarget as Loader;
 				image.removeEventListener( MouseEvent.CLICK, onPreviewClick );
 				image.parent.removeChild( image );
 			}
 			
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<mx:Binding source="resizeInheritCheckbox.selected" destination="_fileVO.sizeInheritance" />
-	<mx:Binding source="maxWidthInput.text as Number" destination="_fileVO.widthMax" />
-	<mx:Binding source="maxHeightInput.text as Number" destination="_fileVO.heightMax" />
+	<fx:Binding source="resizeInheritCheckbox.selected" destination="_fileVO.sizeInheritance" />
+	<fx:Binding source="maxWidthInput.text as Number" destination="_fileVO.widthMax" />
+	<fx:Binding source="maxHeightInput.text as Number" destination="_fileVO.heightMax" />
 	
-	<mx:Canvas width="{thumbMaxWidth}" height="{thumbMaxHeight}" verticalCenter="0" left="5">
-		<mx:UIComponent id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" width="{wThumb/2}" height="{hThumb/2}">
-			
-		</mx:UIComponent>
-	</mx:Canvas>
-	<mx:VBox left="{thumbMaxWidth+10}" right="5" top="5" bottom="5">
-		<mx:FormItem label="Filename:">
-			<mx:TextInput id="filenameInput" text="{_fileVO.filename}" restrict="[0-9][a-z][A-Z]_\-\." height="17" borderStyle="none" />
-		</mx:FormItem>
-		<mx:FormItem label="Max size:">
-			<mx:HBox horizontalGap="5">
-				<mx:TextInput id="maxWidthInput" text="{_fileVO.widthMax}" enabled="{!_fileVO.sizeInheritance}" width="40" restrict="[0-9]" height="17" borderStyle="none" />
-				<mx:Label text="x" />
-				<mx:TextInput id="maxHeightInput" text="{_fileVO.heightMax}" enabled="{!_fileVO.sizeInheritance}" width="40" restrict="[0-9]" height="17" borderStyle="none" />
-				<mx:CheckBox id="resizeInheritCheckbox" change="{onInheritChange()}" selected="{_fileVO.sizeInheritance}" label="Inherit" />
-			</mx:HBox>
-		</mx:FormItem>
-		<mx:FormItem label="Rotate:">
-			<mx:HBox>
-				<mx:Button click="{rotate(-90)}" label="CCW" /> <mx:Button click="{rotate(90)}" label="CW" />
-			</mx:HBox>
-		</mx:FormItem>
-		<mx:Button label="Check resized" click="{showResized()}" />
-	</mx:VBox>
+	<fu:Container width="{thumbMaxWidth}" height="{thumbMaxHeight}">
+		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" width="{wThumb/2}" height="{hThumb/2}" />
+	</fu:Container>
 	
-</mx:Canvas>
+	<bit101:VBox x="200">
+		<bit101:HBox>
+			<bit101:Label text="Filename:" />
+			<bit101:InputText id="filenameInput" text="{_fileVO.filename}" restrict="[0-9][a-z][A-Z]_\-\." />
+		</bit101:HBox>
+		
+		<bit101:HBox>
+			<bit101:Label text="Max size:" />
+			<bit101:InputText id="maxWidthInput" text="{_fileVO.widthMax}" visible="{!_fileVO.sizeInheritance}" width="40" restrict="[0-9]" />
+			<bit101:Label text="x" />
+			<bit101:InputText id="maxHeightInput" text="{_fileVO.heightMax}" visible="{!_fileVO.sizeInheritance}" width="40" restrict="[0-9]" />
+			<bit101:CheckBox id="resizeInheritCheckbox" click="{onInheritChange()}" selected="{_fileVO.sizeInheritance}" label="Inherit" />
+		</bit101:HBox>
+		
+		<bit101:HBox>
+			<bit101:Label text="Rotation:" />
+			<bit101:PushButton click="{rotate(-90)}" label="CW" />
+			<bit101:PushButton click="{rotate(90)}" label="CCW" />
+		</bit101:HBox>
+		
+		<bit101:PushButton label="Check resized" click="{showResized()}" />
+	</bit101:VBox>
+	
+</fu:Container>

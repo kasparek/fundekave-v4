@@ -11,7 +11,7 @@ package net.fundekave.fuup.controller
 		override public function execute ( note:INotification ) : void
 		{
 			// Register the ApplicationMediator
-			var app:FuUp = note.getBody() as FuUp;
+			var app:Fuup = note.getBody() as Fuup;
 			facade.registerMediator( new ApplicationMediator( app ) );
 		}
 	}

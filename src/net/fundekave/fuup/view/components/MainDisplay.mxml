@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
-	horizontalScrollPolicy="off" verticalScrollPolicy="off"
-	xmlns:components="net.fundekave.fuup.view.components.*"
-	width="100%" height="100%">
-	<mx:Script>
+<fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:fu="net.fundekave.*" 
+	xmlns:bit101="com.bit101.components.*"
+	xmlns:components="net.fundekave.fuup.view.components.*">
+	<fx:Script>
 		<![CDATA[
-			
-			public static const STATE_COMPLETE:String   = 'state_complete';
-			
 			public static const STATE_NAME_LOADER:String	= 'stateNameLoader';
 			public static const STATE_NAME_LOGIN:String		= 'stateNameLogin';
 			public static const STATE_NAME_FILES:String		= 'stateNameFiles';
@@ -15,30 +12,29 @@
 			public function setState(stateName:String):void {
 				switch( stateName ) {
 					case STATE_NAME_LOADER:
-						mainStack.selectedIndex = 0;
+						//loginView.visible = false;
+						filesView.visible = false;
 					break;
 					case STATE_NAME_LOGIN:
-						mainStack.selectedIndex = 1;
+						//loginView.visible = true;
+						filesView.visible = false;
 					break;
 					case STATE_NAME_FILES:
-						mainStack.selectedIndex = 2;
+						//loginView.visible = false;
+						filesView.visible = true;
 					break;
 				}
 			}
 			
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
 	<!-- VIEW STACK WITH CUSTOM VIEW COMPONENTS -->
-    <mx:ViewStack id="mainStack" 
-    			  creationPolicy="auto" 
-    			  width="100%" 
-    			  height="100%">
+      
+    <!-- <components:LoginView id="loginView" visible="false" creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/> -->
     
-       <components:LoaderView id="loaderView" /> <!-- Used incase any problems loading the rest of the view states -->	  
-       <components:LoginView creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/>
-       <components:FilesView creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/>
-       
-    </mx:ViewStack>
-	
-</mx:Canvas>
+    <components:FilesView id="filesView" 
+    	width="{Fuup.WIDTH}" height="{Fuup.HEIGHT}"
+    	visible="true" />
+    
+</fu:Container>
