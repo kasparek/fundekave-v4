@@ -111,6 +111,22 @@
 				dispatchEvent(new Event(SETTINGS_INHERIT,true));
 			}
 			
+			private function showResized():void {
+				if(fileVO.encodedJPG) {
+					var image:Image = new Image();
+					image.source = fileVO.encodedJPG;
+					this.addChild( image );
+					this.clipContent = false;
+					image.addEventListener( MouseEvent.CLICK, onPreviewClick ); 
+				}
+			}
+			
+			private function onPreviewClick(e:Event):void {
+				var image:Image = e.currentTarget as Image;
+				image.removeEventListener( MouseEvent.CLICK, onPreviewClick );
+				image.parent.removeChild( image );
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -140,6 +156,7 @@
 				<mx:Button click="{rotate(-90)}" label="CCW" /> <mx:Button click="{rotate(90)}" label="CW" />
 			</mx:HBox>
 		</mx:FormItem>
+		<mx:Button label="Check resized" click="{showResized()}" />
 	</mx:VBox>
 	
 </mx:Canvas>

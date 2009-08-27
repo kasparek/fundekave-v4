@@ -2,6 +2,7 @@ package net.fundekave.fuup.model
 {    
 
       import com.adobe.images.JPGEncoder;
+      import com.dynamicflash.util.Base64;
       
       import flash.display.BitmapData;
       import flash.events.Event;
@@ -69,6 +70,7 @@ package net.fundekave.fuup.model
         	fileVO.heightNew = scaled.height;
         }
         
+        //---processing
         private var currentFile:int = 0;
         
         public function processFiles():void {
@@ -107,12 +109,6 @@ package net.fundekave.fuup.model
         	var jpgEnc:JPGEncoder = new JPGEncoder( fileVO.outputQuality );
         	fileVO.encodedJPG = jpgEnc.encode( bmpd );
         	
-        	var i:Image = new Image();
-        	i.source = fileVO.encodedJPG;
-        	fileVO.renderer.addChild( i );
-        	
-        	
-        	
         	image.parent.removeChild( image );
         	
         	currentFile++;
@@ -122,16 +118,42 @@ package net.fundekave.fuup.model
         	setTimeout(processFile, 100);
         }
         
+        //uploading
+        private var chunkSize:int = 10000;
+        private var uploadLimit:int = 5;
+        private var currentChunks:Array;
+        public function uploadFiles():void {
+        	currentFile = 0;
+        	var len:int = fileList.length;
+        	if(currentFile < len) {
+        		var fileVO:FileVO = fileList[currentFile] as FileVO;
+        		var encodedStr:String = Base64.encodeByteArray( fileVO.encodedJPG );
+        	
+	        	var chunksNum:int = Math.ceil( encodedStr.length / chunkSize );
+	        	currentChunks = [];
+	        	for(var i:int=0;i < chunksNum; i++) {
+	        		currentChunks.push( '<data><chunk seq="'+i+'" to="'+chunksNum+'">'+encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )+'</chunk></data>' );	
+	        	}
+	        	encodedStr = null;
+	        	upload();
+	        	//---take chunks
+	        	//---checking progress
+        		//---when finishid send another chunks
+        	}
+        }
         
+        private var chunksUploading:int = 0
         public function upload():void        
         {
-        	 
-			httpService.send( {} );
+        	while(currentChunks.length > 0 || chunksUploading < uploadLimit) { 
+				httpService.send( {data:currentChunks.shift()} );
+				chunksUploading++;
+        	}
 			        
         }
         public virtual function httpResult(event:ResultEvent):void
         {         
-			
+			chunksUploading--;
         }
    
         public function httpFault (event:FaultEvent):void

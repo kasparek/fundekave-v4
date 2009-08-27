@@ -67,6 +67,7 @@ package net.fundekave.fuup
 			registerCommand( LOGIN, LoginCommand);
 			
 			registerCommand( StateConstants.STATE_PROCESS, ProcessFilesCommand );
+			registerCommand( StateConstants.STATE_UPLOAD, UploadFilesCommand );
 		}
 	}
 }
