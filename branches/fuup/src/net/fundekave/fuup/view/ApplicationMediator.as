@@ -1,7 +1,5 @@
 package net.fundekave.fuup.view
 {
-	import mx.core.Application;
-	
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.common.constants.ActionConstants;
 	
@@ -14,7 +12,7 @@ package net.fundekave.fuup.view
 	{
 		public static const NAME:String	= "ApplicationMediator";
 	 
-		public function ApplicationMediator( viewComponent:FuUp ) 
+		public function ApplicationMediator( viewComponent:Fuup ) 
 		{
 			super( NAME, viewComponent );
 		}
@@ -82,9 +80,9 @@ package net.fundekave.fuup.view
 			}
 		}
 		
-		public function get app():FuUp
+		public function get app():Fuup
 		{ 
-			return viewComponent as FuUp; 
+			return viewComponent as Fuup; 
 		}
 	}
 }

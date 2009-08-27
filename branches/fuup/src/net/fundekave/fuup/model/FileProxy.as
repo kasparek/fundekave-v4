@@ -5,28 +5,21 @@ package net.fundekave.fuup.model
       import com.dynamicflash.util.Base64;
       
       import flash.display.BitmapData;
+      import flash.display.Loader;
       import flash.events.Event;
       import flash.geom.Matrix;
       import flash.utils.setTimeout;
-      
-      import mx.controls.Alert;
-      import mx.controls.Image;
-      import mx.core.Application;
-      import mx.rpc.events.FaultEvent;
-      import mx.rpc.events.ResultEvent;
-      import mx.rpc.http.HTTPService;
-      
+            
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
-      import org.puremvc.as3.multicore.patterns.proxy.Proxy;  
+      import org.puremvc.as3.multicore.patterns.proxy.Proxy;
         
       public class FileProxy extends Proxy implements IProxy
       {
 		public static const NAME:String = 'fileProxy';
-        private var httpService:HTTPService;
         
         //---global settings
         [Bindable]
@@ -41,11 +34,6 @@ package net.fundekave.fuup.model
         public function FileProxy( )
         {
 			super( NAME );
-			httpService  = new HTTPService();
-			httpService.method = "POST";
-			httpService.addEventListener(ResultEvent.RESULT, httpResult);
-            httpService.addEventListener(FaultEvent.FAULT, httpFault);
-      
         }
         
         public function updateFiles():void {
@@ -83,10 +71,10 @@ package net.fundekave.fuup.model
         	if(currentFile < len) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
         		
-        		var image:Image = new Image();
-        		image.source = fileVO.file.data;
-        		image.addEventListener(Event.COMPLETE, onImageReady );
-        		Application.application.addChild( image ); 
+        		var image:Loader = new Loader();
+        		image.loadBytes( fileVO.file.data );
+        		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady );
+        		fileVO.renderer.addChild( image ); 
         		
         	} else {
         		//---processing done
@@ -94,8 +82,8 @@ package net.fundekave.fuup.model
         }
         
         private function onImageReady(e:Event):void {
-        	var image:Image = e.target as Image;
-        	image.removeEventListener(Event.COMPLETE, onImageReady );
+        	var image:Loader = e.target.loader as Loader;
+        	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
         	
@@ -146,20 +134,20 @@ package net.fundekave.fuup.model
         public function upload():void        
         {
         	while(currentChunks.length > 0 || chunksUploading < uploadLimit) { 
-				httpService.send( {data:currentChunks.shift()} );
+				//httpService.send( {data:currentChunks.shift()} );
 				chunksUploading++;
         	}
 			        
         }
-        public virtual function httpResult(event:ResultEvent):void
+        public virtual function httpResult(e:Event):void
         {         
 			chunksUploading--;
         }
    
-        public function httpFault (event:FaultEvent):void
+        public function httpFault (e:Event):void
         {
-        	Alert.show('Connection Error','Error');
-  			sendNotification( ApplicationFacade.SERVICE_ERROR, event.fault.faultString );
+        	trace('Connection Error');
+  			sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }       
 	}
 }

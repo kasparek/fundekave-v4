@@ -3,12 +3,9 @@ package net.fundekave.fuup.view
         
     import flash.events.Event;
     
-    import mx.core.Application;
-    
     import net.fundekave.fuup.ApplicationFacade;
     import net.fundekave.fuup.common.constants.ActionConstants;
     import net.fundekave.fuup.common.constants.StateConstants;
-    import net.fundekave.fuup.view.components.LoaderView;
     import net.fundekave.fuup.view.components.MainDisplay;
     
     import org.puremvc.as3.multicore.interfaces.INotification;
@@ -31,12 +28,7 @@ package net.fundekave.fuup.view
         override public function onRegister():void
         {
         	
-            // Listen for the view's creationComplete event
-            mainDisplay.addEventListener( MainDisplay.STATE_COMPLETE,	registerState );
-            mainDisplay.addEventListener( LoaderView.SERVICE_RETRY, onServiceRetry );
-            // Bind data from the HandleLoginProxy to variable/component in view
-            //BindingUtils.bindProperty( app.log_txt, 'text', lgnPrx, ["username"]);
-            //BindingUtils.bindProperty( app, "armed", lgnPrx, ["login_success"]);
+            facade.registerMediator( new FilesViewMediator( mainDisplay.filesView ) );
         	        	
         }
                        
@@ -60,7 +52,7 @@ package net.fundekave.fuup.view
        			case ApplicationFacade.SERVICE_ERROR:
        			case StartupMonitorProxy.LOADING_FINISHED_INCOMPLETE:
        				sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_INIT );
-       				mainDisplay.loaderView.setState(LoaderView.STATE_NAME_SERVICEERROR);
+       				//mainDisplay.loaderView.setState(LoaderView.STATE_NAME_SERVICEERROR);
        				break;
 				case StateConstants.STATE_INIT:
 					mainDisplay.setState( MainDisplay.STATE_NAME_LOADER );
@@ -77,23 +69,7 @@ package net.fundekave.fuup.view
                     break;
        		}
        	}
-       	
-       	/**
-         * registerState must only be done when the
-         * view has fired its creationComplete Event.
-         * 
-         * Send a notification with the currently loaded
-         * view and state name as params.  REGISTER_STATE
-         * has a registered command RegisterStateCommand 
-         * which will check to see if the view's mediator
-         * is registered with the Facade and if not will
-         * register it.
-         */
-        protected function registerState( e:Event ):void
-        {
-        	sendNotification( ApplicationFacade.REGISTER_STATE, mainDisplay.mainStack.selectedChild, stateName );
-        }
-        
+                      
         protected function onServiceRetry( e:Event ):void {
         	sendNotification( ApplicationFacade.LOAD_RESOURCES );
         } 

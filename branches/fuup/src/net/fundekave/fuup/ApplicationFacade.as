@@ -45,7 +45,7 @@ package net.fundekave.fuup
             return instanceMap[ key ] as ApplicationFacade;
         }
 	
-		public function startup ( app:FuUp ) : void
+		public function startup ( app:Fuup ) : void
 		{
 			sendNotification( STARTUP, app );
 		}

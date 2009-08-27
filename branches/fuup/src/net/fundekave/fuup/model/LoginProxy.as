@@ -3,35 +3,28 @@ package net.fundekave.fuup.model
 
       import com.adobe.crypto.MD5;
       
-      import mx.controls.Alert;
-      import mx.rpc.events.FaultEvent;
-      import mx.rpc.events.ResultEvent;
-      import mx.rpc.http.HTTPService;
+      import flash.events.Event;
+      import flash.events.IOErrorEvent;
+      import flash.net.URLLoader;
+      import flash.net.URLRequest;
       
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.model.vo.*;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
-      import org.puremvc.as3.multicore.patterns.proxy.Proxy;  
+      import org.puremvc.as3.multicore.patterns.proxy.Proxy;
         
       public class LoginProxy extends Proxy implements IProxy
       {
 		public static const NAME:String = 'loginProxy';
         
         public var serviceUrl:String;
-        
-        private var httpService:HTTPService;
-        
+                
         public var loginVO:LoginVO;
         
         public function LoginProxy( )
         {
 			super( NAME );
-			httpService  = new HTTPService();
-			httpService.method = "POST";
-			httpService.addEventListener(ResultEvent.RESULT, httpResult);
-            httpService.addEventListener(FaultEvent.FAULT, httpFault);
-      
         }
         
         public function login( loginVO:LoginVO ):void        
@@ -41,15 +34,21 @@ package net.fundekave.fuup.model
         	
         	loginVO.passwordHash = passHash; 
         	this.loginVO = loginVO;
-        	httpService.resultFormat = HTTPService.RESULT_FORMAT_E4X;
-        	httpService.url = serviceUrl;
-			httpService.send( {data:dataXML.toString()} );
-			        
+        	var service:URLLoader = new URLLoader();
+        	var req:URLRequest = new URLRequest(serviceUrl);
+        	req.method = 'POST';
+        	req.data = {data:dataXML.toString()};
+        	service.addEventListener( Event.COMPLETE, httpResult);
+        	service.addEventListener( IOErrorEvent.IO_ERROR, httpFault);
+        	service.load(req);
         }
-        public virtual function httpResult(event:ResultEvent):void
+        public virtual function httpResult(e:Event):void
         {   
+        	var service:URLLoader = e.target as URLLoader;
+        	service.removeEventListener( Event.COMPLETE, httpResult);
+        	service.removeEventListener( IOErrorEvent.IO_ERROR, httpFault);
 			try {
-				var resultXML:XML = XML(event.result);
+				var resultXML:XML = XML((e.target as URLLoader).data);
 			} catch (e:Error) {
 				trace(e.toString());
 				sendNotification( ApplicationFacade.SERVICE_ERROR );
@@ -73,10 +72,13 @@ package net.fundekave.fuup.model
 			}
         }
    
-        public function httpFault (event:FaultEvent):void
+        public function httpFault (e:Event):void
         {
-        	Alert.show('Connection Error','Error');
-  			sendNotification( ApplicationFacade.SERVICE_ERROR, event.fault.faultString );
+        	var service:URLLoader = e.target as URLLoader;
+        	service.removeEventListener( Event.COMPLETE, httpResult);
+        	service.removeEventListener( IOErrorEvent.IO_ERROR, httpFault);
+        	trace('Connection Error');
+  			sendNotification( ApplicationFacade.SERVICE_ERROR, 'Connection Error' );
         }       
 	}
 }

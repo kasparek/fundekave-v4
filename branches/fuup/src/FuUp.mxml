@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
-	layout="absolute"
-	creationComplete="{facade.startup(this);}" 
-	xmlns:components="net.fundekave.fuup.view.components.*"
-	width="100%" height="100%">
-	<mx:Script>
+<fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:fu="net.fundekave.*" 
+	xmlns:bit101="com.bit101.components.*"
+	addedToStage="{ready();}" 
+	xmlns:components="net.fundekave.fuup.view.components.*">
+	<fx:Script>
 		<![CDATA[
+			public static const WIDTH:int = 600;
+			public static const HEIGHT:int = 800;
 			import net.fundekave.fuup.ApplicationFacade;
-			
 			public static const NAME:String = "fudeup";
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance( NAME );
+			private function ready():void {
+				facade.startup(this);
+				this.graphics.beginFill(0xeeeeee);
+				this.graphics.drawRect(0,0,WIDTH, HEIGHT);
+				this.graphics.endFill();
+			}
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
-	<components:MainDisplay id="mainDisplay" />
+	<components:MainDisplay width="{Fuup.WIDTH}" height="{Fuup.HEIGHT}" id="mainDisplay" />
 	
-</mx:Application>
+	<bit101:HBox>
+		<bit101:Label text="Started" width="100" height="15" />
+	</bit101:HBox>
+	
+</fu:Application>
