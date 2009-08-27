@@ -29,6 +29,7 @@ package net.fundekave.fuup.view
 			filesView.addEventListener( FileView.SETTINGS_INHERIT, onFileIhnerit );
 			filesView.addEventListener( FilesView.SETTINGS_CHANGE, onSettingsChange );
 			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess );
+			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload );
 		}
 		
 		protected function onFileCreated( e:Event ):void {
@@ -55,6 +56,10 @@ package net.fundekave.fuup.view
 		
 		protected function onProcess(e:Event):void {
 			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_PROCESS );
+		}
+		
+		protected function onUpload(e:Event):void {
+			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_UPLOAD );
 		}
 		
 		protected function get filesView():FilesView
