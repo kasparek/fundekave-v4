@@ -7,16 +7,16 @@ package net.fundekave.fuup.model
 	
 	import net.fundekave.fuup.ApplicationFacade;
 	
-	import org.puremvc.as3.multicore.utilities.startupmanager.interfaces.IStartupProxy;
+	import org.puremvc.as3.multicore.interfaces.IProxy;
+	import org.puremvc.as3.multicore.patterns.proxy.Proxy;
 
-	public class ConfigDataProxy extends EntityProxy implements IStartupProxy
+	public class ConfigProxy extends Proxy implements IProxy
 	{
 		public static const NAME:String = 'ConfigDataProxy';
-		public static const SRNAME:String = 'ConfigDataSRProxy';
 		
 		private var dataXML:XML;
 		
-		public function ConfigDataProxy()
+		public function ConfigProxy()
 		{
 			super( NAME );
 		}
@@ -27,7 +27,7 @@ package net.fundekave.fuup.model
 		}
 
 		public function load() :void {
-			sendNotification( ApplicationFacade.CONFIG_DATA_LOADING );
+			sendNotification( ApplicationFacade.CONFIG_LOADING );
 			var request:URLRequest = new URLRequest(ApplicationFacade.SERVICE_CONFIG_URL);
 			var loader:URLLoader = new URLLoader();
 			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
@@ -40,23 +40,21 @@ package net.fundekave.fuup.model
 				dataXML = new XML( event.target.data );
 			} catch (e:Error) {
 				trace(e.toString());
-				sendLoadedNotification( ApplicationFacade.CONFIG_DATA_FAILED, NAME, SRNAME );
+				sendNotification( ApplicationFacade.CONFIG_FAILED );
 				return;
 			}
 			if(!dataXML) {
-				sendLoadedNotification( ApplicationFacade.CONFIG_DATA_FAILED, NAME, SRNAME );
+				sendNotification( ApplicationFacade.CONFIG_FAILED );
 				return;
 			}
 			
 			dataXML.ignoreWhitespace = true;
-			sendLoadedNotification( ApplicationFacade.CONFIG_DATA_LOADED, NAME, SRNAME );
+			sendNotification( ApplicationFacade.CONFIG_LOADED );
 		}
 
 		private function errorHandler(e:IOErrorEvent):void {
-			sendLoadedNotification( ApplicationFacade.CONFIG_DATA_FAILED, NAME, SRNAME );
+			sendNotification( ApplicationFacade.CONFIG_FAILED );
 		}
-
-
 		
 	}
 }

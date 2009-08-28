@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Fudebu>
+<Config>
+<Services>
+<Service name="login">http://localhost/fuup/login.xml</Service>
+<Service name="files">http://localhost/fuup/files.php</Service>
+<Service name="gallery">http://localhost/fuup/gallery.xml</Service>
+</Services>
+</Config>
+</Fudebu>

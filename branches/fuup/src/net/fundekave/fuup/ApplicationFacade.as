@@ -4,27 +4,24 @@ package net.fundekave.fuup
 	import net.fundekave.fuup.controller.*;
 	
 	import org.puremvc.as3.multicore.patterns.facade.Facade;
-	import org.puremvc.as3.multicore.utilities.startupmanager.controller.StartupResourceFailedCommand;
-	import org.puremvc.as3.multicore.utilities.startupmanager.controller.StartupResourceLoadedCommand;
 
 	public class ApplicationFacade extends Facade
 	{
-		public static const SERVICE_CONFIG_URL:String = 'http://localhost/fudebu/config.xml';
+		public static const SERVICE_CONFIG_URL:String = 'http://localhost/fuup/config.xml';
 
 		public static const STARTUP:String = 'startup';
 				
 		// State constants	
 		public static const INJECTED:String 	    = 'injected';		
-		public static const REGISTER_STATE:String 	= 'register_state';
 		
 		//---http service
 		public static const SERVICE_ERROR:String = 'serviceError';
 		
 		//---resources
-		public static const LOAD_RESOURCES:String			= 'loadResources';
-		public static const CONFIG_DATA_LOADING:String 	    = 'congifDataLoading';
-		public static const CONFIG_DATA_LOADED:String 	    = 'configDataLoaded';
-		public static const CONFIG_DATA_FAILED:String 	    = 'configDataFailed';
+		public static const CONFIG_LOAD:String			= 'loadResources';
+		public static const CONFIG_LOADING:String 	    = 'congifDataLoading';
+		public static const CONFIG_LOADED:String 	    = 'configDataLoaded';
+		public static const CONFIG_FAILED:String 	    = 'configDataFailed';
 		
 		//---logion
 		public static const LOGIN:String 	    = 'login';
@@ -33,6 +30,9 @@ package net.fundekave.fuup
 		
 		//---processing
 		public static const PROCESS_PROGRESS:String		= 'processProgress';
+		
+		public static const IMAGES_PROCESS:String		= 'imagesProcess';
+		public static const IMAGES_UPLOAD:String		= 'imagesUpload'; 
 		 
 	 	public function ApplicationFacade( key:String )
 	 	{
@@ -58,16 +58,12 @@ package net.fundekave.fuup
 			super.initializeController();
 			registerCommand( STARTUP, StartupCommand );
 			
-			registerCommand( REGISTER_STATE,   	 RegisterStateCommand );
-			
-			registerCommand( LOAD_RESOURCES, LoadResourcesCommand );
-			registerCommand( CONFIG_DATA_LOADED, StartupResourceLoadedCommand );
-			registerCommand( CONFIG_DATA_FAILED, StartupResourceFailedCommand );
+			registerCommand( CONFIG_LOAD, LoadConfigCommand );
 			
 			registerCommand( LOGIN, LoginCommand);
 			
-			registerCommand( StateConstants.STATE_PROCESS, ProcessFilesCommand );
-			registerCommand( StateConstants.STATE_UPLOAD, UploadFilesCommand );
+			registerCommand( IMAGES_PROCESS, ProcessFilesCommand );
+			registerCommand( IMAGES_UPLOAD, UploadFilesCommand );
 		}
 	}
 }

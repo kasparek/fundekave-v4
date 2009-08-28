@@ -5,7 +5,7 @@ package net.fundekave.fuup.view
 	
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.mediator.Mediator;
-	import org.puremvc.as3.multicore.utilities.startupmanager.model.StartupMonitorProxy;
+	import org.puremvc.as3.multicore.utilities.statemachine.State;
 	import org.puremvc.as3.multicore.utilities.statemachine.StateMachine;
 
 	public class ApplicationMediator extends Mediator
@@ -26,19 +26,11 @@ package net.fundekave.fuup.view
 		
 		override public function listNotificationInterests():Array
 		{
-			return [ 
-					StartupMonitorProxy.RETRYING_LOAD_RESOURCE,
-					StartupMonitorProxy.LOADING_PROGRESS,
-					StartupMonitorProxy.LOAD_RESOURCE_TIMED_OUT,
-					StartupMonitorProxy.LOADING_COMPLETE,
-					StartupMonitorProxy.LOADING_FINISHED_INCOMPLETE,
-					StartupMonitorProxy.CALL_OUT_OF_SYNC_IGNORED,
-					
-					ApplicationFacade.INJECTED,
-					
+			return [ApplicationFacade.INJECTED,
 					ApplicationFacade.LOGIN_SUCCESS,
-					
-					ApplicationFacade.PROCESS_PROGRESS
+					ApplicationFacade.PROCESS_PROGRESS,
+					ApplicationFacade.CONFIG_LOADED,
+					StateMachine.CHANGED
 					];
 		}
 		
@@ -47,36 +39,23 @@ package net.fundekave.fuup.view
 			
 			switch ( note.getName() )
 			{
-				case ApplicationFacade.PROCESS_PROGRESS:
-					var progressObj:Object = note.getBody() as Object;
-					trace('Processing ' + progressObj.processed + '/' + progressObj.total);
-					break;
-				case ApplicationFacade.LOGIN_SUCCESS:
-					trace( "LOGIN SUCCESSFUL" );
+                case ApplicationFacade.CONFIG_LOADED:
+                    trace( "CONFIG >>> Loading Complete" );
 					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
-					break;
-				case StartupMonitorProxy.RETRYING_LOAD_RESOURCE:
-					trace( "Retrying to load resource:" );
-                    break;
-                case StartupMonitorProxy.CALL_OUT_OF_SYNC_IGNORED:
-                    trace( "Abnormal State, Abort" );
-                    break;
-                case StartupMonitorProxy.LOADING_PROGRESS:
-					var perc:Number = note.getBody() as Number;
-					
-                    trace( "Loading Progress: " + perc + "%" );
-                    break;
-                case StartupMonitorProxy.LOADING_COMPLETE:
-                    trace( ">>> Loading Complete" );
-					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_LOGIN );
-                    break;
-                case StartupMonitorProxy.LOADING_FINISHED_INCOMPLETE:
-                    trace( "Loading Finished Incomplete" );
                     break;
 				
 				case ApplicationFacade.INJECTED:
-					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
-					break;	
+					sendNotification( ApplicationFacade.CONFIG_LOAD );
+					break;
+					
+				case StateMachine.CHANGED:
+					var stateName:String = State( note.getBody() ).name;
+            		trace(stateName);
+                    break;
+                case ApplicationFacade.PROCESS_PROGRESS:
+                	var obj:Object = note.getBody() as Object;
+                	trace('IMAGE PROCESSED::'+obj.processed+'/'+obj.total);
+                	break;
 			}
 		}
 		

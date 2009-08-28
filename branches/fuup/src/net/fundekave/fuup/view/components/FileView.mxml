@@ -22,6 +22,9 @@
 			private var thumbMaxHeight:Number = 140;
 			
 			[Bindable]
+			public var statusStr:String = '';
+			
+			[Bindable]
 			private var _fileVO:FileVO;
 			
 			public function get fileVO():FileVO {
@@ -161,6 +164,10 @@
 		</bit101:HBox>
 		
 		<bit101:PushButton label="Check resized" click="{showResized()}" />
+		<!-- result size -->
+		
+		<!-- status bar -->
+		<bit101:Label id="statusLbl" text="{statusStr}" />
 	</bit101:VBox>
 	
 </fu:Container>
