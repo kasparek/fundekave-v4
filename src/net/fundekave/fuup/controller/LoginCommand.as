@@ -1,6 +1,6 @@
 package net.fundekave.fuup.controller
 {
-	import net.fundekave.fuup.model.ConfigDataProxy;
+	import net.fundekave.fuup.model.ConfigProxy;
 	import net.fundekave.fuup.model.LoginProxy;
 	import net.fundekave.fuup.model.vo.LoginVO;
 	
@@ -11,7 +11,7 @@ package net.fundekave.fuup.controller
 	{
 		override public function execute ( note:INotification ) : void
 		{
-			var configProxy:ConfigDataProxy = facade.retrieveProxy( ConfigDataProxy.NAME ) as ConfigDataProxy;
+			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 			var proxy:LoginProxy = facade.retrieveProxy( LoginProxy.NAME ) as LoginProxy;
 			var serviceXML:XML = configProxy.getService( 'login' );
 			proxy.serviceUrl = String(serviceXML);

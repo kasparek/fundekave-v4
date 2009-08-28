@@ -1,7 +1,6 @@
 package net.fundekave.fuup.controller
 {
-	import net.fundekave.fuup.model.FileProxy;
-	import net.fundekave.fuup.model.LoginProxy;
+	import net.fundekave.fuup.model.*;
 	
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.command.SimpleCommand;
@@ -11,6 +10,7 @@ package net.fundekave.fuup.controller
 		override public function execute ( note:INotification ) : void
 		{
 
+			facade.registerProxy( new ConfigProxy() );
 			facade.registerProxy( new LoginProxy() );
 			facade.registerProxy( new FileProxy() );
 			

@@ -10,7 +10,6 @@ package net.fundekave.fuup.view
     
     import org.puremvc.as3.multicore.interfaces.INotification;
     import org.puremvc.as3.multicore.patterns.mediator.Mediator;
-    import org.puremvc.as3.multicore.utilities.startupmanager.model.StartupMonitorProxy;
     import org.puremvc.as3.multicore.utilities.statemachine.State;
     import org.puremvc.as3.multicore.utilities.statemachine.StateMachine;
     
@@ -36,11 +35,6 @@ package net.fundekave.fuup.view
 		{
 			return [
 				StateMachine.CHANGED,
-				StateConstants.STATE_LOGIN,
-				StateConstants.STATE_SETUP,
-				ApplicationFacade.LOGIN_SUCCESS,
-				StateConstants.STATE_INIT,
-				StartupMonitorProxy.LOADING_FINISHED_INCOMPLETE,
 				ApplicationFacade.SERVICE_ERROR
 			];
 		}
@@ -50,28 +44,21 @@ package net.fundekave.fuup.view
        		switch (note.getName())
        		{
        			case ApplicationFacade.SERVICE_ERROR:
-       			case StartupMonitorProxy.LOADING_FINISHED_INCOMPLETE:
-       				sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_INIT );
-       				//mainDisplay.loaderView.setState(LoaderView.STATE_NAME_SERVICEERROR);
-       				break;
-				case StateConstants.STATE_INIT:
-					mainDisplay.setState( MainDisplay.STATE_NAME_LOADER );
-					break;
-       			case StateConstants.STATE_LOGIN:
-       				mainDisplay.setState( MainDisplay.STATE_NAME_LOGIN );
-       				break;
-       			case StateConstants.STATE_SETUP:
-       				mainDisplay.setState( MainDisplay.STATE_NAME_FILES );
+       				sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
        				break;
        			case StateMachine.CHANGED:
             		stateName = State( note.getBody() ).name;
-            		trace('STATE::'+stateName);
+            		switch(stateName) {
+            			case StateConstants.STATE_SETUPING:
+            				mainDisplay.setState( MainDisplay.STATE_NAME_FILES );
+       					break;
+            		}
                     break;
        		}
        	}
                       
         protected function onServiceRetry( e:Event ):void {
-        	sendNotification( ApplicationFacade.LOAD_RESOURCES );
+        	sendNotification( ApplicationFacade.CONFIG_LOAD );
         } 
        	
 

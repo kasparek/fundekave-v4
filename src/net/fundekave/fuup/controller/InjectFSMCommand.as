@@ -22,27 +22,24 @@ package net.fundekave.fuup.controller
 		{
 			//FSM definition
 			//entering,exiting - notification sent on state transition
-			var fsm:XML = <fsm initial={StateConstants.STATE_INIT}>
-				<state name={StateConstants.STATE_INIT} changed={StateConstants.STATE_INIT}>
-					<transition action={ActionConstants.ACTION_LOGIN} target={StateConstants.STATE_LOGIN}/>
-					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUP}/>
+			var fsm:XML = <fsm initial={StateConstants.STATE_INITING}>
+				<state name={StateConstants.STATE_INITING}>
+					<transition action={ActionConstants.ACTION_LOGIN} target={StateConstants.STATE_LOGINING}/>
+					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
-			  	<state name={StateConstants.STATE_LOGIN} changed={StateConstants.STATE_LOGIN}>
-					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUP}/>
-					<transition action={ActionConstants.ACTION_INIT} target={StateConstants.STATE_INIT}/>
+			  	<state name={StateConstants.STATE_LOGINING}>
+					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
+					<transition action={ActionConstants.ACTION_INIT} target={StateConstants.STATE_INITING}/>
 				</state>
-				<state name={StateConstants.STATE_SETUP} changed={StateConstants.STATE_SETUP}>
-					<transition action={ActionConstants.ACTION_PROCESS} target={StateConstants.STATE_PROCESS}/>
+				<state name={StateConstants.STATE_SETUPING}>
+					<transition action={ActionConstants.ACTION_PROCESS} target={StateConstants.STATE_PROCESSING}/>
+					<transition action={ActionConstants.ACTION_UPLOAD} target={StateConstants.STATE_UPLOADING}/>
 				</state>
-				<state name={StateConstants.STATE_PROCESS} changed={StateConstants.STATE_PROCESS}>
-					<transition action={ActionConstants.ACTION_UPLOAD} target={StateConstants.STATE_UPLOAD}/>
+				<state name={StateConstants.STATE_PROCESSING} changed={ApplicationFacade.IMAGES_PROCESS}>
+					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
-				<state name={StateConstants.STATE_UPLOAD} changed={StateConstants.STATE_UPLOAD}>
-					<transition action={ActionConstants.ACTION_CHECK} target={StateConstants.STATE_CHECK}/>
-				</state>
-				<state name={StateConstants.STATE_CHECK} changed={StateConstants.STATE_CHECK}>
-				  <transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUP}/>
-				  <transition action={ActionConstants.ACTION_LOGIN} target={StateConstants.STATE_LOGIN}/>
+				<state name={StateConstants.STATE_UPLOADING} changed={ApplicationFacade.IMAGES_UPLOAD}>
+					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
 			</fsm> ;
 			
