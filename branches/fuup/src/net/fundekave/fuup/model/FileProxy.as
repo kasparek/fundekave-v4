@@ -34,9 +34,9 @@ package net.fundekave.fuup.model
         
         //---global settings
         [Bindable]
-        public var widthMax:Number = 700;
+        public var widthMax:Number = 500;
         [Bindable]
-        public var heightMax:Number = 700;
+        public var heightMax:Number = 500;
         [Bindable]
         public var outputQuality:Number = 80;
         
@@ -99,6 +99,10 @@ package net.fundekave.fuup.model
         
         private var baout:ByteArray;
         
+        public static function deg2rad(deg:Number):Number {
+			return deg * Math.PI / 180;
+		}
+        
         private function onImageReady(e:Event):void {
         	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
@@ -106,18 +110,43 @@ package net.fundekave.fuup.model
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
         	fileVO.renderer.statusStr = 'Processing';
         	
+  			fileVO.widthNew = Math.round(fileVO.widthNew);
+  			fileVO.heightNew = Math.round(fileVO.heightNew);
+  			var widthPostPro:int = fileVO.widthNew;
+  			var heightPostPro:int = fileVO.heightNew; 
+        	
         	var ratio:Number = fileVO.widthNew / fileVO.widthOriginal;
         	var matrix:Matrix = new Matrix();
   			matrix.scale( ratio, ratio );
-  			
-  			fileVO.widthNew = Math.round(fileVO.widthNew);
-  			fileVO.heightNew = Math.round(fileVO.heightNew);
+  			matrix.rotate( FileProxy.deg2rad( fileVO.rotation ) );
+  			switch(fileVO.rotation) {
+  				case 90:
+  				case 270:
+  					var tmp:int = heightPostPro;
+  					  					
+  					heightPostPro = Number(widthPostPro);
+  					widthPostPro = tmp;
+  					
+  					//matrix.translate(widthPostPro,heightPostPro);
+  					switch(fileVO.rotation) {
+  						case 90:
+  							matrix.translate(widthPostPro,0);
+  						break;
+  						case 270:
+  							matrix.translate(0,heightPostPro);
+  						break;
+  					}
+  				break;
+  				case 180:
+  					matrix.translate(widthPostPro,heightPostPro);
+  			}
   			
   			baout = new ByteArray();
  
-  			var bmpd:BitmapData = new BitmapData( fileVO.widthNew, fileVO.heightNew );	
+  			var bmpd:BitmapData = new BitmapData( widthPostPro, heightPostPro );	
   			bmpd.draw( image.content, matrix, null, null, null, true );
-			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, fileVO.widthNew, fileVO.heightNew) );			
+  			
+			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
 			baSource.position = 0;
 
 			al_jpegencoder.encodeAsync(onCompressFinished, baSource, baout, bmpd.width, bmpd.height, fileVO.outputQuality );
@@ -149,7 +178,7 @@ package net.fundekave.fuup.model
         //uploading
         private var service:URLLoader
         private var serviceURL:String;
-        private var chunkSize:int = 10000;
+        private var chunkSize:int = 20000;
         private var uploadLimit:int = 5;
         private var currentChunks:Array;
         public function uploadFiles():void {
@@ -169,7 +198,7 @@ package net.fundekave.fuup.model
 	        	var chunksNum:int = Math.ceil( encodedStr.length / chunkSize );
 	        	currentChunks = [];
 	        	for(var i:int=0;i < chunksNum; i++) {
-	        		currentChunks.push( '<data><chunk seq="'+i+'" to="'+chunksNum+'"><![CDATA['+encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )+']]></chunk></data>' );	
+	        		currentChunks.push( {filename:fileVO.filename ,seq:i,total:chunksNum,data:encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )} );	
 	        	}
 	        	
 	        	encodedStr = null;
@@ -202,7 +231,11 @@ package net.fundekave.fuup.model
 	        	serviceLoc.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
         		
         		var vars:URLVariables = new URLVariables();
-     			vars.data = currentChunks.shift(); 
+        		var dataObj:Object = currentChunks.shift();
+     			vars.data = dataObj.data;  
+     			vars.seq = dataObj.seq;
+     			vars.total = dataObj.total;
+     			vars.filename = dataObj.filename;
         		
 				var req:URLRequest = new URLRequest( serviceURL );
 				req.method = 'POST';
