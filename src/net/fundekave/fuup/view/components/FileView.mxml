@@ -98,11 +98,14 @@
 			private function rotate(dgDiff:Number):void {
 				rotateTo += dgDiff;
 				
-				TweenLite.to( _fileVO, 0.5, {rotation:rotateTo, ease:Quad.easeInOut} );
+				TweenLite.to( _fileVO, 0.5, {rotation:rotateTo, ease:Quad.easeInOut, onComplete:onRotateTween} );
 				
-				if(rotateTo > 360) rotateTo -= 360;
-				if(rotateTo < -360) rotateTo += 360;  
+				if(rotateTo >= 360) rotateTo -= 360;
+				if(rotateTo < 0) rotateTo += 360;  
 				
+			}
+			private function onRotateTween():void {
+				_fileVO.rotation = Number(rotateTo);
 			}
 			
 			private var inheritWasTrue:Boolean = false;
@@ -143,6 +146,8 @@
 		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" width="{wThumb/2}" height="{hThumb/2}" />
 	</fu:Container>
 	
+	<bit101:PushButton x="{this.width - 100}" label="Remove" click="{this.removeChild(this)}" />
+	
 	<bit101:VBox x="200">
 		<bit101:HBox>
 			<bit101:Label text="Filename:" />
@@ -159,8 +164,9 @@
 		
 		<bit101:HBox>
 			<bit101:Label text="Rotation:" />
-			<bit101:PushButton click="{rotate(-90)}" label="CW" />
-			<bit101:PushButton click="{rotate(90)}" label="CCW" />
+			<bit101:PushButton click="{rotate(90)}" label="CW" />
+			<bit101:PushButton click="{rotate(-90)}" label="CCW" />
+			<bit101:Label text="{_fileVO.rotation}" />
 		</bit101:HBox>
 		
 		<bit101:PushButton label="Check resized" click="{showResized()}" />
