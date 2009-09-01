@@ -12,6 +12,9 @@
     	  	public static const ACTION_PROCESS:String = 'actionProcess';
     	  	public static const ACTION_UPLOAD:String = 'actionUpload';
     	  	
+    	  	[Bindable]
+    	  	public var globalProgressLabel:String = 'Loading';
+    	  	
     	  	private var fileRefList:FileReferenceList
 			private function browseFiles():void {
 				fileRefList = new FileReferenceList();
@@ -62,7 +65,7 @@
 			<bit101:PushButton id="processButt" click="{doAction(ACTION_PROCESS)}" label="Process" />
 			<bit101:PushButton id="uploadButt" click="{doAction(ACTION_UPLOAD)}" label="Upload" />
 			<!-- global progress bar -->
-			<bit101:ProgressBar id="globalProgressBar" label="Processing" visible="true" width="275" height="20" value="30" maximum="100" />
+			<bit101:ProgressBar id="globalProgressBar" label="{globalProgressLabel}" visible="true" width="275" height="20" value="30" maximum="100" />
 		</bit101:HBox>
 		<!--
 		<bit101:HBox>
