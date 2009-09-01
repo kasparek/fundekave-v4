@@ -4,6 +4,7 @@ package net.fundekave
     
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.display.Sprite;
     import flash.events.Event;
 
     [DefaultProperty( "children" )]
@@ -11,6 +12,10 @@ package net.fundekave
     {
         private var _children:Vector.<DisplayObject>;
         private var childrenChanged:Boolean = false;
+        
+        public var backgroundColor:Number;
+        public var masked:Boolean = false;
+        public var border:int = 0;
         
         /**
          * Array of DisplayObject instances to be added as children
@@ -37,6 +42,7 @@ package net.fundekave
         
         override protected function onInvalidate(event:Event) : void
         {
+        	
             if ( childrenChanged )
             {
                 while ( numChildren > 0 )
@@ -51,6 +57,25 @@ package net.fundekave
                 
                 childrenChanged = false;
             }
+            
+            //---create mask
+        	if(masked === true) {
+				mask = new Sprite();
+				(mask as Sprite).graphics.beginFill(0x000000);
+				(mask as Sprite).graphics.drawRect(0,0,this.width+border, this.height+border);
+				(mask as Sprite).graphics.endFill();
+				this.addChild( mask );
+				//this.mask = mask;
+        	}
+        	if(!isNaN(backgroundColor)) {
+        		this.graphics.beginFill(backgroundColor);
+        		this.graphics.drawRect(0,0,this.width,this.height);
+        		this.graphics.endFill();
+        	}
+        	if(border>0) {
+        		this.graphics.lineStyle(border,0x000000);
+        		this.graphics.drawRect(0,0,this.width,this.height);
+        	}
             
             super.onInvalidate(event);
         }

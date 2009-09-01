@@ -6,9 +6,8 @@ package net.fundekave.fuup.controller
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.command.SimpleCommand;
 
-	public class ProcessFilesCommand extends SimpleCommand implements ICommand
+	public class ImagesProcessFilesCommand extends SimpleCommand implements ICommand
 	{
-		
 		
 		override public function execute(notification:INotification):void
 		{
@@ -17,7 +16,6 @@ package net.fundekave.fuup.controller
 				proxy.processFiles();
 			}
 		}
-		
 		
 	}
 }

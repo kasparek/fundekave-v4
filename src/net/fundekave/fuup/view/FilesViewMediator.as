@@ -48,10 +48,12 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onSettingsChange(e:Event):void {
+			/*
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			proxy.widthMax = Number( filesView.newWidthInput.text );
 			proxy.heightMax = Number( filesView.newHeightInput.text );
 			proxy.updateFiles();
+			*/
 		}
 		
 		protected function onProcess(e:Event):void {
@@ -59,7 +61,11 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onUpload(e:Event):void {
-			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_UPLOAD );
+			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+			//---check if there are some files processed ready for upload
+			if(proxy.fileList.length > 0) {
+				sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_UPLOAD );
+			}
 		}
 		
 		protected function get filesView():FilesView

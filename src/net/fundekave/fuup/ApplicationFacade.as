@@ -1,6 +1,5 @@
 package net.fundekave.fuup
 {
-	import net.fundekave.fuup.common.constants.StateConstants;
 	import net.fundekave.fuup.controller.*;
 	
 	import org.puremvc.as3.multicore.patterns.facade.Facade;
@@ -31,7 +30,10 @@ package net.fundekave.fuup
 		//---processing
 		public static const PROCESS_PROGRESS:String		= 'processProgress';
 		
+		public static const IMAGES_CHECK_FOR_PROCESSING:String = 'imagesCheckForProcessing';
 		public static const IMAGES_PROCESS:String		= 'imagesProcess';
+		
+		public static const IMAGES_CHECK_FOR_UPLOADING:String = 'imagesCheckForUploading';
 		public static const IMAGES_UPLOAD:String		= 'imagesUpload'; 
 		 
 	 	public function ApplicationFacade( key:String )
@@ -62,7 +64,10 @@ package net.fundekave.fuup
 			
 			registerCommand( LOGIN, LoginCommand);
 			
-			registerCommand( IMAGES_PROCESS, ProcessFilesCommand );
+			registerCommand( IMAGES_CHECK_FOR_PROCESSING, ImagesCheckForProcessingCommand );
+			registerCommand( IMAGES_PROCESS, ImagesProcessFilesCommand );
+			
+			registerCommand( IMAGES_CHECK_FOR_UPLOADING, ImagesCheckForUploading );
 			registerCommand( IMAGES_UPLOAD, UploadFilesCommand );
 		}
 	}

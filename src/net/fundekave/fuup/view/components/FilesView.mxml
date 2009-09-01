@@ -2,9 +2,11 @@
 <fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 
 	xmlns:bit101="com.bit101.components.*"
-	xmlns:components="net.fundekave.fuup.view.components.*">
+	xmlns:components="net.fundekave.fuup.view.components.*"
+	>
     	  <fx:Script>
     	  	<![CDATA[
+    	  		import com.dncompute.canvas.BrowserCanvas;
    	  	
     	  	public static const SETTINGS_CHANGE:String = 'settingsChange';
     	  	public static const ACTION_PROCESS:String = 'actionProcess';
@@ -29,6 +31,19 @@
 					}
 				}
 				
+				filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+				
+			}
+			
+			private function onResize(e:Event):void {
+				filesBox.removeEventListener(Event.ENTER_FRAME, onResize);
+				
+				globalProgressBar.label = String(filesBox.height);
+				
+				var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
+				resizeCanvas.height = String( filesBox.height + 35 );
+				resizeCanvas.width = '100%';
+
 			}
 
 			private function doAction(actionStr:String):void {
@@ -41,28 +56,25 @@
 
     	  	]]>
     	  </fx:Script>
-    <fu:Container  width="{Fuup.WIDTH}" height="50">
-    	
-    	<bit101:VBox>
-    		<bit101:HBox>
-    			<bit101:Label text="Select files:" />
-    			<bit101:PushButton id="selectFilesButt" click="{browseFiles()}" label="Browse" />
-    		</bit101:HBox>
-    		<bit101:HBox>
-    			<bit101:Label text="Max size:" />
-    			<bit101:Label text="Width" />
-				<bit101:InputText id="newWidthInput" restrict="[0-9]" text="700" width="40" height="17" />
-				<bit101:Label text="Height" />
-				<bit101:InputText id="newHeightInput" restrict="[0-9]" text="700" width="40" height="17" />
-			</bit101:HBox>
-    	</bit101:VBox>
-    	<bit101:VBox x="250">
-    		<bit101:PushButton id="processButt" click="{doAction(ACTION_PROCESS)}" label="Process" />
-    		<bit101:PushButton id="uploadButt" click="{doAction(ACTION_UPLOAD)}" label="Upload" />
-    	</bit101:VBox>
-    	
-    </fu:Container>
+	<fu:Container height="25">
+		<bit101:HBox y="5" x="5">
+			<bit101:PushButton id="selectFilesButt" click="{browseFiles()}" label="Select files" />
+			<bit101:PushButton id="processButt" click="{doAction(ACTION_PROCESS)}" label="Process" />
+			<bit101:PushButton id="uploadButt" click="{doAction(ACTION_UPLOAD)}" label="Upload" />
+			<!-- global progress bar -->
+			<bit101:ProgressBar id="globalProgressBar" label="Processing" visible="true" width="275" height="20" value="30" maximum="100" />
+		</bit101:HBox>
+		<!--
+		<bit101:HBox>
+			<bit101:Label text="Max size:" />
+			<bit101:Label text="Width" />
+			<bit101:InputText id="newWidthInput" restrict="[0-9]" text="700" width="40" height="17" />
+			<bit101:Label text="Height" />
+			<bit101:InputText id="newHeightInput" restrict="[0-9]" text="700" width="40" height="17" />
+		</bit101:HBox>
+		-->
+	</fu:Container>
     
-	<bit101:VBox id="filesBox" y="50" width="{Fuup.WIDTH}" height="{Fuup.HEIGHT-50}" mouseChildren="true"	/>
+	<bit101:VBox id="filesBox" x="5" y="30" width="{Fuup.WIDTH-10}" mouseChildren="true" />
 	
 </fu:Container>
