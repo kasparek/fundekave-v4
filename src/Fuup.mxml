@@ -7,12 +7,14 @@ TODO:
 - remove when upload done
 - do 3x retry when uploading on each section
 - show error when upload fail
+- show global progress - loading files
 - show global progres on processing
 - show global progress on uploading
 - dynamic resizing for height
 - icons for close, rotate left/right, show detail
 - TODO: application singleton
 - FIX: browser canvas to retrieve stage from application
+- postprocessing - auto levels, sharpen, improve - take from fuvatar
 -->
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 
@@ -32,6 +34,6 @@ TODO:
 		]]>
 	</fx:Script>
 	
-	<components:MainDisplay width="{Fuup.WIDTH}" height="{Fuup.HEIGHT}" id="mainDisplay" />
+	<components:MainDisplay width="{Fuup.WIDTH}" id="mainDisplay" />
 	
 </fu:Application>
