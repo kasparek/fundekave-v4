@@ -73,6 +73,8 @@ package com.bit101.components
 			_bar.y = 1;
 			_bar.filters = [getShadow(1)];
 			addChild(_bar);
+			
+			_label = new Label(this,0,0,'',0xffffff);
 		}
 		
 		/**
@@ -106,6 +108,9 @@ package com.bit101.components
 			_bar.graphics.drawRect(0, 0, _width - 2, _height - 2);
 			_bar.scaleX = 0;
 			_bar.graphics.endFill();
+			
+			_label.autoSize = true;
+			_label.move(_width / 2 - _label.width / 2, _height / 2 - _label.height / 2);
 		}
 		
 		
@@ -144,6 +149,11 @@ package com.bit101.components
 		public function get value():Number
 		{
 			return _value;
+		}
+		
+		private var _label:Label;
+		public function set label(l:String):void {
+			_label.text = l;
 		}
 		
 	}

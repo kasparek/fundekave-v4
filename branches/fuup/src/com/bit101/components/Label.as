@@ -39,6 +39,8 @@ package com.bit101.components
 		private var _text:String = "";
 		private var _tf:TextField;
 		
+		public var color:Number;
+		
 		/**
 		 * Constructor
 		 * @param parent The parent DisplayObjectContainer on which to add this Label.
@@ -46,9 +48,10 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The string to use as the initial text in this component.
 		 */
-		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "")
+		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:Number=NaN)
 		{
 			_text = text;
+			this.color = color;
 			super(parent, xpos, ypos);
 		}
 		
@@ -73,7 +76,7 @@ package com.bit101.components
 			_tf.embedFonts = true;
 			_tf.selectable = false;
 			_tf.mouseEnabled = false;
-			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, Style.LABEL_TEXT);
+			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, (!isNaN(this.color))?(this.color):(Style.LABEL_TEXT));
 			_tf.text = _text;			
 			addChild(_tf);
 			draw();

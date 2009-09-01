@@ -33,6 +33,6 @@
       
     <!-- <components:LoginView id="loginView" visible="false" creationComplete="{dispatchEvent( new Event( STATE_COMPLETE ) )}"/> -->
     
-    <components:FilesView id="filesView" width="{Fuup.WIDTH}" height="{Fuup.HEIGHT}" visible="false" />
+    <components:FilesView id="filesView" width="{Fuup.WIDTH}" height="{Fuup.HEIGHT}" visible="false" backgroundColor="0xeeeeee" />
     
 </fu:Container>
