@@ -10,7 +10,6 @@ package net.fundekave.fuup.model
       import flash.events.SecurityErrorEvent;
       import flash.geom.Matrix;
       import flash.geom.Rectangle;
-      import flash.net.URLLoader;
       import flash.net.URLVariables;
       import flash.utils.ByteArray;
       import flash.utils.setTimeout;
@@ -21,6 +20,7 @@ package net.fundekave.fuup.model
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
+      import net.fundekave.lib.ImageFiltering;
       import net.fundekave.lib.Service;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
@@ -113,6 +113,12 @@ package net.fundekave.fuup.model
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
         	fileVO.renderer.statusStr = 'Processing';
+        	
+        	//---filtering
+        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+        	if(configProxy.filters.length() > 0) {
+        		var imageFil:ImageFiltering = new ImageFiltering( configProxy.filters );
+        	}
         	
   			fileVO.widthNew = Math.round(fileVO.widthNew);
   			fileVO.heightNew = Math.round(fileVO.heightNew);

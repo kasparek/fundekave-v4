@@ -16,6 +16,9 @@ package net.fundekave.fuup.model
 		
 		private var dataXML:XML;
 		
+		public var filters:XMLList
+		public var lang:Object;
+		
 		public function ConfigProxy()
 		{
 			super( NAME );
@@ -38,6 +41,14 @@ package net.fundekave.fuup.model
 		private function loaderCompleteHandler(event:Event):void {
 			try {
 				dataXML = new XML( event.target.data );
+				
+				filters = dataXML..Filter;
+				
+				lang = {};
+				for each(var l:XML in dataXML..Lang.Item) {
+					lang[l.@name] = String(l);
+				}
+				
 			} catch (e:Error) {
 				trace(e.toString());
 				sendNotification( ApplicationFacade.CONFIG_FAILED );
