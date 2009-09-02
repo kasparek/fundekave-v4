@@ -74,7 +74,7 @@ package com.bit101.components
 			_bar.filters = [getShadow(1)];
 			addChild(_bar);
 			
-			_label = new Label(this,0,0,'',0xffffff);
+			_label = new Label(this,0,0,'');
 		}
 		
 		/**

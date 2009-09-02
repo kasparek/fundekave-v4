@@ -27,6 +27,12 @@ package net.fundekave.fuup
 		public static const LOGIN_SUCCESS:String 	    = 'loginSuccess';
 		public static const LOGIN_FAILED:String 	    = 'loginFailed';
 		
+		//---global progress
+		public static const GLOBAL_PROGRESS_INIT:String = 'globalProgressInit';
+		
+		//---file management
+		public static const FILE_DELETE:String			= 'fileDelete';
+		
 		//---processing
 		public static const PROCESS_PROGRESS:String		= 'processProgress';
 		
@@ -63,6 +69,8 @@ package net.fundekave.fuup
 			registerCommand( CONFIG_LOAD, LoadConfigCommand );
 			
 			registerCommand( LOGIN, LoginCommand);
+			
+			registerCommand( FILE_DELETE, FileDelete );
 			
 			registerCommand( IMAGES_CHECK_FOR_PROCESSING, ImagesCheckForProcessingCommand );
 			registerCommand( IMAGES_PROCESS, ImagesProcessFilesCommand );

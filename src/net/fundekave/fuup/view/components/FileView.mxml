@@ -15,6 +15,7 @@
 			
 			public static const FILE_CREATED:String = 'fileCreated';
 			public static const SETTINGS_INHERIT:String = 'settingsInherit';
+			public static const FILE_REMOVE:String = 'fileRemove';
 			
 			[Bindable]
 			private var thumbMaxWidth:Number = 140;
@@ -142,6 +143,12 @@
 				image.parent.removeChild( image );
 			}
 			
+			public function removeView():void {
+				
+				this.parent.removeChild( this );
+				
+			}
+			
 		]]>
 	</fx:Script>
 	<!--
@@ -153,7 +160,7 @@
 		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" width="{wThumb/2}" height="{hThumb/2}" />
 	</fu:Container>
 	
-	<bit101:PushButton x="{this.width - 40}" width="30" label="x" click="{this.parent.removeChild(this)}" />
+	<bit101:PushButton x="{this.width - 40}" width="30" label="x" click="{dispatchEvent(new Event(FILE_REMOVE,true));}" />
 	
 	<bit101:VBox x="200">
 		<bit101:HBox>

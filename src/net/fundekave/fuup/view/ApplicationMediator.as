@@ -2,6 +2,7 @@ package net.fundekave.fuup.view
 {
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.common.constants.ActionConstants;
+	import net.fundekave.fuup.common.constants.StateConstants;
 	
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.mediator.Mediator;
@@ -28,7 +29,6 @@ package net.fundekave.fuup.view
 		{
 			return [ApplicationFacade.INJECTED,
 					ApplicationFacade.LOGIN_SUCCESS,
-					ApplicationFacade.PROCESS_PROGRESS,
 					ApplicationFacade.CONFIG_LOADED,
 					StateMachine.CHANGED
 					];
@@ -51,11 +51,15 @@ package net.fundekave.fuup.view
 				case StateMachine.CHANGED:
 					var stateName:String = State( note.getBody() ).name;
             		trace(stateName);
+            		switch(stateName) {
+            			case StateConstants.STATE_PROCESSING:
+            				sendNotification( ApplicationFacade.IMAGES_PROCESS );
+            			break;
+            			case StateConstants.STATE_UPLOADING:
+            				sendNotification( ApplicationFacade.IMAGES_UPLOAD );
+            			break;
+            		}
                     break;
-                case ApplicationFacade.PROCESS_PROGRESS:
-                	var obj:Object = note.getBody() as Object;
-                	trace('IMAGE PROCESSED::'+obj.processed+'/'+obj.total);
-                	break;
 			}
 		}
 		
