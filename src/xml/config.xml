@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Fudebu>
-<Config>
-<Services>
-<Service name="login">http://localhost/fuup/login.xml</Service>
-<Service name="files">http://localhost/fuup/files.php</Service>
-<Service name="gallery">http://localhost/fuup/gallery.xml</Service>
-</Services>
-</Config>
-</Fudebu>
+<Fuup>
+	<Config>
+		<Services>
+			<Service name="login">http://localhost/fuup/login.xml</Service>
+			<Service name="files">http://localhost/fuup/files.php</Service>
+			<Service name="gallery">http://localhost/fuup/gallery.xml</Service>
+		</Services>
+	</Config>
+	<Filters>
+		<Filter id="sharpen" type="convol" enabled="1" visible="0">
+			<name>Sharpen</name>
+			<matrix>0,-1,0,-1,5,-1,0,-1,0</matrix>
+			<divisor>1</divisor>
+			<bias>0</bias>
+		</Filter>
+		<Filter id="convoenhance" type="convol" enabled="1" visible="0">
+			<name>Convol Enhance</name>
+			<matrix>0,-2,0,-2,20,-2,0,-2,0</matrix>
+			<divisor>10</divisor>
+			<bias>-40</bias>
+		</Filter>
+		<Filter id="colorenhance" type="color" enabled="1" visible="0">
+			<name><![CDATA[Color Enhance]]></name>
+			<matrix>
+				1.3,0,0,0,0,0,1.2,0,0,0,0,0,1.3,0,0,0,0,0,1,0
+			</matrix>
+		</Filter>
+	</Filters>
+	<Lang>
+		<Item name="process"><![CDATA[Zpracovat]]></Item>
+		<Item name="upload"><![CDATA[Nahrat]]></Item>
+	</Lang>
+</Fuup>
