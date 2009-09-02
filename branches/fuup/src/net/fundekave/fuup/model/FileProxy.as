@@ -7,10 +7,10 @@ package net.fundekave.fuup.model
       import flash.display.Loader;
       import flash.events.Event;
       import flash.events.IOErrorEvent;
+      import flash.events.SecurityErrorEvent;
       import flash.geom.Matrix;
       import flash.geom.Rectangle;
       import flash.net.URLLoader;
-      import flash.net.URLRequest;
       import flash.net.URLVariables;
       import flash.utils.ByteArray;
       import flash.utils.setTimeout;
@@ -21,6 +21,7 @@ package net.fundekave.fuup.model
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
+      import net.fundekave.lib.Service;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
       import org.puremvc.as3.multicore.patterns.proxy.Proxy;
@@ -75,6 +76,9 @@ package net.fundekave.fuup.model
         
         //---processing
         private var currentFile:int = 0;
+        private var currentChunk:int = 0;
+        private var numChunks:int = 0;
+        
         
         public function processFiles():void {
         	currentFile = 0;
@@ -89,7 +93,7 @@ package net.fundekave.fuup.model
         		var image:Loader = new Loader();
         		image.loadBytes( fileVO.file.data );
         		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady );
-        		fileVO.renderer.addChild( image ); 
+        		fileVO.renderer.addChild( image );
         		
         	} else {
         		//---processing done
@@ -176,13 +180,14 @@ package net.fundekave.fuup.model
         }
         
         //uploading
-        private var service:URLLoader
         private var serviceURL:String;
-        private var chunkSize:int = 20000;
-        private var uploadLimit:int = 5;
+        public var chunkSize:int = 5000;
+        private var uploadLimit:int = 3;
         private var currentChunks:Array;
+        private var chunksUploading:int = 0
         public function uploadFiles():void {
         	currentFile = 0;
+        	currentChunk = 0;
         	uploadFile();
         }
         
@@ -195,40 +200,43 @@ package net.fundekave.fuup.model
         		b64enc.encodeBytes( fileVO.encodedJPG );
         		var encodedStr:String = b64enc.toString();
         	
+        		//---prepare all chunks
 	        	var chunksNum:int = Math.ceil( encodedStr.length / chunkSize );
 	        	currentChunks = [];
 	        	for(var i:int=0;i < chunksNum; i++) {
 	        		currentChunks.push( {filename:fileVO.filename ,seq:i,total:chunksNum,data:encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )} );	
 	        	}
 	        	
-	        	encodedStr = null;
+	        	currentChunk = 0;
+	        	numChunks = Number(currentChunks.length);
 	        	
-	        	service = new URLLoader();
-	        	service.addEventListener(Event.COMPLETE, onServiceComplete );
-	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
+	        	encodedStr = null;
 	        	 
 	        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 	        	serviceURL = String( configProxy.getService('files') );
 	        	
 	        	upload();
-	        	//---take chunks
-	        	//---checking progress
-        		//---when finishid send another chunks
+	        	
         	} else {
+        		
         		//---upload complete
         		trace('UPLOAD COMPLETE');
         		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
+        		
         	}
         }
         
-        private var chunksUploading:int = 0
+        
         public function upload():void        
         {
-        	while(currentChunks.length > 0 && chunksUploading < uploadLimit) {
+        	if(currentChunks.length > 0 && chunksUploading < uploadLimit) {
         		
-        		var serviceLoc:URLLoader = new URLLoader();
-	        	serviceLoc.addEventListener(Event.COMPLETE, onServiceComplete );
-	        	serviceLoc.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
+        		//---prepare service
+	        	var service:Service = new Service();
+	        	service.addEventListener(Event.COMPLETE, onServiceComplete );
+	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
+	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
+	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
         		
         		var vars:URLVariables = new URLVariables();
         		var dataObj:Object = currentChunks.shift();
@@ -237,23 +245,48 @@ package net.fundekave.fuup.model
      			vars.total = dataObj.total;
      			vars.filename = dataObj.filename;
         		
-				var req:URLRequest = new URLRequest( serviceURL );
-				req.method = 'POST';
-				req.data = vars;
-				serviceLoc.load( req );
-				trace('CHUNK::UPLOADING::rest::'+String(currentChunks.length));
+        		service.url = serviceURL;
+        		service.variables = vars; 
+				service.send();
+				
 				chunksUploading++;
+				
+				trace('CHUNK::UPLOADING::file::'+String(currentFile)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
+				
+				//---start more chunks if uploadLimit
+				setTimeout( upload, 200 );
         	}
         }
         private function onServiceComplete(e:Event):void
-        {       
+        {   
+        	
+        	var service:Service = e.target as Service;
+	        
+	        if(service.data != '1') {
+	        	trace('SERVICE RETURN ERROR::ANOTHER ATTEMPT');
+	        	service.failed();
+	        	return;
+	        }
+	        
+	        service.removeEventListener(Event.COMPLETE, onServiceComplete );
+	        service.removeEventListener(IOErrorEvent.IO_ERROR, onServiceError );
+	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
+	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
+        	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;  
 			chunksUploading--;
-			trace('CHUNK::DONE::rest::'+String(currentChunks.length));
+			currentChunk++;
+			
+			trace('CHUNK::DONE::file::'+String(currentFile)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
+			
 			if(chunksUploading < uploadLimit && currentChunks.length > 0) {
 				upload();
 			}
-			if(chunksUploading==0 && currentChunks.length == 0) {
+			
+			//---send progress
+        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: currentFile + (currentChunk/numChunks) } );
+			
+			if(chunksUploading == 0 && currentChunks.length == 0) {
 				//---upload done
         		trace('FILE COMPLETE');
         		fileVO.renderer.statusStr = 'Upload DONE';
@@ -261,12 +294,28 @@ package net.fundekave.fuup.model
         		currentFile++;
         		uploadFile();
 			}
+			
         }
    
         private function onServiceError(e:Event):void
         {
-        	trace('Connection Error');
-  			sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
-        }       
+        	var service:Service = e.target as Service;
+        	service.failed();
+        	
+        	trace('Connection Error::another attempt');
+  			
+        }
+        
+        private function onServiceTotalError(e:Event):void {
+        	trace('TOTAL SERVICE ERROR');
+        	
+        	var service:Service = e.target as Service;
+        	service.removeEventListener(Event.COMPLETE, onServiceComplete );
+	        service.removeEventListener(IOErrorEvent.IO_ERROR, onServiceError );
+	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
+	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
+        	
+        	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
+        }      
 	}
 }

@@ -3,17 +3,27 @@
 	xmlns:fu="net.fundekave.*" 
 	xmlns:bit101="com.bit101.components.*"
 	xmlns:components="net.fundekave.fuup.view.components.*"
+	addedToStage="{addedToStage()}"
 	>
     	  <fx:Script>
     	  	<![CDATA[
+    	  		import mx.formatters.SwitchSymbolFormatter;
+    	  		import flash.utils.setTimeout;
     	  		import com.dncompute.canvas.BrowserCanvas;
+    	  		
+    	  	public static const RESIZE:String = 'resize';
    	  	
     	  	public static const SETTINGS_CHANGE:String = 'settingsChange';
     	  	public static const ACTION_PROCESS:String = 'actionProcess';
     	  	public static const ACTION_UPLOAD:String = 'actionUpload';
     	  	
-    	  	[Bindable]
-    	  	public var globalProgressLabel:String = 'Loading';
+    	  	public static const PROGRESS_LABEL_LOADING:String = 'Loading';
+    	  	public static const PROGRESS_LABEL_PROCESSING:String = 'Processing';
+    	  	public static const PROGRESS_LABEL_UPLOADING:String = 'Uploading';
+    	  	
+    	  	private function addedToStage():void {
+    	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+    	  	}
     	  	
     	  	private var fileRefList:FileReferenceList
 			private function browseFiles():void {
@@ -21,32 +31,71 @@
 				fileRefList.addEventListener(Event.SELECT, onFilesSelect );
 				fileRefList.browse([new FileFilter("Images [jpg,gif,png]", "*.jpg;*.gif;*.png")]);
 			}
-
+			private var filesArr:Array;
 			private function onFilesSelect(e:Event):void {
 			
-				var filesArr:Array = (e.target as FileReferenceList).fileList;
-				if(filesArr.length > 0) {
-					var fileView:FileView
-					for each(var file:FileReference in  filesArr) {
-						fileView = new FileView();
-						filesBox.addChild( fileView );
-						fileView.file = file;
-					}
-				}
+				filesArr = (e.target as FileReferenceList).fileList;
 				
-				filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+				//---init global progress bar
+				globalProgressBar.visible = true;
+				globalProgressBar.maximum = filesArr.length;
+				globalProgressBar.value = 0;
+				globalProgressBar.label = PROGRESS_LABEL_LOADING; 
+				
+				populateFiles();
 				
 			}
 			
+			private function populateFiles():void {
+				if(filesArr.length > 0) {
+					var file:FileReference = filesArr.shift();
+					var fileView:FileView = new FileView();
+					filesBox.addChild( fileView );
+					//---wait till filesBox is resized with new element
+					currFileView = fileView;
+					currFile = file;
+					this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+				}
+			}
+			
+			private var currFileView:FileView;
+			private var currFile:FileReference;
+			private function onFileViewFrame(e:Event):void {
+				this.removeEventListener(FilesView.RESIZE, onFileViewFrame );
+				fileLater( currFileView, currFile );
+			}
+			
+			private function fileLater(fileView:FileView, file:FileReference):void {
+				fileView.file = file;
+				fileView.addEventListener( FileView.FILE_CREATED, onFileCreated );
+			}
+			
+			private function onFileCreated(e:Event):void {
+				var fileView:FileView = e.target as FileView;
+				fileView.removeEventListener( FileView.FILE_CREATED, onFileCreated );
+				globalProgressBar.value = Number(globalProgressBar.value + 1);
+				if(globalProgressBar.value == globalProgressBar.maximum) {
+					//---hide progress bar
+					globalProgressBar.visible = false;
+				}
+				populateFiles();
+			}
+			
+			private var fileBoxHeight:int = 0;
 			private function onResize(e:Event):void {
-				filesBox.removeEventListener(Event.ENTER_FRAME, onResize);
+				//filesBox.removeEventListener(Event.ENTER_FRAME, onResize);
+				if( filesBox.height != fileBoxHeight) {
+					fileBoxHeight = filesBox.height; 
 				
-				globalProgressBar.label = String(filesBox.height);
-				
-				var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
-				resizeCanvas.height = String( filesBox.height + 35 );
-				resizeCanvas.width = '100%';
-
+					var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
+					var newHeight:String = String( filesBox.height + Fuup.HEIGHT );
+					resizeCanvas.height = newHeight; 
+					resizeCanvas.width = '100%';
+					
+					trace('NEWSIZE::' + newHeight);
+					
+					dispatchEvent( new Event(RESIZE) );
+				}
 			}
 
 			private function doAction(actionStr:String):void {
@@ -65,7 +114,7 @@
 			<bit101:PushButton id="processButt" click="{doAction(ACTION_PROCESS)}" label="Process" />
 			<bit101:PushButton id="uploadButt" click="{doAction(ACTION_UPLOAD)}" label="Upload" />
 			<!-- global progress bar -->
-			<bit101:ProgressBar id="globalProgressBar" label="{globalProgressLabel}" visible="true" width="275" height="20" value="30" maximum="100" />
+			<bit101:ProgressBar id="globalProgressBar" visible="false" width="275" height="20" maximum="100" />
 		</bit101:HBox>
 		<!--
 		<bit101:HBox>

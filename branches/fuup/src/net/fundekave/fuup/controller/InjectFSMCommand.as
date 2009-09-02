@@ -35,10 +35,10 @@ package net.fundekave.fuup.controller
 					<transition action={ActionConstants.ACTION_PROCESS} target={StateConstants.STATE_PROCESSING}/>
 					<transition action={ActionConstants.ACTION_UPLOAD} target={StateConstants.STATE_UPLOADING}/>
 				</state>
-				<state name={StateConstants.STATE_PROCESSING} entering={ApplicationFacade.IMAGES_CHECK_FOR_PROCESSING} changed={ApplicationFacade.IMAGES_PROCESS}>
+				<state name={StateConstants.STATE_PROCESSING} entering={ApplicationFacade.IMAGES_CHECK_FOR_PROCESSING}>
 					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
-				<state name={StateConstants.STATE_UPLOADING} entering={ApplicationFacade.IMAGES_CHECK_FOR_UPLOADING} changed={ApplicationFacade.IMAGES_UPLOAD}>
+				<state name={StateConstants.STATE_UPLOADING} entering={ApplicationFacade.IMAGES_CHECK_FOR_UPLOADING}>
 					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
 			</fsm> ;

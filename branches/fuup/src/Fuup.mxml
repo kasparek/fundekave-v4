@@ -15,6 +15,7 @@ TODO:
 - TODO: application singleton
 - FIX: browser canvas to retrieve stage from application
 - postprocessing - auto levels, sharpen, improve - take from fuvatar
+- handle total service error
 -->
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 
@@ -24,7 +25,7 @@ TODO:
 	<fx:Script>
 		<![CDATA[
 			public static const WIDTH:int = 600;
-			public static const HEIGHT:int = 800;
+			public static const HEIGHT:int = 35;
 			import net.fundekave.fuup.ApplicationFacade;
 			public static const NAME:String = "fudeup";
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance( NAME );

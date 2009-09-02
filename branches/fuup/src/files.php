@@ -1,4 +1,11 @@
 <?php
+sleep(rand(5,10)/5);
+$r = rand(1,3);
+if($r==2) {
+echo 'died';
+die();
+}
+
 $data = $_POST['data'];
 $seq = (int)  $_POST['seq'];
 $total = (int)  $_POST['total'];
@@ -6,7 +13,7 @@ $filename = $_POST['filename'];
 if(!empty($data)) {
 
 file_put_contents('chunks/chunk-'.$filename.'-'.$seq.'.txt',$data);
-
+		
 }
 
 $allExists = true; 
@@ -28,3 +35,5 @@ if($allExists === true) {
 
 	file_put_contents($filename.'.jpg',base64_decode( $encData ));
 }
+
+echo 1;
