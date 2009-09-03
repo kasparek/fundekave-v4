@@ -3,6 +3,13 @@ package net.fundekave.fuup.model
 
       import cmodule.jpegencoder.CLibInit;
       
+      import de.popforge.imageprocessing.core.Image;
+      import de.popforge.imageprocessing.core.ImageFormat;
+      import de.popforge.imageprocessing.filters.color.ContrastCorrection;
+      import de.popforge.imageprocessing.filters.color.LevelsCorrection;
+      import de.popforge.imageprocessing.filters.convolution.Sharpen;
+      
+      import flash.display.Bitmap;
       import flash.display.BitmapData;
       import flash.display.Loader;
       import flash.events.Event;
@@ -20,7 +27,6 @@ package net.fundekave.fuup.model
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
-      import net.fundekave.lib.ImageFiltering;
       import net.fundekave.lib.Service;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
@@ -115,11 +121,42 @@ package net.fundekave.fuup.model
         	fileVO.renderer.statusStr = 'Processing';
         	
         	//---filtering
-        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-        	if(configProxy.filters.length() > 0) {
-        		var imageFil:ImageFiltering = new ImageFiltering( configProxy.filters );
-        	}
         	
+        	
+        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+        	var bmpdOrig:BitmapData;
+        	if(configProxy.filters.length() > 0) {
+        		
+        		bmpdOrig = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        		bmpdOrig.draw( image );
+        		
+        		var popImage:Image = new Image(fileVO.widthOriginal, fileVO.heightOriginal, ImageFormat.RGB);
+        		popImage.loadBitmapData( bmpdOrig );
+        		var filXML:XML;
+				for each( filXML in configProxy.filters) {
+					var filId:String = String( filXML.attribute('id') );
+					switch( filId ) {
+						case 'levels':
+		        			var filter1: LevelsCorrection = new LevelsCorrection( true );
+		  			  		filter1.apply( popImage );
+		  			  	break;
+		  				case 'sharpen':
+		  			  		var filter2: Sharpen = new Sharpen(0.1);
+							filter2.apply( popImage );
+						break;
+						case 'contrast':
+							var filter3: ContrastCorrection = new ContrastCorrection( 1.2 );
+							filter3.apply( popImage );
+						break;
+					}
+				}
+  			  	bmpdOrig.dispose();
+  			  	bmpdOrig = popImage.bitmapData;
+  			  	popImage.dispose();
+
+        	} 
+      
+        
   			fileVO.widthNew = Math.round(fileVO.widthNew);
   			fileVO.heightNew = Math.round(fileVO.heightNew);
   			var widthPostPro:int = fileVO.widthNew;
@@ -152,9 +189,16 @@ package net.fundekave.fuup.model
   			}
   			
   			baout = new ByteArray();
- 
-  			var bmpd:BitmapData = new BitmapData( widthPostPro, heightPostPro );	
-  			bmpd.draw( image.content, matrix, null, null, null, true );
+  			
+  			var bmpd:BitmapData = new BitmapData( widthPostPro, heightPostPro );
+  			
+  			if(bmpdOrig) {
+  				var bmp:Bitmap = new Bitmap( bmpdOrig );
+  				bmpd.draw( bmp, matrix, null, null, null, true );
+  				bmpdOrig.dispose();
+  			} else {
+  				bmpd.draw( image.content, matrix, null, null, null, true );
+  			}
   			
 			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
 			baSource.position = 0;
@@ -168,6 +212,7 @@ package net.fundekave.fuup.model
         	/**/
         	
         	image.parent.removeChild( image );
+        	bmpd.dispose();
         }
         
         private function onCompressFinished( out:ByteArray ):void {
@@ -186,6 +231,7 @@ package net.fundekave.fuup.model
         }
         
         //uploading
+        private var fileVO:FileVO;
         private var serviceURL:String;
         public var chunkSize:int = 5000;
         private var uploadLimit:int = 3;
@@ -199,8 +245,8 @@ package net.fundekave.fuup.model
         
         private function uploadFile():void {
         	var len:int = fileList.length;
-        	if(currentFile < len) {
-        		var fileVO:FileVO = fileList[currentFile] as FileVO;
+        	if(len > 0) {
+        		fileVO = fileList[len-1] as FileVO;
         		
         		var b64enc:Base64Encoder = new Base64Encoder();
         		b64enc.encodeBytes( fileVO.encodedJPG );
@@ -279,7 +325,6 @@ package net.fundekave.fuup.model
 	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
 	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
         	
-        	var fileVO:FileVO = fileList[currentFile] as FileVO;  
 			chunksUploading--;
 			currentChunk++;
 			
@@ -295,7 +340,8 @@ package net.fundekave.fuup.model
 			if(chunksUploading == 0 && currentChunks.length == 0) {
 				//---upload done
         		trace('FILE COMPLETE');
-        		fileVO.renderer.statusStr = 'Upload DONE';
+        		//fileVO.renderer.statusStr = 'Upload DONE';
+        		sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
         		
         		currentFile++;
         		uploadFile();

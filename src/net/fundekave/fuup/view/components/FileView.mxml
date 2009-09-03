@@ -40,6 +40,7 @@
 			}
 			
 			public function set file(value:FileReference):void {
+				
 				_fileVO = new FileVO( value.name );
 				_fileVO.file = value;
 				_fileVO.renderer = this;
@@ -50,16 +51,19 @@
 				this.graphics.beginFill(0xbbbbbb);
 				this.graphics.drawRoundRect(0,0,this.width,this.height,5,5);
 				this.graphics.endFill();
+				
 			}
 			
 			private function imageLoaded(e:Event):void {
+				
 				var file:FileReference = e.target as FileReference;
 				file.removeEventListener(Event.COMPLETE, imageLoaded);
-				var byteData:ByteArray = file.data as ByteArray;
+				
 				var thumb:Loader = new Loader();
-				thumb.loadBytes( byteData );
+				thumb.loadBytes( file.data );
 				thumbUI.addChild(thumb);
 				thumb.contentLoaderInfo.addEventListener( Event.COMPLETE, drawLater);
+				
 			}
 			
 			/**
@@ -90,7 +94,11 @@
 				m.scale(scale, scale);
 				resized.draw( thumb, m );
 				
+				thumb.unload();
 				thumb.parent.removeChild( thumb );
+				System.gc();
+				thumbUI.addEventListener( Event.ENTER_FRAME, onFrame );
+				
 
 				var bmp:Bitmap = new Bitmap( resized );
 				thumbUI.addChild( bmp );
@@ -98,7 +106,16 @@
 				bmp.y = -hThumb / 2
 				
 				dispatchEvent( new Event( FILE_CREATED, true ));
-			} 
+			}
+			
+			private function onFrame(e:Event):void {
+				e.target.removeEventListener( Event.ENTER_FRAME, onFrame );
+				System.gc();
+				setTimeout(lastGC, 50 );
+			}
+			private function lastGC():void {
+				System.gc();
+			}
 			
 			private var rotateTo:Number = 0;
 			private function rotate(dgDiff:Number):void {

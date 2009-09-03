@@ -42,7 +42,7 @@ package net.fundekave.fuup.model
 			try {
 				dataXML = new XML( event.target.data );
 				
-				filters = dataXML..Filter;
+				filters = dataXML..Filter.(@enabled==1);
 				
 				lang = {};
 				for each(var l:XML in dataXML..Lang.Item) {
