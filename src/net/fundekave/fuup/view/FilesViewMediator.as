@@ -29,12 +29,13 @@ package net.fundekave.fuup.view
 		override public function onRegister():void
 		{
 			
-			filesView.addEventListener( FileView.FILE_CREATED, onFileCreated );
-			filesView.addEventListener( FileView.FILE_REMOVE, onFileRemove );
-			filesView.addEventListener( FileView.SETTINGS_INHERIT, onFileIhnerit );
-			filesView.addEventListener( FilesView.SETTINGS_CHANGE, onSettingsChange );
-			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess );
-			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload );
+			filesView.addEventListener( FileView.FILE_CREATED, onFileCreated, false, 0, true );
+			filesView.addEventListener( FileView.FILE_REMOVE, onFileRemove, false, 0, true );
+			filesView.addEventListener( FilesView.FILE_CHECK_EXITS, onFileCheck, false, 0, true );
+			filesView.addEventListener( FileView.SETTINGS_INHERIT, onFileIhnerit, false, 0, true );
+			filesView.addEventListener( FilesView.SETTINGS_CHANGE, onSettingsChange, false, 0, true );
+			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess, false, 0, true );
+			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload, false, 0, true );
 		}
 		
 		protected function onFileCreated( e:Event ):void {
@@ -50,6 +51,10 @@ package net.fundekave.fuup.view
 		protected function onFileRemove( e:Event ):void {
 			var fileVO:FileVO = (e.target as FileView).fileVO;
 			sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
+		}
+		
+		protected function onFileCheck( e:Event ):void {
+			sendNotification( ApplicationFacade.FILE_CHECK_EXISTS, filesView.currFile.name );
 		}
 		
 		protected function onFileIhnerit( e:Event ):void {
@@ -83,7 +88,9 @@ package net.fundekave.fuup.view
 			return [
 					StateMachine.CHANGED,
 					ApplicationFacade.GLOBAL_PROGRESS_INIT,
-					ApplicationFacade.PROCESS_PROGRESS
+					ApplicationFacade.PROCESS_PROGRESS,
+					ApplicationFacade.FILE_CHECK_FAIL,
+					ApplicationFacade.FILE_CHECK_OK
 					];
 		}
 		
@@ -92,6 +99,12 @@ package net.fundekave.fuup.view
 			var stateName:String;
 			switch ( note.getName() )
 			{
+				case ApplicationFacade.FILE_CHECK_FAIL:
+					filesView.failFile();
+				break;
+				case ApplicationFacade.FILE_CHECK_OK:
+					filesView.addFile();
+				break;
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 					filesView.globalProgressBar.visible = true;

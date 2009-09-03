@@ -18,6 +18,7 @@ package net.fundekave.fuup.model.vo
 		
 		[Bindable]
 		public var filename:String;
+		public var filenameOriginal:String;
 		
 		[Bindable]
 		public var widthOriginal:Number;
@@ -47,6 +48,7 @@ package net.fundekave.fuup.model.vo
 		function FileVO(filename:String):void {
 			
 			this.filename = filename;
+			this.filenameOriginal = String( this.filename );
 			
 		}
 		

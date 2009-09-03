@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 TODO:
-- image remove
-- check for duplicates
+- create status bar - with roll in function to show more lines???
+- file num limit - ?40
 - show detail in popup
-- remove when upload done
 - do 3x retry when uploading on each section
 - show error when upload fail
 - show global progress - loading files
