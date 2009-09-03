@@ -16,6 +16,7 @@
     	  	public static const SETTINGS_CHANGE:String = 'settingsChange';
     	  	public static const ACTION_PROCESS:String = 'actionProcess';
     	  	public static const ACTION_UPLOAD:String = 'actionUpload';
+    	  	public static const FILE_CHECK_EXITS:String = 'fileCheckExits';
     	  	
     	  	public static const PROGRESS_LABEL_LOADING:String = 'Loading';
     	  	public static const PROGRESS_LABEL_PROCESSING:String = 'Processing';
@@ -46,20 +47,33 @@
 				
 			}
 			
+			private var currFileView:FileView;
+			public var currFile:FileReference;
+						
 			private function populateFiles():void {
 				if(filesArr.length > 0) {
-					var file:FileReference = filesArr.shift();
-					var fileView:FileView = new FileView();
-					filesBox.addChild( fileView );
-					//---wait till filesBox is resized with new element
-					currFileView = fileView;
-					currFile = file;
-					this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+					currFile = filesArr.shift();
+					//---check if file is not already in list
+					dispatchEvent( new Event( FILE_CHECK_EXITS ));
 				}
 			}
 			
-			private var currFileView:FileView;
-			private var currFile:FileReference;
+			public function failFile():void {
+				//---set progress
+				
+				//---show message
+				progressInc();
+				//---populate next file
+				populateFiles();
+			}
+			
+			public function addFile():void {
+				currFileView = new FileView();
+				filesBox.addChild( currFileView );
+				//---wait till filesBox is resized with new element
+				this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+			}
+			
 			private function onFileViewFrame(e:Event):void {
 				this.removeEventListener(FilesView.RESIZE, onFileViewFrame );
 				fileLater( currFileView, currFile );
@@ -73,12 +87,17 @@
 			private function onFileCreated(e:Event):void {
 				var fileView:FileView = e.target as FileView;
 				fileView.removeEventListener( FileView.FILE_CREATED, onFileCreated );
+				//---set progress
+				progressInc();
+				populateFiles();
+			}
+			
+			private function progressInc():void {
 				globalProgressBar.value = Number(globalProgressBar.value + 1);
 				if(globalProgressBar.value == globalProgressBar.maximum) {
 					//---hide progress bar
 					globalProgressBar.visible = false;
 				}
-				populateFiles();
 			}
 			
 			private var fileBoxHeight:int = 0;

@@ -31,6 +31,9 @@ package net.fundekave.fuup
 		public static const GLOBAL_PROGRESS_INIT:String = 'globalProgressInit';
 		
 		//---file management
+		public static const FILE_CHECK_EXISTS:String		= 'fileCheckExists';
+		public static const FILE_CHECK_FAIL:String		= 'fileCheckFail';
+		public static const FILE_CHECK_OK:String		= 'fileCheckOk';
 		public static const FILE_DELETE:String			= 'fileDelete';
 		
 		//---processing
@@ -70,6 +73,7 @@ package net.fundekave.fuup
 			
 			registerCommand( LOGIN, LoginCommand);
 			
+			registerCommand( FILE_CHECK_EXISTS, FileCheckExists );
 			registerCommand( FILE_DELETE, FileDelete );
 			
 			registerCommand( IMAGES_CHECK_FOR_PROCESSING, ImagesCheckForProcessingCommand );
