@@ -1,7 +1,5 @@
 package net.fundekave.fuup.model.vo
 {
-	import com.clevr.graphics.Histogram;
-	
 	import flash.display.BitmapData;
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
@@ -41,9 +39,7 @@ package net.fundekave.fuup.model.vo
 		public var rotation:Number = 0;
 		
 		[Bindable]
-		public var outputQuality:Number = 80;
-		
-		public var histogram:Histogram;
+		public var outputQuality:Number = 100;
 		
 		function FileVO(filename:String):void {
 			
