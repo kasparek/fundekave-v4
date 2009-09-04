@@ -8,7 +8,7 @@
 		</Services>
 	</Config>
 	<Filters>
-		<Filter id="sharpen" enabled="1" visible="0">
+		<Filter id="sharpen" enabled="0" visible="0">
 			<name>Sharpen</name>
 		</Filter>
 		<Filter id="levels" enabled="1" visible="0">

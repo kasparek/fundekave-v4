@@ -1,11 +1,12 @@
 <?php
+/*
 sleep(rand(5,10)/10);
 $r = rand(1,5);
 if($r==2) {
 echo 'died';
 die();
 }
-
+/**/
 $data = $_POST['data'];
 $seq = (int)  $_POST['seq'];
 $total = (int)  $_POST['total'];
@@ -33,7 +34,7 @@ if($allExists === true) {
 		//unlink($file);
 	}
 
-	file_put_contents($filename.'.jpg',base64_decode( $encData ));
+	file_put_contents('images/'.$filename.'.jpg',base64_decode( $encData ));
 }
 
 echo 1;

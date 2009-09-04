@@ -3,19 +3,22 @@ package net.fundekave.fuup.model
 
       //import cmodule.jpegencoder.CLibInit;
       
+      import com.clevr.graphics.InterpolatedBitmapData;
+      
       import de.popforge.imageprocessing.core.Image;
       import de.popforge.imageprocessing.core.ImageFormat;
       import de.popforge.imageprocessing.filters.color.ContrastCorrection;
       import de.popforge.imageprocessing.filters.color.LevelsCorrection;
       import de.popforge.imageprocessing.filters.convolution.Sharpen;
       
-      import flash.display.Bitmap;
       import flash.display.BitmapData;
       import flash.display.Loader;
       import flash.events.Event;
       import flash.events.IOErrorEvent;
       import flash.events.SecurityErrorEvent;
       import flash.geom.Matrix;
+      import flash.geom.Point;
+      import flash.geom.Rectangle;
       import flash.net.URLVariables;
       import flash.utils.ByteArray;
       import flash.utils.setTimeout;
@@ -126,10 +129,12 @@ package net.fundekave.fuup.model
         	
         	
         	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-        	var bmpdOrig:BitmapData;
+        	//var bmpdOrig:BitmapData;
+        	var bmpdOrig:InterpolatedBitmapData;
         	if(configProxy.filters.length() > 0) {
         		
-        		bmpdOrig = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        		//bmpdOrig = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        		bmpdOrig = new InterpolatedBitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
         		bmpdOrig.draw( image );
         		
         		var popImage:Image = new Image(fileVO.widthOriginal, fileVO.heightOriginal, ImageFormat.RGB);
@@ -153,7 +158,11 @@ package net.fundekave.fuup.model
 					}
 				}
   			  	bmpdOrig.dispose();
-  			  	bmpdOrig = popImage.bitmapData;
+  			  	var rect:Rectangle = new Rectangle(0,0,popImage.width,popImage.height);
+  			  	//bmpdOrig = new InterpolatedBitmapData( popImage.width,popImage.height );
+  			  	//bmpdOrig.copyPixels( popImage.bitmapData, rect, new Point(0,0) );
+  			  	bmpdOrig = new InterpolatedBitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        		bmpdOrig.draw( image );
   			  	popImage.dispose();
 
         	} 
@@ -195,8 +204,25 @@ package net.fundekave.fuup.model
   			var bmpd:BitmapData = new BitmapData( widthPostPro, heightPostPro );
   			
   			if(bmpdOrig) {
+  				/*
   				var bmp:Bitmap = new Bitmap( bmpdOrig );
   				bmpd.draw( bmp, matrix, null, null, null, true );
+  				*/
+  				 
+				/* The size of the output image */
+				var newWidth:int = 100;
+				var newHeight:int = 200;
+				 
+				var xFactor:Number = bmpdOrig.width / widthPostPro;
+				var yFactor:Number = bmpdOrig.height / heightPostPro;
+				 
+				/* Loop through the pixels of the output image, fetching the equivalent pixel from the input*/
+				for (var x:int = 0; x < widthPostPro; x++) {
+				    for (var y:int = 0; y < heightPostPro; y++) {
+				        bmpd.setPixel(x, y, bmpdOrig.getPixelBicubic(x * xFactor, y * yFactor));
+				    }
+				}
+  				
   				bmpdOrig.dispose();
   			} else {
   				bmpd.draw( image.content, matrix, null, null, null, true );
