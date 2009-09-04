@@ -2,7 +2,7 @@
 <fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*"
 	xmlns:bit101="com.bit101.components.*"
-	width="{Fuup.WIDTH-10}" height="{thumbMaxHeight + 10}">
+	width="300" height="{thumbMaxHeight + 10}">
 	<fx:Script>
 		<![CDATA[
 			import gs.easing.Quad;
@@ -179,9 +179,8 @@
 	
 	<bit101:PushButton x="{this.width - 40}" width="30" label="x" click="{dispatchEvent(new Event(FILE_REMOVE,true));}" />
 	
-	<bit101:VBox x="200">
+	<bit101:VBox x="150">
 		<bit101:HBox>
-			<bit101:Label text="Filename:" />
 			<bit101:InputText id="filenameInput" text="{_fileVO.filename}" restrict="[0-9][a-z][A-Z]_\-\." />
 		</bit101:HBox>
 		<!--
@@ -194,9 +193,8 @@
 		</bit101:HBox>
 		-->
 		<bit101:HBox>
-			<bit101:Label text="Rotation:" />
-			<bit101:PushButton click="{rotate(90)}" label="CW" />
-			<bit101:PushButton click="{rotate(-90)}" label="CCW" />
+			<bit101:PushButton width="30" click="{rotate(90)}" label="CW" />
+			<bit101:PushButton width="30" click="{rotate(-90)}" label="CCW" />
 		</bit101:HBox>
 		
 		<bit101:PushButton label="Check resized" click="{showResized()}" />

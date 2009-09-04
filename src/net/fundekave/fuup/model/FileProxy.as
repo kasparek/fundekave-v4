@@ -1,7 +1,5 @@
 package net.fundekave.fuup.model
 {    
-
-      import cmodule.jpegencoder.CLibInit;
       
       import de.popforge.imageprocessing.core.Image;
       import de.popforge.imageprocessing.core.ImageFormat;
@@ -12,13 +10,9 @@ package net.fundekave.fuup.model
       import flash.display.Bitmap;
       import flash.display.BitmapData;
       import flash.display.Loader;
-      import flash.display.Shader;
-      import flash.display.ShaderJob;
       import flash.events.Event;
       import flash.events.IOErrorEvent;
       import flash.events.SecurityErrorEvent;
-      import flash.geom.Matrix;
-      import flash.geom.Rectangle;
       import flash.net.URLVariables;
       import flash.utils.ByteArray;
       import flash.utils.setTimeout;
@@ -30,6 +24,7 @@ package net.fundekave.fuup.model
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
+      import net.fundekave.lib.JPEGEncoder;
       import net.fundekave.lib.Service;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
@@ -58,6 +53,7 @@ package net.fundekave.fuup.model
 			super( NAME );
 			
 			/* init alchemy object */
+			/*
             var init:CLibInit = new CLibInit(); //get library obejct
             al_jpegencoder = init.init(); // initialize library exported class
             /**/
@@ -194,14 +190,14 @@ package net.fundekave.fuup.model
         	//---draw resized rotated bitmap
         	var bmpd:BitmapData = new BitmapData(bmp.width, bmp.height );
         	bmpd.draw( Application.application.thumbHolder ); 
-      		
+      		/*
   			baout = new ByteArray();
   			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
 			baSource.position = 0;
 
 			al_jpegencoder.encodeAsync(onCompressFinished, baSource, baout, bmpd.width, bmpd.height, fileVO.outputQuality );
 			/**/
-			/*			
+						
         	var jpgEnc:JPEGEncoder = new JPEGEncoder( fileVO.outputQuality );
         	baout = jpgEnc.encode( bmpd );
         	onCompressFinished(null);

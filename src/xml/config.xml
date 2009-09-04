@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Fuup>
 	<Config>
+		<Settings>
+			<Item name="permissions">0</Item>
+			<Item name="chunkSize">10000</Item>
+			<Item name="chunkLimit">4</Item>
+			<Item name="fileLimit">20</Item>
+			<Item name="imageQuality">90</Item>
+			<Item name="imageWidthMax">500</Item>
+			<Item name="imageHeightMax">500</Item>
+		</Settings>
 		<Services>
-			<Service name="login">http://localhost/fuup/login.xml</Service>
-			<Service name="files">http://localhost/fuup/files.php</Service>
-			<Service name="gallery">http://localhost/fuup/gallery.xml</Service>
+			<Service name="login">login.xml</Service>
+			<Service name="files">files.php</Service>
+			<Service name="gallery">gallery.xml</Service>
 		</Services>
 	</Config>
 	<Filters>
@@ -16,7 +25,11 @@
 		</Filter>
 	</Filters>
 	<Lang>
+		<Item name="selectfiles"><![CDATA[Vlozit fotky]]></Item>
 		<Item name="process"><![CDATA[Zpracovat]]></Item>
+		<Item name="processing"><![CDATA[Zpracovavam]]></Item>
 		<Item name="upload"><![CDATA[Nahrat]]></Item>
+		<Item name="uploading"><![CDATA[Nahravam]]></Item>
+		<Item name="filename"><![CDATA[Jmeno souboru:]]></Item>
 	</Lang>
 </Fuup>

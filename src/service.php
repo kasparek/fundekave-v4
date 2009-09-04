@@ -1,6 +1,7 @@
 <?php
 //---service
 //---data
+header('Content-type: text/xml');
 switch($_GET['service']) {
   case 'config':
     echo file_get_contents('xml/config.xml');
@@ -9,4 +10,3 @@ switch($_GET['service']) {
     echo file_get_contents('xml/login.xml');
   break;
 }
-?>
