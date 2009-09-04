@@ -7,7 +7,8 @@
 	>
     	  <fx:Script>
     	  	<![CDATA[
-    	  		import mx.formatters.SwitchSymbolFormatter;
+    	  		import com.somerandomdude.coordy.layouts.twodee.Flow;
+    	  		import net.fundekave.Application;
     	  		import flash.utils.setTimeout;
     	  		import com.dncompute.canvas.BrowserCanvas;
     	  		
@@ -24,6 +25,18 @@
     	  	
     	  	private function addedToStage():void {
     	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+    	  		Application.application.stage.addEventListener(Event.RESIZE, onStageResize );
+    	  		var appWidth:int = Application.application.stage.width;
+				var appHeight:int = Application.application.stage.height;
+				
+				layout = new Flow( filesBox, 1000, 10000,5,5 );
+				
+    	  	}
+    	  	
+    	  	private function onStageResize(e:Event):void {
+    	  		layout.width = (e.target as Stage).width - 10;
+    	  		trace('STAGE::FILESBOX::WIDTH::'+layout.width);
+    	  		layout.render();
     	  	}
     	  	
     	  	private var fileRefList:FileReferenceList
@@ -49,6 +62,7 @@
 			
 			private var currFileView:FileView;
 			public var currFile:FileReference;
+			public var layout:Flow;
 						
 			private function populateFiles():void {
 				if(filesArr.length > 0) {
@@ -56,6 +70,7 @@
 					//---check if file is not already in list
 					dispatchEvent( new Event( FILE_CHECK_EXITS ));
 				}
+				
 			}
 			
 			public function failFile():void {
@@ -69,7 +84,8 @@
 			
 			public function addFile():void {
 				currFileView = new FileView();
-				filesBox.addChild( currFileView );
+				//filesBox.addChild( currFileView );
+				layout.addToLayout( currFileView ); 
 				//---wait till filesBox is resized with new element
 				this.addEventListener(FilesView.RESIZE, onFileViewFrame );
 			}
@@ -101,8 +117,13 @@
 			}
 			
 			private var fileBoxHeight:int = 0;
+			private var fileBoxNumChildred:int = 0;
 			private function onResize(e:Event):void {
 				//filesBox.removeEventListener(Event.ENTER_FRAME, onResize);
+				if(filesBox.numChildren != fileBoxNumChildred) { 
+					fileBoxNumChildred = filesBox.numChildren;
+					dispatchEvent( new Event(RESIZE) );
+				}
 				if( filesBox.height != fileBoxHeight) {
 					fileBoxHeight = filesBox.height; 
 				
@@ -143,9 +164,14 @@
 			<bit101:Label text="Height" />
 			<bit101:InputText id="newHeightInput" restrict="[0-9]" text="700" width="40" height="17" />
 		</bit101:HBox>
+		
+		<bit101:HBox id="filesBox" x="5" y="30" mouseChildren="true" />
 		-->
 	</fu:Container>
     
-	<bit101:VBox id="filesBox" x="5" y="30" width="{Fuup.WIDTH-10}" mouseChildren="true" />
+	<fu:Container id="filesBox" x="5" y="30"
+		height="10000" mouseChildren="true" />
+		
+	
 	
 </fu:Container>

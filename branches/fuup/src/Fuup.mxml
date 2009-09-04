@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 TODO:
+- handle flow layout, not full size thumbs
+- clean code
+- configuration from config.xml
+- levels, sharpen - selectable
 - create status bar - with roll in function to show more lines???
 - file num limit - ?40
 - show detail in popup
@@ -11,8 +15,6 @@ TODO:
 - show global progress on uploading
 - dynamic resizing for height
 - icons for close, rotate left/right, show detail
-- TODO: application singleton
-- FIX: browser canvas to retrieve stage from application
 - postprocessing - auto levels, sharpen, improve - take from fuvatar
 - handle total service error
 - switch for resize and optimize
@@ -36,6 +38,6 @@ TODO:
 		]]>
 	</fx:Script>
 	
-	<components:MainDisplay width="{Fuup.WIDTH}" id="mainDisplay" />
+	<components:MainDisplay id="mainDisplay" />
 	
 </fu:Application>
