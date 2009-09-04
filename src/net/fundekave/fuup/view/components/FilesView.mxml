@@ -107,7 +107,7 @@
 					fileBoxHeight = filesBox.height; 
 				
 					var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
-					var newHeight:String = String( filesBox.height + Fuup.HEIGHT );
+					var newHeight:String = String( filesBox.height + Fuup.HEIGHT + 300 );
 					resizeCanvas.height = newHeight; 
 					resizeCanvas.width = '100%';
 					

@@ -1,9 +1,7 @@
 package net.fundekave.fuup.model
 {    
 
-      //import cmodule.jpegencoder.CLibInit;
-      
-      import com.clevr.graphics.InterpolatedBitmapData;
+      import cmodule.jpegencoder.CLibInit;
       
       import de.popforge.imageprocessing.core.Image;
       import de.popforge.imageprocessing.core.ImageFormat;
@@ -11,13 +9,15 @@ package net.fundekave.fuup.model
       import de.popforge.imageprocessing.filters.color.LevelsCorrection;
       import de.popforge.imageprocessing.filters.convolution.Sharpen;
       
+      import flash.display.Bitmap;
       import flash.display.BitmapData;
       import flash.display.Loader;
+      import flash.display.Shader;
+      import flash.display.ShaderJob;
       import flash.events.Event;
       import flash.events.IOErrorEvent;
       import flash.events.SecurityErrorEvent;
       import flash.geom.Matrix;
-      import flash.geom.Point;
       import flash.geom.Rectangle;
       import flash.net.URLVariables;
       import flash.utils.ByteArray;
@@ -25,11 +25,11 @@ package net.fundekave.fuup.model
       
       import mx.utils.Base64Encoder;
       
+      import net.fundekave.Application;
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
       import net.fundekave.lib.BitmapDataProcess;
-      import net.fundekave.lib.JPEGEncoder;
       import net.fundekave.lib.Service;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
@@ -38,6 +38,7 @@ package net.fundekave.fuup.model
         
       public class FileProxy extends Proxy implements IProxy
       {
+      	
 		public static const NAME:String = 'fileProxy';
         
         private var al_jpegencoder: Object;
@@ -57,7 +58,6 @@ package net.fundekave.fuup.model
 			super( NAME );
 			
 			/* init alchemy object */
-			/*
             var init:CLibInit = new CLibInit(); //get library obejct
             al_jpegencoder = init.init(); // initialize library exported class
             /**/
@@ -104,7 +104,7 @@ package net.fundekave.fuup.model
         		var image:Loader = new Loader();
         		image.loadBytes( fileVO.file.data );
         		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady );
-        		fileVO.renderer.addChild( image );
+        		Application.application.thumbHolder.addChild( image );
         		
         	} else {
         		//---processing done
@@ -117,26 +117,21 @@ package net.fundekave.fuup.model
         public static function deg2rad(deg:Number):Number {
 			return deg * Math.PI / 180;
 		}
-        
+		        
         private function onImageReady(e:Event):void {
-        	var image:Loader = e.target.loader as Loader;
-        	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
-        	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
         	fileVO.renderer.statusStr = 'Processing';
         	
+        	var image:Loader = e.target.loader as Loader;
+        	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
+        	
+        	var bmpdOrig:BitmapData = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        	bmpdOrig.draw( image );
+        	
+        	//---time for filtering on bmp bitmapdatas
         	//---filtering
-        	
-        	
         	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-        	//var bmpdOrig:BitmapData;
-        	var bmpdOrig:InterpolatedBitmapData;
         	if(configProxy.filters.length() > 0) {
-        		
-        		//bmpdOrig = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
-        		bmpdOrig = new InterpolatedBitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
-        		bmpdOrig.draw( image );
-        		
         		var popImage:Image = new Image(fileVO.widthOriginal, fileVO.heightOriginal, ImageFormat.RGB);
         		popImage.loadBitmapData( bmpdOrig );
         		var filXML:XML;
@@ -148,7 +143,7 @@ package net.fundekave.fuup.model
 		  			  		filter1.apply( popImage );
 		  			  	break;
 		  				case 'sharpen':
-		  			  		var filter2: Sharpen = new Sharpen(0.1);
+		  			  		var filter2: Sharpen = new Sharpen();
 							filter2.apply( popImage );
 						break;
 						case 'contrast':
@@ -157,90 +152,62 @@ package net.fundekave.fuup.model
 						break;
 					}
 				}
+				
   			  	bmpdOrig.dispose();
-  			  	var rect:Rectangle = new Rectangle(0,0,popImage.width,popImage.height);
-  			  	//bmpdOrig = new InterpolatedBitmapData( popImage.width,popImage.height );
-  			  	//bmpdOrig.copyPixels( popImage.bitmapData, rect, new Point(0,0) );
-  			  	bmpdOrig = new InterpolatedBitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
-        		bmpdOrig.draw( image );
+        		bmpdOrig = popImage.bitmapData.clone(); 
   			  	popImage.dispose();
-
-        	} 
-      
-        
-  			fileVO.widthNew = Math.round(fileVO.widthNew);
-  			fileVO.heightNew = Math.round(fileVO.heightNew);
-  			var widthPostPro:int = fileVO.widthNew;
-  			var heightPostPro:int = fileVO.heightNew; 
+        	}
         	
-        	var ratio:Number = fileVO.widthNew / fileVO.widthOriginal;
-        	var matrix:Matrix = new Matrix();
-  			matrix.scale( ratio, ratio );
-  			matrix.rotate( FileProxy.deg2rad( fileVO.rotation ) );
-  			switch(fileVO.rotation) {
+        	var bmp:Bitmap = new Bitmap(bmpdOrig,'auto',true);
+        	//---resize bitmap
+        	bmp.width = fileVO.widthNew;
+        	bmp.height = fileVO.heightNew;
+        	//---rotate bitmap
+        	bmp.rotation = fileVO.rotation;
+        	//---translate because of rotation
+        	switch(fileVO.rotation) {
   				case 90:
+  					bmp.x = bmp.width;
+  				break;
   				case 270:
-  					var tmp:int = heightPostPro;
-  					  					
-  					heightPostPro = Number(widthPostPro);
-  					widthPostPro = tmp;
-  					
-  					//matrix.translate(widthPostPro,heightPostPro);
-  					switch(fileVO.rotation) {
-  						case 90:
-  							matrix.translate(widthPostPro,0);
-  						break;
-  						case 270:
-  							matrix.translate(0,heightPostPro);
-  						break;
-  					}
+  					bmp.y = bmp.height;
   				break;
   				case 180:
-  					matrix.translate(widthPostPro,heightPostPro);
+  					bmp.x = bmp.width;
+  					bmp.y = bmp.height;
+  				break;
   			}
-  			
+        	
+        	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2);
+        	Application.application.thumbHolder.addChild( bmp );
+        	     
+        	//---remove image   	
+        	image.parent.removeChild( image );
+        }
+        
+        private function onImageReady2(e:Event):void {
+        	var bmp:Bitmap = e.target as Bitmap;
+        	bmp.removeEventListener(Event.ENTER_FRAME, onImageReady2);
+        	
+        	var fileVO:FileVO = fileList[currentFile] as FileVO;
+        	
+        	//---draw resized rotated bitmap
+        	var bmpd:BitmapData = new BitmapData(bmp.width, bmp.height );
+        	bmpd.draw( Application.application.thumbHolder ); 
+      		
   			baout = new ByteArray();
-  			
-  			var bmpd:BitmapData = new BitmapData( widthPostPro, heightPostPro );
-  			
-  			if(bmpdOrig) {
-  				/*
-  				var bmp:Bitmap = new Bitmap( bmpdOrig );
-  				bmpd.draw( bmp, matrix, null, null, null, true );
-  				*/
-  				 
-				/* The size of the output image */
-				var newWidth:int = 100;
-				var newHeight:int = 200;
-				 
-				var xFactor:Number = bmpdOrig.width / widthPostPro;
-				var yFactor:Number = bmpdOrig.height / heightPostPro;
-				 
-				/* Loop through the pixels of the output image, fetching the equivalent pixel from the input*/
-				for (var x:int = 0; x < widthPostPro; x++) {
-				    for (var y:int = 0; y < heightPostPro; y++) {
-				        bmpd.setPixel(x, y, bmpdOrig.getPixelBicubic(x * xFactor, y * yFactor));
-				    }
-				}
-  				
-  				bmpdOrig.dispose();
-  			} else {
-  				bmpd.draw( image.content, matrix, null, null, null, true );
-  			}
-  			
-  			/*
-			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
+  			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
 			baSource.position = 0;
 
 			al_jpegencoder.encodeAsync(onCompressFinished, baSource, baout, bmpd.width, bmpd.height, fileVO.outputQuality );
 			/**/
-			/**/			
+			/*			
         	var jpgEnc:JPEGEncoder = new JPEGEncoder( fileVO.outputQuality );
         	baout = jpgEnc.encode( bmpd );
         	onCompressFinished(null);
         	/**/
-        	
-        	image.parent.removeChild( image );
+        	//---dispose
+        	bmp.parent.removeChild( bmp );
         	bmpd.dispose();
         }
         
