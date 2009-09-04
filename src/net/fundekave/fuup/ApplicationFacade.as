@@ -6,7 +6,7 @@ package net.fundekave.fuup
 
 	public class ApplicationFacade extends Facade
 	{
-		public static const SERVICE_CONFIG_URL:String = 'http://localhost/fuup/config.xml';
+		public static const SERVICE_CONFIG_URL:String = 'xml/config.xml';
 
 		public static const STARTUP:String = 'startup';
 				
