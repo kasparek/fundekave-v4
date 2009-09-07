@@ -10,6 +10,7 @@ package net.fundekave.fuup.model
       import flash.display.Bitmap;
       import flash.display.BitmapData;
       import flash.display.Loader;
+      import flash.display.PixelSnapping;
       import flash.events.Event;
       import flash.events.IOErrorEvent;
       import flash.events.SecurityErrorEvent;
@@ -76,7 +77,7 @@ package net.fundekave.fuup.model
         	}
         	fileVO.outputQuality = outputQuality
         	
-        	var scaled:Object = BitmapDataProcess.scaleCalc(fileVO.widthOriginal,fileVO.heightOriginal,fileVO.widthMax,fileVO.heightMax);
+        	var scaled:Object = BitmapDataProcess.scaleCalc(fileVO.widthOriginal, fileVO.heightOriginal,fileVO.widthMax,fileVO.heightMax);
         	fileVO.widthNew = scaled.width;
         	fileVO.heightNew = scaled.height;
         }
@@ -121,14 +122,14 @@ package net.fundekave.fuup.model
         	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	
-        	var bmpdOrig:BitmapData = new BitmapData(fileVO.widthOriginal, fileVO.heightOriginal );
+        	var bmpdOrig:BitmapData = new BitmapData(fileVO.widthOriginal+(fileVO.widthOriginal%2), fileVO.heightOriginal+(fileVO.heightOriginal%2) );
         	bmpdOrig.draw( image );
         	
         	//---time for filtering on bmp bitmapdatas
         	//---filtering
         	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
         	if(configProxy.filters.length() > 0) {
-        		var popImage:Image = new Image(fileVO.widthOriginal, fileVO.heightOriginal, ImageFormat.RGB);
+        		var popImage:Image = new Image(bmpdOrig.width, bmpdOrig.height, ImageFormat.RGB);
         		popImage.loadBitmapData( bmpdOrig );
         		var filXML:XML;
 				for each( filXML in configProxy.filters) {
@@ -154,7 +155,7 @@ package net.fundekave.fuup.model
   			  	popImage.dispose();
         	}
         	
-        	var bmp:Bitmap = new Bitmap(bmpdOrig,'auto',true);
+        	var bmp:Bitmap = new Bitmap(bmpdOrig, PixelSnapping.NEVER, true);
         	//---resize bitmap
         	bmp.width = fileVO.widthNew;
         	bmp.height = fileVO.heightNew;
