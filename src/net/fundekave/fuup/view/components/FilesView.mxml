@@ -7,7 +7,6 @@
 	>
     	  <fx:Script>
     	  	<![CDATA[
-    	  		import com.somerandomdude.coordy.layouts.twodee.Flow;
     	  		import net.fundekave.Application;
     	  		import flash.utils.setTimeout;
     	  		import com.dncompute.canvas.BrowserCanvas;
@@ -25,18 +24,8 @@
     	  	
     	  	private function addedToStage():void {
     	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
-    	  		Application.application.stage.addEventListener(Event.RESIZE, onStageResize );
     	  		var appWidth:int = Application.application.stage.width;
 				var appHeight:int = Application.application.stage.height;
-				
-				layout = new Flow( filesBox, 1000, 10000,5,5 );
-				
-    	  	}
-    	  	
-    	  	private function onStageResize(e:Event):void {
-    	  		layout.width = (e.target as Stage).width - 10;
-    	  		trace('STAGE::FILESBOX::WIDTH::'+layout.width);
-    	  		layout.render();
     	  	}
     	  	
     	  	private var fileRefList:FileReferenceList
@@ -62,7 +51,6 @@
 			
 			private var currFileView:FileView;
 			public var currFile:FileReference;
-			public var layout:Flow;
 						
 			private function populateFiles():void {
 				if(filesArr.length > 0) {
@@ -84,8 +72,7 @@
 			
 			public function addFile():void {
 				currFileView = new FileView();
-				//filesBox.addChild( currFileView );
-				layout.addToLayout( currFileView ); 
+				filesBox.addChild( currFileView );
 				//---wait till filesBox is resized with new element
 				this.addEventListener(FilesView.RESIZE, onFileViewFrame );
 			}
@@ -119,11 +106,6 @@
 			private var fileBoxHeight:int = 0;
 			private var fileBoxNumChildred:int = 0;
 			private function onResize(e:Event):void {
-				//filesBox.removeEventListener(Event.ENTER_FRAME, onResize);
-				if(filesBox.numChildren != fileBoxNumChildred) { 
-					fileBoxNumChildred = filesBox.numChildren;
-					dispatchEvent( new Event(RESIZE) );
-				}
 				if( filesBox.height != fileBoxHeight) {
 					fileBoxHeight = filesBox.height; 
 				
@@ -169,9 +151,6 @@
 		-->
 	</fu:Container>
     
-	<fu:Container id="filesBox" x="5" y="30"
-		height="10000" mouseChildren="true" />
+	<bit101:VBox id="filesBox" x="5" y="30" mouseChildren="true" />
 		
-	
-	
 </fu:Container>
