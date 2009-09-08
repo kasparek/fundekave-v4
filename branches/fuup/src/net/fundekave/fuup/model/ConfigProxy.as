@@ -35,7 +35,7 @@ package net.fundekave.fuup.model
 
 		public function load() :void {
 			sendNotification( ApplicationFacade.CONFIG_LOADING );
-			var request:URLRequest = new URLRequest(ApplicationFacade.SERVICE_CONFIG_URL);
+			var request:URLRequest = new URLRequest(ApplicationFacade.SERVICE_CONFIG_URL + '?r='+Math.random());
 			var loader:URLLoader = new URLLoader();
 			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			loader.addEventListener(Event.COMPLETE, loaderCompleteHandler);
