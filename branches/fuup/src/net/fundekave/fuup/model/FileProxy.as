@@ -1,32 +1,17 @@
 package net.fundekave.fuup.model
 {    
       
-      import de.popforge.imageprocessing.core.Image;
-      import de.popforge.imageprocessing.core.ImageFormat;
-      import de.popforge.imageprocessing.filters.color.ContrastCorrection;
-      import de.popforge.imageprocessing.filters.color.LevelsCorrection;
-      import de.popforge.imageprocessing.filters.convolution.Sharpen;
-      
-      import flash.display.Bitmap;
-      import flash.display.BitmapData;
-      import flash.display.Loader;
-      import flash.display.PixelSnapping;
+      import flash.events.ErrorEvent;
       import flash.events.Event;
-      import flash.events.IOErrorEvent;
-      import flash.events.SecurityErrorEvent;
-      import flash.net.URLVariables;
-      import flash.utils.ByteArray;
+      import flash.events.ProgressEvent;
       import flash.utils.setTimeout;
-      
-      import mx.utils.Base64Encoder;
       
       import net.fundekave.Application;
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
-      import net.fundekave.lib.BitmapDataProcess;
-      import net.fundekave.lib.JPEGEncoder;
-      import net.fundekave.lib.Service;
+      import net.fundekave.lib.FileUpload;
+      import net.fundekave.lib.ImageResize;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
       import org.puremvc.as3.multicore.patterns.proxy.Proxy;
@@ -36,8 +21,6 @@ package net.fundekave.fuup.model
       {
       	
 		public static const NAME:String = 'fileProxy';
-        
-        private var al_jpegencoder: Object;
         
         //---global settings
         [Bindable]
@@ -49,15 +32,17 @@ package net.fundekave.fuup.model
         
         public var fileList:Array = new Array();
         
+        private var currentFile:int = 0;
+        
+        //uploading
+        private var fileVO:FileVO;
+        private var serviceURL:String;
+        private var chunkSize:int = 5000;
+        private var uploadLimit:int = 3;
+        
         public function FileProxy( )
         {
 			super( NAME );
-			
-			/* init alchemy object */
-			/*
-            var init:CLibInit = new CLibInit(); //get library obejct
-            al_jpegencoder = init.init(); // initialize library exported class
-            /**/
         }
         
         public function updateFiles():void {
@@ -76,18 +61,9 @@ package net.fundekave.fuup.model
         		fileVO.heightMax = heightMax
         	}
         	fileVO.outputQuality = outputQuality
-        	
-        	var scaled:Object = BitmapDataProcess.scaleCalc(fileVO.widthOriginal, fileVO.heightOriginal,fileVO.widthMax,fileVO.heightMax);
-        	fileVO.widthNew = scaled.width;
-        	fileVO.heightNew = scaled.height;
         }
         
         //---processing
-        private var currentFile:int = 0;
-        private var currentChunk:int = 0;
-        private var numChunks:int = 0;
-        
-        
         public function processFiles():void {
         	currentFile = 0;
         	processFile();
@@ -97,11 +73,15 @@ package net.fundekave.fuup.model
         	var len:int = fileList.length;
         	if(currentFile < len) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
+        		fileVO.renderer.statusStr = 'Processing';
         		
-        		var image:Loader = new Loader();
-        		image.loadBytes( fileVO.file.data );
-        		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady );
-        		Application.application.thumbHolder.addChild( image );
+        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
+        		imageResize.autoEncode = true;
+        		var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+        		imageResize.filtersList = configProxy.filters;
+        		imageResize.loadBytes( fileVO.file.data );
+        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
+        		Application.application.stage.addChild( imageResize );
         		
         	} else {
         		//---processing done
@@ -109,130 +89,30 @@ package net.fundekave.fuup.model
         	}
         }
         
-        private var baout:ByteArray;
-        
-        public static function deg2rad(deg:Number):Number {
-			return deg * Math.PI / 180;
-		}
-		        
-        private function onImageReady(e:Event):void {
-        	var fileVO:FileVO = fileList[currentFile] as FileVO;
-        	fileVO.renderer.statusStr = 'Processing';
-        	
-        	var image:Loader = e.target.loader as Loader;
-        	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
-        	
-        	var bmpdOrig:BitmapData = new BitmapData(fileVO.widthOriginal+(fileVO.widthOriginal%2), fileVO.heightOriginal+(fileVO.heightOriginal%2) );
-        	bmpdOrig.draw( image );
-        	
-        	//---time for filtering on bmp bitmapdatas
-        	//---filtering
-        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-        	if(configProxy.filters.length() > 0) {
-        		var popImage:Image = new Image(bmpdOrig.width, bmpdOrig.height, ImageFormat.RGB);
-        		popImage.loadBitmapData( bmpdOrig );
-        		var filXML:XML;
-				for each( filXML in configProxy.filters) {
-					var filId:String = String( filXML.attribute('id') );
-					switch( filId ) {
-						case 'levels':
-		        			var filter1: LevelsCorrection = new LevelsCorrection( true );
-		  			  		filter1.apply( popImage );
-		  			  	break;
-		  				case 'sharpen':
-		  			  		var filter2: Sharpen = new Sharpen();
-							filter2.apply( popImage );
-						break;
-						case 'contrast':
-							var filter3: ContrastCorrection = new ContrastCorrection( 1.2 );
-							filter3.apply( popImage );
-						break;
-					}
-				}
-				
-  			  	bmpdOrig.dispose();
-        		bmpdOrig = popImage.bitmapData.clone(); 
-  			  	popImage.dispose();
-        	}
-        	
-        	var bmp:Bitmap = new Bitmap(bmpdOrig, PixelSnapping.NEVER, true);
-        	//---resize bitmap
-        	bmp.width = fileVO.widthNew;
-        	bmp.height = fileVO.heightNew;
-        	//---rotate bitmap
-        	bmp.rotation = fileVO.rotation;
-        	//---translate because of rotation
-        	switch(fileVO.rotation) {
-  				case 90:
-  					bmp.x = bmp.width;
-  				break;
-  				case 270:
-  					bmp.y = bmp.height;
-  				break;
-  				case 180:
-  					bmp.x = bmp.width;
-  					bmp.y = bmp.height;
-  				break;
-  			}
-        	
-        	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2);
-        	Application.application.thumbHolder.addChild( bmp );
-        	     
-        	//---remove image   	
-        	image.parent.removeChild( image );
-        }
-        
-        private function onImageReady2(e:Event):void {
-        	var bmp:Bitmap = e.target as Bitmap;
-        	bmp.removeEventListener(Event.ENTER_FRAME, onImageReady2);
+        private function onCompressFinished( e:Event ):void {
+        	var imageResize:ImageResize = e.target as ImageResize;
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
-        	
-        	//---draw resized rotated bitmap
-        	var bmpd:BitmapData = new BitmapData(bmp.width, bmp.height );
-        	bmpd.draw( Application.application.thumbHolder ); 
-      		/*
-  			baout = new ByteArray();
-  			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
-			baSource.position = 0;
-
-			al_jpegencoder.encodeAsync(onCompressFinished, baSource, baout, bmpd.width, bmpd.height, fileVO.outputQuality );
-			/**/
-						
-        	var jpgEnc:JPEGEncoder = new JPEGEncoder( fileVO.outputQuality );
-        	baout = jpgEnc.encode( bmpd );
-        	onCompressFinished(null);
-        	/**/
-        	//---dispose
-        	bmp.parent.removeChild( bmp );
-        	bmpd.dispose();
-        }
-        
-        private function onCompressFinished( out:ByteArray ):void {
-        	
-        	var fileVO:FileVO = fileList[currentFile] as FileVO;
-        	fileVO.encodedJPG = baout;
-        	fileVO.renderer.statusStr = 'Ready. New image size: '+ String(Math.round(baout.length/1024)) + 'kB';
-        	baout = new ByteArray();
+        	fileVO.encodedJPG = imageResize.resultBytes;
+        	fileVO.renderer.statusStr = 'Ready. New image size: '+ String(Math.round(imageResize.resultBytes.length/1024)) + 'kB';
         
         	currentFile++;
         	//---send progress
         	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed:currentFile,total:fileList.length} );
         	
-        	setTimeout(processFile, 10);       
+        	imageResize.dispose();
         	
+        	setTimeout(processFile, 10);       
         }
         
-        //uploading
-        private var fileVO:FileVO;
-        private var serviceURL:String;
-        public var chunkSize:int = 5000;
-        private var uploadLimit:int = 3;
-        private var currentChunks:Array;
-        private var chunksUploading:int = 0
         public function uploadFiles():void {
+        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+	        serviceURL = String( configProxy.getService('files') );
+	        chunkSize = Number( configProxy.getValue('chunkSize') );
+	        uploadLimit = Number( configProxy.getValue('chunkLimit') );
+	        	
         	currentFile = 0;
-        	currentChunk = 0;
+
         	uploadFile();
         }
         
@@ -241,26 +121,12 @@ package net.fundekave.fuup.model
         	if(len > 0) {
         		fileVO = fileList[len-1] as FileVO;
         		
-        		var b64enc:Base64Encoder = new Base64Encoder();
-        		b64enc.encodeBytes( fileVO.encodedJPG );
-        		var encodedStr:String = b64enc.toString();
-        	
-        		//---prepare all chunks
-	        	var chunksNum:int = Math.ceil( encodedStr.length / chunkSize );
-	        	currentChunks = [];
-	        	for(var i:int=0;i < chunksNum; i++) {
-	        		currentChunks.push( {filename:fileVO.filename ,seq:i,total:chunksNum,data:encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )} );	
-	        	}
-	        	
-	        	currentChunk = 0;
-	        	numChunks = Number(currentChunks.length);
-	        	
-	        	encodedStr = null;
-	        	 
-	        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-	        	serviceURL = String( configProxy.getService('files') );
-	        	
-	        	upload();
+        		var fileUpload:FileUpload = new FileUpload(serviceURL,fileVO.filename, chunkSize, uploadLimit);
+        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete );
+        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
+        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );
+        		fileUpload.uploadBytes( fileVO.encodedJPG );
+
 	        	
         	} else {
         		
@@ -271,96 +137,21 @@ package net.fundekave.fuup.model
         	}
         }
         
-        
-        public function upload():void        
-        {
-        	if(currentChunks.length > 0 && chunksUploading < uploadLimit) {
-        		
-        		//---prepare service
-	        	var service:Service = new Service();
-	        	service.addEventListener(Event.COMPLETE, onServiceComplete );
-	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
-	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
-	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
-        		
-        		var vars:URLVariables = new URLVariables();
-        		var dataObj:Object = currentChunks.shift();
-     			vars.data = dataObj.data;  
-     			vars.seq = dataObj.seq;
-     			vars.total = dataObj.total;
-     			vars.filename = dataObj.filename;
-        		
-        		service.url = serviceURL;
-        		service.variables = vars; 
-				service.send();
-				
-				chunksUploading++;
-				
-				trace('CHUNK::UPLOADING::file::'+String(currentFile)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
-				
-				//---start more chunks if uploadLimit
-				setTimeout( upload, 200 );
-        	}
+        private function onUploadComplete(e:Event):void {
+        	sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
+        	currentFile++;
+        	uploadFile();
         }
-        private function onServiceComplete(e:Event):void
-        {   
-        	
-        	var service:Service = e.target as Service;
-	        
-	        if(service.data != '1') {
-	        	trace('SERVICE RETURN ERROR::ANOTHER ATTEMPT');
-	        	service.failed();
-	        	return;
-	        }
-	        
-	        service.removeEventListener(Event.COMPLETE, onServiceComplete );
-	        service.removeEventListener(IOErrorEvent.IO_ERROR, onServiceError );
-	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
-	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
-        	
-			chunksUploading--;
-			currentChunk++;
-			
-			trace('CHUNK::DONE::file::'+String(currentFile)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
-			
-			if(chunksUploading < uploadLimit && currentChunks.length > 0) {
-				upload();
-			}
-			
-			//---send progress
-        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: currentFile + (currentChunk/numChunks) } );
-			
-			if(chunksUploading == 0 && currentChunks.length == 0) {
-				//---upload done
-        		trace('FILE COMPLETE');
-        		//fileVO.renderer.statusStr = 'Upload DONE';
-        		sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
-        		
-        		currentFile++;
-        		uploadFile();
-			}
-			
+        
+        private function onUploadProgress(e:ProgressEvent):void {
+        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: currentFile + (e.bytesLoaded/e.bytesTotal) } );
+        }
+        
+        private function onUploadError(e:ErrorEvent):void {
+        	trace('TOTAL SERVICE ERROR');
+        	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }
    
-        private function onServiceError(e:Event):void
-        {
-        	var service:Service = e.target as Service;
-        	service.failed();
-        	
-        	trace('Connection Error::another attempt');
-  			
-        }
-        
-        private function onServiceTotalError(e:Event):void {
-        	trace('TOTAL SERVICE ERROR');
-        	
-        	var service:Service = e.target as Service;
-        	service.removeEventListener(Event.COMPLETE, onServiceComplete );
-	        service.removeEventListener(IOErrorEvent.IO_ERROR, onServiceError );
-	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
-	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
-        	
-        	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
-        }      
+             
 	}
 }

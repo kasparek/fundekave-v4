@@ -5,6 +5,7 @@
 	width="300" height="{thumbMaxHeight + 10}">
 	<fx:Script>
 		<![CDATA[
+			import net.fundekave.lib.ImageResize;
 			import gs.easing.Quad;
 			import gs.TweenLite;
 			import net.fundekave.lib.BitmapDataProcess;
@@ -45,76 +46,33 @@
 				_fileVO.file = value;
 				_fileVO.renderer = this;
 				
-				value.load()
-				value.addEventListener(Event.COMPLETE, imageLoaded);
-								
+				var imageResize:ImageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
+				imageResize.loadReference( value );
+				imageResize.addEventListener( ImageResize.RESIZED, drawLater );
+				this.thumbUI.addChild( imageResize );
+							
 				this.graphics.beginFill(0xbbbbbb);
 				this.graphics.drawRoundRect(0,0,this.width,this.height,5,5);
 				this.graphics.endFill();
 				
 			}
-			
-			private function imageLoaded(e:Event):void {
-				
-				var file:FileReference = e.target as FileReference;
-				file.removeEventListener(Event.COMPLETE, imageLoaded);
-				
-				var thumb:Loader = new Loader();
-				thumb.loadBytes( file.data );
-				thumbUI.addChild(thumb);
-				thumb.contentLoaderInfo.addEventListener( Event.COMPLETE, drawLater);
-				
-			}
-			
+						
 			/**
 			 * CREATE SMALL THUMBNAIL
 			*/
-			[Bindable]
-			private var wThumb:Number;
-			[Bindable]
-			private var hThumb:Number;
 			private function drawLater(e:Event):void {
-				var thumb:Loader = e.target.loader as Loader;
-				thumb.contentLoaderInfo.removeEventListener( Event.COMPLETE, drawLater);
-								
-				_fileVO.widthOriginal = (thumb.content as Bitmap).width;
-				_fileVO.heightOriginal = (thumb.content as Bitmap).height;
-				
-				/* The size of the output image */
-				var scaled:Object = BitmapDataProcess.scaleCalc(_fileVO.widthOriginal,_fileVO.heightOriginal,thumbMaxWidth,thumbMaxHeight);
-				wThumb = scaled.width;
-				hThumb = scaled.height;
- 				
- 				var resized:BitmapData = new BitmapData(wThumb, hThumb , true, 0x000000);
- 	
- 				var sx:Number = wThumb / _fileVO.widthOriginal;
-			  	var sy:Number = hThumb / _fileVO.heightOriginal;
- 				var scale:Number = Math.min(sx, sy);
- 				var m:Matrix = new Matrix();
-				m.scale(scale, scale);
-				resized.draw( thumb, m );
-				
-				thumb.unload();
-				thumb.parent.removeChild( thumb );
-				System.gc();
-				thumbUI.addEventListener( Event.ENTER_FRAME, onFrame );
-				
+				var imageResize:ImageResize = e.target as ImageResize;
 
-				var bmp:Bitmap = new Bitmap( resized );
+				var bmp:Bitmap = new Bitmap( imageResize.resultBmpData, PixelSnapping.NEVER, true );
 				thumbUI.addChild( bmp );
-				bmp.x = -wThumb / 2
-				bmp.y = -hThumb / 2
+				thumbUI.width = imageResize.resultBmpData.width;
+				thumbUI.height = imageResize.resultBmpData.height;
+				bmp.x = -imageResize.resultBmpData.width / 2
+				bmp.y = -imageResize.resultBmpData.height / 2
+				
+				imageResize.dispose();
 				
 				dispatchEvent( new Event( FILE_CREATED, true ));
-			}
-			
-			private function onFrame(e:Event):void {
-				e.target.removeEventListener( Event.ENTER_FRAME, onFrame );
-				System.gc();
-				setTimeout(lastGC, 50 );
-			}
-			private function lastGC():void {
-				System.gc();
 			}
 			
 			private var rotateTo:Number = 0;
@@ -174,7 +132,7 @@
 	<fx:Binding source="maxHeightInput.text as Number" destination="_fileVO.heightMax" />
 	-->
 	<fu:Container masked="true" backgroundColor="0x000000" border="0" x="5" y="5" width="{thumbMaxWidth}" height="{thumbMaxHeight}">
-		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" width="{wThumb/2}" height="{hThumb/2}" />
+		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" />
 	</fu:Container>
 	
 	<bit101:PushButton x="{this.width - 40}" width="30" label="x" click="{dispatchEvent(new Event(FILE_REMOVE,true));}" />

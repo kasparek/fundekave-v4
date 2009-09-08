@@ -28,6 +28,10 @@ package net.fundekave.fuup.model
 		public function getService(ident:String):XML {
 			return XML( dataXML..Service.(@name==ident) );
 		}
+		
+		public function getValue(ident:String):XML {
+			return XML( dataXML..Item.(@name==ident) );
+		}
 
 		public function load() :void {
 			sendNotification( ApplicationFacade.CONFIG_LOADING );
