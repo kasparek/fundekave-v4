@@ -23,22 +23,19 @@ package net.fundekave.fuup.model
 		public static const NAME:String = 'fileProxy';
         
         //---global settings
-        [Bindable]
+        public var filtersList:XMLList;
         public var widthMax:Number = 500;
-        [Bindable]
         public var heightMax:Number = 500;
-        [Bindable]
         public var outputQuality:Number = 80;
         
-        public var fileList:Array = new Array();
-        
-        private var currentFile:int = 0;
-        
         //uploading
+        public var serviceURL:String;
+        public var chunkSize:int = 5000;
+        public var uploadLimit:int = 3;
+        
+        public var fileList:Array = new Array();
         private var fileVO:FileVO;
-        private var serviceURL:String;
-        private var chunkSize:int = 5000;
-        private var uploadLimit:int = 3;
+        private var currentFile:int = 0;
         
         public function FileProxy( )
         {
@@ -77,8 +74,7 @@ package net.fundekave.fuup.model
         		
         		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
         		imageResize.autoEncode = true;
-        		var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-        		imageResize.filtersList = configProxy.filters;
+        		imageResize.filtersList = filtersList;
         		imageResize.loadBytes( fileVO.file.data );
         		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
         		Application.application.stage.addChild( imageResize );
@@ -106,13 +102,7 @@ package net.fundekave.fuup.model
         }
         
         public function uploadFiles():void {
-        	var configProxy: ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-	        serviceURL = String( configProxy.getService('files') );
-	        chunkSize = Number( configProxy.getValue('chunkSize') );
-	        uploadLimit = Number( configProxy.getValue('chunkLimit') );
-	        	
         	currentFile = 0;
-
         	uploadFile();
         }
         
@@ -126,7 +116,6 @@ package net.fundekave.fuup.model
         		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
         		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );
         		fileUpload.uploadBytes( fileVO.encodedJPG );
-
 	        	
         	} else {
         		

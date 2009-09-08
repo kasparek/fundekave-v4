@@ -92,7 +92,7 @@ package net.fundekave.lib
 			newWidth = maxWidth;
 			newHeight = maxHeight;
 		}
-		return {width:newWidth,height:newHeight}
+		return {width:Math.round(newWidth),height:Math.round(newHeight)}
 	}
 	
 	}

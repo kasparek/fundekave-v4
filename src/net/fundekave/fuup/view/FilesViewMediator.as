@@ -43,8 +43,6 @@ package net.fundekave.fuup.view
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			var fileVO:FileVO = (e.target as FileView).fileVO;
 			proxy.fileList.push( fileVO );
-			fileVO.widthMax = proxy.widthMax;
-			fileVO.heightMax = proxy.heightMax;
 			proxy.updateFile( fileVO );
 		}
 		
