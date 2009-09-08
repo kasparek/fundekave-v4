@@ -12,7 +12,6 @@ package net.fundekave
         {
             super();
             Component.initStage( stage );
-            
             instance = this;
         }
         
