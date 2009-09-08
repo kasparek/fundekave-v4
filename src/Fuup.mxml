@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 TODO:
+- preloader
 - handle flow layout, not full size thumbs
 - clean code
 - configuration from config.xml
