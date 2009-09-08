@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteBase /fuup/
+RewriteBase /
 RewriteRule ^config.xml$ service.php?service=config [QSA]
 RewriteRule ^login.xml$ service.php?service=login [QSA]
 

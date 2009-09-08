@@ -70,6 +70,7 @@ package net.fundekave.fuup
 			registerCommand( STARTUP, StartupCommand );
 			
 			registerCommand( CONFIG_LOAD, LoadConfigCommand );
+			registerCommand( CONFIG_LOADED, LoadedConfigCommand );
 			
 			registerCommand( LOGIN, LoginCommand);
 			

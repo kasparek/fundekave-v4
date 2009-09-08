@@ -81,9 +81,6 @@ package net.fundekave.lib
         	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	var imageBmp:Bitmap = image.content as Bitmap;
-        	image.x = -imageBmp.width; 
-        	image.y = -imageBmp.height;
-        	
         	//---calculate new size
         	if(widthMax > 0 || heightMax > 0) {
         		var scaled:Object = BitmapDataProcess.scaleCalc(imageBmp.width,imageBmp.height,widthMax,heightMax);
@@ -93,6 +90,7 @@ package net.fundekave.lib
         		widthNew = widthMax; 
         		heightNew = heightMax;
         	}
+        	trace('RESIZE::NEW::'+widthNew+'::'+heightNew);
         	
         	bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
         	bmpdOrig.draw( image, null, null, null, null, true );
@@ -140,8 +138,10 @@ package net.fundekave.lib
         	//---resize bitmap
         	bmp.width = widthNew;
         	bmp.height = heightNew;
+        	
         	this.x = -widthNew;
         	this.y = -heightNew;
+        	
         	//---rotate bitmap
         	bmp.rotation = rotationNew;
         	//---translate because of rotation
@@ -167,7 +167,7 @@ package net.fundekave.lib
         	bmp.removeEventListener(Event.ENTER_FRAME, onImageReady2);
         	
         	//---draw resized rotated bitmap
-        	_resultBmpData = new BitmapData(bmp.width, bmp.height );
+        	_resultBmpData = new BitmapData(Math.round(bmp.width), Math.round(bmp.height) );
         	_resultBmpData.draw( this, null, null, null, null, true ); 
         	
         	//---dispose
