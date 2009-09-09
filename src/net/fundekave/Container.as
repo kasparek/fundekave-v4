@@ -14,6 +14,7 @@ package net.fundekave
         private var childrenChanged:Boolean = false;
         
         public var backgroundColor:Number;
+        public var backgroundAlpha:Number=1;
         public var masked:Boolean = false;
         public var border:int = 0;
         
@@ -68,7 +69,7 @@ package net.fundekave
 				//this.mask = mask;
         	}
         	if(!isNaN(backgroundColor)) {
-        		this.graphics.beginFill(backgroundColor);
+        		this.graphics.beginFill(backgroundColor,backgroundAlpha);
         		this.graphics.drawRect(0,0,this.width,this.height);
         		this.graphics.endFill();
         	}
