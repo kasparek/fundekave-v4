@@ -2,9 +2,10 @@
 <fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*"
 	xmlns:bit101="com.bit101.components.*"
-	width="300" height="{thumbMaxHeight + 10}">
+	width="185" height="{thumbMaxHeight + 10}">
 	<fx:Script>
 		<![CDATA[
+			import net.fundekave.Application;
 			import net.fundekave.lib.ImageResize;
 			import gs.easing.Quad;
 			import gs.TweenLite;
@@ -24,7 +25,7 @@
 			private var thumbMaxHeight:Number = 100;
 			
 			[Bindable]
-			public var statusStr:String = '';
+			public var statusStr:String = 'Ready';
 			
 			[Bindable]
 			private var _fileVO:FileVO;
@@ -107,7 +108,9 @@
 				if(fileVO.encodedJPG) {
 					var image:Loader = new Loader();
 					image.loadBytes( fileVO.encodedJPG );
-					this.addChild( image );
+					image.x = 10;
+					image.y = 10;
+					Application.application.addChild( image );
 					image.addEventListener( MouseEvent.CLICK, onPreviewClick ); 
 				}
 			}
@@ -126,21 +129,27 @@
 			
 		]]>
 	</fx:Script>
-	<!--
-	<fx:Binding source="resizeInheritCheckbox.selected" destination="_fileVO.sizeInheritance" />
-	<fx:Binding source="maxWidthInput.text as Number" destination="_fileVO.widthMax" />
-	<fx:Binding source="maxHeightInput.text as Number" destination="_fileVO.heightMax" />
-	-->
+	
 	<fu:Container masked="true" backgroundColor="0x000000" border="0" x="5" y="5" width="{thumbMaxWidth}" height="{thumbMaxHeight}">
 		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" />
 	</fu:Container>
 	
-	<bit101:PushButton x="{this.width - 40}" width="30" label="x" click="{dispatchEvent(new Event(FILE_REMOVE,true));}" />
+	<!-- status bar -->
+	<fu:Container x="5" width="{thumbMaxWidth}" y="{thumbMaxHeight-15}" height="15" backgroundColor="{0xffffff}" backgroundAlpha="0.7">
+		<bit101:Label x="5" y="-2" id="statusLbl" text="{statusStr}" />
+	</fu:Container>
 	
-	<bit101:VBox x="150">
+	
+	<bit101:VBox x="150" y="5">
+		<bit101:PushButton width="30" label="x" click="{dispatchEvent(new Event(FILE_REMOVE,true));}" />
+		<bit101:PushButton width="30" click="{rotate(-90)}" label="CCW" />
+		<bit101:PushButton width="30" click="{rotate(90)}" label="CW" />
+		<bit101:PushButton width="30" label="S" click="{showResized()}" />
+		<!--
 		<bit101:HBox>
 			<bit101:InputText id="filenameInput" text="{_fileVO.filename}" restrict="[0-9][a-z][A-Z]_\-\." />
 		</bit101:HBox>
+		-->
 		<!--
 		<bit101:HBox>
 			<bit101:Label text="Max size:" />
@@ -150,16 +159,7 @@
 			<bit101:CheckBox id="resizeInheritCheckbox" click="{onInheritChange()}" selected="{_fileVO.sizeInheritance}" label="Inherit" />
 		</bit101:HBox>
 		-->
-		<bit101:HBox>
-			<bit101:PushButton width="30" click="{rotate(90)}" label="CW" />
-			<bit101:PushButton width="30" click="{rotate(-90)}" label="CCW" />
-		</bit101:HBox>
 		
-		<bit101:PushButton label="Check resized" click="{showResized()}" />
-		<!-- result size -->
-		
-		<!-- status bar -->
-		<bit101:Label id="statusLbl" text="{statusStr}" />
 	</bit101:VBox>
 	
 </fu:Container>

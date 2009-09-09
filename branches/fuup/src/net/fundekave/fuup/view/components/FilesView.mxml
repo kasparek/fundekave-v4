@@ -7,6 +7,11 @@
 	>
     	  <fx:Script>
     	  	<![CDATA[
+    	  		import gs.plugins.BezierPlugin;
+    	  		import gs.plugins.TweenPlugin;
+    	  		import gs.easing.Quad;
+    	  		import gs.TweenLite;
+    	  		import mx.events.ResizeEvent;
     	  		import net.fundekave.Application;
     	  		import flash.utils.setTimeout;
     	  		import com.dncompute.canvas.BrowserCanvas;
@@ -22,12 +27,16 @@
     	  	public static const PROGRESS_LABEL_PROCESSING:String = 'Processing';
     	  	public static const PROGRESS_LABEL_UPLOADING:String = 'Uploading';
     	  	
+    	  	public static const GAP_HORIZONTAL:int = 5;
+    	  	public static const GAP_VERTICAL:int = 5;
+    	  	
+    	  	
     	  	private function addedToStage():void {
     	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
-    	  		var appWidth:int = Application.application.stage.width;
-				var appHeight:int = Application.application.stage.height;
+    	  		
+    	  		TweenPlugin.activate([BezierPlugin]);
     	  	}
-    	  	
+    	  	    	  	
     	  	private var fileRefList:FileReferenceList
 			private function browseFiles():void {
 				fileRefList = new FileReferenceList();
@@ -57,8 +66,8 @@
 					currFile = filesArr.shift();
 					//---check if file is not already in list
 					dispatchEvent( new Event( FILE_CHECK_EXITS ));
+					return;
 				}
-				
 			}
 			
 			public function failFile():void {
@@ -73,8 +82,44 @@
 			public function addFile():void {
 				currFileView = new FileView();
 				filesBox.addChild( currFileView );
+				//---set filesbox size and child position
+				currFileView.alpha = 0;
+				var posx:Number = (filesBox.width/2) * Math.random();
+				var posy:Number = (filesBox.height/2) * Math.random();
+				currFileView.rotation = 180 * Math.random();
+				currFileView.move(posx,posy);
 				//---wait till filesBox is resized with new element
 				this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+			}
+			
+			private function addToLayout(child:DisplayObject):void {
+				//---set filesbox size and child position
+				 
+			}
+			
+			private function resetLayout():void {
+				if(filesBox.numChildren>0) {
+				var delay:Number = 0;
+				for(var i:int=0; i<filesBox.numChildren; i++) {
+					var child:DisplayObject = filesBox.getChildAt(i)
+					var total:Number = i;
+					var cols:Number = Math.floor(filesBox.width / (child.width+GAP_HORIZONTAL));
+					var rowsDone:Number = Math.floor(total / cols);
+					var rest:Number = total - (cols*rowsDone);
+					
+					var posx:Number = rest * (child.width+GAP_HORIZONTAL);
+					var posy:Number = rowsDone * (child.height+GAP_VERTICAL);
+					if(child.x != posx || child.y != posy) {
+						trace('LAYOUT::SETTINGNEWPOSITION');  
+						TweenLite.to(child,0.5,{x:posx, alpha:1,y:posy,rotation:0
+							,delay:delay,ease:Quad.easeInOut
+							,bezier:[{x:filesBox.width/2, y:filesBox.height/2}]});
+						delay +=0.01;
+					}
+				}
+				var rows:Number = Math.ceil( filesBox.numChildren / cols );
+				filesBox.height = rows * currFileView.height;
+				}
 			}
 			
 			private function onFileViewFrame(e:Event):void {
@@ -105,17 +150,33 @@
 			
 			private var fileBoxHeight:int = 0;
 			private var fileBoxNumChildred:int = 0;
+			private var oldStageWidth:int=0;
 			private function onResize(e:Event):void {
-				if( filesBox.height != fileBoxHeight) {
-					fileBoxHeight = filesBox.height; 
-				
-					var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
-					var newHeight:String = String( filesBox.height + Fuup.HEIGHT + 300 );
-					resizeCanvas.height = newHeight; 
-					resizeCanvas.width = '100%';
+				if(Application.application.stage.stageWidth != oldStageWidth) {
+					var stage:Stage = Application.application.stage;
+					oldStageWidth = stage.stageWidth;
+    	  			filesBox.width = stage.stageWidth-20;
+    	  			trace("STAGERESIZE::NEWFILESBOXSIZE::"+filesBox.width);
+    	  			//---set new positions for children
+    	  			resetLayout();
+				}
+				if( filesBox.height != fileBoxHeight || fileBoxNumChildred!=filesBox.numChildren) {
 					
-					trace('NEWSIZE::' + newHeight);
 					
+					if( fileBoxNumChildred != filesBox.numChildren ) {
+						resetLayout();
+						fileBoxNumChildred = filesBox.numChildren;	
+					}
+					
+					if( filesBox.height != fileBoxHeight ) {
+						fileBoxHeight = filesBox.height;
+						var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
+						var newHeight:String = String( filesBox.height + Fuup.HEIGHT + 300 );
+						resizeCanvas.height = newHeight; 
+						resizeCanvas.width = '100%';
+						
+						trace('NEWSIZE::' + newHeight);
+					}
 					dispatchEvent( new Event(RESIZE) );
 				}
 			}
@@ -127,6 +188,7 @@
 			private function onChange(e:Event):void {
 				dispatchEvent( new Event(SETTINGS_CHANGE) );
 			}
+			
 
     	  	]]>
     	  </fx:Script>
@@ -151,6 +213,6 @@
 		-->
 	</fu:Container>
     
-	<bit101:VBox id="filesBox" x="5" y="30" mouseChildren="true" />
+	<fu:Container id="filesBox" x="5" y="30" mouseChildren="true" />
 		
 </fu:Container>
