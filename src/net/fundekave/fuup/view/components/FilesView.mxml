@@ -7,7 +7,7 @@
 	>
     	  <fx:Script>
     	  	<![CDATA[
-    	  		import gs.plugins.BezierPlugin;
+   	  		
     	  		import gs.plugins.TweenPlugin;
     	  		import gs.easing.Quad;
     	  		import gs.TweenLite;
@@ -34,7 +34,6 @@
     	  	private function addedToStage():void {
     	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
     	  		
-    	  		TweenPlugin.activate([BezierPlugin]);
     	  	}
     	  	    	  	
     	  	private var fileRefList:FileReferenceList
@@ -113,7 +112,7 @@
 						trace('LAYOUT::SETTINGNEWPOSITION');  
 						TweenLite.to(child,0.5,{x:posx, alpha:1,y:posy,rotation:0
 							,delay:delay,ease:Quad.easeInOut
-							,bezier:[{x:filesBox.width/2, y:filesBox.height/2}]});
+							});
 						delay +=0.01;
 					}
 				}
