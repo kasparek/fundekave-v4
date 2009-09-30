@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Fudebu>
+<Login>
+<!-- access 1-can create, 2-can just upload to existing -->
+<User id="1" access="1" token="d45fsd5d654sd4f5d6s" />
+</Login>
+</Fudebu>

@@ -37,7 +37,9 @@ class FDBvo extends FDBTool {
 				}
 			}
 			$this->vo->changed = false;
-			return $this->vo->{$this->primaryCol} = parent::save();
+			$id = parent::save();
+			$this->vo->{$this->primaryCol} = $id;
+			return $id; 
 		}
 	}
 

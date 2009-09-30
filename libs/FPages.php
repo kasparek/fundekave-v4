@@ -242,12 +242,13 @@ class FPages extends FDBTool {
 				}
 				
 				//---show last item
-				$itemRenderer = new FItemsRenderer();
-				$fItems = new FItems($page[5],$user->userVO->userId,$itemRenderer);
+				if(isset($page[5])) {
+					$itemRenderer = new FItemsRenderer();
+					$fItems = new FItems($page[5],$user->userVO->userId,$itemRenderer);
       			$fItems->setOrder('dateCreated desc');
       			$fItems->setWhere('itemIdTop is null and pageId="'.$page[0].'"');
-				$tpl->setVariable("ITEM", $fItems->render(0,1));
-				
+					$tpl->setVariable("ITEM", $fItems->render(0,1));
+				}
 				$tpl->parseCurrentBlock();
 			}
 		}

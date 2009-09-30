@@ -105,11 +105,11 @@ class PageVO extends FVO {
 			$vo->notQuote('dateCreated');
 			$vo->addIgnore('dateUpdated');
 		}
-		$pageId = parent::save();
+		$this->pageId = $vo->save();
 		$this->xmlChanged = false;
 		$vo->vo = false;
 		$vo = false;
-		return $pageId;
+		return $this->pageId;
 	}
 
 	function setDefaults() {
