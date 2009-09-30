@@ -378,7 +378,7 @@ class FDBTool {
 		if($this->debug==1) echo $dot;
 		if(FDBTool::query($dot)) {
 			if($insert) {
-				$retId = (!empty($this->{$this->primaryCol}))?($this->{$this->primaryCol}):(FDBTool::getLastId());
+				$retId = (!empty($this->vo->{$this->primaryCol}))?($this->vo->{$this->primaryCol}):(FDBTool::getLastId());
 			}
 		}
 		//---invalidate cache

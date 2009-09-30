@@ -13,15 +13,12 @@
   </ul>
 <div>
 <a name="ft1" id="ft1"></a>
-<fieldset>
-<legend>Nastaveni</legend>
-
-<!-- BEGIN pageowner -->
-    <label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br />
-<!-- END pageowner -->
-    <label>Název stranky</label>
+	<fieldset>
+		<legend>Nastaveni</legend>
+		<!-- BEGIN pageowner --><label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br /><!-- END pageowner -->
+  	<label>Název stranky</label>
     <input type="text" name="name" value="{PAGENAME}" class="long"><br />
-    <label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short format-d-m-y divider-dot highlight-days-67" /><br />
+    <label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short datepicker" /><br />
     <!-- BEGIN sadmi -->
     <label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
     <label>Nazev kratky</label><input type="text" name="nameshort" value="{PAGENAMESHORT}" class="short" /><br />
@@ -32,44 +29,45 @@
     <!-- BEGIN categories -->
     <label>Kategorie</label><select name="category">{CATEGORYOPTIONS}</select><br />
     <!-- END categories -->
-    <!-- BEGIN pageavatarupload -->
-    <label>Ikona (60x25px)</label>
-    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /><br />
-    <label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
-    <!-- END pageavatarupload -->
-    <!-- BEGIN pageavatar -->
-    <label>&nbsp;</label><img src="{PAGEICOLINK}">&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
-    <!-- END pageavatar -->
     <label>Popis</label>
     <textarea id="{PAGEDESCRIPTIONID}" class="draftable" name="description">{PAGEDESCRIPTION}</textarea><br />
-    <label>Zahlaví</label>
-    <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
     
-    <!-- BEGIN galeryspecific -->
-    <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
-    <!-- BEGIN enhancendgalery -->
-    <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
-    <input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
-    <label>Styl nahledu</label><select name="xthumbstyle">
-    <option value="1">Bez orezu</option>
-    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
-    </select><br />
-    <!-- END enhancendgalery -->
-    <!-- END galeryspecific -->
-    <!-- BEGIN forumreaction -->
-    <label>Dikskuze:</label><select name="forumReact">
-      <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce</option>
-      <option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
-      <option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
-    </select><br />
-    <!-- END forumreaction -->
-    
-<input type="submit" name="save" value="Uložit" class="button submit" />
-<!-- BEGIN delpage -->
-<input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete mazat tuto stranku?" class="button confirm" />
-<!-- END delpage -->    
-
-</fieldset>
+		<label>Podrobnosti</label><a href="#" class="switchOpen" rel="detailSettings"><strong>Otevrit podrobnejsi nastaveni</strong></a>
+		<div id="detailSettings" class="hidden">
+	    <!-- BEGIN pageavatarupload -->
+	    <label>Ikona (60x25px)</label>
+	    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /><br />
+	    <label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
+	    <!-- END pageavatarupload -->
+	    <!-- BEGIN pageavatar -->
+	    <label>&nbsp;</label><img src="{PAGEICOLINK}">&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
+	    <!-- END pageavatar -->
+	    <label>Zahlaví</label>
+	    <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
+	    <!-- BEGIN galeryspecific -->
+	    <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
+	    <!-- BEGIN enhancendgalery -->
+	    <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
+	    <input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
+	    <label>Styl nahledu</label><select name="xthumbstyle">
+	    <option value="1">Bez orezu</option>
+	    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
+	    </select><br />
+	    <!-- END enhancendgalery -->
+	    <!-- END galeryspecific -->
+	    <!-- BEGIN forumreaction -->
+	    <label>Dikskuze:</label><select name="forumReact">
+	      <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce</option>
+	      <option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
+	      <option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
+	    </select>
+	    <!-- END forumreaction -->
+    </div>
+    <div>
+    	<input type="submit" name="save" value="Uložit" class="button submit" />
+			<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete mazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
+		</div>
+	</fieldset>
 </div>
 
 <div>
@@ -113,12 +111,17 @@
 <a name="ft6" id="ft6"></a>
 <fieldset>
 <legend>Nahrat fotografie</legend>
-<div id="fotosUploadify" class="uploadify multi">
+		
+<div id="FuupUploader">
 <!-- BEGIN uploadinput -->
 <label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br />
 <!-- END uploadinput -->
+<a href="http://www.adobe.com/go/getflashplayer">
+				<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+			</a>
+			<input type="submit" name="save" value="Uložit" class="submitUploadify button submit" />
 </div>
-<input type="submit" name="save" value="Uložit" class="submitUploadify button submit" />
+
 </fieldset>
 </div>
 <!-- END galeryspecificcontent -->
@@ -139,3 +142,13 @@
     
 </div>
 </form>
+
+<script type="text/javascript" src="fuup/swfo.js"></script>
+<script type="text/javascript">
+var flashvars = {};
+var params = {};
+params.wmode = "transparent";
+var attributes = {};
+attributes.id = "FuupUploaderSwf";
+swfobject.embedSWF("fuup/Fuup.swf", "FuupUploader", "100%", "35", "10.0.0", "expressInstall.swf", flashvars, params, attributes);
+</script>
