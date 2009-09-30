@@ -1,5 +1,6 @@
 package net.fundekave.lib
 {
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -138,7 +139,7 @@ package net.fundekave.lib
 	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
 	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
         	
-        	dispatchEvent( new Event( ERROR ));
+        	dispatchEvent( new ErrorEvent( ERROR ));
         }
         
 	}
