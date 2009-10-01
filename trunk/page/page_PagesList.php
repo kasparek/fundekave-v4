@@ -53,7 +53,8 @@ class page_PagesList implements iPage {
 			$fPages->setOrder("dateContent desc,pageId desc");
 			$fPages->addWhere('p.locked < 2');
 		} else {
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',typeIdChild');
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value,p.typeId');
+			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 			if($user->idkontrol!==true) {
 				$fPages->addWhere('p.locked < 2');
 			} else {
@@ -67,6 +68,7 @@ class page_PagesList implements iPage {
 		$fPages->setLimit($from,$perPage+1);
 
 		$arr = $fPages->getContent();
+		
 		$totalItems = count($arr);
 
 		$maybeMore = false;

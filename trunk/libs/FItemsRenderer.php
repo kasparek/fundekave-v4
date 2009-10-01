@@ -227,6 +227,7 @@ class FItemsRenderer {
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 			unset($pageVO);
 		}
+		/**/
 		FProfiler::profile('FItemsRenderer::render--PAGE NAME',true);
 
 		//---BLOG / EVENT
@@ -254,7 +255,7 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
-				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showPageLabel'=>true));
+				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showTooltip'=>false,'showPageLabel'=>true));
 				if(FRules::get($userId, $itemVOBottom->pageId,1)) {
 					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}
