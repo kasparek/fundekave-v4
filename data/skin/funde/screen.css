@@ -323,7 +323,7 @@ div#mainbar li {
 	padding-left: 10px;
 	list-style: none;
 	background: url("img/arrow-white-bg.gif") no-repeat left center;
-	line-height: 1.8em;
+	//line-height: 1.8em;
 }
 
 div#mainbar div.vevent ul {
@@ -530,7 +530,8 @@ div#mainbar ul.pageList li {
 	padding-left: 0;
 	background: none;
 }
-div#mainbar ul.pageList li a.pageLink {
+div#mainbar a.pageLink {
+	clear: both;
 	line-height: 25px;
 	display: block;
 	background: #eeeeee;
@@ -639,14 +640,14 @@ div.mainpanel-content div.unread span.author {
 	padding-left: 0.3em;
 }
 div.mainpanel-content div.hentry h2.entry-title {
-  position: absolute;
-	top: -2.5em;
+  //position: absolute;
+	//top: -2.5em;
   padding: 0;
   margin: 0;
 }
 div.mainpanel-content div.hentry h2.entry-title a {
 	color: black;
-	text-decoration: none;
+	text-decoration: underline;
 }
 div.mainpanel-content div.hentry h3 {
 	margin: 0;
@@ -793,7 +794,7 @@ div#mostPopularPages ul li {
 }
 div.commentedItem {
 	clear: left;
-	border-top: 1px dashed #ddd;
+	//border-top: 1px dashed #ddd;
 	padding: 1em 0 1em 30px;
 }
 div.commentedItem div.category {

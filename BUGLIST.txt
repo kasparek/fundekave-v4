@@ -1,3 +1,7 @@
+- last item -
+delete FROM `sys_pages_properties` WHERE name="itemIdLast"; 
+insert into sys_pages_properties select pageId,'itemIdLast',max(itemId) from sys_pages_items where public='1' and itemIdTop is null group by pageId;
+
 pratele - odkazy - vylepsit na bookmarky - kategorie, styl, smazat nefuguje
 
 tipy - do kategorii - misto - breadcrumbs

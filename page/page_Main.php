@@ -9,27 +9,25 @@ class page_Main implements iPage {
 	static function build() {
 		
 		$user = FUser::getInstance();
+		$userId = $user->userVO->userId;
 		$tpl = new FTemplateIT('maina.tpl.html');
 		
 		$cache = FCache::getInstance('f',3600);
 		//--------------LAST-FORUM-POSTS
 		$data = $cache->getData(($user->userVO->userId*1).'-main','lastForumPost');
 		if($data === false) {
-			
-			$arr = FDBTool::getCol("SELECT max(ItemId) as maxid FROM sys_pages_items where typeId='forum' group by pageId order by maxid desc limit 0,6");
-			$data = '';
-			if(!empty($arr)) {
-				$strItemId = implode(',',$arr);
-				
-				$itemRenderer = new FItemsRenderer();
-				$itemRenderer->showPageLabel = true;
-				$fItems = new FItems('forum',$user->userVO->userId,$itemRenderer);
-				$fItems->addWhere('itemId in ('.$strItemId.')');
-				$fItems->addOrder('dateCreated desc');
-				$fItems->getList(0,3);
-				while($fItems->data) $fItems->parse();
-				$data = $fItems->show();
+			$fPages = new FPages('forum', $userId);
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value,p.typeId');
+			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
+			if($user->idkontrol!==true) {
+				$fPages->addWhere('p.locked < 2');
+			} else {
+				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 			}
+			$fPages->setOrder("(pplastitem.value+0.0) desc");
+			$arr = $fPages->getContent(0,4);
+			
+			$data = FPages::printPagelinkList($arr);
 			$cache->setData($data);
 		}
 		if(!empty($data)) $tpl->setVariable('LASTFORUMPOSTS',$data);
@@ -39,6 +37,23 @@ class page_Main implements iPage {
 		$dataArr = $cache->getData(($user->userVO->userId*1).'-main','lastBlogPost');
 		if($dataArr===false) {
 			$dataArr = array();
+			
+			$fPages = new FPages('blog', $userId);
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value,p.typeId');
+			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
+			if($user->idkontrol!==true) {
+				$fPages->addWhere('p.locked < 2');
+			} else {
+				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+			}
+			$fPages->setOrder("(pplastitem.value+0.0) desc");
+			$arr = $fPages->getContent(0,4);
+			
+			$dataArr[] = FPages::printPagelinkList(array(array_shift($arr)));
+			
+			$dataArr[] = FPages::printPagelinkList($arr);
+			
+			/*
 			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
 			if(!empty($arr)) {
 				$itemRenderer = new FItemsRenderer();
@@ -53,11 +68,13 @@ class page_Main implements iPage {
 					$dataArr[] = $fItems->show();
 				}
 			}
+			*/
 			$cache->setData($dataArr);
 		}
+		
 		if(!empty($dataArr)) {
-			$tpl->setVariable('LASTBLOGPOST',array_shift($dataArr));
-			if(!empty($dataArr)) $tpl->setVariable('LASTBLOGPOSTS',implode("\n",$dataArr));
+			$tpl->setVariable('LASTBLOGPOST',$dataArr[0]);
+			if(!empty($dataArr)) $tpl->setVariable('LASTBLOGPOSTS',$dataArr[1]);
 		}
 
 		//------LAST-CREATED-PAGES
