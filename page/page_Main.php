@@ -12,7 +12,7 @@ class page_Main implements iPage {
 		$userId = $user->userVO->userId;
 		$tpl = new FTemplateIT('maina.tpl.html');
 		
-		$cache = FCache::getInstance('f',3600);
+		$cache = FCache::getInstance('f',0);
 		//--------------LAST-FORUM-POSTS
 		$data = $cache->getData(($user->userVO->userId*1).'-main','lastForumPost');
 		if($data === false) {
@@ -50,25 +50,8 @@ class page_Main implements iPage {
 			$arr = $fPages->getContent(0,4);
 			
 			$dataArr[] = FPages::printPagelinkList(array(array_shift($arr)));
-			
 			$dataArr[] = FPages::printPagelinkList($arr);
 			
-			/*
-			$arr = FDBTool::getCol("SELECT itemId FROM sys_pages_items where public = 1 and typeId='blog' and itemIdTop is null order by dateCreated desc limit 0,10");
-			if(!empty($arr)) {
-				$itemRenderer = new FItemsRenderer();
-				$itemRenderer->showHeading = true;
-				$fItems = new FItems('blog',$user->userVO->userId,$itemRenderer);
-				$fItems->addWhere('itemId in ('.implode(',',$arr).')');
-				$fItems->addOrder('dateCreated desc');
-				$fItems->getList(0,5);
-				$firstPost = true;
-				while($fItems->data) {
-					$fItems->parse();
-					$dataArr[] = $fItems->show();
-				}
-			}
-			*/
 			$cache->setData($dataArr);
 		}
 		
