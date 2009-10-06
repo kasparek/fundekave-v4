@@ -100,7 +100,15 @@ class FItemsRenderer {
 				$tpl->setVariable('EDITPAGEID', $pageId.'u');
 			}
 		}
-		if($this->showText==true && !empty($itemVO->text)) $tpl->setVariable('TEXT',$itemVO->text);
+		if($this->showText==true && !empty($itemVO->text)) {
+		  $text = $itemVO->text;
+		  $words = explode(' ',$text);
+		  $shorten = array_slice($words,0,150);
+		  //$text = FSystem::textins(implode(' ',$shorten));
+		  $text = implode(' ',$shorten);
+		  //if blog and not in detail shorten text to 100words
+      $tpl->setVariable('TEXT', $text);
+    }
 		
 		FProfiler::profile('FItemsRenderer::render--BASE DATA',true);
 
@@ -233,7 +241,7 @@ class FItemsRenderer {
 		//---BLOG / EVENT
 		if(!empty($addon)) {
 			$link = FUser::getUri('i='.$itemId.'-'.FSystem::safeText($addon),$pageId);
-			if($this->showHeading==true) {
+			if($this->showHeading == true) {
 				$tpl->setVariable('BLOGLINK',$link);
 				$tpl->setVariable('BLOGTITLE',$addon);
 			}
@@ -256,6 +264,10 @@ class FItemsRenderer {
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
 				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showTooltip'=>false,'showPageLabel'=>true));
+				if($itemVOBottom->typeId == 'galery') {
+          $tpl->touchBlock('withCommented');
+          $tpl->touchBlock('commentedFloat');
+        }
 				if(FRules::get($userId, $itemVOBottom->pageId,1)) {
 					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}
