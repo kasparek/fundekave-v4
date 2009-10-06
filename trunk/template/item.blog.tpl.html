@@ -1,25 +1,18 @@
 <div id="{ITEMIDHTML}" class="hentry<!-- BEGIN notpublished --> notpublished<!-- END notpublished -->">
   <!-- BEGIN category --><span class="category"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
-	
-	
-	
 	<!-- BEGIN notpublishedheader --><h3>Nepublikovano</h3><!-- END notpublishedheader -->
+  <span class="author vcard">
+    <!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --> 
+    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" title="Prave sleduje" class="currentLocation">{USERLOCATION}</a><!-- END useronlinelocation -->
+  </span>
+  <!-- BEGIN edit --><span class="edit"><a href="?k={EDITPAGEID}&amp;i={EDITID}" class="editLink" onclick='xajax_blog_blogEdit("{EDITID}");return false;'>Upravit</a></span><!-- END edit -->
+  <!-- BEGIN commentlink --><span class="comments"><a href="{COMMENTLINK}" class="commentsLink">Komentaru [<!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></span><!-- END commentlink -->
+  <!-- BEGIN link --><span class="link"><a href="{ITEMLINK}" title="Odkaz na prispevek">URL</a></span><!-- END link -->
+  <!-- BEGIN tag --><span class="tag">{TAG}</span><!-- END tag -->
 	<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
 	<!-- BEGIN heading --><h2 class="entry-title summary"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
-	<div class="entry-content">{TEXT}</div>
-
-  <!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
-	
-  <!-- BEGIN toolbar -->
-  <ul>
-  <!-- BEGIN edit --><li class="opposite"><a href="?k={EDITPAGEID}&amp;i={EDITID}" class="editLink" onclick='xajax_blog_blogEdit("{EDITID}");return false;'>Upravit</a></li><!-- END edit -->
-  <li class="opposite"><span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span></li>
-  <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
-  <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
-  <!-- BEGIN commentlink --><li><a href="{COMMENTLINK}" class="commentsLink">Diskuze [<!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></li><!-- END commentlink -->
-  </ul>
-  <!-- END toolbar -->
-  
+	<div class="entry-content<!-- BEGIN withCommented --> withCommented<!-- END withCommented -->">{TEXT}</div>
+  <!-- BEGIN commentedItem --><div class="commentedItem<!-- BEGIN commentedFloat -->Float<!-- END commentedFloat -->">{ITEMBOTTOM}</div><!-- END commentedItem -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
 <hr class="cleaner" />
