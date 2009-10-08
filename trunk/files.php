@@ -3,9 +3,11 @@
 require("./local.php");
 require(INIT_FILENAME);
 
+define('FUUP_UPLOAD','D:/_work/fdk5/data/fuup/');
+
 function chunkFilename($ident,$iter) {
 	$user = FUser::getInstance();
-	return  $file = 'chunks/chunk-'.$user->userVO->name.'-'.$ident.'-'.$iter.'.txt';
+	return  $file = FUUP_UPLOAD.'chunks/chunk-'.$user->userVO->name.'-'.$ident.'-'.$iter.'.txt';
 }
 
 if($user->idkontrol) {
@@ -33,7 +35,7 @@ if($allExists === true) {
 		$encData .= trim(file_get_contents(chunkFilename($filename,$i)));
 	}
 
-	file_put_contents('images/'.$filename.'.jpg',base64_decode( $encData ));
+	file_put_contents(FUUP_UPLOAD.'images/'.strtolower($filename), base64_decode( $encData ));
 	
 	for($i=0;$i<$total;$i++) {
 	  unlink(chunkFilename($filename,$i));
