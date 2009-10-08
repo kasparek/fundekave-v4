@@ -1,6 +1,6 @@
 <?php
 //local settings for current server
-define('ROOT', "C:\_web/fdk5/");
+define('ROOT', "D:\_work/fdk5/");
 define('CONFIGDIR', 'config/');
 define('LIBSDIR', 'libs/');
 define('CONFIG_FILENAME', ROOT.CONFIGDIR.'fdk3.conf.ini');
