@@ -19,8 +19,8 @@ class FileDriver
 
 	function __construct() {
 		require_once('Cache/Lite.php');
-		if(!is_dir(ROOT.ROOT_CACHE_TEXT)) mkdir(ROOT.ROOT_CACHE_TEXT,0777,true);
-		$cacheOptions['cacheDir'] = ROOT.ROOT_CACHE_TEXT;
+		if(!is_dir(FConf::get('settings','cache_path'))) mkdir(FConf::get('settings','cache_path'),0777,true);
+		$cacheOptions['cacheDir'] = FConf::get('settings','cache_path');
 		$cacheOptions['lifeTime'] = $this->lifeTime;
 		$this->cacheLite = new Cache_Lite($cacheOptions);
 	}

@@ -9,16 +9,19 @@ class page_ItemsLive implements iPage {
 	static function build() {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
+		$userId = $user->userVO->userId;
 
 		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
 
 		$localPerPage = $user->pageVO->perPage();
+		
 
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->showPageLabel = true;
 		
 		$fItems = new FItems($typeId,$user->userVO->userId,$itemRenderer);
-		$fItems->addWhere('itemIdTop is null');
+		$fItems->cacheResults = 's';
+		//$fItems->addWhere('itemIdTop is null');
 		$fItems->setOrder('dateCreated desc');
 		
 		$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));

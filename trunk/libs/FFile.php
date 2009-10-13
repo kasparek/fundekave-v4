@@ -46,7 +46,9 @@ class FFile {
 	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
 		if(!file_exists($dir)) {
-			return mkdir($dir, $mode, $recursive);
+			 $dir = mkdir($dir, $mode, $recursive);
+			 //chmod($dir, 0777);
+			 return $dir;
 		}
 	}
 	

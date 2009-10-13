@@ -2,6 +2,8 @@
 class rh_akce_rnd {
 
 	static function show() {
+		return '';
+		
 		$cache = FCache::getInstance('f',86400);
 
 		$itemRenderer = new FItemsRenderer();
