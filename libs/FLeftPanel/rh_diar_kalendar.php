@@ -20,6 +20,8 @@ static function rh_datum() {
 	}
 	//TODO: refactor links - fajax
 	static function show($year='',$month='') {
+		return '';
+		
 		$dden = 1;
 		if(!empty($_REQUEST['ddate'])) {
 			list($drok,$dmesic,$dden)=explode("-",$_REQUEST['ddate']);

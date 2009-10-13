@@ -1,6 +1,10 @@
 - last item -
+
 delete FROM `sys_pages_properties` WHERE name="itemIdLast"; 
 insert into sys_pages_properties select pageId,'itemIdLast',max(itemId) from sys_pages_items where public='1' and itemIdTop is null group by pageId;
+
+delete FROM `sys_pages_items_properties` WHERE name="itemLiveforum"; 
+insert into sys_pages_items_properties select itemId,'itemLiveforum',pageId from sys_pages_items where typeId='forum' and public='1' and itemIdTop is null order by dateCreated desc limit 0,100;
 
 pratele - odkazy - vylepsit na bookmarky - kategorie, styl, smazat nefuguje
 

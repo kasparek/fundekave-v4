@@ -234,7 +234,7 @@ div.sidebarBlock {
   /*border: 1px solid #999;*/
   margin: 0 0 1em 0;
 	padding: 0.3em;
-	background: #eee;
+	background: #fff;
 }
 div.sidebarBlock.loginBlock {
 	padding: 10px 0;
@@ -525,7 +525,7 @@ div#mainbar ul.pageList li a img {
  margin-right: 0.5em;
 }
 div#mainbar ul.pageList li {
-	margin-top: 1em;
+	margin-top: 0.1em;
 	clear: left;
 	padding-left: 0;
 	background: none;

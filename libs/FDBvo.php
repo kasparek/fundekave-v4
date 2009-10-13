@@ -14,9 +14,13 @@ class FDBvo extends FDBTool {
 		}
 		$this->vo = $vo;
 	}
-
+	
 	function load() {
-		$arr = $this->get( $this->vo->{$this->primaryCol} );
+		$primCol = explode(',',$this->primaryCol);
+		foreach($primCol as $col) {
+			$keys[] =  $this->vo->{$col};
+		}
+		$arr = $this->get( implode(',',$keys) );
 		if(!empty($arr)) {
 			foreach($arr as $k=>$v) {
 				$this->vo->{$k} = $v;
@@ -24,26 +28,40 @@ class FDBvo extends FDBTool {
 		}
 	}
 
-	function save() {
-		if($this->vo->changed === true || $this->vo->saveOnlyChanged === false) {
-			$this->queryReset();
-			foreach($this->columns as $col) {
-				if( $this->vo->$col !== null ) {
-					$this->addCol($col, $this->vo->$col);
-					if($this->vo->$col == 'null') {
-						$this->notQuote($col);
-						$this->vo->$col = null;
-					}
+	function feed() {
+		$this->queryReset();
+		foreach($this->columns as $col) {
+			if( $this->vo->$col !== null ) {
+				$this->addCol($col, $this->vo->$col);
+				if($this->vo->$col == 'null') {
+					$this->notQuote($col);
+					$this->vo->$col = null;
 				}
 			}
+		}
+	}
+
+	function save() {
+		if($this->vo->changed === true || $this->vo->saveOnlyChanged === false) {
+			$this->feed();
 			$this->vo->changed = false;
 			$id = parent::save();
-			$this->vo->{$this->primaryCol} = $id;
+			$idList = explode(',',$id);
+			$primCol = explode(',',$this->primaryCol);
+			$i=0;
+			foreach($primCol as $col) {
+				$this->vo->{$col} = $idList[$i];
+				$i++;
+			}
 			return $id; 
 		}
 	}
 
 	function delete() {
-		parent::delete($this->vo->{$this->primaryCol});
+		$primCol = explode(',',$this->primaryCol);
+		foreach($primCol as $col) {
+			$delArr[$col] = $this->vo->{$col}; 
+		}
+		return parent::delete( $delArr );
 	}
 }

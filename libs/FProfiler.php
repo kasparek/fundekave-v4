@@ -22,6 +22,9 @@ class FProfiler {
 		$startTime = $statArr[0]['time'];
 		$lastTime = $startTime;
 		$lastMemUsage = 0;
+		
+		if(empty($statArr)) return;
+		
 		foreach($statArr as $profil) {
 			if($profil['group']==true) {
 				if(!isset($groupLastTime)) $groupLastTime = $lastTime;
@@ -54,7 +57,7 @@ class FProfiler {
 			}
 		}
 		$total = $lastTime-$startTime;
-		file_put_contents(ROOT.'tmp/FSystem-profile-times.log','Total time:'.$total."\n".$text);
+		file_put_contents(FConf::get('settings','logs_path').'System-profile-times.log','Total time:'.$total."\n".$text);
 		$cache->invalidatedata('profile','FSystem');
 	}
 }

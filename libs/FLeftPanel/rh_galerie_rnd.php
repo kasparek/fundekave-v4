@@ -1,6 +1,8 @@
 <?php
 class rh_galerie_rnd {
-	static function show(){
+	static function show() {
+		return '';
+		
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->openPopup = true;
 		$itemRenderer->showPageLabel = true;
