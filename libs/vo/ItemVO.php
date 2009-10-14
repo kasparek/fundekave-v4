@@ -1,5 +1,5 @@
 <?php
-class ItemVO extends FVO {
+class ItemVO extends Fvob {
 
 	var $table = 'sys_pages_items';
 	var $primaryCol = 'itemId';

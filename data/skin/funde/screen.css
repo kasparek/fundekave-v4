@@ -316,14 +316,8 @@ div#mainbar h2 {
 	font-size: 1.5em;
 }
 div#mainbar ul {
-	padding: 1em 0;
+	padding: 0;
 	margin: 0;
-}
-div#mainbar li {
-	padding-left: 10px;
-	list-style: none;
-	background: url("img/arrow-white-bg.gif") no-repeat left center;
-	/*line-height: 1.8em;*/
 }
 
 div#mainbar div.vevent ul {
@@ -958,37 +952,6 @@ div#fcalendar div.calendarNextMonthLink {
 	border-top: 0;*/
 }
 
-/*DOMTABS*/
-div.domtab ul.domtabs
-{
-display: none;
-margin-left: 0;
-padding-left: 0;
-white-space: nowrap;
-}
-
-div.domtab ul.domtabs li
-{
-list-style: none;
-display: inline;
-list-style-type: none;
-}
-
-div.domtab ul.domtabs a { padding: 3px 10px; }
-
-div.domtab ul.domtabs a:link, #navlist a:visited
-{
-color: #000;
-background-color: #ddd;
-text-decoration: none;
-}
-
-div.domtab ul.domtabs a:hover
-{
-color: #000;
-background-color: #eee;
-text-decoration: none;
-}
 /*error msgs*/
 #errormsgJS {
 	display:none;

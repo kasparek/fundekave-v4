@@ -62,15 +62,14 @@ a:active, a:focus, a:hover {
 	}
 
 ul, ol {
-	margin: 0 0 0 2em;
+	margin: 0;
 	padding: 0;
 	}
 
 ul li {
-	margin: 0; padding: 0;
-	list-style-position: outside;
-	list-style-type: square;
-	}
+	margin: 0; 
+  padding: 0;
+}
 
 img, a img {
 	border: 0;

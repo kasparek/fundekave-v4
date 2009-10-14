@@ -1,5 +1,5 @@
 <?php
-class UserVO extends FVO {
+class UserVO extends Fvob {
 
 	//---token is changed every check
 	//---if true user can NOT work in multiple windows

@@ -1,252 +1,88 @@
 <?php
 /**
   * PHP Class b2evo_captcha Version 1.3.1, released 27-Jan-2006
-  *
   * a PHP Class for creating and testing captchas used in b2evolution
-  *
   * Author : Ben Franske, ben@franske.com, http://ben.franske.com
-  *
   * Based on hn_captcha Version 1.2 by Horst Nogajski, horst@nogajski.de
   *     - hn_captcha is a fork of ocr_captcha by Julien Pachet
-  * 
   * License: GNU GPL (http://www.opensource.org/licenses/gpl-license.html)
-  *
   **/
 
 //example
 /*
 if($captcha->validate_submit($_POST['captchaimage'],$_POST['pcaptcha'])) $cap = true; 
 */
-
 /*
 $src = $captcha->get_b2evo_captcha();
 <img src="'.$src.'" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="'.$src.'" />
 <input type="text" name="pcaptcha" value="" />
 */
-
-/**
-  *
-  * changes in version 1.3.1:
-  *  - removed unrequired double quotes
-  *  - use function_exists() to check for some required functions
-  *
-  * changes in version 1.3:
-  *  - modified for use in b2evolution and to make more of a standalone class:
-  *      - stripped code so only image generation and testing remain
-  *      - removed code for multiple attempts, one shot per image only (K.I.S.S.)
-  *      - automatically select from multiple random fonts from the fonts folder
-  *	 - support for random captcha length
-  *      - support for easily selecting valid characters and number of characters
-  *	 - added built-in garbage cleanup
-  *	 - support for case sensitive captchas
-  *	 - upgraded from rand() functions to mt_rand() functions
-  *	 - support for full md5 hashes instead of hash substrings
-  *	 - made it easier to drop in different image generation function
-  *
-  * changes in version 1.2:
-  *  - added a new configuration-variable: secretposition
-  *  - once more modified the function get_try(): generate a string of 32 chars length,
-  *    where at secretposition is the number of current-try.
-  *    Hopefully this is enough for hackprevention.
-  *
-  * changes in version 1.1:
-  *  - added a new configuration-variable: maxrotation
-  *  - added a new configuration-variable: secretstring
-  *  - modified function get_try(): now ever returns a string of 16 chars
-  *
-  **/
-
-/**
-  * License: GNU GPL (http://www.opensource.org/licenses/gpl-license.html)
-  * 
-  * This program is free software;
-  * 
-  * you can redistribute it and/or modify it under the terms of the GNU General Public License
-  * as published by the Free Software Foundation; either version 2 of the License,
-  * or (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License along with this program;
-  * if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-  *
-  **/
-
-
 class FCaptcha
 {
-
-	////////////////////////////////
-	//
 	//	Default options, can be overridden from the calling code
-	//
-
 	/**
 	 * Absolute path to a Tempfolder (with trailing slash!). This must be writeable for PHP and also accessible via HTTP, because the image will be stored there.
-	 *
 	 **/
 	var $tempfolder;
 	var $ftpwebpath; //---physical root of web
 	var $urlwebpath; //---url root of web
 	/**
 	 * Absolute path to folder with TrueTypeFonts (with trailing slash!). This must be readable by PHP.
-	 *
 	 **/
 	var $TTF_folder;
-
-	/**
-         * The minimum number of characters to use for the captcha
-	 * Set to the same as maxchars to use fixed length captchas
-         **/
+	/** The minimum number of characters to use for the captcha * Set to the same as maxchars to use fixed length captchas **/
 	var $minchars = 5;
-
-	/**
-         * The maximum number of characters to use for the captcha
-	 * Set to the same as minchars to use fixed length captchas
-         **/
+	/** The maximum number of characters to use for the captcha **/
 	var $maxchars = 7;
-
-	/**
-         * The minimum font size to use
-         *
-	 **/
+	/** The minimum font size to use **/
 	var $minsize = 20;
-
-	/**
-          * The maximum font size to use
-          *
-          **/
+	/** The maximum font size to use **/
 	var $maxsize = 30;
-
-	/**
-          * The maximum degrees a Char should be rotated. Set it to 30 means a random rotation between -30 and 30.
-          *
-          **/
+	/** The maximum degrees a Char should be rotated. Set it to 30 means a random rotation between -30 and 30. **/
 	var $maxrotation = 25;
-
-	/**
-          * Background noise On/Off (if is FALSE, a grid will be created)
-          *
-          **/
+	/** Background noise On/Off (if is FALSE, a grid will be created) **/
 	var $noise = TRUE;
-
-	/**
-          * This will only use the 216 websafe color pallette for the image.
-          *
-          **/
+	/** This will only use the 216 websafe color pallette for the image. **/
 	var $websafecolors = FALSE;
-
-	/**
-          * Outputs configuration values for testing
-          *
-          **/
+	/** Outputs configuration values for testing **/
 	var $debug = FALSE;
-
-	/**
-          * Filename of garbage collector counter which is stored in the tempfolder
-          *
-          **/
+	/** Filename of garbage collector counter which is stored in the tempfolder **/
 	var $counter_filename = 'b2evo_captcha_counter.txt';
-
-	/**
-          * Prefix of captcha image filenames
-          *
-          **/
+	/** Prefix of captcha image filenames **/
 	var $filename_prefix = 'b2evo_captcha_';
-
-	/**
-          * Number of captchas to generate before garbage collection is done
-          *
-          **/
+	/** Number of captchas to generate before garbage collection is done **/
 	var $collect_garbage_after = 100;
-
-	/**
-          * Maximum lifetime of a captcha (in seconds) before being deleted during garbage collection
-          *
-          **/
+	/** Maximum lifetime of a captcha (in seconds) before being deleted during garbage collection **/
 	var $maxlifetime = 600;
-
-	/**
-          * Make all letters uppercase (does not preclude symbols)
-          *
-          **/
+	/** Make all letters uppercase (does not preclude symbols) **/
 	var $case_sensitive = TRUE;
 
-	////////////////////////////////
-	//
 	//	Private options, these are fixed options
-	//
-
-	/**
-          * String of valid characters which may appear in the captcha
-          *
-          **/
+	/** String of valid characters which may appear in the captcha **/
 	var $validchars = 'abcdefghjkmnpqrstuvwxyz23456789?@#$%&*ABCDEFGHJKLMNPQRSTUVWXYZ23456789?@#$%&*';
-
-	/**
-          * Picture width
-          *
-          **/
+	/** Picture width **/
 	var $lx;
-
-	/**
-          * Picture height
-          *
-          **/
+	/** Picture height **/
 	var $ly;
-
-	/**
-          * JPEG Image quality
-          *
-          **/
+	/** JPEG Image quality **/
 	var $jpegquality = 80;
-
-	/**
-          * Noise multiplier (number of characters gets multipled by this to define noise)
-          * Note: This doesn't quite make sense, do you really want less noise in a smaller captcha?
-          **/
+	/** Noise multiplier (number of characters gets multipled by this to define noise)
+  * Note: This doesn't quite make sense, do you really want less noise in a smaller captcha? **/
 	var $noisefactor = 9;
-
-	/**
-          * Number of backgrond noise characters
-          *
-          **/
+	/** Number of backgrond noise characters **/
 	var $nb_noise;
-
-	/**
-          * Holds the list of possible fonts
-          *
-          **/
+	/** Holds the list of possible fonts **/
 	var $TTF_RANGE;
-
-	/**
-          * Holds the currently selected font filename
-          *
-          **/
+	/** Holds the currently selected font filename **/
 	var $TTF_file;
-
-	/**
-          * Holds the number of characters in the captcha
-          *
-          **/
+	/** Holds the number of characters in the captcha **/
 	var $chars;
-
 	var $public_K;
 	var $private_K;
-
-	/**
-          * Captcha filename
-          *
-          **/
+	/** Captcha filename **/
 	var $filename;
-
-	/**
-          * Holds the version number of the GD-Library
-          *
-          **/
+	/** Holds the version number of the GD-Library **/
 	var $gd_version;
 
 	var $r;

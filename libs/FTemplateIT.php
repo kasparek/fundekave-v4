@@ -63,36 +63,24 @@ class FTemplateIT extends FHTMLTemplateIT {
 			}
 		}
 	}
-	var $arrTabs = array();
+
 	function addRaw($data) {
 		$this->setCurrentBlock('maincontent-raw');
 		$this->setVariable('RAWDATA',$data);
 		$this->parseCurrentBlock();
 	}
+
 	function addTab($arrVars) {
 		$this->setCurrentBlock('maincontent-recurrent');
 		foreach ($arrVars as $k=>$v)  {
 			if($v!='') $this->setVariable($k, $v);
 		}
 		if(!empty($arrVars['TABID']) && !empty($arrVars['TABNAME'])) {
-			//--add to tabs
-			//--if tabs enabled - parse tab menu and include js
-			$this->arrTabs[] = $arrVars;
 			$this->touchBlock('tabidclose');
 		}
 		$this->parseCurrentBlock();
 	}
-	function createTabs() {
-		if(!empty($this->arrTabs)) {
-			foreach($this->arrTabs as $tab) {
-				$this->setCurrentBlock('domtabmenuitem');
-				$tpl->setVariable('TABMENUID', $tab['TABID']);
-				$tpl->setVariable('TABMENUNAME', $tab['TABNAME']);
-				$this->parseCurrentBlock();
-			}
-			$this->touchBlock('domtabclose');
-		}
-	}
+
 	function addTextareaToolbox($key,$textareaId) {
 		global $user;
 		if($user->idkontrol) {
@@ -103,6 +91,7 @@ class FTemplateIT extends FHTMLTemplateIT {
 			unset($ftpl);
 		}
 	}
+
 	function moveBlock($blockName,$variableName) {
 		$tpl->parse($blockName);
 		$block = $tpl->get($blockName);

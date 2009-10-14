@@ -1,5 +1,5 @@
 <?php
-class FVO {
+class Fvob {
 	
 	public $table;
 	public $primaryCol; //---string

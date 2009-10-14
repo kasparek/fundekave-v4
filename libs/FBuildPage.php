@@ -295,7 +295,7 @@ class FBuildPage {
 		//--- js and css included just when needed
 		$useDatePicker = false;
 		$useMarkItUp = false;
-		$useDomTabs = false;
+		$useTabs = false;
 		$useSlimbox = false;
 		$useUploadify = false;
 		$useSupernote = false;
@@ -305,7 +305,7 @@ class FBuildPage {
 			if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'uploadify') !== false) { $useUploadify = true; }
-			if(strpos($item, 'domtabs') !== false) { $useDomTabs = true; }
+			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
 			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 		}
@@ -327,8 +327,8 @@ class FBuildPage {
 			$tpl->touchBlock("uploadifyHEAD");
 			$tpl->touchBlock("uploadifyEND");
 		}
-		if($useDomTabs === true) {
-			$tpl->touchBlock("domtabsEND");
+		if($useTabs === true) {
+			$tpl->touchBlock("tabsEND");
 		}
 		if($useSupernote === true) {
 			$tpl->touchBlock("supernoteEND");
