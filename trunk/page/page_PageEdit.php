@@ -312,15 +312,20 @@ class page_PageEdit implements iPage {
 
 		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
 
+    
 		if($user->pageParam!='a') {
 			$tpl->touchBlock('permissionstab');
-			$tpl->touchBlock('relatedtab');
 			$rules = new FRules($pageVO->pageId, $pageVO->userIdOwner);
 			$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
-			$fRelations = new FPagesRelations($pageVO->pageId);
+			
+			/*
+			$tpl->touchBlock('relatedtab');
+      $fRelations = new FPagesRelations($pageVO->pageId);
 			$tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
+			*/
 		}
-
+    
+    
 		$tpl->touchBlock('pageavatarupload');
 
 		if($pageVO->typeId == 'forum') {
@@ -407,12 +412,14 @@ class page_PageEdit implements iPage {
 		}
 
 		//---left panels configure
+		/*
 		if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
 			$fLeft = new FLeftPanelEdit($pageVO->pageId,0,$pageVO->typeId);
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
 		}
-
+    /**/
+    
 		FBuildPage::addTab(array("MAINHEAD"=>($user->pageParam == 'a')?(FLang::$LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));
 	}
 }

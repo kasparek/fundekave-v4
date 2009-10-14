@@ -14,7 +14,7 @@
   <!-- BEGIN uploadifyHEAD --><link rel="stylesheet" href="uploadify/uploadify.css" type="text/css" media="screen" /><!-- END uploadifyHEAD -->
   <!-- BEGIN markitupHEAD --><link rel="stylesheet" type="text/css" href="js/markitup/skins/markitup/style.css" />
   <link rel="stylesheet" type="text/css" href="js/markitup/sets/default/style.css" /><!-- END markitupHEAD -->
-  <!-- BEGIN juiHEAD --><link type="text/css" href="css/themes/base/ui.all.css" rel="stylesheet" /><!-- END juiHEAD -->
+  <!-- BEGIN juiHEAD --><link type="text/css" href="css/themes/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" /><!-- END juiHEAD -->
   <style type="text/css" media="screen"><!--
 		@import "{CSSSKIN}/screen.css";
   --></style>
@@ -42,16 +42,10 @@
         <!-- BEGIN errormsg --><div class="errormsg">{ERRORMSG}</div><!-- END errormsg -->
         <!-- BEGIN pageheading --><h1>{PAGEHEAD}</h1><!-- END pageheading -->
         <div id="thumbToolbar"></div>
-        <!-- BEGIN domtab --><div class="domtab">
-          <ul class="domtabs">
-            <!-- BEGIN domtabmenuitem --><li><a href="#{TABMENUID}">{TABMENUNAME}</a></li>
-            <!-- END domtabmenuitem -->
-          </ul><!-- END domtab -->
         <!-- BEGIN maincontent-recurrent --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
         <!-- BEGIN contentheading --><h2><!-- BEGIN tabid --><a name="{TABID}" id="{TABID}"><!-- END tabid -->{MAINHEAD}<!-- BEGIN tabidclose --></a><!-- END tabidclose --></h2><!-- END contentheading -->
         {MAINDATA}
         </div><!-- END maincontent-recurrent -->
-        <!-- BEGIN domtabclose --></div><!-- END domtabclose -->
         <!-- BEGIN maincontent-raw -->{RAWDATA}<!-- END maincontent-raw -->
       </div>
       <!-- BEGIN sidebar --><div id="sidebar">
@@ -76,8 +70,6 @@
 <script type="text/javascript" src="js/markitup/sets/default/set.js"></script><!-- END markitupEND -->
 <script type="text/javascript" src="js/DD_roundies_0.0.1a-min.js"></script>
 <!-- BEGIN juiEND --><script type="text/javascript" src="js/jquery-ui.core.js"></script><!-- END juiEND -->
-<!-- BEGIN domtabsEND --><script type="text/javascript" src="./js/domtab.js"></script>
-<script type="text/javascript">$(document).ready(function(){ $('.domtabs').each(function() { $(this).css('display','block'); }); });</script><!-- END domtabsEND -->
 <!-- BEGIN swfobject --><script type="text/javascript" src="fuvatar/swfobject.js"></script><!-- END swfobject -->
 <script type="text/javascript" src="js/FdkGlobal.js"></script>
 <!-- BEGIN slimboxEND --><script type="text/javascript" src="js/slimbox2.js"></script>
@@ -92,6 +84,8 @@
 <!-- BEGIN fajaxformEND --><script type="text/javascript" src="js/jquery.form.fcut.min.js"></script>
 <script type="text/javascript">$(document).ready(function(){ fajaxform(); });</script><!-- END fajaxformEND -->
 <!-- BEGIN userPostEND --><script type="text/javascript">$(document).ready(function(){ initUserPost(); });</script><!-- END userPostEND -->
+<!-- BEGIN tabsEND --><script type="text/javascript" src="./js/jquery-ui.tabs.js"></script>
+<script type="text/javascript">$(document).ready(function(){ $("#tabs").tabs(); });</script><!-- END tabsEND -->
 
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

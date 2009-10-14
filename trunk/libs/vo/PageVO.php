@@ -1,5 +1,5 @@
 <?php
-class PageVO extends FVO {
+class PageVO extends Fvob {
 
 	var $cacheResults = 's';
 	var $table = 'sys_pages';
