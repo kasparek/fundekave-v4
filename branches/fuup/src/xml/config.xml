@@ -3,6 +3,7 @@
 	<Config>
 		<Settings>
 			<Item name="permissions">0</Item>
+			<Item name="maxSize">300000</Item>
 			<Item name="chunkSize">10000</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">20</Item>
@@ -11,9 +12,7 @@
 			<Item name="imageHeightMax">500</Item>
 		</Settings>
 		<Services>
-			<Service name="login">login.xml</Service>
 			<Service name="files">files.php</Service>
-			<Service name="gallery">gallery.xml</Service>
 		</Services>
 	</Config>
 	<Filters>

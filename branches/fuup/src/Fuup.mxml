@@ -2,24 +2,13 @@
 <!--
 TODO:
 - preloader - probably just background
-- handle flow layout, not full size thumbs
+- create nice popup when viewing images - with close button - show detail in popup
 - clean code
-- configuration from config.xml
 - levels, sharpen - selectable
 - create status bar - with roll in function to show more lines???
 - file num limit - ?40
-- show detail in popup
-- do 3x retry when uploading on each section
 - show error when upload fail
-- show global progress - loading files
-- show global progres on processing
-- show global progress on uploading
-- dynamic resizing for height
-- icons for close, rotate left/right, show detail
-- postprocessing - auto levels, sharpen, improve - take from fuvatar
-- handle total service error
-- switch for resize and optimize
-- lang independent
+- language independent
 -->
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 

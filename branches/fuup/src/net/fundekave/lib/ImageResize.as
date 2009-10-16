@@ -37,6 +37,8 @@ package net.fundekave.lib
 		
 		public var autoEncode:Boolean = false;
 		
+		public var widthOriginal:int;
+		public var heightOriginal:int;
 		public var widthMax:int;
 		public var heightMax:int;
 		public var widthNew:int;
@@ -81,6 +83,8 @@ package net.fundekave.lib
         	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	var imageBmp:Bitmap = image.content as Bitmap;
+			this.widthOriginal = imageBmp.width;
+			this.heightOriginal = imageBmp.height;
         	//---calculate new size
         	if(widthMax > 0 || heightMax > 0) {
         		var scaled:Object = BitmapDataProcess.scaleCalc(imageBmp.width,imageBmp.height,widthMax,heightMax);

@@ -127,13 +127,13 @@
 			}
 			
 			private function fileLater(fileView:FileView, file:FileReference):void {
+				fileView.addEventListener( FileView.FILE_UPDATED, onFileCreated );
 				fileView.file = file;
-				fileView.addEventListener( FileView.FILE_CREATED, onFileCreated );
 			}
 			
 			private function onFileCreated(e:Event):void {
 				var fileView:FileView = e.target as FileView;
-				fileView.removeEventListener( FileView.FILE_CREATED, onFileCreated );
+				fileView.removeEventListener( FileView.FILE_UPDATED, onFileCreated );
 				//---set progress
 				progressInc();
 				populateFiles();

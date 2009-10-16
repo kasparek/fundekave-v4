@@ -5,6 +5,7 @@ package net.fundekave.fuup.model
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	
+	import net.fundekave.Application;
 	import net.fundekave.fuup.ApplicationFacade;
 	
 	import org.puremvc.as3.multicore.interfaces.IProxy;
@@ -34,8 +35,15 @@ package net.fundekave.fuup.model
 		}
 
 		public function load() :void {
+			//---try to get confug url
+			var params:Object = Application.application.loaderInfo.parameters;
+			var configUrl:String; 
+			if(params.hasOwnProperty('config')) {
+				configUrl = params.config;
+			}
+			
 			sendNotification( ApplicationFacade.CONFIG_LOADING );
-			var request:URLRequest = new URLRequest(ApplicationFacade.SERVICE_CONFIG_URL + '?r='+Math.random());
+			var request:URLRequest = new URLRequest(((configUrl)?(configUrl):(ApplicationFacade.SERVICE_CONFIG_URL)) + '?r='+Math.random());
 			var loader:URLLoader = new URLLoader();
 			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			loader.addEventListener(Event.COMPLETE, loaderCompleteHandler);

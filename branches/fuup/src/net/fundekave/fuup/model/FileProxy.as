@@ -4,6 +4,7 @@ package net.fundekave.fuup.model
       import flash.events.ErrorEvent;
       import flash.events.Event;
       import flash.events.ProgressEvent;
+      import flash.utils.ByteArray;
       import flash.utils.setTimeout;
       
       import net.fundekave.Application;
@@ -30,6 +31,7 @@ package net.fundekave.fuup.model
         
         //uploading
         public var serviceURL:String;
+		public var maxSize:int = 100000;
         public var chunkSize:int = 5000;
         public var uploadLimit:int = 3;
         
@@ -70,15 +72,29 @@ package net.fundekave.fuup.model
         	var len:int = fileList.length;
         	if(currentFile < len) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
-        		fileVO.renderer.statusStr = 'Processing';
-        		
-        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
-        		imageResize.autoEncode = true;
-        		imageResize.filtersList = filtersList;
-        		imageResize.loadBytes( fileVO.file.data );
-        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
-        		Application.application.stage.addChild( imageResize );
-        		
+				var compareW:int;
+				var compareH:int;
+				if(fileVO.encodedJPG) {
+					compareW = fileVO.widthNew;
+					compareH = fileVO.heightNew;
+				} else {
+					compareW = fileVO.widthOriginal
+					compareH = fileVO.heightOriginal
+				}
+        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent) {
+					fileVO.renderer.updateStatus('Processing',false);
+	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
+					fileVO.rotationCurrent = fileVO.rotation;
+	        		imageResize.autoEncode = true;
+	        		imageResize.filtersList = filtersList;
+	        		imageResize.loadBytes( fileVO.file.data );
+	        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
+	        		Application.application.stage.addChild( imageResize );
+				} else {
+					//---skip file
+					currentFile++;
+					processFile();
+				}
         	} else {
         		//---processing done
         		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
@@ -90,7 +106,9 @@ package net.fundekave.fuup.model
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
         	fileVO.encodedJPG = imageResize.resultBytes;
-        	fileVO.renderer.statusStr = 'Ready. New image size: '+ String(Math.round(imageResize.resultBytes.length/1024)) + 'kB';
+			fileVO.widthNew = imageResize.widthNew;
+			fileVO.heightNew = imageResize.heightNew;
+			fileVO.renderer.updateThumb();
         
         	currentFile++;
         	//---send progress
@@ -108,22 +126,34 @@ package net.fundekave.fuup.model
         
         private function uploadFile():void {
         	var len:int = fileList.length;
+			var noUpload:Boolean = true;
         	if(len > 0) {
-        		fileVO = fileList[len-1] as FileVO;
-        		
-        		var fileUpload:FileUpload = new FileUpload(serviceURL,fileVO.filename, chunkSize, uploadLimit);
-        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete );
-        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
-        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );
-        		fileUpload.uploadBytes( fileVO.encodedJPG );
-	        	
-        	} else {
-        		
-        		//---upload complete
-        		trace('UPLOAD COMPLETE');
-        		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
-        		
-        	}
+				var i:int = 0;
+				while(i<len) {
+	        		fileVO = fileList[i] as FileVO;
+	        		var data:ByteArray = (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data);
+					if(data.length < this.maxSize) {
+		        		var fileUpload:FileUpload = new FileUpload(serviceURL,fileVO.filename, chunkSize, uploadLimit);
+		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete );
+		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
+		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );
+		        		fileUpload.uploadBytes( data );
+						noUpload=false;
+						break;
+					} else {
+						//---show error on file
+						fileVO.renderer.updateStatus('TOO BIG',false,1);						
+					}
+					i++;
+				}
+        	} 
+        	
+			if(noUpload===true) {
+	    		//---upload complete
+	    		trace('UPLOAD COMPLETE');
+	    		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
+			}
+        	
         }
         
         private function onUploadComplete(e:Event):void {

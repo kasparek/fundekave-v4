@@ -41,21 +41,14 @@ package net.fundekave
             super(parent, xpos, ypos);
         }
         
-        override protected function onInvalidate(event:Event) : void
-        {
-        	
-            if ( childrenChanged )
-            {
-                while ( numChildren > 0 )
-                {
+        override protected function onInvalidate(event:Event) : void {
+            if ( childrenChanged ) {
+                while ( numChildren > 0 ) {
                     removeChildAt( 0 );
                 }
-                
-                for each ( var child:DisplayObject in children )
-                {
+                for each ( var child:DisplayObject in children ) {
                     addChild( child );
                 }
-                
                 childrenChanged = false;
             }
             
@@ -66,8 +59,10 @@ package net.fundekave
 				(mask as Sprite).graphics.drawRect(0,0,this.width+border, this.height+border);
 				(mask as Sprite).graphics.endFill();
 				this.addChild( mask );
-				//this.mask = mask;
         	}
+			
+			this.graphics.clear();
+			
         	if(!isNaN(backgroundColor)) {
         		this.graphics.beginFill(backgroundColor,backgroundAlpha);
         		this.graphics.drawRect(0,0,this.width,this.height);

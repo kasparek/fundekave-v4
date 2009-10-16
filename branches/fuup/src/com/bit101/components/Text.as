@@ -34,9 +34,11 @@ package com.bit101.components
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
+	import flashx.textLayout.controls.TLFTextField;
+	
 	public class Text extends Component
 	{
-		private var _tf:TextField;
+		private var _tf:TLFTextField;
 		private var _text:String = "";
 		private var _editable:Boolean = true;
 		private var _panel:Panel;
@@ -72,16 +74,16 @@ package com.bit101.components
 			_panel = new Panel(this);
 			_panel.color = 0xffffff;
 			
-			_tf = new TextField();
+			_tf = new TLFTextField();
 			_tf.x = 2;
-			_tf.y = 2;
+			_tf.y = 0;
 			_tf.height = _height;
 			_tf.embedFonts = true;
 			_tf.multiline = true;
 			_tf.wordWrap = true;
 			_tf.selectable = true;
 			_tf.type = TextFieldType.INPUT;
-			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, Style.LABEL_TEXT);
+			_tf.defaultTextFormat = new TextFormat("Ronda", 8, Style.LABEL_TEXT);
 			_tf.addEventListener(Event.CHANGE, onChange);			
 			addChild(_tf);
 		}
