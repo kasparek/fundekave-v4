@@ -29,16 +29,17 @@ package com.bit101.components
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
+	
+	import flashx.textLayout.controls.TLFTextField;
 	
 	public class InputText extends Component
 	{
 		private var _back:Sprite;
 		private var _password:Boolean = false;
 		private var _text:String = "";
-		private var _tf:TextField;
+		private var _tf:TLFTextField;
 		
 		/**
 		 * Constructor
@@ -76,7 +77,7 @@ package com.bit101.components
 			_back.filters = [getShadow(2, true)];
 			addChild(_back);
 			
-			_tf = new TextField();
+			_tf = new TLFTextField();
 			_tf.embedFonts = true;
 			_tf.selectable = true;
 			_tf.type = TextFieldType.INPUT;

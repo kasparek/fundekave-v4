@@ -29,18 +29,24 @@
 package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
-	import flash.text.TextField;
+	import flash.text.AntiAliasType;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	import flash.text.engine.TextLine;
+	
+	import flashx.textLayout.controls.TLFTextField;
 	
 	public class Label extends Component
 	{
+		
+		private static const HEIGHT:int = 18;
+		
 		private var _autoSize:Boolean = true;
 		private var _text:String = "";
-		private var _tf:TextField;
+		private var _tf:TLFTextField;
 		
 		public var color:Number;
-		
+				
 		/**
 		 * Constructor
 		 * @param parent The parent DisplayObjectContainer on which to add this Label.
@@ -70,19 +76,27 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			_height = 18;
-			_tf = new TextField();
+			_height = HEIGHT;
+			
+			_tf = new TLFTextField();
 			_tf.height = _height;
 			_tf.embedFonts = true;
 			_tf.selectable = false;
+			_tf.antiAliasType = AntiAliasType.ADVANCED;
 			_tf.mouseEnabled = false;
-			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, (!isNaN(this.color))?(this.color):(Style.LABEL_TEXT));
-			_tf.text = _text;			
+						
+			_tf.setTextFormat( new TextFormat( "PF Ronda Seven", 8, (!isNaN(this.color))?(this.color):(Style.LABEL_TEXT)) );
+			_tf.text = _text;
+			_tf.y = -2;
 			addChild(_tf);
+			
 			draw();
 		}
 		
-		
+		private function addTextLineToContainer(textLine:flash.text.engine.TextLine):void
+		{
+			this.addChild(textLine);
+		}
 		
 		
 		///////////////////////////////////
@@ -95,7 +109,9 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
+			
 			_tf.text = _text;
+			
 			if(_autoSize)
 			{
 				_tf.autoSize = TextFieldAutoSize.LEFT;
@@ -106,7 +122,8 @@ package com.bit101.components
 				_tf.autoSize = TextFieldAutoSize.NONE;
 				_tf.width = _width;
 			}
-			_height = _tf.height = 18;
+			
+			_height = _tf.height = HEIGHT;
 		}
 		
 		///////////////////////////////////

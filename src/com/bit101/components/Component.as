@@ -40,10 +40,12 @@ package com.bit101.components
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
+	import flash.text.Font;
 
 	public class Component extends Sprite
 	{
-		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven", mimeType="application/x-font")]
+		
+		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven")]
 		private var Ronda:Class;
 		
 		protected var _width:Number = 0;
@@ -97,14 +99,10 @@ package com.bit101.components
 		/**
 		 * Marks the component to be redrawn on the next frame.
 		 */
-		protected function invalidate():void
+		public function invalidate():void
 		{
-//			draw();
 			addEventListener(Event.ENTER_FRAME, onInvalidate);
 		}
-		
-		
-		
 		
 		///////////////////////////////////
 		// public methods
@@ -166,9 +164,7 @@ package com.bit101.components
 			draw();
 		}
 		
-		
-		
-		
+	
 		///////////////////////////////////
 		// getter/setters
 		///////////////////////////////////

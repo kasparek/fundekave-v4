@@ -14,12 +14,23 @@ package net.fundekave.fuup.controller
 		override public function execute(notification:INotification):void
 		{
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+			var sendCancel:Boolean = false;
 			for each(var fileVO:FileVO in proxy.fileList) {
+				
 				if( !fileVO.encodedJPG ) {
-
-					sendNotification( StateMachine.CANCEL );
+					
+					//---check bytesize of original
+					if(fileVO.file.data.length > proxy.maxSize) {
+						fileVO.renderer.updateStatus( 'TOO BIG - '+String(Math.round(proxy.maxSize/1024))+'kB limit',false,1);
+						sendCancel = true;
+					}
 					
 				}
+				
+				
+			}
+			if(sendCancel === true) {
+				sendNotification( StateMachine.CANCEL );
 			}
 		}
 		

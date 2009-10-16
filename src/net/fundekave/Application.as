@@ -2,12 +2,12 @@ package net.fundekave
 {
     import com.bit101.components.Component;
     
-    import flash.display.Sprite;
+    import flash.text.Font;
 
     public class Application extends Container
     {
     	private static var instance:Application;
-    	
+    			
         public function Application()
         {
             super();
