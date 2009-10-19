@@ -125,13 +125,15 @@ class FUser {
 			}
 
 			$vid = FDBTool::getRow($q);
-
-			$idloginInDb = $vid[0];
-			if($vid[1] == 1) FRules::invalidate();
-
-			if($this->pageVO) {
-				$this->pageVO->favorite = $vid[2]*1;
-				$this->pageVO->favoriteCnt = $vid[3]*1;
+			
+			if(!empty($vid)) {
+				$idloginInDb = $vid[0];
+				if($vid[1] == 1) FRules::invalidate();
+	
+				if($this->pageVO) {
+					$this->pageVO->favorite = $vid[2]*1;
+					$this->pageVO->favoriteCnt = $vid[3]*1;
+				}
 			}
 				
 			//---ip address checking
