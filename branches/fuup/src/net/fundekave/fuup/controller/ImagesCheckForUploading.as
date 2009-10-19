@@ -1,5 +1,6 @@
 package net.fundekave.fuup.controller
 {
+	import net.fundekave.fuup.model.ConfigProxy;
 	import net.fundekave.fuup.model.FileProxy;
 	import net.fundekave.fuup.model.vo.FileVO;
 	
@@ -21,7 +22,8 @@ package net.fundekave.fuup.controller
 					
 					//---check bytesize of original
 					if(fileVO.file.data.length > proxy.maxSize) {
-						fileVO.renderer.updateStatus( 'TOO BIG - '+String(Math.round(proxy.maxSize/1024))+'kB limit',false,1);
+						var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+						fileVO.renderer.updateStatus( String(configProxy.lang.toobig).replace('{LIMITSIZE}', String(Math.round(proxy.maxSize/1024)) ),false,1);
 						sendCancel = true;
 					}
 					

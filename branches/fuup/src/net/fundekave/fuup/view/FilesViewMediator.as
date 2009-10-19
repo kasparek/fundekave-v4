@@ -6,6 +6,7 @@ package net.fundekave.fuup.view
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.common.constants.ActionConstants;
 	import net.fundekave.fuup.common.constants.StateConstants;
+	import net.fundekave.fuup.model.ConfigProxy;
 	import net.fundekave.fuup.model.FileProxy;
 	import net.fundekave.fuup.model.vo.FileVO;
 	import net.fundekave.fuup.view.components.FileView;
@@ -84,6 +85,7 @@ package net.fundekave.fuup.view
 		override public function listNotificationInterests():Array
 		{
 			return [
+					ApplicationFacade.CONFIG_LOADED,
 					StateMachine.CHANGED,
 					ApplicationFacade.GLOBAL_PROGRESS_INIT,
 					ApplicationFacade.PROCESS_PROGRESS,
@@ -97,6 +99,10 @@ package net.fundekave.fuup.view
 			var stateName:String;
 			switch ( note.getName() )
 			{
+				case ApplicationFacade.CONFIG_LOADED:
+					var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+					filesView.lang = configProxy.lang;
+					break;
 				case ApplicationFacade.FILE_CHECK_FAIL:
 					filesView.failFile();
 				break;
@@ -105,16 +111,17 @@ package net.fundekave.fuup.view
 				break;
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+					
 					filesView.globalProgressBar.visible = true;
 					filesView.globalProgressBar.value = 0;
 					stateName = String( note.getBody() );
 					switch(stateName) {
 						case StateConstants.STATE_PROCESSING:
-							filesView.globalProgressBar.label = FilesView.PROGRESS_LABEL_PROCESSING;
+							filesView.globalProgressBar.label = filesView.lang.processing;
 							filesView.globalProgressBar.maximum = proxy.fileList.length;
 						break;
 						case StateConstants.STATE_UPLOADING:
-							filesView.globalProgressBar.label = FilesView.PROGRESS_LABEL_UPLOADING;
+							filesView.globalProgressBar.label = filesView.lang.uploading;
 							filesView.globalProgressBar.maximum = proxy.fileList.length;
 						break;
 					}
