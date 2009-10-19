@@ -13,6 +13,7 @@ package net.fundekave.fuup.controller
 			facade.registerProxy( new ConfigProxy() );
 			facade.registerProxy( new LoginProxy() );
 			facade.registerProxy( new FileProxy() );
+			facade.registerProxy( new ExtInterfaceProxy() );
 			
 		}
 	}

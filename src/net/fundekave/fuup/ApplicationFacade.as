@@ -1,6 +1,7 @@
 package net.fundekave.fuup
 {
 	import net.fundekave.fuup.controller.*;
+	import net.fundekave.fuup.model.ExtInterfaceProxy;
 	
 	import org.puremvc.as3.multicore.patterns.facade.Facade;
 
@@ -28,6 +29,7 @@ package net.fundekave.fuup
 		public static const LOGIN_FAILED:String 	    = 'loginFailed';
 		
 		//---global progress
+		public static const CALLBACK:String		= 'callback';
 		public static const GLOBAL_PROGRESS_INIT:String = 'globalProgressInit';
 		
 		//---file management
@@ -43,7 +45,8 @@ package net.fundekave.fuup
 		public static const IMAGES_PROCESS:String		= 'imagesProcess';
 		
 		public static const IMAGES_CHECK_FOR_UPLOADING:String = 'imagesCheckForUploading';
-		public static const IMAGES_UPLOAD:String		= 'imagesUpload'; 
+		public static const IMAGES_UPLOAD:String		= 'imagesUpload';
+		
 		 
 	 	public function ApplicationFacade( key:String )
 	 	{
@@ -68,6 +71,7 @@ package net.fundekave.fuup
 		{
 			super.initializeController();
 			registerCommand( STARTUP, StartupCommand );
+			registerCommand( CALLBACK, CallbackCommand );
 			
 			registerCommand( CONFIG_LOAD, LoadConfigCommand );
 			registerCommand( CONFIG_LOADED, LoadedConfigCommand );

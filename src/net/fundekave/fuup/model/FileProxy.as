@@ -82,7 +82,8 @@ package net.fundekave.fuup.model
 					compareH = fileVO.heightOriginal
 				}
         		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent) {
-					fileVO.renderer.updateStatus('Processing',false);
+					var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+					fileVO.renderer.updateStatus(String(configProxy.lang.processing),false);
 	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
 					fileVO.rotationCurrent = fileVO.rotation;
 	        		imageResize.autoEncode = true;
@@ -142,7 +143,7 @@ package net.fundekave.fuup.model
 						break;
 					} else {
 						//---show error on file
-						fileVO.renderer.updateStatus('TOO BIG',false,1);						
+						//---it wont get here because it is stopped on checking before upload						
 					}
 					i++;
 				}
@@ -152,6 +153,7 @@ package net.fundekave.fuup.model
 	    		//---upload complete
 	    		trace('UPLOAD COMPLETE');
 	    		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
+				sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_COMPLETE );
 			}
         	
         }
@@ -159,6 +161,7 @@ package net.fundekave.fuup.model
         private function onUploadComplete(e:Event):void {
         	sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
         	currentFile++;
+			sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_ONE_COMPLETE );
         	uploadFile();
         }
         
@@ -167,6 +170,7 @@ package net.fundekave.fuup.model
         }
         
         private function onUploadError(e:ErrorEvent):void {
+			fileVO.renderer.updateStatus("UPLOAD ERROR. TRY AGAIN",false,1);
         	trace('TOTAL SERVICE ERROR');
         	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }
