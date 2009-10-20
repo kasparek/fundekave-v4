@@ -351,6 +351,9 @@ class page_PageEdit implements iPage {
 		}
 
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
+			$cache = FCache::getInstance( 's' );
+			$cache->setData($pageVO->galeryDir.'/', 'galeryDir');
+			
 			$tpl->touchBlock('galeryspecifictabs');
 
 			if($pageVO->itemsOrder()=='dateCreated desc') {
