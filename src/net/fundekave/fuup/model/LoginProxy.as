@@ -9,7 +9,7 @@ package net.fundekave.fuup.model
       import flash.net.URLRequest;
       
       import net.fundekave.fuup.ApplicationFacade;
-      import net.fundekave.fuup.model.vo.*;
+      import net.fundekave.fuup.model.vo.LoginVO;
       
       import org.puremvc.as3.multicore.interfaces.IProxy;
       import org.puremvc.as3.multicore.patterns.proxy.Proxy;

@@ -10,7 +10,7 @@ package net.fundekave.fuup.model
       import net.fundekave.Application;
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.common.constants.ActionConstants;
-      import net.fundekave.fuup.model.vo.*;
+      import net.fundekave.fuup.model.vo.FileVO;
       import net.fundekave.fuup.view.components.FileView;
       import net.fundekave.lib.FileUpload;
       import net.fundekave.lib.ImageResize;
@@ -92,7 +92,6 @@ package net.fundekave.fuup.model
 					compareH = fileVO.heightOriginal
 				}
         		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev) {
-					_useFiltersPrev = _useFilters;
 					fileVO.renderer.setLocalState( FileView.STATE_PROCESSING );
 					var rot:Number = fileVO.rotation+fileVO.rotationFromOriginal;
 					if(rot<0) rot += 360;
@@ -116,6 +115,7 @@ package net.fundekave.fuup.model
         	} else {
         		//---processing done
         		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
+				_useFiltersPrev = _useFilters;
         	}
         }
         

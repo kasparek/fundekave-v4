@@ -99,7 +99,7 @@ package com.bit101.components
 			
 			_minimizeButton = new Sprite();
 			_minimizeButton.graphics.beginFill(0, 0);
-			_minimizeButton.graphics.drawRect(-10, -10, 10, 10);
+			_minimizeButton.graphics.drawRect(-5, -5, 10, 10);
 			_minimizeButton.graphics.endFill();
 			_minimizeButton.graphics.beginFill(0, .35);
 			_minimizeButton.graphics.moveTo(-5, -3);
@@ -115,7 +115,7 @@ package com.bit101.components
 			
 			_closeButton = new Sprite();
 			_closeButton.graphics.beginFill(0, 0);
-			_closeButton.graphics.drawRect(-10, -10, 10, 10);
+			_closeButton.graphics.drawRect(-5, -5, 10, 10);
 			_closeButton.graphics.endFill();
 			_closeButton.graphics.beginFill(0, .35);
 			_closeButton.graphics.moveTo(-3, -5);
