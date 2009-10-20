@@ -71,6 +71,9 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onProcess(e:Event):void {
+			var useFilters:Boolean = filesView.correctionsCheckbox.selected;
+			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+			proxy.useFilters = useFilters;
 			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_PROCESS );
 		}
 		
@@ -102,6 +105,7 @@ package net.fundekave.fuup.view
 				case ApplicationFacade.CONFIG_LOADED:
 					var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 					filesView.lang = configProxy.lang;
+					filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
 					break;
 				case ApplicationFacade.FILE_CHECK_FAIL:
 					filesView.failFile();

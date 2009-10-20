@@ -6,13 +6,19 @@
 	>
     	  <fx:Script>
     	  	<![CDATA[
-				import com.dncompute.canvas.BrowserCanvas;
+				import flashx.textLayout.formats.TextAlign;
 				
 				import gs.TweenLite;
 				import gs.easing.Quad;
 				
 				import net.fundekave.Application;
-    	  		
+				import com.bit101.components.Label;
+				import com.bit101.components.Window;
+				/**
+				*import net.fundekave.Application-;
+				*import com.bit101.components.Label-;
+				*import com.bit101.components.Window-;
+    	  		*/
     	  	public static const RESIZE:String = 'resize';
    	  	
     	  	public static const SETTINGS_CHANGE:String = 'settingsChange';
@@ -25,6 +31,8 @@
 				
 			[Bindable]
 			public var lang:Object;
+				
+			public var filesNumMax:int;
     	  	
     	  	
     	  	private function addedToStage():void {
@@ -40,17 +48,16 @@
 			}
 			private var filesArr:Array;
 			private function onFilesSelect(e:Event):void {
-			
 				filesArr = (e.target as FileReferenceList).fileList;
-				
-				//---init global progress bar
-				globalProgressBar.visible = true;
-				globalProgressBar.maximum = filesArr.length;
-				globalProgressBar.value = 0;
-				globalProgressBar.label = lang.loading; 
-				
-				populateFiles();
-				
+				if(filesArr.length>0) {
+					//---init global progress bar
+					globalProgressBar.visible = true;
+					globalProgressBar.maximum = filesArr.length;
+					globalProgressBar.value = 0;
+					globalProgressBar.label = lang.loading; 
+					
+					populateFiles();
+				}
 			}
 			
 			private var currFileView:FileView;
@@ -75,7 +82,25 @@
 			}
 			
 			public function addFile():void {
+				//---check for limit
+				if(filesBox.numChildren >= filesNumMax) {
+					//---show error
+					var errWin:Window = new Window(this,200,5,"ERROR");
+					errWin.closeTween = {alpha:0,delay:5};
+					errWin.height = 50;
+					errWin.width = 200;
+					errWin.close();
+					errWin.setContentAlignHorizontal(TextAlign.CENTER);
+					errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
+					
+					globalProgressBar.visible = false;
+					currFile = null;
+					filesArr = null;
+					return;
+				}
+				
 				currFileView = new FileView();
+				currFileView.lang = this.lang;
 				filesBox.addChild( currFileView );
 				//---set filesbox size and child position
 				currFileView.alpha = 0;
@@ -165,12 +190,7 @@
 					
 					if( filesBox.height != fileBoxHeight ) {
 						fileBoxHeight = filesBox.height;
-						var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
-						var newHeight:String = String( filesBox.height + Fuup.HEIGHT + 300 );
-						resizeCanvas.height = newHeight; 
-						resizeCanvas.width = '100%';
-						
-						trace('NEWSIZE::' + newHeight);
+						Application.application.height = filesBox.height + Fuup.HEIGHT + 300
 					}
 					dispatchEvent( new Event(RESIZE) );
 				}
@@ -189,9 +209,14 @@
     	  </fx:Script>
 	<fu:Container height="25">
 		<bit101:HBox y="5" x="5">
-			<bit101:PushButton id="selectFilesButt" click="{browseFiles()}" label="{lang.selectfiles}" />
-			<bit101:PushButton id="processButt" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
-			<bit101:PushButton id="uploadButt" click="{doAction(ACTION_UPLOAD)}" label="{lang.upload}" />
+			<bit101:PushButton id="selectFilesButt" width="60" click="{browseFiles()}" label="{lang.selectfiles}" />
+			<fu:Container height="20" width="60">
+				<bit101:CheckBox id="correctionsCheckbox" label="{lang.corections}" selected="true" y="5" x="5" />	
+			</fu:Container>
+			
+			
+			<bit101:PushButton id="processButt" width="60" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
+			<bit101:PushButton id="uploadButt" width="60" click="{doAction(ACTION_UPLOAD)}" label="{lang.upload}" />
 			<!-- global progress bar -->
 			<bit101:ProgressBar id="globalProgressBar" visible="false" width="275" height="20" maximum="100" />
 		</bit101:HBox>

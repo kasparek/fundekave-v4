@@ -36,6 +36,7 @@ package net.fundekave.fuup.model.vo
 		public var heightNew:Number;
 		
 		public var rotationCurrent:Number = 0;
+		public var rotationFromOriginal:Number = 0;
 		[Bindable]
 		public var rotation:Number = 0;
 		

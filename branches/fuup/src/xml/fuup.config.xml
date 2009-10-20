@@ -27,14 +27,17 @@
 		</Filter>
 	</Filters>
 	<Lang>
-		<Item name="selectfiles"><![CDATA[Vlozit fotky]]></Item>
-		<Item name="process"><![CDATA[Zpracovat]]></Item>
+		<Item name="selectfiles"><![CDATA[Vybrat]]></Item>
+		<Item name="corections"><![CDATA[Korekce]]></Item>
+		<Item name="process"><![CDATA[Zmensit]]></Item>
 		<Item name="loading"><![CDATA[Nahravam]]></Item>
 		<Item name="processing"><![CDATA[Zpracovavam]]></Item>
 		<Item name="upload"><![CDATA[Nahrat]]></Item>
 		<Item name="uploading"><![CDATA[Nahravam]]></Item>
 		<Item name="filename"><![CDATA[Jmeno souboru:]]></Item>
-		<Item name="tooBig"><![CDATA[Moc velky: {LIMITSIZE}kB max]]></Item>
+		<Item name="toobig"><![CDATA[Moc velky: {LIMITSIZE}kB max]]></Item>
 		<Item name="filetypes"><![CDATA[Soubory typu: jpg,gif,png]]></Item>
+		<Item name="uploaderror"><![CDATA[Chyba. Zkuste to znovu.]]></Item>
+		<Item name="filelimiterror"><![CDATA[Prilis mnoho souboru]]></Item>
 	</Lang>
 </Fuup>
