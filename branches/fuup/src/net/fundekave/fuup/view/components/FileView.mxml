@@ -15,6 +15,7 @@
 			
 			import net.fundekave.fuup.model.vo.FileVO;
 			import net.fundekave.lib.ImageResize;
+			
 			import flash.filters.DropShadowFilter;
 			import net.fundekave.Application;
 			import com.bit101.components.Component;
@@ -151,6 +152,7 @@
 				imageResize.dispose();
 				
 				updateStatus('');
+				TweenLite.to(this.thumbUI,0.3,{alpha:1});
 				dispatchEvent( new Event( FILE_UPDATED, true ));
 			}
 			
@@ -159,6 +161,7 @@
 					this.thumbUI.removeChildAt( 0 );
 					rotateTo = 0;
 				}
+				this.thumbUI.alpha = 0;
 				var imageResize:ImageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
 				if(fileVO.encodedJPG) {
 					imageResize.loadBytes( fileVO.encodedJPG );
@@ -293,7 +296,9 @@
 			}
 			
 			public function removeView():void {
-				TweenLite.to( this, 0.2, {alpha:0, onComplete:onTween});
+				TweenLite.to( this, 0.2, {alpha:0, onComplete:onTween, overwrite:0});
+				trace("TWEENREMOVE"+fileVO.filename);
+				if(previewWin) previewWin.close();
 			}
 			
 			private function onTween():void {

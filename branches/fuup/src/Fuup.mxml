@@ -5,7 +5,6 @@ TODO:
 -->
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 
-	xmlns:bit101="com.bit101.components.*"
 	addedToStage="{ready();}" 
 	xmlns:components="net.fundekave.fuup.view.components.*"
 	>
