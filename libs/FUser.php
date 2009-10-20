@@ -126,6 +126,7 @@ class FUser {
 
 			$vid = FDBTool::getRow($q);
 			
+			$idloginInDb = null;
 			if(!empty($vid)) {
 				$idloginInDb = $vid[0];
 				if($vid[1] == 1) FRules::invalidate();

@@ -27,6 +27,7 @@ if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userId
 	FError::addError(FLang::$MESSAGE_PAGE_LOCKED);
 	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 }
+
 FProfiler::profile('PAGE BEFORE SHOW');
 //---generate page
 FBuildPage::show();
@@ -40,3 +41,4 @@ FDBTool::profileLog();
 session_write_close();
 $db = FDBConn::getInstance();
 $db->kill();
+ob_end_flush();

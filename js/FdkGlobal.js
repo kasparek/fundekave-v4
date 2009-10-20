@@ -1,4 +1,7 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
+function fuupUploadOneComplete() {
+	sendAjax('page-fuup');
+}
 
 var buttonClicked = '';
 var preventAjax = false;

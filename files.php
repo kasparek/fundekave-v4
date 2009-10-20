@@ -3,11 +3,9 @@
 require("./local.php");
 require(INIT_FILENAME);
 
-define('FUUP_UPLOAD','D:/_work/fdk5/data/fuup/');
-
 function chunkFilename($ident,$iter) {
 	$user = FUser::getInstance();
-	return  $file = FUUP_UPLOAD.'chunks/chunk-'.$user->userVO->name.'-'.$ident.'-'.$iter.'.txt';
+	return  $file = FConf::get("settings","fuup_chunks_path").'chunk-'.$user->userVO->name.'-'.$ident.'-'.$iter.'.txt';
 }
 
 if($user->idkontrol) {
@@ -34,8 +32,17 @@ if($allExists === true) {
 	for($i=0;$i<$total;$i++) {
 		$encData .= trim(file_get_contents(chunkFilename($filename,$i)));
 	}
-
-	file_put_contents(FUUP_UPLOAD.'images/'.strtolower($filename), base64_decode( $encData ));
+	
+	$cache = FCache::getInstance( 's' );
+	$galeryUrl = $cache->getData('galeryDir');
+	$imageName = strtolower($filename);
+	$imageNameArr = explode('.',$imageName);
+	$extArr = array_splice($imageNameArr,count($imageNameArr)-1,1);
+	$ext = $extArr[0];
+	$imageName = implode('.',$imageNameArr); 
+	$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.FSystem::safeText($imageName).'.'.$ext;
+	
+	file_put_contents($imagePath, base64_decode( $encData ));
 	
 	for($i=0;$i<$total;$i++) {
 	  unlink(chunkFilename($filename,$i));
