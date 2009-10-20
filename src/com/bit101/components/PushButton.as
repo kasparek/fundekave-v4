@@ -54,6 +54,8 @@ package com.bit101.components
 		public function PushButton(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, label:String = "", defaultHandler:Function = null)
 		{
 			super(parent, xpos, ypos);
+			width = 100;
+			height = 20;
 			if(defaultHandler != null)
 			{
 				addEventListener(MouseEvent.CLICK, defaultHandler);
@@ -69,7 +71,7 @@ package com.bit101.components
 			super.init();
 			buttonMode = true;
 			useHandCursor = true;
-			setSize(100, 20);
+			setSize(width, height);
 		}
 		
 		/**

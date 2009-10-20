@@ -28,9 +28,12 @@
  
 package com.bit101.components
 {
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Shape;
 	import flash.display.Sprite;
+	
+	import flashx.textLayout.formats.TextAlign;
 	
 	[DefaultProperty( "content" )]
 	
@@ -101,6 +104,22 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
+			
+			switch(alignHorizontal) {
+				case TextAlign.CENTER:
+					var i:int;
+					var child:DisplayObject;
+					for(i=0;i<this.numChildren;i++) {
+						child = this.getChildAt(i) as DisplayObject;
+						child.x = 0;
+					}
+					for(i=0;i<this.content.numChildren;i++) {
+						child = this.content.getChildAt(i) as DisplayObject;
+						child.x = (this.width/2) - (child.width/2);
+					}
+					break;
+			}
+			
 			_background.graphics.clear();
 			if(_color == -1)
 			{

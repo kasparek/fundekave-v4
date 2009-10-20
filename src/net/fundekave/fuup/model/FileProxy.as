@@ -11,6 +11,7 @@ package net.fundekave.fuup.model
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.common.constants.ActionConstants;
       import net.fundekave.fuup.model.vo.*;
+      import net.fundekave.fuup.view.components.FileView;
       import net.fundekave.lib.FileUpload;
       import net.fundekave.lib.ImageResize;
       
@@ -38,6 +39,15 @@ package net.fundekave.fuup.model
         public var fileList:Array = new Array();
         private var fileVO:FileVO;
         private var currentFile:int = 0;
+		
+		private var _useFilters:Boolean = true;
+		private var _useFiltersPrev:Boolean = true;
+		public function set useFilters(b:Boolean):void {
+			_useFilters = b;	
+		}
+		public function get useFilters():Boolean {
+			return _useFilters;
+		}
         
         public function FileProxy( )
         {
@@ -81,13 +91,20 @@ package net.fundekave.fuup.model
 					compareW = fileVO.widthOriginal
 					compareH = fileVO.heightOriginal
 				}
-        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent) {
-					var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-					fileVO.renderer.updateStatus(String(configProxy.lang.processing),false);
-	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,fileVO.rotation,fileVO.outputQuality);
+        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev) {
+					_useFiltersPrev = _useFilters;
+					fileVO.renderer.setLocalState( FileView.STATE_PROCESSING );
+					var rot:Number = fileVO.rotation+fileVO.rotationFromOriginal;
+					if(rot<0) rot += 360;
+					if(rot>=360) rot -=360;
+	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,rot,fileVO.outputQuality);
+					fileVO.rotationFromOriginal = rot; 
+					fileVO.rotation = 0;
 					fileVO.rotationCurrent = fileVO.rotation;
 	        		imageResize.autoEncode = true;
-	        		imageResize.filtersList = filtersList;
+					if(_useFilters===true) {
+	        			imageResize.filtersList = filtersList;
+					}
 	        		imageResize.loadBytes( fileVO.file.data );
 	        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
 	        		Application.application.stage.addChild( imageResize );
@@ -170,7 +187,8 @@ package net.fundekave.fuup.model
         }
         
         private function onUploadError(e:ErrorEvent):void {
-			fileVO.renderer.updateStatus("UPLOAD ERROR. TRY AGAIN",false,1);
+			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+			fileVO.renderer.updateStatus(configProxy.lang.uploaderror,false,1);
         	trace('TOTAL SERVICE ERROR');
         	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }

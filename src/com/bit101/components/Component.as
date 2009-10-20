@@ -33,6 +33,7 @@
  
 package com.bit101.components
 {
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.display.Stage;
@@ -40,7 +41,8 @@ package com.bit101.components
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
-	import flash.text.Font;
+	
+	import flashx.textLayout.formats.TextAlign;
 
 	public class Component extends Sprite
 	{
@@ -50,6 +52,8 @@ package com.bit101.components
 		
 		protected var _width:Number = 0;
 		protected var _height:Number = 0;
+		
+		public var alignHorizontal:String;
 		
 		public static const DRAW:String = "draw";
 
@@ -145,6 +149,14 @@ package com.bit101.components
 		 */
 		public function draw():void
 		{
+			switch(alignHorizontal) {
+				case TextAlign.CENTER:
+					for(var i:int=0;i<this.numChildren;i++) {
+						var child:DisplayObject = this.getChildAt(i) as DisplayObject;
+						child.x = (this.width/2) - (child.width/2);
+					}
+					break;
+			}
 			dispatchEvent(new Event(Component.DRAW));
 		}
 		

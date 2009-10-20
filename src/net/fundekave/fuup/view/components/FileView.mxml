@@ -8,27 +8,31 @@
 	
 	<fx:Script>
 		<![CDATA[
-			
-			/*keep disapearing
-			impor com.bit101.components.Component;
-			impor flash.filters.DropShadowFilter;
-			impor net.fundekave.Application;
-			*/
-			
-			import com.bit101.components.Component;
-			import flash.filters.DropShadowFilter;
-			import net.fundekave.Application;
-			
 			import gs.TweenLite;
 			import gs.easing.Quad;
 			
+			import mx.events.CloseEvent;
+			
 			import net.fundekave.fuup.model.vo.FileVO;
 			import net.fundekave.lib.ImageResize;
-			
+			import flash.filters.DropShadowFilter;
+			import net.fundekave.Application;
+			import com.bit101.components.Component;
+			import com.bit101.components.Window;
+			/**
+			*import flash.filters.DropShadowFilte-r;
+			*import net.fundekave.Applicatio-n;
+			*import com.bit101.components.Componen-t;
+			*import com.bit101.components.Windo-w;
+			**/
 			public static const FILE_CREATED:String = 'fileCreated';
 			public static const FILE_UPDATED:String = 'fileUpdated';
 			public static const SETTINGS_INHERIT:String = 'settingsInherit';
 			public static const FILE_REMOVE:String = 'fileRemove';
+			
+			public static const STATE_PROCESSING:String = 'processing';
+			
+			public var lang:Object;
 			
 			[Embed(source="/assets/X.png")]
 			private var ClosePNG:Class;
@@ -117,6 +121,17 @@
 				
 				dispatchEvent( new Event( FILE_CREATED, true ));
 			}
+			
+			public function setLocalState(stateName:String):void {
+				switch( stateName ) {
+					case STATE_PROCESSING:
+						fileVO.renderer.updateStatus(String(lang.processing),false);
+						if(previewWin) {
+							previewWin.close();
+						}
+						break;
+				}
+			}
 						
 			/**
 			 * CREATE SMALL THUMBNAIL
@@ -142,6 +157,7 @@
 			public function updateThumb():void {
 				if(this.thumbUI.numChildren > 0) {
 					this.thumbUI.removeChildAt( 0 );
+					rotateTo = 0;
 				}
 				var imageResize:ImageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
 				if(fileVO.encodedJPG) {
@@ -210,19 +226,70 @@
 				dispatchEvent(new Event(SETTINGS_INHERIT,true));
 			}
 			
+			private var previewWin:Window;
+			
 			private function showResized():void {
-				var image:Loader = new Loader();
-				image.loadBytes( (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data) );
-				image.x = 10;
-				image.y = 10;
-				Application.application.addChild( image );
-				image.addEventListener( MouseEvent.CLICK, onPreviewClick ); 
+				if(previewWin) {
+					if(previewWin.minimized==true) {
+						previewWin.minimized = false;
+					}
+					return;
+				}
+				
+				var title:String = fileVO.filename
+				+ ' ' 
+				+ String((fileVO.widthNew)?(fileVO.widthNew):(fileVO.widthOriginal))
+				+ 'x'
+				+ String((fileVO.heightNew)?(fileVO.heightNew):(fileVO.heightOriginal))
+				+ ' '
+				+ String( Math.round(((fileVO.encodedJPG)?(fileVO.encodedJPG.length):(fileVO.file.size))/1024) ) + 'kB';
+					
+				
+				previewWin = new Window(Application.application, 0, 0, title);
+				previewWin.addEventListener( Event.RESIZE, onWinReady );
+				previewWin.draggable = true;
+				previewWin.hasMinimizeButton = true;
+				previewWin.hasCloseButton = true;
+				
+				previewWin.width = fileVO.widthOriginal;
+				previewWin.height = fileVO.heightOriginal + 20;
+				previewWin.addEventListener( CloseEvent.CLOSE, onClosePreview );
+				
+				previewWin.x = -previewWin.width;
+				previewWin.y = -previewWin.height;
+				previewWin.closeTween = {alpha:0,ease:Quad.easeInOut};
+				previewWin.closeTweenDuration = 0.2;
+				
+				if(previewWin.height > Application.application.height) {
+					Application.application.height = previewWin.height + 10;
+				}
 			}
 			
-			private function onPreviewClick(e:Event):void {
-				var image:Loader = e.currentTarget as Loader;
-				image.removeEventListener( MouseEvent.CLICK, onPreviewClick );
-				image.parent.removeChild( image );
+			private function onWinReady(e:Event):void {
+				var win:Window = e.target as Window;
+				win.removeEventListener( Event.RESIZE, onWinReady );
+				TweenLite.to( win, 0.5, {x:0,y:0,ease:Quad.easeInOut,onComplete:onTweenPreviewWin,onCompleteParams:[win]} );
+			}
+			
+			private function onTweenPreviewWin(win:Window):void {
+				var image:Loader = new Loader();
+				image.loadBytes( (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data) );
+				//image.x = 10;
+				//image.y = 30;
+				image.alpha = 0;
+				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview );
+				win.content.addChild( image );
+				
+			}
+			private function onLoaderPreview(e:Event):void {
+				var loader:Loader = e.target.loader as Loader;
+				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoaderPreview );
+				TweenLite.to( loader, 0.5, {alpha:1,ease:Quad.easeInOut} );
+			}
+						
+			private function onClosePreview( e:CloseEvent ):void {
+				previewWin = null;
+				Application.application.restoreHeight();
 			}
 			
 			public function removeView():void {

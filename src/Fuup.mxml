@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 TODO:
-- create nice popup when viewing images - with close button - show detail in popup
 - clean code
-- levels, sharpen - selectable
-- create status bar - with roll in function to show more lines???
-- file num limit - ?40
 -->
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 

@@ -32,6 +32,10 @@ package com.bit101.components
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	
+	import gs.TweenLite;
+	
+	import mx.events.CloseEvent;
 
 	public class Window extends Component
 	{
@@ -43,8 +47,13 @@ package com.bit101.components
 		private var _shadow:Boolean = true;
 		private var _draggable:Boolean = true;
 		private var _minimizeButton:Sprite;
+		private var _closeButton:Sprite;
 		private var _hasMinimizeButton:Boolean = false;
+		private var _hasCloseButton:Boolean = false;
 		private var _minimized:Boolean = false;
+		
+		public var closeTween:Object;
+		public var closeTweenDuration:Number = 0.5;
 		
 		
 		/**
@@ -69,6 +78,10 @@ package com.bit101.components
 			setSize(100, 100);
 		}
 		
+		public function setContentAlignHorizontal(align:String):void {
+			_panel.alignHorizontal = align;
+		}
+		
 		/**
 		 * Creates and adds the child display objects of this component.
 		 */
@@ -86,7 +99,7 @@ package com.bit101.components
 			
 			_minimizeButton = new Sprite();
 			_minimizeButton.graphics.beginFill(0, 0);
-			_minimizeButton.graphics.drawRect(-10, -10, 20, 20);
+			_minimizeButton.graphics.drawRect(-10, -10, 10, 10);
 			_minimizeButton.graphics.endFill();
 			_minimizeButton.graphics.beginFill(0, .35);
 			_minimizeButton.graphics.moveTo(-5, -3);
@@ -99,6 +112,30 @@ package com.bit101.components
 			_minimizeButton.useHandCursor = true;
 			_minimizeButton.buttonMode = true;
 			_minimizeButton.addEventListener(MouseEvent.CLICK, onMinimize);
+			
+			_closeButton = new Sprite();
+			_closeButton.graphics.beginFill(0, 0);
+			_closeButton.graphics.drawRect(-10, -10, 10, 10);
+			_closeButton.graphics.endFill();
+			_closeButton.graphics.beginFill(0, .35);
+			_closeButton.graphics.moveTo(-3, -5);
+			_closeButton.graphics.lineTo(-5, -3);
+			_closeButton.graphics.lineTo(-1.5, 0);
+			_closeButton.graphics.lineTo(-5, 3);
+			_closeButton.graphics.lineTo(-3, 5);
+			_closeButton.graphics.lineTo(0, 1.5);
+			_closeButton.graphics.lineTo(3, 5);
+			_closeButton.graphics.lineTo(5, 3);
+			_closeButton.graphics.lineTo(1.5, 0);
+			_closeButton.graphics.lineTo(5, -3);
+			_closeButton.graphics.lineTo(3, -5);
+			_closeButton.graphics.lineTo(0, -1.5);
+			_closeButton.graphics.endFill();
+			_closeButton.x = 10;
+			_closeButton.y = 10;
+			_closeButton.useHandCursor = true;
+			_closeButton.buttonMode = true;
+			_closeButton.addEventListener(MouseEvent.CLICK, onClose);
 			
 			filters = [getShadow(4, false)];
 		}
@@ -119,7 +156,9 @@ package com.bit101.components
 			_titleBar.color = _color;
 			_panel.color = _color;
 			_titleBar.width = width;
-			_titleLabel.x = _hasMinimizeButton ? 20 : 5;
+			_titleLabel.x = 5;
+			_titleLabel.x += _hasMinimizeButton ? 15 : 0;
+			_titleLabel.x += _hasCloseButton ? 15 : 0;
 			_panel.setSize(_width, _height - 20);
 		}
 
@@ -154,6 +193,25 @@ package com.bit101.components
 			minimized = !minimized;
 		}
 		
+		public function close():void {
+			onClose(null);
+		}
+		
+		protected function onClose(event:MouseEvent):void
+		{
+			if(closeTween) {
+				closeTween.onComplete = this.onCloseTween;
+				TweenLite.to( this, closeTweenDuration, closeTween );
+			} else {
+				onCloseTween();
+			}
+			
+		}
+		private function onCloseTween():void {
+			dispatchEvent( new CloseEvent( CloseEvent.CLOSE ));
+			while(numChildren>0) removeChildAt(0);
+			this.parent.removeChild( this );
+		}
 		///////////////////////////////////
 		// getter/setters
 		///////////////////////////////////
@@ -253,6 +311,26 @@ package com.bit101.components
 		public function get hasMinimizeButton():Boolean
 		{
 			return _hasMinimizeButton;
+		}
+		
+		public function set hasCloseButton(b:Boolean):void
+		{
+			_hasCloseButton = b;
+			if(_hasCloseButton)
+			{
+				addChild(_closeButton);
+				_minimizeButton.x += 15;
+			}
+			else if(contains(_closeButton))
+			{
+				removeChild(_closeButton);
+				_minimizeButton.x -= 15;
+			}
+			invalidate();
+		}
+		public function get hasCloseButton():Boolean
+		{
+			return _hasCloseButton;
 		}
 		
 		/**
