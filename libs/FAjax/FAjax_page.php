@@ -2,12 +2,16 @@
 class FAjax_page {
 	static function fuup($data) {
 		$user = FUser::getInstance();
-    //---call galery refresh
+    	//---call galery refresh
+    	$cache = FCache::getInstance( 's' );
+		$pageId = $cache->getData('pageId','selectedPage');
+		
 		$galery = new FGalery();
-		$numNewFoto = $galery->refreshImgToDb($user->pageVO->pageId);
-		if($numNewFoto > 0) {
-			FAjax::addResponse('function','call','galeryLoadThumb;'.$numNewFoto);
-		}
+		$items = $galery->refreshImgToDb($pageId);
+		
+		if(isset($items['new'])) FAjax::addResponse('function','call','alert;'.implode(',',$items['new']));
+		if(isset($items['updated'])) FAjax::addResponse('function','call','alert;'.implode(',',$items['updated']));
+		//FAjax::addResponse('function','call','galeryLoadThumb;'.$totalFoto);
 	}
 	
 	static function edit($data) {

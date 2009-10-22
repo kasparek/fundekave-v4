@@ -1,5 +1,5 @@
 <form action="{FORMACTION}" method="post" enctype="multipart/form-data" class="fajaxform">
-
+<!-- BEGIN pageid --><input type="hidden" name="pageId" value="{PAGEID}" /><!-- END pageid -->
 <div id="tabs">
   <ul>
     <li><a href="#tabs-1">Nastaveni</a></li>
@@ -91,13 +91,12 @@
 <fieldset>
 <legend>Seznam fotografii</legend>
 <input type="submit" name="save" value="Uložit" class="button submit" /><br />
-<label>Celkem v galerii:</label><span>{FOTOTOTAL}</span><br />
-<script type="text/javascript"> var fotoTotal={FOTOTOTAL};</script>
+<label>Celkem v galerii:</label><span id="fotoTotal">{FOTOTOTAL}</span><br />
 <label>Řadit:</label><select name="galeryorder">
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
 </select><br />
-<table id="fotoList"><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></table>
+<div id="fotoList"><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></div>
 <input type="submit" name="save" value="Uložit" class="button submit" />
 </fieldset>
 </div>

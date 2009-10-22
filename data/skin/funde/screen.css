@@ -367,6 +367,8 @@ div#mainbar form.notpublished fieldset{
 }
 div#mainbar fieldset label {
 	float: left;
+}
+div#mainbar fieldset div.row {
 	clear: left;
 }
 div#mainbar fieldset input {
@@ -393,6 +395,15 @@ div#mainbar fieldset input.submit {
 div#mainbar fieldset textarea {
 	width: 400px;
 	height: 6em;
+	font-size: 1.2em;
+	margin-bottom: 0.3em;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0 5px;
+}
+div#mainbar fieldset textarea.short {
+	width: 400px;
+	height: 2em;
 	font-size: 1.2em;
 	margin-bottom: 0.3em;
 	margin-left: 0;
@@ -960,6 +971,16 @@ div#fcalendar div.calendarNextMonthLink {
 	color: #000;
 	font-size: 1.2em;
 	background-color: #fdd;
+	margin: 0 1em 0 1em;
+	padding: 1em;
+}
+#okmsgJS {
+	display:none;
+}
+.okmsg {
+	color: #000;
+	font-size: 1.2em;
+	background-color: #dfd;
 	margin: 0 1em 0 1em;
 	padding: 1em;
 }

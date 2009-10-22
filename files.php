@@ -15,6 +15,7 @@ if($user->idkontrol) {
 	$total = (int)  $_POST['total'];
 	$filename = $_POST['filename'];
 	if(!empty($data)) {
+		FFile::makeDir(FConf::get("settings","fuup_chunks_path"));
 		file_put_contents(chunkFilename($filename,$seq),$data);
 	}
 
@@ -34,7 +35,7 @@ if($allExists === true) {
 	}
 	
 	$cache = FCache::getInstance( 's' );
-	$galeryUrl = $cache->getData('galeryDir');
+	$galeryUrl = $cache->getData('galeryDir','selectedPage');
 	$imageName = strtolower($filename);
 	$imageNameArr = explode('.',$imageName);
 	$extArr = array_splice($imageNameArr,count($imageNameArr)-1,1);

@@ -80,7 +80,7 @@ class FRules {
 		}
     return ($retVal=='yes')?(true):(false);
 	}
-
+	
 	function getList($listPublic=true,$idstr=0) {
 		if(!empty($idstr)) $this->page = $idstr;
 		if(!empty($this->page)) {
@@ -104,6 +104,11 @@ class FRules {
 			}
 		}
 	}
+	
+	function inputName($k) {
+		return 'rule-'.$k;
+	}
+	
 	function printEditForm($idstr=0) {
 		$this->getList(true,$idstr);
 		$tpl = new FTemplateIT('pages.permissions.tpl.html');
@@ -120,6 +125,7 @@ class FRules {
 		foreach ($this->ruleText as $k=>$v) {
 			$tpl->setCurrentBlock('rules');
 			$tpl->setVariable('RULESNUM',$k);
+			$tpl->setVariable('INPUTNAME',$this->inputName($k));
 			$tpl->setVariable('RULESCONTENT',$v);
 			$tpl->setVariable('RULESNAME',$this->ruleNames[$k]);
 			$tpl->parseCurrentBlock();
@@ -127,7 +133,19 @@ class FRules {
 
 		return $tpl->get();
 	}
-	function update(){
+	function update($data=array()) {
+		if(!empty($data)) {
+			if(isset($data['public'])) {
+				$rules->public = $data['public'];
+			}
+			foreach ($this->ruleText as $k=>$v) {
+				$inputName = $this->inputName($k);
+				if(isset($data[$inputName])) {
+					$this->ruleText[$k] = $data[$inputName]; 
+				}
+			}
+		}
+		
 		//---set rules
 		$this->clear(); //delete perm for page
 

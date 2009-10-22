@@ -1,5 +1,6 @@
 <?php
 error_reporting(E_ALL ^ E_DEPRECATED);
+date_default_timezone_set("Europe/London");
 //----error catching
 function obHandler($buffer) {
 	$arr = explode('<?xml',$buffer);
@@ -31,7 +32,7 @@ FProfiler::profile('START');
 //session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");
 ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
 ini_set('session.gc_probability',1);
-ini_set('session.save_path', ROOT.'tmp/');
+ini_set('session.save_path', ROOT.'tmp');
 
 session_start();
 FProfiler::profile('FUse::before instance');
