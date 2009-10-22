@@ -1,50 +1,53 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 function fuupUploadOneComplete() {
 	sendAjax('page-fuup');
-}
+};
+
+function deleteFoto(event) {
+		if (confirm($(this).attr("title"))) {
+			//---send ajax
+			var id = $(this).attr("id");
+			idArr = id.split("-");
+			addXMLRequest('itemId', idArr[1]);
+			sendAjax('galery-delete');
+			//---remove element
+			$('#foto-'+idArr[1]).hide('slow',function(){$('#foto-'+idArr[1]).remove()});
+		}
+		event.preventDefault();
+		preventAjax = true;
+	};
 
 var buttonClicked = '';
 var preventAjax = false;
-function fconfirm(event) {
-	setListeners('confirm', 'click', function(event) {
-		if (!confirm($(this).attr("title"))) {
-			preventAjax = true;
-			event.preventDefault();
-		}
-	});
+function fconfirm(event) { setListeners('confirm', 'click', function(event) { if (!confirm($(this).attr("title"))) { preventAjax = true; event.preventDefault(); } }); };
+function onButtonClick(event) { buttonClicked = event.target.name; };
+function fsubmit(event) {
+	$("#errormsgJS").hide();
+	if (preventAjax == true) { preventAjax = false; return; }
+	var arr = $(this).formToArray(false);
+	var result = false;
+	var resultProperty = false;
+	while (arr.length > 0) {
+		var obj = arr.shift();
+		addXMLRequest(obj.name, obj.value);
+		if (obj.name == 'result') result = true;
+		if (obj.name == 'resultProperty') resultProperty = true;
+	}
+	if (result == false) addXMLRequest('result', $(this).attr("id"));
+	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
+	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
+	sendAjax(gup('m', this.action));
+	event.preventDefault();
 };
 
 function fajaxform(event) {
-	setListeners('button', 'click', function(event) {
-		buttonClicked = $(this).attr('name');
-	});
-	setListeners('fajaxform', 'submit', function(event) {
-		$("#errormsgJS").hide();
-		if (preventAjax == true) {
-			preventAjax = false;
-			return;
-		}
-		var arr = $(this).formToArray(false);
-		var result = false;
-		var resultProperty = false;
-		while (arr.length > 0) {
-			var obj = arr.shift();
-			addXMLRequest(obj.name, obj.value);
-			if (obj.name == 'result')
-				result = true;
-			if (obj.name == 'resultProperty')
-				resultProperty = true;
-		}
-		if (result == false)
-			addXMLRequest('result', $(this).attr("id"));
-		if (resultProperty == false)
-			addXMLRequest('resultProperty', 'html');
-		if (buttonClicked.length > 0)
-			addXMLRequest('action', buttonClicked);
-		sendAjax(gup('m', this.action));
-		event.preventDefault();
-	});
+	setListeners('button', 'click', onButtonClick);
+	setListeners('fajaxform', 'submit', fsubmit );
 };
+function bindDeleteFoto() {
+	setListeners('deletefoto', 'click', deleteFoto);
+}
+
 function uploadifyInit() {
 	$(".uploadify").each(function(i){
 		$(this).fileUpload( {
@@ -215,17 +218,19 @@ $("#errormsgJS").hide();
 			$("#prokoho").attr("value", str);
 			$("#recipientcombo").attr("selectedIndex", 0);
 		});
-		
-		$('#fotoList').each(function(){
+		fotoTotal = $("#fotoTotal").text();
+		$('#fotoList').each(function() {
 			if(fotoTotal > 0) {
 				galeryLoadThumb();
 			}
 		});
 		
 	});
+
+var fotoTotal = 0;
 var fotoLoaded = 0;
 function galeryLoadThumb(toTotal) {
-	if(toTotal>0) fotoTotal = fotoTotal + parseInt(toTotal);
+	if(toTotal > 0) fotoTotal = fotoTotal + parseInt(toTotal);
 	if(fotoLoaded < fotoTotal) {
 		//---send ajax call
 		addXMLRequest('total', fotoTotal);
@@ -233,6 +238,10 @@ function galeryLoadThumb(toTotal) {
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', 'append');
 		addXMLRequest('call', 'galeryLoadThumb;');
+		addXMLRequest('call', 'fajaxform');
+		addXMLRequest('call', 'datePickerInit');
+		addXMLRequest('call', 'fajaxform');
+		addXMLRequest('call', 'bindDeleteFoto');
 		sendAjax('galery-editThumb');
 		//---increment counter
 		fotoLoaded = fotoLoaded + 1;
@@ -370,10 +379,10 @@ function gup(name, url) {
 			.exec(url);
 	return (results === null) ? (0) : (results[1]);
 };
-function errmsg(msg) {
-	$("#errormsgJS").html(msg);
-	$("#errormsgJS").show('slow');
-	
+function msg(type, text) {
+	$("#"+type+"msgJS").html( text );
+	$("#"+type+"msgJS").show('slow');
+	setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000)
 }
 // ---send and process ajax request
 function sendAjax(action) {
@@ -420,10 +429,13 @@ function sendAjax(action) {
 							break;
 						case 'call':
 							var arr = item.text().split(';');
+							var functionName = arr[0];
 							var par = '';
-							if (arr.length > 1)
-								par = arr[1];
-							eval(arr[0] + "('" + par + "');");
+							if (arr.length > 1) {
+								arr.splice(0,1);
+								par = arr.join("','");
+							}
+							eval(functionName + "('" + par + "');");
 							break;
 						case 'html':
 						case 'append':

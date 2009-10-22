@@ -468,7 +468,7 @@ class FDBTool {
 			}
 		}
 		//---invalidate cache
-		if($this->cacheResults!=0) {
+		if(!empty( $this->cacheResults )) {
 			$cache = FCache::getInstance($this->cacheResults);
 			$cache->invalidateData($this->getCacheId($retId),'fdb');
 		}

@@ -1,13 +1,13 @@
 <?php
-//TODO: refactoring due to galery
 include_once('iPage.php');
 class page_PageEdit implements iPage {
 
 	static function process( $data ) {
 		//---action
 		$action = '';
-		if(isset($data['action'])) $action = $data['action']; 
+		if(isset($data['action'])) $action = $data['action'];
 		if(isset($data["save"])) $action = 'save';
+		if(isset($data["del"])) $action = 'del'; 
 				
 		$user = FUser::getInstance();
 		
@@ -22,14 +22,15 @@ class page_PageEdit implements iPage {
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
 
 		if($action == "save") {
+			$pageVO = new PageVO();
 			if($user->pageParam == 'a') {
 				//---new page
-				$pageVO = new PageVO();
 				$pageVO->typeId = $user->pageVO->typeIdChild;
 				$pageVO->setDefaults();
 				$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
 			} else {
-				$pageVO = $user->pageVO;
+				$pageVO->pageId = $data['pageId'];
+				$pageVO->load();
 			}
 			FError::resetError();
 				
@@ -142,12 +143,13 @@ class page_PageEdit implements iPage {
 				if($user->pageParam != 'a') {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
-					$rules->public = $data['public'];
-					$rules->ruleText = $data['rule'];
-					$rules->update();
+					$rules->update( $data );
+					
 					//---relations update
+					/*
 					$fRelations = new FPagesRelations($pageVO->pageId);
 					$fRelations->update();
+					*/
 				}
 
 				//---set special properties
@@ -170,6 +172,9 @@ class page_PageEdit implements iPage {
 				//---if page has been created reset pageParam before redirect
 				if($user->pageParam=='a') {
 					$user->pageParam = '';
+					$pageCreated = true;
+				} else {
+					$pageCreated = false;
 				}
 				//---CLEAR CACHE
 				$cache = FCache::getInstance('f'); 
@@ -191,12 +196,19 @@ class page_PageEdit implements iPage {
 							FGalery::removeFoto($dfoto);
 						}
 					}
-
-					if(isset($data['fot'])) {
-						foreach ($data['fot'] as $k=>$v) {
-							$itemVO = new ItemVO($k,true);
+					
+					//--prepare foto array
+					foreach($data as $k=>$v) {
+						if(strpos($k, 'foto-') !== false) {
+							$keyArr = explode('-',$k);
+							$fotoArr[$keyArr[1]][$keyArr[2]] = $v; 
+						}
+					}
+					if(isset($fotoArr)) {
+						foreach ($fotoArr as $k=>$v) {
+							$itemVO = new ItemVO($k,true,array('type'=>'ignore'));
 							$itemVO->saveOnlyChanged = true;
-							$itemVO->set('text',FSystem::textins($v['comm'],array('plainText'=>1)));
+							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateCreated',$v['date'],array('type'=>'date'))) {
 									FError::addError(ERROR_DATE_FORMAT);
@@ -205,12 +217,19 @@ class page_PageEdit implements iPage {
 							$itemVO->save();
 						}
 					}
+					
 
 				}
 
 				/* redirect */
 				if($data['__ajaxResponse']) {
-					FAjax::addResponse('function','call','redirect;'.FUser::getUri('',$pageVO->pageId,$redirectAdd));
+					if($pageCreated === true) {
+						//if new page redirect
+						FAjax::addResponse('function','call','redirect;'.FUser::getUri('',$pageVO->pageId,$redirectAdd));
+					} else {
+						//if updating just message
+						FAjax::addResponse('function','call','msg;ok;Data saved');
+					}
 				} else {
 					FHTTP::redirect(FUser::getUri('','',$redirectAdd));
 				}
@@ -227,31 +246,33 @@ class page_PageEdit implements iPage {
 					$arr = FError::getError();
 					FError::resetError();
 					while($arr) {
-						FAjax::addResponse('function','call','errmsg;'.array_shift($arr).'');
+						FAjax::addResponse('function','call','errmsg;error;'.array_shift($arr).'');
 					}
 				}
 			}
 		}
 
 		/*  DELETE PAGE */
-		if (isset($_POST['del']) && $user->pageParam!='a') {
+		if ($action == "del" && $user->pageParam!='a') {
+			$pageId = $data['pageId'];
 			//---check if page has any related items
-			$arrd = $db->getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$user->pageVO->pageId."'");
+			$arrd = FDBTool::getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$pageId."'");
 				
 			$delete = false;
 			if(empty($arrd)) $delete = true;
 			if($user->pageParam == 'sa') $delete = true;
-				
+
+			$pageVO = new PageVO($pageId,true);
 			if($delete === false) {
 				//---lock & hide
-				$user->pageVO->locked=3;
-				$user->pageVO->save();
+				$pageVO->locked = 3;
+				$pageVO->save();
 			} else {
 				//---complete delete
-				FPages::deletePage($user->pageVO->pageId);
+				FPages::deletePage($pageId);
 			}
-				
-			FHTTP::redirect($user->getUri('',''));
+			FError::addError(FLang::$LABEL_DELETED_OK);
+			FAjax::addResponse('function','call','redirect;'.FUser::getUri('',HOME_PAGE,''));
 		}
 
 	}
@@ -276,8 +297,13 @@ class page_PageEdit implements iPage {
 			$pageVO->setDefaults();
 			$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
 		} else {
-			$pageVO = $user->pageVO;
+			$pageVO = new PageVO();
+			$pageVO->pageId = $user->pageVO->pageId;
+			$pageVO->load();
 		}
+		
+		$cache = FCache::getInstance( 's' );
+		$cache->setData($pageVO->pageId, 'pageId', 'selectedPage');
 
 		//---SHOW TIME
 		/***
@@ -291,6 +317,8 @@ class page_PageEdit implements iPage {
 			
 		$tpl=new FTemplateIT('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FUser::getUri('m=page-edit&u='.$user->userVO->userId));
+		if($pageVO->typeId!="top") $tpl->touchBlock('delpage');
+		if($user->pageParam!='a') $tpl->setVariable('PAGEID',$pageVO->pageId);
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FUser::getUri('who='.$pageVO->userIdOwner,'finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
@@ -352,7 +380,7 @@ class page_PageEdit implements iPage {
 
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
 			$cache = FCache::getInstance( 's' );
-			$cache->setData($pageVO->galeryDir.'/', 'galeryDir');
+			$cache->setData($pageVO->galeryDir.'/', 'galeryDir', 'selectedPage');
 			
 			$tpl->touchBlock('galeryspecifictabs');
 

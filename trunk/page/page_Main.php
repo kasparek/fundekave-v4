@@ -48,10 +48,11 @@ class page_Main implements iPage {
 			}
 			$fPages->setOrder("(pplastitem.value+0.0) desc");
 			$arr = $fPages->getContent(0,4);
-			
-			$dataArr[] = FPages::printPagelinkList(array(array_shift($arr)));
-			$dataArr[] = FPages::printPagelinkList($arr);
-			
+			$dataArr = array();
+			if(!empty($arr)) {
+				$dataArr[] = FPages::printPagelinkList(array(array_shift($arr)));
+				$dataArr[] = FPages::printPagelinkList($arr);
+			}
 			$cache->setData($dataArr);
 		}
 		
@@ -85,7 +86,10 @@ class page_Main implements iPage {
 		
 		//------MOST-VISITED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostVisited')) === false) {
-			$arr = FDBTool::getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(hit) desc limit 0,10");
+			$arr = FDBTool::getCol("select pc.pageId from sys_pages_counter as pc join sys_pages as p on p.pageId=pc.pageId 
+			where pc.dateStamp > date_sub(now(), interval 1 week) 
+			and p.locked < 2
+			and pc.typeId in ('galery','forum','blog') group by pc.pageId order by sum(hit) desc limit 0,10");
 			//---cache result
 			$x = 0;
 			while($arr && $x < 6) {
@@ -108,7 +112,10 @@ class page_Main implements iPage {
 		
 		//------MOST-ACTIVE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostActive')) === false) {
-			$arr = FDBTool::getCol("select pageId from sys_pages_counter where dateStamp > date_sub(now(), interval 1 week) and typeId in ('galery','forum','blog') group by pageId order by sum(ins) desc limit 0,10");
+			$arr = FDBTool::getCol("select pc.pageId from sys_pages_counter as pc join sys_pages as p on p.pageId=pc.pageId 
+			where pc.dateStamp > date_sub(now(), interval 1 week)  
+			and p.locked < 2 
+			and pc.typeId in ('galery','forum','blog') group by pc.pageId order by sum(ins) desc limit 0,10");
 			//---cache result
 			$x = 0;
 			while($arr && $x < 6) {
@@ -131,7 +138,8 @@ class page_Main implements iPage {
 
 		//------MOST-FAVOURITE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostFavourite')) === false) {
-			$arr = FDBTool::getCol("select pageId from sys_pages_favorites where book=1 group by pageId order by sum(book) desc limit 0,10");
+			$arr = FDBTool::getCol("select pf.pageId from sys_pages_favorites as pf join sys_pages as p on p.pageId=pc.pageId 
+			where pf.book=1 and p.locked < 2 group by pf.pageId order by sum(pf.book) desc limit 0,10");
 			//---cache result
 			$x = 0;
 			while($arr && $x < 6) {

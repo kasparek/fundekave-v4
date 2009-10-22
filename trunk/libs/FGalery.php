@@ -229,17 +229,18 @@ class FGalery {
 			$change = true;
 		}
 		
+		$items = array();
+		
 		//---insert new foto to db
 		if(!empty($arrNotInDB)) {
 			foreach ($arrNotInDB as $file) {
-				$itemVO = new ItemVO();
-				$itemVO->pageId = $pageId;
-				$itemVO->typeId = $this->pageVO->typeId;
-				$itemVO->enclosure = $file;
+				$this->itemVO = new ItemVO();
+				$this->itemVO->pageId = $pageId;
+				$this->itemVO->typeId = $this->pageVO->typeId;
+				$this->itemVO->enclosure = $file;
 				/*
 				$itemVO->dateCreated = 'now()';
 				//---try exif
-				
 				$exif = @exif_read_data( $galdir.$file );
 				if(!empty($exif)) {
 					$itemVO->dateCreated = date("Y-m-d",$exif['FileDateTime']);
@@ -249,14 +250,14 @@ class FGalery {
 					}
 				}
 				*/
-				$itemVO->filesize = filesize($galdir.$file);
-				$itemVO->text = '';
-				$itemVO->hit = 0;
-				$itemVO->save();
+				$this->itemVO->filesize = filesize($galdir.$file);
+				$this->itemVO->text = '';
+				$this->itemVO->hit = 0;
+				$this->itemVO->save();
 				$gCountFotoNew++;
-				$this->itemVO = $itemVO;
 				$thumbPathArr = $this->getThumbPath();
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
+				$items['new'][] = $this->itemVO->itemId;
 				$change = true;
 			}
 		}
@@ -269,13 +270,12 @@ class FGalery {
 				if($newFilesize != $oldFilesize) {
 					//---delete thumb, update filesize
 					$fotoId = $arrNames[$v];
-					$itemVO = new ItemVO();
-					$itemVO->itemId = $fotoId;
-					$itemVO->load();
-					$itemVO->filesize = $newFilesize;
-					$itemVO->save();
+					$this->itemVO = new ItemVO($fotoId,true,array('type'=>'ignore'));
+					$this->itemVO->filesize = $newFilesize;
+					$this->itemVO->save();
 					$this->removeThumb();
 					$change = true;
+					$items['updated'][] = $fotoId; 
 				}
 			}
 		}
@@ -287,8 +287,9 @@ class FGalery {
 		}
 
 		//---update foto count on page
-		FDBTool::query("update sys_pages set cnt='".($gCountFotoNew + $gCountFoto)."',dateUpdated = now() where pageId='".$pageId."'");
-		return $gCountFotoNew;
+		$totalFoto = $gCountFotoNew + $gCountFoto;
+		FDBTool::query("update sys_pages set cnt='".$totalFoto."',dateUpdated = now() where pageId='".$pageId."'");
+		return $items;
 	}
 
 	/**
@@ -313,6 +314,7 @@ class FGalery {
 
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
+			return true;
 		}
 	}
 	

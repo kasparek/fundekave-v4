@@ -25,14 +25,28 @@ class FAjax {
 			$dataXML = stripslashes($data);
 			$xml = new SimpleXMLElement($dataXML);
 			foreach($xml->Request->Item as $item) {
-				$dataProcessed[ (String)$item['name'] ] = (String)$item;
+				$k = (String)$item['name'];
+				$v = (String)$item;
+				if(isset($dataProcessed[ $k ])) {
+					if(is_array($dataProcessed[ $k ])) {
+						$dataProcessed[ $k ][] = $v;
+					} else {
+						$dataProcessed[ $k ] = array( $dataProcessed[ $k ], $v);
+					}
+				} else {
+					$dataProcessed[ $k ] = $v;
+				}
 			}
 			$dataProcessed['__ajaxResponse'] = true;
 		} else {
-			$arr = explode(';',$data);
-			foreach($arr as $row) {
-				list($k,$v) = explode(':',$row);
-				$dataProcessed[$k] = $v;
+			if(is_array($data)) {
+				$dataProcessed = $data;
+			} else {
+				$arr = explode(';',$data);
+				foreach($arr as $row) {
+					list($k,$v) = explode(':',$row);
+					$dataProcessed[$k] = $v;
+				}
 			}
 			$dataProcessed['__ajaxResponse'] = false;
 		}
@@ -84,9 +98,12 @@ class FAjax {
 		foreach($originalData as $k=>$v) {
 			switch($k) {
 				case 'call':
-					$tpl->setCurrentBlock('call');
-					$tpl->setVariable('FUNCTION', $v);
-					$tpl->parseCurrentBlock();
+					if(!is_array($v)) $v = array($v);
+					foreach($v as $funcName) {
+						$tpl->setCurrentBlock('call');
+						$tpl->setVariable('FUNCTION', $funcName);
+						$tpl->parseCurrentBlock();
+					}
 					break;
 				case 'callback':
 					$tpl->setCurrentBlock('callback');

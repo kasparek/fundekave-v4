@@ -31,8 +31,8 @@ class ItemVO extends Fvob {
 	);
 
 	static $colsType = array(
-		'galery'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
-		,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')"),
+		'galery'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
+		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
 		'blog'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
 		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
 		'forum'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
@@ -110,11 +110,13 @@ class ItemVO extends Fvob {
 
 		function getTypeColumns( $typeId='' ) {
 			if($typeId=='') $typeId = $this->typeId;
+			$ret = $this->columns;
 			if(!empty($typeId)) {
-				return $this->columns = array_merge($this->columns, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
-			} else {
-				return $this->columns;
+				if(isset(ItemVO::$colsType[$typeId])) {
+					$ret = $this->columns = array_merge($this->columns, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
+				}
 			}
+			return $ret;
 		}
 
 		function checkItem() {
@@ -129,23 +131,23 @@ class ItemVO extends Fvob {
 			}
 		}
 
-		function load() {
-
-			if(empty($this->typeId)) {
-				$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
-				$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
+		function load($typed=true) {
+			
+			if($typed===true) {
+				if(empty($this->typeId)) {
+					$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
+					$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
+				}
+				$this->columns = $this->getTypeColumns();
 			}
-			$this->columns = $this->getTypeColumns();
 
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
 			if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
-					
 				$vo = new FDBvo( $this );
 				$vo->load();
 				$vo->vo = false;
 				$vo = false;
-
 				$this->prepare();
 			} else {
 				$this->reload($itemVO);
