@@ -3,15 +3,25 @@ class FAjax_galery {
 	static function editThumb($data) {
 		
 		$user = FUser::getInstance();
-		$pageVO = $user->pageVO; 
+		
+		$cache = FCache::getInstance( 's' );
+		$pageId = $cache->getData('pageId','selectedPage');
+		
+		 
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
+		$itemRenderer->thumbPreventCache = true;
 		
 		$fItems = new FItems('galery',false,$itemRenderer);
-		$fItems->setWhere("pageId='".$pageVO->pageId."'");
-		$fItems->setOrder($pageVO->itemsOrder());
-		$ret = $fItems->render((int) $data['seq'],1);
-		
+		if(isset($data['item'])) {
+			$fItems->setWhere("itemId='".$data['item']."'");
+			$ret = $fItems->render(0,1);	
+		} else {
+			$pageVO = new PageVO($pageId,true);	
+			$fItems->setWhere("pageId='".$pageId."'");
+			$fItems->setOrder($pageVO->itemsOrder());
+			$ret = $fItems->render((int) $data['seq'],1);
+		}
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 	}
 	static function delete($data) {
