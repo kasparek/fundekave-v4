@@ -105,27 +105,7 @@ if ($itemId > 0) {
 
 if(empty($pageId)) $pageId = HOME_PAGE;
 
-if(isset($pageId{5})) {
-	//---remove the part behind - it is just nice link
-	if(false!==($pos=strpos($pageId,'-'))) {
-		$textLink = substr($pageId,$pos+1);
-		//TODO: security check if textlink match with pageid -  otherwise do redirect
-		$pageId = substr($pageId,0,$pos);
-	}
-	//---slice pageid on fiveid and params
-	if(isset($pageId{5})) {
-		if($pageId{5}==';') {
-			$getArr = explode(";",substr($pageId,5));
-			foreach ($getArr as $getVar) {
-				$getVarArr = explode("=",$getVar);
-				$_GET[$getVarArr[0]] = $getVarArr[1];
-			}
-		} else {
-			$user->pageParam = substr($pageId,5);
-			$pageId = substr($pageId,0,5);
-		}
-	}
-}
+$pageId = FSystem::processK($pageId);
 
 $user->whoIs = 0;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);

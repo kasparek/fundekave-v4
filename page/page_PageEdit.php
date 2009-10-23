@@ -7,10 +7,10 @@ class page_PageEdit implements iPage {
 		$action = '';
 		if(isset($data['action'])) $action = $data['action'];
 		if(isset($data["save"])) $action = 'save';
-		if(isset($data["del"])) $action = 'del'; 
-				
+		if(isset($data["del"])) $action = 'del';
+			
 		$user = FUser::getInstance();
-		
+
 		$redirectAdd = '';
 		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->pageParam!='sa') {
 			$user->pageParam = 'a' ;
@@ -33,7 +33,7 @@ class page_PageEdit implements iPage {
 				$pageVO->load();
 			}
 			FError::resetError();
-				
+
 			//---categories
 			if($pageVO->typeId=='blog' && $user->pageParam!='a') {
 				$category = new FCategory('sys_pages_category','categoryId');
@@ -41,25 +41,25 @@ class page_PageEdit implements iPage {
 				$category->arrSaveAddon = array('typeId'=>$pageVO->pageId);
 				$category->process($data);
 			}
-				
+
 			//---leftpanel
 			if(isset($data['leftpanel'])) {
 				$fLeft = new FLeftPanel($pageVO->pageId,0,$pageVO->typeId);
 				$fLeft->process($data['leftpanel']);
 			}
-				
+
 			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
 			if(empty($pageVO->name)) {
-				FError::addError(FLang::$ERROR_PAGE_ADD_NONAME);	
+				FError::addError(FLang::$ERROR_PAGE_ADD_NONAME);
 			}
 			if($nameChanged) {
 				if(FPages::page_exist('name',$pageVO->name)) {
-					FError::addError(FLang::$ERROR_PAGE_NAMEEXISTS);	
+					FError::addError(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
 			$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
 			$pageVO->content = FSystem::textins($data['content']);
-				
+
 			if(isset($data['datecontent'])) {
 				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
 			}
@@ -117,7 +117,7 @@ class page_PageEdit implements iPage {
 						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
 						$dir = WEB_REL_GALERY .$pageVO->galeryDir;
-						FFile::makeDir($dir);						
+						FFile::makeDir($dir);
 					}
 
 					//---load settings from defaults if not in limits
@@ -144,12 +144,12 @@ class page_PageEdit implements iPage {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->update( $data );
-					
+						
 					//---relations update
 					/*
-					$fRelations = new FPagesRelations($pageVO->pageId);
-					$fRelations->update();
-					*/
+					 $fRelations = new FPagesRelations($pageVO->pageId);
+					 $fRelations->update();
+					 */
 				}
 
 				//---set special properties
@@ -177,7 +177,7 @@ class page_PageEdit implements iPage {
 					$pageCreated = false;
 				}
 				//---CLEAR CACHE
-				$cache = FCache::getInstance('f'); 
+				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('forumdesc');
 
 				/* galery foto upload */
@@ -196,12 +196,12 @@ class page_PageEdit implements iPage {
 							FGalery::removeFoto($dfoto);
 						}
 					}
-					
+						
 					//--prepare foto array
 					foreach($data as $k=>$v) {
 						if(strpos($k, 'foto-') !== false) {
 							$keyArr = explode('-',$k);
-							$fotoArr[$keyArr[1]][$keyArr[2]] = $v; 
+							$fotoArr[$keyArr[1]][$keyArr[2]] = $v;
 						}
 					}
 					if(isset($fotoArr)) {
@@ -217,7 +217,7 @@ class page_PageEdit implements iPage {
 							$itemVO->save();
 						}
 					}
-					
+						
 
 				}
 
@@ -241,12 +241,12 @@ class page_PageEdit implements iPage {
 				//---cache data
 				$cache = FCache::getInstance('l');
 				$cache->setData($pageVO, 'page', 'form');
-				
+
 				if($data['__ajaxResponse']) {
 					$arr = FError::getError();
 					FError::resetError();
 					while($arr) {
-						FAjax::addResponse('function','call','errmsg;error;'.array_shift($arr).'');
+						FAjax::addResponse('function','call','msg;error;'.array_shift($arr).'');
 					}
 				}
 			}
@@ -257,7 +257,7 @@ class page_PageEdit implements iPage {
 			$pageId = $data['pageId'];
 			//---check if page has any related items
 			$arrd = FDBTool::getCol("SELECT itemId FROM sys_pages_items WHERE pageId='".$pageId."'");
-				
+
 			$delete = false;
 			if(empty($arrd)) $delete = true;
 			if($user->pageParam == 'sa') $delete = true;
@@ -278,7 +278,7 @@ class page_PageEdit implements iPage {
 	}
 
 	static function build() {
-		
+
 		$user = FUser::getInstance();
 
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
@@ -301,7 +301,7 @@ class page_PageEdit implements iPage {
 			$pageVO->pageId = $user->pageVO->pageId;
 			$pageVO->load();
 		}
-		
+
 		$cache = FCache::getInstance( 's' );
 		$cache->setData($pageVO->pageId, 'pageId', 'selectedPage');
 
@@ -317,7 +317,7 @@ class page_PageEdit implements iPage {
 			
 		$tpl=new FTemplateIT('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FUser::getUri('m=page-edit&u='.$user->userVO->userId));
-		if($pageVO->typeId!="top") $tpl->touchBlock('delpage');
+		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');
 		if($user->pageParam!='a') $tpl->setVariable('PAGEID',$pageVO->pageId);
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FUser::getUri('who='.$pageVO->userIdOwner,'finfo'));
@@ -340,20 +340,20 @@ class page_PageEdit implements iPage {
 
 		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
 
-    
+
 		if($user->pageParam!='a') {
 			$tpl->touchBlock('permissionstab');
 			$rules = new FRules($pageVO->pageId, $pageVO->userIdOwner);
 			$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
-			
+				
 			/*
-			$tpl->touchBlock('relatedtab');
-      $fRelations = new FPagesRelations($pageVO->pageId);
-			$tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
-			*/
+			 $tpl->touchBlock('relatedtab');
+			 $fRelations = new FPagesRelations($pageVO->pageId);
+			 $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
+			 */
 		}
-    
-    
+
+
 		$tpl->touchBlock('pageavatarupload');
 
 		if($pageVO->typeId == 'forum') {
@@ -381,7 +381,7 @@ class page_PageEdit implements iPage {
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
 			$cache = FCache::getInstance( 's' );
 			$cache->setData($pageVO->galeryDir.'/', 'galeryDir', 'selectedPage');
-			
+				
 			$tpl->touchBlock('galeryspecifictabs');
 
 			if($pageVO->itemsOrder()=='dateCreated desc') {
@@ -391,20 +391,20 @@ class page_PageEdit implements iPage {
 			$fItems->setWhere("pageId='".$pageVO->pageId."'");
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 			/*
-			$itemRenderer = new FItemsRenderer();
-			$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
-			
-			$fItems = new FItems('galery',false,$itemRenderer);
-			$fItems->setWhere("pageId='".$pageVO->pageId."'");
-			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
-			if($pageVO->getPageParam('enhancedsettings/orderitems') == 1) {
+			 $itemRenderer = new FItemsRenderer();
+			 $itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
+			 	
+			 $fItems = new FItems('galery',false,$itemRenderer);
+			 $fItems->setWhere("pageId='".$pageVO->pageId."'");
+			 $tpl->setVariable('FOTOTOTAL',$fItems->getCount());
+			 if($pageVO->getPageParam('enhancedsettings/orderitems') == 1) {
 				$tpl->touchBlock('gorddate');
 				$fItems->setOrder($pageVO->itemsOrder());
-			} else {
+				} else {
 				$fItems->setOrder('enclosure');
-			}
-			$tpl->setVariable('FOTOLIST',$fItems->render());
-			*/
+				}
+				$tpl->setVariable('FOTOLIST',$fItems->render());
+				*/
 			/* UPLOAD INPUTS */
 			$numInputs=7;
 			for ($x=1;$x<$numInputs;$x++) {
@@ -444,13 +444,13 @@ class page_PageEdit implements iPage {
 
 		//---left panels configure
 		/*
-		if($user->pageParam != 'a') {
+		 if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
 			$fLeft = new FLeftPanelEdit($pageVO->pageId,0,$pageVO->typeId);
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
-		}
-    /**/
-    
+			}
+			/**/
+
 		FBuildPage::addTab(array("MAINHEAD"=>($user->pageParam == 'a')?(FLang::$LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));
 	}
 }
