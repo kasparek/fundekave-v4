@@ -12,6 +12,8 @@ function deleteFoto(event) {
 			sendAjax('galery-delete');
 			//---remove element
 			$('#foto-'+idArr[1]).hide('slow',function(){$('#foto-'+idArr[1]).remove()});
+			fotoTotal--;
+			$("#fotoTotal").text(fotoTotal);
 		}
 		event.preventDefault();
 		preventAjax = true;
@@ -229,23 +231,64 @@ $("#errormsgJS").hide();
 
 var fotoTotal = 0;
 var fotoLoaded = 0;
-function galeryLoadThumb(toTotal) {
-	if(toTotal > 0) fotoTotal = fotoTotal + parseInt(toTotal);
-	if(fotoLoaded < fotoTotal) {
-		//---send ajax call
+var itemsNewList =  [];
+var itemsUpdatedList = [];
+var galeryCheckRunning = false;
+
+function galeryRefresh(itemsNew,itemsUpdated,total) {
+	fotoTotal = parseInt( total );
+	$("#fotoTotal").text(total);
+	
+	var itemsNewArr=[],itemsUpdatedArr=[];
+	if(itemsNew.length>0) itemsNewArr = itemsNew.split(',');
+	if(itemsUpdated.length>0) itemsUpdatedArr = itemsUpdated.split(',');
+	while(itemsNewArr.length>0) {
+		itemsNewList.push(itemsNewArr.shift());
+	}
+	while(itemsUpdatedArr.length>0) { 
+		itemsUpdatedList.push(itemsUpdatedArr.shift());
+	}
+	if(!galeryCheckRunning) galeryCheck();
+}
+
+function galeryCheck() {
+	if(itemsUpdatedList.length>0) {
+		galeryLoadThumb(itemsUpdatedList.shift(),'U');
+	} else if(itemsNewList.length>0) {
+	  galeryLoadThumb(itemsNewList.shift(),'N');
+	} else if(fotoLoaded < fotoTotal) {
+		galeryLoadThumb();
+	}
+}
+
+function galeryLoadThumb(item,type) {
+	var destSet=false;
+	galeryCheckRunning = true;
+	if(item > 0) {
+		addXMLRequest('item', item);
+		if(type=='U') {
+			addXMLRequest('result', 'foto-'+item);
+			addXMLRequest('resultProperty', 'replaceWith');
+			destSet=true;
+		}
+	} else {
 		addXMLRequest('total', fotoTotal);
 		addXMLRequest('seq', fotoLoaded);
+	}
+	if(destSet===false) {
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', 'append');
-		addXMLRequest('call', 'galeryLoadThumb;');
-		addXMLRequest('call', 'fajaxform');
-		addXMLRequest('call', 'datePickerInit');
-		addXMLRequest('call', 'fajaxform');
-		addXMLRequest('call', 'bindDeleteFoto');
-		sendAjax('galery-editThumb');
-		//---increment counter
-		fotoLoaded = fotoLoaded + 1;
 	}
+	addXMLRequest('call', 'fajaxform');
+	addXMLRequest('call', 'datePickerInit');
+	addXMLRequest('call', 'bindDeleteFoto');
+	fotoLoaded++;
+	if(fotoLoaded < fotoTotal) {
+		addXMLRequest('call', 'galeryCheck');
+	} else {
+	  galeryCheckRunning = false;
+	}
+	sendAjax('galery-editThumb');
 };
 // ---textarea - size/markitup switching
 function initInsertToTextarea() {
@@ -438,10 +481,10 @@ function sendAjax(action) {
 							eval(functionName + "('" + par + "');");
 							break;
 						case 'html':
+						case 'replaceWith':
 						case 'append':
-							eval('$("#' + item.attr('target') + '").'
-									+ item.attr('property')
-									+ '( item.text() );');
+							var command = '$("#' + item.attr('target') + '").' + item.attr('property') + '( item.text() );'
+							eval(command);
 							break;
 						default:
 							eval('$("#' + item.attr('target') + '").attr("'

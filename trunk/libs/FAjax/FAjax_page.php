@@ -9,9 +9,11 @@ class FAjax_page {
 		$galery = new FGalery();
 		$items = $galery->refreshImgToDb($pageId);
 		
-		if(isset($items['new'])) FAjax::addResponse('function','call','alert;'.implode(',',$items['new']));
-		if(isset($items['updated'])) FAjax::addResponse('function','call','alert;'.implode(',',$items['updated']));
-		//FAjax::addResponse('function','call','galeryLoadThumb;'.$totalFoto);
+		$newStr = '';
+		$updatedStr = '';
+		if(isset($items['new'])) $newStr = implode(',',$items['new']);
+		if(isset($items['updated'])) $updatedStr = implode(',',$items['updated']);
+		FAjax::addResponse('function','call','galeryRefresh;'.$newStr.';'.$updatedStr.';'.$items['total']);
 	}
 	
 	static function edit($data) {

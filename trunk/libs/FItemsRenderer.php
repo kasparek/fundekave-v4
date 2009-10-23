@@ -26,6 +26,7 @@ class FItemsRenderer {
 	public $currentHeader = '';
 	public $itemIdInside = 0;
 	public $showBottomItem = true;
+	public $thumbPreventCache = false;
 
 	function setCustomTemplate($templateName) {
 		$this->customTemplateName = $templateName;
@@ -178,7 +179,7 @@ class FItemsRenderer {
 				$pageVO  = new PageVO($pageId,true);
 				$tpl->setVariable('IMGALT',$pageVO->name.' '.$itemVO->enclosure);
 				$tpl->setVariable('IMGTITLE',$pageVO->name.' '.$itemVO->enclosure);
-				$tpl->setVariable('IMGURLTHUMB',$itemVO->thumbUrl);
+				$tpl->setVariable('IMGURLTHUMB',$itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):('')));
 				$tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$itemVO->thumbWidth.'px;"');
 				//$tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$itemVO->height.'px;"');
 				if($this->showRating==true) $tpl->setVariable('HITS',$itemVO->hit);
