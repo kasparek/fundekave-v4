@@ -54,6 +54,11 @@ class FAjax {
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
 		
+		if(isset($fajax->data['k'])) {
+			//---process k - set pageparam on user if needed
+			FSystem::processK($fajax->data['k']);
+		}
+		
 		//---dealing with ajax requests
 		$filename = ROOT.LIBSDIR.'FAjax/FAjax_'.$mod.'.php';
 		require_once($filename);

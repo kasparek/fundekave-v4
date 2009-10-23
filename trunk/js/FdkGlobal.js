@@ -38,6 +38,7 @@ function fsubmit(event) {
 	if (result == false) addXMLRequest('result', $(this).attr("id"));
 	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
 	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
+	addXMLRequest('k', gup('k', this.action));
 	sendAjax(gup('m', this.action));
 	event.preventDefault();
 };
