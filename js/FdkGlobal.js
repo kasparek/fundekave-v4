@@ -441,56 +441,55 @@ function sendAjax(action) {
 			$(data.responseXML).find("Item").each(
 					function() {
 						var item = $(this);
+						var command = '';
 						switch (item.attr('property')) {
-						case 'css':
-							el = createEl('link',{'type':'text/css','rel':'stylesheet','href':item.text()});
-					        if ($.browser.msie) el.onreadystatechange = function() { /loaded|complete/.test(el.readyState) && call(); };
-					        else if ($.browser.opera) el.onload = call;
-					        else { //FF, Safari, Chrome
-					          (function(){
-					            try {
-						            el.sheet.cssRule;
-					            } catch(e){
-						            setTimeout(arguments.callee, 20);
-						            return;
-					            };
-					            call();
-					          })();
-					        }
-						  $('head').get(0).appendChild(el);
-			                 break;
-						case 'getScript':
-							var arr = item.text().split(';');
-							if(arr[1]) {
-								eval("$.getScript('"+arr[0]+"',"+arr[1]+");");
-							} else {
-								eval("$.getScript('"+arr[0]+"');");
-							}
-							break;
-						case 'callback':
-							eval(item.text() + "( data.responseText );");
-							break;
-						case 'call':
-							var arr = item.text().split(';');
-							var functionName = arr[0];
-							var par = '';
-							if (arr.length > 1) {
-								arr.splice(0,1);
-								par = arr.join("','");
-							}
-							eval(functionName + "('" + par + "');");
-							break;
-						case 'html':
-						case 'replaceWith':
-						case 'append':
-							var command = '$("#' + item.attr('target') + '").' + item.attr('property') + '( item.text() );'
-							eval(command);
-							break;
-						default:
-							eval('$("#' + item.attr('target') + '").attr("'
-									+ item.attr('property')
-									+ '", item.text());');
+							case 'css':
+								el = createEl('link',{'type':'text/css','rel':'stylesheet','href':item.text()});
+						        if ($.browser.msie) el.onreadystatechange = function() { /loaded|complete/.test(el.readyState) && call(); };
+						        else if ($.browser.opera) el.onload = call;
+						        else { //FF, Safari, Chrome
+						          (function(){
+						            try {
+							            el.sheet.cssRule;
+						            } catch(e){
+							            setTimeout(arguments.callee, 20);
+							            return;
+						            };
+						            call();
+						          })();
+						        }
+							  $('head').get(0).appendChild(el);
+				                 break;
+							case 'getScript':
+								var arr = item.text().split(';');
+								if(arr[1]) {
+									command = "$.getScript('"+arr[0]+"',"+arr[1]+");";
+								} else {
+									command = "$.getScript('"+arr[0]+"');";
+								}
+								break;
+							case 'callback':
+								command = item.text() + "( data.responseText );";
+								break;
+							case 'call':
+								var arr = item.text().split(';');
+								var functionName = arr[0];
+								var par = '';
+								if (arr.length > 1) {
+									arr.splice(0,1);
+									par = arr.join("','");
+								}
+								command = functionName + "('" + par + "');";
+								break;
+							case 'html':
+							case 'replaceWith':
+							case 'append':
+								command = '$("#' + item.attr('target') + '").' + item.attr('property') + '( item.text() );'
+								break;
+							default:
+								command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
 						}
+						if(command.length>0) eval(command);
 					});
 		}
 	});
