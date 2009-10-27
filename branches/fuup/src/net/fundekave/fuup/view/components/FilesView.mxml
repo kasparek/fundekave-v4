@@ -10,7 +10,6 @@
 				
 				import gs.TweenLite;
 				import gs.easing.Quad;
-				
 				import net.fundekave.Application;
 				import com.bit101.components.Label;
 				import com.bit101.components.Window;
@@ -33,19 +32,30 @@
 			public var lang:Object;
 				
 			public var filesNumMax:int;
-    	  	
+			public var multiFiles:Boolean = true;
+			
+			[Bindable] public var settingsVisible:Boolean = true;
+			[Bindable] public var autoProcess:Boolean = false;
+			[Bindable] public var autoUpload:Boolean = false;
+			[Bindable] public var displayContent:Boolean = true;
     	  	
     	  	private function addedToStage():void {
     	  		filesBox.addEventListener(Event.ENTER_FRAME, onResize);
-    	  		
     	  	}
     	  	    	  	
     	  	private var fileRefList:FileReferenceList
 			private function browseFiles():void {
-				fileRefList = new FileReferenceList();
-				fileRefList.addEventListener(Event.SELECT, onFilesSelect );
-				fileRefList.browse([new FileFilter(String(lang.filetypes), "*.jpg;*.gif;*.png")]);
+				if(multiFiles===true) {
+					fileRefList = new FileReferenceList();
+					fileRefList.addEventListener(Event.SELECT, onFilesSelect );
+					fileRefList.browse([new FileFilter(String(lang.filetypes), "*.jpg;*.gif;*.png")]);
+				} else {
+					var fileRef:FileReference = new FileReference();
+					fileRef.addEventListener(Event.SELECT, onFileSelect );
+					fileRef.browse([new FileFilter(String(lang.filetypes), "*.jpg;*.gif;*.png")]);
+				}
 			}
+			
 			private var filesArr:Array;
 			private function onFilesSelect(e:Event):void {
 				filesArr = (e.target as FileReferenceList).fileList;
@@ -60,6 +70,16 @@
 				}
 			}
 			
+			private function onFileSelect(e:Event):void {
+				
+				var fileRef:FileReference = e.target as FileReference;
+				if( fileRef.name ) {
+					filesArr = [];
+					currFile = fileRef;
+					dispatchEvent( new Event( FILE_CHECK_EXITS ));
+				}
+			}
+			
 			private var currFileView:FileView;
 			public var currFile:FileReference;
 						
@@ -69,6 +89,10 @@
 					//---check if file is not already in list
 					dispatchEvent( new Event( FILE_CHECK_EXITS ));
 					return;
+				} else {
+					if(autoProcess===true) {
+						doAction(ACTION_PROCESS);
+					}
 				}
 			}
 			
@@ -110,7 +134,8 @@
 				currFileView.rotation = 180 * Math.random();
 				currFileView.move(posx,posy);
 				//---wait till filesBox is resized with new element
-				this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+				//this.addEventListener(FilesView.RESIZE, onFileViewFrame );
+				setTimeout( onFileViewFrame, 100, null);
 			}
 			
 			private function addToLayout(child:DisplayObject):void {
@@ -144,7 +169,7 @@
 			}
 			
 			private function onFileViewFrame(e:Event):void {
-				this.removeEventListener(FilesView.RESIZE, onFileViewFrame );
+				//this.removeEventListener(FilesView.RESIZE, onFileViewFrame );
 				fileLater( currFileView, currFile );
 			}
 			
@@ -173,26 +198,28 @@
 			private var fileBoxNumChildred:int = 0;
 			private var oldStageWidth:int=0;
 			private function onResize(e:Event):void {
-				if(Application.application.stage.stageWidth != oldStageWidth) {
-					var stage:Stage = Application.application.stage;
-					oldStageWidth = stage.stageWidth;
-    	  			filesBox.width = stage.stageWidth-20;
-    	  			trace("STAGERESIZE::NEWFILESBOXSIZE::"+filesBox.width);
-    	  			//---set new positions for children
-    	  			resetLayout();
-				}
-				if( filesBox.height != fileBoxHeight || fileBoxNumChildred!=filesBox.numChildren) {
-					
-					if( fileBoxNumChildred != filesBox.numChildren ) {
-						resetLayout();
-						fileBoxNumChildred = filesBox.numChildren;	
+				if(displayContent===true) {
+					if(Application.application.stage.stageWidth != oldStageWidth) {
+						var stage:Stage = Application.application.stage;
+						oldStageWidth = stage.stageWidth;
+	    	  			filesBox.width = stage.stageWidth-20;
+	    	  			trace("STAGERESIZE::NEWFILESBOXSIZE::"+filesBox.width);
+	    	  			//---set new positions for children
+	    	  			resetLayout();
 					}
-					
-					if( filesBox.height != fileBoxHeight ) {
-						fileBoxHeight = filesBox.height;
-						Application.application.height = filesBox.height + Fuup.HEIGHT + 300
+					if( filesBox.height != fileBoxHeight || fileBoxNumChildred!=filesBox.numChildren) {
+						
+						if( fileBoxNumChildred != filesBox.numChildren ) {
+							resetLayout();
+							fileBoxNumChildred = filesBox.numChildren;	
+						}
+						
+						if( filesBox.height != fileBoxHeight ) {
+							fileBoxHeight = filesBox.height;
+							Application.application.height = filesBox.height + Fuup.HEIGHT + 300
+						}
+						dispatchEvent( new Event(RESIZE) );
 					}
-					dispatchEvent( new Event(RESIZE) );
 				}
 			}
 
@@ -210,15 +237,17 @@
 	<fu:Container height="25">
 		<bit101:HBox y="5" x="5">
 			<bit101:PushButton id="selectFilesButt" width="60" click="{browseFiles()}" label="{lang.selectfiles}" />
-			<fu:Container height="20" width="60">
+			
+			<fu:Container height="20" width="60" visible="{settingsVisible}">
 				<bit101:CheckBox id="correctionsCheckbox" label="{lang.corections}" selected="true" y="5" x="5" />	
 			</fu:Container>
 			
-			
-			<bit101:PushButton id="processButt" width="60" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
-			<bit101:PushButton id="uploadButt" width="60" click="{doAction(ACTION_UPLOAD)}" label="{lang.upload}" />
+			<bit101:PushButton id="processButt" visible="{!autoProcess}" width="60" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
+			<bit101:PushButton id="uploadButt" visible="{!autoUpload}" width="60" click="{doAction(ACTION_UPLOAD)}" label="{lang.upload}" />
 			<!-- global progress bar -->
 			<bit101:ProgressBar id="globalProgressBar" visible="false" width="275" height="20" maximum="100" />
+			<!-- global messages -->
+			<bit101:Label id="globalMessages" text="" visible="false" />
 		</bit101:HBox>
 		<!--
 		<bit101:HBox>
@@ -233,6 +262,6 @@
 		-->
 	</fu:Container>
     
-	<fu:Container id="filesBox" x="5" y="30" mouseChildren="true" />
+	<fu:Container id="filesBox" visible="{displayContent}" x="5" y="30" mouseChildren="true" />
 		
 </fu:Container>

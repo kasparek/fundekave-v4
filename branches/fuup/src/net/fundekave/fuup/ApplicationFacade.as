@@ -42,6 +42,7 @@ package net.fundekave.fuup
 		public static const PROCESS_PROGRESS:String		= 'processProgress';
 		
 		public static const IMAGES_CHECK_FOR_PROCESSING:String = 'imagesCheckForProcessing';
+		public static const IMAGES_PROCESSED:String = 'imagesProcessed';
 		public static const IMAGES_PROCESS:String		= 'imagesProcess';
 		
 		public static const IMAGES_CHECK_FOR_UPLOADING:String = 'imagesCheckForUploading';

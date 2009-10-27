@@ -1,5 +1,7 @@
 package net.fundekave.fuup.controller
 {
+	import flash.utils.setTimeout;
+	
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.common.constants.StateConstants;
 	import net.fundekave.fuup.model.FileProxy;
@@ -18,7 +20,7 @@ package net.fundekave.fuup.controller
 			
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			if(proxy.fileList.length > 0) {
-				proxy.processFiles();
+				setTimeout(proxy.processFiles,200);
 			}
 		}
 		

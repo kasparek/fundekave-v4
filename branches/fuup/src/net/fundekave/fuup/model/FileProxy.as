@@ -29,6 +29,7 @@ package net.fundekave.fuup.model
         public var widthMax:Number = 500;
         public var heightMax:Number = 500;
         public var outputQuality:Number = 80;
+		public var crop:Boolean = false;
         
         //uploading
         public var serviceURL:String;
@@ -70,6 +71,7 @@ package net.fundekave.fuup.model
         		fileVO.heightMax = heightMax
         	}
         	fileVO.outputQuality = outputQuality
+			fileVO.crop = crop;
         }
         
         //---processing
@@ -97,6 +99,7 @@ package net.fundekave.fuup.model
 					if(rot<0) rot += 360;
 					if(rot>=360) rot -=360;
 	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,rot,fileVO.outputQuality);
+					imageResize.crop = crop;
 					fileVO.rotationFromOriginal = rot; 
 					fileVO.rotation = 0;
 					fileVO.rotationCurrent = fileVO.rotation;
@@ -151,7 +154,7 @@ package net.fundekave.fuup.model
 	        		fileVO = fileList[i] as FileVO;
 	        		var data:ByteArray = (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data);
 					if(data.length < this.maxSize) {
-		        		var fileUpload:FileUpload = new FileUpload(serviceURL,fileVO.filename, chunkSize, uploadLimit);
+		        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
 		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete );
 		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
 		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );

@@ -35,7 +35,7 @@ package net.fundekave.fuup.controller
 					<transition action={ActionConstants.ACTION_PROCESS} target={StateConstants.STATE_PROCESSING}/>
 					<transition action={ActionConstants.ACTION_UPLOAD} target={StateConstants.STATE_UPLOADING}/>
 				</state>
-				<state name={StateConstants.STATE_PROCESSING} entering={ApplicationFacade.IMAGES_CHECK_FOR_PROCESSING}>
+				<state name={StateConstants.STATE_PROCESSING} entering={ApplicationFacade.IMAGES_CHECK_FOR_PROCESSING} exiting={ApplicationFacade.IMAGES_PROCESSED}>
 					<transition action={ActionConstants.ACTION_SETUP} target={StateConstants.STATE_SETUPING}/>
 				</state>
 				<state name={StateConstants.STATE_UPLOADING} entering={ApplicationFacade.IMAGES_CHECK_FOR_UPLOADING}>

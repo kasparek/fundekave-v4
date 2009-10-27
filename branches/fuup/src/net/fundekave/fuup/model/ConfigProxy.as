@@ -31,7 +31,12 @@ package net.fundekave.fuup.model
 		}
 		
 		public function getValue(ident:String):XML {
-			return XML( dataXML..Item.(@name==ident) );
+			var itemList:XMLList = dataXML..Item.(@name==ident);
+			if(itemList.length() > 0) {
+				return itemList[0];
+			} else {
+				return null;
+			}
 		}
 
 		public function load() :void {

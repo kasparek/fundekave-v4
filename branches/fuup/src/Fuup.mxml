@@ -10,8 +10,8 @@ TODO:
 	>
 	<fx:Script>
 		<![CDATA[
-			
-			public static const WIDTH:int = 600;
+			//minimum size
+			public static const WIDTH:int = 400;
 			public static const HEIGHT:int = 35;
 			import net.fundekave.fuup.ApplicationFacade;
 			public static const NAME:String = "fudeup";

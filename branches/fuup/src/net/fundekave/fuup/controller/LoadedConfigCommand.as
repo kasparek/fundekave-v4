@@ -1,5 +1,7 @@
 package net.fundekave.fuup.controller
 {
+		
+	import net.fundekave.Application;
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.model.ConfigProxy;
 	import net.fundekave.fuup.model.ExtInterfaceProxy;
@@ -22,6 +24,7 @@ package net.fundekave.fuup.controller
 			fileProxy.widthMax = Number( configProxy.getValue( 'imageWidthMax' ) );
 			fileProxy.heightMax = Number( configProxy.getValue( 'imageHeightMax' ) );
 			fileProxy.outputQuality = Number( configProxy.getValue( 'imageQuality' ) );
+			fileProxy.crop = Number( configProxy.getValue( 'crop' ) ) === 1 ? true : false;
 			fileProxy.filtersList = configProxy.filters;
 			
 			fileProxy.serviceURL = String( configProxy.getService('files') );
@@ -32,6 +35,9 @@ package net.fundekave.fuup.controller
 			extProxy.callbackLoaded = String( configProxy.getValue( 'onLoaded' ) );
 			extProxy.callbackUploadOneComplete = String( configProxy.getValue( 'onUploadOneComplete' ) );
 			extProxy.callbackUploadComplete = String( configProxy.getValue( 'onUploadComplete' ) );
+			
+			Application.application.width = Number( configProxy.getValue('embedWidth') );
+			Application.application.height = Number( configProxy.getValue('embedHeight') );
 			
 			sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.LOADED );
 		}
