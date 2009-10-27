@@ -14,6 +14,7 @@ package net.fundekave.lib
 	import flash.display.PixelSnapping;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
@@ -37,6 +38,7 @@ package net.fundekave.lib
 		
 		public var autoEncode:Boolean = false;
 		
+		public var crop:Boolean = false;
 		public var widthOriginal:int;
 		public var heightOriginal:int;
 		public var widthMax:int;
@@ -85,17 +87,7 @@ package net.fundekave.lib
         	var imageBmp:Bitmap = image.content as Bitmap;
 			this.widthOriginal = imageBmp.width;
 			this.heightOriginal = imageBmp.height;
-        	//---calculate new size
-        	if(widthMax > 0 || heightMax > 0) {
-        		var scaled:Object = BitmapDataProcess.scaleCalc(imageBmp.width,imageBmp.height,widthMax,heightMax);
-        		widthNew = scaled.width; 
-        		heightNew = scaled.height;
-        	} else {
-        		widthNew = widthMax; 
-        		heightNew = heightMax;
-        	}
-        	trace('RESIZE::NEW::'+widthNew+'::'+heightNew);
-        	
+        	        	
         	bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
         	bmpdOrig.draw( image, null, null, null, null, true );
         	
@@ -138,7 +130,28 @@ package net.fundekave.lib
   			  	popImage.dispose();
         	}
         	
+			//crop cropped if needed
+			if(crop === true) {
+				var cropped:Rectangle = ImageResize.cropCalc( bmpdOrig.width,bmpdOrig.height,widthMax,heightMax );
+				var croppedBmpd:BitmapData = new BitmapData( cropped.width, cropped.height );
+				croppedBmpd.copyPixels( bmpdOrig, cropped, new Point() );
+				bmpdOrig.dispose();
+				bmpdOrig = croppedBmpd;
+			}
+			
         	var bmp:Bitmap = new Bitmap(bmpdOrig, PixelSnapping.NEVER, true);
+			
+			//---calculate new size
+			if(widthMax > 0 || heightMax > 0) {
+				var scaled:Rectangle = ImageResize.scaleCalc( bmpdOrig.width,bmpdOrig.height,widthMax,heightMax );
+				widthNew = scaled.width; 
+				heightNew = scaled.height;
+			} else {
+				widthNew = widthMax; 
+				heightNew = heightMax;
+			}
+			trace('RESIZE::NEW::'+widthNew+'::'+heightNew);
+			
         	//---resize bitmap
         	bmp.width = widthNew;
         	bmp.height = heightNew;
@@ -217,5 +230,38 @@ package net.fundekave.lib
         	_resultBmpData.dispose();
         	this.parent.removeChild( this );
         }
+		
+		static public function scaleCalc(originalWidth:Number,originalHeight:Number, maxWidth:Number, maxHeight:Number):Rectangle {
+			var testWidth:Number  = (originalWidth * maxHeight / originalHeight);
+			var testHeight:Number = (originalHeight * maxWidth / originalWidth);
+			var rect:Rectangle = new Rectangle();
+			if (testHeight < maxHeight) {
+				rect.width = maxWidth;
+				rect.height = Math.round( testHeight );
+			} else if (testWidth < maxWidth) {
+				rect.width = Math.round( testWidth );
+				rect.height = maxHeight;
+			} else {
+				rect.width = Math.round( maxWidth );
+				rect.height = Math.round( maxHeight );
+			}
+			return rect;
+		}
+		
+		static public function cropCalc(originalWidth:Number,originalHeight:Number, newWidth:Number, newHeight:Number):Rectangle {
+			var rect:Rectangle = new Rectangle(0,0,originalWidth,originalHeight);
+			if((originalWidth/originalHeight) != (newWidth/newHeight)) {
+				//---do CROP
+				var ptmp_height:int = (originalHeight * newWidth) / originalWidth;
+				if(ptmp_height < newHeight) {
+					rect.width = (newWidth * originalHeight) / newHeight ;
+					rect.x = ((originalWidth - rect.width) / 2);
+				} else {
+					rect.height =  (newHeight * originalWidth) / newWidth ;
+					rect.y = (originalHeight - rect.height) / 2;
+				}
+			}
+			return rect;
+		}
 	}
 }

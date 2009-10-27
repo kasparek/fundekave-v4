@@ -76,7 +76,7 @@ package com.dncompute.canvas {
 		public static function getInstance():BrowserCanvas {
          if (instance == null) {
             allowInstantiation = true;
-            instance = new BrowserCanvas( Application.application.stage );
+            instance = new BrowserCanvas( Application.application.stage, Application.application.outterId );
             allowInstantiation = false;
           }
          return instance;
@@ -120,9 +120,7 @@ package com.dncompute.canvas {
 				
 				if (this.containerId == null) this.containerId = ExternalInterface.objectID;
 				if (this.containerId == null) this.containerId = ExternalInterface.call(JSScripts.GET_FLASH_ID, stage.loaderInfo.url);
-				
-				if (browserHacks.length != 0) 
-				{
+				if (this.containerId == null && browserHacks.length != 0) {
 					this.containerId = ExternalInterface.call(JSScripts.INSERT_BROWSER_HACKS, this.containerId, browserHacks.join(","));
 				}
 			}
@@ -145,9 +143,7 @@ package com.dncompute.canvas {
 			this._maxWidth = formatSize(newWidth);
 			invalidate();
 		}
-		
-		
-		
+				
 		public function set height(newHeight:String):void {
 			this._height = formatSize(newHeight);
 			invalidate();

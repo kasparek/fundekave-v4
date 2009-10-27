@@ -2,14 +2,22 @@
 <Fuup>
 	<Config>
 		<Settings>
+			<Item name="settingsEnabled">1</Item>
+			<Item name="autoProcess">0</Item>
+			<Item name="autoUpload">0</Item>
+			<Item name="displayContent">1</Item>
+			<Item name="crop">1</Item>
+			<Item name="multi">1</Item>
 			<Item name="permissions">0</Item>
 			<Item name="maxSize">300000</Item>
 			<Item name="chunkSize">10000</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">20</Item>
 			<Item name="imageQuality">80</Item>
-			<Item name="imageWidthMax">650</Item>
-			<Item name="imageHeightMax">500</Item>
+			<Item name="imageWidthMax">40</Item>
+			<Item name="imageHeightMax">50</Item>
+			<Item name="embedWidth">-1</Item>
+			<Item name="embedHeight">25</Item>
 			<Item name="onLoaded">fuupLoaded</Item>
 			<Item name="onUploadOneComplete">fuupUploadOneComplete</Item>
 			<Item name="onUploadComplete"></Item>

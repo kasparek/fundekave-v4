@@ -154,6 +154,7 @@ package com.bit101.components
 		private var _label:Label;
 		public function set label(l:String):void {
 			_label.text = l;
+			this.invalidate();
 		}
 		
 	}

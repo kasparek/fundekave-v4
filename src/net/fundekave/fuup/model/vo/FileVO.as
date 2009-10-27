@@ -43,6 +43,8 @@ package net.fundekave.fuup.model.vo
 		[Bindable]
 		public var outputQuality:Number = 100;
 		
+		public var crop:Boolean = false;
+		
 		function FileVO(filename:String):void {
 			
 			this.filename = filename;

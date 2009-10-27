@@ -78,11 +78,12 @@ package com.bit101.components
 			for(var i:int = 0; i < numChildren; i++)
 			{
 				var child:DisplayObject = getChildAt(i);
-				child.x = xpos;
-				xpos += child.width;
-				xpos += _spacing;
-				
-				maxHeight = Math.max( maxHeight, child.height );
+				if(child.visible===true) {
+					child.x = xpos;
+					xpos += child.width;
+					xpos += _spacing;
+					maxHeight = Math.max( maxHeight, child.height );
+				}
 			}
 			
 			width = xpos;

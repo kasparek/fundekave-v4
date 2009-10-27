@@ -48,8 +48,10 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onFileRemove( e:Event ):void {
-			var fileVO:FileVO = (e.target as FileView).fileVO;
-			sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
+			if(stateName == StateConstants.STATE_SETUPING) {
+				var fileVO:FileVO = (e.target as FileView).fileVO;
+				sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
+			}
 		}
 		
 		protected function onFileCheck( e:Event ):void {
@@ -93,19 +95,36 @@ package net.fundekave.fuup.view
 					ApplicationFacade.GLOBAL_PROGRESS_INIT,
 					ApplicationFacade.PROCESS_PROGRESS,
 					ApplicationFacade.FILE_CHECK_FAIL,
-					ApplicationFacade.FILE_CHECK_OK
+					ApplicationFacade.FILE_CHECK_OK,
+					ApplicationFacade.IMAGES_PROCESSED,
+					ApplicationFacade.SERVICE_ERROR
 					];
 		}
 		
+		private var imagesProcessed:Boolean;
+		private var stateName:String;
 		override public function handleNotification(note:INotification):void
 		{
-			var stateName:String;
+			var configProxy:ConfigProxy
 			switch ( note.getName() )
 			{
+				case ApplicationFacade.SERVICE_ERROR:
+					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+					filesView.globalMessages.text = configProxy.lang.uploaderror; 
+					filesView.globalMessages.visible = true;
+					break;
+				case ApplicationFacade.IMAGES_PROCESSED:
+					imagesProcessed = true;
+					break;
 				case ApplicationFacade.CONFIG_LOADED:
-					var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 					filesView.lang = configProxy.lang;
 					filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
+					filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
+					filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
+					filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
+					filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
+					filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
 					break;
 				case ApplicationFacade.FILE_CHECK_FAIL:
 					filesView.failFile();
@@ -115,9 +134,9 @@ package net.fundekave.fuup.view
 				break;
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-					
 					filesView.globalProgressBar.visible = true;
 					filesView.globalProgressBar.value = 0;
+					filesView.globalMessages.visible = false;
 					stateName = String( note.getBody() );
 					switch(stateName) {
 						case StateConstants.STATE_PROCESSING:
@@ -140,6 +159,12 @@ package net.fundekave.fuup.view
             		switch( stateName ) {
             			case StateConstants.STATE_SETUPING:
             				filesView.globalProgressBar.visible = false;
+							if(filesView.autoUpload===true) {
+								if(this.imagesProcessed===true) {
+									this.imagesProcessed=false;
+									this.onUpload(null);
+								}
+							}
             			break;
             		}
                     break;
