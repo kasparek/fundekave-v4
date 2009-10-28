@@ -83,7 +83,7 @@ package net.fundekave.lib
 				trace('CHUNK::UPLOADING::file::'+String(dataObj.filename)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
 				
 				//---start more chunks if uploadLimit
-				setTimeout( upload, 200 );
+				if(chunks.length>0) setTimeout( upload, 500 );
         	}
         }
         
