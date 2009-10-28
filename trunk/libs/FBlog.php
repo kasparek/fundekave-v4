@@ -67,7 +67,7 @@ class FBlog {
 		$textAreaId = fBlog::textAreaId();
 	  
 		$tpl = new FTemplateIT('blog.editform.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri('m=blog-submit'));
+		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
 		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
 		if($itemId > 0) {
 			$itemVO = new ItemVO($itemId,false,array('type'=>'blog'));
@@ -108,7 +108,7 @@ class FBlog {
 	  
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
-				FMenu::secondaryMenuAddItem(FUser::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'fajaxa');
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'fajaxa');
 			}
 		}
 	  

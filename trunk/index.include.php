@@ -1,15 +1,15 @@
-<?php 
-require(INIT_FILENAME); 
+<?php
+require(INIT_FILENAME);
 
 //---process ajax requests - or alternative POST requests
 $user = FUser::getInstance();
 if(isset($_REQUEST['m']) && $user->pageAccess == true) {
-  FAjax::process($_REQUEST['m'],(isset($_REQUEST['d']))?($_REQUEST['d']):($_POST));
+	FAjax::process($_REQUEST['m'],(isset($_REQUEST['d']))?($_REQUEST['d']):($_POST));
 }
 FProfiler::profile('FAJAX PROCESSED DONE');
 //---process post/get for page
 $data = $_POST;
-if(!empty($_FILES))  $data['__files'] = $_FILES; 
+if(!empty($_FILES))  $data['__files'] = $_FILES;
 if(!empty($_GET))  $data['__get'] = $_GET;
 FBuildPage::process( $data );
 FProfiler::profile('PAGE PROCESSED DONE');
@@ -18,7 +18,7 @@ if($user->pageAccess == true) {
 	$user->pageStat();
 	//---tag toolbar set up
 	if($user->idkontrol === true) {
-	  FItemsToolbar::setTagToolbar();
+		FItemsToolbar::setTagToolbar();
 	}
 }
 FProfiler::profile('PAGE STAT/TOOLBAR');

@@ -79,7 +79,7 @@ class page_UserSettings implements iPage {
 					}
 				}
 				$userVO->save();
-				FHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FSystem::getUri());
 			}
 		}
 	}
@@ -93,7 +93,7 @@ class page_UserSettings implements iPage {
 
 		$tpl = new FTemplateIT('users.personal.html');
 
-		$tpl->setVariable("FORMACTION",FUser::getUri('m=user-settings&u='.$userVO->userId));
+		$tpl->setVariable("FORMACTION",FSystem::getUri('m=user-settings&u='.$userVO->userId));
 		$tpl->setVariable("USERNAME",$userVO->name);
 		$options='';
 		$arrOpt = FDBTool::getAll('select skinId,name from sys_skin order by name','skin','categ','s');

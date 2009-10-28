@@ -28,7 +28,7 @@ class page_SysEditPages implements iPage {
 					}
 				}
 			}
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 
 	}
@@ -83,7 +83,7 @@ class page_SysEditPages implements iPage {
 			$options .= '<option value="'.$k.'"'.(($k==$arrParams['type'])?(' selected="selected"'):('')).'>'.$v.'</option>';
 		}
 		$tpl->setVariable('TYPEOPTIONS',$options);
-		$tpl->setVariable('LISTFORMACTION',FUser::getUri());
+		$tpl->setVariable('LISTFORMACTION',FSystem::getUri());
 		if($arrParams['order']==1) $tpl->touchBlock('sortabc');
 
 		$options='';

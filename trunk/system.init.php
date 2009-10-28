@@ -11,19 +11,17 @@ ob_start("obHandler");
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) {
-		$c = ROOT.ROOT_CODE . $c ;
+		$c = ROOT . ROOT_CODE . $c ;
 	} else {
 		if(strpos($c,'VO')!==false) { $c = 'vo/'.$c; }
-		$c = LIBSDIR . $c ;
+		$c = ROOT . LIBSDIR . $c ;
 	}
-	include  $c . '.php';
+	require( $c . '.php' );
 }
 spl_autoload_register("class_autoloader");
 setlocale(LC_ALL,'cs_CZ.UTF-8');
-
 //--------------------------------------------------------config + constant init
 FConf::getInstance();
-
 //-------------------------------------------------------------time for debuging
 FProfiler::profile('START');
 
@@ -35,9 +33,6 @@ ini_set('session.gc_probability',1);
 ini_set('session.save_path', ROOT.'tmp');
 
 session_start();
-FProfiler::profile('FUse::before instance');
-$user = FUser::getInstance();
-FProfiler::profile('FUse::after instance');
 
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
@@ -46,18 +41,11 @@ if(!empty($_REQUEST["k"])) {
 		$kvArr = explode('=',array_shift($kArr));
 		if(isset($kvArr[1])) {
 			$_REQUEST[$kvArr[0]] = $kvArr[1];
+			$_GET[$kvArr[0]] = $kvArr[1];
 		}
 	}
 }
 
-if(isset($_REQUEST['m']) && empty($pageId)) {
-	$cache = FCache::getInstance('s');
-	if(false !== ($pageIdTmp = $cache->getData('lastPage'))) {
-		$pageId = $pageIdTmp;
-	}
-}
-
-$user->pageParam = '';
 //---backward compatibility
 if(isset($_GET['kam'])) {
 	if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
@@ -83,7 +71,7 @@ if(isset($_GET['u'])) {
 	}
 }*/
 $itemId = 0;
-
+$itemVO = false;
 if(!empty($_REQUEST["i"])) {
 	$itemId = (int) $_REQUEST['i'];
 } elseif(isset($_REQUEST['nid'])) {
@@ -92,24 +80,24 @@ if(!empty($_REQUEST["i"])) {
 }
 
 if ($itemId > 0) {
-  $user->itemVO = new ItemVO($itemId);
-	$user->itemVO->checkItem();
-	if($user->itemVO->itemId > 0) {
+  $itemVO = new ItemVO($itemId);
+	$itemVO->checkItem();
+	if($itemVO->itemId > 0) {
   	if(empty($pageId)) {
-  		$pageId = $user->itemVO->pageId;
+  		$pageId = $itemVO->pageId;
   	}
 	} else {
-    $user->itemVO = false;
+    $itemVO = false;
   }
 }
 
 if(empty($pageId)) $pageId = HOME_PAGE;
-
 $pageId = FSystem::processK($pageId);
 
-$user->whoIs = 0;
-if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
-FProfiler::profile('PARAMS/SESSION INIT DONE');
+//setup userVO
+$user = FUser::getInstance();
+if( $itemVO ) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
+if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 $user->kde(); //---check user / load info / load page content / chechk page exist
 FProfiler::profile('USER/PAGE CHECK DONE');

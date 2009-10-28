@@ -74,6 +74,7 @@ class PageVO extends Fvob {
 	//---watcher
 	var $saveOnlyChanged = false;
 	var $changed = false;
+	var $loaded = false;
 	var $xmlChanged = false;
 
 
@@ -86,9 +87,7 @@ class PageVO extends Fvob {
 
 	function load() {
 		$vo = new FDBvo( $this );
-		$vo->load();
-		$vo->vo = false;
-		$vo = false;
+		return $this->loaded = $vo->load();
 	}
 
 	function save() {

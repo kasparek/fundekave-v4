@@ -47,6 +47,11 @@ class SessionDriver
 		return true;	
 	}
 
+	function &getPointer( $key, $grp ) {
+		if(!isset($this->data[$grp][$key])) $this->data[$grp][$key] = false;
+		return $this->data[$grp][$key];
+	}
+	
 	function getData($key, $grp) {
 		if(isset($this->data[$grp][$key])) {
 			$data = $this->data[$grp][$key];

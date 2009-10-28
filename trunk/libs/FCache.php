@@ -151,12 +151,21 @@ class FCache {
 	 * CACHE DATA FUNCTIONS
 	 *
 	 */
-
+	
 	function getGroup( $grp = self::DEFAULT_GRP, $driverIdent='' ) {
 		if(null === ($driver = $this->getDriver( $driverIdent ))) return false;
 		return $driver->getGroup( $grp );
 	}
 
+	function &getPointer( $key , $grp = self::DEFAULT_GRP, $driverIdent='' ) {
+		if(null === ($driver = $this->getDriver($driverIdent))) return false;
+		if($this->checkKey($key) === false) return false;
+		if($this->checkGrp($grp) === false) return false;
+		$this->key = $key;
+		$this->grp = $grp;
+		return $driver->getPointer($key, $grp);
+	}
+	
 	function getData( $key , $grp = self::DEFAULT_GRP, $driverIdent='' ) {
 		if(null === ($driver = $this->getDriver($driverIdent))) return false;
 		if($this->checkKey($key) === false) return false;

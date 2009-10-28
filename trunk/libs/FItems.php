@@ -114,18 +114,17 @@ class FItems extends FDBTool {
 		if($this->debug==1) print_r($this->data);
 		return $this->data;
 	}
-
+/*
 	function pop() {
 		if($this->data) return array_shift($this->data);
 	}
-
+*/
 	function parse() {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
-		if($itemVO = $this->pop()) {
+		if($itemVO = array_shift($this->data)) {
 			$this->fItemsRenderer->render( $itemVO );
 			FProfiler::profile('FItems::parse--ITEM PARSED');
-			return true;
 		}
 	}
 

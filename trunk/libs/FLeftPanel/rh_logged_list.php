@@ -10,9 +10,9 @@ class rh_logged_list {
 				$kde = FUser::getLocation($pra[0]);
 				$tpl->setCurrentBlock('user');
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($pra[0]));
-				$tpl->setVariable('USERLINK',FUser::getUri('who='.$pra[0],'finfo'));
+				$tpl->setVariable('USERLINK',FSystem::getUri('who='.$pra[0],'finfo'));
 				$tpl->setVariable('USERNAME',FUser::getgidname($pra[0]));
-				$tpl->setVariable('USERLOCATIONLINK',FUser::getUri('',$kde['pageId'],$kde['param']));
+				$tpl->setVariable('USERLOCATIONLINK',FSystem::getUri('',$kde['pageId'],$kde['param']));
 				$tpl->setVariable('USERLOCATIONLONG',$kde['name']);
 				$tpl->setVariable('USERLOCATIONSHORT',$kde['nameshort']);
 				$tpl->setVariable('USERACTIVE',substr($pra[1],3,5));

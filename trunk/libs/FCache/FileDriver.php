@@ -1,4 +1,5 @@
 <?php
+require_once(ROOT.'pear/Cache/Lite.php');
 /**
  * file driver for FCache
  * 
@@ -18,7 +19,6 @@ class FileDriver
 	var $lifeTime = 60;
 
 	function __construct() {
-		require_once('Cache/Lite.php');
 		if(!is_dir(FConf::get('settings','cache_path'))) mkdir(FConf::get('settings','cache_path'),0777,true);
 		$cacheOptions['cacheDir'] = FConf::get('settings','cache_path');
 		$cacheOptions['lifeTime'] = $this->lifeTime;
@@ -46,6 +46,10 @@ class FileDriver
 		return false;
 	}
 
+	function getPointer( $key, $grp) {
+		return false;
+	}
+	
 	function getData($key, $grp) {
 		return unserialize($this->cacheLite->get($key,$grp));
 	}

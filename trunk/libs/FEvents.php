@@ -89,7 +89,7 @@ class FEvents {
 		}
 
 		$tpl = new FTemplateIT('events.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri('m=event-submit&u='.FUser::logon()));
+		$tpl->setVariable('FORMACTION',FSystem::getUri('m=event-submit&u='.FUser::logon()));
 		$tpl->setVariable('HEADING',(($itemVO->itemId>0)?($itemVO->addon):(FLang::$LABEL_EVENT_NEW)));
 		$tpl->setVariable('ITEMID',$itemVO->itemId);
 
@@ -114,7 +114,7 @@ class FEvents {
 		}
 
 		if(!empty( $itemVO->enclosure )) {
-			$tpl->setVariable('DELFLY',FUser::getUri('m=event-delFlyer&d=item:'.$itemVO->itemId));
+			$tpl->setVariable('DELFLY',FSystem::getUri('m=event-delFlyer&d=item:'.$itemVO->itemId));
 			$tpl->setVariable('FLYERURL',FEvents::flyerUrl( $itemVO->enclosure ));
 			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
 		}
@@ -163,7 +163,7 @@ class FEvents {
 			$user->itemVO = new ItemVO();
 			FError::addError(FLang::$LABEL_DELETED_OK);
 			if($redirect === true) {
-				FHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FSystem::getUri());
 			} else {
 				return false;
 			}
@@ -244,7 +244,7 @@ class FEvents {
 			}
 				
 			if($redirect === true) {
-				FHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FSystem::getUri());
 			} else {
 				return $itemVO;
 			}

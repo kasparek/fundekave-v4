@@ -26,7 +26,7 @@ class FProfiler {
 		if(empty($statArr)) return;
 		
 		foreach($statArr as $profil) {
-			if($profil['group']==true) {
+			if($profil['group']===true) {
 				if(!isset($groupLastTime)) $groupLastTime = $lastTime;
 				$profil['timeDif'] = round($profil['time']-$groupLastTime,4);
 				$arrGroup[$profil['comment']][] = $profil;

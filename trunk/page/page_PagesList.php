@@ -3,6 +3,7 @@ include_once('iPage.php');
 class page_PagesList implements iPage {
 
 	static function process($data) {
+		$invalidate = false;
 		$user = FUser::getInstance();
 
 		$cache = FCache::getInstance('s');
@@ -24,12 +25,27 @@ class page_PagesList implements iPage {
 				$pageSearchCache['filtrStr'] = FSystem::textins($data['filtr'],array('plainText'=>1));
 			}
 		}
-
+		
 		$pageSearchCache = $cache->setData($pageSearchCache,$user->pageVO->pageId,'search');
+		
+		if($invalidate === true) {
+			$mainCache = FCache::getInstance('f',0);
+			$mainCache->invalidateCache('user-'.$user->userVO->userId,'page-'.$user->pageId);
+		}
 	}
 
 	static function build() {
 		$user = FUser::getInstance();
+		
+		$p = 1;
+		if(isset($_GET['p'])) $p = (int) $_GET['p'];
+		$mainCache = FCache::getInstance('f',0);
+		$cacheKey = 'user-'.$user->userVO->userId;
+		$cacheGrp = 'page-'.$user->pageId.(($p>1)?('-'.$p):(''));
+		$ret = $mainCache->getData($cacheKey,$cacheGrp);
+		
+		if(false === $ret) { 
+		
 		$cache = FCache::getInstance('s');
 		$pageSearchCache = $cache->getData($user->pageVO->pageId,'search');
 
@@ -65,7 +81,7 @@ class page_PagesList implements iPage {
 		$perPage = $user->pageVO->perPage();
 		$pager = new FPager(0,$perPage ,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
-		$fPages->setLimit($from,$perPage+1);
+		$fPages->setLimit( $from, $perPage+1 );
 
 		$arr = $fPages->getContent();
 		
@@ -81,7 +97,7 @@ class page_PagesList implements iPage {
 		//---BUILD PAGE
 		$tpl = new FTemplateIT('pages.list.tpl.html');
 
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
 
 		//---populate categories
 		$category = new FCategory('sys_pages_category','categoryId');
@@ -137,7 +153,7 @@ class page_PagesList implements iPage {
 					$tplGal->setCurrentBlock('item');
 					$tplGal->setVariable("THUMB",$fotoThumb);
 					$tplGal->setVariable("PAGEID",$gal[0]);
-					$tplGal->setVariable("PAGELINK",FUser::getUri('',$gal[0]));
+					$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal[0]));
 					$tplGal->setVariable("PAGENAME",$gal[1]);
 					$tplGal->setVariable("DATELOCAL",$gal[3]);
 					$tplGal->setVariable("DATEISO",$gal[5]);
@@ -158,8 +174,11 @@ class page_PagesList implements iPage {
 		} else {
 			$tpl->touchBlock('noresults');
 		}
-
-		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+		$ret = $tpl->get();
+		$mainCache->setData($ret,$cacheKey,$cacheGrp);
+		}
+		
+		FBuildPage::addTab(array( "MAINDATA"=>$ret ));
 
 	}
 }

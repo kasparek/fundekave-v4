@@ -91,7 +91,7 @@ class page_GaleryDetail implements iPage {
 				$onPageNum = $itemVO->onPageNum();
 
 				$tpl = new FTemplateIT('galery.detail.tpl.html');
-				$tpl->setVariable("LINKBACKTOP", FUser::getUri(FConf::get('pager','urlVar').'='.$onPageNum, $itemVO->pageId));
+				$tpl->setVariable("LINKBACKTOP", FSystem::getUri(FConf::get('pager','urlVar').'='.$onPageNum, $itemVO->pageId));
 
 				$tpl->setVariable("IMGALT", $pageVO->name.' '.$itemVO->enclosure );
 				$tpl->setVariable("IMGDIR", $itemVO->detailUrl );
@@ -129,7 +129,7 @@ class page_GaleryDetail implements iPage {
 					$tpl->setVariable("THUMBNEXT",$itemVONext->render($itemRenderer));
 
 					$tpl->touchBlock('nextlinkclose');
-					$tpl->setVariable('NEXTLINK',FUser::getUri('i='.$itemVONext->itemId));
+					$tpl->setVariable('NEXTLINK',FSystem::getUri('i='.$itemVONext->itemId));
 				}
 				
 				//TODO: deeplinking for comments

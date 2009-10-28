@@ -175,7 +175,7 @@ class FCategory extends FDBTool {
 				
 			if($redirect===true) {
 				$rediraddon = $this->getUriAddon();
-				FHTTP::redirect(FUser::getUri($rediraddon));
+				FHTTP::redirect(FSystem::getUri($rediraddon));
 			}
 		}
 	}

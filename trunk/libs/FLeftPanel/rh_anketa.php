@@ -58,7 +58,7 @@ class rh_anketa {
 							$tpl->setVariable('ANSWERID',$odp[0]);
 						}
 						$tpl->setVariable('NOTVOTEDANSWER',$odp[1]);
-						$tpl->setVariable('ANSWERURL',FUser::getUri('m=user-poll&d=po:'.$do[0].';an:'.$odp[0]));
+						$tpl->setVariable('ANSWERURL',FSystem::getUri('m=user-poll&d=po:'.$do[0].';an:'.$odp[0]));
 					} else {
 						$tpl->setVariable('ANSWER',$odp[1]);
 						$tpl->setVariable('COLUMNSIMGURL','/sloupec.gif');

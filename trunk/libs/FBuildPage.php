@@ -147,31 +147,31 @@ class FBuildPage {
 			$pageId = $user->pageVO->pageId;
 				
 			if(!empty($user->pageParam) || $user->itemVO) {
-				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
 				
 			if($user->pageVO->typeId == 'forum') {
-				FMenu::secondaryMenuAddItem($user->getUri('',$pageId,'h'), FLang::$LABEL_HOME);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 			}
 				
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
-						FMenu::secondaryMenuAddItem(FUser::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt','fajaxa');
+						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt','fajaxa');
 					}
-					FMenu::secondaryMenuAddItem(FUser::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
 					if(FRules::getCurrent(2)) {
 
-						FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
+						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 
 					}
 				}
-				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
-				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 			if(FRules::get($user->userVO->userId,'sadmi',1)) {
-				FMenu::secondaryMenuAddItem(FUser::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
 			}
 			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/
@@ -196,7 +196,7 @@ class FBuildPage {
 		//---ERROR MESSAGES
 		$tpl->printErrorMsg();
 		//---HEADER
-		$cssPath = $user->getSkinCSSFilename();
+		$cssPath = FSystem::getSkinCSSFilename();
 		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
@@ -300,11 +300,13 @@ class FBuildPage {
 		$useUploadify = false;
 		$useSupernote = false;
 		$useFajaxform = false;
+		$useSwfobject = false;
+		$useFuup = false;
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
 			if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
-			if(strpos($item, 'uploadify') !== false) { $useUploadify = true; }
+			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
 			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
@@ -323,9 +325,11 @@ class FBuildPage {
 			$tpl->touchBlock("slimboxHEAD");
 			$tpl->touchBlock("slimboxEND");
 		}
-		if($useUploadify === true) {
-			$tpl->touchBlock("uploadifyHEAD");
-			$tpl->touchBlock("uploadifyEND");
+		if($useSwfobject === true) {
+			$tpl->touchBlock("swfo");
+		}
+		if($useFuup === true) {
+			$tpl->touchBlock("fuup");
 		}
 		if($useTabs === true) {
 			$tpl->touchBlock("tabsEND");

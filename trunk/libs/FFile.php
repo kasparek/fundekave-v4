@@ -57,7 +57,7 @@ class FFile {
 			if ($dh = opendir($filepath)) {
 				while (($sf = readdir($dh)) !== false) {
 					if ($sf != '.' && $sf != '..') {
-						if (!FSystem::rm_recursive($filepath.'/'.$sf)) {
+						if (!FFile::rm_recursive($filepath.'/'.$sf)) {
 							FError::addError($filepath.'/'.$sf.' could not be deleted.');
 						}
 					}
