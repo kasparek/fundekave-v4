@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Fuup>
+	<Config>
+		<Settings>
+			<Item name="settingsEnabled">0</Item>
+			<Item name="autoProcess">1</Item>
+			<Item name="autoUpload">1</Item>
+			<Item name="displayContent">0</Item>
+			<Item name="crop">1</Item>
+			<Item name="multi">0</Item>
+			<Item name="permissions">0</Item>
+			<Item name="maxSize">300000</Item>
+			<Item name="chunkSize">10000</Item>
+			<Item name="chunkLimit">4</Item>
+			<Item name="fileLimit">20</Item>
+			<Item name="imageQuality">80</Item>
+			<Item name="imageWidthMax">40</Item>
+			<Item name="imageHeightMax">50</Item>
+			<Item name="embedWidth">400</Item>
+			<Item name="embedHeight">25</Item>
+			<Item name="onLoaded"></Item>
+			<Item name="onUploadOneComplete">fuupUploadAvatarComplete</Item>
+			<Item name="onUploadComplete"></Item>
+		</Settings>
+		<Services>
+			<Service name="files">{URL}</Service>
+		</Services>
+	</Config>
+	<Filters>
+		<Filter id="sharpen" enabled="0" visible="0">
+			<name>Sharpen</name>
+		</Filter>
+		<Filter id="levels" enabled="0" visible="0">
+			<name>Levels Correction</name>
+		</Filter>
+	</Filters>
+	<Lang>
+		<Item name="selectfiles"><![CDATA[Vybrat]]></Item>
+		<Item name="corections"><![CDATA[Korekce]]></Item>
+		<Item name="process"><![CDATA[Zmensit]]></Item>
+		<Item name="loading"><![CDATA[Nahravam]]></Item>
+		<Item name="processing"><![CDATA[Zpracovavam]]></Item>
+		<Item name="upload"><![CDATA[Nahrat]]></Item>
+		<Item name="uploading"><![CDATA[Nahravam]]></Item>
+		<Item name="filename"><![CDATA[Jmeno souboru:]]></Item>
+		<Item name="toobig"><![CDATA[Moc velky: {LIMITSIZE}kB max]]></Item>
+		<Item name="filetypes"><![CDATA[Soubory typu: jpg,gif,png]]></Item>
+		<Item name="uploaderror"><![CDATA[Chyba. Zkuste to znovu.]]></Item>
+		<Item name="filelimiterror"><![CDATA[Prilis mnoho souboru]]></Item>
+	</Lang>
+</Fuup>
