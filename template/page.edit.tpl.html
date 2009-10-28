@@ -12,6 +12,10 @@
     <!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Levy panel</a></li><!-- END leftpaneltab -->
   </ul>
 <div id="tabs-1">
+	<div class="buttonBar">
+   	<input type="submit" name="save" value="Uložit" class="button submit" />
+		<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
+	</div>
 	<fieldset>
 		<legend>Nastaveni</legend>
 		<!-- BEGIN pageowner --><label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br /><!-- END pageowner -->
@@ -35,11 +39,12 @@
 		<div id="detailSettings" class="hidden">
 	    <!-- BEGIN pageavatarupload -->
 	    <label>Ikona (60x25px)</label>
-	    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /><br />
+	    <div id="pava" class="fuup">
+	    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /></div><br />
 	    <label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
 	    <!-- END pageavatarupload -->
 	    <!-- BEGIN pageavatar -->
-	    <label>&nbsp;</label><img src="{PAGEICOLINK}">&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
+	    <label>&nbsp;</label><img src="{PAGEICOLINK}" />&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
 	    <!-- END pageavatar -->
 	    <label>Zahlaví</label>
 	    <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
@@ -62,10 +67,6 @@
 	    </select>
 	    <!-- END forumreaction -->
     </div>
-    <div>
-    	<input type="submit" name="save" value="Uložit" class="button submit" />
-			<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete mazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
-		</div>
 	</fieldset>
 </div>
 <!-- BEGIN perm -->
@@ -88,25 +89,25 @@
 <!-- END forumspecific -->
 <!-- BEGIN galeryspecificcontent -->
 <div id="tabs-5">
+<div class="buttonBar">
+	<input type="submit" name="save" value="Uložit" class="button submit" />
+</div>
 <fieldset>
 <legend>Seznam fotografii</legend>
-<input type="submit" name="save" value="Uložit" class="button submit" /><br />
 <label>Celkem v galerii:</label><span id="fotoTotal">{FOTOTOTAL}</span><br />
 <label>Řadit:</label><select name="galeryorder">
 <option value="0">Podle jména</option>
 <option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
 </select><br />
 <div id="fotoList"><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></div>
-<input type="submit" name="save" value="Uložit" class="button submit" />
 </fieldset>
 </div>
 <div id="tabs-6">
 <fieldset>
 <legend>Nahrat fotografie</legend>
-<div id="FuupUploader">
+<div class="fuup" id="fuga">
 <a href="http://www.adobe.com/go/getflashplayer"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" /></a><br />
 <!-- BEGIN uploadinput --><label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br /><!-- END uploadinput -->
-<input type="submit" name="save" value="Uložit" class="submitUploadify button submit" />
 </div>
 </fieldset>
 </div>
@@ -128,7 +129,3 @@
     
 </div>
 </form>
-<script type="text/javascript" src="js/jquery.flashembed.min.js"></script>
-<script type="text/javascript">
-flashembed("FuupUploader", {src: "assets/Fuup.swf", height:40, wmode:"transparent", version:[10,0,12], expressInstall:"js/expressInstall.swf"},{config:'xml/fuup.config.xml'});
-</script>

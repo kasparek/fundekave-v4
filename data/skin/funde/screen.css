@@ -384,6 +384,10 @@ div#mainbar fieldset input.xShort {
 div#mainbar fieldset input.short {
 	width: 10em;
 }
+div#mainbar .buttonBar {
+	padding-top: 0.5em;
+	padding-bottom: 1em;
+}
 div#mainbar fieldset input.button {
 	width: auto;
 	min-width: 5em;

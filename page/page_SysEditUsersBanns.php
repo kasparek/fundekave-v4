@@ -10,7 +10,7 @@ class page_SysEditUsersBanns implements iPage {
 			foreach ($data["usersstat"] as $k=>$v){
 				FDBTool::query("update sys_users set deleted=".$v." where userId=".$k);
 			}
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 		if(isset($data['usrfilter'])) {
 			$cache = FCache::getInstance('s');
@@ -50,13 +50,13 @@ class page_SysEditUsersBanns implements iPage {
 			$tpl->setCurrentBlock('user');
 			$tpl->setVariable('ID',$usr[0]);
 			$tpl->setVariable('NAME',$usr[1]);
-			$tpl->setVariable('URL',FUser::getUri('who='.$usr[0],'finfo'));
+			$tpl->setVariable('URL',FSystem::getUri('who='.$usr[0],'finfo'));
 			$tpl->setVariable('CREATED',$usr[3]);
 			$tpl->setVariable('UPDATED',$usr[4]);
 			$tpl->setVariable('HIT',$usr[5]);
 			$tpl->touchBlock('userlocked'.($usr[2]*1));
 			if(!empty($usr[6])) {
-				$tpl->setVariable('DISCONNECTURL',FUser::getUri('du='.$usr[0]));
+				$tpl->setVariable('DISCONNECTURL',FSystem::getUri('du='.$usr[0]));
 				$tpl->setVariable('IP',$usr[6]);
 			}
 			$tpl->parseCurrentBlock();

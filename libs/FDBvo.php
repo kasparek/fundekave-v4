@@ -25,6 +25,9 @@ class FDBvo extends FDBTool {
 			foreach($arr as $k=>$v) {
 				$this->vo->{$k} = $v;
 			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 

@@ -18,7 +18,7 @@ class page_EventsView implements iPage {
 		$user = FUser::getInstance();
 
 		if(empty($user->pageParam)) {
-			FMenu::secondaryMenuAddItem(FUser::getUri('','eveac'),FLang::$LABEL_EVENTS_ARCHIV);
+			FMenu::secondaryMenuAddItem(FSystem::getUri('','eveac'),FLang::$LABEL_EVENTS_ARCHIV);
 		}
 
 		if($user->pageParam=='u') {

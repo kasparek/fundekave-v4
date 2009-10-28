@@ -10,7 +10,7 @@ class page_SysEditBanner implements iPage {
 		if(!empty($data['__files']['bann'])) {
 			if($ak=upload($data['__files']["bann"],WEB_REL_BANNER)) {
 				FError::addError(FLang::$MESSAGE_UPLOAD_SUCCESS);
-				FHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FSystem::getUri());
 			}
 		}
 		
@@ -20,7 +20,7 @@ class page_SysEditBanner implements iPage {
 			if(file_exists($banner)) {
 				if($ak = @unlink($banner)){
 					FError::addError(FLang::$LABEL_DELETED_OK);
-					FHTTP::redirect(FUser::getUri());
+					FHTTP::redirect(FSystem::getUri());
 				} else {
 					FError::addError(FLang::$LABEL_FILE.' '.FLang::$LABEL_NOTEXISTS.': '.$banner);
 				}
@@ -58,7 +58,7 @@ class page_SysEditBanner implements iPage {
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
 			}
 
-			FHTTP::redirect(FUser::getUri('ebe='.$bannerId));
+			FHTTP::redirect(FSystem::getUri('ebe='.$bannerId));
 		}
 
 		//delete banner from db
@@ -67,7 +67,7 @@ class page_SysEditBanner implements iPage {
 			if($bannerId>0) {
 				$db->query("delete from sys_banner where bannerId=".$bannerId);
 				FError::addError(FLang::$LABEL_DELETED_OK);
-				FHTTP::redirect(FUser::getUri());
+				FHTTP::redirect(FSystem::getUri());
 			}
 		}
 	}
@@ -76,7 +76,7 @@ class page_SysEditBanner implements iPage {
 
 		//-----novy banner
 		$tpl = new FTemplateIT('sys.edit.banners.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
 
 		if(isset($_GET['ebe'])) {
 			$bannerIdEdit = (int) $_GET['ebe'];
@@ -113,7 +113,7 @@ strict from sys_banner where bannerId='".$bannerIdEdit."'");
 			$tpl->setVariable('EDDATETO',((Date('Y')+10).'-'.Date("m-d")));
 		}
 		if(!empty($bannerName)) {
-			$tpl->setVariable('EDACTION',FUser::getUri());
+			$tpl->setVariable('EDACTION',FSystem::getUri());
 			if(preg_match("/(.swf)$/",$bannerName)) {
 				$tpl->setVariable('EDSWFURL',WEB_REL_BANNER.$bannerName);
 				$tpl->setVariable('EDSWFNAME',$bannerName);
@@ -162,8 +162,8 @@ FROM sys_banner ORDER BY dateFrom desc");
 				$tpl->setVariable('TIMESHIT',$row[6]);
 				$tpl->setVariable('OWNERLINK','?k=finfo&who='.$row[5]);
 				$tpl->setVariable('OWNERNAME',FUser::getgidname($row[5]));
-				$tpl->setVariable('EDITURL',FUser::getUri('ebe='.$row[0]));
-				$tpl->setVariable('DELETEURL',FUser::getUri('ebd='.$row[0]));
+				$tpl->setVariable('EDITURL',FSystem::getUri('ebe='.$row[0]));
+				$tpl->setVariable('DELETEURL',FSystem::getUri('ebd='.$row[0]));
 				$tpl->parseCurrentBlock();
 			}
 		}
@@ -185,8 +185,8 @@ FROM sys_banner ORDER BY dateFrom desc");
 					$tpl->setVariable('UNIMGNAME',$file);
 				}
 
-				$tpl->setVariable('NEWBANNERURL',FUser::getUri('ibn='.$file));
-				$tpl->setVariable('IMGDELETEURL',FUser::getUri('ibd='.$file));
+				$tpl->setVariable('NEWBANNERURL',FSystem::getUri('ibn='.$file));
+				$tpl->setVariable('IMGDELETEURL',FSystem::getUri('ibd='.$file));
 				$tpl->parseCurrentBlock();
 			}
 		}

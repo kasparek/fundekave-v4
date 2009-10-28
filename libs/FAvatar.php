@@ -66,7 +66,7 @@ class FAvatar {
 			}
 
 			if($user->idkontrol && $avatarUserId>0) {
-				$avatarUrl = FUser::getUri('who='.$avatarUserId,'finfo');
+				$avatarUrl = FSystem::getUri('who='.$avatarUserId,'finfo','');
 				if($showName) {
 					$tpl->setVariable('NAMEURL',$avatarUserName);
 					if($noTooltip === false) $tpl->setVariable('NAMECLASS','supernote-hover-avatar'.$avatarUserId);
@@ -97,11 +97,11 @@ class FAvatar {
 					$tpl->setVariable('TIPUSERNAME',$avatarUserName);
 
 					$arrLinks = array(
-					array('url'=>FUser::getUri('who='.$avatarUserId,'finfo'),'text'=>FLang::$LABEL_INFO),
-					array('url'=>FUser::getUri('who='.$avatarUserId,'fpost'),'text'=>FLang::$LABEL_POST),
+					array('url'=>FSystem::getUri('who='.$avatarUserId,'finfo',''),'text'=>FLang::$LABEL_INFO),
+					array('url'=>FSystem::getUri('who='.$avatarUserId,'fpost',''),'text'=>FLang::$LABEL_POST),
 					);
 					if($avatarUserId != $user->userVO->userId) {
-						$arrLinks[] = array('url'=>FUser::getUri('m=user-switchFriend&d=user:'.$avatarUserId)
+						$arrLinks[] = array('url'=>FSystem::getUri('m=user-switchFriend&d=user:'.$avatarUserId)
 						,'id'=>'avbook'.$avatarUserId
 						,'class'=>'fajaxa'
 						,'text'=>(($user->userVO->isFriend($avatarUserId))?(FLang::$LABEL_FRIEND_REMOVE):(FLang::$LABEL_FRIEND_ADD)));
@@ -129,7 +129,7 @@ class FAvatar {
 
 	static function createName($fileOrig) {
 		$user = FUser::getInstance();
-		return FSystem::safeText($user->userVO->name).".".$user->userVO->userId.".".date('U').".".FSystem::fileExt($fileOrig);
+		return FSystem::safeText($user->userVO->name).".".$user->userVO->userId.".".date('U').".".FFile::fileExt($fileOrig);
 	}
 	static function processAvatar($avatarName) {
 		//---resize and crop if needed

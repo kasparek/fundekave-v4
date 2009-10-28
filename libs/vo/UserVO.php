@@ -1,6 +1,5 @@
 <?php
 class UserVO extends Fvob {
-
 	//---token is changed every check
 	//---if true user can NOT work in multiple windows
 	//---use true for webservice - more secure
@@ -71,7 +70,6 @@ class UserVO extends Fvob {
 	}
 
 	function load() {
-
 		$vo = new FDBvo( $this );
 		$vo->addJoinAuto('sys_skin','skinId',array('name'));
 		$vo->load();

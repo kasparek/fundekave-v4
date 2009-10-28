@@ -73,7 +73,7 @@ class page_Main implements iPage {
 			while($arr) {
 				$row = array_shift($arr);
 				$tpl->setCurrentBlock('newpage');
-				$tpl->setVariable('NEWPAGEURL',FUser::getUri('',$row[0]));
+				$tpl->setVariable('NEWPAGEURL',FSystem::getUri('',$row[0]));
 				$tpl->setVariable('NEWPAGETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 				$tpl->setVariable('NEWPAGETEXT',$row[2].' ['. FLang::$TYPEID[$row[1]].']');
 				$tpl->parseCurrentBlock();
@@ -97,7 +97,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostvisitedpage');
-					$tpl->setVariable('MOSTVISITEDEURL',FUser::getUri('',$row[0]));
+					$tpl->setVariable('MOSTVISITEDEURL',FSystem::getUri('',$row[0]));
 					$tpl->setVariable('MOSTVISITEDTITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
@@ -123,7 +123,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostactivepage');
-					$tpl->setVariable('MOSTACTIVEURL',FUser::getUri('',$row[0]));
+					$tpl->setVariable('MOSTACTIVEURL',FSystem::getUri('',$row[0]));
 					$tpl->setVariable('MOSTACTIVETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();
@@ -147,7 +147,7 @@ class page_Main implements iPage {
 				if(FRules::get($user->userVO->userId,$pageId)) {
 					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
 					$tpl->setCurrentBlock('mostfavouritepage');
-					$tpl->setVariable('MOSTFAVOURITEURL',FUser::getUri('',$row[0]));
+					$tpl->setVariable('MOSTFAVOURITEURL',FSystem::getUri('',$row[0]));
 					$tpl->setVariable('MOSTFAVOURITETITLE',FSystem::textins($row[3],array('plainText'=>1)));
 					$tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
 					$tpl->parseCurrentBlock();

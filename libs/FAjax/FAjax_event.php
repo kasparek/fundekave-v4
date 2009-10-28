@@ -52,7 +52,7 @@ class FAjax_event {
 			}
 		} elseif($itemVO === false) {
 			//---item deleted
-			FAjax::addResponse('function','call','redirect;'.FUser::getUri('','event'));
+			FAjax::addResponse('function','call','redirect;'.FSystem::getUri('','event'));
 			
 		} else {
 			$itemId=0;

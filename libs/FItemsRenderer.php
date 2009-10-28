@@ -4,10 +4,10 @@ class FItemsRenderer {
 	function __construct() {
 
 	}
-	
+
 	var $debug = false;
 
-	private $tpl;
+	private $tpl = false;
 	private $tplType;
 	private $tplParsed = '';
 	private $customTemplateName = '';
@@ -28,6 +28,22 @@ class FItemsRenderer {
 	public $showBottomItem = true;
 	public $thumbPreventCache = false;
 
+	private $initialized = false;
+	private $localVars;
+
+	function init() {
+		if($this->initialized===false) {
+			$this->initialized===true;
+			$user = FUser::getInstance();
+			$this->localVars['localUserId'] = $user->userVO->userId;
+			$this->localVars['localUserPageId'] = $user->pageVO->pageId;
+			$this->localVars['localUserZavatar'] = $user->userVO->zavatar;
+			$this->localVars['localUserIdkontrol'] = $user->idkontrol;
+			$this->localVars['localCSS'] = FSystem::getSkinCSSFilename();
+		}
+		return $this->localVars;
+	}
+
 	function setCustomTemplate($templateName) {
 		$this->customTemplateName = $templateName;
 	}
@@ -40,50 +56,46 @@ class FItemsRenderer {
 		}
 	}
 
-
-	function &itemTpl($typeId='') {
-		
-		if(!empty($this->tpl) && $typeId!='' && $typeId != $this->tplType) {
-			$this->tplParsed .= $this->tpl->get();
-			unset($this->tpl);
-		}
-		
-		if(empty($this->tpl) && $typeId!='') {
-			$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$this->tpl->loadTemplatefile($this->getTemplateName($typeId));
-			$this->tplType = $typeId;
-		}
-		
-		return $this->tpl;
-	}
-
 	function render( $itemVO ) {
-		$user = FUser::getInstance();
-		$userId = $user->userVO->userId;
-		
+		//---get "local"
+		extract($this->init());
+
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
 		$pageId = $itemVO->pageId;
 		$typeId = $itemVO->typeId;
 		$addon = $itemVO->addon;
-    
-		FProfiler::profile('FItemsRenderer::render--InSTANCES',true);
-		
-    	//---check permissions to edit
+		$enclosure = $itemVO->enclosure;
+
+		//---check permissions to edit
 		$enableEdit = false;
-		if(FRules::get($userId,$pageId,2) || $itemUserId == $userId) {
+		if($itemUserId === $localUserId) {
 			$enableEdit=true;
+		} else {
+			if(FRules::get($localUserId,$pageId,2)) {
+				$enableEdit=true;
+			}
 		}
-		FProfiler::profile('FItemsRenderer::render--EDITABLE CHECKED',true);
 		/*.........zacina vypis prispevku.........*/
-		$tpl = $this->itemTpl( $typeId );
-		
+
+		//---INIT TEMPLATE
+		if($this->tpl !== false && $typeId != $this->tplType) {
+			$this->tplParsed .= $this->tpl->get();
+			$this->tpl = false;
+		}
+		if( $this->tpl === false ) {
+			$this->tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
+			$this->tpl->loadTemplatefile($this->getTemplateName($typeId));
+			$this->tplType = $typeId;
+		}
+		$tpl = $this->tpl;
+
 		$tpl->setCurrentBlock();
 		//---common for all items
-		if($this->showHentryClass==true) $tpl->touchBlock('hentry');
+		if($this->showHentryClass === true) $tpl->touchBlock('hentry');
 		$tpl->setVariable('ITEMIDHTML', 'i'.$itemId);
 		$tpl->setVariable('ITEMID', $itemId);
-		$tpl->setVariable('ITEMLINK', FUser::getUri('i='.$itemId,''));
+		$tpl->setVariable('ITEMLINK', FSystem::getUri('i='.$itemId,''));
 		$tpl->setVariable('PAGEID', $pageId);
 		$tpl->setVariable('DATELOCAL', $itemVO->dateCreatedLocal);
 		$tpl->setVariable('DATEISO', $itemVO->dateCreatedIso);
@@ -96,29 +108,27 @@ class FItemsRenderer {
 		if(isset($itemVO->name)) $tpl->setVariable('AUTHOR',$itemVO->name);
 		if($itemVO->unread === true) $tpl->touchBlock('unread');
 		if($enableEdit === true) {
-			if($itemVO->editable === true && $user->pageVO->pageId == $pageId) {
+			if($itemVO->editable === true && $localUserPageId == $pageId) {
 				$tpl->setVariable('EDITID', $itemId); //--- FORUM/delete-BLOG/edit
 				$tpl->setVariable('EDITPAGEID', $pageId.'u');
 			}
 		}
-		if($this->showText==true && !empty($itemVO->text)) {
-		  $text = $itemVO->text;
-		  $words = explode(' ',$text);
-		  $shorten = array_slice($words,0,150);
-		  //$text = FSystem::textins(implode(' ',$shorten));
-		  $text = implode(' ',$shorten);
-		  //if blog and not in detail shorten text to 100words
-      $tpl->setVariable('TEXT', $text);
-    }
-		
-		FProfiler::profile('FItemsRenderer::render--BASE DATA',true);
+
+		if($this->showText === true && $itemVO->text) {
+			$text = $itemVO->text;
+			//$words = explode(' ',$text);
+			//$shorten = array_slice($words,0,150);
+			//$text = FSystem::textins(implode(' ',$shorten));
+			//$text = implode(' ',$shorten);
+			//if blog and not in detail shorten text to 100words
+			$tpl->setVariable('TEXT', $text);
+		}
+		/**/
+
 
 		switch($typeId) {
 			case 'event':
-				/**
-				 * EVENT RENDERER
-				 *
-				 */
+				//--EVENT RENDERER
 				if($itemVO->categoryId > 0) {
 					$categoryArr = FCategory::getCategory($itemVO->categoryId);
 					$tpl->setVariable('CATEGORY',$categoryArr[2]);
@@ -131,11 +141,11 @@ class FItemsRenderer {
 					$tpl->setVariable('ENDDATETIMELOCAL',$itemVO->dateEndLocal.(($itemVO->dateEndTime!='00:00')?(' '.$itemVO->dateEndTime):('')));
 				}
 
-				if(!empty($itemVO->enclosure)) {
-					$flyerFilename = FEvents::flyerUrl($itemVO->enclosure);
+				if(!empty($enclosure)) {
+					$flyerFilename = FEvents::flyerUrl($enclosure);
 					if(file_exists($flyerFilename)) {
-					 $flyerFilenameThumb = FEvents::thumbUrl($itemVO->enclosure);
-					 //FEvents::createThumb($itemVO->enclosure);
+						$flyerFilenameThumb = FEvents::thumbUrl($enclosure);
+						//FEvents::createThumb($enclosure);
 						$arrSize = getimagesize($flyerFilename);
 						$tpl->setVariable('BIGFLYERLINK',$flyerFilename.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20));
 						$tpl->setVariable('FLYERTHUMBURL',$flyerFilenameThumb);
@@ -143,7 +153,7 @@ class FItemsRenderer {
 						$tpl->setVariable('IMGEVENTALT',$addon);
 					}
 				} else {
-					$tpl->setVariable('FLYERTHUMBURLDEFAULT',FUser::getSkinCSSFilename() . '/img/flyer_default.png');
+					$tpl->setVariable('FLYERTHUMBURLDEFAULT', $localCSS . '/img/flyer_default.png');
 				}
 				if($this->showComments === true) {
 					if($itemVO->tag_weight > 0) {
@@ -156,42 +166,38 @@ class FItemsRenderer {
 					}
 				}
 				if($this->showFooter === true) {
-					if($enableEdit===true) {
-						$tpl->setVariable('EDITLINK', FUser::getUri('m=event-edit&d=result:fajaxContent;item:'.$itemId,'event','u'));
+					if($enableEdit === true) {
+						$tpl->setVariable('EDITLINK', FSystem::getUri('m=event-edit&d=result:fajaxContent;item:'.$itemId,'event','u'));
 					}
 				}
 				break;
 			case 'forum':
-				/**
-				 * FORUM RENDERER
-				 */
-				if(!empty($itemVO->enclosure)) {
-					$tpl->setVariable('ENCLOSURE',FItemsRenderer::proccessItemEnclosure($itemVO->enclosure));	
+				//--FORUM RENDERER
+				if( $enclosure ) {
+					$tpl->setVariable('ENCLOSURE',$this->proccessItemEnclosure($enclosure));
 				}
-				if($user->userVO->zavatar == 1) {
+				if( $localUserZavatar == 1 ) {
 					$tpl->setVariable('AVATAR', FAvatar::showAvatar( (int) $itemUserId));
 				}
 				break;
 			case 'galery':
-				/**
-				 * GALERY RENDERER
-				 */
+				//--- GALERY RENDERER
 				$pageVO  = new PageVO($pageId,true);
-				$tpl->setVariable('IMGALT',$pageVO->name.' '.$itemVO->enclosure);
-				$tpl->setVariable('IMGTITLE',$pageVO->name.' '.$itemVO->enclosure);
+				$tpl->setVariable('IMGALT',$pageVO->name.' '.$enclosure);
+				$tpl->setVariable('IMGTITLE',$pageVO->name.' '.$enclosure);
 				$tpl->setVariable('IMGURLTHUMB',$itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):('')));
 				$tpl->setVariable('ADDONSTYLEWIDTH',' style="width: '.$itemVO->thumbWidth.'px;"');
 				//$tpl->setVariable('ADDONSTYLEHEIGHT',' style="height: '.$itemVO->height.'px;"');
-				if($this->showRating==true) $tpl->setVariable('HITS',$itemVO->hit);
+				if($this->showRating === true) $tpl->setVariable('HITS',$itemVO->hit);
 
-				if($this->openPopup) {
+				if( $this->openPopup === true ) {
 					$tpl->setVariable('IMGURLDETAIL',$itemVO->detailUrlToPopup);
 					$tpl->touchBlock('popupc');
 					$tpl->setVariable('POPUPCLIGHTBOXGROUP','-'.$pageId);
 				} else {
 					$tpl->setVariable('IMGURLDETAIL',$itemVO->detailUrlToGalery);
 				}
-				if($this->showTooltip) {
+				if($this->showTooltip === true) {
 					$tpl->setVariable('ITEMIDTOOLTIP',$itemId);
 					$tpl->setVariable('PAGEIDTOOLTIP',$pageId);
 					$tpl->setVariable('LINKPOPUP',$itemVO->detailUrlToPopup);
@@ -199,49 +205,49 @@ class FItemsRenderer {
 				unset($pageVO);
 				break;
 		}
+		/**/
 		
-		FProfiler::profile('FItemsRenderer::render--TYPE CUSTOM',true);
-
 		//---for logged users
-		if ($user->idkontrol === true && $this->showFooter === true) {
+		if ($localUserIdkontrol === true && $this->showFooter === true) {
 			//---thumb tag link
 			if($this->showTag === true) {
-				$tpl->setVariable('TAG', FItemTags::getTag($itemId,$userId,$typeId,$itemVO->tag_weight));
+				$tpl->setVariable('TAG', FItemTags::getTag($itemId,$localUserId,$typeId,$itemVO->tag_weight));
 			}
+			/*
 			if($this->showPocketAdd === true) {
 				$tpl->setVariable('POCKET',FPocket::getLink($itemId));
 			}
+			*/
 			//---user link and location
 			if($itemUserId > 0) {
 				if($typeId != 'galery') {
-					$tpl->setVariable('AUTHORLINK',FUser::getUri('who='.$itemUserId,'finfo'));
+					$tpl->setVariable('AUTHORLINK',FSystem::getUri('who='.$itemUserId,'finfo'));
 					$tpl->touchBlock('authorlinkclose');
 				}
 				if($typeId == 'forum') {
 					if (FUser::isOnline( $itemUserId )) {
 						$kde = FUser::getLocation( $itemUserId );
 						$tpl->setVariable('USERLOCATION',$kde['name']);
-						$tpl->setVariable('USERLOCATIONLINK',FUser::getUri('',$kde['pageId'],$kde['param']));
+						$tpl->setVariable('USERLOCATIONLINK',FSystem::getUri('',$kde['pageId'],$kde['param']));
 					}
 				}
 			}
 		}
-		FProfiler::profile('FItemsRenderer::render--REGISTERED USERS',true);
+		/**/
 
 		//---PAGE NAME
-		if($this->showPageLabel==true) {
+		if($this->showPageLabel === true) {
 			$tpl->touchBlock('haspagelabel');
 			$pageVO = new PageVO($pageId,true);
-			$tpl->setVariable('PAGELINK',FUser::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId));
+			$tpl->setVariable('PAGELINK',FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId));
 			$tpl->setVariable('PAGENAME',$pageVO->name);
 			unset($pageVO);
 		}
 		/**/
-		FProfiler::profile('FItemsRenderer::render--PAGE NAME',true);
-
+		
 		//---BLOG / EVENT
-		if(!empty($addon)) {
-			$link = FUser::getUri('i='.$itemId.'-'.FSystem::safeText($addon),$pageId);
+		if( $addon ) {
+			$link = FSystem::getUri('i='.$itemId.'-'.FSystem::safeText($addon),$pageId);
 			if($this->showHeading == true) {
 				$tpl->setVariable('BLOGLINK',$link);
 				$tpl->setVariable('BLOGTITLE',$addon);
@@ -252,55 +258,53 @@ class FItemsRenderer {
 				$tpl->setVariable('COMMENTS', FForum::show($itemId, $writeRule, $this->itemIdInside));
 			} else {
 				$tpl->setVariable('COMMENTLINK',$link);
-				$unReadedReactions = $itemVO->getNumUnreadComments( $userId );
+				$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
 				if($unReadedReactions > 0) {
 					$tpl->setVariable('ALLNEWCNT',$unReadedReactions);
 				}
 				$tpl->setVariable('CNTCOMMENTS',$itemVO->cnt);
 			}
 		}
-		FProfiler::profile('FItemsRenderer::render--ADDON PRESENT',true);
-
+		/**/
+		
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
 				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showTooltip'=>false,'showPageLabel'=>true));
 				if($itemVOBottom->typeId == 'galery') {
-          $tpl->touchBlock('withCommented');
-          $tpl->touchBlock('commentedFloat');
-        }
-				if(FRules::get($userId, $itemVOBottom->pageId,1)) {
+					$tpl->touchBlock('withCommented');
+					$tpl->touchBlock('commentedFloat');
+				}
+				if(FRules::get($localUserId, $itemVOBottom->pageId,1)) {
 					$tpl->setVariable('ITEMBOTTOM',$itemVOBottom->render());
 				}
 				unset($itemVOBottom);
 			}
-			if(!empty($itemVO->pageIdBottom)) {
-				if(FRules::get($userId,$itemVO->pageIdBottom,1)) {
+			if( $itemVO->pageIdBottom ) {
+				if( FRules::get($localUserId,$itemVO->pageIdBottom,1) ) {
 					$pageVO = new PageVO($itemVO->pageIdBottom,true);
-					$tpl->setVariable('ITEMBOTTOM','<h3><a href="'.FUser::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>');
+					$tpl->setVariable('ITEMBOTTOM','<h3><a href="'.FSystem::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>');
 					unset($pageVO);
 				}
 			}
 		}
-		FProfiler::profile('FItemsRenderer::render--LINK BOTTOM ITEM',true);
-
+		/**/
+		
 		//---FINAL PARSE
 		$tpl->parseCurrentBlock();
-		FProfiler::profile('FItemsRenderer::render--PARSE',true);
-
 	}
 
 	function show() {
 		$tpl = $this->tpl;
 		$ret = $this->tplParsed;
 		$this->tplParsed = '';
-		if($tpl) {
+		if( $tpl ) {
 			$ret .= $tpl->get();
-			unset($this->tpl);
+			$this->tpl = false;
 		}
 		return $ret;
 	}
-	
+
 	/**
 	 * SUPPORT
 	 * */
@@ -315,5 +319,5 @@ class FItemsRenderer {
 		}
 		return $ret;
 	}
-	 
+
 }

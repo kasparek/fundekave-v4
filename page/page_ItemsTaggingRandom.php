@@ -25,7 +25,7 @@ class page_ItemsTaggingRandom implements iPage {
 					foreach ($itemTags as $k=>$v) {
 						FItems::tag($k,FUser::logon(),0,$v);
 					}
-					FHTTP::redirect(FUser::getUri());
+					FHTTP::redirect(FSystem::getUri());
 				}
 			}
 		}

@@ -11,7 +11,7 @@ class FMenu {
 				$arrmenu[]=array('elogo',FLang::$LABEL_LOGOUT);
 			}
 			foreach ($arrmenu as $ro) {
-				$menuItems[] = array("LINK"=>FUser::getUri('',$ro[0],''), "pageId"=>$ro[0], "TEXT"=>$ro[1]);
+				$menuItems[] = array("LINK"=>FSystem::getUri('',$ro[0],''), "pageId"=>$ro[0], "TEXT"=>$ro[1]);
 			}
 			$cache->setData($menuItems);
 		}
@@ -30,7 +30,7 @@ class FMenu {
 
 			if(!empty($arrmnuTmp)) {
 				foreach ($arrmnuTmp as $row) {
-					$menuItems[]=array('LINK'=>FUser::getUri('',$row[0]),'TEXT'=>$row[1]);
+					$menuItems[]=array('LINK'=>FSystem::getUri('',$row[0]),'TEXT'=>$row[1]);
 				}
 			} else $menuItems = array();
 			

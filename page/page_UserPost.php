@@ -75,7 +75,7 @@ class page_UserPost implements iPage {
 		
 		//---redirect				
 		if ($redir == true) {
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 		
 	}
@@ -132,7 +132,7 @@ class page_UserPost implements iPage {
 
 		$tpl = new FTemplateIT('users.post.tpl.html');
 
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->touchBlock('selectedfriend');
 		$tpl->touchBlock('friendscombo');
 
@@ -154,7 +154,7 @@ class page_UserPost implements iPage {
 			$tpl->setVariable('FILTERUSERNAME',$filterUsername);
 		}
 		if ($filterText || $filterUsername) {
-			$tpl->setVariable('FILTRCANCELLINK',FUser::getUri('filtr=cancel'));
+			$tpl->setVariable('FILTRCANCELLINK',FSystem::getUri('filtr=cancel'));
 		}
 		
 		if($totalItems > $perPage) {
@@ -187,10 +187,10 @@ class page_UserPost implements iPage {
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
 				$tpl->setVariable("DATEISO", $post["datum"]);
 				if($post["userIdFrom"]==$user->userVO->userId) {
-					$tpl->setVariable("SENTLINK", FUser::getUri("who=".$post["userIdTo"],'finfo'));
+					$tpl->setVariable("SENTLINK", FSystem::getUri("who=".$post["userIdTo"],'finfo'));
 					$tpl->setVariable("SENTNAME", FUser::getgidname($post["userIdTo"]));
 				} else {
-					$tpl->setVariable("RECEIVEDLINK", FUser::getUri("who=".$post["userIdTo"],'finfo'));
+					$tpl->setVariable("RECEIVEDLINK", FSystem::getUri("who=".$post["userIdTo"],'finfo'));
 					$tpl->setVariable("RECEIVEDNAME", FUser::getgidname($post["userIdFrom"]));
 				}
 				$tpl->setVariable("TEXT", $post["text"]);

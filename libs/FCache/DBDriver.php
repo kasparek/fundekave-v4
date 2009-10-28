@@ -64,7 +64,11 @@ class DBDriver
 			return false;
 		}
 	}
-
+	
+	function getPointer( $key, $grp) {
+		return false;
+	}
+	
 	function getData( $key, $grp ) {
 		$q = "select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
 		if($value = FDBTool::getOne($q)) {

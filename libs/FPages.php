@@ -91,13 +91,14 @@ class FPages extends FDBTool {
 			//---delete photo
 			$dir = $pageVO->galeryDir;
 			$galery = new FGalery();
+			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and itemIdTop is null");
 			foreach ($arrd as $df) $galery->removeFoto($df);
 			if(!empty($dir)) {
-				FSystem::rm_recursive( ROOT . WEB_REL_GALERY . $dir );
+				FFile::rm_recursive( ROOT . WEB_REL_GALERY . $dir );
 				$cachePath = $galery->getThumbCachePath();
-				FSystem::rm_recursive($cachePath);
+				FFile::rm_recursive($cachePath);
 				$systemCachePath = $galery->getThumbCachePath( WEB_REL_CACHE_GALERY_SYSTEM );
-				FSystem::rm_recursive($systemCachePath);
+				FFile::rm_recursive($systemCachePath);
 			}
 		}
 
@@ -200,7 +201,7 @@ class FPages extends FDBTool {
 					$tpl->setVariable("CATEGORYPAGELINKLIST",FPages::printPagelinkList($arrForums[$category[0]]));
 				}
 				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATEGORYLINK',FUser::getUri('','',$category[0]));
+				$tpl->setVariable('CATEGORYLINK',FSystem::getUri('','',$category[0]));
 				$tpl->setVariable('CATEGORYID',$category[0]);
 				$tpl->setVariable('CATEGORYNAME',$category[1]);
 				$tpl->parseCurrentBlock();

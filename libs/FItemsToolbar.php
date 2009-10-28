@@ -109,17 +109,17 @@ class FItemsToolbar {
 				}
 			}
 			if(isset($previous)) {
-				$tpl->setVariable('PREVIOUSLINK',FUser::getUri('tuda=prev'));
+				$tpl->setVariable('PREVIOUSLINK',FSystem::getUri('tuda=prev'));
 				$tpl->setVariable('PREVIOUSTEXT',FLang::$PAGER_PREVIOUS . (($previous!='')?(' ' .$previous):('')));
 			}
 			if(isset($current)) $tpl->setVariable('CURRENTDATE',$current);
 			if(isset($next)) {
-				$tpl->setVariable('NEXTLINK',FUser::getUri('tuda=next'));
+				$tpl->setVariable('NEXTLINK',FSystem::getUri('tuda=next'));
 				$tpl->setVariable('NEXTTEXT',(($next!='')?($next .' '):('')). FLang::$PAGER_NEXT);
 			}
 		}
 		if($toolbarData['enabled']==0) $tpl->touchBlock('tudis');
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
 
 		FItemsToolbar::setTagToolbarData($toolbarData);
 

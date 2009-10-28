@@ -42,7 +42,7 @@ class page_PollEdit implements iPage {
 				$cach->invalidateGroup('poll');
 			}
 			else FError::addError(FLang::$ERROR_POLL_QUESTION);
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 		
 		if(isset($_POST['saveank']) && !empty($_POST['arr'])){
@@ -69,7 +69,7 @@ class page_PollEdit implements iPage {
 				$cach->invalidateGroup('poll');
 			}
 			
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 		
 		if(isset($_POST['saveodp'])){
@@ -104,13 +104,13 @@ class page_PollEdit implements iPage {
 			
 			$cache = FCache::getInstance('s');
 			$cach->invalidateGroup('poll');
-			FHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
+			FHTTP::redirect(FSystem::getUri((!empty($ankid))?('ankid='.$ankid):('')));
 		}
 		if(isset($_POST['letsnull'])){
 			FDBTool::query("DELETE FROM sys_poll_answers_users WHERE pollId='".$ankid."'");
 			$cache = FCache::getInstance('s');
 			$cach->invalidateGroup('poll');
-			FHTTP::redirect(FUser::getUri((!empty($ankid))?('ankid='.$ankid):('')));
+			FHTTP::redirect(FSystem::getUri((!empty($ankid))?('ankid='.$ankid):('')));
 		}
 	}
 	
@@ -130,24 +130,24 @@ class page_PollEdit implements iPage {
 
 		$tpl = new FTemplateIT('poll.edit.tpl.html');
 		if($superAdmin) {
-			$tpl->setVariable('FORMACTIONADM',FUser::getUri());
+			$tpl->setVariable('FORMACTIONADM',FSystem::getUri());
 			$tpl->setVariable('SELECTEDPAGEID',$selectedPageId);
 		}
 
-		$tpl->setVariable('FORMACTIONNEW',FUser::getUri());
+		$tpl->setVariable('FORMACTIONNEW',FSystem::getUri());
 		if($superAdmin) $tpl->touchBlock('pageadm');
 
 		$arr=$db->getAll("SELECT pollId,pageId,activ,question,dateCreated,userId FROM sys_poll".(($selectedPageId!='')?(" where pageId='".$selectedPageId."'"):(''))." ORDER BY dateCreated DESC");
 
-		$tpl->setVariable('FORMACTIONEDIT',FUser::getUri());
+		$tpl->setVariable('FORMACTIONEDIT',FSystem::getUri());
 		if($superAdmin) $tpl->touchBlock('paheader');
 		foreach ($arr as $row){
 			$tpl->setCurrentBlock('polllist');
 			$tpl->setVariable('LISTPOLLID',$row[0]);
 			$tpl->setVariable('LISTACTIV',(($row[2]==1)?(' checked="checked"'):('')));
-			$tpl->setVariable('LISTLINKEDIT',FUser::getUri('ankid='.$row[0]));
+			$tpl->setVariable('LISTLINKEDIT',FSystem::getUri('ankid='.$row[0]));
 			$tpl->setVariable('LISTQUESTION',$row[3]);
-			$tpl->setVariable('LISTOWNERLINK',FUser::getUri('who='.$row[5],'33'));
+			$tpl->setVariable('LISTOWNERLINK',FSystem::getUri('who='.$row[5],'33'));
 			$tpl->setVariable('LISTOWNERNAME',FUser::getgidname($row[5]));
 			$tpl->setVariable('LISTDATECREATE',$row[4]);
 			if($superAdmin) {
@@ -159,7 +159,7 @@ class page_PollEdit implements iPage {
 
 
 		if(!empty($ankid)){
-			$tpl->setVariable('FORMACTIONDETAIL',FUser::getUri());
+			$tpl->setVariable('FORMACTIONDETAIL',FSystem::getUri());
 			$tpl->setVariable('POLLID',$ankid);
 
 			$dot = FDBTool::getRow("SELECT question,publicresults,votesperuser FROM sys_poll WHERE pollId='".$ankid."'");

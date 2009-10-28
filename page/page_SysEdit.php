@@ -7,12 +7,12 @@ class page_SysEdit implements iPage {
 	}
 
 	static function build() {
-		FMenu::secondaryMenuAddItem(FUser::getUri('','sbann'),'Banany');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','skate'),'Kategorie');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','spaka'),'Stranky');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','sbanr'),'Bannery');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','spoll'),'Ankety');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','sleft'),'Sidepanel');
-		FMenu::secondaryMenuAddItem(FUser::getUri('','sfunc'),'Sidepanel fce');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','sbann'),'Banany');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','skate'),'Kategorie');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','spaka'),'Stranky');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','sbanr'),'Bannery');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','spoll'),'Ankety');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','sleft'),'Sidepanel');
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','sfunc'),'Sidepanel fce');
 	}
 }

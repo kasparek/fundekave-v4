@@ -6,6 +6,7 @@ class page_Registration implements iPage {
 
 		if(isset($data['addusr'])) {
 			$user = FUser::getInstance();
+			//TODO: check if user is logged
 			$user->register( $data );
 		}
 		
@@ -20,7 +21,7 @@ class page_Registration implements iPage {
 		}
 		$tpl = new FTemplateIT('user.registration.tpl.html');
 		if (!FUser::logon()) {
-			$tpl->setVariable('FORMACTION',FUser::getUri());
+			$tpl->setVariable('FORMACTION',FSystem::getUri());
 			$tpl->setVariable('NAME',$data['jmenoreg']);
 			$tpl->setVariable('PWD1',$data['pwdreg1']);
 			$tpl->setVariable('PWD2',$data['pwdreg2']);

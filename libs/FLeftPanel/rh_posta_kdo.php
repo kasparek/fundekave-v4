@@ -33,10 +33,10 @@ class rh_posta_kdo {
 			foreach ($arrPost as $userId=>$userPost) {
 				$tpl->setCurrentBlock('user');
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userId));
-				$tpl->setVariable('USERLINK',FUser::getUri('m=user-postFilter&d=user:'.$userId.';s:all','fpost'));
+				$tpl->setVariable('USERLINK',FSystem::getUri('m=user-postFilter&d=user:'.$userId.';s:all','fpost'));
 				$tpl->setVariable('USERNAME',$userPost['name']);
-				$tpl->setVariable('RECEIVEDLINK',FUser::getUri('m=user-postFilter&d=user:'.$userId.';s:received','fpost'));
-				$tpl->setVariable('SENTLINK',FUser::getUri('m=user-postFilter&d=user:'.$userId.';s:sent','fpost'));
+				$tpl->setVariable('RECEIVEDLINK',FSystem::getUri('m=user-postFilter&d=user:'.$userId.';s:received','fpost'));
+				$tpl->setVariable('SENTLINK',FSystem::getUri('m=user-postFilter&d=user:'.$userId.';s:sent','fpost'));
 				$tpl->setVariable('RECEIVED',$userPost['received']);
 				$tpl->setVariable('SENT',$userPost['sent']);
 				$tpl->parseCurrentBlock();

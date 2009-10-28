@@ -33,7 +33,7 @@ class page_UserDiary implements iPage {
 				$cache = FCache::getInstance('s');
 				$cache->setData($arrd,'diary','form');
 			}
-			FHTTP::redirect(FUser::getUri('ddate='.$arrd['dateEvent']));
+			FHTTP::redirect(FSystem::getUri('ddate='.$arrd['dateEvent']));
 		}
 
 		//---mazani udalosti
@@ -44,7 +44,7 @@ class page_UserDiary implements iPage {
 				$cache = FCache::getInstance('f');
 				$user->invalidateGroup('calendarlefthand');
 			}
-			FHTTP::redirect(FUser::getUri('ddate='.$_REQUEST['ddate']));
+			FHTTP::redirect(FSystem::getUri('ddate='.$_REQUEST['ddate']));
 		}
 	}
 
@@ -82,8 +82,8 @@ class page_UserDiary implements iPage {
 		//---show part
 		$tpl = new FTemplateIT('users.diary.tpl.html');
 
-		$tpl->setVariable('FORMACTION',FUser::getUri());
-		$tpl->setVariable('ADDFORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
+		$tpl->setVariable('ADDFORMACTION',FSystem::getUri());
 
 		if(isset($_POST['dsearch'])) $tpl->setVariable('SEARCHTEXT',$_POST['dsearch']);
 		if(isset($_POST['dsden'])) $tpl->setVariable('SEARCHDAY',$_POST['dsden']);
@@ -92,7 +92,7 @@ class page_UserDiary implements iPage {
 
 		$tpl->setVariable('TODAYDATE',$dden.'.'.$dmesic.'.'.$drok);
 
-		$tpl->setVariable('SHOWMINELINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-00&l=m'));
+		$tpl->setVariable('SHOWMINELINK',FSystem::getUri('ddate='.$drok.'-'.$dmesic.'-00&l=m'));
 
 		if(isset($arrd)) {
 			$tpl->setVariable('DID',$arrd[0]);
@@ -197,19 +197,19 @@ class page_UserDiary implements iPage {
 				$tpl->setVariable('EVENTNAME',$row[1]);
 					
 				if($row[7] == 3) {
-					$tpl->setVariable('EVENTLINK',FUser::getUri('i='.$row[4],'event'));
+					$tpl->setVariable('EVENTLINK',FSystem::getUri('i='.$row[4],'event'));
 					$tpl->touchBlock('eventlinkclose');
 				}
 				if($row[7]=='1') $tpl->touchBlock('repeatyear');
 				elseif($row[7]=='2') $tpl->touchBlock('repeatmonth');
 				$tpl->setVariable('EVENTTEXT',nl2br($row[2]));
-				if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',FUser::getUri('i='.$row[3],'event'));
+				if($row[7]==3) $tpl->setVariable('EVENTEVENTLINK',FSystem::getUri('i='.$row[3],'event'));
 				if($row[5]!=$user->userVO->userId && $row[7]!=0) {
-					$tpl->setVariable('AUTHORLINK',FUser::getUri('who='.$row[4],'finfo'));
+					$tpl->setVariable('AUTHORLINK',FSystem::getUri('who='.$row[4],'finfo'));
 					$tpl->setVariable('AUTHOR',FUser::getgidname($row[4]));
 				} else {
-					$tpl->setVariable('EVENTEDITLINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));
-					$tpl->setVariable('EVENTDELETELINK',FUser::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&del='.$row[3]));
+					$tpl->setVariable('EVENTEDITLINK',FSystem::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&did='.$row[3]));
+					$tpl->setVariable('EVENTDELETELINK',FSystem::getUri('ddate='.$drok.'-'.$dmesic.'-'.$dden.'&del='.$row[3]));
 				}
 		  $tpl->parseCurrentBlock();
 		   

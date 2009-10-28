@@ -220,7 +220,7 @@ class FForum extends FDBTool {
 			$cache = FCache::getInstance('f');
 			$cache->invalidateData('lastForumPost');
 			if($callbackFunction) call_user_func($callbackFunction);
-			FHTTP::redirect(FUser::getUri());
+			FHTTP::redirect(FSystem::getUri());
 		}
 	}
 
@@ -279,7 +279,7 @@ class FForum extends FDBTool {
 			if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
 		}
 		if($user->pageVO->locked == 0 && $publicWrite > 0) {
-			$tpl->setVariable('FORMACTION',FUser::getUri());
+			$tpl->setVariable('FORMACTION',FSystem::getUri());
 			$name = "";
 			if($user->idkontrol) $zprava = FUserDraft::get('forum'.$user->pageVO->pageId);
 			 

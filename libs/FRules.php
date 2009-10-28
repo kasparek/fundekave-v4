@@ -57,9 +57,10 @@ class FRules {
 	}
 
 	static function get($usr,$page,$type=1) {
-		$ret=false;
+		$ret = false;
+		$key = $usr.'-'.$page.'-'.$type;
 		$cache = FCache::getInstance('s');
-		if(false === ($retVal = $cache->getData($usr.'-'.$page.'-'.$type, 'fRules'))) {
+		if(false === ($retVal = &$cache->getPointer($key, 'fRules'))) {
 			//---if is rules = 0 is ban
 			$dot = "select r.userId,r.rules,s.public,s.userIdOwner
 			from sys_pages as s 
@@ -75,10 +76,9 @@ class FRules {
 				if($arr[2] == 1) $ret = true; //public page
 				if($arr[2] == 2 && $usr > 0) $ret = true; //for registrated page
 			}
-			$retVal = ($ret===true)?('yes'):('no');
-			$cache->setData($retVal, $usr.'-'.$page.'-'.$type, 'fRules');
+			$retVal = ($ret===true)?(1):(2);
 		}
-    return ($retVal=='yes')?(true):(false);
+    	return ($retVal===1)?(true):(false);
 	}
 	
 	function getList($listPublic=true,$idstr=0) {

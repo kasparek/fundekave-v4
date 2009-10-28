@@ -2,6 +2,12 @@
 function fuupUploadOneComplete() {
 	sendAjax('page-fuup');
 };
+function fuupUploadAvatarComplete() {
+
+};
+function fuupUploadPageAvatarComplete() {
+
+};
 
 function deleteFoto(event) {
 		if (confirm($(this).attr("title"))) {
@@ -39,7 +45,7 @@ function fsubmit(event) {
 	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
 	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
 	addXMLRequest('k', gup('k', this.action));
-	sendAjax(gup('m', this.action));
+	sendAjax(gup('m', this.action),gup('k', this.action));
 	event.preventDefault();
 };
 
@@ -49,6 +55,12 @@ function fajaxform(event) {
 };
 function bindDeleteFoto() {
 	setListeners('deletefoto', 'click', deleteFoto);
+}
+
+function fuupInit() {
+	$(".fuup").each(function(i){
+		swfobject.embedSWF("assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent'});
+	});
 }
 
 function uploadifyInit() {
@@ -429,7 +441,7 @@ function msg(type, text) {
 	setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000)
 }
 // ---send and process ajax request
-function sendAjax(action) {
+function sendAjax(action,k) {
 	var data = getXMLRequest();
 	$.ajax( {
 		type : "POST",
@@ -437,7 +449,7 @@ function sendAjax(action) {
 		dataType : 'xml',
 		dataProcess : false,
 		cache : false,
-		data : "m=" + action + "-x&d=" + data,
+		data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + data,
 		complete : function(data) {
 			$(data.responseXML).find("Item").each(
 					function() {

@@ -225,13 +225,13 @@ class page_PageEdit implements iPage {
 				if($data['__ajaxResponse']) {
 					if($pageCreated === true) {
 						//if new page redirect
-						FAjax::addResponse('function','call','redirect;'.FUser::getUri('',$pageVO->pageId,$redirectAdd));
+						FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
 						FAjax::addResponse('function','call','msg;ok;Data saved');
 					}
 				} else {
-					FHTTP::redirect(FUser::getUri('','',$redirectAdd));
+					FHTTP::redirect(FSystem::getUri('','',$redirectAdd));
 				}
 			} else {
 				//---error during value check .. let the values stay in form - data remain in _POST
@@ -272,7 +272,7 @@ class page_PageEdit implements iPage {
 				FPages::deletePage($pageId);
 			}
 			FError::addError(FLang::$LABEL_DELETED_OK);
-			FAjax::addResponse('function','call','redirect;'.FUser::getUri('',HOME_PAGE,''));
+			FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',HOME_PAGE,''));
 		}
 
 	}
@@ -302,9 +302,6 @@ class page_PageEdit implements iPage {
 			$pageVO->load();
 		}
 
-		$cache = FCache::getInstance( 's' );
-		$cache->setData($pageVO->pageId, 'pageId', 'selectedPage');
-
 		//---SHOW TIME
 		/***
 		 *TODO:
@@ -316,11 +313,11 @@ class page_PageEdit implements iPage {
 		 **/
 			
 		$tpl=new FTemplateIT('page.edit.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri('m=page-edit&u='.$user->userVO->userId));
+		$tpl->setVariable('FORMACTION',FSystem::getUri('m=page-edit&u='.$user->userVO->userId));
 		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');
 		if($user->pageParam!='a') $tpl->setVariable('PAGEID',$pageVO->pageId);
 		if(!empty($pageData['userIdOwner'])) {
-			$tpl->setVariable('OWNERLINK',FUser::getUri('who='.$pageVO->userIdOwner,'finfo'));
+			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
 		}
 
@@ -379,32 +376,14 @@ class page_PageEdit implements iPage {
 		}
 
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
-			$cache = FCache::getInstance( 's' );
-			$cache->setData($pageVO->galeryDir.'/', 'galeryDir', 'selectedPage');
-				
 			$tpl->touchBlock('galeryspecifictabs');
-
 			if($pageVO->itemsOrder()=='dateCreated desc') {
 				$tpl->touchBlock('gorddate');
 			}
 			$fItems = new FItems('galery',false);
 			$fItems->setWhere("pageId='".$pageVO->pageId."'");
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
-			/*
-			 $itemRenderer = new FItemsRenderer();
-			 $itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
-			 	
-			 $fItems = new FItems('galery',false,$itemRenderer);
-			 $fItems->setWhere("pageId='".$pageVO->pageId."'");
-			 $tpl->setVariable('FOTOTOTAL',$fItems->getCount());
-			 if($pageVO->getPageParam('enhancedsettings/orderitems') == 1) {
-				$tpl->touchBlock('gorddate');
-				$fItems->setOrder($pageVO->itemsOrder());
-				} else {
-				$fItems->setOrder('enclosure');
-				}
-				$tpl->setVariable('FOTOLIST',$fItems->render());
-				*/
+
 			/* UPLOAD INPUTS */
 			$numInputs=7;
 			for ($x=1;$x<$numInputs;$x++) {

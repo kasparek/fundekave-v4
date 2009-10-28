@@ -140,11 +140,11 @@ static function rh_datum() {
 					$tpl->setCurrentBlock('row');
 					$tpl->parseCurrentBlock();
 				}
-				$tpl->setVariable('PREVIOUSMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
+				$tpl->setVariable('PREVIOUSMONTHURL',FSystem::getUri(sprintf("ddate=%04d-%02d-%02d",$yearbefore,$monthbefore,$daybefore)));
 				$tpl->setVariable('XYEARPREV',$yearbefore);
 				$tpl->setVariable('XMONTHPREV',$monthbefore);
 				$tpl->setVariable('PREVIOUSMONTH',FLang::$MONTHS[$monthbefore]);
-				$tpl->setVariable('NEXTMONTHURL',FUser::getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
+				$tpl->setVariable('NEXTMONTHURL',FSystem::getUri(sprintf("ddate=%04d-%02d-%02d",$yearafter,$monthafter,$dayafter)));
 				$tpl->setVariable('XYEARNEXT',$yearafter);
 				$tpl->setVariable('XMONTHNEXT',$monthafter);
 				$tpl->setVariable('NEXTMONTH',FLang::$MONTHS[$monthafter]);

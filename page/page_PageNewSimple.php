@@ -32,8 +32,8 @@ class page_PageNewSimple implements iPage {
 				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('calendarlefthand');
 				$cache->invalidateGroup('newpage');
-				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FUser::getUri('',$pageVO->pageId).'">'.$nazev.'</a>');
-				FHTTP::redirect(FUser::getUri());
+				FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$nazev.'</a>');
+				FHTTP::redirect(FSystem::getUri());
 			} else {
 				$cache = FCache::getInstance('s');
 				$cache->setData(array($nazev,$ocem),'newP','form');
@@ -55,7 +55,7 @@ class page_PageNewSimple implements iPage {
 
 
 		$tpl = new FTemplateIT('forum.new.tpl.html');
-		$tpl->setVariable('FORMACTION',FUser::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->setVariable('NAME',$nazev);
 		$tpl->setVariable('DESC',$ocem);
 

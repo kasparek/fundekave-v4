@@ -1,6 +1,57 @@
 <?php
 class FSystem {
 	
+	/**
+	 * get skin name
+	 * @return string - url
+	 */
+	static function getSkinCSSFilename() {
+		$skin = SKIN_DEFAULT;
+		//---TODO: from userVO load custom skin name
+		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
+		return( WEB_REL_CSS . $skin );
+	}
+	
+	/**
+	 * Build local path for redirects, buttons, etc.
+	 * @param $otherParams
+	 * @param $pageId
+	 * @param $pageParam
+	 * @return string - URL
+	 */
+	static function getUri($otherParams='',$pageId='',$pageParam=false, $scriptName=BASESCRIPTNAME) {
+		$otherParams = str_replace('&',SEPARATOR,$otherParams);
+		$user = FUser::getInstance();
+		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
+
+		$newPageId = $user->pageVO->pageId;
+		if(!empty($pageId)) $newPageId = $pageId;
+		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
+		
+		if(preg_match("/i=([0-9]*)/" , $otherParams)) {
+			if(empty($pageParam)) $newPageId = '';
+		} else {
+			if( empty($pageId) && $user->itemVO ) {
+				$params[] = 'i='.$user->itemVO->itemId;
+				if(empty($pageParam)) $newPageId = '';
+			}
+		}
+		if(!empty($newPageId)) {
+			if(empty($pageParam)) {
+				$pageVO  = new PageVO($newPageId,true);
+				$safeName = FSystem::safetext($pageVO->name);
+			}
+			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
+			$params = array_reverse($params);
+		}
+		if(!empty($otherParams)) $params[] = $otherParams;
+		$parStr = '';
+		if(isset($params)) {
+			$parStr = '?'.implode(SEPARATOR,$params);
+		}
+		return $scriptName . $parStr;
+	}
+		
 	static function processK($pageId) {
 		if(isset($pageId{5})) {
 			//---remove the part behind - it is just nice link
@@ -57,7 +108,7 @@ class FSystem {
 		}
 
 		if($paramsArr['formatOption']==1) {
-			require_once('HTML/BBCodeParser.php');
+			require_once(ROOT.'pear/HTML/BBCodeParser.php');
 			$config = parse_ini_file(ROOT.CONFIGDIR.'BBCodeParser.ini', true);
 			$parser = new HTML_BBCodeParser($config['HTML_BBCodeParser']);
 			$parser->setText($text);
@@ -67,8 +118,7 @@ class FSystem {
 		}
 
 		if($paramsArr['formatOption'] < 2) {
-			require_once('PEAR.php');
-			require_once('HTML/Safe.php');
+			require_once(ROOT.'pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
 			if($user->idkontrol && $paramsArr['formatOption']>0) {
 				$objectKey = array_search('object',$safe->deleteTags);

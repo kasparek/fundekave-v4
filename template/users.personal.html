@@ -8,16 +8,22 @@
 </fieldset>
 <fieldset>
 <legend>Osobni nastaveni</legend>
+
 <label for="idfoto">Avatar</label>
-<input type="file" name="idfoto" id="avatarUploadify" class="uploadify" />
+<div id="uava" class="fuup">
+<input type="file" name="idfoto" />
 <p>obrázek musí být menší než 20kb; může být .gif nebo .jpg; ideální rozměry 40x50pix nebo podobný poměr</p>
+</div>
+<!--
 <label>Skin</label><select name="skin">{SKINOPTIONS}</select><br />
+-->
+<div>
 <label>Bannery</label>
 <select name="zbanner">
 <option value="0">Nezobrazovat</option>
 <option value="1"<!-- BEGIN zbanner --> selected="selected"<!-- END zbanner -->>Zobrazovat</option>
 </select>
-<br />
+</div>
 <label>Ikony klubů</label>
 <select name="zaudico">
 <option value="0">Nezobrazovat</option>
