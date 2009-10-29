@@ -105,7 +105,7 @@ package com.bit101.components
 		 */
 		public function invalidate():void
 		{
-			addEventListener(Event.ENTER_FRAME, onInvalidate);
+			addEventListener(Event.ENTER_FRAME, onInvalidate,false,0,true );
 		}
 		
 		///////////////////////////////////

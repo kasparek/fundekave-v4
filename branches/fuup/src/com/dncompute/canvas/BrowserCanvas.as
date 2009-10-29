@@ -166,7 +166,7 @@ package com.dncompute.canvas {
 		
 		
 		private function invalidate():void {
-			timerSprite.addEventListener(Event.ENTER_FRAME,update);
+			timerSprite.addEventListener(Event.ENTER_FRAME,update,false,0,true );
 		}
 		
 		private function update(event:Event):void {

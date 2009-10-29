@@ -81,7 +81,7 @@
 				var s1:Component = new Component();
 				s1.useHandCursor = true;
 				s1.buttonMode = true;
-				s1.addEventListener(MouseEvent.CLICK, onButtClose);
+				s1.addEventListener(MouseEvent.CLICK, onButtClose,false,0,true);
 				s1.width = 20;
 				s1.height = 20;
 				s1.addChild( new ClosePNG() );
@@ -91,7 +91,7 @@
 				var s2:Component = new Component();
 				s2.useHandCursor = true;
 				s2.buttonMode = true;
-				s2.addEventListener(MouseEvent.CLICK, onButtCCW);
+				s2.addEventListener(MouseEvent.CLICK, onButtCCW,false,0,true);
 				s2.width = 20;
 				s2.height = 20;
 				s2.addChild( new CCWPNG() );
@@ -101,7 +101,7 @@
 				var s3:Component = new Component();
 				s3.useHandCursor = true;
 				s3.buttonMode = true;
-				s3.addEventListener(MouseEvent.CLICK, onButtCW);
+				s3.addEventListener(MouseEvent.CLICK, onButtCW,false,0,true);
 				s3.width = 20;
 				s3.height = 20;
 				s3.addChild( new CWPNG() );
@@ -111,7 +111,7 @@
 				var s4:Component = new Component();
 				s4.useHandCursor = true;
 				s4.buttonMode = true;
-				s4.addEventListener(MouseEvent.CLICK, onButtShow);
+				s4.addEventListener(MouseEvent.CLICK, onButtShow,false,0,true);
 				s4.width = 20;
 				s4.height = 20;
 				s4.addChild( new ShowPNG() );
@@ -172,7 +172,7 @@
 						imageResize.loadReference( fileVO.file );
 					}
 				}
-				imageResize.addEventListener( ImageResize.RESIZED, drawLater );
+				imageResize.addEventListener( ImageResize.RESIZED, drawLater ,false,0,true);
 				this.thumbUI.addChild( imageResize );
 			}
 			
@@ -249,14 +249,14 @@
 					
 				
 				previewWin = new Window(Application.application, 0, 0, title);
-				previewWin.addEventListener( Event.RESIZE, onWinReady );
+				previewWin.addEventListener( Event.RESIZE, onWinReady ,false,0,true);
 				previewWin.draggable = true;
 				previewWin.hasMinimizeButton = true;
 				previewWin.hasCloseButton = true;
 				
 				previewWin.width = fileVO.widthOriginal;
 				previewWin.height = fileVO.heightOriginal + 20;
-				previewWin.addEventListener( CloseEvent.CLOSE, onClosePreview );
+				previewWin.addEventListener( CloseEvent.CLOSE, onClosePreview ,false,0,true);
 				
 				previewWin.x = -previewWin.width;
 				previewWin.y = -previewWin.height;
@@ -280,7 +280,7 @@
 				//image.x = 10;
 				//image.y = 30;
 				image.alpha = 0;
-				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview );
+				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
 				win.content.addChild( image );
 				
 			}
@@ -302,6 +302,8 @@
 			}
 			
 			private function onTween():void {
+				this.fileVO.destroy();
+				this.fileVO = null;
 				this.parent.removeChild( this );	
 			}
 			

@@ -84,7 +84,7 @@ package com.bit101.components
 			_tf.selectable = true;
 			_tf.type = TextFieldType.INPUT;
 			_tf.defaultTextFormat = new TextFormat("Ronda", 8, Style.LABEL_TEXT);
-			_tf.addEventListener(Event.CHANGE, onChange);			
+			_tf.addEventListener(Event.CHANGE, onChange,false,0,true );			
 			addChild(_tf);
 		}
 		

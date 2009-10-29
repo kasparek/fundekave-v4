@@ -107,8 +107,12 @@ package net.fundekave.fuup.model
 					if(_useFilters===true) {
 	        			imageResize.filtersList = filtersList;
 					}
-	        		imageResize.loadBytes( fileVO.file.data );
-	        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished );
+					if(fileVO.file.data.length>0) {
+	        			imageResize.loadBytes( fileVO.file.data );
+					} else {
+						imageResize.loadReference( fileVO.file );
+					}
+	        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished,false,0,true );
 	        		Application.application.stage.addChild( imageResize );
 				} else {
 					//---skip file
@@ -126,7 +130,9 @@ package net.fundekave.fuup.model
         	var imageResize:ImageResize = e.target as ImageResize;
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
-        	fileVO.encodedJPG = imageResize.resultBytes;
+			fileVO.encodedJPG = new ByteArray();
+			fileVO.encodedJPG.writeBytes( imageResize.resultBytes )
+        	//fileVO.encodedJPG = ByteArray(imageResize.resultBytes);
 			fileVO.widthNew = imageResize.widthNew;
 			fileVO.heightNew = imageResize.heightNew;
 			fileVO.renderer.updateThumb();
@@ -155,9 +161,9 @@ package net.fundekave.fuup.model
 	        		var data:ByteArray = (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data);
 					if(data.length < this.maxSize) {
 		        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
-		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete );
-		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress );
-		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError );
+		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete,false,0,true );
+		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress,false,0,true );
+		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );
 		        		fileUpload.uploadBytes( data );
 						noUpload=false;
 						break;

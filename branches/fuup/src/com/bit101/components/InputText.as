@@ -55,7 +55,7 @@ package com.bit101.components
 			super(parent, xpos, ypos);
 			if(defaultHandler != null)
 			{
-				addEventListener(Event.CHANGE, defaultHandler);
+				addEventListener(Event.CHANGE, defaultHandler,false,0,true );
 			}
 		}
 		
@@ -83,7 +83,7 @@ package com.bit101.components
 			_tf.type = TextFieldType.INPUT;
 			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, Style.INPUT_TEXT);
 			addChild(_tf);
-			_tf.addEventListener(Event.CHANGE, onChange);
+			_tf.addEventListener(Event.CHANGE, onChange,false,0,true );
 			
 		}
 		

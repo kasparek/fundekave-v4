@@ -58,7 +58,7 @@ package com.bit101.components
 			height = 20;
 			if(defaultHandler != null)
 			{
-				addEventListener(MouseEvent.CLICK, defaultHandler);
+				addEventListener(MouseEvent.CLICK, defaultHandler,false,0,true );
 			}
 			this.label = label;
 		}
@@ -94,8 +94,8 @@ package com.bit101.components
 			_label = new Label();
 			addChild(_label);
 			
-			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown,false,0,true );
+			addEventListener(MouseEvent.ROLL_OVER, onMouseOver,false,0,true );
 		}
 		
 		
@@ -151,7 +151,7 @@ package com.bit101.components
 		protected function onMouseOver(event:MouseEvent):void
 		{
 			_over = true;
-			addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+			addEventListener(MouseEvent.ROLL_OUT, onMouseOut,false,0,true );
 		}
 		
 		/**
@@ -175,7 +175,7 @@ package com.bit101.components
 		{
 			_down = true;
 			_face.filters = [getShadow(1, true)];
-			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp,false,0,true );
 		}
 		
 		/**

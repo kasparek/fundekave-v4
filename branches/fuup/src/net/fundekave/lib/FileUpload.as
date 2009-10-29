@@ -62,10 +62,10 @@ package net.fundekave.lib
         		
         		//---prepare service
 	        	var service:Service = new Service();
-	        	service.addEventListener(Event.COMPLETE, onServiceComplete );
-	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError );
-	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
-	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
+	        	service.addEventListener(Event.COMPLETE, onServiceComplete ,false,0,true );
+	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError ,false,0,true );
+	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError ,false,0,true );
+	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError ,false,0,true );
         		
         		var vars:URLVariables = new URLVariables();
         		var dataObj:Object = chunks.shift();
@@ -128,6 +128,7 @@ package net.fundekave.lib
         	var service:Service = e.target as Service;
         	service.failed();
         	trace('Connection Error::another attempt');
+
         }
         
         private function onServiceTotalError(e:Event):void {
@@ -140,6 +141,7 @@ package net.fundekave.lib
 	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
         	
         	dispatchEvent( new ErrorEvent( ERROR ));
+
         }
         
 	}

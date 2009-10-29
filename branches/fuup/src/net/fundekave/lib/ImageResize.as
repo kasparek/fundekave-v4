@@ -1,6 +1,6 @@
 package net.fundekave.lib
 {
-	import cmodule.jpegencoder.CLibInit;
+	//import cmodule.jpegencoder.CLibInit;
 	
 	import de.popforge.imageprocessing.core.Image;
 	import de.popforge.imageprocessing.core.ImageFormat;
@@ -57,31 +57,37 @@ package net.fundekave.lib
 			this.outputQuality = outputQuality;
 			
 			/* init alchemy object */
-			
-            var init:CLibInit = new CLibInit(); //get library obejct
-            al_jpegencoder = init.init(); // initialize library exported class
+			/*
+			var jpegClib:CLibInit = new CLibInit(); //get library obejct
+            al_jpegencoder = jpegClib.init(); // initialize library exported class
             /**/
 		}
 		
+		private var localFireRef:FileReference;
 		public function loadReference(fileRef:FileReference):void {
 			fileRef.load()
-			fileRef.addEventListener(Event.COMPLETE, onFileRef);
+			fileRef.addEventListener(Event.COMPLETE, onFileRef,false,0,true );
 		}
 		
 		private function onFileRef( e:Event ):void {
 			var file:FileReference = e.target as FileReference;
 			file.removeEventListener(Event.COMPLETE, onFileRef);
 			this.loadBytes( file.data );
+			localFireRef = file;
 		}
 		
 		public function loadBytes(bytes:ByteArray):void {
 			var image:Loader = new Loader();
     		image.loadBytes( bytes );
-    		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady );
+    		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady ,false,0,true );
     		this.addChild( image );
 		}
 		
 		private function onImageReady(e:Event):void {
+			if(localFireRef) {
+				localFireRef.data.clear();
+				localFireRef = null;
+			}
         	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	var imageBmp:Bitmap = image.content as Bitmap;
@@ -128,6 +134,7 @@ package net.fundekave.lib
   			  	bmpdOrig.dispose();
         		bmpdOrig = popImage.bitmapData.clone(); 
   			  	popImage.dispose();
+				popImage = null;
         	}
         	
 			//crop cropped if needed
@@ -175,7 +182,7 @@ package net.fundekave.lib
   				break;
   			}
         	
-        	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2);
+        	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2,false,0,true );
         	this.addChild( bmp );
         }
         
@@ -207,12 +214,12 @@ package net.fundekave.lib
         	if(!bmpd) bmpd = _resultBmpData;
         	
         	resultBytes = new ByteArray();
-        	
+        	/*
   			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
 			baSource.position = 0;
 			al_jpegencoder.encodeAsync(onCompressFinished, baSource, resultBytes, bmpd.width, bmpd.height, this.outputQuality );
 			/**/
-        	/*
+        	
         	var jpgEnc:JPEGEncoder = new JPEGEncoder( this.outputQuality );
         	resultBytes = jpgEnc.encode( bmpd );
         	onCompressFinished(null);
@@ -228,6 +235,12 @@ package net.fundekave.lib
         
         public function dispose():void {
         	_resultBmpData.dispose();
+			_resultBmpData = null;
+			al_jpegencoder = null;
+			if(resultBytes) resultBytes.clear();
+			resultBytes = null;
+			bmpdOrig.dispose();
+			bmpdOrig = null;
         	this.parent.removeChild( this );
         }
 		
