@@ -40,12 +40,12 @@
 	    <!-- BEGIN pageavatarupload -->
 	    <label>Ikona (60x25px)</label>
 	    <div id="pava" class="fuup">
-	    <input type="file" name="audico" id="pageavatarUploadify" class="uploadify" /></div><br />
+	    <input type="file" name="audico" /></div><br />
 	    <label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
 	    <!-- END pageavatarupload -->
-	    <!-- BEGIN pageavatar -->
-	    <label>&nbsp;</label><img src="{PAGEICOLINK}" />&nbsp;&nbsp;&nbsp;Smazat <input type="checkbox" name="delpic" value="1" class="checkbox" /><br />
-	    <!-- END pageavatar -->
+	    <div id="pageavatarBox"><!-- BEGIN pageavatar -->
+	    <label>&nbsp;</label><img src="{PAGEICOLINK}" /> <input value="Smazat" title="Opravdu chcete smazat avatar stranky?" type="submit" name="delpageavatar" class="button confirm" /><br />
+	    <!-- END pageavatar --></div>
 	    <label>Zahlaví</label>
 	    <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
 	    <!-- BEGIN galeryspecific -->

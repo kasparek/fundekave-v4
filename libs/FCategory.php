@@ -117,6 +117,7 @@ class FCategory extends FDBTool {
 	function parseComboBox($blockname,$selectname,$arr,$selected=0){
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['SELECT'.$k]=$v;
 		$this->tplObject->setVariable($arrtmp);
+		if(!empty($arr))
 		foreach ($arr as $k=>$v) {
 			$this->tplObject->setCurrentBlock("arr".$blockname);
 			$this->tplObject->setVariable("OPTIONVALUE",$k);
@@ -146,9 +147,9 @@ class FCategory extends FDBTool {
 	
 	function getUriAddon() {
 		$user = FUser::getInstance();
-		$conf = FConf::getInstance();
 		$rediraddon = '';
-		if(!empty($_REQUEST[$conf['pager']['urlVar']])) $this->arrRedirAddon[$conf['pager']['urlVar']] = $_REQUEST[$conf['pager']['urlVar']];
+		$urlVar  = FConf::get('pager','urlVar');
+		if(!empty($_REQUEST[$urlVar])) $this->arrRedirAddon[$urlVar] = $_REQUEST[$urlVar];
 		if(!empty($this->arrRedirAddon)) foreach ($this->arrRedirAddon as $k=>$v) $rediraddon .= '&'.$k.'='.$v;
 		return $rediraddon;
 	}
@@ -206,11 +207,11 @@ class FCategory extends FDBTool {
 		$arr = $this->getContent();
 
 		$user = FUser::getInstance();
-		$this->tplObject->setVariable("FORMACTION",$user->getUri($addToUrl));
+		$this->tplObject->setVariable("FORMACTION",FSystem::getUri($addToUrl));
 
 		$arrheadtmp = $this->arrHead;
 		if ($this->editlink > 0) $arrheadtmp['akce']='';
-		if($this->isDel == true) $arrheadtmp['del']=LABEL_CATEGORY_DELETE;
+		if($this->isDel == true) $arrheadtmp['del']= FLang::$LABEL_CATEGORY_DELETE;
 
 		$this->tplObject->setVariable("COLS",count($arrheadtmp));
 		foreach ($arrheadtmp as $td) {

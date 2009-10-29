@@ -2,9 +2,8 @@
 require(INIT_FILENAME);
 
 //---process ajax requests - or alternative POST requests
-$user = FUser::getInstance();
-if(isset($_REQUEST['m']) && $user->pageAccess == true) {
-	FAjax::process($_REQUEST['m'],(isset($_REQUEST['d']))?($_REQUEST['d']):($_POST));
+if(isset($_REQUEST['m'])) {
+	FAjax::process( $_REQUEST['m'], (isset($_REQUEST['d']))?($_REQUEST['d']):($_POST) );
 }
 FProfiler::profile('FAJAX PROCESSED DONE');
 //---process post/get for page

@@ -1,30 +1,37 @@
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 function fuupUploadOneComplete() {
-	sendAjax('page-fuup');
+	sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));
 };
 function fuupUploadAvatarComplete() {
-
+	addXMLRequest('result', "avatarBox");
+	addXMLRequest('resultProperty', 'html');
+  sendAjax('user-avatar',gup('k',$(".fajaxform").attr('action')));
 };
 function fuupUploadPageAvatarComplete() {
-
+	addXMLRequest('result', "pageavatarBox");
+	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('call', 'fconfirm');
+	sendAjax('page-avatar',gup('k',$(".fajaxform").attr('action')));
 };
 
+function bindDeleteFoto() { setListeners('deletefoto', 'click', deleteFoto); }
 function deleteFoto(event) {
-		if (confirm($(this).attr("title"))) {
-			//---send ajax
-			var id = $(this).attr("id");
-			idArr = id.split("-");
-			addXMLRequest('itemId', idArr[1]);
-			sendAjax('galery-delete');
-			//---remove element
-			$('#foto-'+idArr[1]).hide('slow',function(){$('#foto-'+idArr[1]).remove()});
-			fotoTotal--;
-			$("#fotoTotal").text(fotoTotal);
-		}
-		event.preventDefault();
-		preventAjax = true;
-	};
+	if (confirm($(this).attr("title"))) {
+		//---send ajax
+		var id = $(this).attr("id");
+		idArr = id.split("-");
+		addXMLRequest('itemId', idArr[1]);
+		sendAjax('galery-delete');
+		//---remove element
+		$('#foto-'+idArr[1]).hide('slow',function(){$('#foto-'+idArr[1]).remove()});
+		fotoTotal--;
+		$("#fotoTotal").text(fotoTotal);
+	}
+	event.preventDefault();
+	preventAjax = true;
+};
 
+function fajaxform(event) { setListeners('button', 'click', onButtonClick); setListeners('fajaxform', 'submit', fsubmit ); };
 var buttonClicked = '';
 var preventAjax = false;
 function fconfirm(event) { setListeners('confirm', 'click', function(event) { if (!confirm($(this).attr("title"))) { preventAjax = true; event.preventDefault(); } }); };
@@ -49,84 +56,26 @@ function fsubmit(event) {
 	event.preventDefault();
 };
 
-function fajaxform(event) {
-	setListeners('button', 'click', onButtonClick);
-	setListeners('fajaxform', 'submit', fsubmit );
-};
-function bindDeleteFoto() {
-	setListeners('deletefoto', 'click', deleteFoto);
-}
+function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent'}); }); }
 
-function fuupInit() {
-	$(".fuup").each(function(i){
-		swfobject.embedSWF("assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent'});
-	});
-}
-
-function uploadifyInit() {
-	$(".uploadify").each(function(i){
-		$(this).fileUpload( {
-			'uploader' : 'uploadify/uploader.swf',
-			'cancelImg' : 'uploadify/cancel.png',
-			'script' : 'uploadify/upload.php',
-			'fileExt' : '*.jpg;*.jpeg;*.gif;*.png',
-			'scriptData' : {
-				'u' : gup('u', $(".fajaxform").attr('action')),
-				'm' : gup('m', $(".fajaxform").attr('action'))
-			},
-			'onComplete' : function(event) {
-				if($(this).hasClass('multi')) {
-					addXMLRequest('uploadify', 'oneDone');
-					addXMLRequest('modul', gup('m', $(".fajaxform").attr('action')));
-					addXMLRequest('item', gup('i', $(".fajaxform").attr('action')));
-					addXMLRequest('ident', $(this).attr('id'));
-					sendAjax(gup('m', $(".fajaxform").attr('action')));
-				}
-			},
-			'onAllComplete' : function(event) {
-				addXMLRequest('uploadify', 'complete');
-				addXMLRequest('modul', gup('m', $(".fajaxform").attr('action')));
-				addXMLRequest('item', gup('i', $(".fajaxform").attr('action')));
-				addXMLRequest('ident', $(this).attr('id'));
-				sendAjax(gup('m', $(".fajaxform").attr('action')));
-			},
-			'multi' : ($(this).hasClass('multi')) ?  true  :  false ,
-			'auto' : ($(this).hasClass('multi')) ? false : true,
-			'displayData' : 'speed'
-		});
-	});
-	$(".submitUploadify").click(function(evt){
-		$("#"+$(".uploadify.multi").attr('id')).fileUploadStart();
-		evt.preventDefault();
-	});
-};
-
-function fajaxa(event) {
-	setListeners('fajaxa', 'click', function(event) {
-		if (preventAjax == true) {
-			preventAjax = false;
-			return;
-		}
-		var str = gup('d', this.href);
-		var arr = str.split(';');
-		var result = false;
-		var resultProperty = false;
-		while (arr.length > 0) {
-			var rowStr = arr.shift();
-			var row = rowStr.split(':');
-			addXMLRequest(row[0], row[1]);
-			if (row[0] == 'result')
-				result = true;
-			if (row[0] == 'resultProperty')
-				resultProperty = true;
-		}
-		if (result == false)
-			addXMLRequest('result', $(this).attr("id"));
-		if (resultProperty == false)
-			addXMLRequest('resultProperty', 'html');
-		sendAjax(gup('m', this.href));
-		event.preventDefault();
-	});
+function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
+function fajaxaSend(event) {
+	if (preventAjax == true) { preventAjax = false; return; }
+	var str = gup('d', event.target.href);
+	var arr = str.split(';');
+	var result = false;
+	var resultProperty = false;
+	while (arr.length > 0) {
+		var rowStr = arr.shift();
+		var row = rowStr.split(':');
+		addXMLRequest(row[0], row[1]);
+		if (row[0] == 'result') result = true;
+		if (row[0] == 'resultProperty') resultProperty = true;
+	}
+	if (result == false) addXMLRequest('result', $(this).attr("id"));
+	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
+	sendAjax(gup('m', this.href),gup('k', event.target.href));
+	event.preventDefault();
 };
 
 function initUserPost() {
@@ -151,21 +100,12 @@ function avatarfrominput(evt) {
 }
 
 function datePickerInit() {
-	$.datepicker.setDefaults($.extend( {
-		showMonthAfterYear : false
-	}, $.datepicker.regional['']));
+	$.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional['']));
 	$(".datepicker").datepicker($.datepicker.regional['cs']);
 };
 
 function initSlimbox() {
-	$("a[rel^='lightbox']").slimbox( {
-		overlayFadeDuration : 100,
-		resizeDuration : 100,
-		imageFadeDuration : 100,
-		captionAnimationDuration : 100
-	}, null, function(el) {
-		return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel));
-	});
+	$("a[rel^='lightbox']").slimbox( { overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100 }, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); });
 }
 
 function initSupernote() {
@@ -181,12 +121,9 @@ function markItUpInit() {
 }
 
 function switchOpen() {
-	setListeners('switchOpen', 'click', 
-			function(evt){ 
-		      $('#'+this.rel).toggleClass('hidden');
-		     }
-		);
+	setListeners('switchOpen', 'click', function(evt){ $('#'+this.rel).toggleClass('hidden'); } );
 }
+
 /**
  *main init
  **/
@@ -301,7 +238,7 @@ function galeryLoadThumb(item,type) {
 	} else {
 	  galeryCheckRunning = false;
 	}
-	sendAjax('galery-editThumb');
+	sendAjax('galery-editThumb',gup('k',$(".fajaxform").attr('action')));
 };
 // ---textarea - size/markitup switching
 function initInsertToTextarea() {
@@ -410,36 +347,20 @@ function draftTimerHandler() {
 };
 
 // register ib keyup
-function draftEventHandler() {
-	setDraftElement(this);
-	startDraftTimer();
-};
+function draftEventHandler() { setDraftElement(this); startDraftTimer(); };
 // ---end-drafting------------------------
 
-// ---popup opening
-function openPopup(href) {
-	window.open(href, 'fpopup', 'scrollbars=' + gup("scrollbars", href)
-			+ ',toolbar=' + gup("toolbar", href) + ',menubar='
-			+ gup("menubar", href) + ',status=' + gup("status", href)
-			+ ',resizable=' + gup("resizable", href) + ',width='
-			+ gup("width", href) + ',height=' + gup("height", href) + '');
-};
+//---popup opening
+function openPopup(href) { window.open(href, 'fpopup', 'scrollbars=' + gup("scrollbars", href) + ',toolbar=' + gup("toolbar", href) + ',menubar=' + gup("menubar", href) + ',status=' + gup("status", href) + ',resizable=' + gup("resizable", href) + ',width=' + gup("width", href) + ',height=' + gup("height", href) + ''); };
+
 // ---util funcions
-function setListeners(className, eventName, functionDefinition) {
-	$("." + className).unbind(eventName, functionDefinition);
-	$("." + className).bind(eventName, functionDefinition);
-};
-function gup(name, url) {
-	name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-	var regex = new RegExp("[\\?&|]" + name + "=([^&#|]*)"), results = regex
-			.exec(url);
-	return (results === null) ? (0) : (results[1]);
-};
-function msg(type, text) {
-	$("#"+type+"msgJS").html( text );
-	$("#"+type+"msgJS").show('slow');
-	setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000)
-}
+function setListeners(className, eventName, functionDefinition) { $("." + className).unbind(eventName, functionDefinition); $("." + className).bind(eventName, functionDefinition); };
+//---extract parameter from url
+function gup(name, url) { name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]"); var regex = new RegExp("[\\?&|]" + name + "=([^&#|]*)"), results = regex.exec(url); return (results === null) ? (0) : (results[1]); };
+
+//---print message
+function msg(type, text) { $("#"+type+"msgJS").html( text ); $("#"+type+"msgJS").show('slow'); setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000) };
+
 // ---send and process ajax request
 function sendAjax(action,k) {
 	var data = getXMLRequest();
@@ -507,32 +428,16 @@ function sendAjax(action,k) {
 		}
 	});
 }
-function redirect(dir) {
-	window.location.replace(dir);
-}
+
+//---redirect
+function redirect(dir) { window.location.replace(dir); };
+
 //---build xml request
 var xmlArray = [];
 var xmlStr = '<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';
-function resetXMLRequest() {
-	xmlArray = []
-}
-function addXMLRequest(key, value) {
-	var str = xmlStr;
-	str = str.replace('{KEY}', key);
-	str = str.replace('{DATA}', value);
-	xmlArray.push(str);
-}
-function getXMLRequest() {
-	var str = '<FXajax><Request>' + xmlArray.join('') + '</Request></FXajax>';
-	resetXMLRequest();
-	return str;
-}
+function resetXMLRequest() { xmlArray = []; };
+function addXMLRequest(key, value) { var str = xmlStr; str = str.replace('{KEY}', key); str = str.replace('{DATA}', value); xmlArray.push(str); };
+function getXMLRequest() { var str = '<FXajax><Request>' + xmlArray.join('') + '</Request></FXajax>'; resetXMLRequest(); return str; };
 
 var call = function(){ return true; };
-var createEl = function(type,attr){
-    var el = document.createElement(type);
-    $.each(attr,function(key){
-      if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]);
-    });
-    return el;
-  };
+var createEl = function(type,attr) { var el = document.createElement(type); $.each(attr,function(key){ if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]); }); return el; };

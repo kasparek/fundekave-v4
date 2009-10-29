@@ -19,8 +19,8 @@
 			<Item name="embedWidth">400</Item>
 			<Item name="embedHeight">25</Item>
 			<Item name="onLoaded"></Item>
-			<Item name="onUploadOneComplete">fuupUploadAvatarComplete</Item>
-			<Item name="onUploadComplete"></Item>
+			<Item name="onUploadOneComplete"></Item>
+			<Item name="onUploadComplete">fuupUploadAvatarComplete</Item>
 		</Settings>
 		<Services>
 			<Service name="files">{URL}</Service>

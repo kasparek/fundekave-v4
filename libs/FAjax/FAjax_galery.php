@@ -1,13 +1,9 @@
 <?php
-class FAjax_galery {
+class FAjax_galery extends FAjaxPluginBase {
 	static function editThumb($data) {
-		
 		$user = FUser::getInstance();
-		
-		$cache = FCache::getInstance( 's' );
-		$pageId = $cache->getData('pageId','selectedPage');
-		
-		 
+		$pageId = $user->pageId;
+				 
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
 		$itemRenderer->thumbPreventCache = true;

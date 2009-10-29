@@ -64,21 +64,26 @@ class FAjax {
 		require_once($filename);
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
-			call_user_func(array($className,$action), $dataProcessed);
+			if(call_user_func(array($className,'validate'), $dataProcessed)) {
+				call_user_func(array($className,$action), $dataProcessed);
+			} else {
+				FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
+			}
 			//---send response
-			if($ajax==true) {
+			if($ajax === true) {
 				$ret = FAjax::buildResponse();
 			} else {
 				FAjax::resetResponse();
 			}
 		}
 
-		if($ajax==true) {
+		if($ajax === true) {
 			header ("content-type: text/xml");
 			echo $ret;
 			exit();
 		}
 	}
+	
 	public $data;
 	public $responseData; 
 	static public function addResponse($target, $property, $value) {

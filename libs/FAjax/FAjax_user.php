@@ -1,5 +1,5 @@
 <?php
-class FAjax_user {
+class FAjax_user extends FAjaxPluginBase {
 	static function switchFriend($data) {
 		$userIdFriend = $data['user'];
 		if($userIdFriend > 0) {
@@ -20,6 +20,11 @@ class FAjax_user {
 				FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 			}
 		}
+	}
+	
+	static function avatar($data) {
+		$userId = FUser::logon();
+		FAjax::addResponse($data['result'], $data['resultProperty'], FAvatar::showAvatar($userId));
 	}
 	
 	static function book($data) {

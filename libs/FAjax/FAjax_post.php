@@ -1,5 +1,5 @@
 <?php
-class FAjax_post {
+class FAjax_post extends FAjaxPluginBase {
 
   static function avatarFromInput($data) {
 		$user = FUser::getInstance();

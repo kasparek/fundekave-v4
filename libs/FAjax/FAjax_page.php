@@ -1,11 +1,20 @@
 <?php
-class FAjax_page {
+class FAjax_page extends FAjaxPluginBase {
+	
+	static function validate($data) {
+		$user = FUser::getInstance();
+		if(empty($user->userVO->userId)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	static function fuup($data) {
 		$user = FUser::getInstance();
-    	//---call galery refresh
-    	$cache = FCache::getInstance( 's' );
-		$pageId = $cache->getData('pageId','selectedPage');
-		
+    //---call galery refresh
+    $pageId = $user->pageId;
+    	
 		$galery = new FGalery();
 		$items = $galery->refreshImgToDb($pageId);
 		
@@ -16,6 +25,18 @@ class FAjax_page {
 		FAjax::addResponse('function','call','galeryRefresh;'.$newStr.';'.$updatedStr.';'.$items['total']);
 	}
 	
+	static function avatar($data) {
+		$user = FUser::getInstance();
+		$pageVO = new PageVO($user->pageId,true);
+		$tpl=new FTemplateIT('page.edit.tpl.html');
+		$tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco.'?r='.rand());
+		$tpl->parse('pageavatar');
+		$avatar = $tpl->get('pageavatar');
+		
+		FAjax::addResponse($data['result'], $data['resultProperty'], $avatar);
+		
+	}
+	 
 	static function edit($data) {
 		
 		page_PageEdit::process($data);

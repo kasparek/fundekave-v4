@@ -292,7 +292,7 @@ div#loggedUserContainer h2 a {
 	font-weight: bold;
 	text-decoration: none;
 }
-div#loggedUserContainer p {
+div#loggedUserContainer div#avatarBox {
 	float: right;
 }
 div#loggedUserContainer a.recentSender {

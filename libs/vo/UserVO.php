@@ -94,14 +94,6 @@ class UserVO extends Fvob {
 		$this->userId = $vo->save();
 		$vo->vo = false;
 		$vo = false;
-
-		//---check logged user
-		$user = FUser::getInstance();
-		if($this->userId == $user->userVO->userId) {
-			//---update cache
-			$cache = FCache::getInstance( 's' );
-			$cache->setData($this,'user');
-		}
 	}
 
 	function getXMLVal($branch,$node,$default='') {
