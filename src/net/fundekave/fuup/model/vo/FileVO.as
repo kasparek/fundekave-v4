@@ -52,5 +52,14 @@ package net.fundekave.fuup.model.vo
 			
 		}
 		
+		public function destroy():void {
+			if(file.data) file.data.clear();
+			file = null;
+			if(processedBitmapData) processedBitmapData.dispose();
+			processedBitmapData = null;
+			if(encodedJPG) encodedJPG.clear();
+			encodedJPG = null;
+		}
+		
 	}
 }

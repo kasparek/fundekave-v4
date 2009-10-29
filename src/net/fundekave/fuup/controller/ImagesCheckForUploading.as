@@ -21,7 +21,7 @@ package net.fundekave.fuup.controller
 				if( !fileVO.encodedJPG ) {
 					
 					//---check bytesize of original
-					if(fileVO.file.data.length > proxy.maxSize) {
+					if(fileVO.file.size > proxy.maxSize) {
 						var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 						fileVO.renderer.updateStatus( String(configProxy.lang.toobig).replace('{LIMITSIZE}', String(Math.round(proxy.maxSize/1024)) ),false,1);
 						sendCancel = true;

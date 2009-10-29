@@ -57,7 +57,7 @@ package com.bit101.components
 		override public function addChild(child:DisplayObject) : DisplayObject
 		{
 			super.addChild(child);
-			child.addEventListener(Event.RESIZE, onResize);
+			child.addEventListener(Event.RESIZE, onResize,false,0,true );
 			invalidate();
 			return child;
 		}
