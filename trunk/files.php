@@ -82,7 +82,7 @@ if($allExists === true) {
 			$imageName = strtolower($filename);
 			$ext = FFile::fileExt($imageName);
 			$imageName =str_replace('.'.$ext,'',$imageName); 
-			$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.FSystem::safeText($imageName).'.'.$ext;
+			$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
 	}
 	
 	file_put_contents($imagePath, base64_decode( $encData ));

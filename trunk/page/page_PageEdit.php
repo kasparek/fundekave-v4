@@ -8,11 +8,13 @@ class page_PageEdit implements iPage {
 		if(isset($data['action'])) $action = $data['action'];
 		if(isset($data["save"])) $action = 'save';
 		if(isset($data["del"])) $action = 'del';
+		if(isset($data["delpageavatar"])) $action = 'delpageavatar';
 			
 		$user = FUser::getInstance();
 
 		$redirectAdd = '';
-		if(($user->pageVO->pageId=='galed' || $user->pageVO->pageId=='paged') && $user->pageParam!='sa') {
+		$pageCreating = array('galed','paged','blone','forne');
+		if(in_array($user->pageVO->pageId,$pageCreating) && $user->pageParam!='sa') {
 			$user->pageParam = 'a' ;
 			$redirectAdd = 'e';
 		}
@@ -20,6 +22,15 @@ class page_PageEdit implements iPage {
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
+		
+		if($action == 'delpageavatar') {
+			$pageVO = new PageVO($data['pageId'],true);
+			$pageVO->saveOnlyChanged=true;
+			$pageVO->set('pageIco','');
+			$pageVO->save();
+			FAjax::addResponse('pageavatarBox','html','');
+			return;
+		}
 
 		if($action == "save") {
 			$pageVO = new PageVO();

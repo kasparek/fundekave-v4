@@ -1,5 +1,5 @@
 <?php
-class FAjax_pages {
+class FAjax_pages extends FAjaxPluginBase {
 	static function book($data) {
 		if (FDBTool::getOne("select book from sys_pages_favorites where pageId = '".$data['page']."' AND userId = '".$data['user']."'")) {
 			$book = 0;

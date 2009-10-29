@@ -49,7 +49,7 @@ class FBlog {
 				$returnItemId = 0;
 			}
 			$cache = FCache::getInstance('f');
-			$cache->invalideteGroup('lastBlogPost');
+			$cache->invalidateGroup('lastBlogPost');
 			 
 		} else {
 			//---DO AJAX ERROR - cant save data - no rules

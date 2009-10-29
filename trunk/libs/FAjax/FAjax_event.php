@@ -1,5 +1,5 @@
 <?php
-class FAjax_event {
+class FAjax_event extends FAjaxPluginBase {
 	static function delFlyer($data) {
 		if($data['item']>0) {
 			$itemVO = new ItemVO($data['item'],true);
