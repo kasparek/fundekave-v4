@@ -1,7 +1,5 @@
 package net.fundekave.lib
 {
-	//import cmodule.jpegencoder.CLibInit;
-	
 	import de.popforge.imageprocessing.core.Image;
 	import de.popforge.imageprocessing.core.ImageFormat;
 	import de.popforge.imageprocessing.filters.color.ContrastCorrection;
@@ -24,6 +22,7 @@ package net.fundekave.lib
 		
 		public static const RESIZED:String = 'resized';
 		public static const ENCODED:String = 'encoded';
+		public static const INFO:String = 'info';
 		
 		private var bmpdOrig:BitmapData;
 		private var al_jpegencoder: Object;
@@ -65,8 +64,14 @@ package net.fundekave.lib
 		
 		private var localFireRef:FileReference;
 		public function loadReference(fileRef:FileReference):void {
-			fileRef.load()
 			fileRef.addEventListener(Event.COMPLETE, onFileRef,false,0,true );
+			fileRef.load()
+		}
+		private var onlyInfo:Boolean = false;
+		public function loadInfoFromReference(fileRef:FileReference):void {
+			onlyInfo = true;
+			fileRef.addEventListener(Event.COMPLETE, onFileRef,false,0,true );
+			fileRef.load()
 		}
 		
 		private function onFileRef( e:Event ):void {
@@ -93,49 +98,58 @@ package net.fundekave.lib
         	var imageBmp:Bitmap = image.content as Bitmap;
 			this.widthOriginal = imageBmp.width;
 			this.heightOriginal = imageBmp.height;
-        	        	
-        	bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
-        	bmpdOrig.draw( image, null, null, null, null, true );
-        	
-        	//---remove image
-        	image.addEventListener(Event.REMOVED_FROM_STAGE, onImageRemoved,false,0,true);
+        	if(this.onlyInfo===true) {
+				this.onlyInfo=false;
+				dispatchEvent( new Event( INFO ));
+			} else {       	
+        		bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
+        		bmpdOrig.draw( image, null, null, null, null, true );
+				//---remove image
+				image.addEventListener(Event.REMOVED_FROM_STAGE, onImageRemoved,false,0,true);
+			}
         	imageBmp.bitmapData.dispose();
         	image.unload(); 	
         	image.parent.removeChild( image );
-        	
   		}
+		
+		private function applyFilters(bmpd:BitmapData):BitmapData {
+			if(filtersList)
+				if(filtersList.length() > 0) {
+					var popImage:Image = new Image(bmpd.width, bmpd.height, ImageFormat.RGB);
+					popImage.loadBitmapData( bmpd );
+					var filXML:XML;
+					for each( filXML in filtersList) {
+						var filId:String = String( filXML.attribute('id') );
+						switch( filId ) {
+							case 'levels':
+								var filter1: LevelsCorrection = new LevelsCorrection( true );
+								filter1.apply( popImage );
+								break;
+							case 'sharpen':
+								var filter2: Sharpen = new Sharpen(0.1);
+								filter2.apply( popImage );
+								break;
+							case 'contrast':
+								var filter3: ContrastCorrection = new ContrastCorrection( 1.2 );
+								filter3.apply( popImage );
+								break;
+						}
+					}
+					
+					bmpd.dispose();
+					bmpd = popImage.bitmapData.clone();
+					
+					popImage.dispose();
+					popImage = null;
+				}
+			return bmpd;
+		}
+		
   		private function onImageRemoved(e:Event):void {
   			(e.target as Loader).removeEventListener(Event.REMOVED_FROM_STAGE, onBmpRemoved);
         	//---time for filtering on bmp bitmapdatas
         	//---filtering
-        	if(filtersList)
-        	if(filtersList.length() > 0) {
-        		var popImage:Image = new Image(bmpdOrig.width, bmpdOrig.height, ImageFormat.RGB);
-        		popImage.loadBitmapData( bmpdOrig );
-        		var filXML:XML;
-				for each( filXML in filtersList) {
-					var filId:String = String( filXML.attribute('id') );
-					switch( filId ) {
-						case 'levels':
-		        			var filter1: LevelsCorrection = new LevelsCorrection( true );
-		  			  		filter1.apply( popImage );
-		  			  	break;
-		  				case 'sharpen':
-		  			  		var filter2: Sharpen = new Sharpen();
-							filter2.apply( popImage );
-						break;
-						case 'contrast':
-							var filter3: ContrastCorrection = new ContrastCorrection( 1.2 );
-							filter3.apply( popImage );
-						break;
-					}
-				}
-				
-  			  	bmpdOrig.dispose();
-        		bmpdOrig = popImage.bitmapData.clone(); 
-  			  	popImage.dispose();
-				popImage = null;
-        	}
+			bmpdOrig = this.applyFilters(bmpdOrig); 
         	
 			//crop cropped if needed
 			if(crop === true) {
@@ -194,6 +208,8 @@ package net.fundekave.lib
         	_resultBmpData = new BitmapData(Math.round(bmp.width), Math.round(bmp.height) );
         	_resultBmpData.draw( this, null, null, null, null, true ); 
         	
+			//_resultBmpData = this.applyFilters(_resultBmpData);
+			
         	//---dispose
         	bmp.bitmapData.dispose();
         	bmp.addEventListener(Event.REMOVED_FROM_STAGE, onBmpRemoved, false,0,true);
@@ -234,12 +250,12 @@ package net.fundekave.lib
         }
         
         public function dispose():void {
-        	_resultBmpData.dispose();
+        	if(_resultBmpData) _resultBmpData.dispose();
 			_resultBmpData = null;
 			al_jpegencoder = null;
 			if(resultBytes) resultBytes.clear();
 			resultBytes = null;
-			bmpdOrig.dispose();
+			if(bmpdOrig) bmpdOrig.dispose();
 			bmpdOrig = null;
         	this.parent.removeChild( this );
         }

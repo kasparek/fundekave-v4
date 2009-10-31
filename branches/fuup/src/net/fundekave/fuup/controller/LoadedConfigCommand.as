@@ -25,6 +25,7 @@ package net.fundekave.fuup.controller
 			fileProxy.heightMax = Number( configProxy.getValue( 'imageHeightMax' ) );
 			fileProxy.outputQuality = Number( configProxy.getValue( 'imageQuality' ) );
 			fileProxy.crop = Number( configProxy.getValue( 'crop' ) ) === 1 ? true : false;
+			fileProxy.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
 			fileProxy.filtersList = configProxy.filters;
 			
 			fileProxy.serviceURL = String( configProxy.getService('files') );

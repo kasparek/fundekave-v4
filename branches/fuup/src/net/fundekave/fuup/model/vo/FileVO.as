@@ -15,7 +15,13 @@ package net.fundekave.fuup.model.vo
 		public var encodedJPG:ByteArray;
 		
 		[Bindable]
-		public var filename:String;
+		private var _filename:String;
+		[Bindable]
+		public function get filename():String { return _filename; }
+		public function set filename(s:String):void {
+			this._filename = s;
+			this.filenameOriginal = String( s );
+		}
 		public var filenameOriginal:String;
 		
 		[Bindable]
@@ -44,12 +50,12 @@ package net.fundekave.fuup.model.vo
 		public var outputQuality:Number = 100;
 		
 		public var crop:Boolean = false;
+		public var showThumb:Boolean = true;
 		
-		function FileVO(filename:String):void {
-			
-			this.filename = filename;
-			this.filenameOriginal = String( this.filename );
-			
+		function FileVO(filename:String=null):void {
+			if(filename) {
+				this.filename = filename;
+			}
 		}
 		
 		public function destroy():void {

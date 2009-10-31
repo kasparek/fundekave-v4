@@ -10,6 +10,8 @@
 				
 				import gs.TweenLite;
 				import gs.easing.Quad;
+				
+				import net.fundekave.fuup.model.vo.FileVO;
 				import net.fundekave.Application;
 				import com.bit101.components.Label;
 				import com.bit101.components.Window;
@@ -125,6 +127,8 @@
 				}
 				
 				currFileView = new FileView();
+				currFileView.fileVO = new FileVO();
+				currFileView.fileVO.showThumb = this.displayContent;
 				currFileView.lang = this.lang;
 				filesBox.addChild( currFileView );
 				//---set filesbox size and child position
@@ -183,7 +187,7 @@
 				fileView.removeEventListener( FileView.FILE_UPDATED, onFileCreated );
 				//---set progress
 				progressInc();
-				populateFiles();
+				setTimeout(populateFiles,100);
 			}
 			
 			private function progressInc():void {

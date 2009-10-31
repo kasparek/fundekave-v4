@@ -62,7 +62,7 @@ package net.fundekave.lib
         		
         		//---prepare service
 	        	var service:Service = new Service();
-	        	service.addEventListener(Event.COMPLETE, onServiceComplete ,false,0,true );
+	        	service.addEventListener(Event.COMPLETE, onServiceComplete);
 	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError ,false,0,true );
 	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError ,false,0,true );
 	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError ,false,0,true );
