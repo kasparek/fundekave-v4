@@ -2,6 +2,7 @@
 // markItUp! Universal MarkUp Engine, JQuery plugin
 // By Jay Salvat - http://markitup.jaysalvat.com/
 // ------------------------------------------------------------------*/
+/*
 .markItUp * {
 	margin:0px; padding:0px;
 	outline:none;
@@ -15,15 +16,17 @@
 	width:700px;
 	margin:5px 0 5px 0;
 }
+*/
 .markItUpContainer  {
 	font:11px Verdana, Arial, Helvetica, sans-serif;
 }
 .markItUpEditor {
 	font:12px 'Courier New', Courier, monospace;
 	padding:5px;
-	width:690px;
-	height:320px;
-	clear:both; display:block;
+	width:90% !important;
+	height:320px !important;
+	clear:both; 
+	display:block;
 	line-height:18px;
 	overflow:auto;
 }

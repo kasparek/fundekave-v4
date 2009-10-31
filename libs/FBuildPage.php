@@ -297,14 +297,15 @@ class FBuildPage {
 		$useMarkItUp = false;
 		$useTabs = false;
 		$useSlimbox = false;
-		$useUploadify = false;
 		$useSupernote = false;
 		$useFajaxform = false;
 		$useSwfobject = false;
 		$useFuup = false;
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
-			if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
+
+			//if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
+
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }

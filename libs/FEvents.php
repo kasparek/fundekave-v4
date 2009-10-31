@@ -108,7 +108,6 @@ class FEvents {
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
 		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( $itemVO->text ));
-		$tpl->addTextareaToolbox('DESCRIPTIONTOOLBOX','event');
 		if($itemVO->itemId > 0) {
 			$tpl->touchBlock('delakce');
 		}

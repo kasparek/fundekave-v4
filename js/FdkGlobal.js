@@ -99,10 +99,7 @@ function avatarfrominput(evt) {
 	sendAjax('post-avatarfrominput');
 }
 
-function datePickerInit() {
-	$.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional['']));
-	$(".datepicker").datepicker($.datepicker.regional['cs']);
-};
+function datePickerInit() { $.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional[''])); $(".datepicker").datepicker($.datepicker.regional['cs']); };
 
 function initSlimbox() {
 	$("a[rel^='lightbox']").slimbox( { overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100 }, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); });
@@ -112,17 +109,12 @@ function initSupernote() {
 	supernote = new SuperNote('supernote', {});
 }
 
-function draftSetEventListeners() {
-	setListeners('draftable', 'keyup', draftEventHandler);
-};
+function draftSetEventListeners() { setListeners('draftable', 'keyup', draftEventHandler); };
 
-function markItUpInit() {
-	$('.markItUp').markItUp(mySettings);
-}
+var waitingTA;
+function markItUpInit() { var textid='.draftable'; if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } $(textid).markItUp(mySettings); };
 
-function switchOpen() {
-	setListeners('switchOpen', 'click', function(evt){ $('#'+this.rel).toggleClass('hidden'); } );
-}
+function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'+this.rel).toggleClass('hidden'); } ); };
 
 /**
  *main init
@@ -251,14 +243,11 @@ function initInsertToTextarea() {
 			'toggleToolSize',
 			'click',
 			function(evt) {
-				$("#" + gup("textid", this.href)).toggleClass(
-						gup("class", this.href));
-				$("#" + gup('toolid', this.href)).toggleClass(
-						'textareaToolboxLarge');
 				if ($("#" + gup("textid", this.href) + ".markItUpEditor").length === 1) {
 					$("#" + gup("textid", this.href)).markItUpRemove();
 				} else {
-					$("#" + gup("textid", this.href)).markItUp(mySettings);
+					waitingTA = gup("textid", this.href);
+					sendAjax('void-markitup');
 				}
 				evt.preventDefault();
 			});
@@ -278,8 +267,7 @@ function draftDoSave() {
 		if (taText.length != arrDraft[x][1] && taText.length > 0) {
 			addXMLRequest('place', $("#" + arrDraft[x][0]).attr("id"));
 			addXMLRequest('text', taText);
-			addXMLRequest('call', 'draftSaved;' + $("#" + arrDraft[x][0]).attr(
-					"id"));
+			addXMLRequest('call', 'draftSaved;' + $("#" + arrDraft[x][0]).attr("id"));
 			sendAjax('draft-save');
 			arrDraft[x][1] = taText.length;
 			draftTimeoutCounter = 0;

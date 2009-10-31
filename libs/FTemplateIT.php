@@ -81,17 +81,6 @@ class FTemplateIT extends FHTMLTemplateIT {
 		$this->parseCurrentBlock();
 	}
 
-	function addTextareaToolbox($key,$textareaId) {
-		global $user;
-		if($user->idkontrol) {
-			$ftpl = new FTemplateIT('textarea.toolbox.tpl.html');
-			$ftpl->setVariable('TEXTAREAID',$textareaId);
-			$ftpl->setVariable('TOOLID',$textareaId);
-			$this->setVariable($key,$ftpl->get());
-			unset($ftpl);
-		}
-	}
-
 	function moveBlock($blockName,$variableName) {
 		$tpl->parse($blockName);
 		$block = $tpl->get($blockName);

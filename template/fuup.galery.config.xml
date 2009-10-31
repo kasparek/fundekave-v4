@@ -7,15 +7,15 @@
 			<Item name="autoUpload">0</Item>
 			<Item name="displayContent">1</Item>
 			<Item name="crop">0</Item>
-			<Item name="multi">1</Item>
+			<Item name="multi">0</Item>
 			<Item name="permissions">0</Item>
-			<Item name="maxSize">300000</Item>
-			<Item name="chunkSize">10000</Item>
+			<Item name="maxSize">230000</Item>
+			<Item name="chunkSize">15000</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">80</Item>
 			<Item name="imageQuality">80</Item>
 			<Item name="imageWidthMax">700</Item>
-			<Item name="imageHeightMax">500</Item>
+			<Item name="imageHeightMax">700</Item>
 			<Item name="embedWidth">-1</Item>
 			<Item name="embedHeight">150</Item>
 			<Item name="onLoaded">fuupLoaded</Item>
@@ -27,11 +27,14 @@
 		</Services>
 	</Config>
 	<Filters>
+		<Filter id="levels" enabled="0" visible="0">
+			<name>Levels Correction</name>
+		</Filter>
+		<Filter id="contrast" enabled="1" visible="0">
+			<name>Contrast Correction</name>
+		</Filter>
 		<Filter id="sharpen" enabled="1" visible="0">
 			<name>Sharpen</name>
-		</Filter>
-		<Filter id="levels" enabled="1" visible="0">
-			<name>Levels Correction</name>
 		</Filter>
 	</Filters>
 	<Lang>
