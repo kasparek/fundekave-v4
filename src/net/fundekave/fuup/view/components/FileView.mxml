@@ -68,7 +68,7 @@
 			
 			public function set file(value:FileReference):void {
 				
-				_fileVO = new FileVO( value.name );
+				_fileVO.filename = value.name ;
 				_fileVO.file = value;
 				_fileVO.renderer = this;
 											
@@ -141,39 +141,48 @@
 				var imageResize:ImageResize = e.target as ImageResize;
 				fileVO.widthOriginal = imageResize.widthOriginal; 
 				fileVO.heightOriginal = imageResize.heightOriginal;
-
-				var bmp:Bitmap = new Bitmap( imageResize.resultBmpData, PixelSnapping.NEVER, true );
-				thumbUI.addChild( bmp );
-				thumbUI.width = imageResize.resultBmpData.width;
-				thumbUI.height = imageResize.resultBmpData.height;
-				bmp.x = -imageResize.resultBmpData.width / 2
-				bmp.y = -imageResize.resultBmpData.height / 2
-				
+				if(fileVO.showThumb===true) {
+					var bmp:Bitmap = new Bitmap( imageResize.resultBmpData, PixelSnapping.NEVER, true );
+					thumbUI.addChild( bmp );
+					thumbUI.width = imageResize.resultBmpData.width;
+					thumbUI.height = imageResize.resultBmpData.height;
+					bmp.x = -imageResize.resultBmpData.width / 2
+					bmp.y = -imageResize.resultBmpData.height / 2
+					updateStatus('');
+					TweenLite.to(this.thumbUI,0.3,{alpha:1});
+				}
 				imageResize.dispose();
-				
-				updateStatus('');
-				TweenLite.to(this.thumbUI,0.3,{alpha:1});
 				dispatchEvent( new Event( FILE_UPDATED, true ));
 			}
 			
 			public function updateThumb():void {
-				if(this.thumbUI.numChildren > 0) {
-					this.thumbUI.removeChildAt( 0 );
-					rotateTo = 0;
-				}
-				this.thumbUI.alpha = 0;
-				var imageResize:ImageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
-				if(fileVO.encodedJPG) {
-					imageResize.loadBytes( fileVO.encodedJPG );
-				} else {
-					if(fileVO.file.data) {
-						imageResize.loadBytes( fileVO.file.data );
+				var imageResize:ImageResize;
+				if( fileVO.showThumb === true ) { 
+					if(this.thumbUI.numChildren > 0) {
+						this.thumbUI.removeChildAt( 0 );
+						rotateTo = 0;
+					}
+					this.thumbUI.alpha = 0;
+					imageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
+					if(fileVO.encodedJPG) {
+						imageResize.loadBytes( fileVO.encodedJPG );
 					} else {
-						imageResize.loadReference( fileVO.file );
+						if(fileVO.file.data) {
+							imageResize.loadBytes( fileVO.file.data );
+						} else {
+							imageResize.loadReference( fileVO.file );
+						}
+					}
+					imageResize.addEventListener( ImageResize.RESIZED, drawLater ,false,0,true);
+					this.thumbUI.addChild( imageResize );
+				} else {
+					if(!fileVO.widthOriginal) {
+						imageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
+						imageResize.loadInfoFromReference( fileVO.file );
+						imageResize.addEventListener( ImageResize.INFO, drawLater ,false,0,true);
+						this.thumbUI.addChild( imageResize );
 					}
 				}
-				imageResize.addEventListener( ImageResize.RESIZED, drawLater ,false,0,true);
-				this.thumbUI.addChild( imageResize );
 			}
 			
 			public function updateStatus(status:String=null,showInfo:Boolean=true,type:int=0):void {
@@ -275,15 +284,26 @@
 			}
 			
 			private function onTweenPreviewWin(win:Window):void {
-				var image:Loader = new Loader();
-				image.loadBytes( (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data) );
-				//image.x = 10;
-				//image.y = 30;
-				image.alpha = 0;
-				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
-				win.content.addChild( image );
-				
+				if(fileVO.encodedJPG) {
+					var image:Loader = new Loader();
+					image.alpha = 0;
+					image.loadBytes( fileVO.encodedJPG );
+					image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
+					win.content.addChild( image );
+				} else if(fileVO.file.data) {
+					fileVO.file.addEventListener(Event.COMPLETE, onFileLoaded );
+					fileVO.file.load();
+				}
 			}
+			private function onFileLoaded(e:Event):void {
+				fileVO.file.removeEventListener(Event.COMPLETE, onFileLoaded );
+				var image:Loader = new Loader();
+				image.alpha = 0;
+				image.loadBytes( fileVO.file.data );
+				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
+				previewWin.content.addChild( image );
+			}
+			
 			private function onLoaderPreview(e:Event):void {
 				var loader:Loader = e.target.loader as Loader;
 				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoaderPreview );
@@ -292,13 +312,16 @@
 						
 			private function onClosePreview( e:CloseEvent ):void {
 				previewWin = null;
+				fileVO.file.data.clear();
 				Application.application.restoreHeight();
 			}
 			
 			public function removeView():void {
 				TweenLite.to( this, 0.2, {alpha:0, onComplete:onTween, overwrite:0});
 				trace("TWEENREMOVE"+fileVO.filename);
-				if(previewWin) previewWin.close();
+				if(previewWin) {
+					previewWin.close();
+				}
 			}
 			
 			private function onTween():void {

@@ -30,6 +30,7 @@ package net.fundekave.fuup.model
         public var heightMax:Number = 500;
         public var outputQuality:Number = 80;
 		public var crop:Boolean = false;
+		public var displayContent:Boolean = true;
         
         //uploading
         public var serviceURL:String;
@@ -72,6 +73,7 @@ package net.fundekave.fuup.model
         	}
         	fileVO.outputQuality = outputQuality
 			fileVO.crop = crop;
+			fileVO.showThumb = displayContent;
         }
         
         //---processing
@@ -84,8 +86,8 @@ package net.fundekave.fuup.model
         	var len:int = fileList.length;
         	if(currentFile < len) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
-				var compareW:int;
-				var compareH:int;
+				var compareW:int = 0;
+				var compareH:int = 0;
 				if(fileVO.encodedJPG) {
 					compareW = fileVO.widthNew;
 					compareH = fileVO.heightNew;
@@ -107,7 +109,13 @@ package net.fundekave.fuup.model
 					if(_useFilters===true) {
 	        			imageResize.filtersList = filtersList;
 					}
-					if(fileVO.file.data.length>0) {
+					var loadBytes:Boolean = true;
+					if(!fileVO.file.data) {
+						loadBytes = false
+					} else if(fileVO.file.data.length==0) {
+						loadBytes = false
+					}
+					if(loadBytes === true) {
 	        			imageResize.loadBytes( fileVO.file.data );
 					} else {
 						imageResize.loadReference( fileVO.file );
@@ -177,7 +185,7 @@ package net.fundekave.fuup.model
         	
 			if(noUpload===true) {
 	    		//---upload complete
-	    		trace('UPLOAD COMPLETE');
+	    		trace('FILEPROXY::UPLOAD COMPLETE');
 	    		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
 				sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_COMPLETE );
 			}
@@ -189,16 +197,18 @@ package net.fundekave.fuup.model
         	currentFile++;
 			sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_ONE_COMPLETE );
         	uploadFile();
+			trace('FILEPROXY::UPLOAD COMPLETE EVENT');
         }
         
         private function onUploadProgress(e:ProgressEvent):void {
         	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: currentFile + (e.bytesLoaded/e.bytesTotal) } );
+			trace('FILEPROXY::UPLOAD PROGRESS');
         }
         
         private function onUploadError(e:ErrorEvent):void {
 			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 			fileVO.renderer.updateStatus(configProxy.lang.uploaderror,false,1);
-        	trace('TOTAL SERVICE ERROR');
+        	trace('FILEPROXY::TOTAL SERVICE ERROR');
         	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }
    
