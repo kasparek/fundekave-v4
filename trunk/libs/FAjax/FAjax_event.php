@@ -24,17 +24,15 @@ class FAjax_event extends FAjaxPluginBase {
 		FAjax::addResponse($data['result'], 'html', FEvents::editForm());
 		FAjax::addResponse('function','call','draftSetEventListeners');
 		
-		FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;markItUpInit');
-		FAjax::addResponse('function','css','js/markitup/skins/markitup/style.css');
+		FAjax::addResponse('function','css','js/markitup/skins/simple/style.css');
 		FAjax::addResponse('function','css','js/markitup/sets/default/style.css');
 		FAjax::addResponse('function','getScript','js/markitup/jquery.markitup.pack.js');
-		FAjax::addResponse('function','getScript','js/markitup/sets/default/set.js');
+		FAjax::addResponse('function','getScript','js/markitup/sets/default/set.js;markItUpInit');
 		
 		FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;datePickerInit');
 		FAjax::addResponse('function','getScript','js/i18n/ui.datepicker-cs.js');
-		FAjax::addResponse('function','css','css/themes/base/ui.all.css');
+		FAjax::addResponse('function','css','css/themes/ui-lightness/jquery-ui-1.7.2.custom.css');
 		
-		FAjax::addResponse('function','getScript','js/jquery.uploadify.js;uploadifyInit');
 		FAjax::addResponse('function','call','fajaxform');
 		
 	}

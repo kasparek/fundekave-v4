@@ -5,11 +5,9 @@ class FAjax_blog extends FAjaxPluginBase {
 		
 		FAjax::addResponse('editnew', 'html', FBlog::getEditForm($data['item']));
 		FAjax::addResponse('function','call','draftSetEventListeners');
-		//$fajax->addResponse('function','call','initInsertToTextarea');
-		
+				
 		FAjax::addResponse('function','css','js/markitup/skins/markitup/style.css');
 		FAjax::addResponse('function','css','js/markitup/sets/default/style.css');
-
 		FAjax::addResponse('function','getScript','js/markitup/jquery.markitup.pack.js');
 		FAjax::addResponse('function','getScript','js/markitup/sets/default/set.js;markItUpInit');
 		

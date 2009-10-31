@@ -396,9 +396,10 @@ div#mainbar fieldset input.button {
 div#mainbar fieldset input.submit {
 	margin-left: 10em;
 }
+
 div#mainbar fieldset textarea {
-	width: 400px;
-	height: 6em;
+	width:500px;
+	height:6em;
 	font-size: 1.2em;
 	margin-bottom: 0.3em;
 	margin-left: 0;
@@ -442,7 +443,7 @@ div#mainbar fieldset div.textareaToolbox ul li {
 }
 div#mainbar fieldset div.textareaToolboxLarge {
 	width: 95%;
-	margin-left: 0;
+	margin-left: 100px;
 }
 span.textInsertStyle,
 span.textInsertObject,
@@ -456,7 +457,8 @@ span.textInsertObject {
 	border-right: 1px solid white;
 }
 span.textAreaResize {
-  float: right;
+  float: left;
+  
 }
 span.textAreaResize a {
   text-decoration: none;
@@ -464,7 +466,9 @@ span.textAreaResize a {
   display: block;
   width: 16px;
   height: 16px;
-  margin-top: -2px;  
+  margin-top: 2px;
+	margin-right: 3px;
+	margin-left: -19px;  
 }
 ul#todaysInfo {
 	padding: 0;

@@ -344,8 +344,7 @@ class page_PageEdit implements iPage {
 
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
-		$tpl->addTextareaToolbox('PAGECONTENTTOOLBOX',$textareaIdContent);
-
+		
 		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
 
 
@@ -359,10 +358,9 @@ class page_PageEdit implements iPage {
 			 $fRelations = new FPagesRelations($pageVO->pageId);
 			 $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
 			 */
+			 
+			 $tpl->touchBlock('pageavatarupload');
 		}
-
-
-		$tpl->touchBlock('pageavatarupload');
 
 		if($pageVO->typeId == 'forum') {
 			//enable avatar
@@ -373,7 +371,6 @@ class page_PageEdit implements iPage {
 			}
 			$tpl->setVariable('CONTENT',$home);
 			$tpl->setVariable('HOMEID',$textareaIdForumHome);
-			$tpl->addTextareaToolbox('CONTENTTOOLBOX',$textareaIdForumHome);
 		}
 
 		if($pageVO->typeId == 'galery') {

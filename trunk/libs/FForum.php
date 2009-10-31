@@ -300,7 +300,6 @@ class FForum extends FDBTool {
 				$tpl->setVariable('CAPTCHASRC',$src);
 			}
 			$tpl->setVariable('TEXTAREAID','forum'.$user->pageVO->pageId);
-			$tpl->addTextareaToolbox('TEXTAREATOOLBOX','forum'.$user->pageVO->pageId);
 
 			$cache = FCache::getInstance('s',0);
 			$filter = $cache->getData( $user->pageVO->pageId, 'filter');

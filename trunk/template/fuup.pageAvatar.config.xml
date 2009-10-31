@@ -9,7 +9,7 @@
 			<Item name="crop">1</Item>
 			<Item name="multi">0</Item>
 			<Item name="permissions">0</Item>
-			<Item name="maxSize">300000</Item>
+			<Item name="maxSize">50000</Item>
 			<Item name="chunkSize">10000</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">20</Item>
@@ -27,11 +27,8 @@
 		</Services>
 	</Config>
 	<Filters>
-		<Filter id="sharpen" enabled="0" visible="0">
-			<name>Sharpen</name>
-		</Filter>
-		<Filter id="levels" enabled="0" visible="0">
-			<name>Levels Correction</name>
+		<Filter id="contrast" enabled="1" visible="0">
+			<name>Contrast Correction</name>
 		</Filter>
 	</Filters>
 	<Lang>

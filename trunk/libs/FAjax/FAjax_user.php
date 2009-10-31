@@ -87,25 +87,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$fPocket->action($data['ac'],$data['pocket']);
 		FAjax::addResponse('pocket','html',$fPocket->show(true));
 	}
-	static function settings($data) {
-		if(isset($data['uploadify'])) {
-			//---get new avatar
-			$user = FUser::getInstance();
-			$cache = FCache::getInstance('d');
-			$arr = $cache->getData($user->userVO->userId . '-' .$data['modul'],'uploadify');
-			if(!empty($arr)) {
-				$avatarName = FAvatar::createName($arr["filenameOriginal"]);
-				if(file_exists(WEB_REL_AVATAR.$avatarName)) unlink(WEB_REL_AVATAR.$avatarName);
-				rename($arr['filenameTmp'],WEB_REL_AVATAR.$avatarName);
-				chmod(WEB_REL_AVATAR.$avatarName,0777);
-				$user->userVO->avatar = FAvatar::processAvatar($avatarName);
-				$user->userVO->save();
-				//---create response
-				//---return new avatar
-				FAjax::addResponse('rh_login','html',FLeftPanelPlugins::rh_login());
-			}
-		}
-	}
+	
 	static function postFilter($data) {
 		if(!empty($data['user'])) {
 			$userId = (int) $data['user'];
