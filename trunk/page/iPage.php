@@ -7,5 +7,5 @@ interface iPage
 	 * @return void
 	 */
     static function process($data);
-    static function build();
+    static function build($data=array());
 }

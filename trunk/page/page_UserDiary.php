@@ -48,7 +48,7 @@ class page_UserDiary implements iPage {
 		}
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 
 		$dden = 0;
@@ -80,7 +80,7 @@ class page_UserDiary implements iPage {
 		}
 		
 		//---show part
-		$tpl = new FTemplateIT('users.diary.tpl.html');
+		$tpl = FSystem::tpl('users.diary.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->setVariable('ADDFORMACTION',FSystem::getUri());

@@ -2,6 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
+<script type="text/javascript">
+if(window.location.hash) { var str=window.location.hash; str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); }
+</script>
   <title>{TITLE}</title>
   <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
 	<meta http-equiv="Content-language" content="cs" />
@@ -40,13 +43,12 @@
         <div id="errormsgJS" class="errormsg"></div>
         <div id="okmsgJS" class="okmsg"></div>
         <!-- BEGIN errormsg --><div class="errormsg">{ERRORMSG}</div><!-- END errormsg -->
-        <!-- BEGIN pageheading --><h1>{PAGEHEAD}</h1><!-- END pageheading -->
+        <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
         <div id="thumbToolbar"></div>
         <!-- BEGIN maincontent-recurrent --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
         <!-- BEGIN contentheading --><h2><!-- BEGIN tabid --><a name="{TABID}" id="{TABID}"><!-- END tabid -->{MAINHEAD}<!-- BEGIN tabidclose --></a><!-- END tabidclose --></h2><!-- END contentheading -->
         {MAINDATA}
         </div><!-- END maincontent-recurrent -->
-        <!-- BEGIN maincontent-raw -->{RAWDATA}<!-- END maincontent-raw -->
       </div>
       <!-- BEGIN sidebar --><div id="sidebar">
         <!-- BEGIN sidebar-block --><div class="sidebarBlock radcon<!-- BEGIN sidebar-block-login --> loginBlock<!-- END sidebar-block-login -->">
@@ -85,6 +87,8 @@
 <!-- BEGIN userPostEND --><script type="text/javascript">$(document).ready(function(){ initUserPost(); });</script><!-- END userPostEND -->
 <!-- BEGIN tabsEND --><script type="text/javascript" src="./js/jquery-ui.tabs.js"></script>
 <script type="text/javascript">$(document).ready(function(){ $("#tabs").tabs(); });</script><!-- END tabsEND -->
+<!-- BEGIN bbq --><script type="text/javascript" src="./js/jquery.ba-bbq.min.js"></script>
+<script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
 
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

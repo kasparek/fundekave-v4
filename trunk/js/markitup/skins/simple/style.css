@@ -23,8 +23,9 @@
 .markItUpEditor {
 	font:12px 'Courier New', Courier, monospace;
 	padding:5px;
-	width:90% !important;
-	height:320px !important;
+	width:95%;
+	margin: 0 auto;
+	height:320px;
 	clear:both; 
 	display:block;
 	line-height:18px;

@@ -72,10 +72,10 @@ class page_SysEditBanner implements iPage {
 		}
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 		//-----novy banner
-		$tpl = new FTemplateIT('sys.edit.banners.tpl.html');
+		$tpl = FSystem::tpl('sys.edit.banners.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 
 		if(isset($_GET['ebe'])) {

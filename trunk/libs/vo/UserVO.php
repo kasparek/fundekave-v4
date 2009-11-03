@@ -80,17 +80,21 @@ class UserVO extends Fvob {
 	function save(){
 		$vo = new FDBvo( $this );
 		$vo->addIgnore('dateLastVisit');
-		$vo->addIgnore('dateCreated');
-		if(!empty($this->newPassword)) {
-			$this->password= $this->newPassword;
+		if($this->userId>0) {
+			$vo->addIgnore('dateCreated');
+			$vo->notQuote('dateUpdated');
+			$this->dateUpdated = 'now()';
+			$vo->addIgnore('name');
+		} else {
+			$vo->addIgnore('dateUpdated');
+			$vo->notQuote('dateCreated');
+			$this->dateCreated = 'now()';
+		}
+		if(!empty($this->passwordNew)) {
+			$this->password = $this->passwordNew;
 		} else {
 			$vo->addIgnore('password');
 		}
-		$vo->addIgnore('name');
-		$vo->addIgnore('userId');
-		$vo->notQuote('dateUpdated');
-		$this->dateUpdated = 'now()';
-
 		$this->userId = $vo->save();
 		$vo->vo = false;
 		$vo = false;

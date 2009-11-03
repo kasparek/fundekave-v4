@@ -57,7 +57,7 @@ class FEvents {
 		//--listovani
 		$celkem = $fItems->getCount();
 		$perPage = FConf::get('events','perpage');
-		$tpl = new FTemplateIT('events.tpl.html');
+		$tpl = FSystem::tpl('events.tpl.html');
 		if($celkem > 0) {
 			if($celkem > $perPage) {
 				$pager = new FPager($celkem,$perPage,array('extraVars'=>array('kat'=>$adruh,'filtr'=>$filtr)));
@@ -88,7 +88,7 @@ class FEvents {
 			$itemVO->dateStartLocal = Date("d.m.Y");
 		}
 
-		$tpl = new FTemplateIT('events.edit.tpl.html');
+		$tpl = FSystem::tpl('events.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=event-submit&u='.FUser::logon()));
 		$tpl->setVariable('HEADING',(($itemVO->itemId>0)?($itemVO->addon):(FLang::$LABEL_EVENT_NEW)));
 		$tpl->setVariable('ITEMID',$itemVO->itemId);

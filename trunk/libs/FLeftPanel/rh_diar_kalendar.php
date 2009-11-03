@@ -6,7 +6,7 @@ static function rh_datum() {
 		 global $conf,$user,$DAYS;
 		 if(!$ret = $user->cacheGet('datelefthand')) {
 		 include(ROOT.$conf['language']['path'].'calendar.php');
-		 $tpl = new FTemplateIT('sidebar.today.tpl.html');
+		 $tpl = FSystem::tpl('sidebar.today.tpl.html');
 		 $tpl->setVariable('DAYWORD',$DAYS[Date("D")]);
 		 $tpl->setVariable('DATE',Date('d.'.'m.'.'Y'),$ret);
 		 $tpl->setVariable('TIME',date("H:i"),$ret);
@@ -107,9 +107,8 @@ static function rh_datum() {
 				}
 				$arrEventForDayKeys = array_keys($arrEventsForDay);
 				
-				$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-				$tpl->loadTemplatefile('sidebar.calendar.tpl.html');
-				
+				$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_CALENDAR);
+								
 				$tpl->setVariable('CURRENTMONTH',FLang::$MONTHS[$dmesic]);
 				$tpl->setVariable('CURRENTYEAR',$drok);
 				for ($x=1;$x<=$hor;$x++) {

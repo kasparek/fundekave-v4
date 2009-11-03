@@ -12,7 +12,7 @@ class page_UserSettings implements iPage {
 				$userVO->icq = str_replace("-","",FSystem::textins($data['infoicq'],array('plainText'=>1)));
 				$userVO->email = FSystem::textins($data['infoemajl'],array('plainText'=>1));
 
-				if($data['skin'] > 0) $userVO->skin = $data['skin'] * 1;
+				if(isset($data['skin'])) if($data['skin'] > 0) $userVO->skin = $data['skin'] * 1;
 				$userVO->setXMLVal('settings','bookedorder', $data['bookedorder']*1);
 				$userVO->setXMLVal('personal','www',FSystem::textins($data['infowww'],array('plainText'=>1)));
 				$userVO->setXMLVal('personal','place',FSystem::textins($data['infomisto'],array('plainText'=>1)));
@@ -71,27 +71,34 @@ class page_UserSettings implements iPage {
 				}
 
 				//avatar
-				$avatarFile = $data['__files']["idfoto"];
-				if ($avatarFile["error"] == 0){
-					$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
-					if(FSystem::upload($avatarFile, WEB_REL_AVATAR, 20000)) {
-						$userVO->avatar = FAvatar::processAvatar($avatarFile['name']);
+				if(isset($data['__files']["idfoto"])) {
+					$avatarFile = $data['__files']["idfoto"];
+					if ($avatarFile["error"] == 0){
+						$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
+						if(FSystem::upload($avatarFile, WEB_REL_AVATAR, 20000)) {
+							$userVO->avatar = FAvatar::processAvatar($avatarFile['name']);
+						}
 					}
 				}
 				$userVO->save();
-				FHTTP::redirect(FSystem::getUri());
+				
+				if($data['__ajaxResponse']) {
+					FAjax::addResponse('function','call','msg;ok;Data saved');
+				} else {
+					FHTTP::redirect(FSystem::getUri());
+				}
 			}
 		}
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 
 
 		$user = FUser::getInstance();
 		$userVO = $user->userVO;
 
-		$tpl = new FTemplateIT('users.personal.html');
+		$tpl = FSystem::tpl('users.personal.html');
 
 		$tpl->setVariable("FORMACTION",FSystem::getUri('m=user-settings&u='.$userVO->userId));
 		$tpl->setVariable("USERNAME",$userVO->name);
@@ -119,7 +126,6 @@ class page_UserSettings implements iPage {
 		$tpl->setVariable("USERJIDLO",$userVO->getXMLVal('personal','food'));
 		$tpl->setVariable("USERHOBBY",$userVO->getXMLVal('personal','hobby'));
 		$tpl->setVariable("USERABOUT",FSystem::textToTextarea($userVO->getXMLVal('personal','about')));
-		$tpl->addTextareaToolbox('USERABOUTTOOLBOX','userabout');
 
 		if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
 		if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');

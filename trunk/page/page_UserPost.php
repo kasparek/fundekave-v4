@@ -80,7 +80,7 @@ class page_UserPost implements iPage {
 		
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
@@ -130,7 +130,7 @@ class page_UserPost implements iPage {
 		if($filterUsername = $cache->getData('name','filtrPost')) $recipients = $filterUsername;
 
 
-		$tpl = new FTemplateIT('users.post.tpl.html');
+		$tpl = FSystem::tpl('users.post.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->touchBlock('selectedfriend');
@@ -143,7 +143,6 @@ class page_UserPost implements iPage {
 
 		$tpl->setVariable('RECIPIENTS',$recipients);
 		$tpl->setVariable('MESSAGE',$zprava);
-		$tpl->addTextareaToolbox('MESSAGETOOLBOX','postText');
 		$tpl->setVariable('HIDDENWHO',$user->whoIs);
 		$tpl->setVariable('PERPAGE',$perPage);
 

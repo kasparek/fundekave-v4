@@ -11,7 +11,7 @@ class page_PagePoll implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		$do = FDBTool::getRow("SELECT pollId,question,votesperuser,publicresults FROM sys_poll WHERE activ=1 AND pageId='".$user->pageVO->pageId."'");
 

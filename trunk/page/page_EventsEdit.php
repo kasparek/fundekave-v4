@@ -8,7 +8,7 @@ class page_EventsEdit implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		
 		$user = FUser::getInstance();
 		$itemId=0;

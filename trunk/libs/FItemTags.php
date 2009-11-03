@@ -55,12 +55,12 @@ class FItemTags {
 		} else {
 			$template = $templateNameActive;
 		}
-		if(!FTemplateIT::templateExist(str_replace('{TYPE}',$typeId,$template))) {
+		if(!FSystem::tplExist(str_replace('{TYPE}',$typeId,$template))) {
 			$typeId = 'default';
 		}
 		$template = str_replace('{TYPE}',$typeId,$template);
 		
-		//$tpl = new FTemplateIT($template);
+		//$tpl = FSystem::tpl($template);
 		
 		$tpl = file_get_contents(ROOT.ROOT_TEMPLATES.$template);
 		if($isTagged !== true) {

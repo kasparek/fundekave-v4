@@ -18,7 +18,7 @@ class page_SysEditUsersBanns implements iPage {
 		}
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$cache = FCache::getInstance('s');
 		if(false !== ($filtr = $cache->getData('ubann','filtr'))) $usrfilter = $filtr;
 		else $usrfilter=0;
@@ -33,7 +33,7 @@ class page_SysEditUsersBanns implements iPage {
 		$perpage = 40;
 		$total = FDBTool::getOne("SELECT count(1) ".$base);
 
-		$tpl = new FTemplateIT('sys.admin.bann.tpl.html');
+		$tpl = FSystem::tpl('sys.admin.bann.tpl.html');
 		$tpl->setVariable('TOTALITEMS',$total);
 		$dot = "SELECT s.userId,s.name,s.deleted,s.dateUpdated,s.dateCreated,s.hit,l.ip,s.ipcheck ".$base;
 		if($total>$perpage) {

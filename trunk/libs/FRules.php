@@ -98,8 +98,10 @@ class FRules {
 			}
 			if($listPublic) {
 				$arr = FDBTool::getRow("select public,userIdOwner from sys_pages where pageId='".$this->page."'");
-				$this->public = $arr[0];
-				$this->owner = $arr[1];
+				if($arr) {
+					$this->public = $arr[0];
+					$this->owner = $arr[1];
+				}
 				if($this->public=='') $this->public=1;
 			}
 		}
@@ -111,7 +113,7 @@ class FRules {
 	
 	function printEditForm($idstr=0) {
 		$this->getList(true,$idstr);
-		$tpl = new FTemplateIT('pages.permissions.tpl.html');
+		$tpl = FSystem::tpl('pages.permissions.tpl.html');
 		$tpl->setVariable('HEADERLABEL',FLang::$TEXT_PERMISSIONS_SET);
 		$tpl->setVariable('SELECTLABEL',FLang::$LABEL_RULES_ACCESS);
 		$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);

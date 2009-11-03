@@ -4,8 +4,7 @@ class pageCategories {
 		$user = FUser::getInstance();
 		$arr = FDBTool::getAll("select categoryId,name from sys_pages_category where typeId = '".$user->pageVO->pageId."' order by ord,name");
 		if(!empty($arr)) {
-			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$tpl->loadTemplatefile('sidebar.page.categories.tpl.html');	
+			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_PAGE_CATEGORIES);
 			foreach ($arr as $category) {
 				$tpl->setCurrentBlock('item');
 				$tpl->setVariable('PAGEID',$user->pageId);

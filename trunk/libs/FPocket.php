@@ -60,7 +60,7 @@ class FPocket extends FDBTool {
             $ret = '';
             $arr = $this->getItems();
     
-            $tpl = new FTemplateIT($this->template);
+            $tpl = FSystem::tpl($this->template);
     
             if(!empty($arr)) {
                 //---parse

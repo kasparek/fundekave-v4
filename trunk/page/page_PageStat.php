@@ -6,10 +6,10 @@ class page_PageStat implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 
-		$tpl = new FTemplateIT('forums.stat.tpl.html');
+		$tpl = FSystem::tpl('forums.stat.tpl.html');
 		$tpl->setVariable('OWNERLINK','?k=33&who='.$user->pageVO->userIdOwner);
 		$tpl->setVariable('OWNERNAME',FLang::$getgidname($user->pageVO->userIdOwner));
 		$tpl->setVariable('MESSAGESCOUNT',$user->pageVO->cnt);

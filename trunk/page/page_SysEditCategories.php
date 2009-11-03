@@ -13,7 +13,7 @@ class page_SysEditCategories implements iPage {
 		
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		/**
 		 * TODO: add textarea for editing category description
 		 * typeId - page types - top,blog,culture,galery,forum

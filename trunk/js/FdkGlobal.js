@@ -1,3 +1,22 @@
+
+function BBQinit() {
+    var url = $.param.fragment();
+    if(url) {
+    var urlArr = url.split('/');
+    if(urlArr[1]) {
+    var arr = urlArr[1].split(';');
+		while (arr.length > 0) {
+			var rowStr = arr.shift();
+			var row = rowStr.split(':');
+			addXMLRequest(row[0], row[1]);
+			if (row[0] == 'result') result = true;
+			if (row[0] == 'resultProperty') resultProperty = true;
+		}
+		}
+    sendAjax(urlArr[0]);
+    }
+};
+
 //http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 function fuupUploadOneComplete() {
 	sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));
@@ -60,21 +79,25 @@ function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("assets/Fu
 
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
+	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
+	$(".showProgress").attr('src','assets/loading.gif?r='+Math.random()); 
 	if (preventAjax == true) { preventAjax = false; return; }
-	var str = gup('d', event.target.href);
-	var arr = str.split(';');
-	var result = false;
-	var resultProperty = false;
-	while (arr.length > 0) {
-		var rowStr = arr.shift();
-		var row = rowStr.split(':');
-		addXMLRequest(row[0], row[1]);
-		if (row[0] == 'result') result = true;
-		if (row[0] == 'resultProperty') resultProperty = true;
+	var href=$(this).attr("href") ,result = false, resultProperty = false, str = gup('d', href), id = $(this).attr("id");
+	if(str) { 
+		var arr = str.split(';');
+		while (arr.length > 0) {
+			var rowStr = arr.shift();
+			var row = rowStr.split(':');
+			addXMLRequest(row[0], row[1]);
+			if (row[0] == 'result') result = true;
+			if (row[0] == 'resultProperty') resultProperty = true;
+		}
 	}
-	if (result == false) addXMLRequest('result', $(this).attr("id"));
-	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
-	sendAjax(gup('m', this.href),gup('k', event.target.href));
+	if(id) {
+		if (result == false) addXMLRequest('result', $(this).attr("id"));
+		if (resultProperty == false) addXMLRequest('resultProperty', 'html');
+	}
+	sendAjax(gup('m', href),gup('k', href));
 	event.preventDefault();
 };
 
@@ -221,6 +244,7 @@ function galeryLoadThumb(item,type) {
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', 'append');
 	}
+	//addXMLRequest('call', 'initSlimbox');
 	addXMLRequest('call', 'fajaxform');
 	addXMLRequest('call', 'datePickerInit');
 	addXMLRequest('call', 'bindDeleteFoto');
@@ -364,6 +388,11 @@ function sendAjax(action,k) {
 					function() {
 						var item = $(this);
 						var command = '';
+						switch (item.attr('target')) {
+						case 'document':
+						command =  item.attr('target') + '.' + item.attr('property') + ' = "'+item.text()+'"';
+						break;
+						default:
 						switch (item.attr('property')) {
 							case 'css':
 								el = createEl('link',{'type':'text/css','rel':'stylesheet','href':item.text()});
@@ -410,7 +439,8 @@ function sendAjax(action,k) {
 								break;
 							default:
 								command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
-						}
+						};
+						};
 						if(command.length>0) eval(command);
 					});
 		}

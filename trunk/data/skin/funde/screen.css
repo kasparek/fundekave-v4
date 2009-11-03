@@ -372,8 +372,9 @@ div#mainbar fieldset div.row {
 	clear: left;
 }
 div#mainbar fieldset input {
-	width: 28em;
+	width: 400px;
 	margin-bottom: 0.3em;
+	padding: 0 4px;
 }
 div#mainbar fieldset select {
 	margin-bottom: 0.3em;
@@ -397,8 +398,10 @@ div#mainbar fieldset input.submit {
 	margin-left: 10em;
 }
 
-div#mainbar fieldset textarea {
-	width:500px;
+textarea {
+	border: 1px solid #aaa;
+	
+	width:400px;
 	height:6em;
 	font-size: 1.2em;
 	margin-bottom: 0.3em;
@@ -595,7 +598,7 @@ div.mainpanel-content div.hentry div.avatar {
 div.mainpanel-content div.hentry span.tag {
 	position: absolute;
 	top: 0;
-	right: 10em;
+	right: 14em;
 	padding: 0 0.6em;
 	line-height: 1.9em;
 	background-color: #ddd;
@@ -605,7 +608,7 @@ div.mainpanel-content div.hentry span.tag {
 div.mainpanel-content div.hentry span.link {
 	position: absolute;
 	top: 0;
-	right: 15em;
+	right: 18.5em;
 	padding: 0 0.6em;
 	line-height: 1.9em;
 	background-color: #ddd;
@@ -795,10 +798,11 @@ div#fotoBox div.back {
 	margin-bottom: 1em;
 	text-align: center;
 }
-div.fotoDetail,
-div.fotoDetail p {
+div.fotoDetailBox,
+div.fotoDetailBox p {
 	text-align: center;
 }
+
 div.previous,
 div.next {
 	float: left;

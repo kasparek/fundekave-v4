@@ -114,7 +114,7 @@ class page_PollEdit implements iPage {
 		}
 	}
 	
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		
 		$selectedPageId = $user->pageVO->pageId;
@@ -128,7 +128,7 @@ class page_PollEdit implements iPage {
 		
 		if(!empty($_REQUEST["ankid"])) $ankid = $_REQUEST["ankid"]*1; else $ankid=0;
 
-		$tpl = new FTemplateIT('poll.edit.tpl.html');
+		$tpl = FSystem::tpl('poll.edit.tpl.html');
 		if($superAdmin) {
 			$tpl->setVariable('FORMACTIONADM',FSystem::getUri());
 			$tpl->setVariable('SELECTEDPAGEID',$selectedPageId);

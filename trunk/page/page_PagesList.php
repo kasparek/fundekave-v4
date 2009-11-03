@@ -34,14 +34,21 @@ class page_PagesList implements iPage {
 		}
 	}
 
-	static function build() {
+	static function invalidate() {
+		$user = FUser::getInstance();
+		$cacheGrp = 'page-'.$user->pageId;
+		$mainCache = FCache::getInstance('f',0);
+		$mainCache->invalidateGroup($cacheGrp);
+	}
+	
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		
 		$p = 1;
 		if(isset($_GET['p'])) $p = (int) $_GET['p'];
 		$mainCache = FCache::getInstance('f',0);
-		$cacheKey = 'user-'.$user->userVO->userId;
-		$cacheGrp = 'page-'.$user->pageId.(($p>1)?('-'.$p):(''));
+		$cacheKey = 'user-'.$user->userVO->userId.(($p>1)?('-p-'.$p):(''));
+		$cacheGrp = 'page-'.$user->pageId;
 		$ret = $mainCache->getData($cacheKey,$cacheGrp);
 		
 		if(false === $ret) { 
@@ -59,7 +66,7 @@ class page_PagesList implements iPage {
 
 		//---QUERY RESULTS
 		$fPages = new FPages($typeId, $userId);
-		$fPages->cacheResults = 's';
+		//$fPages->cacheResults = 's';
 		if(!empty($pageSearchCache['categoryId'])) $fPages->addWhere("p.categoryId=".$pageSearchCache['categoryId']);
 		if(!empty($pageSearchCache['filtrStr'])){
 			$fPages->addWhereSearch(array('p.name','p.description','p.authorContent','p.dateContent'),$pageSearchCache['filtrStr'],'OR');
@@ -95,7 +102,7 @@ class page_PagesList implements iPage {
 		if($from > 0) $totalItems += $from;
 
 		//---BUILD PAGE
-		$tpl = new FTemplateIT('pages.list.tpl.html');
+		$tpl = FSystem::tpl('pages.list.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 
@@ -146,7 +153,7 @@ class page_PagesList implements iPage {
 				$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
       			$fItems->setOrder('hit desc');
       			
-      			$tplGal = new FTemplateIT('item.galerylink.tpl.html');
+      			$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 				foreach ($arr as $gal) {
 					$fItems->setWhere('pageId="'.$gal[0].'"');
 					$fotoThumb = $fItems->render(0,1);

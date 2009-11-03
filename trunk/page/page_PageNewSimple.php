@@ -42,7 +42,7 @@ class page_PageNewSimple implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 		$cache = FCache::getInstance('s');
 		$nazev = '';
@@ -54,7 +54,7 @@ class page_PageNewSimple implements iPage {
 		}
 
 
-		$tpl = new FTemplateIT('forum.new.tpl.html');
+		$tpl = FSystem::tpl('forum.new.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->setVariable('NAME',$nazev);
 		$tpl->setVariable('DESC',$ocem);
