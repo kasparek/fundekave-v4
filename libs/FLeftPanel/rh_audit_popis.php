@@ -12,9 +12,7 @@ class rh_audit_popis {
 		$admins = $ret['admins'];
 		$ret = '';
 		if(!empty($klub)) {
-			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$tpl->loadTemplatefile('sidebar.page.description.tpl.html');
-
+			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_PAGE_DESC);
 			$tpl->setVariable('DESCRIPTION',$klub[1]);
 			$tpl->setVariable('OWNERAVATAR',FAvatar::showAvatar($klub[0]));
 			if(!empty($admins))

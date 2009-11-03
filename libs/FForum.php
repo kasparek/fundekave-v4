@@ -232,6 +232,8 @@ class FForum extends FDBTool {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		FProfiler::profile('FForum::show--INSTANCES');
+		$simple = false;
+		if(isset($paramsArr['simple'])) $simple = $paramsArr['simple'];
 	  
 		$zprava = '';
 		//---available params
@@ -272,7 +274,7 @@ class FForum extends FDBTool {
 
 		/* ........ vypis nazvu auditka .........*/
 		//--FORM
-		$tpl = new FTemplateIT('forum.view.tpl.html');
+		$tpl = FSystem::tpl('forum.view.tpl.html');
 		
 		if($showHead===true) {
 			$desc = $user->pageVO->content;
@@ -304,11 +306,16 @@ class FForum extends FDBTool {
 			$cache = FCache::getInstance('s',0);
 			$filter = $cache->getData( $user->pageVO->pageId, 'filter');
 			$tpl->setVariable('TEXTAREACONTENT',(($filter!==false)?($filter):($zprava)));
+			
+			
 
 			if ($user->idkontrol) {
-				$tpl->touchBlock('userlogged');
-				$tpl->touchBlock('userlogged2');
-				$tpl->setVariable('PERPAGE',$perPage);
+				
+				if($simple===false) {
+					$tpl->touchBlock('userlogged');
+					$tpl->touchBlock('userlogged2');
+					$tpl->setVariable('PERPAGE',$perPage);
+				}
 			}
 		} elseif($publicWrite == 2) {
 			$tpl->setVariable('READONLY',FLang::$MESSAGE_FORUM_REGISTEREDONLY);
@@ -355,12 +362,7 @@ class FForum extends FDBTool {
 			$mess = '';
 			 
 			$tpl->setVariable('MESSAGES',$fItems->render());
-			if($formAtEnd===true) {
-				//---remove posts block and place it on POSTSONTOP
-				//TODO: think if needed form on end
-				//$tpl->moveBlock('posts','POSTSONTOP');
-				 
-			}
+			
 			FProfiler::profile('FForum::show--ITEMS DONE');
 			/*......aktualizace novych a prectenych......*/
 			if($itemId>0) {

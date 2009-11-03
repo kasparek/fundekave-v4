@@ -1,5 +1,22 @@
 <?php
 class FAjax_galery extends FAjaxPluginBase {
+
+	static function validate($data) {
+		if($data['function']=='show') return true;
+		return parent::validate($data);
+	}
+
+	static function show($data) {
+		$itemId = $data['item'];
+		if($data['__ajaxResponse']===true) {
+			$user = FUser::getInstance();
+			$user->itemVO = new ItemVO($itemId,true);
+			page_GaleryDetail::build($data);	
+		} else {
+			FHTTP::redirect(FSystem::getUri('i='.$itemId,'',''));
+		}
+	}
+	
 	static function editThumb($data) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageId;
@@ -7,6 +24,7 @@ class FAjax_galery extends FAjaxPluginBase {
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
 		$itemRenderer->thumbPreventCache = true;
+		$itemRenderer->openPopup = true;
 		
 		$fItems = new FItems('galery',false,$itemRenderer);
 		if(isset($data['item'])) {
@@ -14,13 +32,15 @@ class FAjax_galery extends FAjaxPluginBase {
 			$ret = $fItems->render(0,1);	
 		} else {
 			$pageVO = new PageVO($pageId,true);	
-			$fItems->setWhere("pageId='".$pageId."'");
+			$fItems->setWhere("pageId='".$pageId."' and itemIdTop is null");
 			$fItems->setOrder($pageVO->itemsOrder());
 			$ret = $fItems->render((int) $data['seq'],1);
 		}
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 	}
+	
 	static function delete($data) {
 		FGalery::removeFoto($data['itemId']);
 	}
+	
 }

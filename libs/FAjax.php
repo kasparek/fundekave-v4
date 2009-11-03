@@ -64,11 +64,12 @@ class FAjax {
 		require_once($filename);
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
-			if(call_user_func(array($className,'validate'), $dataProcessed)) {
+			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
 				call_user_func(array($className,$action), $dataProcessed);
 			} else {
 				FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
 			}
+			
 			//---send response
 			if($ajax === true) {
 				$ret = FAjax::buildResponse();
@@ -101,9 +102,8 @@ class FAjax {
 		$data = $fajax->responseData;
 		$originalData = $fajax->data;
 		
-		$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-		$tpl->loadTemplatefile('fajax.xml');
-		
+		$tpl = FSystem::tpl('fajax.xml');
+			
 		//---process original data
 		foreach($originalData as $k=>$v) {
 			switch($k) {

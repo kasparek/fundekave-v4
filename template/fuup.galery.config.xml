@@ -7,7 +7,7 @@
 			<Item name="autoUpload">0</Item>
 			<Item name="displayContent">1</Item>
 			<Item name="crop">0</Item>
-			<Item name="multi">0</Item>
+			<Item name="multi">1</Item>
 			<Item name="permissions">0</Item>
 			<Item name="maxSize">230000</Item>
 			<Item name="chunkSize">15000</Item>

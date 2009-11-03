@@ -6,7 +6,7 @@ class page_ItemsLive implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		$typeId = $user->pageVO->typeIdChild;
 		$userId = $user->userVO->userId;

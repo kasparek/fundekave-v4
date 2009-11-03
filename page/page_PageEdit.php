@@ -28,6 +28,7 @@ class page_PageEdit implements iPage {
 			$pageVO->saveOnlyChanged=true;
 			$pageVO->set('pageIco','');
 			$pageVO->save();
+			page_PagesList::invalidate();
 			FAjax::addResponse('pageavatarBox','html','');
 			return;
 		}
@@ -149,6 +150,7 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
+				page_PagesList::invalidate();
 
 				//---page editing
 				if($user->pageParam != 'a') {
@@ -282,13 +284,18 @@ class page_PageEdit implements iPage {
 				//---complete delete
 				FPages::deletePage($pageId);
 			}
+			page_PagesList::invalidate();
 			FError::addError(FLang::$LABEL_DELETED_OK);
-			FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',HOME_PAGE,''));
+			if($data['__ajaxResponse']) {
+				FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',HOME_PAGE,''));
+			} else {
+				FHTTP::redirect(FSystem::getUri('',HOME_PAGE,''));
+			}
 		}
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 		$user = FUser::getInstance();
 
@@ -323,7 +330,7 @@ class page_PageEdit implements iPage {
 		 *
 		 **/
 			
-		$tpl=new FTemplateIT('page.edit.tpl.html');
+		$tpl=FSystem::tpl('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=page-edit&u='.$user->userVO->userId));
 		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');
 		if($user->pageParam!='a') $tpl->setVariable('PAGEID',$pageVO->pageId);
@@ -389,7 +396,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('gorddate');
 			}
 			$fItems = new FItems('galery',false);
-			$fItems->setWhere("pageId='".$pageVO->pageId."'");
+			$fItems->setWhere("pageId='".$pageVO->pageId."' and itemIdTop is null");
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 
 			/* UPLOAD INPUTS */
@@ -438,6 +445,6 @@ class page_PageEdit implements iPage {
 			}
 			/**/
 
-		FBuildPage::addTab(array("MAINHEAD"=>($user->pageParam == 'a')?(FLang::$LABEL_PAGE_NEW):(''),"MAINDATA"=>$tpl->get()));
+		FBuildPage::addTab(array("MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
 	}
 }

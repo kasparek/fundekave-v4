@@ -14,13 +14,13 @@ if( $user->idkontrol ) {
 		$c = $_GET['c'];
 		switch($c) {
 			case 'uava':
-				$tpl = new FTemplateIT('fuup.avatar.config.xml');
+				$tpl = FSystem::tpl('fuup.avatar.config.xml');
 				break;
 			case 'pava':
-				$tpl = new FTemplateIT('fuup.pageAvatar.config.xml');
+				$tpl = FSystem::tpl('fuup.pageAvatar.config.xml');
 				break;
 			default:
-				$tpl = new FTemplateIT('fuup.galery.config.xml');
+				$tpl = FSystem::tpl('fuup.galery.config.xml');
 		}
 		$tpl->setVariable('URL','files.php?k='.$pageId.(($c)?('&f='.$c):('')));
 		$tpl->show();

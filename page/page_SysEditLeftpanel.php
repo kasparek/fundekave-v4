@@ -6,7 +6,7 @@ class page_SysEditLeftpanel implements iPage {
 		//TODO: Icant see category process - page not tested
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		if(empty($_REQUEST['rh'])) $rh=0; else $rh = $_REQUEST['rh']*1;
 		
 		$sidebarGroup = 0;

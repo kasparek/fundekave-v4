@@ -66,7 +66,7 @@ class FBlog {
 	  
 		$textAreaId = fBlog::textAreaId();
 	  
-		$tpl = new FTemplateIT('blog.editform.tpl.html');
+		$tpl = FSystem::tpl('blog.editform.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
 		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
 		if($itemId > 0) {
@@ -112,7 +112,7 @@ class FBlog {
 			}
 		}
 	  
-		$tpl = new FTemplateIT('blog.list.tpl.html');
+		$tpl = FSystem::tpl('blog.list.tpl.html');
 		if($user->idkontrol) $tpl->touchBlock('logged');
 
 		//--edit mode

@@ -1,6 +1,16 @@
 <?php
 class FLang {
 
+static $TPL_SIDEBAR_PAGE_CATEGORIES = 'sidebar.page.categories.tpl.html';
+static $TPL_SIDEBAR_POLL = 'sidebar.poll.tpl.html';
+static $TPL_SIDEBAR_PAGE_DESC = 'sidebar.page.description.tpl.html';
+static $TPL_SIDEBAR_USERS = 'sidebar.users.tpl.html';
+static $TPL_SIDEBAR_CALENDAR = 'sidebar.calendar.tpl.html';
+static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
+static $TPL_SIDEBAR_USER_LOGIN = 'sidebar.user.login.tpl.html';
+static $TPL_USER_AVATAR = 'user.avatar.tpl.html';
+
+
 static $LABEL_PAGES_LIVE = 'Živě';
 static $LABEL_WEEK = 'Tyden';
 static $LABEL_TOP = 'Nej';
@@ -22,6 +32,8 @@ static $LABEL_NOTREGISTEREDUSERS = 'Neprihlaseni';
 
 static $BUTTON_PAGE_SETTINGS = 'Admin';
 static $BUTTON_PAGE_BACK = 'Zpět';
+static $BUTTON_PAGE_NEXT = 'Dalsi';
+static $BUTTON_PAGE_PREV = 'Predchozi';
 static $BUTTON_EDIT = 'Upravit';
 static $MESSAGE_PAGE_LOCKED = 'Stránka je zamčena administrátory. Připadné dotazy: <a href="?k=fl168">.:--<< FUN.de.KAVE >>--:. typy, rady, chyby</a>';
 
@@ -83,6 +95,7 @@ static $ERROR_BLOG_NAMEEMPTY = 'Nezadali jste jmeno blogu';
 static $ERROR_BLOG_NAMEEXISTS = 'Takove jmeno blogu jiz existuje';
 
 static $REGISTER_WELCOME = '<strong>REGISTRACE PROBĚHLA ÚSPĚŠNĚ</strong><br />Vitejte na Fundekave. Zde si muzete nastavit svuj profil.';
+static $ERROR_INVALID_EMAIL = 'Neplatny email';
 static $ERROR_REGISTER_TOSHORTNAME = 'Jméno je příliš krátké';
 static $ERROR_REGISTER_TOLONGNAME = 'Jméno je příliš dlouhé';
 static $ERROR_REGISTER_NOTALLOWEDNAME = 'Jméno muze obsahovat pouze pismena, cisla a znaky bez diakritiky';

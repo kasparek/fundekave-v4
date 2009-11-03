@@ -20,7 +20,7 @@ class page_ForumView implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		FProfiler::profile('page_ForumView--START');
 		
@@ -32,7 +32,7 @@ class page_ForumView implements iPage {
 					FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar(false)));	
 				} else {
 					//---button to enable toolbar
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=items-tool'), FLang::$LABEL_THUMBS,0,'itemsTool');
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=items-tool'), FLang::$LABEL_THUMBS,0,'','fajaxa');
 				}
 			}
 		}

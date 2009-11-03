@@ -43,7 +43,7 @@ class page_UserSurf implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
 		$pageId = $user->pageVO->pageId;
@@ -51,7 +51,7 @@ class page_UserSurf implements iPage {
 		if(isset($_REQUEST["sc"])) $kat = $_REQUEST["sc"]*1; else $kat=0;
 		if(isset($_REQUEST["sm"])) $showAll = $_REQUEST["sm"]*1; else $showAll=0;
 
-		$tpl = new FTemplateIT("user.surf.tpl.html");
+		$tpl = FSystem::tpl("user.surf.tpl.html");
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
 		$tpl->setVariable('SELECTEDCATEGORY',$kat);
 

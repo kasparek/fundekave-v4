@@ -6,11 +6,11 @@ class page_Main implements iPage {
 		
 	}
 	
-	static function build() {
+	static function build($data=array()) {
 		
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
-		$tpl = new FTemplateIT('maina.tpl.html');
+		$tpl = FSystem::tpl('maina.tpl.html');
 		
 		$cache = FCache::getInstance('f',0);
 		//--------------LAST-FORUM-POSTS

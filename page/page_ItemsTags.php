@@ -6,7 +6,7 @@ class page_ItemsTags implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 		$user = FUser::getInstance();
 		$userId = $user->userVO->userId;
@@ -36,7 +36,7 @@ class page_ItemsTags implements iPage {
 		}
 		if($from > 0) $totalItems += $from;
 
-		$tpl = new FTemplateIT('items.list.tpl.html');
+		$tpl = FSystem::tpl('items.list.tpl.html');
 
 		if($totalItems > 0) {
 			$pager->totalItems = $totalItems;

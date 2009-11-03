@@ -22,6 +22,7 @@ if($user->pageAccess == true) {
 }
 FProfiler::profile('PAGE STAT/TOOLBAR');
 //---shows message that page is locked
+if($user->pageVO)
 if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
 	FError::addError(FLang::$MESSAGE_PAGE_LOCKED);
 	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;

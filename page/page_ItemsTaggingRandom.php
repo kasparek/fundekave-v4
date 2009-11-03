@@ -32,7 +32,7 @@ class page_ItemsTaggingRandom implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 
 		$fItems = new FItems();
 		$fItems->showPageLabel = true;
@@ -47,7 +47,7 @@ class page_ItemsTaggingRandom implements iPage {
 		$fItems->setGroup('i.itemId');
 		$fItems->setOrder('tags,rand()');
 
-		$tpl = new FTemplateIT('items.tagging.tpl.html');
+		$tpl = FSystem::tpl('items.tagging.tpl.html');
 
 		$fItems->getData(0,15);
 

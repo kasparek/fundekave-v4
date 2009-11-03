@@ -6,7 +6,7 @@ class page_UserInfo implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 
 		if($who = $user->whoIs) {
@@ -21,7 +21,7 @@ class page_UserInfo implements iPage {
 
 		}
 
-		$tpl = new FTemplateIT('users.info.tpl.html');
+		$tpl = FSystem::tpl('users.info.tpl.html');
 
 		$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 		$tpl->setVariable('NAME',$userVO->name);

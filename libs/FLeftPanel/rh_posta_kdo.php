@@ -28,8 +28,7 @@ class rh_posta_kdo {
 
 		$tmptext = '';
 		if(!empty($arr)) {
-			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$tpl->loadTemplatefile('sidebar.users.tpl.html');
+			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USERS);
 			foreach ($arrPost as $userId=>$userPost) {
 				$tpl->setCurrentBlock('user');
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userId));

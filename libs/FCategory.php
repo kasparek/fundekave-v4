@@ -90,20 +90,20 @@ class FCategory extends FDBTool {
 		$this->setSelect('categoryId,name,description');
 		$arr = $this->getContent();
 		if(!empty($arr)) {
-			$this->tplObject = new FTemplateIT($this->templateList);
+			$tpl = FSystem::tpl($this->templateList);
 			foreach ($arr as $row) {
 				if($row[0] == $selectedCat) {
-					$this->tplObject->setVariable('CATEGORYNAME',$row[1]);
+					$tpl->setVariable('CATEGORYNAME',$row[1]);
 					$this->selected = $row;
 					$user->pageVO->name =  $this->selected[1] . ' - ' . $user->pageVO->name;
 				}
-				$this->tplObject->setCurrentBlock('category');
-				$this->tplObject->setVariable('CATLINK',$user->getUri('kat='.$row[0]));
-				$this->tplObject->setVariable('CATNAME',$row[1]);
-				$this->tplObject->setVariable('DESC',$row[2]);
-				$this->tplObject->parseCurrentBlock('category');
+				$tpl->setCurrentBlock('category');
+				$tpl->setVariable('CATLINK',$user->getUri('kat='.$row[0]));
+				$tpl->setVariable('CATNAME',$row[1]);
+				$tpl->setVariable('DESC',$row[2]);
+				$tpl->parseCurrentBlock('category');
 			}
-			return $this->tplObject->get();
+			return $tpl->get();
 		}
 	}
 	function getCats($typeId='') {
@@ -115,34 +115,32 @@ class FCategory extends FDBTool {
 	}
 
 	function parseComboBox($blockname,$selectname,$arr,$selected=0){
+		$tpl = &$this->tplObject;
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['SELECT'.$k]=$v;
-		$this->tplObject->setVariable($arrtmp);
+		$tpl->setVariable($arrtmp);
 		if(!empty($arr))
 		foreach ($arr as $k=>$v) {
-			$this->tplObject->setCurrentBlock("arr".$blockname);
-			$this->tplObject->setVariable("OPTIONVALUE",$k);
-			if(!empty($selected)) $this->tplObject->setVariable("OPTIONSELECTED",(($selected==$k)?(' selected="selected"'):('')));
-			$this->tplObject->setVariable("OPTIONTEXT",$v);
-			$this->tplObject->edParseBlock("arr".$blockname);
+			$tpl->setVariable("OPTIONVALUE",$k);
+			if(!empty($selected)) $tpl->setVariable("OPTIONSELECTED",(($selected==$k)?(' selected="selected"'):('')));
+			$tpl->setVariable("OPTIONTEXT",$v);
+			$tpl->parse("arr".$blockname);
+			
 		}
-		$this->tplObject->setCurrentBlock("kateg".$blockname);
-		$this->tplObject->setVariable("SELECTNAME",$selectname);
-		$this->tplObject->edParseBlock("kateg".$blockname);
-		$this->tplObject->setCurrentBlock("kategformelement".$this->formElement);
-		$this->tplObject->edParseBlock("kategformelement".$this->formElement);
+		$tpl->setVariable("SELECTNAME",$selectname);
+		$tpl->parse("kateg".$blockname);
+		$tpl->parse("kategformelement".$this->formElement);
 	}
 	
 	function getInput($blockname,$name,$value=''){
-		$this->tplObject->setCurrentBlock($blockname);
+		$tpl = &$this->tplObject;
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['INPUT'.$k]=$v;
-		$this->tplObject->setVariable($arrtmp);
-		if($value!='') $this->tplObject->setVariable("INPUTVALUE",$value);
-		$this->tplObject->setVariable("INPUTCOL",$name);
-		$this->tplObject->setVariable("INPUTCLASS",$this->arrClass[$this->key]." ");
-		$this->tplObject->setVariable("INPUTTYPE",$this->arrInputType[$this->key]);
-		$this->tplObject->setCurrentBlock("kategformelement".$this->formElement);
-		$this->tplObject->edParseBlock("kategformelement".$this->formElement);
-		$this->tplObject->edParseBlock($blockname);
+		$tpl->setVariable($arrtmp);
+		if($value!='') $tpl->setVariable("INPUTVALUE",$value);
+		$tpl->setVariable("INPUTCOL",$name);
+		$tpl->setVariable("INPUTCLASS",$this->arrClass[$this->key]." ");
+		$tpl->setVariable("INPUTTYPE",$this->arrInputType[$this->key]);
+		$tpl->parse("kategformelement".$this->formElement);
+		$tpl->parse($blockname);
 	}
 	
 	function getUriAddon() {
@@ -182,7 +180,7 @@ class FCategory extends FDBTool {
 	}
 	
 	function getEdit() {
-
+		$tpl = &$this->tplObject;
 		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;
 
 		$rediraddon = $this->getUriAddon();
@@ -192,8 +190,8 @@ class FCategory extends FDBTool {
 		$this->setSelect($this->primaryCol.','.implode(',',$this->arrDbUsedCols));
 		$total = $this->getCount();
 
-		$this->tplObject = new FTemplateIT($this->template);
-		$this->tplObject->setCurrentBlock("kateg");
+		$tpl = FSystem::tpl($this->template);
+		$tpl->setCurrentBlock("kateg");
 
 		$addToUrl = $rediraddon;
 		if($total > $this->perpage) {
@@ -201,23 +199,22 @@ class FCategory extends FDBTool {
 			$actualPid = $pager->getCurrentPageID();
 			$from=($actualPid-1) * $this->perpage;
 			$this->setLimit($from,$this->perpage);
-			$this->tplObject->setVariable("PAGER",$pager->links);
+			$tpl->setVariable("PAGER",$pager->links);
 		}
 
 		$arr = $this->getContent();
 
 		$user = FUser::getInstance();
-		$this->tplObject->setVariable("FORMACTION",FSystem::getUri($addToUrl));
+		$tpl->setVariable("FORMACTION",FSystem::getUri($addToUrl));
 
 		$arrheadtmp = $this->arrHead;
 		if ($this->editlink > 0) $arrheadtmp['akce']='';
 		if($this->isDel == true) $arrheadtmp['del']= FLang::$LABEL_CATEGORY_DELETE;
 
-		$this->tplObject->setVariable("COLS",count($arrheadtmp));
+		$tpl->setVariable("COLS",count($arrheadtmp));
 		foreach ($arrheadtmp as $td) {
-			$this->tplObject->setCurrentBlock("kateghead");
-			$this->tplObject->setVariable("COLUMN",$td);
-			$this->tplObject->edParseBlock("kateghead");
+			$tpl->setVariable("COLUMN",$td);
+			$tpl->parse("kateghead");
 		}
 		$this->formElement = '';
 		if(!empty($arr))
@@ -236,12 +233,11 @@ class FCategory extends FDBTool {
 				}
 			}
 			if ($this->editlink > 0) {
-				$this->tplObject->setVariable("EDITKAM",$this->editlink);
-				$this->tplObject->setVariable("EDITID",$kat[$this->primaryCol]);
+				$tpl->setVariable("EDITKAM",$this->editlink);
+				$tpl->setVariable("EDITID",$kat[$this->primaryCol]);
 			}
-			$this->tplObject->setCurrentBlock("arrkateg");
-			$this->tplObject->setVariable($this->arrDefaultValues);
-			$this->tplObject->edParseBlock("arrkateg");
+			$tpl->setVariable($this->arrDefaultValues);
+			$tpl->parse("arrkateg");
 		}
 		//--- new one
 
@@ -259,6 +255,6 @@ class FCategory extends FDBTool {
 			}
 		}
 
-		return $this->tplObject->get();
+		return $tpl->get();
 	}
 }

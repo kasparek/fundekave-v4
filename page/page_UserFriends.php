@@ -6,10 +6,10 @@ class page_UserFriends implements iPage {
 		
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 
-		$tpl = new FTemplateIT('user.friends.tpl.html');
+		$tpl = FSystem::tpl('user.friends.tpl.html');
 
 		if ($user->whoIs > 0) {
 			$userId = $user->whoIs;

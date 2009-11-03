@@ -22,6 +22,10 @@ class FAjax_user extends FAjaxPluginBase {
 		}
 	}
 	
+	static function settings($data) {
+		page_UserSettings::process($data);
+	}
+	
 	static function avatar($data) {
 		$userId = FUser::logon();
 		FAjax::addResponse($data['result'], $data['resultProperty'], FAvatar::showAvatar($userId));

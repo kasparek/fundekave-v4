@@ -78,7 +78,7 @@ class FGalery {
 	 * @return string url
 	 */
 	function getThumbCachePath($cacheDir='') {
-		return (($cacheDir!='') ? ( $cacheDir ):( WEB_REL_CACHE_GALERY )) . $this->pageVO->pageId . '-' . FSystem::safeText($this->pageVO->name);
+		if($this->pageVO) return (($cacheDir!='') ? ( $cacheDir ):( WEB_REL_CACHE_GALERY )) . $this->pageVO->pageId . '-' . FSystem::safeText($this->pageVO->name);
 	}
 	
 	/**

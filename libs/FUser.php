@@ -122,7 +122,6 @@ class FUser {
             	where userId = '".$userVO->userId."'";	
 			}
 			$vid = FDBTool::getRow($q);
-				
 			$idloginInDb = null;
 			if(!empty($vid)) {
 				$idloginInDb = $vid[0];
@@ -191,12 +190,14 @@ class FUser {
 			FProfiler::profile('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
+		
 		if($pageAccess === true) {
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
 			if($userId>0) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
 			FProfiler::profile('FUser::kde::4');
+			
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if( $this->pageParam ) {
@@ -229,6 +230,7 @@ class FUser {
 					$pageAccess = $this->pageAccess = true;
 				}
 			}
+			
 			FProfiler::profile('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
@@ -244,6 +246,7 @@ class FUser {
 				FProfiler::profile('FUser::kde::8');
 			}
 		}
+		
 	}
 
 	function pageStat() {
@@ -282,21 +285,24 @@ class FUser {
 		if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 		if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 		if($pwdreg1!=$pwdreg2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-		if(!FError::isError()){
+		
+		//validate email
+		$data['email'] = trim($data['email']);
+		require_once('Zend/Validate/EmailAddress.php');
+		$validator = new Zend_Validate_EmailAddress();
+		if(true!==$validator->isValid($data['email']))  FError::addError(FLang::$ERROR_INVALID_EMAIL);  
+				
+		if(FError::isError()===false){
 			$userVO = new UserVO();
-			$userVO->name = jmenoreg;
-			$userVO->password = md5($pwdreg1);
+			$userVO->name = $jmenoreg;
+			$userVO->email = $data['email'];
+			$userVO->passwordNew = md5($pwdreg1);
 			$userVO->save();
-			//$dot = 'insert into sys_users (name,password,dateCreated,skinId,info) values ("'.$jmenoreg.'","'.md5($pwdreg1).'",now(),1,"'.$this->userVO->info.'")';
-
-			//	$newiduser = FDBTool::getOne("SELECT LAST_INSERT_ID()");
-			//login user
 			FUser::login($data['jmenoreg'],md5($pwdreg1),false);
 			//---oznameni o registraci
 			FMessages::sendSAMessage(array('NEWUSERID'=>$userVO->userId,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
 			FError::addError(FLang::$REGISTER_WELCOME);
 			FHTTP::redirect(FSystem::getUri('',POSTREGISTRATION_PAGE));
-
 		} else {
 			//cache data
 			$cache = FCache::getInstance('s');

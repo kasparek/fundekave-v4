@@ -44,8 +44,7 @@ class rh_anketa {
 					foreach($vk as $row) $sc[$row[0]]=$row[1];
 				}
 				/* ........... viditelna cast ........*/
-				$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-				$tpl->loadTemplatefile('sidebar.poll.tpl.html');	
+				$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_POLL);	
 				
 				$tpl->setVariable('QUESTION',$do[1]);
 				foreach($vv as $odp){

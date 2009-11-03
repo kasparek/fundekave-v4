@@ -113,8 +113,8 @@ class FLeftPanelEdit extends FDBTool {
 
 	}
 	function showEdit() {
-		$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-		$tpl->loadTemplatefile('leftpanel.page.set.tpl.html');
+
+		$tpl = FSystem::tpl('leftpanel.page.set.tpl.html');
 
 		$lPanel = new FLeftPanel($this->pageId, $this->userId, $this->pageType);
 		$lPanel->load(true);

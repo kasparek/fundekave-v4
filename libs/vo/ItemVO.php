@@ -296,23 +296,41 @@ class ItemVO extends Fvob {
 			}
 			return $pid;
 		}
+		
+		function getTotal() {
+			return count($this->getPageItemsId());
+		}
+		
+		function getPos() {
+			$arr = $this->getPageItemsId();
+			$arr = array_flip($arr);
+			return $arr[$this->itemId]; 
+		}
 
-		function getNext() {
-			$itemId = $this->getSideItemId(1);
+		function getNext($onlyId=false) {
+			$itemId = $this->getSideItemId(1,true);
 			if($itemId > 0) {
-				$itemVO = new ItemVO($itemId, false);
-				$itemVO->typeId = $this->typeId;
-				return $itemVO;
+				if($onlyId === true) {
+					return $itemId;
+				} else {
+					$itemVO = new ItemVO($itemId, false);
+					$itemVO->typeId = $this->typeId;
+					return $itemVO;
+				} 
 			}
 			return false;
 		}
 
-		function getPrev() {
-			$itemId = $this->getSideItemId(-1);
+		function getPrev($onlyId=false) {
+			$itemId = $this->getSideItemId(-1,true);
 			if($itemId > 0) {
-				$itemVO = new ItemVO($itemId, false);
-				$itemVO->typeId = $this->typeId;
-				return $itemVO;
+				if($onlyId === true) {
+					return $itemId;
+				} else {
+					$itemVO = new ItemVO($itemId, false);
+					$itemVO->typeId = $this->typeId;
+					return $itemVO;
+				}
 			}
 			return false;
 		}

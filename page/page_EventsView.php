@@ -14,7 +14,7 @@ class page_EventsView implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 
 		if(empty($user->pageParam)) {
@@ -30,7 +30,7 @@ class page_EventsView implements iPage {
 			if( $user->itemVO ) {
 
 				$itemVO = new ItemVO($user->itemVO->itemId,true ,array('type'=>'event','showComments'=>true) );
-				$tpl = new FTemplateIT('events.tpl.html');
+				$tpl = FSystem::tpl('events.tpl.html');
 				$tpl->setVariable('ITEMS',$itemVO->render());
 				$tmpText = $tpl->get();
 

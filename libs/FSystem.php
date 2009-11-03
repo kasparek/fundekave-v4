@@ -1,6 +1,32 @@
 <?php
 class FSystem {
 	
+	//TEMPLATE HELPER
+	static function tpl($templatefile,$root = '',$removeUnknownVariables=TRUE, $removeEmptyBlocks=TRUE){
+		if($root == '') $root = ROOT.ROOT_TEMPLATES;
+		$tpl = new FHTMLTemplateIT($root);
+		$tpl->loadTemplatefile($templatefile, $removeUnknownVariables, $removeEmptyBlocks);
+		return $tpl;
+	}
+
+	static function tplExist($template) {
+		return file_exists(ROOT.ROOT_TEMPLATES.$template);
+	}
+	
+	static function tplParseBlockFromVars($tpl, $vars, $block='__global__') {
+		foreach($vars as $k=>$v) $varArr[strtolower($k)] = $v;
+		if (isset($tpl->blocklist[$block]) && !empty($vars)) {
+			if(preg_match_all("{{([A-Za-z0-9]*)}}", $tpl->blocklist[$block], $arr)){
+				foreach($arr[1] as $vartoset){
+					$vartosetLower = strtolower($vartoset);
+					if(isset($varArr[$vartosetLower])) $tpl->setVariable($vartoset,$varArr[$vartosetLower]);
+				}
+			}
+		}
+		$tpl->parse($block);
+		return $tpl;
+	}
+	
 	/**
 	 * get skin name
 	 * @return string - url
@@ -20,11 +46,15 @@ class FSystem {
 	 * @return string - URL
 	 */
 	static function getUri($otherParams='',$pageId='',$pageParam=false, $scriptName=BASESCRIPTNAME) {
+		$arrAcnchor = explode('#',$otherParams);
+		$otherParams = $arrAcnchor[0];
+		$anchor = '';
+		if(isset($arrAcnchor[1])) $anchor = '#' . $arrAcnchor[1]; 
 		$otherParams = str_replace('&',SEPARATOR,$otherParams);
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
-		$newPageId = $user->pageVO->pageId;
+		if($user->pageVO) $newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
 		
@@ -49,7 +79,7 @@ class FSystem {
 		if(isset($params)) {
 			$parStr = '?'.implode(SEPARATOR,$params);
 		}
-		return $scriptName . $parStr;
+		return $scriptName . $parStr . $anchor;
 	}
 		
 	static function processK($pageId) {

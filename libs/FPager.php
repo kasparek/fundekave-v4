@@ -24,18 +24,32 @@ class FPager {
 		
 		if(!empty($conf)) $params = array_merge($params,$conf);
     	
-        if(!empty($conf)){
-	        foreach ($conf as $k=>$v) {
+        if(!empty($params)){
+	        foreach ($params as $k=>$v) {
 	        	$this->$k = $v;
 	        }
         }
-        foreach ($_GET as $k=>$v) {
+        foreach($_GET as $k=>$v) {
+        	$vArr = explode(SEPARATOR,$v);
+        	if(count($vArr)>1) {
+        		$getAdd[$k]=$vArr[0];
+        		while(count($vArr)>1) {
+        			list($kl,$vl) = explode('=',array_pop($vArr));
+        			$getAdd[$kl]=$vl;
+        		}
+        		unset($_GET[$k]);
+        	} 
+        }
+        $localGet = $_GET;
+        if(!empty($getAdd)) $localGet = array_merge($localGet,$getAdd);
+         
+        foreach ($localGet as $k=>$v) {
         	if($k!=$this->urlVar && !in_array($k,$this->bannvars)) $this->extraVars[$k]=$v;
         }
         if(!empty($this->itemData)) $this->totalItems = count($this->itemData);
         
-        if(isset($_GET[$this->urlVar])) $this->currentPage = $_GET[$this->urlVar] * 1;
-        
+        if(isset($localGet[$this->urlVar])) $this->currentPage = $_GET[$this->urlVar] * 1;
+                
         if($this->manualCurrentPage!=0) $this->currentPage = $this->manualCurrentPage;
         
         if(!isset($conf['noAutoparse'])) {

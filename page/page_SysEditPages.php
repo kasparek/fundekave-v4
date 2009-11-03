@@ -33,7 +33,7 @@ class page_SysEditPages implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		//--column locked
 		//--1-locked,
 		//--2-lokcked,invisible(visible only for owner),
@@ -53,7 +53,7 @@ class page_SysEditPages implements iPage {
 		//---SHOW PART
 		$user = FUser::getInstance();
 
-		$tpl = new FTemplateIT('sys.edit.pages.tpl.html');
+		$tpl = FSystem::tpl('sys.edit.pages.tpl.html');
 
 		$fPages = new FPages($type,$user->userVO->userId);
 		$fPages->sa = true;

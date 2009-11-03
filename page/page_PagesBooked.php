@@ -6,7 +6,7 @@ class page_PagesBooked implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$user = FUser::getInstance();
 		
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';

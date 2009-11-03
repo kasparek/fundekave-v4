@@ -7,7 +7,7 @@ class page_SysEditLeftpanelFunctions implements iPage {
 		$category->process($data, true);
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		$category = new FCategory('sys_leftpanel_functions','functionId');
 		$category->ident = 'rhfunctions';
 

@@ -190,7 +190,7 @@ class FPages extends FDBTool {
 		}
 
 		//---template init
-		$tpl = new FTemplateIT('forums.all.tpl.html');
+		$tpl = FSystem::tpl('forums.all.tpl.html');
 		$arrCategory = FDBTool::getAll("select categoryId,name from sys_pages_category where typeId='".$this->type."' order by ord,name");
 		if(count($arrCategory)>0) {
 			foreach ($arrCategory as $category) {
@@ -222,7 +222,7 @@ class FPages extends FDBTool {
 	static function printPagelinkList($arrLinks=array()) {
 		$user = FUser::getInstance();
 		//---template init
-		$tpl = new FTemplateIT('item.pagelink.tpl.html');
+		$tpl = FSystem::tpl('item.pagelink.tpl.html');
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			$tpl->touchBlock('showicons');
@@ -266,7 +266,7 @@ class FPages extends FDBTool {
 		if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
 		 
 		//---template init
-		$tpl = new FTemplateIT('forums.booked.tpl.html');
+		$tpl = FSystem::tpl('forums.booked.tpl.html');
 
 		//---srovnani klubu
 		FForum::clearUnreadedMess();

@@ -6,7 +6,7 @@ class page_EventsArchiv implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		
 		FBuildPage::addTab(array("MAINDATA"=>FEvents::show(true),"MAINID"=>'fajaxContent'));
 		

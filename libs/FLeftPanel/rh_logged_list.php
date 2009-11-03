@@ -4,8 +4,7 @@ class rh_logged_list {
 		$ret = '';
 		$user = FUser::getInstance();
 		if (false !== ($arrpra = FDBTool::getAll("SELECT f.userIdFriend,SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik FROM sys_users_logged as l INNER JOIN sys_users_friends as f ON f.userIdFriend=l.userId  WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated AND f.userId=".$user->userVO->userId." AND f.userIdFriend!='".$user->userVO->userId."' GROUP BY f.userIdFriend ORDER BY casklik"))) {
-			$tpl = new FHTMLTemplateIT(ROOT.ROOT_TEMPLATES);
-			$tpl->loadTemplatefile('sidebar.users.tpl.html');
+			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USERS);
 			foreach ($arrpra as $pra){
 				$kde = FUser::getLocation($pra[0]);
 				$tpl->setCurrentBlock('user');

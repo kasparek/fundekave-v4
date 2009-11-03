@@ -6,7 +6,7 @@ class page_SysEdit implements iPage {
 
 	}
 
-	static function build() {
+	static function build($data=array()) {
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','sbann'),'Banany');
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','skate'),'Kategorie');
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','spaka'),'Stranky');

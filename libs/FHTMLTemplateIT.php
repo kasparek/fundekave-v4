@@ -291,7 +291,6 @@ class FHTMLTemplateIT
         $this->setRoot($root);
     } // end constructor
 
-
     /**
      * Sets the option for the template class
      *
