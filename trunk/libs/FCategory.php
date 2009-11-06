@@ -98,7 +98,7 @@ class FCategory extends FDBTool {
 					$user->pageVO->name =  $this->selected[1] . ' - ' . $user->pageVO->name;
 				}
 				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATLINK',$user->getUri('kat='.$row[0]));
+				$tpl->setVariable('CATLINK',FSystem::getUri('kat='.$row[0]));
 				$tpl->setVariable('CATNAME',$row[1]);
 				$tpl->setVariable('DESC',$row[2]);
 				$tpl->parseCurrentBlock('category');

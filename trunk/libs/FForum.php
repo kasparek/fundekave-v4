@@ -207,13 +207,8 @@ class FForum extends FDBTool {
 			$cache->setData(FSystem::textins($data["zprava"],array('plainText'=>1)), $pageId, 'filter');
 		}
 		//---per page
-		$cache = FCache::getInstance('s',0);
-		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage();
-		
 		if (isset($data["perpage"]) && $data["perpage"] != $perPage) {
-			$perPage = $data["perpage"]*1;
-			if($perPage < 2) $perPage = 10;
-			$cache->setData($perPage, $pageId,'pp');
+			$perPage = $user->pageVO->perPage( $data["perpage"] );
 		}
 		//---redirect
 		if($redirect==true) {
@@ -243,10 +238,8 @@ class FForum extends FDBTool {
 	  
 		if(FUser::logon() === false && $publicWrite > 0) { $captcha = new FCaptcha(); }
 	  
-		$cache = FCache::getInstance('s',0);
-		if(($perPage = $cache->getData($pageId,'pp')) === false) $perPage = $user->pageVO->perPage('forum');
-		FProfiler::profile('FForum::show--PERPAGE');
-	  
+		$perPage = $user->pageVO->perPage();
+			  
 		if( FUser::logon() ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
 			if($unreadedCnt > 0) {
@@ -254,8 +247,7 @@ class FForum extends FDBTool {
 				elseif($unreadedCnt > 100) $perPage = 100;
 			}
 		}
-		FProfiler::profile('FForum::show--UNREADED');
-		
+				
 		//---DEEPLINKING
 		$manualCurrentPage = 0;
 		if($user->itemVO || $itemIdInside > 0) {
@@ -310,11 +302,12 @@ class FForum extends FDBTool {
 			
 
 			if ($user->idkontrol) {
-				
 				if($simple===false) {
 					$tpl->touchBlock('userlogged');
 					$tpl->touchBlock('userlogged2');
 					$tpl->setVariable('PERPAGE',$perPage);
+				} else {
+					$tpl->touchBlock('small');
 				}
 			}
 		} elseif($publicWrite == 2) {

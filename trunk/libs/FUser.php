@@ -21,7 +21,7 @@ class FUser {
 
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
-	'u'=>4, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
+	'u'=>1, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
 	'p'=>1, //anketa nastaveni

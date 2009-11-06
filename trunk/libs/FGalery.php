@@ -346,9 +346,9 @@ class FGalery {
 		$galery = new FGalery();
 		$galery->pageVO = new PageVO($pageId, true);
 		$cachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath();
-		FSystem::rm_recursive($cachePath);
+		FFile::rm_recursive($cachePath);
 		$systemCachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath( WEB_REL_CACHE_GALERY_SYSTEM );
-		FSystem::rm_recursive($systemCachePath);
+		FFile::rm_recursive($systemCachePath);
 	} 
 	
 }

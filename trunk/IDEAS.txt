@@ -1,3 +1,7 @@
+search box
+result stranka se zalozkama
+uzivatele | prispevky | stranky
+
 kalendar - diary
  - pro kazdou stranku
  - kdo sleduje stranku vidi udalosti kalendare ve svym kalendari

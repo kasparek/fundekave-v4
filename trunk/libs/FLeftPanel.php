@@ -165,7 +165,7 @@ class FLeftPanel extends FDBTool {
 							$showBlock = true;
 							$cacheId = 'lp';
 							$cacheGrp = $fnc;
-								
+
 							if(strpos($panel['options'],'nocache')===false) {
 									
 								//---member/non-member dependant block

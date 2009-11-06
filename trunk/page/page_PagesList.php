@@ -45,7 +45,8 @@ class page_PagesList implements iPage {
 		$user = FUser::getInstance();
 		
 		$p = 1;
-		if(isset($_GET['p'])) $p = (int) $_GET['p'];
+		$urlVar = FConf::get('pager','urlVar');
+		if(isset($_GET[$urlVar])) $p = (int) $_GET[$urlVar];
 		$mainCache = FCache::getInstance('f',0);
 		$cacheKey = 'user-'.$user->userVO->userId.(($p>1)?('-p-'.$p):(''));
 		$cacheGrp = 'page-'.$user->pageId;
@@ -115,11 +116,11 @@ class page_PagesList implements iPage {
 				//---selected cat
 				if($row[0] == $pageSearchCache['categoryId']) {
 					$tpl->setVariable('CATEGORYSELECTED',$row[1]);
-					$tpl->setVariable('CATEGORYSELECTEDCANCEL',$user->getUri('c=0'));
+					$tpl->setVariable('CATEGORYSELECTEDCANCEL',FSystem::getUri('c=0'));
 					$user->pageVO->name =  $row[1] . ' - ' . $user->pageVO->name;
 				}
 				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATLINK',$user->getUri('c='.$row[0]));
+				$tpl->setVariable('CATLINK',FSystem::getUri('c='.$row[0]));
 				$tpl->setVariable('CATNAME',$row[1]);
 
 				$tpl->parseCurrentBlock();

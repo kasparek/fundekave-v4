@@ -164,7 +164,7 @@ class FItemsRenderer {
 				}
 				if($this->showFooter === true) {
 					if($enableEdit === true) {
-						$vars['EDITLINK'] = FSystem::getUri('m=event-edit&d=result:fajaxContent;item:'.$itemId,'event','u');
+						$vars['EDITLINK'] = FSystem::getUri('i='.$itemId,'event','u');
 					}
 				}
 				break;
@@ -252,7 +252,7 @@ class FItemsRenderer {
 			if($this->showComments == true) {
 				$writeRule = FPages::getProperty($pageId,'forumSet');
 				if(false !== ($itemWriteRule = ItemVO::getProperty($itemId,'forumSet',2))) $writeRule = $itemWriteRule;
-				$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside);
+				$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('simple'=>1) );
 			} else {
 				$vars['COMMENTLINK'] = $link;
 				$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );

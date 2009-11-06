@@ -32,6 +32,16 @@ function fuupUploadPageAvatarComplete() {
 	addXMLRequest('call', 'fconfirm');
 	sendAjax('page-avatar',gup('k',$(".fajaxform").attr('action')));
 };
+function fuupUploadEventComplete() {
+	var item = $('#item').attr('value');
+	if(item>0) addXMLRequest('item', item);
+  addXMLRequest('result', "flyerDiv");
+	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('call', 'initSlimbox');
+	addXMLRequest('call', 'fconfirm');
+	addXMLRequest('call', 'fajaxform');
+	sendAjax('event-flyer',gup('k',$(".fajaxform").attr('action')));	
+}
 
 function bindDeleteFoto() { setListeners('deletefoto', 'click', deleteFoto); }
 function deleteFoto(event) {
@@ -80,7 +90,7 @@ function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("assets/Fu
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
 	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
-	$(".showProgress").attr('src','assets/loading.gif?r='+Math.random()); 
+	if($(this).hasClass('showBusy')) $(".showProgress").attr('src','assets/loading.gif'); 
 	if (preventAjax == true) { preventAjax = false; return; }
 	var href=$(this).attr("href") ,result = false, resultProperty = false, str = gup('d', href), id = $(this).attr("id");
 	if(str) { 
@@ -244,7 +254,7 @@ function galeryLoadThumb(item,type) {
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', 'append');
 	}
-	//addXMLRequest('call', 'initSlimbox');
+	addXMLRequest('call', 'initSlimbox');
 	addXMLRequest('call', 'fajaxform');
 	addXMLRequest('call', 'datePickerInit');
 	addXMLRequest('call', 'bindDeleteFoto');

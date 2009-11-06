@@ -213,16 +213,18 @@ span.postsNew {
 	font-weight: bold;
 }
 div#pageholder.hasMainBanner #mainbar {
-	padding-top: 80px;
+	/*padding-top: 80px;*/
 }
 
 div#banner {
+/*
 	position: absolute;
 	z-index: 3;
 	top: 55px;
 	left: 80px;
 	width: 100%;
 	text-align: left;
+	*/
 }
 
 div#banner div.banner-content {
@@ -410,13 +412,8 @@ textarea {
 	padding: 0 5px;
 }
 div#mainbar fieldset textarea.short {
-	width: 400px;
-	height: 2em;
-	font-size: 1.2em;
-	margin-bottom: 0.3em;
-	margin-left: 0;
-	margin-right: 0;
-	padding: 0 5px;
+	height: 3em;
+	float: left;
 }
 div#mainbar fieldset textarea.draftNotSave {
   border-right: 2px solid #dd0000; 
