@@ -16,6 +16,7 @@ package net.fundekave.fuup
 		
 		//---http service
 		public static const SERVICE_ERROR:String = 'serviceError';
+		public static const FILESIZE_ERROR:String = 'filesizeError';
 		
 		//---resources
 		public static const CONFIG_LOAD:String			= 'loadResources';

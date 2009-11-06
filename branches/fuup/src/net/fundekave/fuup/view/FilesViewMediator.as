@@ -97,7 +97,8 @@ package net.fundekave.fuup.view
 					ApplicationFacade.FILE_CHECK_FAIL,
 					ApplicationFacade.FILE_CHECK_OK,
 					ApplicationFacade.IMAGES_PROCESSED,
-					ApplicationFacade.SERVICE_ERROR
+					ApplicationFacade.SERVICE_ERROR,
+					ApplicationFacade.FILESIZE_ERROR
 					];
 		}
 		
@@ -108,10 +109,15 @@ package net.fundekave.fuup.view
 			var configProxy:ConfigProxy
 			switch ( note.getName() )
 			{
+				case ApplicationFacade.FILESIZE_ERROR:
+					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+					filesView.globalMessages.text = String(configProxy.lang.toobig).replace('{LIMITSIZE}', String(Math.round(Number(note.getBody())/1024))); 
+					filesView.globalMessagesBox.visible = true;
+					break;
 				case ApplicationFacade.SERVICE_ERROR:
 					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 					filesView.globalMessages.text = configProxy.lang.uploaderror; 
-					filesView.globalMessages.visible = true;
+					filesView.globalMessagesBox.visible = true;
 					break;
 				case ApplicationFacade.IMAGES_PROCESSED:
 					imagesProcessed = true;
@@ -136,7 +142,7 @@ package net.fundekave.fuup.view
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 					filesView.globalProgressBar.visible = true;
 					filesView.globalProgressBar.value = 0;
-					filesView.globalMessages.visible = false;
+					filesView.globalMessagesBox.visible = false;
 					stateName = String( note.getBody() );
 					switch(stateName) {
 						case StateConstants.STATE_PROCESSING:
@@ -160,7 +166,7 @@ package net.fundekave.fuup.view
             			case StateConstants.STATE_SETUPING:
             				filesView.globalProgressBar.visible = false;
 							if(filesView.autoUpload===true) {
-								if(this.imagesProcessed===true) {
+								if(this.imagesProcessed===true || filesView.autoProcess===false) {
 									this.imagesProcessed=false;
 									this.onUpload(null);
 								}
