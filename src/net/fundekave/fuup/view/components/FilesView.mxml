@@ -12,6 +12,7 @@
 				import gs.easing.Quad;
 				
 				import net.fundekave.fuup.model.vo.FileVO;
+				
 				import net.fundekave.Application;
 				import com.bit101.components.Label;
 				import com.bit101.components.Window;
@@ -37,8 +38,17 @@
 			public var multiFiles:Boolean = true;
 			
 			[Bindable] public var settingsVisible:Boolean = true;
-			[Bindable] public var autoProcess:Boolean = false;
-			[Bindable] public var autoUpload:Boolean = false;
+			
+			private var _autoProcess:Boolean = false;
+			[Bindable] public function set autoProcess(v:Boolean):void { _autoProcess = v; autoProcessButtVis = !v }
+			public function get autoProcess():Boolean { return _autoProcess; }
+			
+			[Bindable] public var autoProcessButtVis:Boolean = true;
+			
+			private var _autoUpload:Boolean = false;
+			[Bindable] public function set autoUpload(v:Boolean):void { _autoUpload = v; autoProcessButtVis = !v }
+			public function get autoUpload():Boolean { return _autoUpload; }
+			
 			[Bindable] public var displayContent:Boolean = true;
     	  	
     	  	private function addedToStage():void {
@@ -47,6 +57,8 @@
     	  	    	  	
     	  	private var fileRefList:FileReferenceList
 			private function browseFiles():void {
+				globalMessagesBox.visible = false;
+				
 				if(multiFiles===true) {
 					fileRefList = new FileReferenceList();
 					fileRefList.addEventListener(Event.SELECT, onFilesSelect );
@@ -94,6 +106,8 @@
 				} else {
 					if(autoProcess===true) {
 						doAction(ACTION_PROCESS);
+					} else if(autoUpload === true) {
+						doAction(ACTION_UPLOAD);
 					}
 				}
 			}
@@ -246,12 +260,14 @@
 				<bit101:CheckBox id="correctionsCheckbox" label="{lang.corections}" selected="true" y="5" x="5" />	
 			</fu:Container>
 			
-			<bit101:PushButton id="processButt" visible="{!autoProcess}" width="60" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
+			<bit101:PushButton id="processButt" visible="{autoProcessButtVis}" width="60" click="{doAction(ACTION_PROCESS)}" label="{lang.process}" />
 			<bit101:PushButton id="uploadButt" visible="{!autoUpload}" width="60" click="{doAction(ACTION_UPLOAD)}" label="{lang.upload}" />
 			<!-- global progress bar -->
 			<bit101:ProgressBar id="globalProgressBar" visible="false" width="275" height="20" maximum="100" />
 			<!-- global messages -->
-			<bit101:Label id="globalMessages" text="" visible="false" />
+			<bit101:HBox id="globalMessagesBox" backgroundColor="0xaa3333" width="275" height="20" visible="false" alignHorizontal="center">
+				<bit101:Label id="globalMessages" text="" color="0xffffff" />
+			</bit101:HBox>
 		</bit101:HBox>
 		<!--
 		<bit101:HBox>

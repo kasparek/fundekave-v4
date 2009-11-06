@@ -4,6 +4,7 @@ package net.fundekave.fuup.model
       import flash.events.ErrorEvent;
       import flash.events.Event;
       import flash.events.ProgressEvent;
+      import flash.net.FileReference;
       import flash.utils.ByteArray;
       import flash.utils.setTimeout;
       
@@ -167,12 +168,21 @@ package net.fundekave.fuup.model
 				while(i<len) {
 	        		fileVO = fileList[i] as FileVO;
 	        		var data:ByteArray = (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data);
-					if(data.length < this.maxSize) {
+					var ref:FileReference;
+					var size:uint;
+					if(data.length==0) {
+						ref = fileVO.file;
+						size = fileVO.file.size;
+					} else {
+						size = data.length;
+					}
+					if(size < this.maxSize) {
 		        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
 		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete,false,0,true );
 		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress,false,0,true );
 		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );
-		        		fileUpload.uploadBytes( data );
+		        		if(ref) fileUpload.uploadReference( ref );
+						else fileUpload.uploadBytes( data );
 						noUpload=false;
 						break;
 					} else {

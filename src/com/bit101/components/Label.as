@@ -45,7 +45,16 @@ package com.bit101.components
 		private var _text:String = "";
 		private var _tf:TLFTextField;
 		
-		public var color:Number;
+		private var recreate:Boolean = false;
+		private var _color:uint = Style.LABEL_TEXT;
+		public function set color(v:uint):void {
+			_color = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get color():uint {
+			return _color;
+		}
 				
 		/**
 		 * Constructor
@@ -54,11 +63,12 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The string to use as the initial text in this component.
 		 */
-		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:Number=NaN)
+		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0)
 		{
 			_text = text;
-			this.color = color;
+			if(color>0) this.color = color;
 			super(parent, xpos, ypos);
+			trace('LABEL::color::'+String( color ));
 		}
 		
 		/**
@@ -85,7 +95,7 @@ package com.bit101.components
 			_tf.antiAliasType = AntiAliasType.ADVANCED;
 			_tf.mouseEnabled = false;
 						
-			_tf.setTextFormat( new TextFormat( "PF Ronda Seven", 8, (!isNaN(this.color))?(this.color):(Style.LABEL_TEXT)) );
+			_tf.setTextFormat( new TextFormat( "PF Ronda Seven", 8,  this.color ));
 			_tf.text = _text;
 			_tf.y = -2;
 			addChild(_tf);
@@ -109,6 +119,12 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
+			
+			if(recreate===true) {
+				recreate = false;
+				this.removeChild( _tf );
+				this.addChildren();
+			}
 			
 			_tf.text = _text;
 			

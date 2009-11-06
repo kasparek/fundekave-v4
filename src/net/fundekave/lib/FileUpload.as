@@ -6,6 +6,7 @@ package net.fundekave.lib
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.FileReference;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
@@ -35,7 +36,16 @@ package net.fundekave.lib
 			this.chunkSize = chunkSize;
 			this.uploadLimit = uploadLimit;
 		}
-		
+		public function uploadReference( ref:FileReference ):void {
+			ref.addEventListener(Event.COMPLETE, onRefLoad);
+			ref.load();
+		}
+		private function onRefLoad(e:Event):void {
+			var ref:FileReference = e.target as FileReference;
+			ref.addEventListener(Event.COMPLETE, onRefLoad);
+			this.uploadBytes( ref.data );
+			setTimeout( ref.data.clear, 100 );
+		}
 		public function uploadBytes( bytes:ByteArray ):void {
 			var b64enc:Base64Encoder = new Base64Encoder();
         	b64enc.encodeBytes( bytes );
