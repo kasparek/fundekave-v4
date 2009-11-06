@@ -111,7 +111,7 @@ package net.fundekave.fuup.view
 			{
 				case ApplicationFacade.FILESIZE_ERROR:
 					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-					filesView.globalMessages.text = String(configProxy.lang.toobig).replace('{LIMITSIZE}', String(Math.round(Number(note.getBody())/1024))); 
+					filesView.globalMessages.text = String(configProxy.lang.toobig).replace('LIMITSIZE', String(Math.round(Number(note.getBody())/1024))); 
 					filesView.globalMessagesBox.visible = true;
 					break;
 				case ApplicationFacade.SERVICE_ERROR:
