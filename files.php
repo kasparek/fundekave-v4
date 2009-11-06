@@ -19,6 +19,9 @@ if( $user->idkontrol ) {
 			case 'pava':
 				$tpl = FSystem::tpl('fuup.pageAvatar.config.xml');
 				break;
+			case 'futip':
+				$tpl = FSystem::tpl('fuup.event.config.xml');
+				break;
 			default:
 				$tpl = FSystem::tpl('fuup.galery.config.xml');
 		}
@@ -76,6 +79,15 @@ if($allExists === true) {
 			$pageVO->set('pageIco',$imageName);
 			$pageVO->save();
 			break;
+		case 'futip':
+			$user = FUser::getInstance();
+			//---upload in tmp folder in user folder and save filename in db cache
+			$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
+			$imagePath = $dir . '/' .  $filename;
+			FFile::makeDir($dir);
+			$cache = FCache::getInstance('d');
+			$cache->setData($filename,'event','user-'.$user->userVO->userId);
+		break;
 		default:
 			$pageVO = new PageVO($pageId,true);
 			$galeryUrl = $pageVO->galeryDir;

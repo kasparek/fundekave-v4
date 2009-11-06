@@ -42,16 +42,12 @@ class FPager {
         }
         $localGet = $_GET;
         if(!empty($getAdd)) $localGet = array_merge($localGet,$getAdd);
-         
         foreach ($localGet as $k=>$v) {
         	if($k!=$this->urlVar && !in_array($k,$this->bannvars)) $this->extraVars[$k]=$v;
         }
         if(!empty($this->itemData)) $this->totalItems = count($this->itemData);
-        
         if(isset($localGet[$this->urlVar])) $this->currentPage = $_GET[$this->urlVar] * 1;
-                
         if($this->manualCurrentPage!=0) $this->currentPage = $this->manualCurrentPage;
-        
         if(!isset($conf['noAutoparse'])) {
             $this->getPager();
         }
@@ -67,7 +63,8 @@ class FPager {
     function getPager()
     {
         //---check page validity
-        if($this->currentPage < 1 || $this->currentPage > ceil($this->totalItems / $this->perPage)) $this->currentPage = 1;
+        if($this->perPage>0) $numPages = ceil($this->totalItems / $this->perPage); else $numPages=1;
+        if($this->currentPage < 1 || $this->currentPage > $numPages) $this->currentPage = 1;
         //defaults
         $page = $this->currentPage;
         $totalitems = $this->totalItems;
@@ -85,7 +82,8 @@ class FPager {
         //other vars
         $prev = $page - 1;									//previous page is page - 1
         $next = $page + 1;									//next page is page + 1
-        $lastpage = ceil($totalitems / $limit);				//lastpage is = total items / items per page, rounded up.
+        $lastpage = 1;
+        if($limit>0) $lastpage = ceil($totalitems / $limit);				//lastpage is = total items / items per page, rounded up.
         $lpm1 = $lastpage - 1;								//last page minus 1
 
         /*

@@ -2,6 +2,8 @@
 class FAjaxPluginBase {
 	public static function validate($data) {
 		$user = FUser::getInstance();
-		return $user->idkontrol;
+		$ret = $user->idkontrol;
+		if($user->pageAccess===false) $ret = false; 
+		return $ret;
 	}
 }

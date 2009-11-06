@@ -15,10 +15,10 @@
     <div id="futip" class="fuup">
 		<input type="file" name="akceletak" id="flyerUpload" class="uploadify"/></div><br />
     <label> - nebo URL</label><input type="text" name="akceletakurl" /><br />
-    <div id="flyerDiv">
+    <div id="flyerDiv" class="row">
       <!-- BEGIN flyer -->
-      <label>Letak</label><a target="_blank" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a><br />
-      <label>Odstranit letak</label><a href="{DELFLY}" title="Opravdu chcete smazat letak?" class="fajaxa confirm">Smazat</a><br />
+      <label>Letak</label><a rel="lightbox" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a>
+      <input type="submit" name="delFlyer" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
       <!-- END flyer -->
     </div>
     <label>Popis / Program</label>
@@ -26,3 +26,4 @@
 		<textarea id="event" name="description" class="draftable">{DESCRIPTION}</textarea>{DESCRIPTIONTOOLBOX}<br />
   </fieldset>
 </form>
+<!-- init lightbox -->

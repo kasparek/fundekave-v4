@@ -3,24 +3,24 @@
 	<Config>
 		<Settings>
 			<Item name="settingsEnabled">0</Item>
-			<Item name="autoProcess">1</Item>
+			<Item name="autoProcess">0</Item>
 			<Item name="autoUpload">1</Item>
 			<Item name="displayContent">0</Item>
-			<Item name="crop">1</Item>
+			<Item name="crop">0</Item>
 			<Item name="multi">0</Item>
 			<Item name="permissions">0</Item>
-			<Item name="maxSize">50000</Item>
+			<Item name="maxSize">500000</Item>
 			<Item name="chunkSize">10000</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">20</Item>
 			<Item name="imageQuality">80</Item>
-			<Item name="imageWidthMax">40</Item>
-			<Item name="imageHeightMax">50</Item>
+			<Item name="imageWidthMax">800</Item>
+			<Item name="imageHeightMax">1200</Item>
 			<Item name="embedWidth">400</Item>
 			<Item name="embedHeight">25</Item>
 			<Item name="onLoaded"></Item>
 			<Item name="onUploadOneComplete"></Item>
-			<Item name="onUploadComplete">fuupUploadAvatarComplete</Item>
+			<Item name="onUploadComplete">fuupUploadEventComplete</Item>
 		</Settings>
 		<Services>
 			<Service name="files">{URL}</Service>

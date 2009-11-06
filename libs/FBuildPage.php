@@ -273,6 +273,7 @@ class FBuildPage {
 		FProfiler::profile('FBuildPage--FSystem::topMenu');
 
 		//---BANNER
+		/*
 		if(!isset($_GET['nobanner'])) {
 			$banner = FBanner::getBanner();
 			if(!empty($banner)) {
@@ -281,7 +282,7 @@ class FBuildPage {
 			}
 		}
 		FProfiler::profile('FBuildPage--FSystem::grndbanner');
-
+		*/
 		if($user->pageAccess === true) {
 			//---SECONDARY MENU
 			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
@@ -324,7 +325,6 @@ class FBuildPage {
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
-		$useMarkItUp = false;
 		$useTabs = false;
 		$useSlimbox = false;
 		$useSupernote = false;
@@ -334,13 +334,10 @@ class FBuildPage {
 		$useBBQ = false;
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
-
-			//if(strpos($item, 'markItUp') !== false || strpos($item, 'toggleToolSize') !== false) { $useMarkItUp = true; }
-
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
-			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
+//			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 			if(strpos($item, 'fajaxa') !== false && strpos($item, 'hash') !== false) { $useBBQ = true; }
 		}
@@ -349,10 +346,6 @@ class FBuildPage {
 			$tpl->touchBlock("juiHEAD"); //---js in the header
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
 			$tpl->touchBlock("datepickerEND"); //---javascript on the end of the page
-		}
-		if($useMarkItUp === true) {
-			$tpl->touchBlock("markitupHEAD");
-			$tpl->touchBlock("markitupEND");
 		}
 		if($useSlimbox === true) {
 			$tpl->touchBlock("slimboxHEAD");

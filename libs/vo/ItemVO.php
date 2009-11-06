@@ -6,6 +6,7 @@ class ItemVO extends Fvob {
 
 	var $options = array();
 
+	var $typed = false;
 	var $columns = array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
 	'itemIdBottom' => 'itemIdBottom',
@@ -114,6 +115,7 @@ class ItemVO extends Fvob {
 			if(!empty($typeId)) {
 				if(isset(ItemVO::$colsType[$typeId])) {
 					$ret = $this->columns = array_merge($this->columns, ($typeId)?(ItemVO::$colsType[$typeId]):(array()));
+					$this->typed=true;
 				}
 			}
 			return $ret;
@@ -143,7 +145,7 @@ class ItemVO extends Fvob {
 
 			//---try load from cache cache
 			$cache = FCache::getInstance('l');
-			if(($itemVO = $cache->getData($this->itemId, 'fit')) === false) {
+			if(($itemVO = $cache->getData($this->itemId.'-'.(($this->typed==true)?('typed'):('nottyped')), 'fit')) === false) {
 				$vo = new FDBvo( $this );
 				$vo->load();
 				$vo->vo = false;
@@ -170,7 +172,7 @@ class ItemVO extends Fvob {
 			$this->prepare();
 			//---save in cache
 			$cache = FCache::getInstance('l');
-			$cache->setData( $this, $this->itemId, 'fit');
+			$cache->setData( $this, $this->itemId.'-'.(($this->typed===true)?('typed'):('nottyped')), 'fit');
 		}
 
 		function save() {
@@ -178,7 +180,7 @@ class ItemVO extends Fvob {
 			$vo->resetIgnore();
 			if($this->itemId > 0) {
 				//---update
-
+				$vo->addIgnore('dateCreated');
 			} else {
 				//---insert
 				if(empty($this->dateCreated)) {

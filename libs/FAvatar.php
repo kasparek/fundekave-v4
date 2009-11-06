@@ -39,6 +39,8 @@ class FAvatar {
 		$showName = (isset($paramsArr['showName']))?(true):(false);
 		$noTooltip = (isset($paramsArr['noTooltip']))?(true):(false);
 		$withTooltip = (isset($paramsArr['withTooltip']))?(true):(false);
+		
+		$noTooltip = true;
 			
 		$avatarUserId = $userId;
 		if($avatarUserId==-1) {

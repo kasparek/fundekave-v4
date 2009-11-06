@@ -3,6 +3,7 @@ class rh_login {
 	static function show() {
 		$user = FUser::getInstance();
 		if($user->idkontrol === true) {
+		
 			$q = "select count(1) from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
 			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USER_LOGGED);
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
@@ -17,6 +18,7 @@ class rh_login {
 			return $tpl->get();
 			
 		} else {
+			
 			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USER_LOGIN);
 			$tpl->setVariable('FORMACTION',FSystem::getUri());
 			if( REGISTRATION_ENABLED == 1 ) $tpl->touchBlock('reglink');

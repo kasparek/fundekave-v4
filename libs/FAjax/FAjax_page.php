@@ -1,15 +1,6 @@
 <?php
 class FAjax_page extends FAjaxPluginBase {
 	
-	static function validate($data) {
-		$user = FUser::getInstance();
-		if(empty($user->userVO->userId)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
 	static function fuup($data) {
 		$user = FUser::getInstance();
     //---call galery refresh

@@ -119,7 +119,9 @@ th {
 	}
 
 /* PUBLIC DECLARATIONS */
-
+.hidden {
+	display: none;
+}
 .clearbox {
 	display: table; 
 	width: 100%;

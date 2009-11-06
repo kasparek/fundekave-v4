@@ -12,14 +12,13 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
   <!-- BEGIN keywords --><meta name="keywords" content="{DESCRIPTION}" /><!-- END keywords -->
   <link rel="shortcut icon" href="{CSSSKIN}/img/favicon.ico" type="image/x-icon" />
   <link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://www.fundekave.net/frss.php?k={PAGEID}" />
-  <link rel="stylesheet" type="text/css" href="css/fdk.css" media="all" title="fundekave" />
+  <link rel="stylesheet" type="text/css" href="ca.php?c=css/global.css;css/print.css;css/handheld.css;css/aural.css;css/fPager.css" media="all" title="fundekave" />
   <!-- BEGIN slimboxHEAD --><link rel="stylesheet" href="css/slimbox2.css" type="text/css" media="screen" /><!-- END slimboxHEAD -->
-  <!-- BEGIN markitupHEAD --><link rel="stylesheet" type="text/css" href="js/markitup/skins/markitup/style.css" />
-  <link rel="stylesheet" type="text/css" href="js/markitup/sets/default/style.css" /><!-- END markitupHEAD -->
   <!-- BEGIN juiHEAD --><link type="text/css" href="css/themes/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" /><!-- END juiHEAD -->
   <style type="text/css" media="screen"><!--
 		@import "{CSSSKIN}/screen.css";
   --></style>
+
   <!--[if lt IE 8.0]><link type="text/css" rel="stylesheet" href="{CSSSKIN}/ie7-styles.css" /><![endif]-->
   <!--[if lt IE 7.0]><link type="text/css" rel="stylesheet" href="{CSSSKIN}/ie6-styles.css" /><![endif]-->
 </head>
@@ -32,7 +31,7 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
       </ul><!-- END menu -->
     </div>
     <div id="pagebar">
-      <div id="logo"><a href="http://fundekave.net/"><img src="/data/skin/funde/img/fundekave-logo.gif" width="160" height="125" alt="FunDeKave.net" /></a></div>
+      <div id="logo"><a href="http://fundekave.net/"><img src="data/skin/funde/img/fundekave-logo.gif" width="160" height="125" alt="FunDeKave.net" /></a></div>
       <div id="mainbar">
         <!-- BEGIN secondary-menu --><div id="menu-secondary-holder">
           <ul id="menu-secondary">
@@ -61,16 +60,11 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
     </div>
     <!-- BEGIN footer --><p id="footer"><span>deSIGNed by <a href="http://www.filip-mares.co.uk/">nakashi</a> &amp; <a href="http://fundekave.net">fundekave.net</a> - <a href="http://frantisek-kaspar.co.uk" title="php web developer">kasparek</a></span> Pages:: {COUNTER}</p><!-- END footer -->
   </div>
-	<!-- BEGIN banner --><div id="banner">
- 		<div class="banner-content">{BANNER}</div>
-	</div><!-- END banner -->
+	<!-- BEGIN banner --><div id="banner"><div class="banner-content">{BANNER}</div></div><!-- END banner -->
 	<!-- BEGIN users-floating-tooltips -->{USERTOOLTIPS}<!-- END users-floating-tooltips -->
 <!-- javascript section -->
 <!-- BEGIN wrappedjs --><script src="{WRAPPEDJS}"></script><!-- END wrappedjs -->
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<!-- BEGIN markitupEND --><script type="text/javascript" src="js/markitup/jquery.markitup.pack.js"></script>
-<script type="text/javascript" src="js/markitup/sets/default/set.js"></script><!-- END markitupEND -->
-<script type="text/javascript" src="js/DD_roundies_0.0.1a-min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js;js/DD_roundies_0.0.1a-min.js"></script>
 <!-- BEGIN juiEND --><script type="text/javascript" src="js/jquery-ui.core.js"></script><!-- END juiEND -->
 <script type="text/javascript" src="js/FdkGlobal.js"></script>
 <!-- BEGIN slimboxEND --><script type="text/javascript" src="js/slimbox2.js"></script>

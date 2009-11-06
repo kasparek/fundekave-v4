@@ -9,6 +9,8 @@ class FImgProcess {
     
     var $image;
     
+    var $data;
+        
     var $sourceUrl;
     var $sourceWidth;
     var $sourceHeight;
@@ -67,12 +69,13 @@ class FImgProcess {
             $this->resize($width,$height);
             if(isset($mode['reflection'])) $this->reflection();
             if(isset($mode['rotate'])) $this->rotate();
-            return $this->save();
+            $this->data = $this->save();
         }
     }
     
     static function process($source,$target='',$mode=array()) {
-    	return new FImgProcess($source, $target, $mode);
+    	$p = new FImgProcess($source, $target, $mode);
+    	return $p->data; 
     }
     
     function open() {
@@ -232,6 +235,7 @@ class FImgProcess {
       
       if(!$this->image) return false;
         $ret = false;
+        
         if(empty($this->targetUrl)) ob_start(); // start a new output buffer
         switch($this->targetMimeType) {
             case 1: //gif

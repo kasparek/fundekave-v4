@@ -283,7 +283,8 @@ class FDBTool {
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
-		$arr = FDBTool::getAll($dot,(($cacheId!==false)?($cacheId):(md5($dot))),'fdb',$this->cacheResults,$this->lifeTime);
+		$cacheId = (($cacheId!==false)?($cacheId):(md5($dot)));
+		$arr = FDBTool::getAll($dot,$cacheId,'fdb',$this->cacheResults,$this->lifeTime);
 		if(!empty($arr)) {
 			if($this->fetchmode == 1) {
 			if(empty($this->columns)) {
@@ -300,7 +301,7 @@ class FDBTool {
 				foreach($arr as $ret) {
 					$i = 0;
 					foreach($cols as $col) {
-						$retNew[$col] = $ret[$i];
+						if(isset($ret[$i])) $retNew[$col] = $ret[$i];
 						$i++;
 					}
 					$arrNamed[]=$retNew;
@@ -329,7 +330,7 @@ class FDBTool {
 		}
 	}
 	function getCacheId($id) {
-		return $this->table.'-'.$this->primaryCol.'-'.$id;
+		return $this->table.'-'.$this->primaryCol.'-'.$id.'-'.count($this->columns);
 	}
 	function get($id) {
 		if( !empty($this->columns) ) {

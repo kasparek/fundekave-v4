@@ -124,19 +124,20 @@ class PageVO extends Fvob {
 	 * @return number
 	 */
 	function perPage($perPage=0) {
-		if($perPage>0) {
+		$cache = FCache::getInstance('s');
+		$SperPage = &$cache->getPointer($this->pageId,'pp'); 
+		if($perPage > 0) {
 			if($perPage > FConf::get('perpage','min')) {
 				//set perpage
-				$cache = FCache::getInstance('s');
-				$perPage = $cache->setData((int) $perPage,$this->pageId,'pp');
+				$SperPage = (int) $perPage;
 			}
 		}
 		//get from cache if is custom
-		$cache = FCache::getInstance('s');
-		$perPage = $cache->getData($this->pageId,'pp');
-		if(empty($perPage))$perPage = (String) $this->getPageParam('enhancedsettings/perpage');
+		if(!empty($SperPage)) $perPage = $SperPage;
+		if(empty($perPage)) $perPage = (String) $this->getPageParam('enhancedsettings/perpage');
 		if(empty($perPage)) $perPage = FConf::get('perpage',$this->pageId);
-		if(empty($perPage)) $perPage = FConf::get('perpage',((!empty($typeId))?($typeId):($this->typeId)));
+		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeIdChild);
+		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeId);
 		if(empty($perPage)) $perPage = FConf::get('perpage','default');
 		return $perPage;
 	}

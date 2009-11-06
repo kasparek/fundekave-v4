@@ -126,8 +126,8 @@ class page_GaleryDetail implements iPage {
 				FAjax::addResponse('function','call','fajaxa');
 			} else {
 				FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,'backButt');
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash');
-				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash');
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash showBusy');
+				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash showBusy');
 				
 				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}

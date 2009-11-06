@@ -5,7 +5,15 @@ class FError {
 		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();
 	}
 	function addError($langkey,$systemError=0){
-		$_SESSION[($systemError==0)?("errormsg"):('sysmsg')][]=(($systemError==0)?(''):($systemError.'::')).$langkey;
+		$mainKey = ($systemError==0)?("errormsg"):('sysmsg');
+		$prepend = (($systemError==0)?(''):($systemError.'::'));
+		$count=0;		
+		if(isset($_SESSION[$mainKey][$langkey])) {
+			$arr = explode(' ',$_SESSION[$mainKey][$langkey]);
+			$count = str_replace(array('[',']'),array('',''),$arr[count($arr)-1]) + 1;
+		}
+		
+		$_SESSION[$mainKey][$langkey]= $prepend.$langkey. (($count>0)?(' ['.$count.']'):(''));
 		return false;
 	}
 	function resetError(){
