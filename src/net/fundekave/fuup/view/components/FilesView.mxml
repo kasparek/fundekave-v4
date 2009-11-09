@@ -225,16 +225,24 @@
 	    	  			//---set new positions for children
 	    	  			resetLayout();
 					}
-					if( filesBox.height != fileBoxHeight || fileBoxNumChildred!=filesBox.numChildren) {
+					if( filesBox.height != fileBoxHeight || fileBoxNumChildred != filesBox.numChildren) {
 						
 						if( fileBoxNumChildred != filesBox.numChildren ) {
 							resetLayout();
 							fileBoxNumChildred = filesBox.numChildren;	
 						}
 						
-						if( filesBox.height != fileBoxHeight ) {
-							fileBoxHeight = filesBox.height;
-							Application.application.height = filesBox.height + Fuup.HEIGHT + 300
+						if(filesBox.numChildren > 0) {
+						
+							if( filesBox.height != fileBoxHeight ) {
+								fileBoxHeight = filesBox.height;
+								Application.application.height = filesBox.height + Fuup.HEIGHT + 300;
+							}
+							
+						} else {
+							
+							Application.application.height = Fuup.HEIGHT;
+							
 						}
 						dispatchEvent( new Event(RESIZE) );
 					}

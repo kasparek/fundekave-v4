@@ -33,19 +33,13 @@ package net.fundekave
 			var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
 			resizeCanvas.width = String( (w==-1)?('100%'):(w) );
 			if(w==-1) {
-				//this.addEventListener(Event.RENDER,onRenderWidth);
 				super.width = stage.width<Fuup.WIDTH ? Fuup.WIDTH : stage.width;
 			} else {
 				super.width = w;
 			}
 			trace("WIDTH::"+this.width);
 		}
-		/*
-		private function onRenderWidth(e:Event):void {
-			this.removeEventListener(Event.RENDER,onRenderWidth);
-			this.width = stage.width;
-		}
-		*/
+		
 		private var _prevHeight:Number;
 		override public function set height(h:Number):void {
 			_prevHeight = this.height;
@@ -58,12 +52,7 @@ package net.fundekave
 			}
 			trace("HEIGHT::"+this.height);
 		}
-		/*
-		private function onRenderHeight(e:Event):void {
-			this.removeEventListener(Event.RENDER,onRenderHeight);
-			this.height = stage.height;
-		}
-		*/
+		
 		public function restoreHeight():void {
 			if(_prevHeight > 0) {
 				this.height = _prevHeight;

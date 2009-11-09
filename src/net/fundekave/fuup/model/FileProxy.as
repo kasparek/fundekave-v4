@@ -217,8 +217,12 @@ package net.fundekave.fuup.model
         
         private function onUploadError(e:ErrorEvent):void {
 			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-			fileVO.renderer.updateStatus(configProxy.lang.uploaderror,false,1);
-        	trace('FILEPROXY::TOTAL SERVICE ERROR');
+			if(displayContent===true) {
+				fileVO.renderer.updateStatus(configProxy.lang.uploaderror,false,1);
+			} else {
+				sendNotification( ApplicationFacade.FILE_DELETE, fileVO);
+			}
+			trace('FILEPROXY::TOTAL SERVICE ERROR');
         	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
         }
    
