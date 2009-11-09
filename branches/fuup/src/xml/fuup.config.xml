@@ -4,10 +4,10 @@
 		<Settings>
 			<Item name="settingsEnabled">1</Item>
 			<Item name="autoProcess">0</Item>
-			<Item name="autoUpload">1</Item>
-			<Item name="displayContent">0</Item>
+			<Item name="autoUpload">0</Item>
+			<Item name="displayContent">1</Item>
 			<Item name="crop">0</Item>
-			<Item name="multi">0</Item>
+			<Item name="multi">1</Item>
 			<Item name="permissions">0</Item>
 			<Item name="maxSize">300000</Item>
 			<Item name="chunkSize">10000</Item>
