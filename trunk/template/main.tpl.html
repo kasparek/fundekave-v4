@@ -33,15 +33,27 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
     <div id="pagebar">
       <div id="logo"><a href="http://fundekave.net/"><img src="data/skin/funde/img/fundekave-logo.gif" width="160" height="125" alt="FunDeKave.net" /></a></div>
       <div id="mainbar">
+
+      <form action="{SEARCHACTION}" method="post">
+        <div id="search-holder">
+        <div id="search">
+        <input type="text" class="short" /> <input type="submit" class="button" name="search" value="Hledat" />
+        </div>
+        </div>
+        </form>
+
         <!-- BEGIN secondary-menu --><div id="menu-secondary-holder">
           <ul id="menu-secondary">
             <!-- BEGIN secondary-menu-item --><li<!-- BEGIN secondary-menu-oppositebutton --> class="opposite"<!-- END secondary-menu-oppositebutton -->><a href="{LOLINK}"<!-- BEGIN secondary-menu-class-custom --> class="{CLASS}"<!-- END secondary-menu-class-custom --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a></li>
             <!-- END secondary-menu-item -->
           </ul>
         </div><!-- END secondary-menu -->
+                
         <div id="errormsgJS" class="errormsg"></div>
         <div id="okmsgJS" class="okmsg"></div>
-        <!-- BEGIN errormsg --><div class="errormsg">{ERRORMSG}</div><!-- END errormsg -->
+        <!-- BEGIN errormsg --><div class="errormsg static">{ERRORMSG}</div><!-- END errormsg -->
+        <!-- BEGIN okmsg --><div class="okmsg static">{OKMSG}</div><!-- END okmsg -->
+        
         <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
         <div id="thumbToolbar"></div>
         <!-- BEGIN maincontent-recurrent --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
@@ -80,7 +92,7 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
 <script type="text/javascript">$(document).ready(function(){ fajaxform(); });</script><!-- END fajaxformEND -->
 <!-- BEGIN userPostEND --><script type="text/javascript">$(document).ready(function(){ initUserPost(); });</script><!-- END userPostEND -->
 <!-- BEGIN tabsEND --><script type="text/javascript" src="./js/jquery-ui.tabs.js"></script>
-<script type="text/javascript">$(document).ready(function(){ $("#tabs").tabs(); });</script><!-- END tabsEND -->
+<script type="text/javascript">$(document).ready(function(){ tabsInit(); });</script><!-- END tabsEND -->
 <!-- BEGIN bbq --><script type="text/javascript" src="./js/jquery.ba-bbq.min.js"></script>
 <script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
 

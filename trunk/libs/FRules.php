@@ -68,6 +68,7 @@ class FRules {
 			on r.pageId=s.pageId and r.userId='".$usr."'
 			where s.pageId='".$page."'";
 			$arr = FDBTool::getRow($dot);
+						
 			if($arr[3] == $usr) $ret = true;
 			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
 			elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher

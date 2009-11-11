@@ -94,7 +94,7 @@ class FEvents {
 		$tpl->setVariable('ITEMID',$itemVO->itemId);
 
 		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';
-		$arrOpt = FDBTool::getAll($q,'event','categ','s');
+		$arrOpt = FDBTool::getAll($q,'event','categ','l');
 		$options = '';
 		if(!empty($arrOpt)) foreach ($arrOpt as $row) {
 			$options .= '<option value="'.$row[0].'"'.(($row[0] == $itemVO->categoryId)?(' selected="selected"'):('')).'>'.$row[1].'</option>';
@@ -107,7 +107,8 @@ class FEvents {
 		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( $itemVO->text ));
+		$draft = FUserDraft::get('event');
+		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( !empty($draft) ? $draft :$itemVO->text ));
 		if($itemVO->itemId > 0) {
 			$tpl->touchBlock('delakce');
 		}
@@ -118,7 +119,28 @@ class FEvents {
 			$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
 		}
 
-		if(!empty($tplBlock)) {
+		//enhanced settings
+		$reminder = $itemVO->prop('reminder');
+		$reminderOptions='';
+		foreach (FLang::$DIARYREMINDER as $k=>$v) {
+			$reminderOptions.='<option value="'.$k.'"'.(($k==$reminder)?(' selected="selected"'):('')).'>'.$v.'</option>';
+		}
+		$tpl->setVariable('REMINDEROPTIONS',$reminderOptions);
+
+		$reminderEveryday = (int) $itemVO->prop('reminderEveryday');
+		if($reminderEveryday==1) $tpl->touchBlock('everydayselected');
+
+		$repeat = $itemVO->prop('repeat');
+		$repeatOptions='';
+		foreach (FLang::$DIARYREPEATER as $k=>$v) {
+			$repeatOptions.='<option value="'.$k.'"'.(($k==$repeat)?(' selected="selected"'):('')).'>'.$v.'</option>';
+		}
+		$tpl->setVariable('REPEATOPTIONS',$repeatOptions);
+
+		$public = (int) $itemVO->public;
+		$tpl->touchBlock('access'.$public);
+
+		if( !empty($tplBlock) ) {
 			$tpl->parse($tplBlock);
 			return $tpl->get($tplBlock);
 		} else {
@@ -190,6 +212,9 @@ class FEvents {
 		}
 
 		if($action=='nav') {
+			if(!empty($data['categoryNew'])) {
+				$data['category'] = FCategory::tryGet( $data['categoryNew'],'event');
+			}
 
 			//---check time
 			$timeStart = '';
@@ -219,6 +244,8 @@ class FEvents {
 			if($data['category'] > 0) $itemVO->categoryId = (int) $data['category'];
 
 			if(empty($itemVO->addon)) FError::addError(FLang::$ERROR_NAME_EMPTY);
+
+			$itemVO->public = (int) $data['dpublic'];
 
 			if(!FError::isError()) {
 				$itemId = $itemVO->save();
@@ -253,11 +280,17 @@ class FEvents {
 						}
 					}
 				}
+				//enhanced settings
+				$itemVO->prop('reminder',$data['dpripomen']);
+				$itemVO->prop('reminderEveryday',$data['dopakovat']);
+				$itemVO->prop('repeat',$data['drepeat']);
+
 				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('eventtip');
 				$cache->invalidateGroup('calendarlefthand');
 				$user = FUser::getInstance();
 				$user->itemVO = $itemVO;
+				FUserDraft::clear('event');
 			} else {
 				$cache = FCache::getInstance('s');
 				$cache->setData($itemVO,$user->pageVO->pageId,'form');

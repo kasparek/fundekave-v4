@@ -61,6 +61,12 @@ class UserVO extends Fvob {
 	//---new post alerting
 	var $newPost = 0;
 	var $newPostFrom = '';
+	
+	var $requestId;
+	var $requestUserId;
+	var $requestMessage;
+	
+	var $activityPageId;
 
 	function UserVO($userId=0, $autoLoad = false) {
 		$this->userId = $userId;
@@ -71,7 +77,7 @@ class UserVO extends Fvob {
 
 	function load() {
 		$vo = new FDBvo( $this );
-		$vo->addJoinAuto('sys_skin','skinId',array('name'));
+		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 		$vo->load();
 		$vo->vo = false;
 		$vo = false;
@@ -113,7 +119,7 @@ class UserVO extends Fvob {
 	function setXMLVal($branch,$node,$value) {
 		$xml = new SimpleXMLElement($this->info);
 		$xml->$branch->$node = $value;
-		$this->xmlProperties = $xml->asXML();
+		$this->info = $xml->asXML();
 	}
 
 	function hasNewMessages(){
@@ -145,14 +151,21 @@ class UserVO extends Fvob {
 			return(in_array($userId,$arr));
 		}
 	}
+	
+	function isRequest($userId) {
+		$cnt = FDBTool::getOne("select count(1) from sys_pages_items where typeId='request' and userId='".$userId."' and addon='".$this->userId."'");
+		return ($cnt>0) ? true : false;
+	}
 
 	function addFriend($userIdArr) {
 		if($this->userId > 0) {
 			if(!is_array($userIdArr)) $userIdArr = array($userIdArr);
 			foreach ($userIdArr as $userId) {
-				FDBTool::query("insert into sys_users_friends (userId,userIdFriend,dateCreated) values ('" . $this->userId . "','" . $userId . "',NOW())");
-				$this->getFriends(0,true);
+				if($userId != $this->userId) {
+					FDBTool::query("insert into sys_users_friends (userId,userIdFriend,dateCreated) values ('" . $this->userId . "','" . $userId . "',NOW())");
+				}
 			}
+			$this->getFriends(0,true);
 		}
 	}
 
@@ -186,5 +199,54 @@ class UserVO extends Fvob {
 
 			return $arr;
 		}
+	}
+	
+	function loadFriends() {
+		
+		$vo = new FDBvo( $this );
+		$vo->VO = 'UserVO';
+		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
+		
+		$vo->addJoin('join sys_users_friends as f on f.userIdFriend=sys_users.userId');
+						
+		$vo->setWhere("f.userId = ".$this->userId);
+		$vo->setOrder('sys_users.name');
+		return $vo->get();
+		
+	}
+	
+	function loadOnlineFriends() {
+		$vo = new FDBvo( $this );
+		$vo->VO = 'UserVO';
+		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
+		
+		$vo->addJoin('join sys_users_friends as f on f.userIdFriend=sys_users.userId');
+		
+		$vo->addSelect('l.dateUpdated as activity,l.location as activityPageId');
+		$vo->addJoin('join sys_users_logged as l on l.userId = sys_users.userId');
+				
+		$vo->addWhere("f.userId = ".$this->userId);
+		$vo->addWhere("l.userId != ".$this->userId);
+		$vo->addWhere("subdate(NOW(),interval ".USERVIEWONLINE." minute) < l.dateUpdated"); 
+
+		$vo->setOrder('sys_users.dateLastVisit');
+		return $vo->get();
+	}
+	
+	function loadRequests() {
+		
+		$vo = new FDBvo( $this );
+		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
+		
+		$vo->addSelect('i.itemId as requestId,i.userId as requestUserId,i.text as requestMessage');
+		$vo->addJoin('join sys_pages_items as i on i.userId=sys_users.userId');
+		
+		$vo->VO = 'UserVO';
+		
+		$vo->setWhere("i.typeId = 'request'");
+		$vo->setWhere("i.addon = ".$this->userId);
+		$vo->setOrder('sys_users.name');
+		return $vo->get();
+		
 	}
 }

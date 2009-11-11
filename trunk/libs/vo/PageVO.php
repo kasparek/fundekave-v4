@@ -136,8 +136,8 @@ class PageVO extends Fvob {
 		if(!empty($SperPage)) $perPage = $SperPage;
 		if(empty($perPage)) $perPage = (String) $this->getPageParam('enhancedsettings/perpage');
 		if(empty($perPage)) $perPage = FConf::get('perpage',$this->pageId);
-		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeIdChild);
-		if(empty($perPage)) $perPage = FConf::get('perpage',$this->typeId);
+		if(empty($perPage) && !empty($this->typeIdChild)) $perPage = FConf::get('perpage',$this->typeIdChild);
+		if(empty($perPage) && !empty($this->typeId)) $perPage = FConf::get('perpage',$this->typeId);
 		if(empty($perPage)) $perPage = FConf::get('perpage','default');
 		return $perPage;
 	}

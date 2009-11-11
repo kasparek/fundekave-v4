@@ -44,6 +44,20 @@ class FFile {
 		return $arrFiles;
 	}
 	
+	static function folderSize($dir) {
+		$arr = FFile::fileList($dir);
+		$size = 0;
+		
+		if(!empty($arr))
+		foreach($arr as $file) {
+			$filename = $dir.'/'.$file;
+			if(is_file($filename)) {
+				$size += filesize($filename);	
+			}
+		}
+		return $size;
+	}
+	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
 		if(!file_exists($dir)) {
 			 $ret = @mkdir($dir, $mode, $recursive);

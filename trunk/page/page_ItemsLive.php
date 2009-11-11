@@ -13,6 +13,8 @@ class page_ItemsLive implements iPage {
 
 		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
 
+		$typeId = '';
+		
 		$localPerPage = $user->pageVO->perPage();
 		
 

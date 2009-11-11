@@ -6,14 +6,16 @@ class FBlog {
 	}
 
 	static function process($data) {
+		$action = $data['action'];
 		$user = FUser::getInstance();
 		$returnItemId = 0;
 		$pageId = $user->pageVO->pageId;
 		if(FRules::get($user->userVO->userId,$pageId,2) === true) {
-			if(!isset($data['del'])) {
+			if($action === 'save') {
 				$itemVO = new ItemVO();
 				$itemVO->addon = FSystem::textins($data['nadpis'],array('plainText'=>1));
-				$itemVO->text = FSystem::textins($data['textclanku']);
+				$itemVO->text = FSystem::textins($data['textshort']);
+				$itemVO->textLong = FSystem::textins($data['textlong']);
 				$author = FSystem::textins($data['autor'],array('plainText'=>1));
 				$itemVO->name = ((empty($author))?($user->userVO->name):($author));
 
@@ -21,40 +23,53 @@ class FBlog {
 				$data['datum'] = FSystem::switchDate($data['datum']);
 				if(FSystem::isDate($data['datum'])) $itemVO->dateCreated = $data['datum'];
 
-				if(isset($data['nid'])) {
-					if($data['nid']>0) {
-						$itemVO->itemId = (int) $data['nid'];
-					}
+				if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
+				
+				if(!empty($data['categoryNew'])) {
+					$data['category'] = FCategory::tryGet( $data['categoryNew'], $pageId);
 				}
-
-				if(isset($data['category'])) $itemVO->categoryId = (int) $data['category'];
+				if(!empty($data['category'])) $itemVO->categoryId = (int) $data['category'];
 
 				if($data['public'] == 1) $itemVO->public = 1;
 
+				$newItem=false;
 				if(empty($itemVO->itemId)) {
 					$itemVO->userId = $user->userVO->userId;
 					$itemVO->pageId = $pageId;
 					$itemVO->typeId = 'blog';
+					$newItem=true;
 				}
 				$returnItemId = $itemVO->save();
 
 				///properties
 				ItemVO::setProperty($returnItemId,'forumSet',(int) $data['forumset']);
 
-				FUserDraft::clear(FBlog::textAreaId());
-			} else {
+				FUserDraft::clear(FBlog::textAreaId().'short');
+				FUserDraft::clear(FBlog::textAreaId().'long');
+				
+				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
+			} else if($action==='delete') {
 				$itemVO = new ItemVO();
-				$itemVO->itemId = (int) $aFormValues['nid'];
+				$itemVO->itemId = (int) $data['item'];
 				$itemVO->delete();
 				$returnItemId = 0;
+
+				FError::addError(FLang::$LABEL_DELETED_OK,1);
+				FAjax::redirect(FSystem::getUri('',$pageId,''));
 			}
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('lastBlogPost');
+			
+			
+			
 			 
 		} else {
-			//---DO AJAX ERROR - cant save data - no rules
-			//echo 'error::rules';
+			FError::addError(FLang::$ERROR_RULES_CREATE);
 		}
+		
+		
+		
 		return $returnItemId;
 	}
 	static function textAreaId() {
@@ -64,18 +79,26 @@ class FBlog {
 	static function getEditForm($itemId) {
 		$user = FUser::getInstance();
 	  
-		$textAreaId = fBlog::textAreaId();
+		$textAreaIdShort = FBlog::textAreaId().'short';
+		$textAreaIdLong = FBlog::textAreaId().'long';
 	  
 		$tpl = FSystem::tpl('blog.editform.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
 		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
+		
+		$textShort = FUserDraft::get($textAreaIdShort);
+		$textLong = FUserDraft::get($textAreaIdLong);
+			
 		if($itemId > 0) {
 			$itemVO = new ItemVO($itemId,false,array('type'=>'blog'));
 
 			if($itemVO->load()) {
 				$tpl->setVariable('EDITADDON',$itemVO->addon);
 				$tpl->setVariable('EDITDATE',$itemVO->dateCreatedLocal);
-				$tpl->setVariable('EDITTEXT',$itemVO->text);
+				
+				if(empty($textShort)) $textShort = $itemVO->text;
+				if(empty($textlong)) $textLong = $itemVO->textLong;
+				
 				$tpl->setVariable('EDITAUTOR',$itemVO->name);
 				$tpl->touchBlock('newdelete');
 				$tpl->setVariable('EDITID',$itemId);
@@ -89,16 +112,20 @@ class FBlog {
 				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',FPages::getProperty($user->pageVO->pageId,'forumSet',2)));
 				///categories
 				if($opt = FCategory::getOptions($user->pageVO->pageId,$itemVO->categoryId,true,''))
-				$tpl->setVariable('CATEGORYOPTIONS',$opt);
+				$tpl->setVariable('CATOPTIONS',$opt);
 			}
 		} else {
+			
 			$tpl->setVariable('EDITDATE',Date("d.m.Y"));
-			if($draft = FUserDraft::get($textAreaId)) $tpl->setVariable('EDITTEXT',$draft);
+			
 		}
-
-		$tpl->setVariable('TEXTID',$textAreaId);
-		//---have to be called js functions: draftSetEventListeners, initInsertToTextarea
-
+		
+		$tpl->setVariable('EDITTEXTSHORT',$textShort);
+		$tpl->setVariable('EDITTEXT',$textLong);
+		
+		$tpl->setVariable('TEXTIDSHORT',$textAreaIdShort);
+		$tpl->setVariable('TEXTID',$textAreaIdLong);
+		
 		return $tpl->get();
 	}
 	static function listAll($itemId = 0,$editMode = false) {
@@ -108,8 +135,9 @@ class FBlog {
 	  
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD, 1, '', 'fajaxa');
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD);
 			}
+			if($user->pageParam=='a') return;
 		}
 	  
 		$tpl = FSystem::tpl('blog.list.tpl.html');

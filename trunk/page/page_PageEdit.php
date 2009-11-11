@@ -224,7 +224,7 @@ class page_PageEdit implements iPage {
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateCreated',$v['date'],array('type'=>'date'))) {
-									FError::addError(ERROR_DATE_FORMAT);
+									FError::addError(FLang::$ERROR_DATE_FORMAT);
 								}
 							}
 							$itemVO->save();
@@ -238,10 +238,12 @@ class page_PageEdit implements iPage {
 				if($data['__ajaxResponse']) {
 					if($pageCreated === true) {
 						//if new page redirect
+						FAjax::errorsLater();
+						FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
 						FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
-						FAjax::addResponse('function','call','msg;ok;Data saved');
+						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 					}
 				} else {
 					FHTTP::redirect(FSystem::getUri('','',$redirectAdd));
@@ -254,14 +256,6 @@ class page_PageEdit implements iPage {
 				//---cache data
 				$cache = FCache::getInstance('l');
 				$cache->setData($pageVO, 'page', 'form');
-
-				if($data['__ajaxResponse']) {
-					$arr = FError::getError();
-					FError::resetError();
-					while($arr) {
-						FAjax::addResponse('function','call','msg;error;'.array_shift($arr).'');
-					}
-				}
 			}
 		}
 
@@ -285,7 +279,7 @@ class page_PageEdit implements iPage {
 				FPages::deletePage($pageId);
 			}
 			page_PagesList::invalidate();
-			FError::addError(FLang::$LABEL_DELETED_OK);
+			FError::addError(FLang::$LABEL_DELETED_OK,1);
 			if($data['__ajaxResponse']) {
 				FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',HOME_PAGE,''));
 			} else {

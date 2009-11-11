@@ -1,6 +1,6 @@
 <?php
 class FSystem {
-	
+
 	//TEMPLATE HELPER
 	static function tpl($templatefile,$root = '',$removeUnknownVariables=TRUE, $removeEmptyBlocks=TRUE){
 		if($root == '') $root = ROOT.ROOT_TEMPLATES;
@@ -12,7 +12,7 @@ class FSystem {
 	static function tplExist($template) {
 		return file_exists(ROOT.ROOT_TEMPLATES.$template);
 	}
-	
+
 	static function tplParseBlockFromVars($tpl, $vars, $block='__global__') {
 		foreach($vars as $k=>$v) $varArr[strtolower($k)] = $v;
 		if (isset($tpl->blocklist[$block]) && !empty($vars)) {
@@ -26,7 +26,7 @@ class FSystem {
 		$tpl->parse($block);
 		return $tpl;
 	}
-	
+
 	/**
 	 * get skin name
 	 * @return string - url
@@ -37,7 +37,7 @@ class FSystem {
 		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
 		return( WEB_REL_CSS . $skin );
 	}
-	
+
 	/**
 	 * Build local path for redirects, buttons, etc.
 	 * @param $otherParams
@@ -49,7 +49,7 @@ class FSystem {
 		$arrAcnchor = explode('#',$otherParams);
 		$otherParams = $arrAcnchor[0];
 		$anchor = '';
-		if(isset($arrAcnchor[1])) $anchor = '#' . $arrAcnchor[1]; 
+		if(isset($arrAcnchor[1])) $anchor = '#' . $arrAcnchor[1];
 		$otherParams = str_replace('&',SEPARATOR,$otherParams);
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
@@ -57,7 +57,7 @@ class FSystem {
 		if($user->pageVO) $newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
-		
+
 		if(preg_match("/i=([0-9]*)/" , $otherParams)) {
 			if(empty($pageParam)) $newPageId = '';
 		} else {
@@ -81,7 +81,7 @@ class FSystem {
 		}
 		return $scriptName . $parStr . $anchor;
 	}
-		
+
 	static function processK($pageId) {
 		if(isset($pageId{5})) {
 			//---remove the part behind - it is just nice link
@@ -107,7 +107,7 @@ class FSystem {
 		}
 		return $pageId;
 	}
-	
+
 	/**
 	 * option - 0 - remove html, safe text 1 - remove html, safe text, parse bb, 2- nothing - just trim
 	 *
@@ -117,7 +117,7 @@ class FSystem {
 	 * @param boolean $wrap - wrap long words
 	 */
 	static function textins($text,$paramsArr=array()) {
-	 
+
 		$breakLong = 1;
 		$endOfLine = 1;
 
@@ -178,7 +178,7 @@ class FSystem {
 		}
 		return $text;
 	}
-	
+
 	static function wordWrap($strParam, $i=70, $wrap = "\n") {
 		$str = strip_tags($strParam);
 		$str = str_replace("\n",' ',$str);
@@ -194,15 +194,15 @@ class FSystem {
 		}
 		return $strParam;
 	}
-	
+
 	static function textinsBr2nl($text,$br='<br />') {
 		return str_replace(array($br."\r\n",$br."\n"),array("\n","\n"),$text);
 	}
-	
+
 	static function textToTextarea($text) {
 		return htmlspecialchars(FSystem::textinsBr2nl($text));
 	}
-	
+
 	//---kontrola vkladaneho datumu
 	static function den($date) {
 		list($day,$month,$year)=Explode(".",$date);
@@ -212,15 +212,17 @@ class FSystem {
 			}
 		}
 	}
-	
+
 	static function switchDate($date) {
-		$arr = explode('.',$date);
-		if(count($arr)>1) {
-			$date = $arr[2].'-'.$arr[1].'-'.$arr[0];
+		if(strpos($date,'.')) {
+			$arr = explode('.',$date);
+			if(count($arr)>1) {
+				$date = $arr[2].'-'.$arr[1].'-'.$arr[0];
+			}
 		}
 		return $date;
 	}
-	
+
 	static function isDate($datein) {
 		$ret=false;
 		$arr = explode(" ",$datein);
@@ -230,20 +232,20 @@ class FSystem {
 		}
 		return $ret;
 	}
-	
+
 	static function isTime($time) {
 		$arrTime = explode(':',$time);
 		if (count($arrTime) >= 2) {
 			if($arrTime[0] < 24 && $arrTime[1] < 60 && $arrTime[0] >= 0 && $arrTime[1] >= 0) return true;
 		}
 	}
-	
+
 	function ip2num($ip) {
 		$arip=explode(".",$ip);
 		$numip=sprintf ("%03d%03d%03d%03d", $arip[0], $arip[1], $arip[2],$arip[3]);
 		return($numip);
 	}
-	
+
 	function getUserIp() {
 		$IPadresa=$_SERVER["REMOTE_ADDR"]."@";
 		if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])) $IPadresa.=$_SERVER["HTTP_X_FORWARDED_FOR"];
@@ -255,7 +257,7 @@ class FSystem {
 		if(isset($_SERVER["X_HTTP_FORWARDED_FOR"])) $IPadresa.=$_SERVER["X_HTTP_FORWARDED_FOR"];
 		return($IPadresa);
 	}
-	
+
 	/**
 	 * transliterate czech diacritic to ascii
 	 *
@@ -291,5 +293,5 @@ class FSystem {
 		}
 		return $return;
 	}
-		
+
 }

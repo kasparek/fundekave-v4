@@ -1,37 +1,33 @@
 <?php
 class FError {
-	function __construct(){
-		if(!isset($_SESSION["errormsg"])) $_SESSION["errormsg"] = array();
-		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();
+	/**
+	 *
+	 * @param $langkey - string or langkey
+	 * @param $type - 0-error,1-info
+	 * @return void
+	 */
+	static function addError($langkey,$type=0){
+		$pointer = &$_SESSION['errormsg'][$type];
+		if(!isset($pointer[$langkey])) $pointer[$langkey]=0;
+		$pointer[$langkey]++;
 	}
-	function addError($langkey,$systemError=0){
-		$mainKey = ($systemError==0)?("errormsg"):('sysmsg');
-		$prepend = (($systemError==0)?(''):($systemError.'::'));
-		$count=0;		
-		if(isset($_SESSION[$mainKey][$langkey])) {
-			$arr = explode(' ',$_SESSION[$mainKey][$langkey]);
-			$count = str_replace(array('[',']'),array('',''),$arr[count($arr)-1]) + 1;
-		}
-		
-		$_SESSION[$mainKey][$langkey]= $prepend.$langkey. (($count>0)?(' ['.$count.']'):(''));
-		return false;
+
+	static function resetError($type=0){
+		$_SESSION["errormsg"][$type] = array();
 	}
-	function resetError(){
-		$_SESSION["errormsg"]=array();
-		$_SESSION["sysmsg"]=array();
+
+	static function getError($type=0){
+		if(!isset($_SESSION["errormsg"][$type])) $_SESSION["errormsg"][$type] = array();
+		return $_SESSION["errormsg"][$type];
 	}
-	function getError($sys=false){
-    $index = ($sys)?("sysmsg"):("errormsg");
-	  if(!isset($_SESSION[$index])) $_SESSION[$index] = array();
-		return($_SESSION[$index]);
+
+	static function isError($type=0){
+		if(!empty($_SESSION["errormsg"][$type])) return true;
 	}
-	function isError($sys=false){
-		$ret=false;
-		
-		if(!isset($_SESSION["errormsg"])) $_SESSION["errormsg"] = array();
-		if(!isset($_SESSION["sysmsg"])) $_SESSION["sysmsg"] = array();
-		
-		if(count($_SESSION[(($sys)?("sysmsg"):("errormsg"))]) > 0) $ret=true;
-		return($ret);
+	
+	static function debug($die=true) {
+		print_r($_SESSION["errormsg"][0]);
+		print_r($_SESSION["errormsg"][1]);
+		if($die===true) die();
 	}
 }

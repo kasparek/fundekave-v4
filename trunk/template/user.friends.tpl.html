@@ -1,48 +1,6 @@
-<!-- BEGIN whois -->
-<h2>Pratele uzivatele: {WHOISNAME}</h2>
-<div id="recipientavatar">
-  	{SELECTEDFRIENDAVATAR}<br />
-    {SELECTEDFRIENDNAME}
-</div>
-<!-- END whois -->
-<!-- BEGIN friendstable -->
-<div class="friends">
-<h3>Pratele</h3>
-<!-- BEGIN friends -->
-<ul>
-<!-- BEGIN friendsrow -->
-<li>
-<div>{FRIENDSAVATAR}</div>
-  <ul>
-  <li><strong>{FRIENDSNAME}</strong></li>
-  <li><a href="?k=frien&amp;who={FUSERID}">Přátelé</a></li>
-	<li><a href="?k=booke&amp;who={FUSERID}">Kluby</a></li>
-	<li>Posledni prihlaseni: {FLAST}</li>
-  <!-- BEGIN fcomment -->
-  <li>Komentar: {FCOMMENT}</li>
-  <!-- END fcomment -->
-  </ul>
-</li>
-<!-- END friendsrow -->
-</ul>
-<!-- END friends -->
-</div>
-<div class="friends">
-<h3>On-Line pratele</h3>
-<!-- BEGIN friendsonline -->
-<ul>
-<!-- BEGIN friendsonlinerow -->
-<li>
-<div>{ONLINEFRIENDAVATAR}<br />
-<strong>{ONLINEFRIENDNAME}</strong></div>
-  <ul>
-  <li><a href="?k={ONLINECURRENTPAGELINK}">{ONLINECURRENTPAGE}</a></li>
-  <li>Přihlášen: {ONLINELOGIN}</li>
-  <li>Poslední aktivita: {ONLINELAST}</li>
-</ul>
-</li>
-<!-- END friendsonlinerow -->
-</ul>
-<!-- END friendsonline -->
-</div>
-<!-- END friendstable -->
+
+{FRIENDSLIST}
+
+{REQUESTSLIST}
+
+{ONLINELIST}

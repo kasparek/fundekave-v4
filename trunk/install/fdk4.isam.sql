@@ -99,7 +99,7 @@ CREATE INDEX `pocket-user` ON sys_users_pocket (userId);
 
 CREATE TABLE sys_users_draft (
   userId MEDIUMINT unsigned NOT NULL
-  ,place VARCHAR(10) NOT NULL
+  ,place VARCHAR(20) NOT NULL
   ,text  TEXT
   ,UNIQUE KEY `userDraft` (`userId`,`place`)
 )  ;
