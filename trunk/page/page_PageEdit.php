@@ -197,7 +197,7 @@ class page_PageEdit implements iPage {
 				if($pageVO->typeId == 'galery') {
 					if(!empty($data['__files'])) {
 						//---upload new foto
-						$adr = ROOT . ROOT_WEB . WEB_REL_GALERY . $pageVO->galeryDir;
+						$adr = ROOT_GALERY . $pageVO->galeryDir;
 						foreach ($_FILES as $foto) {
 							if ($foto["error"]==0) $up=FSystem::upload($foto,$adr,500000);
 						}
