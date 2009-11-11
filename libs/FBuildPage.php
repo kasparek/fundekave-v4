@@ -238,6 +238,7 @@ class FBuildPage {
 		$cssPath = FSystem::getSkinCSSFilename();
 		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
+		$tpl->setVariable("URL_JS", URL_JS);
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
 		//TODO: use wrapper when all js done
