@@ -5,11 +5,11 @@ class FUser {
 	const LO = 'fdk5.salt';
 
 	var $userVO;
-	
+
 	var $pageId;
 	var $pageParam; //---replacing ->currentPageParam
 	var $pageVO;
-	
+
 	var $itemVO;
 
 	//---used when looking after someone informations
@@ -92,7 +92,7 @@ class FUser {
 			if($pageId!='') FHTTP::redirect(FSystem::getUri('',$pageId,''));
 		}
 	}
-	
+
 	/**
 	 * logout current user
 	 * @return void
@@ -163,18 +163,18 @@ class FUser {
 			if(false === ($this->userVO = &$cache->getPointer('user'))) {
 				$this->userVO = new UserVO();
 			}
-		} 
+		}
 		$userId = $this->userVO->userId;
 		$pageAccess = $this->pageAccess = true;
 		$pageId = $this->pageId;
-		
+
 		FProfiler::profile('FUser::kde::1');
 		if($pageId) {
 			//---logout action
 			if( $pageId == 'elogo') {
 				if($userId > 0) {
 					FUser::logout($userId);
-					FError::addError(FLang::$MESSAGE_LOGOUT_OK);
+					FError::addError(FLang::$MESSAGE_LOGOUT_OK,1);
 					FHTTP::redirect('index.php');
 				}
 			}
@@ -190,14 +190,14 @@ class FUser {
 			FProfiler::profile('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
-		
+
 		if($pageAccess === true) {
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
 			if($userId>0) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
 			FProfiler::profile('FUser::kde::4');
-			
+				
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if( $this->pageParam ) {
@@ -230,7 +230,7 @@ class FUser {
 					$pageAccess = $this->pageAccess = true;
 				}
 			}
-			
+				
 			FProfiler::profile('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
@@ -246,7 +246,7 @@ class FUser {
 				FProfiler::profile('FUser::kde::8');
 			}
 		}
-		
+
 	}
 
 	function pageStat() {
@@ -255,6 +255,34 @@ class FUser {
 
 	function setWhoIs($userId) {
 		if(FUser::isUserIdRegistered($userId)) $this->whoIs = $userId; else $this->whoIs=0;
+	}
+
+	static function usersList( $arr, $ident='', $label='' ) {
+		if(!empty($arr)) {
+			$tpl = FSystem::tpl('users.list.tpl.html');
+			if($label!='') $tpl->setVariable('LABEL',$label);
+			foreach($arr as $userVO) {
+				if(!empty($ident)) $tpl->setVariable('BOXID',$ident.$userVO->userId);
+				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
+				$tpl->setVariable('NAME',$userVO->name);
+				$tpl->setVariable('PROFILURL',FSystem::getUri('who='.$userVO->userId,'finfo',''));
+				if(!empty($userVO->dateLastVisit)) $tpl->setVariable('ACTIVITY',$userVO->dateLastVisit);
+				if(!empty($userVO->activityPageId)) {
+					$pageVO = new PageVO($userVO->activityPageId,true);
+					$tpl->setVariable('ACTIVITYURL',FSystem::getUri('',$userVO->activityPageId,''));
+					$tpl->setVariable('ACTIVITYPAGENAME',$pageVO->name);
+					$tpl->setVariable('ACTIVITYPAGENAMESHORT',$pageVO->nameshort);
+				}
+				if(!empty($userVO->requestId)) {
+					$tpl->setVariable('REQUESTID',$userVO->requestId);
+					$tpl->setVariable('REQUESTMESSAGE',$userVO->requestMessage);
+					$tpl->setVariable('REQUESTACTION',FSystem::getUri('m=user-requestaccept','',''));
+				}
+				$tpl->parse('friendsrow');
+			}
+			$tpl->parse();
+			return $tpl->get();
+		}
 	}
 
 	/**
@@ -285,13 +313,13 @@ class FUser {
 		if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 		if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 		if($pwdreg1!=$pwdreg2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-		
+
 		//validate email
 		$data['email'] = trim($data['email']);
 		require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
-		if(true!==$validator->isValid($data['email']))  FError::addError(FLang::$ERROR_INVALID_EMAIL);  
-				
+		if(true!==$validator->isValid($data['email']))  FError::addError(FLang::$ERROR_INVALID_EMAIL);
+
 		if(FError::isError()===false){
 			$userVO = new UserVO();
 			$userVO->name = $jmenoreg;
@@ -301,7 +329,7 @@ class FUser {
 			FUser::login($data['jmenoreg'],md5($pwdreg1),false);
 			//---oznameni o registraci
 			FMessages::sendSAMessage(array('NEWUSERID'=>$userVO->userId,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
-			FError::addError(FLang::$REGISTER_WELCOME);
+			FError::addError(FLang::$REGISTER_WELCOME,1);
 			FHTTP::redirect(FSystem::getUri('',POSTREGISTRATION_PAGE));
 		} else {
 			//cache data

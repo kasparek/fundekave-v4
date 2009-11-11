@@ -1,5 +1,6 @@
 <?php
 class FAjax_user extends FAjaxPluginBase {
+
 	static function switchFriend($data) {
 		$userIdFriend = $data['user'];
 		if($userIdFriend > 0) {
@@ -22,13 +23,91 @@ class FAjax_user extends FAjaxPluginBase {
 		}
 	}
 	
+	static function friendremove($data) {
+	
+	}
+	
+	static function friendrequest($data) {
+		$tpl = FSystem::tpl('friend.request.tpl.html');
+		$tpl->setVariable('ACTION',FSystem::getUri('m=user-friendrequestsend'));
+		$tpl->setVariable('USER',$data['u']);
+		$ret = $tpl->get();
+		FAjax::addResponse('function','call','remove;friendrequest,1');
+		FAjax::addResponse('okmsgJS','after',$ret);
+		FAjax::addResponse('function','getScript','js/jquery.form.fcut.min.js;friendRequestInit');
+	}
+	
+	static function friendrequestsend($data) {
+		$user = FUser::getInstance();
+	
+		$itemVO = new ItemVO();
+		$itemVO->typeId = 'request';
+		$itemVO->text = FSystem::textins($data['message']);
+		$itemVO->pageId = 'frien';
+		$itemVO->userId = $user->userVO->userId;
+		$itemVO->name = $user->userVO->name;
+		$itemVO->userId = $user->userVO->userId;
+		$itemVO->addon = $data['user'];
+		$itemVO->save();
+		
+		sleep(2);
+		FAjax::addResponse('function','call','remove;friendButt');
+		FAjax::addResponse('function','call','remove;friendrequest');
+		FAjax::addResponse('okmsgJS','html','Request sent');
+	}
+	
+	static function requestaccept($data) {
+		$action = $data['action'];
+		switch($action) {
+			case 'requestaccept':
+				$itemVO = new ItemVO();
+				$itemVO->itemId = $data['request'];
+				$itemVO->load(false);
+				
+				$user = FUser::getInstance();
+				$user->userVO->addFriend( (int) $itemVO->userId );
+				FError::addError(FLang::$MSG_FRIEND_ADDED,1);
+				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
+				
+				$itemVO->delete();
+				break;
+			case 'requestcancel':
+				$itemVO = new ItemVO();
+				$itemVO->itemId = $data['request'];
+				$itemVO->load(false);
+				
+				FError::addError('Request canceled',1);
+				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
+
+				$itemVO->delete();
+				break;
+		}
+	}
+	
 	static function settings($data) {
 		page_UserSettings::process($data);
 	}
 	
 	static function avatar($data) {
-		$userId = FUser::logon();
-		FAjax::addResponse($data['result'], $data['resultProperty'], FAvatar::showAvatar($userId));
+		//---list user images
+		$user = FUser::getInstance();
+		$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+		$arr = FFile::fileList($dir,'jpg');
+		sort($arr);
+		$arr = array_reverse($arr);
+		$tpl = FSystem::tpl("users.personal.html");
+		$ret = '';
+		foreach($arr as $img) {
+			$tpl->setVariable("IMGURL",WEB_REL_AVATAR.$user->userVO->name.'/'.$img);
+			$tpl->setVariable("IMGID",md5($img));
+			$tpl->parse('personalImage');
+		}
+		$ret .= $tpl->get('personalImage');
+		FAjax::addResponse('personalfoto', 'html', $ret);
+		FAjax::addResponse('folderSize', 'html', round(FFile::folderSize($dir)/1024).'kB');
+		FAjax::addResponse('function','call','fconfirm');
+		FAjax::addResponse('function','call','fajaxform');
+		FAjax::addResponse('function','call','initSlimbox');
 	}
 	
 	static function book($data) {

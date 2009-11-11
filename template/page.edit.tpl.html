@@ -11,11 +11,13 @@
     <!-- BEGIN categorytab --><li><a href="#tabs-7">Kategorie</a></li><!-- END categorytab -->
     <!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Levy panel</a></li><!-- END leftpaneltab -->
   </ul>
-<div id="tabs-1">
-	<div class="buttonBar">
+  
+  <div class="buttonBar">
    	<input type="submit" name="save" value="Uložit" class="button submit" />
 		<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
 	</div>
+	
+<div id="tabs-1">
 	<fieldset>
 		<legend>Nastaveni</legend>
 		<!-- BEGIN pageowner --><label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br /><!-- END pageowner -->
@@ -49,8 +51,7 @@
 	    <!-- END pageavatarupload -->
 	    
 	    <label>Zahlaví</label>
-	    <span class="textAreaResize"><a href="?textid={PAGECONTENTID}" class="toggleToolSize"></a></span>
-	    <textarea id="{PAGECONTENTID}" class="draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
+	    <textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
 	    <!-- BEGIN galeryspecific -->
 	    <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
 	    <!-- BEGIN enhancendgalery -->
@@ -86,16 +87,11 @@
 <div id="tabs-4">
 <fieldset>
 <legend>Nastenka klubu</legend>
-<span class="textAreaResize"><a href="?textid={HOMEID}" class="toggleToolSize"></a></span>
-<textarea id="{HOMEID}" name="forumhome" class="draftable largeTextarea">{CONTENT}</textarea>{CONTENTTOOLBOX}<br />
-<input type="submit" name="save" value="Uložit" class="button submit" />
+<textarea id="{HOMEID}" name="forumhome" class="markitup draftable largeTextarea">{CONTENT}</textarea>{CONTENTTOOLBOX}<br />
 </div>
 <!-- END forumspecific -->
 <!-- BEGIN galeryspecificcontent -->
 <div id="tabs-5">
-<div class="buttonBar">
-	<input type="submit" name="save" value="Uložit" class="button submit" />
-</div>
 <fieldset>
 <legend>Seznam fotografii</legend>
 <label>Celkem v galerii:</label><span id="fotoTotal">{FOTOTOTAL}</span><br />

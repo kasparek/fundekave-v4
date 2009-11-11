@@ -39,69 +39,77 @@ if( $user->idkontrol ) {
 		file_put_contents(chunkFilename($filename,$seq),$data);
 	}
 
-	$allExists = true; 
+	$allExists = true;
 	for($i=0;$i<$total;$i++) {
 		if(!file_exists(chunkFilename($filename,$i)))  {
 			$allExists = false;
 		}
 	}
 
-//---file complete
-if($allExists === true) {
+	//---file complete
+	if($allExists === true) {
 
-	//--concat all files
-	$encData = '';
-	for($i=0;$i<$total;$i++) {
-		$encData .= trim(file_get_contents(chunkFilename($filename,$i)));
-	}
-	switch($f) {
-		case 'uava':
-			$user = FUser::getInstance();
-			$imageName = FAvatar::createName($filename);
-			$imagePath = ROOT.ROOT_WEB.WEB_REL_AVATAR.$imageName;
-			//delete old
-			if($user->userVO->avatar) {
-				if(file_exists(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar)) {
-					unlink(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar);
+		//--concat all files
+		$encData = '';
+		for($i=0;$i<$total;$i++) {
+			$encData .= trim(file_get_contents(chunkFilename($filename,$i)));
+		}
+		$write = true;
+		switch($f) {
+			case 'uava':
+				$user = FUser::getInstance();
+				$imageName = FAvatar::createName($filename);
+				$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+				$imagePath = $dir . '/' . $imageName;
+				FFile::makeDir($dir);
+				//delete old
+				if($user->userVO->avatar) {
+					if(file_exists(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar)) {
+						unlink(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar);
+					}
 				}
-			}
-			//update db
-			$user->userVO->saveOnlyChanged = true;
-			$user->userVO->set('avatar', $imageName);
-			$user->userVO->save();
-			break;
-		case 'pava':
-			$imageName = 'pageAvatar-'.$pageId.'.jpg';
-			$imagePath = ROOT.ROOT_WEB.WEB_REL_PAGE_AVATAR.$imageName;
-			//update db
-			$pageVO = new PageVO($pageId,true);
-			$pageVO->saveOnlyChanged = true;
-			$pageVO->set('pageIco',$imageName);
-			$pageVO->save();
-			break;
-		case 'futip':
-			$user = FUser::getInstance();
-			//---upload in tmp folder in user folder and save filename in db cache
-			$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
-			$imagePath = $dir . '/' .  $filename;
-			FFile::makeDir($dir);
-			$cache = FCache::getInstance('d');
-			$cache->setData($filename,'event','user-'.$user->userVO->userId);
-		break;
-		default:
-			$pageVO = new PageVO($pageId,true);
-			$galeryUrl = $pageVO->galeryDir;
-			$imageName = strtolower($filename);
-			$ext = FFile::fileExt($imageName);
-			$imageName =str_replace('.'.$ext,'',$imageName); 
-			$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
-	}
-	
-	file_put_contents($imagePath, base64_decode( $encData ));
-	for($i=0;$i<$total;$i++) {
-	  unlink(chunkFilename($filename,$i));
-	}
-}
+					
+				$folderSize = FFile::folderSize($dir) / 1024;
+				
+				if($folderSize < FConf::get('settings','personal_foto_limit')) {
+					file_put_contents($imagePath, base64_decode( $encData ));
+				} else {
+					FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
+				}
+				$write = false;
+				break;
+			case 'pava':
+				$imageName = 'pageAvatar-'.$pageId.'.jpg';
+				$imagePath = ROOT.ROOT_WEB.WEB_REL_PAGE_AVATAR.$imageName;
+				//update db
+				$pageVO = new PageVO($pageId,true);
+				$pageVO->saveOnlyChanged = true;
+				$pageVO->set('pageIco',$imageName);
+				$pageVO->save();
+				break;
+			case 'futip':
+				$user = FUser::getInstance();
+				//---upload in tmp folder in user folder and save filename in db cache
+				$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
+				$imagePath = $dir . '/' .  $filename;
+				FFile::makeDir($dir);
+				$cache = FCache::getInstance('d');
+				$cache->setData($filename,'event','user-'.$user->userVO->userId);
+				break;
+			default:
+				$pageVO = new PageVO($pageId,true);
+				$galeryUrl = $pageVO->galeryDir;
+				$imageName = strtolower($filename);
+				$ext = FFile::fileExt($imageName);
+				$imageName =str_replace('.'.$ext,'',$imageName);
+				$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+		}
 
-echo 1;
+		if($write===true) file_put_contents($imagePath, base64_decode( $encData ));
+		for($i=0;$i<$total;$i++) {
+	  unlink(chunkFilename($filename,$i));
+		}
+	}
+
+	echo 1;
 }

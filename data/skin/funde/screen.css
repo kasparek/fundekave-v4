@@ -176,11 +176,18 @@ ul#menu li a {
 ul#menu li.active a {
 	background-color: white;
 }
+div#search-holder {
+float: right;
+padding-top: 10px;
+margin-bottom: -10px;
+}
+
 div#menu-secondary-holder {
 	padding-top: 20px;
 	padding-right: 20px;
 	padding-bottom: 10px;
 }
+
 div#mainbar ul#menu-secondary {
 	margin: 0;
 	padding: 0;
@@ -188,6 +195,7 @@ div#mainbar ul#menu-secondary {
 	display: table;
 	border-bottom: 1px solid #999;
 }
+
 div#mainbar ul#menu-secondary li {
 	position: relative;
 	padding-left: 0;
@@ -883,10 +891,12 @@ div.friends {
 	margin-right: 2%;
 }
 div.friends ul li {
+	list-style: none;
 	background-image: none;
 	clear: left;
 }
 div.friends ul li ul li {
+	padding-left: 1em;
 	background: url("img/arrow-white-bg.gif") no-repeat left center;
 }
 div.friends ul li div,
@@ -970,6 +980,22 @@ div#fcalendar div.calendarNextMonthLink {
 	
 	/*background: #eae6da;
 	border-top: 0;*/
+}
+
+/* user info */
+div.info-webcam {
+	float: right;
+}
+div.user-info {
+	padding-top: 10px;
+}
+div.user-info-foto {
+	padding-top: 10px;
+}
+div.user-info-foto img {
+	margin-bottom: 10px;
+	margin-right: 10px;
+	float: left;
 }
 
 /*error msgs*/

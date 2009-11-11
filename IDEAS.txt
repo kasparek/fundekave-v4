@@ -1,3 +1,10 @@
+events - tipy -> udalosti
+soukromy - vidi pouze pratele
+osobni - vidim pouze ja a vybrani pratele
+repetitini - jako v diary
+upozorneni - pro vsechny kdo prijdou 
+
+
 search box
 result stranka se zalozkama
 uzivatele | prispevky | stranky

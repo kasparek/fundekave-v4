@@ -25,6 +25,7 @@ class page_ForumView implements iPage {
 		FProfiler::profile('page_ForumView--START');
 		
 		/* PALCE FILTER TOOLBAR */
+		/*
 		if($user->idkontrol) {
 			if($user->pageParam=='') {
 				if(isset($_GET['s']) || FItemsToolbar::isToolbarEnabled()) {
@@ -36,7 +37,7 @@ class page_ForumView implements iPage {
 				}
 			}
 		}
-		
+		*/
 
 
 		if ($user->pageVO->typeId=='blog') {

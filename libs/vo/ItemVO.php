@@ -357,7 +357,14 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
-
+		
+		public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0);  
+		function prop($propertyName,$value=null) {
+			if($value!==null) ItemVO::setProperty($this->itemId,$propertyName,$value);
+			$default='';
+			if(isset($this->propDefaults[$propertyName])) $default = $this->propDefaults[$propertyName];
+			return ItemVO::getProperty($this->itemId,$propertyName,$default);
+		}
 
 		//---special properties
 		static function getProperty($itemId,$propertyName,$default=false) {

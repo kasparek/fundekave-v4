@@ -30,7 +30,7 @@ static $LABEL_YES = 'Ano';
 static $LABEL_NO = 'Ne';
 static $LABEL_NOTREGISTEREDUSERS = 'Neprihlaseni';
 
-static $BUTTON_PAGE_SETTINGS = 'Admin';
+static $BUTTON_PAGE_SETTINGS = 'SA';
 static $BUTTON_PAGE_BACK = 'Zpět';
 static $BUTTON_PAGE_NEXT = 'Dalsi';
 static $BUTTON_PAGE_PREV = 'Predchozi';
@@ -42,6 +42,10 @@ static $MESSAGE_DIARY_REMINDER = 'Pripominka z diare<br /><a href="{LINK}">{NAME
 
 static $LABEL_BOOK = 'Do oblíbených';
 static $LABEL_UNBOOK = 'Nesledovat';
+static $SEND_MESSAGE = 'Poslat zpravu';
+static $LABEL_FRIEND_ADD = 'Pridat do pratel';
+static $LABEL_FRIEND_REMOVE = 'Odebrat z pratel';
+static $MSG_FRIEND_ADDED = 'Pritel pridan';
 
 static $LABEL_PAGE_NEW = 'Nová stránka';
 static $ERROR_PAGE_ADD_NONAME = 'Zadejte prosím jméno stránky';
@@ -73,8 +77,6 @@ static $LABEL_DELETED_OK = 'Uspesne smazano';
 static $LABEL_EVENTS_ARCHIV = 'Archiv';
 static $LABEL_EVENT_NEW = 'Novy tip';
 static $LABEL_LOGOUT = 'Odhlaseni';
-static $LABEL_FRIEND_ADD = 'Do pratel';
-static $LABEL_FRIEND_REMOVE = 'Odebrat z pratel';
 static $ERROR_DATE_FORMAT = 'Spatny format data';
 static $MESSAGE_SUCCESS_CREATE = 'Úspěšně založeno';
 static $MESSAGE_SUCCESS_SAVED = 'Úspěšně uloženo';
@@ -121,7 +123,7 @@ static $ERROR_UPLOAD_NOTALLOWEDFILENAME = 'Soubor obsahuje nepovolene znaky [5]'
 static $ERROR_UPLOAD_NOTSAVED = 'Chyba při ukládání souboru [6]';
 static $MESSAGE_UPLOAD_SUCCESS = 'Uspesne nahrano';
 
-static $ERROR_RULES_CREATE = 'Nemate dostatecna prava pro zakladani';
+static $ERROR_RULES_CREATE = 'Nemate dostatecna prava pro pridavani';
 static $ERROR_CAPTCHA = 'Opiste spravne kontrolni kod';
 static $ERROR_GALERY_DIREMPTY = 'Nezadali jste adresar';
 static $ERROR_GALERY_DIRWRONG = 'Zadali jste neplatne jmeno adresar, jsou povolene znaky pouze / - _ 0-9 a-z A-Z';
@@ -145,6 +147,8 @@ static $TEXT_PERMISSIONS_SET = 'Nastavení přístupových práv';
 
 static $ERROR_BANNER_TARGETEMPTY = 'Nezadali jste cilovou adresu banneru';
 static $ERROR_BANNER_EMPTY = 'Nezadali jste banner';
+
+static $PERSONAL_FOTO_FOLDER_FULL = 'Vas osobni adresar na fotky je plny';
 
 //---category
 static $LABEL_CATEGORY_NAME = 'Nazev';

@@ -156,14 +156,14 @@ class FBuildPage {
 				//NOT TEMPLATE AT ALL
 				$contentData = array("MAINDATA"=>$user->pageVO->content);
 			}
-				
+
 			FProfiler::profile('FBuildPage::baseContent--CONTENT DONE');
 
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 
 			if(!empty($user->pageParam) || $user->itemVO) {
-				if($user->itemVO) $typeId = $user->itemVO->typeId; else $typeId = ''; 
+				if($user->itemVO) $typeId = $user->itemVO->typeId; else $typeId = '';
 				if($typeId!='galery' && $typeId!='forum' && $user->pageParam!='a') FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
 			}
 
@@ -187,7 +187,7 @@ class FBuildPage {
 				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
-			if(FRules::get($user->userVO->userId,'sadmi',1)) {
+			if(FRules::get($user->userVO->userId,'sadmi',2)) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
 			}
 			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
@@ -218,15 +218,21 @@ class FBuildPage {
 
 		$user = FUser::getInstance();
 		//---ERROR MESSAGES
-		$arrerr = FError::getError();
-		if(is_array($arrerr)){
-			foreach ($arrerr as $err) $str[]=$err;
-			if(isset($str)){
-				$tpl->setCurrentBlock("errormsg");
-				$tpl->setVariable("ERRORMSG",implode("<br />",$str));
-				$tpl->setCurrentBlock("errormsg");
-				FError::resetError();
+		$arrMsg = FError::getError();
+		if(!empty($arrMsg)){
+			foreach ($arrMsg as $k=>$v) {
+				$tpl->setVariable("ERRORMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
+				$tpl->parse("errormsg");
 			}
+			FError::resetError();
+		}
+		$arrMsg = FError::getError(1);
+		if(!empty($arrMsg)){
+			foreach ($arrMsg as $k=>$v) {
+				$tpl->setVariable("OKMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
+				$tpl->parse("okmsg");
+			}
+			FError::resetError(1);
 		}
 		//---HEADER
 		$cssPath = FSystem::getSkinCSSFilename();
@@ -274,15 +280,15 @@ class FBuildPage {
 
 		//---BANNER
 		/*
-		if(!isset($_GET['nobanner'])) {
+		 if(!isset($_GET['nobanner'])) {
 			$banner = FBanner::getBanner();
 			if(!empty($banner)) {
-				$tpl->setVariable("BANNER",$banner);
-				$tpl->touchBlock('hasMainBanner');
+			$tpl->setVariable("BANNER",$banner);
+			$tpl->touchBlock('hasMainBanner');
 			}
-		}
-		FProfiler::profile('FBuildPage--FSystem::grndbanner');
-		*/
+			}
+			FProfiler::profile('FBuildPage--FSystem::grndbanner');
+			*/
 		if($user->pageAccess === true) {
 			//---SECONDARY MENU
 			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
@@ -306,7 +312,7 @@ class FBuildPage {
 		$fLeftpanel->show();
 		FProfiler::profile('FBuildPage--FLeftPanel');
 		$fLeftpanel = false;
-		
+
 
 		//---FOOTER INFO
 		$cache = FCache::getInstance('l');
@@ -337,7 +343,7 @@ class FBuildPage {
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
-//			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
+			//			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 			if(strpos($item, 'fajaxa') !== false && strpos($item, 'hash') !== false) { $useBBQ = true; }
 		}
@@ -358,7 +364,9 @@ class FBuildPage {
 			$tpl->touchBlock("fuup");
 		}
 		if($useTabs === true) {
+			$tpl->touchBlock("juiHEAD"); //---js in the header
 			$tpl->touchBlock("tabsEND");
+			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
 		}
 		if($useSupernote === true) {
 			$tpl->touchBlock("supernoteEND");

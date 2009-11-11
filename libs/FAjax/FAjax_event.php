@@ -28,11 +28,6 @@ class FAjax_event extends FAjaxPluginBase {
 		FAjax::addResponse($data['result'], 'html', FEvents::editForm($data['item']));
 		FAjax::addResponse('function','call','draftSetEventListeners');
 
-		FAjax::addResponse('function','css','js/markitup/skins/simple/style.css');
-		FAjax::addResponse('function','css','js/markitup/sets/default/style.css');
-		FAjax::addResponse('function','getScript','js/markitup/jquery.markitup.pack.js');
-		FAjax::addResponse('function','getScript','js/markitup/sets/default/set.js;markItUpInit');
-
 		FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;datePickerInit');
 		FAjax::addResponse('function','getScript','js/i18n/ui.datepicker-cs.js');
 		FAjax::addResponse('function','css','css/themes/ui-lightness/jquery-ui-1.7.2.custom.css');
@@ -43,6 +38,7 @@ class FAjax_event extends FAjaxPluginBase {
 		FAjax::addResponse('function','getScript','js/swfo.js;fuupInit');
 		FAjax::addResponse('function','call','fajaxform');
 		FAjax::addResponse('function','call','fconfirm');
+		FAjax::addResponse('function','call','addTASwitch');
 	}
 
 	static function submit($data) {
@@ -58,16 +54,13 @@ class FAjax_event extends FAjaxPluginBase {
 
 		if($itemVO === false) {
 			//---item deleted
+			FAjax::errorsLater();
 			FAjax::addResponse('function','call','redirect;'.FSystem::getUri('','event',''));
 
 		} else {
-			
+		
 			//if updating just message
-			if(FError::isError()) {
-				$arr = FError::getError();
-				FError::resetError();
-				FAjax::addResponse('function','call','msg;error;'.implode('<br />',$arr));
-			} else {
+			if(!FError::isError()) {
 				FAjax::addResponse('function','call','msg;ok;Data saved');
 			}
 			
@@ -80,7 +73,7 @@ class FAjax_event extends FAjaxPluginBase {
 			FAjax::addResponse('function','call','fajaxform');
 			FAjax::addResponse('function','call','fconfirm');
 			FAjax::addResponse('function','call','initSlimbox');
-			//FAjax::addResponse('function','call','markItUpInit');
+			FAjax::addResponse('function','call','tabsInit');
 			FAjax::addResponse('function','call','fuupInit');
 			
 

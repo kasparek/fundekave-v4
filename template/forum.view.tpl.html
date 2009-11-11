@@ -6,9 +6,7 @@
   <!-- BEGIN usernotlogged -->
   <label>Jméno</label><input type="text" name="jmeno" value="{USERNAMENOTLOGGED}" class="short" tabindex="0" /><br />
   <!-- END usernotlogged -->
-  <label for="{TEXTAREAID}">Text</label>
-	<span class="textAreaResize"><a href="?textid={TEXTAREAID}" class="toggleToolSize"></a></span>
-	<textarea id="{TEXTAREAID}" class="draftable<!-- BEGIN small --> short<!-- END small -->" name="zprava" tabindex="1">{TEXTAREACONTENT}</textarea>
+  <label for="{TEXTAREAID}">Text</label> <textarea id="{TEXTAREAID}" class="markitup draftable<!-- BEGIN small --> short<!-- END small -->" name="zprava" tabindex="1">{TEXTAREACONTENT}</textarea>
 	<br />
   <!-- BEGIN usernotlogged2 -->
   <label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />

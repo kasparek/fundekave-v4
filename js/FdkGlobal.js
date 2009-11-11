@@ -1,3 +1,17 @@
+function friendRequestInit() {
+	$('#friendrequest').show('slow');
+	fajaxform();
+	$('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()});
+}
+
+function tabsInit() { $("#tabs").tabs(); }
+function remove(id,notween) {
+if(notween==1) {
+$('#'+id).remove();
+}else{ 
+$('#'+id).hide('slow',function(){$('#'+id).remove()});
+} 
+}
 
 function BBQinit() {
     var url = $.param.fragment();
@@ -62,11 +76,17 @@ function deleteFoto(event) {
 
 function fajaxform(event) { setListeners('button', 'click', onButtonClick); setListeners('fajaxform', 'submit', fsubmit ); };
 var buttonClicked = '';
+var formSent;
 var preventAjax = false;
+
 function fconfirm(event) { setListeners('confirm', 'click', function(event) { if (!confirm($(this).attr("title"))) { preventAjax = true; event.preventDefault(); } }); };
 function onButtonClick(event) { buttonClicked = event.target.name; };
 function fsubmit(event) {
-	$("#errormsgJS").hide();
+	event.preventDefault();
+	$('.errormsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
+	$('.okmsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
+	$('.button',this).attr('disabled','disabled');
+	formSent = this;
 	if (preventAjax == true) { preventAjax = false; return; }
 	var arr = $(this).formToArray(false);
 	var result = false;
@@ -82,7 +102,6 @@ function fsubmit(event) {
 	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
 	addXMLRequest('k', gup('k', this.action));
 	sendAjax(gup('m', this.action),gup('k', this.action));
-	event.preventDefault();
 };
 
 function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent'}); }); }
@@ -127,7 +146,6 @@ function avatarfrominput(evt) {
 	addXMLRequest('username', $("#prokoho").attr("value"));
 	addXMLRequest('result', "recipientavatar");
 	addXMLRequest('resultProperty', 'html');
-	addXMLRequest('call', 'initSupernote');
 	addXMLRequest('call', 'fajaxa');
 	sendAjax('post-avatarfrominput');
 }
@@ -145,7 +163,29 @@ function initSupernote() {
 function draftSetEventListeners() { setListeners('draftable', 'keyup', draftEventHandler); };
 
 var waitingTA;
-function markItUpInit() { var textid='.draftable'; if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } $(textid).markItUp(mySettings); };
+var markitupScriptsLoaded = false;
+function markItUpInit() { var textid='.markitup'; if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } $(textid).markItUp(mySettings); markitupScriptsLoaded = true; };
+
+function addTASwitch() {
+	$('.markitup').each( function() { $(this).before('<span class="textAreaResize"><a href="?textid='+$(this).attr('id')+'" class="toggleToolSize"></a></span>'); });
+	setListeners(
+			'toggleToolSize',
+			'click',
+			function(e) {
+				var TAId = gup("textid", e.target.href);
+				if ( $("#" + TAId).hasClass('markItUpEditor') ) {
+					$("#" + TAId).markItUpRemove();
+				} else {
+					if(markitupScriptsLoaded===false) {
+						waitingTA = TAId;
+						sendAjax('void-markitup');
+					} else {
+						$("#" + TAId).markItUp(mySettings);
+					}
+				}
+				e.preventDefault();
+			});
+}
 
 function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'+this.rel).toggleClass('hidden'); } ); };
 
@@ -183,6 +223,7 @@ $("#errormsgJS").hide();
 				});
 		// ---textarea toolbox
 		initInsertToTextarea();
+		addTASwitch();
 		// ---round corners
 		DD_roundies.addRule('.radcon', 5);
 		// ---message page
@@ -273,18 +314,6 @@ function initInsertToTextarea() {
 			clearTimeout(draftTimeout);
 		}
 	});
-	setListeners(
-			'toggleToolSize',
-			'click',
-			function(evt) {
-				if ($("#" + gup("textid", this.href) + ".markItUpEditor").length === 1) {
-					$("#" + gup("textid", this.href)).markItUpRemove();
-				} else {
-					waitingTA = gup("textid", this.href);
-					sendAjax('void-markitup');
-				}
-				evt.preventDefault();
-			});
 }
 
 //---drafting ----------------------------
@@ -445,6 +474,7 @@ function sendAjax(action,k) {
 							case 'html':
 							case 'replaceWith':
 							case 'append':
+							case 'after':
 								command = '$("#' + item.attr('target') + '").' + item.attr('property') + '( item.text() );'
 								break;
 							default:
@@ -452,6 +482,7 @@ function sendAjax(action,k) {
 						};
 						};
 						if(command.length>0) eval(command);
+						if(formSent) { $('.button',formSent).removeAttr('disabled'); formSent=null; }
 					});
 		}
 	});

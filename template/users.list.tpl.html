@@ -1,0 +1,25 @@
+<div class="friends">
+<h3>{LABEL}</h3>
+<!-- BEGIN friends --><ul>
+<!-- BEGIN friendsrow -->
+<li<!-- BEGIN boxid --> id="{BOXID}"<!-- END boxid -->>
+<div>{AVATAR}</div>
+  <ul>
+  <li><strong>{NAME}</strong></li>
+  <li><a href="{PROFILURL}">Profil</a></li>
+	<!-- BEGIN offline --><li>Posledni aktivita: {ACTIVITY}</li><!-- END offline -->
+	<!-- BEGIN online --><li>Aktivni: <a href="{ACTIVITYURL}" title="{ACTIVITYPAGENAME}">{ACTIVITYPAGENAMESHORT}</a></li><!-- END online -->
+  </ul>
+  <!-- BEGIN req --><form action="{REQUESTACTION}" class="fajaxform">
+  <input type="hidden" name="request" value="{REQUESTID}" />
+  <div style="width: 100%;">
+  <fieldset>
+  <!-- BEGIN reqmess --><p>{REQUESTMESSAGE}</p><!-- END reqmess -->
+	<input type="submit" name="requestaccept" value="Pridat do pratel" class="button" /> <input type="submit" name="requestcancel" value="Zrusit" title="Opravdu chcete zrusit tento pozadavek?" class="button confirm" />
+	</fieldset>
+	</div>
+	</form><!-- END req -->
+</li>
+<!-- END friendsrow -->
+</ul><!-- END friends -->
+</div>

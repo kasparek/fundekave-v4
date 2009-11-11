@@ -130,7 +130,7 @@ class page_PagesList implements iPage {
 		//---populate filte input
 		$tpl->setVariable('FILTRTEXT',$pageSearchCache['filtrStr']);
 		if(!empty($pageSearchCache['filtrStr'])) {
-			$tpl->setVariable('FILTRSELECTEDCANCEL',$user->getUri('f='));
+			$tpl->setVariable('FILTRSELECTEDCANCEL',FSystem::getUri('f='));
 		}
 
 		//---show results if any

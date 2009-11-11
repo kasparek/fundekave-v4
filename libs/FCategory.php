@@ -38,7 +38,7 @@ class FCategory extends FDBTool {
 		$user = FUser::getInstance();
 		if(!$user->idkontrol) $this->addWhere('public=1');
 	}
-	
+
 	/**
 	 * get list of options for select HTML input
 	 *
@@ -68,13 +68,13 @@ class FCategory extends FDBTool {
 		}
 		return $options;
 	}
-	
+
 	//STATIC FUNCTIONS
 	static function getCategory($categoryId) {
 		$q = "select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'";
 		return FDBTool::getRow($q,$categoryId,'categories','l');;
 	}
-	
+
 	/**
 	 * print list of categories to select from - static html for frontend
 	 *
@@ -124,13 +124,13 @@ class FCategory extends FDBTool {
 			if(!empty($selected)) $tpl->setVariable("OPTIONSELECTED",(($selected==$k)?(' selected="selected"'):('')));
 			$tpl->setVariable("OPTIONTEXT",$v);
 			$tpl->parse("arr".$blockname);
-			
+				
 		}
 		$tpl->setVariable("SELECTNAME",$selectname);
 		$tpl->parse("kateg".$blockname);
 		$tpl->parse("kategformelement".$this->formElement);
 	}
-	
+
 	function getInput($blockname,$name,$value=''){
 		$tpl = &$this->tplObject;
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['INPUT'.$k]=$v;
@@ -142,7 +142,7 @@ class FCategory extends FDBTool {
 		$tpl->parse("kategformelement".$this->formElement);
 		$tpl->parse($blockname);
 	}
-	
+
 	function getUriAddon() {
 		$user = FUser::getInstance();
 		$rediraddon = '';
@@ -151,7 +151,7 @@ class FCategory extends FDBTool {
 		if(!empty($this->arrRedirAddon)) foreach ($this->arrRedirAddon as $k=>$v) $rediraddon .= '&'.$k.'='.$v;
 		return $rediraddon;
 	}
-	
+
 	function process($data, $redirect=false) {
 		//---action part
 		if(isset($data["save"])){
@@ -171,14 +171,14 @@ class FCategory extends FDBTool {
 				}
 			}
 			if (isset($data["del".$this->ident])) foreach ($data["del".$this->ident] as $gkid) $this->db->query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');
-				
+
 			if($redirect===true) {
 				$rediraddon = $this->getUriAddon();
 				FHTTP::redirect(FSystem::getUri($rediraddon));
 			}
 		}
 	}
-	
+
 	function getEdit() {
 		$tpl = &$this->tplObject;
 		if(empty($this->ident) || empty($this->table) || empty($this->primaryCol)) return false;
@@ -221,7 +221,7 @@ class FCategory extends FDBTool {
 		foreach ($arr as $kat) {
 			$this->arrDefaultValues = array("KATEG"=>$this->ident,"ID"=>$kat[0]);
 			$arrColsSwitched = array_flip($this->arrDbUsedCols);
-				
+
 			foreach ($this->arrDbUsedCols as $this->key=>$col){
 				if($this->arrInputType[$this->key]=='public'){
 					//---select public
@@ -256,5 +256,30 @@ class FCategory extends FDBTool {
 		}
 
 		return $tpl->get();
+	}
+
+	static function tryGet( $newCat, $typeId ) {
+		$newCat = trim($newCat);
+		//check first if it does not exist
+		$q = "select categoryId,name from sys_pages_category where typeId='".$typeId."'";
+		$arrCat = FDBTool::getAll($q);
+		$percentHighest = 0;
+		$catIdHighest = 0;
+		foreach($arrCat as $row) {
+			$sim = similar_text(strtolower($newCat),strtolower($row[1]),$percent);
+			if($percent > $percentHighest) {
+				$percentHighest = $percent;
+				$catIdHighest = $row[0];
+			}
+		}
+		if($percentHighest > 79) {
+			return $catIdHighest;
+		} else {
+			$catVO = new CategoryVO();
+			$catVO->name = $newCat;
+			$catVO->typeId = $typeId;
+			$catVO->save();
+			return $catVO->categoryId;
+		}
 	}
 }
