@@ -5,18 +5,18 @@ class FEvents {
 		return str_replace(FFile::fileExt($flyerName),'jpg',$flyerName);
 	}
 
-	static function thumbUrl($flyerName) {
-		return FConf::get('events','flyer_cache') . FEvents::thumbName($flyerName);
+	static function thumbUrl($flyerName, $root=URL_FLYER_THUMB) {
+		return $root . FEvents::thumbName($flyerName);
 	}
 
-	static function flyerUrl($flyerName) {
-		return FConf::get('events','flyer_source') . $flyerName;
+	static function flyerUrl($flyerName,$root=URL_FLYER) {
+		return $root . $flyerName;
 	}
 
 	static function createThumb($imageName) {
 		//---create paths
-		$flyerFilename = FEvents::flyerUrl($imageName);
-		$flyerFilenameThumb = FEvents::thumbUrl($imageName);
+		$flyerFilename = FEvents::flyerUrl($imageName,ROOT_FLYER);
+		$flyerFilenameThumb = FEvents::thumbUrl($imageName,ROOT_FLYER_THUMB);
 		//---delete old
 		if(file_exists($flyerFilenameThumb)) { unlink($flyerFilenameThumb); }
 		//---generate thumb
@@ -181,8 +181,10 @@ class FEvents {
 			if($itemVO->itemId>0) {
 				//del and update db
 				if($itemVO->enclosure!='') {
-					if(file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-					if(file_exists(FConf::get('events','flyer_cache').$itemVO->enclosure)) unlink(FConf::get('events','flyer_cache').$itemVO->enclosure);
+					$rootFlyer = ROOT_FLYER.$itemVO->enclosure;
+					$rootFlyerThumb = ROOT_FLYER_THUMB.$itemVO->enclosure;
+					if(file_exists($rootFlyer)) unlink($rootFlyer);
+					if(file_exists($rootFlyerThumb)) unlink($rootFlyerThumb);
 				}
 				$itemVO->enclosure = 'null';
 				$itemVO->save();
@@ -254,11 +256,11 @@ class FEvents {
 					if($ext=='gif' || $ext=='jpg' || $ext=='jpeg' || $ext=='png') {
 						$flyerName = FEvents::createFlyerName($itemVO->itemId, $data['akceletakurl']);
 						//---delete old files
-						if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-						if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
+						if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
+						if(file_exists(ROOT_FLYER.$flyerName)) unlink(ROOT_FLYER.$flyerName);
 						//---save file
 						if($file = file_get_contents($data['akceletakurl'])) {
-							file_put_contents(FConf::get('events','flyer_source').$flyerName,$file);
+							file_put_contents(ROOT_FLYER.$flyerName,$file);
 						}
 						FEvents::createThumb($flyerName);
 
@@ -269,10 +271,10 @@ class FEvents {
 					if($data['__files']['akceletak']['error'] == 0) {
 						$flyerName = $data['__files']['akceletak']['name'] = FEvents::createFlyerName($itemVO->itemId, $data['__files']['akceletak']['name']);
 						//---delete old files
-						if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-						if(file_exists(FConf::get('events','flyer_source').$flyerName)) unlink(FConf::get('events','flyer_source').$flyerName);
+						if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
+						if(file_exists(ROOT_FLYER.$flyerName)) unlink(ROOT_FLYER.$flyerName);
 						//---upload file
-						if(FSystem::upload($data['__files']['akceletak'],FConf::get('events','flyer_source'),800000)) {
+						if(FSystem::upload($data['__files']['akceletak'],ROOT_FLYER,800000)) {
 							FEvents::createThumb($data['__files']['akceletak']['name']);
 							$itemVO->enclosure = $data['__files']['akceletak']['name'];
 							$itemVO->save();
@@ -312,12 +314,12 @@ class FEvents {
 			if(!empty($filename)) {
 				//---set flyer
 				$flyerName = FEvents::createFlyerName($itemVO->itemId, $filename);
-				if(!empty($itemVO->enclosure) && file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-				$flyerTarget = FConf::get('events','flyer_source').$flyerName;
+				if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
+				$flyerTarget = ROOT_FLYER.$flyerName;
 				if(file_exists($flyerTarget)) unlink($flyerTarget);
 				rename(FConf::get('settings','upload_tmp').$user->userVO->name.'/'.$filename, $flyerTarget);
 				chmod($flyerTarget, 0777);
-				FFile::makeDir(FConf::get('events','flyer_cache'));
+				FFile::makeDir(FConf::get('events','root_flyer_thumb'));
 				FEvents::createThumb( $flyerName );
 				$itemVO->enclosure = $flyerName;
 				$itemVO->save();

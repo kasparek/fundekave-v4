@@ -5,8 +5,10 @@ class FAjax_event extends FAjaxPluginBase {
 		if($data['item']>0) {
 			$itemVO = new ItemVO($data['item'],true);
 			if($itemVO->enclosure!='') {
-				if(file_exists(FConf::get('events','flyer_source').$itemVO->enclosure)) unlink(FConf::get('events','flyer_source').$itemVO->enclosure);
-				if(file_exists(FConf::get('events','flyer_cache').$itemVO->enclosure)) unlink(FConf::get('events','flyer_cache').$itemVO->enclosure);
+				$rootFlyer = ROOT_FLYER.$itemVO->enclosure;
+				$rootFlyerThumb = ROOT_FLYER_THUMB.$itemVO->enclosure;
+				if(file_exists($rootFlyer)) unlink($rootFlyer);
+				if(file_exists($rootFlyerThumb)) unlink($rootFlyerThumb);
 			}
 			$itemVO->enclosure = 'null';
 			$itemVO->save();

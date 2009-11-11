@@ -141,15 +141,16 @@ class FItemsRenderer {
 
 				if(!empty($enclosure)) {
 					$flyerFilename = FEvents::flyerUrl($enclosure);
-					if(file_exists($flyerFilename)) {
+					//$root_flyerFilename = FEvents::flyerUrl($enclosure,ROOT_FLYER);
+					//if(file_exists($root_flyerFilename)) {
 						$flyerFilenameThumb = FEvents::thumbUrl($enclosure);
 						//FEvents::createThumb($enclosure);
-						$arrSize = getimagesize($flyerFilename);
-						$vars['BIGFLYERLINK'] = $flyerFilename.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20);
+						//$arrSize = getimagesize($flyerFilename);
+						$vars['BIGFLYERLINK'] = $flyerFilename;//.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20);
 						$vars['FLYERTHUMBURL'] = $flyerFilenameThumb;
 						$vars['IMGEVENTTITLE'] = $addon;
 						$vars['IMGEVENTALT'] = $addon;
-					}
+					//}
 				} else {
 					$vars['FLYERTHUMBURLDEFAULT'] = $localCSS . '/img/flyer_default.png';
 				}
