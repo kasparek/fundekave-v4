@@ -36,21 +36,23 @@ class FGalery {
 		//---check thumbnail
 		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
-			$thumbPathArr = $fGalery->getThumbPath(URL_GALERY_CACHE_SYSTEM);
+			$thumbPathArr = $fGalery->getThumbPath(ROOT_GALERY_CACHE_SYSTEM);
 			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
 				$fGalery->createThumb($thumbPathArr
 					,array('width'=>$fGalery->conf['widthThumb']
 						,'height'=>$fGalery->conf['heightThumb'])
 					);	
 			}
+			$thumbPathArr = $fGalery->getThumbPath(URL_GALERY_CACHE_SYSTEM);
 			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			$fGalery->itemVO->heightWidth = $fGalery->conf['heightThumb'];
 		} else {
-			$thumbPathArr = $fGalery->getThumbPath();
+			$thumbPathArr = $fGalery->getThumbPath(ROOT_GALERY_CACHE);
 			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
 				$fGalery->createThumb($thumbPathArr);
 			}
+			$thumbPathArr = $fGalery->getThumbPath();
 			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			$fGalery->itemVO->thumbWidth = (String) $fGalery->pageVO->getPageParam('enhancedsettings/widthpx');
 			$fGalery->itemVO->thumbHeight = (String) $fGalery->pageVO->getPageParam('enhancedsettings/heightpx');
@@ -58,9 +60,10 @@ class FGalery {
 			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 		}
 		$fGalery->itemVO->detailUrl = URL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
+		$toTestDetail = ROOT_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure; 
 
-		if(file_exists( $fGalery->itemVO->detailUrl )) {
-			list($width,$height) = getimagesize( $fGalery->itemVO->detailUrl );
+		if(file_exists( $toTestDetail )) {
+			list($width,$height) = getimagesize( $toTestDetail );
 			$fGalery->itemVO->detailWidth = $width;
 			$fGalery->itemVO->detailHeight = $height;
 			$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
@@ -86,8 +89,8 @@ class FGalery {
 	 *
 	 * @return strinf url
 	 */
-	function  getDetailUrl() {
-		return URL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
+	function  getDetailUrl($root=URL_GALERY) {
+		return $root . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
 	}
 	
 	/**
@@ -96,7 +99,7 @@ class FGalery {
 	 * @param string $cacheDir - alternative
 	 * @return array [path,filename,thumb,url]
 	 */
-	function getThumbPath($cacheDir = '') {
+	function getThumbPath( $cacheDir = '' ) {
 		$pathUrl = $this->getThumbCachePath($cacheDir);
 		$arrFilename = explode('.',$this->itemVO->enclosure);
 		$filenameExtStriped = implode('.',array_slice($arrFilename,0,count($arrFilename)-1));
@@ -115,8 +118,8 @@ class FGalery {
 	 * @param string $path - url
 	 * @return boolean
 	 */
-	static function isThumb($path) {
-		return file_exists($path);
+	static function isThumb( $path ) {
+		return file_exists( $path );
 	}
 	
 	/**
@@ -134,7 +137,7 @@ class FGalery {
 				}
 			}
 			//Create file
-			if(isset($params['source'])) $sourceImgUrl = $params['source'];	else $sourceImgUrl = $this->getDetailUrl();
+			if(isset($params['source'])) $sourceImgUrl = $params['source'];	else $sourceImgUrl = $this->getDetailUrl(ROOT_GALERY);
 			if(isset($params['quality'])) $quality = $params['quality']; else $quality = $this->conf['quality'];
 			if(isset($params['thumbnailstyle'])) $thumbnailstyle = (int) $params['thumbnailstyle']; else $thumbnailstyle = (int) $this->pageVO->getPageParam('enhancedsettings/thumbnailstyle');
 			if(isset($params['width'])) $width = (int) $params['width']; else $width = (int) ($this->pageVO->getPageParam('enhancedsettings/widthpx') < 10)?($this->conf['widthThumb']):((String) $this->pageVO->getPageParam('enhancedsettings/widthpx'));
@@ -171,7 +174,7 @@ class FGalery {
 		$galery->itemVO = new ItemVO($itemId, true, array('type'=>'galery'));
 		$galery->pageVO = new PageVO($galery->itemVO->pageId,true);
 		$galery->itemVO->hit();
-		return file_get_contents( $galery->getDetailUrl() );
+		return file_get_contents( $galery->getDetailUrl(ROOT_GALERY) );
 	}
 
 	/**
