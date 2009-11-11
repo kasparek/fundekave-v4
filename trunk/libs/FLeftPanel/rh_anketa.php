@@ -13,7 +13,7 @@ class rh_anketa {
 	}
 	static function show($ankid=0,$odpid=0) {
 		$user = FUser::getInstance();
-
+		if(empty($user->pageVO)) return;
 		$data = '';
 
 		if($ankid == 0) $do=FDBTool::getRow("SELECT pollId,question,votesperuser FROM sys_poll WHERE activ=1 AND pageId='".$user->pageVO->pageId."'");

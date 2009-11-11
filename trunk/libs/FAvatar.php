@@ -13,10 +13,10 @@ class FAvatar {
 		} elseif($userId > 0) {
 			$cache = FCache::getInstance('l');
 			if( ($userAvatar = $cache->getData($userId,'UavaUrl')) === false ) {
-				$userAvatar = URL_AVATAR . FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
+				$userAvatar = FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
 				if(!empty($userAvatar)) {
-					if(file_exists($userAvatar) && !is_dir($userAvatar)) {
-						$picname = $userAvatar;
+					if(file_exists( ROOT_AVATAR.$userAvatar ) && !is_dir( ROOT_AVATAR.$userAvatar )) {
+						$picname = URL_AVATAR.$userAvatar;
 					}
 				}
 				$cache->setData($userAvatar ,$userId,'UavaUrl');

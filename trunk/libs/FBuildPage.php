@@ -356,9 +356,11 @@ class FBuildPage {
 		}
 		if($useSlimbox === true) {
 			$tpl->touchBlock("slimboxHEAD");
+			$tpl->setVariable('SLIMBOX_URL_JS',URL_JS);
 			$tpl->touchBlock("slimboxEND");
 		}
 		if($useSwfobject === true) {
+			$tpl->setVariable('SWFO_URL_JS',URL_JS);
 			$tpl->touchBlock("swfo");
 		}
 		if($useFuup === true) {
@@ -366,16 +368,20 @@ class FBuildPage {
 		}
 		if($useTabs === true) {
 			$tpl->touchBlock("juiHEAD"); //---js in the header
+			$tpl->setVariable('TABS_URL_JS',URL_JS);
 			$tpl->touchBlock("tabsEND");
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
 		}
 		if($useSupernote === true) {
+			$tpl->setVariable('SUPERNOTE_URL_JS',URL_JS);
 			$tpl->touchBlock("supernoteEND");
 		}
 		if($useFajaxform === true) {
+			$tpl->setVariable('FORM_URL_JS',URL_JS);
 			$tpl->touchBlock("fajaxformEND");
 		}
 		if($useBBQ===true) {
+			$tpl->setVariable('BBQ_URL_JS',URL_JS);
 			$tpl->touchBlock("bbq");
 		}
 		FProfiler::profile('FBuildPage--custom js sections');

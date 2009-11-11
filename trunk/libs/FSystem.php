@@ -54,6 +54,7 @@ class FSystem {
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
+    $newPageId = '';
 		if($user->pageVO) $newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
