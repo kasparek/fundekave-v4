@@ -13,7 +13,7 @@ class page_UserSettings implements iPage {
 
 				$md5 = str_replace('avatar','',$data['action']);
 
-				$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+				$dir = ROOT_AVATAR . $user->userVO->name;
 				$arr = FFile::fileList($dir,'jpg');
 
 				foreach($arr as $file) {
@@ -25,7 +25,7 @@ class page_UserSettings implements iPage {
 
 				$newAvatar = FAvatar::processAvatar($dir.'/'.$newSource);
 				//update
-				if(!empty($user->userVO->avatar)) unlink(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar);
+				if(!empty($user->userVO->avatar)) unlink(ROOT_AVATAR.$user->userVO->avatar);
 				$user->userVO->avatar = $newAvatar;
 				$user->userVO->save();
 
@@ -40,7 +40,7 @@ class page_UserSettings implements iPage {
 
 				$md5 = str_replace('del','',$data['action']);
 
-				$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+				$dir = ROOT_AVATAR . $user->userVO->name;
 				$arr = FFile::fileList($dir,'jpg');
 				foreach($arr as $file) {
 					if(md5($file) == $md5) {
@@ -128,8 +128,8 @@ class page_UserSettings implements iPage {
 				$avatarFile = $data['__files']["idfoto"];
 				if ($avatarFile["error"] == 0){
 					$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
-					if(FSystem::upload($avatarFile, WEB_REL_AVATAR, 20000)) {
-						$userVO->avatar = FAvatar::processAvatar(WEB_REL_AVATAR.$avatarFile['name']);
+					if(FSystem::upload($avatarFile, ROOT_AVATAR, 20000)) {
+						$userVO->avatar = FAvatar::processAvatar(ROOT_AVATAR.$avatarFile['name']);
 					}
 				}
 			}
@@ -212,7 +212,7 @@ class page_UserSettings implements iPage {
 
 		if($userVO->getXMLVal('webcam','motion') == 0) $tpl->touchBlock('cammotion');
 
-		$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+		$dir = ROOT_AVATAR . $user->userVO->name;
 
 		$tpl->setVariable('FOLDERSIZE',round(FFile::folderSize($dir)/1024).'kB');
 		$tpl->setVariable('FOLDERLIMIT', FConf::get('settings','personal_foto_limit').'kB');
@@ -222,7 +222,7 @@ class page_UserSettings implements iPage {
 		$arr = array_reverse($arr);
 		$ret = '';
 		foreach($arr as $img) {
-			$tpl->setVariable("IMGURL",WEB_REL_AVATAR.$user->userVO->name.'/'.$img);
+			$tpl->setVariable("IMGURL",URL_AVATAR.$user->userVO->name.'/'.$img);
 			$tpl->setVariable("IMGID",md5($img));
 			$tpl->parse('personalImage');
 		}

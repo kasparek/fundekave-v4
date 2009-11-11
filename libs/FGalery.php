@@ -36,7 +36,7 @@ class FGalery {
 		//---check thumbnail
 		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
-			$thumbPathArr = $fGalery->getThumbPath(WEB_REL_CACHE_GALERY_SYSTEM);
+			$thumbPathArr = $fGalery->getThumbPath(URL_GALERY_CACHE_SYSTEM);
 			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
 				$fGalery->createThumb($thumbPathArr
 					,array('width'=>$fGalery->conf['widthThumb']
@@ -57,7 +57,7 @@ class FGalery {
 			if(empty($fGalery->itemVO->thumbWidth)) $fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 		}
-		$fGalery->itemVO->detailUrl = WEB_REL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
+		$fGalery->itemVO->detailUrl = URL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 
 		if(file_exists( $fGalery->itemVO->detailUrl )) {
 			list($width,$height) = getimagesize( $fGalery->itemVO->detailUrl );
@@ -78,7 +78,7 @@ class FGalery {
 	 * @return string url
 	 */
 	function getThumbCachePath($cacheDir='') {
-		if($this->pageVO) return (($cacheDir!='') ? ( $cacheDir ):( WEB_REL_CACHE_GALERY )) . $this->pageVO->pageId . '-' . FSystem::safeText($this->pageVO->name);
+		if($this->pageVO) return (($cacheDir!='') ? ( $cacheDir ):( URL_GALERY_CACHE )) . $this->pageVO->pageId . '-' . FSystem::safeText($this->pageVO->name);
 	}
 	
 	/**
@@ -87,7 +87,7 @@ class FGalery {
 	 * @return strinf url
 	 */
 	function  getDetailUrl() {
-		return WEB_REL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
+		return URL_GALERY . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
 	}
 	
 	/**
@@ -209,7 +209,7 @@ class FGalery {
 		//---search folder
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
-		$galdir = WEB_REL_GALERY . $this->pageVO->galeryDir.'/';
+		$galdir = ROOT_GALERY . $this->pageVO->galeryDir.'/';
 		$handle=opendir( $galdir . '/' );
 		while ( false !== ($file = readdir( $handle )) ){
 			if (preg_match("/((.jpeg)|(.jpg)|(.gif)|(.JPEG)|(.JPG)|(.GIF)$)/",$file)) {
@@ -306,7 +306,7 @@ class FGalery {
 			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 			
 			if(!empty($galery->itemVO->thumbUrl)) if(is_file($galery->itemVO->thumbUrl)) unlink($galery->itemVO->thumbUrl);
-			if(is_file(WEB_REL_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) unlink(WEB_REL_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 			$galery->removeThumb();
 
 			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
@@ -326,16 +326,16 @@ class FGalery {
 	 * @return void
 	 */
 	function removeThumb() {
-		$thumbPathArr = $this->getThumbPath();
-		if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-			if(!unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-				FError::addError('Cannot delete thumb: '.ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+		$thumbPathArr = $this->getThumbPath(ROOT_GALERY_CACHE);
+		if(FGalery::isThumb($thumbPathArr['thumb'])) {
+			if(!unlink($thumbPathArr['thumb'])) {
+				FError::addError('Cannot delete thumb: '.$thumbPathArr['thumb']);
 			}
 		}
 		//---delete system thumb
-		$thumbPathArr = $this->getThumbPath( WEB_REL_CACHE_GALERY_SYSTEM );
-		if(FGalery::isThumb(ROOT.ROOT_WEB.$thumbPathArr['thumb'])) {
-			@unlink(ROOT.ROOT_WEB.$thumbPathArr['thumb']);
+		$thumbPathArr = $this->getThumbPath( ROOT_GALERY_CACHE_SYSTEM );
+		if(FGalery::isThumb($thumbPathArr['thumb'])) {
+			@unlink($thumbPathArr['thumb']);
 		}
 	}
 	/**
@@ -345,9 +345,9 @@ class FGalery {
 	static function deleteThumbs( $pageId ) {
 		$galery = new FGalery();
 		$galery->pageVO = new PageVO($pageId, true);
-		$cachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath();
+		$cachePath = $galery->getThumbCachePath( ROOT_GALERY_CACHE );
 		FFile::rm_recursive($cachePath);
-		$systemCachePath = ROOT . ROOT_WEB . $galery->getThumbCachePath( WEB_REL_CACHE_GALERY_SYSTEM );
+		$systemCachePath = $galery->getThumbCachePath( ROOT_GALERY_CACHE_SYSTEM );
 		FFile::rm_recursive($systemCachePath);
 	} 
 	

@@ -94,10 +94,10 @@ class FPages extends FDBTool {
 			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and itemIdTop is null");
 			foreach ($arrd as $df) $galery->removeFoto($df);
 			if(!empty($dir)) {
-				FFile::rm_recursive( ROOT . WEB_REL_GALERY . $dir );
+				FFile::rm_recursive( ROOT_GALERY . $dir );
 				$cachePath = $galery->getThumbCachePath();
 				FFile::rm_recursive($cachePath);
-				$systemCachePath = $galery->getThumbCachePath( WEB_REL_CACHE_GALERY_SYSTEM );
+				$systemCachePath = $galery->getThumbCachePath( URL_GALERY_CACHE_SYSTEM );
 				FFile::rm_recursive($systemCachePath);
 			}
 		}
@@ -230,7 +230,7 @@ class FPages extends FDBTool {
 				$tpl->setCurrentBlock('item');
 				if($user->userVO->zforumico) {
 					if(!empty($page[3])) {
-						$tpl->setVariable("AVATARURL", WEB_REL_PAGE_AVATAR.$page[3]);
+						$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page[3]);
 						$tpl->setVariable("AVATARNAME", $page[2]);
 						$tpl->setVariable("AVATARALT", $page[2]);
 					}
@@ -364,9 +364,9 @@ class FPages extends FDBTool {
 	static function avatarFromUrl($pageId, $avatarUrl) {
 		$filename = 'pageAvatar-'.$pageId.'.jpg';
 		if($file = @file_get_contents( $avatarUrl )) {
-			file_put_contents(WEB_REL_PAGE_AVATAR.$filename,$file);
+			file_put_contents(ROOT_PAGE_AVATAR.$filename,$file);
 			$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-			$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$filename,WEB_REL_PAGE_AVATAR.$filename,$resizeParams);
+			$iProc = new FImgProcess(ROOT_PAGE_AVATAR.$filename,ROOT_PAGE_AVATAR.$filename,$resizeParams);
 		}
 		return $filename;
 	}
@@ -374,13 +374,13 @@ class FPages extends FDBTool {
 	//---load from upload
 	function avatarUpload($pageId, $filesData) {
 		$filesData['name'] = "pageAvatar-".$pageId.'.jpg';
-		if($up = FSystem::upload($filesData, WEB_REL_PAGE_AVATAR, 40000)) {
+		if($up = FSystem::upload($filesData, ROOT_PAGE_AVATAR, 40000)) {
 			//---resize and crop if needed
-			list($width,$height,$type) = getimagesize(WEB_REL_PAGE_AVATAR.$up['name']);
+			list($width,$height,$type) = getimagesize(ROOT_PAGE_AVATAR.$up['name']);
 			if($width != PAGE_AVATAR_WIDTH_PX || $height!= PAGE_AVATAR_HEIGHT_PX) {
 				//---RESIZE
 				$resizeParams = array('quality'=>80,'crop'=>1,'width'=>PAGE_AVATAR_WIDTH_PX,'height'=>PAGE_AVATAR_HEIGHT_PX);
-				$iProc = new FImgProcess(WEB_REL_PAGE_AVATAR.$filesData['name'],WEB_REL_PAGE_AVATAR.$up['name'],$resizeParams);
+				$iProc = new FImgProcess(ROOT_PAGE_AVATAR.$filesData['name'],ROOT_PAGE_AVATAR.$up['name'],$resizeParams);
 			}
 			return $up['name'];
 		}
@@ -389,7 +389,7 @@ class FPages extends FDBTool {
 
 	//---delete
 	function avatarDelete( $pageId ) {
-		$filename = WEB_REL_PAGE_AVATAR.'pageAvatar-'.$pageId.'.jpg';
+		$filename = ROOT_PAGE_AVATAR.'pageAvatar-'.$pageId.'.jpg';
 		if(file_exists($filename)) {
 			unlink($filename);
 			return '';

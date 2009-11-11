@@ -40,7 +40,7 @@ class FUvatar {
       if($user->userVO->getXMLVal('webcam','avatar') == 1) {
             //---RESIZE
             $resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
-            FImgProcess::process($filename,WEB_REL_AVATAR . $user->userVO->avatar,$resizeParams);
+            FImgProcess::process($filename,URL_AVATAR . $user->userVO->avatar,$resizeParams);
         }
          
          $interval = (int) $user->getXMLVal('webcam','interval');

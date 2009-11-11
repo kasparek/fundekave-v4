@@ -39,7 +39,7 @@ class FBanner {
 			} else {
 				$banner = $strictBanner[rand(0,count($strictBanner)-1)];
 			}
-			$imgname = WEB_REL_BANNER . $banner[1];
+			$imgname = URL_BANNER . $banner[1];
 			$imglink = 'bannredir.php?bid='.$banner[0];
 
 			if(preg_match("/(.swf)$/",$imgname))
