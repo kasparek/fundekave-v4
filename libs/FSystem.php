@@ -35,7 +35,7 @@ class FSystem {
 		$skin = SKIN_DEFAULT;
 		//---TODO: from userVO load custom skin name
 		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
-		return( WEB_REL_CSS . $skin );
+		return( URL_CSS . $skin );
 	}
 
 	/**
