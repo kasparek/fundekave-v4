@@ -34,7 +34,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$ret = $tpl->get();
 		FAjax::addResponse('function','call','remove;friendrequest,1');
 		FAjax::addResponse('okmsgJS','after',$ret);
-		FAjax::addResponse('function','getScript','js/jquery.form.fcut.min.js;friendRequestInit');
+		FAjax::addResponse('function','getScript',URL_JS.'jquery.form.fcut.min.js;friendRequestInit');
 	}
 	
 	static function friendrequestsend($data) {

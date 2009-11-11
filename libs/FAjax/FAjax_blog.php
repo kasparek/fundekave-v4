@@ -8,8 +8,8 @@ class FAjax_blog extends FAjaxPluginBase {
 			FAjax::addResponse('editnew', 'html', $ret);
 			FAjax::addResponse('function','call','draftSetEventListeners');
 
-			FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;datePickerInit');
-			FAjax::addResponse('function','getScript','js/i18n/ui.datepicker-cs.js');
+			FAjax::addResponse('function','getScript', URL_JS.'jquery-ui.datepicker.js;datePickerInit');
+			FAjax::addResponse('function','getScript',URL_JS.'i18n/ui.datepicker-cs.js');
 			FAjax::addResponse('function','css','css/themes/ui-lightness/jquery-ui-1.7.2.custom.css');
 
 			FAjax::addResponse('function','call','addTASwitch');
