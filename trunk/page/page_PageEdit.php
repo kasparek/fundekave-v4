@@ -346,7 +346,7 @@ class page_PageEdit implements iPage {
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
 		
-		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco);
+		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco);
 
 
 		if($user->pageParam!='a') {

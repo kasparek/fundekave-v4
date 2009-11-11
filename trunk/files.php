@@ -59,13 +59,13 @@ if( $user->idkontrol ) {
 			case 'uava':
 				$user = FUser::getInstance();
 				$imageName = FAvatar::createName($filename);
-				$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+				$dir = ROOT_AVATAR . $user->userVO->name;
 				$imagePath = $dir . '/' . $imageName;
 				FFile::makeDir($dir);
 				//delete old
 				if($user->userVO->avatar) {
-					if(file_exists(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar)) {
-						unlink(ROOT.ROOT_WEB.WEB_REL_AVATAR.$user->userVO->avatar);
+					if(file_exists(ROOT_AVATAR.$user->userVO->avatar)) {
+						unlink(ROOT_AVATAR.$user->userVO->avatar);
 					}
 				}
 					
@@ -80,7 +80,7 @@ if( $user->idkontrol ) {
 				break;
 			case 'pava':
 				$imageName = 'pageAvatar-'.$pageId.'.jpg';
-				$imagePath = ROOT.ROOT_WEB.WEB_REL_PAGE_AVATAR.$imageName;
+				$imagePath = ROOT_PAGE_AVATAR.$imageName;
 				//update db
 				$pageVO = new PageVO($pageId,true);
 				$pageVO->saveOnlyChanged = true;
@@ -102,7 +102,7 @@ if( $user->idkontrol ) {
 				$imageName = strtolower($filename);
 				$ext = FFile::fileExt($imageName);
 				$imageName =str_replace('.'.$ext,'',$imageName);
-				$imagePath = ROOT.ROOT_WEB.WEB_REL_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+				$imagePath = ROOT_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
 		}
 
 		if($write===true) file_put_contents($imagePath, base64_decode( $encData ));

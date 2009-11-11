@@ -69,7 +69,7 @@ class page_UserInfo implements iPage {
 		$tpl->setVariable("DATECREATED",$userVO->dateCreated);
 		$tpl->setVariable("DATEUPDATED",$userVO->dateLastVisit);
 
-		$dir = ROOT.ROOT_WEB.WEB_REL_AVATAR . $user->userVO->name;
+		$dir = ROOT_AVATAR . $user->userVO->name;
 		$arr = FFile::fileList($dir,'jpg');
 		if(!empty($arr)) {
 			$tpl->touchBlock('tabfoto');
@@ -77,7 +77,7 @@ class page_UserInfo implements iPage {
 			$arr = array_reverse($arr);
 			$ret = '';
 			foreach($arr as $img) {
-				$tpl->setVariable("IMGURL",WEB_REL_AVATAR.$user->userVO->name.'/'.$img);
+				$tpl->setVariable("IMGURL",URL_AVATAR.$user->userVO->name.'/'.$img);
 				$tpl->parse('foto');
 			}
 		}

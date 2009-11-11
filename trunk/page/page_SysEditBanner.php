@@ -8,7 +8,7 @@ class page_SysEditBanner implements iPage {
 
 		//upload
 		if(!empty($data['__files']['bann'])) {
-			if($ak=upload($data['__files']["bann"],WEB_REL_BANNER)) {
+			if($ak=upload($data['__files']["bann"],ROOT_BANNER)) {
 				FError::addError(FLang::$MESSAGE_UPLOAD_SUCCESS);
 				FHTTP::redirect(FSystem::getUri());
 			}
@@ -16,7 +16,7 @@ class page_SysEditBanner implements iPage {
 		
 		//delete file from ftp
 		if(isset($data['__get']['ibd'])) {
-			$banner =  WEB_REL_BANNER.trim($data['__get']['ibd']);
+			$banner =  ROOT_BANNER.trim($data['__get']['ibd']);
 			if(file_exists($banner)) {
 				if($ak = @unlink($banner)){
 					FError::addError(FLang::$LABEL_DELETED_OK);
@@ -115,13 +115,13 @@ strict from sys_banner where bannerId='".$bannerIdEdit."'");
 		if(!empty($bannerName)) {
 			$tpl->setVariable('EDACTION',FSystem::getUri());
 			if(preg_match("/(.swf)$/",$bannerName)) {
-				$tpl->setVariable('EDSWFURL',WEB_REL_BANNER.$bannerName);
+				$tpl->setVariable('EDSWFURL',URL_BANNER.$bannerName);
 				$tpl->setVariable('EDSWFNAME',$bannerName);
 			} elseif(preg_match("/(jpg|gif)$/",$bannerName)) {
-				$tpl->setVariable('EDURL',WEB_REL_BANNER.$bannerName);
+				$tpl->setVariable('EDURL',URL_BANNER.$bannerName);
 				$tpl->setVariable('EDNAME',$bannerName);
 			} else {
-				$tpl->setVariable('UNEDURL',WEB_REL_BANNER.$bannerName);
+				$tpl->setVariable('UNEDURL',URL_BANNER.$bannerName);
 				$tpl->setVariable('UNEDNAME',$bannerName);
 			}
 		}
@@ -144,13 +144,13 @@ FROM sys_banner ORDER BY dateFrom desc");
 				if($row[8]==1) $tpl->touchBlock('strict');
 				$arrUsedFiles[] = $file = $row[1];
 				if(preg_match("/(.swf)$/",$file)) {
-					$tpl->setVariable('BANNERSWFURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('BANNERSWFURL',URL_BANNER.$file);
 					$tpl->setVariable('BANNERSWFNAME',$file);
 				} elseif(preg_match("/(jpg|gif)$/",$file)) {
-					$tpl->setVariable('BANNERURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('BANNERURL',URL_BANNER.$file);
 					$tpl->setVariable('BANNERNAME',$file);
 				} else {
-					$tpl->setVariable('UNBANNERURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('UNBANNERURL',URL_BANNER.$file);
 					$tpl->setVariable('UNBANNERNAME',$file);
 				}
 
@@ -168,20 +168,20 @@ FROM sys_banner ORDER BY dateFrom desc");
 			}
 		}
 
-		$arrFiles = FSystem::fileList(WEB_REL_BANNER,"swf|gif|jpg|JPG|GIF|SWF|JPEG|jpeg");
+		$arrFiles = FSystem::fileList(ROOT_BANNER,"swf|gif|jpg|JPG|GIF|SWF|JPEG|jpeg");
 
 		while($arrFiles) {
 			$file = array_shift($arrFiles);
 			if(!in_array($file,$arrUsedFiles)) {
 				$tpl->setCurrentBlock('bannerimg');
 				if(preg_match("/(.swf)$/",$file)) {
-					$tpl->setVariable('SWFURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('SWFURL',URL_BANNER.$file);
 					$tpl->setVariable('SWFNAME',$file);
 				} elseif(preg_match("/(jpg|gif)$/",$file)) {
-					$tpl->setVariable('IMGURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('IMGURL',URL_BANNER.$file);
 					$tpl->setVariable('IMGNAME',$file);
 				} else {
-					$tpl->setVariable('UNIMGURL',WEB_REL_BANNER.$file);
+					$tpl->setVariable('UNIMGURL',URL_BANNER.$file);
 					$tpl->setVariable('UNIMGNAME',$file);
 				}
 

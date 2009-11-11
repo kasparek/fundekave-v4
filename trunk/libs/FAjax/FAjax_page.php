@@ -18,7 +18,7 @@ class FAjax_page extends FAjaxPluginBase {
 		$user = FUser::getInstance();
 		$pageVO = new PageVO($user->pageId,true);
 		$tpl=FSystem::tpl('page.edit.tpl.html');
-		$tpl->setVariable('PAGEICOLINK',WEB_REL_PAGE_AVATAR.$pageVO->pageIco.'?r='.rand());
+		$tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco.'?r='.rand());
 		$tpl->parse('pageavatar');
 		$avatar = $tpl->get('pageavatar');
 		FAjax::addResponse($data['result'], $data['resultProperty'], $avatar);

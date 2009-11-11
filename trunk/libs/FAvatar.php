@@ -6,14 +6,14 @@ class FAvatar {
 	 * @return string - avatar pic url
 	 */
 	static function getAvatarUrl($userId=-1){
-		$picname = WEB_REL_AVATAR . AVATAR_DEFAULT;
+		$picname = URL_AVATAR . AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
-			$picname = WEB_REL_AVATAR . $user->userVO->avatar; //---myself
+			$picname = URL_AVATAR . $user->userVO->avatar; //---myself
 		} elseif($userId > 0) {
 			$cache = FCache::getInstance('l');
 			if( ($userAvatar = $cache->getData($userId,'UavaUrl')) === false ) {
-				$userAvatar = WEB_REL_AVATAR . FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
+				$userAvatar = URL_AVATAR . FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
 				if(!empty($userAvatar)) {
 					if(file_exists($userAvatar) && !is_dir($userAvatar)) {
 						$picname = $userAvatar;
@@ -140,7 +140,7 @@ class FAvatar {
 			//---RESIZE
 			$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
 			$newName = FAvatar::createName($avatarName);
-			$targetName = ROOT . ROOT_WEB . WEB_REL_AVATAR.$newName;
+			$targetName = ROOT_AVATAR.$newName;
 			FImgProcess::process($avatarName,$targetName,$resizeParams);
 		}
 		return $newName;
