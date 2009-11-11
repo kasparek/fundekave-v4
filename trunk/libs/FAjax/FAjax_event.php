@@ -28,14 +28,14 @@ class FAjax_event extends FAjaxPluginBase {
 		FAjax::addResponse($data['result'], 'html', FEvents::editForm($data['item']));
 		FAjax::addResponse('function','call','draftSetEventListeners');
 
-		FAjax::addResponse('function','getScript','js/jquery-ui.datepicker.js;datePickerInit');
-		FAjax::addResponse('function','getScript','js/i18n/ui.datepicker-cs.js');
+		FAjax::addResponse('function','getScript',URL_JS.'jquery-ui.datepicker.js;datePickerInit');
+		FAjax::addResponse('function','getScript',URL_JS.'i18n/ui.datepicker-cs.js');
 		FAjax::addResponse('function','css','css/themes/ui-lightness/jquery-ui-1.7.2.custom.css');
 		
 		FAjax::addResponse('function','css','css/slimbox2.css');
-		FAjax::addResponse('function','getScript','js/slimbox2.js');
+		FAjax::addResponse('function','getScript',URL_JS.'slimbox2.js');
 
-		FAjax::addResponse('function','getScript','js/swfo.js;fuupInit');
+		FAjax::addResponse('function','getScript',URL_JS.'swfo.js;fuupInit');
 		FAjax::addResponse('function','call','fajaxform');
 		FAjax::addResponse('function','call','fconfirm');
 		FAjax::addResponse('function','call','addTASwitch');
