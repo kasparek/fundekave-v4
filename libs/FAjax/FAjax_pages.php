@@ -10,7 +10,7 @@ class FAjax_pages extends FAjaxPluginBase {
 		}
 		FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".($data['page'])."' AND userId='" . $data['user']."'");
 		
-		FAjax::addResponse('bookButt','html',$data);
+		FAjax::addResponse('bookButt','$html',$data);
 	}
 
 	static function booked($data) {
@@ -18,7 +18,7 @@ class FAjax_pages extends FAjaxPluginBase {
 		if($user->$userVO->isFriend($data['user'])) $user->whoIs = $data['user'];
 		$fPages = new FPages($typeId,$user->$userVO->userId);
 		
-		FAjax::addResponse('bookedContent','html',$fPages->printBookedList(true));
+		FAjax::addResponse('bookedContent','$html',$fPages->printBookedList(true));
 	}
 
 }

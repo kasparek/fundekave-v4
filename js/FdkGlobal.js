@@ -4,14 +4,9 @@ function friendRequestInit() {
 	$('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()});
 }
 
-function tabsInit() { $("#tabs").tabs(); }
-function remove(id,notween) {
-if(notween==1) {
-$('#'+id).remove();
-}else{ 
-$('#'+id).hide('slow',function(){$('#'+id).remove()});
-} 
-}
+function enable(id) { $('#'+id).removeAttr('disabled'); };
+function tabsInit() { $("#tabs").tabs(); };
+function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
 
 function BBQinit() {
     var url = $.param.fragment();
@@ -37,12 +32,12 @@ function fuupUploadOneComplete() {
 };
 function fuupUploadAvatarComplete() {
 	addXMLRequest('result', "avatarBox");
-	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('resultProperty', '$html');
   sendAjax('user-avatar',gup('k',$(".fajaxform").attr('action')));
 };
 function fuupUploadPageAvatarComplete() {
 	addXMLRequest('result', "pageavatarBox");
-	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('resultProperty', '$html');
 	addXMLRequest('call', 'fconfirm');
 	sendAjax('page-avatar',gup('k',$(".fajaxform").attr('action')));
 };
@@ -50,7 +45,7 @@ function fuupUploadEventComplete() {
 	var item = $('#item').attr('value');
 	if(item>0) addXMLRequest('item', item);
   addXMLRequest('result', "flyerDiv");
-	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('resultProperty', '$html');
 	addXMLRequest('call', 'initSlimbox');
 	addXMLRequest('call', 'fconfirm');
 	addXMLRequest('call', 'fajaxform');
@@ -78,9 +73,19 @@ function fajaxform(event) { setListeners('button', 'click', onButtonClick); setL
 var buttonClicked = '';
 var formSent;
 var preventAjax = false;
+var draftdrop = false;
 
 function fconfirm(event) { setListeners('confirm', 'click', function(event) { if (!confirm($(this).attr("title"))) { preventAjax = true; event.preventDefault(); } }); };
-function onButtonClick(event) { buttonClicked = event.target.name; };
+
+function changeInit() {
+ setListeners('change','change',fOnChange);
+}
+function fOnChange(e) {
+	var value = $(e.target).attr('value');
+	//sendAjax();
+} 
+
+function onButtonClick(event) { buttonClicked = event.target.name; if($(event.target).hasClass('draftdrop')) draftdrop=true; };
 function fsubmit(event) {
 	event.preventDefault();
 	$('.errormsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
@@ -98,7 +103,7 @@ function fsubmit(event) {
 		if (obj.name == 'resultProperty') resultProperty = true;
 	}
 	if (result == false) addXMLRequest('result', $(this).attr("id"));
-	if (resultProperty == false) addXMLRequest('resultProperty', 'html');
+	if (resultProperty == false) addXMLRequest('resultProperty', '$html');
 	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
 	addXMLRequest('k', gup('k', this.action));
 	sendAjax(gup('m', this.action),gup('k', this.action));
@@ -124,7 +129,7 @@ function fajaxaSend(event) {
 	}
 	if(id) {
 		if (result == false) addXMLRequest('result', $(this).attr("id"));
-		if (resultProperty == false) addXMLRequest('resultProperty', 'html');
+		if (resultProperty == false) addXMLRequest('resultProperty', '$html');
 	}
 	sendAjax(gup('m', href),gup('k', href));
 	event.preventDefault();
@@ -145,7 +150,7 @@ function initUserPost() {
 function avatarfrominput(evt) {
 	addXMLRequest('username', $("#prokoho").attr("value"));
 	addXMLRequest('result', "recipientavatar");
-	addXMLRequest('resultProperty', 'html');
+	addXMLRequest('resultProperty', '$html');
 	addXMLRequest('call', 'fajaxa');
 	sendAjax('post-avatarfrominput');
 }
@@ -160,7 +165,68 @@ function initSupernote() {
 	supernote = new SuperNote('supernote', {});
 }
 
-function draftSetEventListeners() { setListeners('draftable', 'keyup', draftEventHandler); };
+var TAOriginalArr = [];
+function draftableSaveTA(id) {
+	TAOriginalArr.push( [ id, $('#'+id).attr('value') ] );
+}
+
+function draftDropAll() {
+$('.draftable').each( function() {
+	$('#draftdrop'+$(this).attr('id')).remove();
+ 	addXMLRequest('result', $(this).attr('id'));
+	sendAjax('draft-drop');
+});
+}
+
+function unusedDraft(TAid) {
+	$('#draftdrop'+TAid).each( function(){
+	  addXMLRequest('result', TAid);
+		sendAjax('draft-drop');
+		$(this).remove();
+	});
+}
+
+function dropDraft(e) {
+	e.preventDefault();
+	var x, arrDraftLength = TAOriginalArr.length, arr=[];
+	for (x = 0; x < arrDraftLength; x++) {
+		var taArr = TAOriginalArr[x];
+		if(taArr[0] == gup('ta',$(e.currentTarget).attr('href'))) {
+		 $('#'+taArr[0]).attr('value',taArr[1]);
+		 addXMLRequest('result', taArr[0]);
+		 sendAjax('draft-drop');
+		} else {
+			arr.push( taArr );
+		}
+	}
+	TAOriginalArr = arr;
+	$(e.currentTarget).remove();
+}
+
+function draftOnSubmit(e) { if (draftTimeout) { clearTimeout(draftTimeout); } };
+
+function draftSetEventListeners(TAid) {
+	setListeners('submit', 'click', draftOnSubmit);
+	setListeners('draftable', 'keyup', draftEventHandler);
+	if(window.location.hash=='#dd') {
+		draftDropAll();
+		window.location.hash='';
+	} else {
+		if(TAid) {
+			draftCheck( TAid );
+		} else {
+			$('.draftable').each( function (){ draftCheck( $(this).attr('id') ); } );
+		}
+	}
+};
+
+function draftCheck(TAid) {
+	$(TAid).attr('disabled','disabled');
+ 	addXMLRequest('result', TAid);
+	addXMLRequest('resultProperty', '$html');
+	addXMLRequest('call','enable;'+TAid);
+	sendAjax('draft-check');
+};
 
 var waitingTA;
 var markitupScriptsLoaded = false;
@@ -192,19 +258,31 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
 /**
  *main init
  **/
+function userin() {
+	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
+	fajaxa();
+	fconfirm();
+	changeInit();
+  // ---ajax textarea / tools
+	addTASwitch();
+	draftSetEventListeners();
+	// ---message page
+	$("#prokoho").change(avatarfrominput);
+	$("#recipientcombo").change( function(evt) {
+		var str = "";
+		$("#recipientcombo option:selected").each( function() { str += $(this).text() + " "; });
+		$("#prokoho").attr("value", str);
+		$("#recipientcombo").attr("selectedIndex", 0);
+	});
+	//galery edit	
+	fotoTotal = $("#fotoTotal").text();
+	$('#fotoList').each(function() { if(fotoTotal > 0) { galeryLoadThumb(); } });
+} 
 $(document).ready( function() {
 $("#errormsgJS").css('display','block');
 $("#errormsgJS").hide();
-	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
-		fajaxa();
-		fconfirm();
 		switchOpen();
-		setListeners('popupLink', 'click', function(evt) {
-			openPopup(this.href);
-			evt.preventDefault();
-		});
-		// ---ajax textarea
-		draftSetEventListeners();
+		setListeners('popupLink', 'click', function(evt) { openPopup(this.href); evt.preventDefault(); });
 		// ---fuvatar
 		$('.fuvatarswf').each(
 				function() {
@@ -221,27 +299,8 @@ $("#errormsgJS").hide();
 								allowFullScreen : "true"
 							});
 				});
-		// ---textarea toolbox
-		initInsertToTextarea();
-		addTASwitch();
 		// ---round corners
-		DD_roundies.addRule('.radcon', 5);
-		// ---message page
-		$("#prokoho").change(avatarfrominput);
-		$("#recipientcombo").change( function(evt) {
-			var str = "";
-			$("#recipientcombo option:selected").each( function() {
-				str += $(this).text() + " ";
-			});
-			$("#prokoho").attr("value", str);
-			$("#recipientcombo").attr("selectedIndex", 0);
-		});
-		fotoTotal = $("#fotoTotal").text();
-		$('#fotoList').each(function() {
-			if(fotoTotal > 0) {
-				galeryLoadThumb();
-			}
-		});
+		//DD_roundies.addRule('.radcon', 5);
 		
 	});
 
@@ -284,7 +343,7 @@ function galeryLoadThumb(item,type) {
 		addXMLRequest('item', item);
 		if(type=='U') {
 			addXMLRequest('result', 'foto-'+item);
-			addXMLRequest('resultProperty', 'replaceWith');
+			addXMLRequest('resultProperty', '$replaceWith');
 			destSet=true;
 		}
 	} else {
@@ -293,7 +352,7 @@ function galeryLoadThumb(item,type) {
 	}
 	if(destSet===false) {
 		addXMLRequest('result', 'fotoList');
-		addXMLRequest('resultProperty', 'append');
+		addXMLRequest('resultProperty', '$append');
 	}
 	addXMLRequest('call', 'initSlimbox');
 	addXMLRequest('call', 'fajaxform');
@@ -307,14 +366,6 @@ function galeryLoadThumb(item,type) {
 	}
 	sendAjax('galery-editThumb',gup('k',$(".fajaxform").attr('action')));
 };
-// ---textarea - size/markitup switching
-function initInsertToTextarea() {
-	setListeners('submit', 'click', function(evt) {
-		if (draftTimeout) {
-			clearTimeout(draftTimeout);
-		}
-	});
-}
 
 //---drafting ----------------------------
 // ---textarea drafting
@@ -398,7 +449,7 @@ function draftTimerHandler() {
 };
 
 // register ib keyup
-function draftEventHandler() { setDraftElement(this); startDraftTimer(); };
+function draftEventHandler() { unusedDraft($(this).attr('id')); setDraftElement(this); startDraftTimer(); };
 // ---end-drafting------------------------
 
 //---popup opening
@@ -471,18 +522,24 @@ function sendAjax(action,k) {
 								}
 								command = functionName + "('" + par + "');";
 								break;
-							case 'html':
-							case 'replaceWith':
-							case 'append':
-							case 'after':
-								command = '$("#' + item.attr('target') + '").' + item.attr('property') + '( item.text() );'
+							case 'void':
+									//just debug message
 								break;
 							default:
-								command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
+								var property = item.attr('property');
+								if(property[0]=='$') {
+									property = property.replace('$','');
+									command = '$("#' + item.attr('target') + '").' + property + '( item.text() );'
+								} else { 
+									command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
+								}
 						};
 						};
 						if(command.length>0) eval(command);
-						if(formSent) { $('.button',formSent).removeAttr('disabled'); formSent=null; }
+						if(formSent) { 
+							$('.button',formSent).removeAttr('disabled'); formSent=null;
+							if(draftdrop===true) draftDropAll(); 
+						}
 					});
 		}
 	});

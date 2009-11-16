@@ -5,11 +5,8 @@ class FMenu {
 		$cache = FCache::getInstance('s');
 		if(false === ($menuItems=$cache->getData('top','menu'))) {
 			$userId = FUser::logon();
-			$q = "SELECT pageId,text FROM sys_menu ".(($userId>0)?(""):('WHERE public=1'))." ORDER BY ord";
+			$q = "SELECT pageId,text FROM sys_menu where pageIdTop='".HOME_PAGE."'".(($userId>0)?(""):(' and public=1'))." ORDER BY ord";
 			$arrmenu = FDBTool::getAll($q); //,'tMenu','default','s',0);
-			if($userId > 0) {
-				$arrmenu[]=array('elogo',FLang::$LABEL_LOGOUT);
-			}
 			foreach ($arrmenu as $ro) {
 				$menuItems[] = array("LINK"=>FSystem::getUri('',$ro[0],''), "pageId"=>$ro[0], "TEXT"=>$ro[1]);
 			}
@@ -17,6 +14,7 @@ class FMenu {
 		}
 		return $menuItems;
 	}
+
 	static function secondaryMenu($menu) {
 		$cache = FCache::getInstance('s');
 		$user = FUser::getInstance();
@@ -46,6 +44,7 @@ class FMenu {
 			
 		return($menuItems);
 	}
+	
 	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='',$buttonClass='') {
 		$button = array('LINK'=>$link,'TEXT'=>$text);
 		if( $opposite != 0 ) $button['OPPOSITE'] = 1;

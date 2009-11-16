@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-if(window.location.hash) { var str=window.location.hash; str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); }
+if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); } };
 </script>
   <title>{TITLE}</title>
   <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
@@ -96,7 +96,9 @@ if(window.location.hash) { var str=window.location.hash; str = str.replace('#','
 <script type="text/javascript">$(document).ready(function(){ tabsInit(); });</script><!-- END tabsEND -->
 <!-- BEGIN bbq --><script type="text/javascript" src="{BBQ_URL_JS}jquery.ba-bbq.min.js"></script>
 <script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
-
+<!-- BEGIN bbq --><script type="text/javascript" src="{BBQ_URL_JS}jquery.ba-bbq.min.js"></script>
+<script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
+<!-- BEGIN userin --><script type="text/javascript">$(document).ready(function(){ userin(); });</script><!-- END userin -->
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

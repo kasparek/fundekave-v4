@@ -74,10 +74,9 @@ class DBDriver
 		if($value = FDBTool::getOne($q)) {
 			if(!empty($value)) {
 				return unserialize($value);
-			} else {
-				return false;
 			}
 		}
+		return false;
 	}
 
 	function invalidateData($key, $grp) {

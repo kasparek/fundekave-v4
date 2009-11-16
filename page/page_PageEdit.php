@@ -3,6 +3,7 @@ include_once('iPage.php');
 class page_PageEdit implements iPage {
 
 	static function process( $data ) {
+		$redirParam = '';
 		//---action
 		$action = '';
 		if(isset($data['action'])) $action = $data['action'];
@@ -22,14 +23,14 @@ class page_PageEdit implements iPage {
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
-		
+
 		if($action == 'delpageavatar') {
 			$pageVO = new PageVO($data['pageId'],true);
 			$pageVO->saveOnlyChanged=true;
 			$pageVO->set('pageIco','');
 			$pageVO->save();
 			page_PagesList::invalidate();
-			FAjax::addResponse('pageavatarBox','html','');
+			FAjax::addResponse('pageavatarBox','$html','');
 			return;
 		}
 
@@ -70,7 +71,7 @@ class page_PageEdit implements iPage {
 				}
 			}
 			$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
-			$pageVO->content = FSystem::textins($data['content']);
+			if(!empty($data['content'])) $pageVO->content = FSystem::textins($data['content']);
 
 			if(isset($data['datecontent'])) {
 				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
@@ -128,20 +129,29 @@ class page_PageEdit implements iPage {
 					if(empty($pageVO->galeryDir)) {
 						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
-						$dir = WEB_REL_GALERY .$pageVO->galeryDir;
+						$dir = ROOT_GALERY .$pageVO->galeryDir;
 						FFile::makeDir($dir);
 					}
 
 					//---load settings from defaults if not in limits
-					if(($xperpage = $data['xperpage']*1) < 1) $xperpage = FConf::get('galery','perpage');
-					if(($xwidthpx = $data['xwidthpx']*1) < 10) $xwidthpx = FConf::get('galery','widthThumb');
-					if(($xheightpx = $data['xheightpx']*1) < 10) $xheightpx = FConf::get('galery','heightThumb');
+					$xperpage = FConf::get('galery','perpage');
+					$xwidthpx = FConf::get('galery','widthThumb');
+					$xheightpx = FConf::get('galery','heightThumb');
+					$thumbStyle = 2;
+						
+					if(isset($data['xperpage'])) if($data['xperpage'] > 2) $xperpage = (int) $data['xperpage'];
+					if(isset($data['xwidthpx'])) if($data['xwidthpx'] > 20) $xwidthpx = (int) $data['xwidthpx'];
+					if(isset($data['xheightpx'])) if($data['xheightpx'] > 20) $xheightpx = (int) $data['xheightpx'];
+
 					$pageVO->setXML('enhancedsettings','perpage',$xperpage);
 					$pageVO->setXML('enhancedsettings','widthpx',$xwidthpx);
 					$pageVO->setXML('enhancedsettings','heightpx',$xheightpx);
-					$pageVO->setXML('enhancedsettings','thumbnailstyle',(int) $data['xthumbstyle']);
+						
+					if(isset($data['xthumbstyle'])) $thumbStyle = (int) $data['xthumbstyle'];
+					$pageVO->setXML('enhancedsettings','thumbnailstyle',$thumbStyle);
+						
 					if(isset($data['galeryorder'])) $pageVO->setXML('enhancedsettings','orderitems',(int) $data['galeryorder']);
-					if(isset($data['forumReact'])) $pageVO->setXML('enhancedsettings','fotoforum',(int) $data['forumReact']);
+						
 					//---if setting changed on edited galery delete thumbs
 					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
 						FGalery::deleteThumbs( $pageVO->pageId );
@@ -157,7 +167,7 @@ class page_PageEdit implements iPage {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->update( $data );
-						
+
 					//---relations update
 					/*
 					 $fRelations = new FPagesRelations($pageVO->pageId);
@@ -166,18 +176,12 @@ class page_PageEdit implements iPage {
 				}
 
 				//---set special properties
-				if ($pageVO->typeId == 'blog') {
+				if ($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery') {
 					if(isset($data['forumReact'])) {
-						FPages::setProperty($pageVO->pageId, 'forumSet',(int) $data['forumReact']);
+						$pageVO->prop('forumSet',(int) $data['forumReact']);
 					}
 				}
 
-				//CLEAR DRAFT
-				FUserDraft::clear($textareaIdDescription);
-				FUserDraft::clear($textareaIdContent);
-				if($pageVO->typeId=='forum' || $pageVO->typeId=='blog') {
-					FUserDraft::clear($textareaIdForumHome);
-				}
 				//---set current page for redirect
 				if(!empty($pageVO->pageId)) {
 					$user->pageVO->pageId = $pageVO->pageId;
@@ -209,7 +213,7 @@ class page_PageEdit implements iPage {
 							FGalery::removeFoto($dfoto);
 						}
 					}
-						
+
 					//--prepare foto array
 					foreach($data as $k=>$v) {
 						if(strpos($k, 'foto-') !== false) {
@@ -230,8 +234,8 @@ class page_PageEdit implements iPage {
 							$itemVO->save();
 						}
 					}
-						
 
+					$redirParam='#dd';
 				}
 
 				/* redirect */
@@ -246,7 +250,7 @@ class page_PageEdit implements iPage {
 						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 					}
 				} else {
-					FHTTP::redirect(FSystem::getUri('','',$redirectAdd));
+					FHTTP::redirect(FSystem::getUri($redirParam,'',$redirectAdd));
 				}
 			} else {
 				//---error during value check .. let the values stay in form - data remain in _POST
@@ -280,11 +284,7 @@ class page_PageEdit implements iPage {
 			}
 			page_PagesList::invalidate();
 			FError::addError(FLang::$LABEL_DELETED_OK,1);
-			if($data['__ajaxResponse']) {
-				FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',HOME_PAGE,''));
-			} else {
-				FHTTP::redirect(FSystem::getUri('',HOME_PAGE,''));
-			}
+			FAjax::redirect(FSystem::getUri('',HOME_PAGE,''));
 		}
 
 	}
@@ -327,7 +327,10 @@ class page_PageEdit implements iPage {
 		$tpl=FSystem::tpl('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=page-edit&u='.$user->userVO->userId));
 		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');
-		if($user->pageParam!='a') $tpl->setVariable('PAGEID',$pageVO->pageId);
+		if($user->pageParam!='a') {
+			$tpl->setVariable('PAGEID',$pageVO->pageId);
+			$tpl->touchBlock('extendedtab');
+		}
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
@@ -337,15 +340,16 @@ class page_PageEdit implements iPage {
 		$pageCont = '';
 
 		if(isset($pageVO->name)) $tpl->setVariable('PAGENAME',$pageVO->name);
-		if(isset($pageVO->description)) if(!$pageDesc = FUserDraft::get($textareaIdDescription)) $pageDesc = $pageVO->description;
-		if(isset($pageVO->content)) if(!$pageCont = FUserDraft::get($textareaIdContent)) $pageCont = $pageVO->content;
+		 
+		if(isset($pageVO->description)) $pageDesc = $pageVO->description;
+		if(isset($pageVO->content)) $pageCont = $pageVO->content;
 
 		$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
 		$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
 
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
-		
+
 		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco);
 
 
@@ -353,35 +357,35 @@ class page_PageEdit implements iPage {
 			$tpl->touchBlock('permissionstab');
 			$rules = new FRules($pageVO->pageId, $pageVO->userIdOwner);
 			$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
-				
+
 			/*
 			 $tpl->touchBlock('relatedtab');
 			 $fRelations = new FPagesRelations($pageVO->pageId);
 			 $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
 			 */
-			 
-			 $tpl->touchBlock('pageavatarupload');
+
+			$tpl->touchBlock('pageavatarupload');
 		}
 
 		if($pageVO->typeId == 'forum') {
 			//enable avatar
 			$tpl->touchBlock('forumspecifictab');
 			//FORUM HOME
-			if(!$home = FUserDraft::get($textareaIdForumHome)) {
-				$home = FSystem::textToTextarea($pageVO->getPageParam('home'));
-			}
+			$home = FSystem::textToTextarea($pageVO->getPageParam('home'));
 			$tpl->setVariable('CONTENT',$home);
 			$tpl->setVariable('HOMEID',$textareaIdForumHome);
 		}
 
-		if($pageVO->typeId == 'galery') {
-			$tpl->setVariable('PERPAGE',$pageVO->getPageParam('enhancedsettings/perpage'));
-			$tpl->setVariable('GTHUMBWIDTH',$pageVO->getPageParam('enhancedsettings/widthpx'));
-			$tpl->setVariable('GTHUMBHEIGHT',$pageVO->getPageParam('enhancedsettings/heightpx'));
-			if($pageVO->getPageParam('enhancedsettings/thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
-			//$tpl->touchBlock('fforum'.($pageVO->getPageParam('enhancedsettings/fotoforum')*1));
-		} elseif ($pageVO->typeId=='blog') {
-			$tpl->touchBlock('fforum'.(FPages::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+		if($user->pageParam != 'a') {
+			if($pageVO->typeId == 'galery') {
+				$tpl->setVariable('PERPAGE',$pageVO->getPageParam('enhancedsettings/perpage'));
+				$tpl->setVariable('GTHUMBWIDTH',$pageVO->getPageParam('enhancedsettings/widthpx'));
+				$tpl->setVariable('GTHUMBHEIGHT',$pageVO->getPageParam('enhancedsettings/heightpx'));
+				if($pageVO->getPageParam('enhancedsettings/thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
+				$tpl->touchBlock('fforum'.(PageVO::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+			} elseif ($pageVO->typeId=='blog') {
+				$tpl->touchBlock('fforum'.(PageVO::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+			}
 		}
 
 		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {

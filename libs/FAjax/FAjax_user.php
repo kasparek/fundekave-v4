@@ -33,7 +33,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$tpl->setVariable('USER',$data['u']);
 		$ret = $tpl->get();
 		FAjax::addResponse('function','call','remove;friendrequest,1');
-		FAjax::addResponse('okmsgJS','after',$ret);
+		FAjax::addResponse('okmsgJS','$after',$ret);
 		FAjax::addResponse('function','getScript',URL_JS.'jquery.form.fcut.min.js;friendRequestInit');
 	}
 	
@@ -53,7 +53,7 @@ class FAjax_user extends FAjaxPluginBase {
 		sleep(2);
 		FAjax::addResponse('function','call','remove;friendButt');
 		FAjax::addResponse('function','call','remove;friendrequest');
-		FAjax::addResponse('okmsgJS','html','Request sent');
+		FAjax::addResponse('okmsgJS','$html','Request sent');
 	}
 	
 	static function requestaccept($data) {
@@ -103,8 +103,8 @@ class FAjax_user extends FAjaxPluginBase {
 			$tpl->parse('personalImage');
 		}
 		$ret .= $tpl->get('personalImage');
-		FAjax::addResponse('personalfoto', 'html', $ret);
-		FAjax::addResponse('folderSize', 'html', round(FFile::folderSize($dir)/1024).'kB');
+		FAjax::addResponse('personalfoto', '$html', $ret);
+		FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
 		FAjax::addResponse('function','call','fconfirm');
 		FAjax::addResponse('function','call','fajaxform');
 		FAjax::addResponse('function','call','initSlimbox');
@@ -148,27 +148,27 @@ class FAjax_user extends FAjaxPluginBase {
 
 			//---create response
 			if($data['__ajaxResponse']==true) { 
-				FAjax::addResponse('tag'.$itemId,'html',FItemTags::getTag($itemId,$userId));
+				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
 				FAjax::addResponse('function','call','fajaxa');
 			}
 		}
 	}
 
 	static function poll($data) {
-		FAjax::addResponse('rh_anketa','html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an']));
+		FAjax::addResponse('rh_anketa','$html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an']));
 		FAjax::addResponse('function','call','setPollListeners');
 	}
 
 	static function pocketIn($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->saveItem(((isset($data['item']))?($data['item']):('')),((isset($data['page']))?($data['page']):('')));
-		FAjax::addResponse('pocket','html',$fPocket->show(true));
+		FAjax::addResponse('pocket','$html',$fPocket->show(true));
 	}
 
 	static function pocketAc($data) {
 		$fPocket = new FPocket(FUser::logon());
 		$fPocket->action($data['ac'],$data['pocket']);
-		FAjax::addResponse('pocket','html',$fPocket->show(true));
+		FAjax::addResponse('pocket','$html',$fPocket->show(true));
 	}
 	
 	static function postFilter($data) {

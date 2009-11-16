@@ -1,8 +1,8 @@
 <?php
 class FBlog {
-	 
+
 	function __construct() {
-		 
+			
 	}
 
 	static function process($data) {
@@ -24,13 +24,13 @@ class FBlog {
 				if(FSystem::isDate($data['datum'])) $itemVO->dateCreated = $data['datum'];
 
 				if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
-				
+
 				if(!empty($data['categoryNew'])) {
 					$data['category'] = FCategory::tryGet( $data['categoryNew'], $pageId);
 				}
 				if(!empty($data['category'])) $itemVO->categoryId = (int) $data['category'];
 
-				if($data['public'] == 1) $itemVO->public = 1;
+				$itemVO->public = (int) $data['public'];
 
 				$newItem=false;
 				if(empty($itemVO->itemId)) {
@@ -39,14 +39,34 @@ class FBlog {
 					$itemVO->typeId = 'blog';
 					$newItem=true;
 				}
+				
+				//commented = connectio
+				if(!empty($data['commented'])) {
+					
+					$objekt = $data['commented'];
+				//---check for item
+					if(preg_match("/[&?|]i=([0-9]*)/" , $objekt, $matches)) {
+						//check if it is item
+						if(FItems::itemExists($matches[1])) {
+							$itemIdBottom = $matches[1];
+							$objekt = '';
+						}
+					} else if(preg_match("/[&?|]k=([0-9a-zA-Z]*)/" , $objekt, $matches)) {
+						if(FPages::page_exist('pageId',$matches[1])) {
+							$pageIdBottom = $matches[1];
+							$objekt = '';
+						}
+					}
+					
+					if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
+					if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
+					
+				}
+				
 				$returnItemId = $itemVO->save();
 
 				///properties
 				ItemVO::setProperty($returnItemId,'forumSet',(int) $data['forumset']);
-
-				FUserDraft::clear(FBlog::textAreaId().'short');
-				FUserDraft::clear(FBlog::textAreaId().'long');
-				
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
 			} else if($action==='delete') {
@@ -60,16 +80,16 @@ class FBlog {
 			}
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('lastBlogPost');
-			
-			
-			
-			 
+				
+				
+				
+
 		} else {
 			FError::addError(FLang::$ERROR_RULES_CREATE);
 		}
-		
-		
-		
+
+
+
 		return $returnItemId;
 	}
 	static function textAreaId() {
@@ -78,27 +98,30 @@ class FBlog {
 	}
 	static function getEditForm($itemId) {
 		$user = FUser::getInstance();
-	  
+		 
 		$textAreaIdShort = FBlog::textAreaId().'short';
 		$textAreaIdLong = FBlog::textAreaId().'long';
-	  
+		 
 		$tpl = FSystem::tpl('blog.editform.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
 		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
-		
-		$textShort = FUserDraft::get($textAreaIdShort);
-		$textLong = FUserDraft::get($textAreaIdLong);
+
+		$textShort = '';
+		$textLong = '';
 			
+		$selectedCategory = 0;
 		if($itemId > 0) {
 			$itemVO = new ItemVO($itemId,false,array('type'=>'blog'));
+				
 
 			if($itemVO->load()) {
+
 				$tpl->setVariable('EDITADDON',$itemVO->addon);
 				$tpl->setVariable('EDITDATE',$itemVO->dateCreatedLocal);
-				
-				if(empty($textShort)) $textShort = $itemVO->text;
-				if(empty($textlong)) $textLong = $itemVO->textLong;
-				
+
+				$textShort = $itemVO->text;
+				$textLong = $itemVO->textLong;
+
 				$tpl->setVariable('EDITAUTOR',$itemVO->name);
 				$tpl->touchBlock('newdelete');
 				$tpl->setVariable('EDITID',$itemId);
@@ -109,37 +132,44 @@ class FBlog {
 					$tpl->touchBlock('statpublic');
 				}
 				///properties
-				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',FPages::getProperty($user->pageVO->pageId,'forumSet',2)));
-				///categories
-				if($opt = FCategory::getOptions($user->pageVO->pageId,$itemVO->categoryId,true,''))
-				$tpl->setVariable('CATOPTIONS',$opt);
+				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',PageVO::getProperty($user->pageVO->pageId,'forumSet',2)));
+				$selectedCategory = $itemVO->categoryId;
+				
+				if(!empty($itemVO->itemIdBottom)) {
+					$bottom = new ItemVO($itemVO->itemIdBottom,true);
+					$tpl->setVariable('COMMENTEDITEM',$bottom->render());
+				}
 			}
 		} else {
-			
+				
 			$tpl->setVariable('EDITDATE',Date("d.m.Y"));
-			
+			$tpl->setVariable('EDITAUTOR',$user->userVO->name);
+				
 		}
 		
+		///categories
+		if($opt = FCategory::getOptions($user->pageVO->pageId,$selectedCategory,true,'')) $tpl->setVariable('CATOPTIONS',$opt);
+
 		$tpl->setVariable('EDITTEXTSHORT',$textShort);
 		$tpl->setVariable('EDITTEXT',$textLong);
-		
+
 		$tpl->setVariable('TEXTIDSHORT',$textAreaIdShort);
 		$tpl->setVariable('TEXTID',$textAreaIdLong);
-		
+
 		return $tpl->get();
 	}
 	static function listAll($itemId = 0,$editMode = false) {
 		$user = FUser::getInstance();
 		$itemId = (int) $itemId;
 		$perPage = BLOG_PERPAGE;
-	  
+					 
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD);
 			}
 			if($user->pageParam=='a') return;
 		}
-	  
+		 
 		$tpl = FSystem::tpl('blog.list.tpl.html');
 		if($user->idkontrol) $tpl->touchBlock('logged');
 
@@ -159,36 +189,46 @@ class FBlog {
 			}
 		}
 
-		if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
-
 		if($itemId > 0) {
-
-			$itemVO = new ItemVO($itemId,true,array('type'=>'blog','showComments'=>true));
+			
+			$extraParams = array('type'=>'blog','showComments'=>true); 
+			if($user->pageParam=='u') {
+				$extraParams['showComments'] = false;
+			}
+			$extraParams['showDetail'] = true;
+			$itemVO = new ItemVO($itemId,true,$extraParams);
+			$itemVO->saveOnlyChanged = true;
+			$itemVO->set('hit',$itemVO->hit+1);
+			$itemVO->save();
+			$user->pageVO->title = $user->pageVO->name;
+			$user->pageVO->name = $itemVO->addon;
 			$tpl->setVariable('ITEMS', $itemVO->render());
-			 
+			
 		} else {
 
+			if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
 			$itemRenderer = new FItemsRenderer();
-
 			$fItems = new FItems('blog',false,$itemRenderer);
 			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
+			if(isset($_REQUEST['c'])) {
+				$fItems->addWhere("categoryId='". (int) $_REQUEST['c'] ."'");	
+			} 
 			$fItems->addWhere('itemIdTop is null');
 			$fItems->setOrder("dateCreated desc");
 
 			$render = $fItems->render($currentPage * $perPage, $perPage);
-			
+				
 			if(!empty($render)){
 				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 				$tpl->setVariable('ITEMS', $render);
-				//TODO:refactor title, label, desc manipulation dependency on detail
-				//if($itemId>0) $user->pageVO->name = $fItems->currentHeader;
 			}
+			
 		}
-		
+
 		return $tpl->get();
 			
 	}
-	
+
 	/**
 	 * callback function when processing forum attached to gallery
 	 * @return void

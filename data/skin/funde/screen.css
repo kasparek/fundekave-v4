@@ -330,41 +330,13 @@ div#mainbar ul {
 	margin: 0;
 }
 
-div#mainbar div.vevent ul {
-  display: block;
-  height: 1.8em;
-  background: #ddd;
-  margin-top: 0.5em;
-  padding: 0;
+div.participants {
+	
 }
-div#mainbar div.vevent li {
-  padding-left: 5px;
-  padding-right: 5px;
-  background: transparent;
-  list-style-type: none;
-  display: inline;
-  float: left;
-}
-div#mainbar div.hentry ul {
-  display: block;
-  height: 1.8em;
-  background: #ddd;
-  margin-top: 0.5em;
-  padding: 0;
-}
-div#mainbar div.hentry li {
-  padding-left: 5px;
-  padding-right: 5px;
-  background: transparent;
-  list-style-type: none;
-  display: inline;
-  float: left;
-}
-div#mainbar div.vevent li.opposite {
-  float:right;
-}
-div#mainbar div.hentry li.opposite {
-  float:right;
+div.participant {
+	float:left;
+	padding: 0 1em 1em 0;
+	text-align: center;
 }
 
 div#mainbar fieldset {
@@ -537,13 +509,40 @@ div.mainpanel-content div#categories h3 a{
 div.mainpanel-content div#categories ul {
 	margin-left: 30px;
 }
-div#mainbar ul.pageList {
+
+/* sidebar page categories list*/
+div#pageCategories ul {
+  list-style: none;
 }
-div#mainbar ul.pageList li a img {
+div#pageCategories ul li {
+	margin-top: 0.1em;
+	clear: left;
+	padding-left: 0;
+	background: none;
+}
+div#pageCategories a {
+	clear: both;
+	line-height: 25px;
+	display: block;
+	background: #eeeeee;
+	text-decoration: none;
+  margin-top: 2px;
+	padding: 0 1em; 
+  font-weight: bold;
+}
+div#pageCategories ul li a:hover {
+	background: #bbbbbb;
+}
+
+div#mainbar ul.pageList {
+	list-style: none;
+}
+div#mainbar ul.pageList li a.pageLink img {
  padding: 0;
  margin: 0;
  float: left;
  margin-right: 0.5em;
+ margin-left: -1em;
 }
 div#mainbar ul.pageList li {
 	margin-top: 0.1em;
@@ -557,22 +556,20 @@ div#mainbar a.pageLink {
 	display: block;
 	background: #eeeeee;
 	text-decoration: none;
-  margin-top: 2px; 
+  margin-top: 2px;
+	padding: 0 1em; 
   font-weight: bold;
 }
-div#mainbar ul.pageList li a:hover {
-	background: #bbbbbb
+
+div#mainbar ul.pageList li a.pageLink:hover {
+	background: #bbbbbb;
 }
 div#mainbar ul.pageList li div.hentry {
 	margin-top: 0;
 }
 
 div#mainbar li span.postsNew {
-	display: block;
-	float: left;
-	width: 2em;
-	text-align: right;
-	margin-right: 0.5em;
+	/*margin: 0 0.5em;*/
 }
 div#mainbar div.hentry span.postsNew {
 	display: inline;
@@ -583,105 +580,115 @@ div#mainbar div.hentry span.postsNew {
 div.mainpanel-content div.hentry {
 	clear: left;
 	margin-top: 2.3em;
-	padding-top: 1.9em;
-	padding-bottom: 2em;
+	padding-top: 0;
+	padding-bottom: 0.5em;
 	position: relative;
 	border-top: 1px solid #ddd;
 	overflow: hidden;
 }
 
-div.mainpanel-content div.hentry a.tagLink img {
-  margin-bottom: -4px;
+div.mainpanel-content div.hentry span.tagMe img {
+  margin-bottom: -2px;
+  
 }
+
 div.mainpanel-content div.hasPageLabel {
-  margin-top: 5em;
+  margin-top: 0em;
 }
+
 div.mainpanel-content div.hentry div.avatar {
 	float: left;
 	margin: 0 0.5em 1em 0;
 }
-div.mainpanel-content div.hentry span.tag {
-	position: absolute;
-	top: 0;
-	right: 14em;
-	padding: 0 0.6em;
-	line-height: 1.9em;
-	background-color: #ddd;
-	border: none;
-	font-weight: bold;
+ 
+/**
+ ENTRY HEADER
+**/
+div.mainpanel-content div.hentry div.header {
+   line-height: 2em;
+   border: none;
+   height: 2em;
 }
-div.mainpanel-content div.hentry span.link {
-	position: absolute;
-	top: 0;
-	right: 18.5em;
-	padding: 0 0.6em;
-	line-height: 1.9em;
-	background-color: #ddd;
-	border: none;
-	font-weight: bold;
-}
-div.mainpanel-content div.hentry span.comments {
-	position: absolute;
-	top: 0;
-	right: 20em;
-	padding: 0 0.6em;
-	line-height: 1.9em;
-	background-color: #ddd;
-	border: none;
-	font-weight: bold;
-}
-div.mainpanel-content div.hentry span.edit {
-	position: absolute;
-	top: 0;
-	right: 33em;
-	padding: 0 0.6em;
-	line-height: 1.9em;
-	background-color: #ddd;
-	border: none;
-	font-weight: bold;
+
+div.mainpanel-content div.vevent div.header {
+	height: auto;
+	float: right;
+	margin-top: -1.5em;
 }
 
 div.mainpanel-content div.hentry abbr.published {
-	position: absolute;
-	top: 0;
-	right: 0;
-	padding: 0 0.6em;
-	line-height: 1.9em;
-	min-width: 8em;
+	float: right;
 	background-color: #ddd;
-	border: none;
 	font-weight: bold;
+	border: none;
+	padding: 0 1em;
 }
 
-div.mainpanel-content div.unread  abbr.published {
-	border-right: 0.3em solid red;
-	padding-right: 0.3em;
+div.mainpanel-content div.unread abbr.published {
+	border-right: 0.4em solid red;
+	padding-right: 0.4em;
 }
+
 div.mainpanel-content div.hentry span.author {
-	position: absolute;
-	top: 0;
-	left: 0;
-	padding: 0 0.6em;
-	line-height: 1.9em;
+	float: left;
 	background-color: #ddd;
-	border: none;
 	font-weight: bold;
+	padding: 0 1em;
 }
+
+div.mainpanel-content div.unread span.author {
+	border-left: 0.4em solid red;
+	padding-left: 0.4em;
+}
+
 div.mainpanel-content div.hentry span.author a.currentLocation {
   font-weight: normal;
   text-decoration: underline;
 }
+
 div.mainpanel-content div.hentry span.author a {
   text-decoration: none;
 }
-div.mainpanel-content div.hentry div.header input {
-  padding: 0;
-  margin: 0;
+
+div.mainpanel-content div.hentry span.delete {
+	float: right;
+	background-color: #ddd;
+	height: 1.9em;
+	padding: 0 0.5em;
+  
 }
-div.mainpanel-content div.unread span.author {
-	border-left: 0.3em solid red;
-	padding-left: 0.3em;
+
+div.mainpanel-content div.hentry span.delete img {
+	margin-top: 2px;
 }
+
+div.mainpanel-content div.hentry span.stats {
+	float: right;
+  background-color: #ddd;
+	padding: 0 1em;
+	margin: 0 1em;
+}
+
+div.mainpanel-content div.hentry span.edit {
+	float: right;
+	padding: 0 1em;
+	line-height: 1.9em;
+	background-color: #ddd;
+	border: none;
+	font-weight: bold;
+}
+
+div.mainpanel-content div.vevent span.vcard {
+	float: right;
+	background-color: #ddd;
+	font-weight: bold;
+	padding: 0 1em;
+	margin-right: 1em;
+}
+
+
+
+
 div.mainpanel-content div.hentry h2.entry-title {
   /*position: absolute;
 	top: -2.5em;*/
@@ -701,8 +708,13 @@ div.mainpanel-content div.hentry h3 {
 div.mainpanel-content div.hentry h3 a {
 	color: black;
 }
-div.mainpanel-content div.notpublished h3 {
+div.mainpanel-content div.notpublished div.notpublishedMsg {
 	color: #ff0000;
+	height: 2em;
+	line-height: 2em;
+	font-weight: bold;
+	background-color: #ffddbb;
+	padding: 0 1em;
 }
 div.mainpanel-content div.hentry div.entry-content {
 	padding-top: 0.5em;
@@ -710,10 +722,13 @@ div.mainpanel-content div.hentry div.entry-content {
 div.mainpanel-content div.hentry div.withCommented {
   margin-right: 250px;
 }
+div.mainpanel-content div.hentry div.textLong {
+  margin-top: 20px;
+}
 div.mainpanel-content div.hentry div.entry-content img {
 	max-width: 680px;
 }
-div.mainpanel-content div.statistic {
+div.mainpanel-content div.stats{
   margin: 0 auto;
   padding: 0 0 0.3em 0; 
   text-align: center;
@@ -721,16 +736,23 @@ div.mainpanel-content div.statistic {
 div.galleryList div.thumbnail {
 	float: left;
 	margin-right: 15px;
+	padding-top: 0;
+	margin-top: -5px;
 }
 div.galleryList div.hentry {
 	clear: both;
 	min-height: 140px;
-	padding-bottom: 0;
+	padding: 0;
 	margin-bottom: 1em;
 }
 div.galleryList div.hentry h3.entry-title {
 	padding: 0.5em 0;
 }
+
+div.galleryList div.hentry span.abbr {
+	line-height: 2em;
+}
+
 div.galeryThumbs div.hentry {
 	float: left;
 	clear: none;
@@ -752,13 +774,28 @@ span.tagIs {
 span.tagIs img {
   margin-bottom:-4px;
 }
+
 span.viewedTimes {
-	top: 0;
-	height: auto;
-	padding-top: 0.2em;
+	padding-bottom: 0.2em;
 	padding-right: 24px;
-	line-height: 16px;
 	background: url("img/eye.png") no-repeat right center;
+}
+
+span.commentsNum {
+	padding-top: 2px;
+	padding-bottom: 0.2em;
+}
+
+span.commentsNum a {
+	text-decoration: none;	
+}
+
+span.commentsNum img {
+	margin-bottom:-4px;	
+}
+
+span.linkIco img {
+	margin-bottom:-2px;
 }
 
 /* events */
@@ -841,23 +878,24 @@ div#mostPopularPages ul li {
 }
 div.commentedItem {
   clear: left;
-	padding: 1em 0 1em 60px;
+	padding: 0 0 0 60px;
 
 }
 div.commentedItemFloat {
-  position: absolute;
+  /*position: absolute;
   float: right;
   top: 4em;
   right: 0;
   width: 190px;
 	border-top: 1px dashed #ddd;
 	background-color: #eeeeee;
-	padding: 10px 0 0 10px;
+	padding: 10px 0 0 10px;*/
 }
-div.commentedItemFloat div.hentry{
+div.commentedItem div.hentry{
 	margin-top: 0;
 	margin-bottom: 0;
-  padding-right: 2em;
+  padding-top: 0;
+	padding-right: 2em;
   border-top: none;
 }
 div.commentedItem div.category {

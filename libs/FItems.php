@@ -7,6 +7,7 @@ class FItems extends FDBTool {
 	private $typeId;
 	//---list of ItemVOs
 	public $data;
+	public $map = true; //---map data onto object 
 	//---renderer
 	public $fItemsRenderer;
 
@@ -19,32 +20,30 @@ class FItems extends FDBTool {
 	public $thumbInSysRes = false;
 
 
-	function __construct($typeId='',$byPremissions=false,$itemRenderer=null) {
+	function __construct($typeId='',$byPermissions=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
 		$this->fetchmode = 1;
 		if($typeId!='') $this->typeId = $typeId;
-		
+
 		$itemVO = new ItemVO();
 		$this->columns = $itemVO->getTypeColumns( $this->typeId );
 		$itemVO = false;
-		
-		if($this->typeId!='') {
-			$this->initList($this->typeId,$byPremissions);
-		}
-		
+
+		$this->initList($this->typeId,$byPermissions);
+
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
 	}
-	
+
 	function __destruct() {
 	 unset($this->fItemsRenderer);
-  }
+	}
 
 	static function isTypeValid($type) {
 		$types = array('forum','galery','blog','event');
 		return in_array($type, $types);
 	}
 
-	function initList($typeId='forum', $byPermissions = false) {
+	function initList($typeId='', $byPermissions = false) {
 		$this->queryReset();
 		if(FItems::isTypeValid($typeId)) {
 			$this->typeId = $typeId;
@@ -56,18 +55,22 @@ class FItems extends FDBTool {
 			$this->byPermissions = $byPermissions;
 		}
 		//---set select
-		$this->setSelect( $this->columns );
+		foreach($this->columns as $k=>$v) {
+			if(strpos($v,' as ')===false) $v .= ' as '.$k;
+			$columnsAsed[]=$v;
+		}
+		$this->setSelect( $columnsAsed );
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
-			$this->addWhere('public = 1');
+			$this->addWhere('sys_pages_items.public = 1');
 		}
 
 	}
-	
+
 	function total() {
 		return count($this->data);
 	}
-	
+
 	function getList($from=0, $count=0) {
 		$this->data = array();
 		$itemTypeId = $this->typeId;
@@ -78,6 +81,7 @@ class FItems extends FDBTool {
 			$itemsCount = 0;
 			$page = 0;
 			$arr = array();
+				
 			while(count($arr) < $count || $count==0) {
 				$arrTmp = $this->getContent($from + ($page*$count), $count);
 				$page++;
@@ -103,22 +107,26 @@ class FItems extends FDBTool {
 
 		if(!empty($arr)) {
 			//---map items
-			foreach($arr as $row) {
-				$itemVO = new ItemVO();
-				$itemVO->thumbInSysRes = $this->thumbInSysRes;
-				$itemVO->map( $row );
-				$this->data[] = $itemVO;
+			if($this->map === true) {
+				foreach($arr as $row) {
+					$itemVO = new ItemVO();
+					$itemVO->thumbInSysRes = $this->thumbInSysRes;
+					$itemVO->map( $row );
+					$this->data[] = $itemVO;
+				}
+			} else {
+				$this->data = $arr;
 			}
 		}
 
 		if($this->debug==1) print_r($this->data);
 		return $this->data;
 	}
-/*
-	function pop() {
+	/*
+	 function pop() {
 		if($this->data) return array_shift($this->data);
-	}
-*/
+		}
+		*/
 	function parse() {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
@@ -145,7 +153,7 @@ class FItems extends FDBTool {
 			return false;
 		}
 	}
-	
+
 	//---aktualizace oblibenych / prectenych prispevku
 	/*.......aktualizace FAV KLUBU............*/
 	static function aFavAll($usrId,$typeId='forum') {
@@ -166,10 +174,10 @@ class FItems extends FDBTool {
 			}
 		}
 	}
-	
+
 	static function aFav($pageId,$userId,$cnt,$booked=0) {
 		if(!empty($userId)){
-			$dot = "insert into sys_pages_favorites 
+			$dot = "insert into sys_pages_favorites
 			values ('".$userId."','".$pageId."',(select cnt from sys_pages where pageId='".$pageId."'),'".$booked."')
 			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$pageId."')";
 			FDBTool::query($dot);

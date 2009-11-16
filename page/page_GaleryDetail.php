@@ -119,10 +119,10 @@ class page_GaleryDetail implements iPage {
 				FAjax::addResponse('prevButt','href',$prevUri);
 				FAjax::addResponse('nextButt','href',$nextUri);
 				
-				FAjax::addResponse('pageHead','html',FBuildPage::getHeading());
+				FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 				FAjax::addResponse('document','title',FBuildPage::getTitle());
 				
-				FAjax::addResponse('fotoBox','html',$ret);
+				FAjax::addResponse('fotoBox','$html',$ret);
 				FAjax::addResponse('function','call','fajaxa');
 			} else {
 				FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,'backButt');

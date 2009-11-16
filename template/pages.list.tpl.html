@@ -1,16 +1,3 @@
-<form action="{FORMACTION}" method="post">
-<fieldset>
-	<legend>Vyber</legend>
-	
-	<label>Kategorie</label><a href="#" class="switchOpen" rel="categories"><strong>Vybrat</strong></a><br /> 
-	<div id="categories" class="hidden">
-	<!-- BEGIN category --><h3><a href="{CATLINK}">{CATNAME}</a></h3><!-- END category -->
-	</div>
-	<!-- BEGIN catselected --><label>Vybrana kategorie</label>{CATEGORYSELECTED} <a href="{CATEGORYSELECTEDCANCEL}">Zrusit</a><br /><!-- END catselected -->
-  <label for="filtr">Hledat</label> <input type="text" id="filtr" name="filtr" value="{FILTRTEXT}" title="Hledani" class="short" /> 
-  <input type="submit" name="nav" value="Vybrat" class="button" /> <!-- BEGIN filtrselected --><a href="{FILTRSELECTEDCANCEL}">Zrusit</a><!-- END filtrselected -->
-</fieldset>
-</form>
 <!-- BEGIN results -->
 <!-- BEGIN toppager -->{TOPPAGER}<!-- END toppager -->
 {PAGELINKS}

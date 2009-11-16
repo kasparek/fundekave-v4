@@ -309,7 +309,11 @@ class FDBTool {
 	}
 	function get($id=0) {
 		if( !empty($this->columns) ) {
-			$this->replaceSelect('*', implode(',',$this->columns));
+			foreach($this->columns as $k=>$v) {
+				if(strpos($v,' as ')===false) $v .= ' as '.$k;
+				$columnsAsed[]=$v;
+			}
+			$this->replaceSelect('*', implode(',',$columnsAsed));
 		}
 		if(empty($this->_where)) {
 			if(empty($id)) return;

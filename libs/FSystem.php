@@ -54,7 +54,7 @@ class FSystem {
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
-    $newPageId = '';
+		$newPageId = '';
 		if($user->pageVO) $newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
 		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
@@ -80,7 +80,8 @@ class FSystem {
 		if(isset($params)) {
 			$parStr = '?'.implode(SEPARATOR,$params);
 		}
-		return $scriptName . $parStr . $anchor;
+		$url = $scriptName . $parStr . $anchor;
+		return $url;
 	}
 
 	static function processK($pageId) {

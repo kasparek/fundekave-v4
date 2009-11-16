@@ -1,9 +1,10 @@
+propojeni - pokud je fotka pripojena k clanku u fotky ukazat to propojeni, stejny u eventu - ?u vsech?
+
 events - tipy -> udalosti
 soukromy - vidi pouze pratele
 osobni - vidim pouze ja a vybrani pratele
 repetitini - jako v diary
 upozorneni - pro vsechny kdo prijdou 
-
 
 search box
 result stranka se zalozkama
@@ -14,37 +15,18 @@ kalendar - diary
  - kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
  - rewrite page_UserDiary
 
-event page
-- kategorie
-- kalendar
-
 minimize left bloks
 <!-- BEGIN sidebar-block-toolbar --><div class="sidebarBlockToolbar" style="display:none;"><a href="{MOVEUP}">u</a><a href="{MOVEDOWN}">d</a><a href="{MINIMIZE}">m</a></div><!-- END sidebar-block-toolbar -->
 
 rss-
 events - just events
 main - last blogs, posts, events
-
-switch from XAJAX to JQuery ajax
-
-PROPOJENI
-  - blogpost - galerie
-  - galerie - blogpost
-  - blogpost - fotka
-  - fotka - blogpost
-  - fotka - forumpost
-  - galerie - forumpost
-  - galerie - blogpost
-obecne
-  - item -> page
-  - page -> item
-  - item -> item
-  - page -> page - to uz mam
  
 WEBCAM
   - moznost aktivovat webcam swf
   - stranka s online webcam
   - nastaveni prav pro prohlizeni, pro seznam uzivatelu, pro pratele, vsechny ...
-
-USER HOMEPAGE
-  - mod_rewrite kasparek.fundekave.net -> fundekave.net?u=kasparek
+  
+//---version TBC
+SOCIAL list
+ - kdo kdy kde s kym - lama automat - to ted frci

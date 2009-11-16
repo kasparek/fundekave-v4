@@ -3,6 +3,7 @@ include_once('iPage.php');
 class page_UserPost implements iPage {
 
 	static function process($data) {
+		$redirParam = '';
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 		//---action part - cache -pp,filtr
@@ -48,8 +49,8 @@ class page_UserPost implements iPage {
 					foreach ($arrto as $komu){
 						FMessages::send($komu,$zprava,$user->userVO->userId);
 					}
-					FUserDraft::clear('postText');
 					$redir = true;
+					$redirParam = '#dd';
 				}
 			}
 		}
@@ -75,7 +76,7 @@ class page_UserPost implements iPage {
 		
 		//---redirect				
 		if ($redir == true) {
-			FHTTP::redirect(FSystem::getUri());
+			FHTTP::redirect(FSystem::getUri($redirParam));
 		}
 		
 	}
@@ -89,8 +90,6 @@ class page_UserPost implements iPage {
 		if(($pp = $cache->getData($user->pageVO->pageId,'pp')) !== false) $perPage = $pp;
 		if($perPage < 2) $perPage = POST_PERPAGE;
 
-		//load draft
-		$zprava = FUserDraft::get('postText');
 		//load from filter
 		if(($filterText = $cache->getData('text','filtrPost')) !== false) $zprava = $filterText;
 
@@ -142,7 +141,7 @@ class page_UserPost implements iPage {
 		}
 
 		$tpl->setVariable('RECIPIENTS',$recipients);
-		$tpl->setVariable('MESSAGE',$zprava);
+		if(isset($zprava)) $tpl->setVariable('MESSAGE', $zprava);
 		$tpl->setVariable('HIDDENWHO',$user->whoIs);
 		$tpl->setVariable('PERPAGE',$perPage);
 

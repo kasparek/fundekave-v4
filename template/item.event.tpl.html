@@ -1,4 +1,4 @@
-<div class="vevent radcon">
+<div class="vevent hentry radcon">
 	<!-- BEGIN flyer -->
 	<a href="{BIGFLYERLINK}" rel="lightbox"><img class="eventFlyerThumb" src="{FLYERTHUMBURL}" title="Leták {IMGEVENTTITLE}" alt="{IMGEVENTALT}" /></a>
 	<!-- END flyer -->
@@ -17,22 +17,25 @@
 	</div>
 	<hr class="cleaner"/>
 	<!-- BEGIN toolbar -->
-			<ul>
-			<!-- BEGIN edit --><li class="opposite"><a href="{EDITLINK}">Upravit</a></li><!-- END edit -->
-      <li class="opposite">
+			<div class="header">
+			        
         <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-        <span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span>
-      </li>
+        
+				<span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span>
       
-      <!-- BEGIN tag --><li>{TAG}</li><!-- END tag -->
-      <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
-      <!-- BEGIN commentlink --><li><a href="{COMMENTLINK}" class="commentsLink">Diskuze [<!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}]</a></li><!-- END commentlink -->
+		    <span class="stats">
+			  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png"></a></span> | <!-- END numcomment -->
+				<!-- BEGIN tag -->{TAG} | <!-- END tag -->
+			  <!-- BEGIN link --><span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="{ITEMLINKICODIR}/img/link_go.png" /></a></span><!-- END link -->
+			  </span>
+	  
+	  		<!-- BEGIN edit --><span class="edit"><a href="{EDITLINK}">Upravit</a></span><!-- END edit -->
       
-      </ul>
+      </div>
     <!-- END toolbar -->
 </div>
 <!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
 <!-- BEGIN participants --><div id="participants"><h3>Kdo přijde</h3>
 <!-- BEGIN participant --><div class="participant">{PARTICIPANTAVATAR}</div><!-- END participant -->
-</div><!-- END participants -->
+</div><hr class="cleaner" /><!-- END participants -->
 <!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
