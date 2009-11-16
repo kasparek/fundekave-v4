@@ -8,7 +8,7 @@
   </ul>
   
   <div class="buttonBar">
-    <input name="save" id="submitButtonSave" value="Uložit" class="button submit" type="submit">  
+    <input name="save" id="submitButtonSave" value="Uložit" class="button submit draftdrop" type="submit">  
     <!-- BEGIN newdelete --><input name="delete" id="submitButtonDelete" value="Smazat" class="button confirm" title="Opravdu chcete vymazat tento clánek ?" type="submit" /><!-- END newdelete -->
   </div>
   
@@ -34,9 +34,10 @@
 <div id="tabs-2">
 <fieldset>
 
-	<label for="formLink">Propojeni</label><input id="formLink" name="commented" value="" type="text"> <a href="">Smazat existujici</a><br />
+	<label for="formLink">Propojeni</label><input id="formLink" name="commented" value="" type="text" class="change" /><br />
     <!-- BEGIN commentedItem -->
     {COMMENTEDITEM}
+    <input type="submit" name="deleteBottom" value="Smazat" title="Opravdu chcete smazat propojeni?" class="button confirm" />
     <hr class="cleaner" />
     <!-- END commentedItem -->
 

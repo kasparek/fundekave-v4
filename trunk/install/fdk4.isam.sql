@@ -341,14 +341,14 @@ CREATE INDEX `sys_surfinie-user` ON sys_surfinie (userId);
 CREATE INDEX `sys_surfinie-category` ON sys_surfinie (categoryId);
 
 CREATE TABLE sys_menu (
-       menuId SMALLINT unsigned NOT NULL AUTO_INCREMENT
+       pageIdTop varchar(5) NOT NULL
      , pageId varchar(5) NOT NULL
      , text VARCHAR(50) NOT NULL
      , public TINYINT unsigned NOT NULL DEFAULT 0
      , ord SMALLINT unsigned NOT NULL DEFAULT 0
-     , PRIMARY KEY (menuId)
-     , INDEX (pageId)
-)  ;
+     , PRIMARY KEY (pageIdTop,pageId)
+);
+CREATE INDEX `menu-pageTop` ON sys_menu (pageIdTop);
 CREATE INDEX `menu-page` ON sys_menu (pageId);
 
 CREATE TABLE sys_pages_favorites (

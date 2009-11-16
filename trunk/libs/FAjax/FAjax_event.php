@@ -16,7 +16,7 @@ class FAjax_event extends FAjaxPluginBase {
 			//delete temporary probably
 
 		}
-		FAjax::addResponse('flyerDiv', 'html', '');
+		FAjax::addResponse('flyerDiv', '$html', '');
 	}
 
 	static function edit($data) {
@@ -27,7 +27,7 @@ class FAjax_event extends FAjaxPluginBase {
 			return;
 		}
 
-		FAjax::addResponse($data['result'], 'html', FEvents::editForm($data['item']));
+		FAjax::addResponse($data['result'], '$html', FEvents::editForm($data['item']));
 		FAjax::addResponse('function','call','draftSetEventListeners');
 
 		FAjax::addResponse('function','getScript',URL_JS.'jquery-ui.datepicker.js;datePickerInit');
@@ -50,7 +50,7 @@ class FAjax_event extends FAjaxPluginBase {
 		$itemVO = FEvents::processForm( $data, false );
 
 		if($action=='delFlyer') {
-			FAjax::addResponse('flyerDiv', 'html', '');
+			FAjax::addResponse('flyerDiv', '$html', '');
 			return;
 		}
 
@@ -68,7 +68,7 @@ class FAjax_event extends FAjaxPluginBase {
 			
 			$itemId=0;
 			if($itemVO) $itemId = $itemVO->itemId;
-			FAjax::addResponse('fajaxContent', 'html', FEvents::editForm($itemId));
+			FAjax::addResponse('fajaxContent', '$html', FEvents::editForm($itemId));
 
 			FAjax::addResponse('function','call','draftSetEventListeners');
 			FAjax::addResponse('function','call','datePickerInit');

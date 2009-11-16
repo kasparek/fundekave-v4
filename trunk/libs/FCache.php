@@ -79,6 +79,13 @@ class FCache {
 	function &getDriver( $driverIdent='' ) {
 		if(!empty($driverIdent)) {
 			switch($driverIdent) {
+				//---for testing - no caching - always return false
+				case 'v':
+				case 'void':
+				case 'debug':
+					require_once('FCache/VoidDriver.php');
+					$this->driver = VoidDriver::getInstance();
+					break;
 				//---in session
 				case 's':
 				case 'sess':

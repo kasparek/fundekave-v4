@@ -15,8 +15,9 @@ class FItemsRenderer {
 	public $showPageLabel = false;
 	public $showTag = true;
 	public $showComments = false;
+	public $showCommentsNum = true;
 	public $showText = true;
-	public $showTooltip = true;
+	public $showTooltip = false;
 	public $openPopup = true;
 	public $showRating = true;
 	public $showHentryClass = true;
@@ -27,6 +28,7 @@ class FItemsRenderer {
 	public $itemIdInside = 0;
 	public $showBottomItem = true;
 	public $thumbPreventCache = false;
+	public $showDetail = false;
 
 	private $initialized = false;
 	private $localVars;
@@ -94,10 +96,11 @@ class FItemsRenderer {
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');
+		$vars['ITEMLINKICODIR'] = $localCSS;
 		$vars['PAGEID'] = $pageId;
 		$vars['DATELOCAL'] = $itemVO->dateCreatedLocal;
 		$vars['DATEISO'] = $itemVO->dateCreatedIso;
-
+		
 		if($itemVO->public != 1) {
 			$touchedBlocks['notpublished']=true;
 			$touchedBlocks['notpublishedheader']=true;
@@ -107,24 +110,40 @@ class FItemsRenderer {
 		if($itemVO->unread === true) $touchedBlocks['unread']=true;
 		if($enableEdit === true) {
 			if($itemVO->editable === true && $localUserPageId == $pageId) {
-				$vars['EDITID'] = $itemId; //--- FORUM/delete-BLOG/edit
-				$vars['EDITPAGEID'] = $pageId.'u';
+								
+				$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
+				
+				//forum
+				$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
+				$vars['DELETECSSDIR']=$localCSS;
 			}
 		}
 
 		if($this->showText === true && $itemVO->text) {
-			$text = $itemVO->text;
-			//$words = explode(' ',$text);
-			//$shorten = array_slice($words,0,150);
-			//$text = FSystem::textins(implode(' ',$shorten));
-			//$text = implode(' ',$shorten);
-			//if blog and not in detail shorten text to 100words
-			$vars['TEXT'] = $text;
+			$vars['TEXT'] = $itemVO->text;
 		}
 		/**/
-
+		if($this->showRating === true) $vars['HITS'] = $itemVO->hit;
 
 		switch($typeId) {
+			case 'blog':
+				$user = FUser::getInstance();
+				$detailId = '';
+				if($user->itemVO) {
+					if($detailId == $itemId) {
+						$this->showDetail = true;
+					}
+				}
+				if(!empty($itemVO->textLong) && $this->showDetail===true ){
+					$vars['TEXTLONG'] = $itemVO->textLong;	
+				}
+				if( $this->showDetail===true ) {
+					$touchedBlocks['headhidden'] = true;
+				}
+				if( $localUserZavatar == 1 ) {
+					$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
+				}
+				break;
 			case 'event':
 				//--EVENT RENDERER
 				if($itemVO->categoryId > 0) {
@@ -141,16 +160,11 @@ class FItemsRenderer {
 
 				if(!empty($enclosure)) {
 					$flyerFilename = FEvents::flyerUrl($enclosure);
-					//$root_flyerFilename = FEvents::flyerUrl($enclosure,ROOT_FLYER);
-					//if(file_exists($root_flyerFilename)) {
-						$flyerFilenameThumb = FEvents::thumbUrl($enclosure);
-						//FEvents::createThumb($enclosure);
-						//$arrSize = getimagesize($flyerFilename);
-						$vars['BIGFLYERLINK'] = $flyerFilename;//.'?width='.($arrSize[0]+20).'&height='.($arrSize[1]+20);
-						$vars['FLYERTHUMBURL'] = $flyerFilenameThumb;
-						$vars['IMGEVENTTITLE'] = $addon;
-						$vars['IMGEVENTALT'] = $addon;
-					//}
+					$flyerFilenameThumb = FEvents::thumbUrl($enclosure);
+					$vars['BIGFLYERLINK'] = $flyerFilename;
+					$vars['FLYERTHUMBURL'] = $flyerFilenameThumb;
+					$vars['IMGEVENTTITLE'] = $addon;
+					$vars['IMGEVENTALT'] = $addon;
 				} else {
 					$vars['FLYERTHUMBURLDEFAULT'] = $localCSS . '/img/flyer_default.png';
 				}
@@ -186,8 +200,7 @@ class FItemsRenderer {
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
 				$vars['ADDONSTYLEWIDTH'] = ' style="width: '.$itemVO->thumbWidth.'px;"';
 				//$vars['ADDONSTYLEHEIGHT'] = ' style="height: '.$itemVO->height.'px;"';
-				if($this->showRating === true) $vars['HITS'] = $itemVO->hit;
-
+				
 				if( $this->openPopup === true ) {
 					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToPopup;
 					$touchedBlocks['popupc'] = true;
@@ -204,7 +217,7 @@ class FItemsRenderer {
 				break;
 		}
 		/**/
-		
+
 		//---for logged users
 		if ($localUserIdkontrol === true && $this->showFooter === true) {
 			//---thumb tag link
@@ -212,10 +225,10 @@ class FItemsRenderer {
 				$vars['TAG'] = FItemTags::getTag($itemId,$localUserId,$typeId,$itemVO->tag_weight);
 			}
 			/*
-			if($this->showPocketAdd === true) {
+			 if($this->showPocketAdd === true) {
 				$vars['POCKET'] = FPocket::getLink($itemId);
-			}
-			*/
+				}
+				*/
 			//---user link and location
 			if($itemUserId > 0) {
 				if($typeId != 'galery') {
@@ -232,47 +245,40 @@ class FItemsRenderer {
 			}
 		}
 		/**/
-
-		//---PAGE NAME
-		if($this->showPageLabel === true) {
-			$touchedBlocks['haspagelabel']=true;
-			$pageVO = new PageVO($pageId,true);
-			$vars['PAGELINK'] = FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId);
-			$vars['PAGENAME'] = $pageVO->name;
-			unset($pageVO);
-		}
-		/**/
-		
+		$link = FSystem::getUri('i='.$itemId.(($addon)?('-'.FSystem::safeText($addon)):('')),$pageId);;
 		//---BLOG / EVENT
 		if( $addon ) {
-			$link = FSystem::getUri('i='.$itemId.'-'.FSystem::safeText($addon),$pageId);
+			
 			if($this->showHeading == true) {
 				$vars['BLOGLINK'] = $link;
 				$vars['BLOGTITLE'] = $addon;
 			}
-			if($this->showComments == true) {
-				$writeRule = FPages::getProperty($pageId,'forumSet');
-				if(false !== ($itemWriteRule = ItemVO::getProperty($itemId,'forumSet',2))) $writeRule = $itemWriteRule;
-				$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('simple'=>1) );
-			} else {
-				$vars['COMMENTLINK'] = $link;
-				$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
-				if($unReadedReactions > 0) {
-					$vars['ALLNEWCNT'] = $unReadedReactions;
-				}
-				$vars['CNTCOMMENTS'] = $itemVO->cnt;
-			}
+				
 		}
-		/**/
+
+		if($this->showComments === true) {
+			$this->showCommentsNum = false;
+			
+			$writeRule = PageVO::getProperty($pageId,'forumSet');
+			if(false !== ($itemWriteRule = ItemVO::getProperty($itemId,'forumSet',2))) $writeRule = $itemWriteRule;
+			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
 		
+		} 
+		if($this->showCommentsNum === true){
+			$vars['COMMENTLINK'] = $link;
+			$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
+			if($unReadedReactions > 0) { $vars['ALLNEWCNT'] = $unReadedReactions; }
+			$vars['CNTCOMMENTS'] = $itemVO->cnt;
+			$vars['COMMENTSCSSDIR'] = $localCSS;
+		}
+
+		/**/
+
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
-				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, array('showTooltip'=>false,'showPageLabel'=>true));
-				if($itemVOBottom->typeId == 'galery') {
-					$touchedBlocks['withCommented']=true;
-					$touchedBlocks['commentedFloat']=true;
-				}
+				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, 
+				array('showTooltip'=>false,'showPageLabel'=>false,'showRating'=>false,'showTag'=>false,'openPopup'=>false,'showCommentsNum'=>false));
 				if(FRules::get($localUserId, $itemVOBottom->pageId,1)) {
 					$vars['ITEMBOTTOM'] = $itemVOBottom->render();
 				}
@@ -287,7 +293,29 @@ class FItemsRenderer {
 			}
 		}
 		/**/
+
+		//---PAGE NAME
+		//TODO: fix this
 		
+		if($this->showPageLabel === true) {
+			
+			if($itemVO->itemIdTop > 0) {
+				
+				$itemTop = new ItemVO($itemVO->itemIdTop,true);
+				$vars['TOP'] = $itemTop->render();
+				$vars['HEADURL'] = FSystem::getUri('i='.$itemVO->itemIdTop,'','');
+				
+			}
+			
+			$touchedBlocks['haspagelabel'] = true;
+			$pageVO = new PageVO($pageId,true);
+			$vars['PAGELINK'] = FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId);
+			$vars['PAGENAME'] = $pageVO->name;
+			unset($pageVO);
+				
+		}
+		/**/
+
 		//---FINAL PARSE
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;
 		$tpl->setVariable($vars);

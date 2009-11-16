@@ -35,13 +35,10 @@ class FEvents {
 		$adruh = 0;
 		$filtr = '';
 
-		$category = new FCategory('sys_pages_category','categoryId');
-		FBuildPage::addTab(array("MAINDATA"=>$category->getList('event')));
-
 		$fItems = new FItems('event',false);
-		if(isset($_REQUEST['kat'])) $adruh = (int) $_REQUEST['kat'];
+		if(isset($_REQUEST['c'])) $adruh = (int) $_REQUEST['c'];
 		if(isset($_REQUEST['filtr'])) $filtr = trim($_REQUEST['filtr']);
-		if($adruh>0) $fItems->addWhere('categoryId="'.$adruh.'"');
+		if($adruh > 0) $fItems->addWhere('categoryId="'.$adruh.'"');
 		if(!empty($filtr)) $fItems->addWhereSearch(array('location','addon','text'),$filtr,'or');
 
 		if($archiv===false) {
@@ -107,8 +104,8 @@ class FEvents {
 		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-		$draft = FUserDraft::get('event');
-		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( !empty($draft) ? $draft :$itemVO->text ));
+		
+		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( $itemVO->text ));
 		if($itemVO->itemId > 0) {
 			$tpl->touchBlock('delakce');
 		}
@@ -292,16 +289,14 @@ class FEvents {
 				$cache->invalidateGroup('calendarlefthand');
 				$user = FUser::getInstance();
 				$user->itemVO = $itemVO;
-				FUserDraft::clear('event');
+				
 			} else {
 				$cache = FCache::getInstance('s');
 				$cache->setData($itemVO,$user->pageVO->pageId,'form');
 			}
 
 			if($redirect === true) {
-				FHTTP::redirect(FSystem::getUri());
-			} else {
-
+				FHTTP::redirect(FSystem::getUri('#dd'));
 			}
 		}
 

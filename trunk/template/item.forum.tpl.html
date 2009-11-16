@@ -1,15 +1,23 @@
 <div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread --><!-- BEGIN haspagelabel --> hasPageLabel<!-- END haspagelabel -->">
   <a name="{ITEMIDHTML}"></a>
-  <span class="author vcard">
-    <!-- BEGIN postdeletecheckbox --><input type="checkbox" name="del[]" value="{EDITID}" class="deleteItem" title="Oznacit pro smazani, po odeslani" /><!-- END postdeletecheckbox -->
-    <!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --> 
-    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" title="Prave sleduje" class="currentLocation">{USERLOCATION}</a><!-- END useronlinelocation -->
-  </span>
-  <!-- BEGIN link --><span class="link"><a href="{ITEMLINK}" title="Odkaz na prispevek">URL</a></span><!-- END link -->
-  <!-- BEGIN tag --><span class="tag">{TAG}</span><!-- END tag -->
-  <!-- BEGIN pocket -->{POCKET} <!-- END pocket -->
+  <!-- BEGIN h2 --><h2><a href="{HEADURL}">{HEAD}</a></h2><!-- END h2 -->
+  <!-- BEGIN top --><div style="opacity: 0.2;">{TOP}</div><!-- END top -->
+  <div class="header">
+		<span class="author vcard">
+	    <!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --> 
+	    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" title="Prave sleduje" class="currentLocation">{USERLOCATION}</a><!-- END useronlinelocation -->
+	  </span>
+	  
+	  <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+	  
+	  <span class="stats">
+		<!-- BEGIN tag -->{TAG} | <!-- END tag -->
+	  <!-- BEGIN link --><span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="{ITEMLINKICODIR}/img/link_go.png" /></a></span><!-- END link -->
+	  </span>
+	  
+	  <!-- BEGIN postdeletecheckbox --><span class="delete"><a href="{DELETEURL}" class="fajaxa confirm" title="Opravdu chcete smazat prispevek?"><img src="{DELETECSSDIR}/img/comment_delete.png" title="Smazat prispevek" /></a></span><!-- END postdeletecheckbox -->
+	</div>
   <!-- BEGIN useravatar --><div class="avatar">{AVATAR}</div><!-- END useravatar -->
-  <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
   <div class="entry-content">{TEXT}
     <!-- BEGIN enclosure --><div class="enclosure">{ENCLOSURE}</div><!-- END enclosure -->
   </div>

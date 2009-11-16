@@ -20,11 +20,11 @@ class FPages extends FDBTool {
 
 		$this->getListPages();
 	}
-	
+
 	static function setBooked($pageId,$userId,$book) {
 		$this->query("update sys_pages_favorites set book='".$book."' where pageId='".$pageId."' AND userId='" . $userId."'");
 	}
-	
+
 	static function newPageId($delka=5) {
 		$moznosti='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 		$lo="";
@@ -36,16 +36,16 @@ class FPages extends FDBTool {
 		}
 		return($lo);
 	}
-	
+
 	static function page_exist($col,$val) {
 		return FDBTool::getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
 	}
-	
+
 	static function pageOwner($pageId) {
 		$q = "SELECT userIdOwner FROM sys_pages WHERE pageId= '".$pageId."'";
 		return FDBTool::getOne($q,$pageId,'pageOwn','s');
 	}
-	
+
 	function getListPages() {
 		if($this->permission == 1) {
 			if($this->sa === true) {
@@ -112,7 +112,7 @@ class FPages extends FDBTool {
 		FDBTool::query("delete from sys_pages_counter where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_users_perm where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_pages where pageId='".$pageId."'");
-		 
+			
 		FDBTool::query("delete from sys_leftpanel_pages where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_leftpanel_users where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_users_pocket where pageId='".$pageId."'");
@@ -120,7 +120,7 @@ class FPages extends FDBTool {
 		FDBTool::query("delete from sys_pages_items where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_menu where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_menu_secondary where pageId='".$pageId."'");
-		 
+			
 		$arrPoll = FDBTool::getCol("select pollId from sys_poll where pageId='".$pageId."'");
 		while($arrPoll) {
 			$pollId = array_shift($arrPoll);
@@ -135,17 +135,22 @@ class FPages extends FDBTool {
 	 *
 	 * @param string $pageId
 	 * @param Boolean $increment - if false cnt is decremented
-	 * @param Boolean $refresh - if true data are overriden with fresh query - slower 
+	 * @param Boolean $refresh - if true data are overriden with fresh query - slower
 	 * @return void
 	 */
-	static function cntSet($pageId, $increment=true, $refresh=false) {
-		if($refresh==true) {
-			return FDBTool::query('update sys_pages set dateUpdated=now(),cnt = (select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null) where pageId="'.$pageId.'"');
-		} else {
-			return FDBTool::query('update sys_pages set dateUpdated=now(),cnt = cnt '.(($increment==true)?('+'):('-')).' 1 where pageId="'.$pageId.'"');
+	static function cntSet($pageId, $value = 1, $refresh=false) {
+		$incStr = '';
+		if($refresh===true) {
+			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null)';
+		} else if($value > 0) {
+			$incStr = 'cnt + '.$value;
+		} else if($value < 0) {
+			$incStr = 'cnt - '.abs($value);
 		}
+		if(!empty($incStr)) $incStr = ',cnt = '.$incStr;
+		return FDBTool::query('update sys_pages set dateUpdated=now()'.$incStr.' where pageId="'.$pageId.'"');
 	}
-	
+
 	/**
 	 * sets FDBTool to load just pages by category
 	 *
@@ -162,7 +167,7 @@ class FPages extends FDBTool {
 		$this->addWhere('p.categoryId='.$categoryId);
 		$this->setOrder('p.name');
 	}
-	
+
 	function getListByCategory($categoryId) {
 		$user = FUser::getInstance();
 		$this->type = $user->pageVO->typeIdChild;
@@ -230,21 +235,21 @@ class FPages extends FDBTool {
 				$tpl->setCurrentBlock('item');
 				if($user->userVO->zforumico) {
 					if(!empty($page[3])) {
-						$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page[3]);
-						$tpl->setVariable("AVATARNAME", $page[2]);
-						$tpl->setVariable("AVATARALT", $page[2]);
+						$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
+						$tpl->setVariable("AVATARNAME", $page['name']);
+						$tpl->setVariable("AVATARALT", $page['name']);
 					}
 				}
-				$tpl->setVariable("PAGENAME", $page[2]);
-				$tpl->setVariable("PAGEID", $page[0].'-'.FSystem::safetext($page[2]));
+				$tpl->setVariable("PAGENAME", $page['name']);
+				$tpl->setVariable("PAGEID", $page['pageId'].'-'.FSystem::safetext($page['name']));
 				if($user->idkontrol) {
-					if($page[4]>0 && $page[4]<100000) $tpl->setVariable("PAGEPOSTSNEW", $page[4]);
-					else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
+					if($page['newMess']>0 && $page['newMess']<100000) $tpl->setVariable("PAGEPOSTSNEW", $page['newMess']);
+					//else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
 				}
-				
+
 				//---show last item
-				if(!empty($page[5])) {
-					$item = new ItemVO($page[5],true,array('type'=>$page[6]));
+				if(!empty($page['itemId'])) {
+					$item = new ItemVO($page['itemId'],true,array('type'=>$page['typeId'],'showPageLabel'=>true));
 					$tpl->setVariable("ITEM", $item->render());
 				}
 				$tpl->parseCurrentBlock();
@@ -252,7 +257,7 @@ class FPages extends FDBTool {
 		}
 		return $tpl->get();
 	}
-	
+
 	/**
 	 * list of own, booked and new pages
 	 *
@@ -260,11 +265,13 @@ class FPages extends FDBTool {
 	 * @return hmtl String
 	 */
 	function printBookedList($xajax=false) {
+		$this->fetchmode = 1;
+		
 		$user = FUser::getInstance();
 		$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
-		 
+			
 		if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
-		 
+			
 		//---template init
 		$tpl = FSystem::tpl('forums.booked.tpl.html');
 
@@ -300,7 +307,7 @@ class FPages extends FDBTool {
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
-				$newSum += $forum[4];
+				$newSum += $forum['newMess'];
 			}
 			if($newSum>0) {
 				$tpl->setVariable('OWNERNEW',$newSum);
@@ -327,7 +334,7 @@ class FPages extends FDBTool {
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
-				$newSum += $forum[4];
+				$newSum += $forum['newMess'];
 			}
 			if($newSum>0) {
 				$tpl->setVariable('BOOKEDNEW',$newSum);
@@ -356,9 +363,9 @@ class FPages extends FDBTool {
 			$tpl->parse('bookedcontent');
 			return $tpl->get('bookedcontent');
 		} else return $tpl->get();
-		 
+			
 	}
-	
+
 	/* AVATAR FOR PAGE */
 	//---load from url
 	static function avatarFromUrl($pageId, $avatarUrl) {
@@ -395,19 +402,5 @@ class FPages extends FDBTool {
 			return '';
 		}
 	}
-	
-	/* PAGE PROPERTIES */
-	static function getProperty($pageId,$propertyName,$default=null) {
-		$arr = FDBTool::getAll("select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'");
-		if(empty($arr)) {
-			///get default
-			$value = $default;
-		} else {
-			$value = $arr[0][0];
-		}
-		return $value;
-	}
-	static function setProperty($pageId,$propertyName,$propertyValue) {
-		return FDBTool::query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
-	}
+
 }

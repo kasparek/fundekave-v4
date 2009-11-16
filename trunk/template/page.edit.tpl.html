@@ -3,6 +3,7 @@
 <div id="tabs">
   <ul>
     <li><a href="#tabs-1">Nastaveni</a></li>
+    <!-- BEGIN extendedtab --><li><a href="#tabs-9">Specialni</a></li><!-- END extendedtab -->
     <!-- BEGIN galeryspecifictabs --><li><a href="#tabs-5">Fotografie</a></li>
     <li><a href="#tabs-6">Upload</a></li><!-- END galeryspecifictabs -->
     <!-- BEGIN permissionstab --><li><a href="#tabs-2">Pristup</a></li><!-- END permissionstab -->
@@ -13,7 +14,7 @@
   </ul>
   
   <div class="buttonBar">
-   	<input type="submit" name="save" value="Uložit" class="button submit" />
+   	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
 		<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
 	</div>
 	
@@ -36,11 +37,20 @@
     <!-- END categories -->
     <label>Popis</label>
     <textarea id="{PAGEDESCRIPTIONID}" class="draftable" name="description">{PAGEDESCRIPTION}</textarea><br />
+    	
+	  <!-- BEGIN content -->  
+	  <label>Zahlaví / Obsah</label>
+	   <textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
+	  <!-- END content -->  
     
-		<label>Podrobnosti</label><a href="#" class="switchOpen" rel="detailSettings"><strong>Otevrit podrobnejsi nastaveni</strong></a>
-		<div id="detailSettings" class="hidden">
-	    
-			<!-- BEGIN pageavatarupload -->
+	</fieldset>
+</div>
+<!-- BEGIN extended -->
+<div id="tabs-9">
+	<!-- BEGIN pageavatarhandler -->
+	<fieldset>
+		<legend>Avatar</legend>      
+      <!-- BEGIN pageavatarupload -->
 	    <label>Ikona (60x25px)</label>
 	    <div id="pava" class="fuup">
 	    <input type="file" name="audico" /></div><br />
@@ -49,10 +59,11 @@
 	    <label>&nbsp;</label><img src="{PAGEICOLINK}" /> <input value="Smazat" title="Opravdu chcete smazat avatar stranky?" type="submit" name="delpageavatar" class="button confirm" /><br />
 	    <!-- END pageavatar --></div>
 	    <!-- END pageavatarupload -->
-	    
-	    <label>Zahlaví</label>
-	    <textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
-	    <!-- BEGIN galeryspecific -->
+  </fieldset>
+  <!-- END pageavatarhandler -->
+  <!-- BEGIN galeryspecific -->
+  <fieldset>
+		<legend>Galerie</legend>
 	    <label>Na stránku</label><input type="text" name="xperpage" value="{PERPAGE}" class="xShort" /> [pocet nahledu na stranku]<br />
 	    <!-- BEGIN enhancendgalery -->
 	    <label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
@@ -62,17 +73,25 @@
 	    <option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
 	    </select><br />
 	    <!-- END enhancendgalery -->
-	    <!-- END galeryspecific -->
-	    <!-- BEGIN forumreaction -->
-	    <label>Dikskuze:</label><select name="forumReact">
+	    
+      
+  </fieldset>
+  <!-- END galeryspecific -->
+  <!-- BEGIN forumreaction -->
+  <fieldset>
+		<legend>Komentare</legend>
+	    
+			<label>Komentare:</label><select name="forumReact">
 	      <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce</option>
 	      <option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
 	      <option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
 	    </select>
-	    <!-- END forumreaction -->
-    </div>
+	    
 	</fieldset>
+	<!-- END forumreaction -->
 </div>
+<!-- END extended -->
+<!-- BEGIN end -->
 <!-- BEGIN perm -->
 <div id="tabs-2">
    {PAGEPERMISIONSFORM}

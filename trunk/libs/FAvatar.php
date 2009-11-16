@@ -11,17 +11,18 @@ class FAvatar {
 			$user = FUser::getInstance();
 			$picname = URL_AVATAR . $user->userVO->avatar; //---myself
 		} elseif($userId > 0) {
-			$cache = FCache::getInstance('l');
-			if( ($userAvatar = $cache->getData($userId,'UavaUrl')) === false ) {
+			$cache = FCache::getInstance('d',0);
+			$avatarUrl = $cache->getData($userId,'avatar_url');
+			if( $avatarUrl === false ) {
 				$userAvatar = FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
 				if(!empty($userAvatar)) {
 					if(file_exists( ROOT_AVATAR.$userAvatar ) && !is_dir( ROOT_AVATAR.$userAvatar )) {
 						$picname = URL_AVATAR.$userAvatar;
 					}
 				}
-				$cache->setData($userAvatar ,$userId,'UavaUrl');
+				$cache->setData($picname ,$userId,'avatar_url');
 			} else {
-				$picname = $userAvatar;
+				$picname = $avatarUrl;
 			}
 		}
 		return($picname);
@@ -43,30 +44,31 @@ class FAvatar {
 		$noTooltip = true;
 			
 		$avatarUserId = $userId;
-		if($avatarUserId==-1) {
+		if( $avatarUserId == -1) {
 			$user = FUser::getInstance();
 			$avatarUserId = $user->userVO->userId;
 		}
 
-		$cache = FCache::getInstance('l');
-
-		if(!$ret = $cache->getData($avatarUserId,'Uavatar')) {
+		$cache = FCache::getInstance('f',0);
+		$cacheId = 'opt'.(($showName===true)?('-1'):('-0'));
+		$cacheGrp = 'avatar_'.$avatarUserId;
+		$ret = $cache->getData( $cacheId,$cacheGrp);
+		if(false === $ret) {
 			if(!isset($user)) $user = FUser::getInstance();
-				
 			$tpl = FSystem::tpl(FLang::$TPL_USER_AVATAR);
 
-			if($userId==-1 ) $avatarUserName = $user->userVO->name;
+			if($userId == -1 ) $avatarUserName = $user->userVO->name;
 			elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
 			else $avatarUserName = '';
 
 			if($showName) $tpl->setVariable('USERNAME',$avatarUserName);
-			if($user->userVO->zavatar==1) {
+			if($user->userVO->zavatar == 1) {
 				$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
 				$tpl->setVariable('AVATARUSERNAME',$avatarUserName);
 				if(isset($class)) $tpl->setVariable('AVATARCLASS',$class);
 			}
 
-			if($user->idkontrol && $avatarUserId>0) {
+			if($user->idkontrol && $avatarUserId > 0) {
 				$avatarUrl = FSystem::getUri('who='.$avatarUserId,'finfo','');
 				if($showName) {
 					$tpl->setVariable('NAMEURL',$avatarUserName);
@@ -81,7 +83,7 @@ class FAvatar {
 			}
 			$tpl->parse('useravatar');
 			$ret = $tpl->get('useravatar');
-			$cache->setData($ret,$avatarUserId,'Uavatar');
+			$cache->setData($ret, $cacheId, $cacheGrp);
 		}
 
 		$tooltip = '';

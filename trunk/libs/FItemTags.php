@@ -15,7 +15,8 @@ class FItemTags {
 		if(0 == FDBTool::getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
 			FItemTags::invalidateCache();
 			FDBTool::query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');
-			return FDBTool::query("insert into sys_pages_items_tag values ('".$itemId."','".$userId."',".(($tag!='')?("'".FSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
+			FDBTool::query("insert into sys_pages_items_tag values ('".$itemId."','".$userId."',".(($tag!='')?("'".FSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
+			page_PagesList::invalidate();
 		}
 	}
 	static function removeTag($itemId,$userId) {
@@ -23,7 +24,7 @@ class FItemTags {
 			FItemTags::invalidateCache();
 			FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'");
 			FDBTool::query("update sys_pages_items set tag_weight=(select IF( sum( weight ) IS NULL , 0, sum( weight ) ) from sys_pages_items_tag where itemId='".$itemId."' ) where itemId='".$itemId."'");
-			return true;
+			page_PagesList::invalidate();
 		}
 	}
 	static function isTagged($itemId,$userId) {

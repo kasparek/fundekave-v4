@@ -14,7 +14,7 @@ class FBuildPage {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
 			$pageTitle = $user->pageVO->name;
-			return (!empty($pageTitle)?($pageTitle.' - '):('')).BASEPAGETITLE;
+			return (!empty($pageTitle)?($pageTitle.' - '):('')).(!empty($user->pageVO->title)?($user->pageVO->title.' - '):('')).BASEPAGETITLE;
 		}
 	}
 	static function getHeading() {
@@ -148,7 +148,7 @@ class FBuildPage {
 				} else {
 					//STATIC TEMPLATE
 					$tpl = FSystem::tpl($template);
-					$tpl->parseBlockFromVars( $user->pageVO );
+					FSystem::tplParseBlockFromVars( $tpl, $user->pageVO );
 					FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 					unset($tpl);
 				}
@@ -308,7 +308,7 @@ class FBuildPage {
 		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
 
 		//---LEFT PANEL POPULATING
-		$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?($user->pageVO->typeId):(''));
+		$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId=='top' ? $user->pageVO->typeIdChild : $user->pageVO->typeId ):(''));
 		$fLeftpanel->load();
 		$fLeftpanel->show();
 		FProfiler::profile('FBuildPage--FLeftPanel');
@@ -351,7 +351,9 @@ class FBuildPage {
 
 		if($useDatePicker === true) {
 			$tpl->touchBlock("juiHEAD"); //---js in the header
+			$tpl->setVariable('JUI_URL_JS',URL_JS);
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
+			$tpl->setVariable('DATEPICKER_URL_JS',URL_JS);
 			$tpl->touchBlock("datepickerEND"); //---javascript on the end of the page
 		}
 		if($useSlimbox === true) {
@@ -370,6 +372,7 @@ class FBuildPage {
 			$tpl->touchBlock("juiHEAD"); //---js in the header
 			$tpl->setVariable('TABS_URL_JS',URL_JS);
 			$tpl->touchBlock("tabsEND");
+			$tpl->setVariable('JUI_URL_JS',URL_JS);
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
 		}
 		if($useSupernote === true) {
@@ -384,6 +387,9 @@ class FBuildPage {
 			$tpl->setVariable('BBQ_URL_JS',URL_JS);
 			$tpl->touchBlock("bbq");
 		}
+		
+		if($user->idkontrol===true) $tpl->touchBlock("userin"); 
+		
 		FProfiler::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);

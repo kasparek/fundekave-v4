@@ -14,10 +14,11 @@ class page_Main implements iPage {
 		
 		$cache = FCache::getInstance('f',0);
 		//--------------LAST-FORUM-POSTS
-		$data = $cache->getData(($user->userVO->userId*1).'-main','lastForumPost');
+		$data = $cache->getData(($user->userVO->userId*1).'-mainforum','pagelist');
 		if($data === false) {
 			$fPages = new FPages('forum', $userId);
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value,p.typeId');
+			$fPages->fetchmode=1;
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 			if($user->idkontrol!==true) {
 				$fPages->addWhere('p.locked < 2');
@@ -34,12 +35,11 @@ class page_Main implements iPage {
 		/**/
 		
 		//---------------LAST-BLOG-POSTS
-		$dataArr = $cache->getData(($user->userVO->userId*1).'-main','lastBlogPost');
+		$dataArr = $cache->getData(($user->userVO->userId*1).'-mainblog','pagelist');
 		if($dataArr===false) {
-			$dataArr = array();
-			
 			$fPages = new FPages('blog', $userId);
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value,p.typeId');
+			$fPages->fetchmode=1;
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 			if($user->idkontrol!==true) {
 				$fPages->addWhere('p.locked < 2');

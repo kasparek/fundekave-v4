@@ -44,6 +44,7 @@ class PageVO extends Fvob {
 	var $categoryVO;
 	var $menuSecondaryGroup;
 	var $template;
+	var $title = ''; //---for html
 	var $name;
 	var $nameshort;
 	var $description;
@@ -125,7 +126,7 @@ class PageVO extends Fvob {
 	 */
 	function perPage($perPage=0) {
 		$cache = FCache::getInstance('s');
-		$SperPage = &$cache->getPointer($this->pageId,'pp'); 
+		$SperPage = &$cache->getPointer($this->pageId,'pp');
 		if($perPage > 0) {
 			if($perPage > FConf::get('perpage','min')) {
 				//set perpage
@@ -183,5 +184,27 @@ class PageVO extends Fvob {
 			$xml->$branch->$node = $value;
 		}
 		$this->pageParams = $xml->asXML();
+	}
+
+	public $propDefaults = array();
+	function prop($propertyName,$value=null) {
+		if($value!==null) PageVO::setProperty($this->pageId,$propertyName,$value);
+		$default='';
+		if(isset($this->propDefaults[$propertyName])) $default = $this->propDefaults[$propertyName];
+		return PageVO::getProperty($this->pageId,$propertyName,$default);
+	}
+
+	//---special properties
+	static function getProperty($pageId,$propertyName,$default=false) {
+		$q = "select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'";
+		$value = FDBTool::getOne($q,$pageId.'-'.$propertyName.'-prop','fpages','l');
+		if($value === false || $value === null) $value = $default;
+		return $value;
+	}
+
+	static function setProperty($pageId,$propertyName,$propertyValue) {
+		FDBTool::query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+		$cache = FCache::getInstance('l');
+		$cache->invalidateData($pageId.'-'.$propertyName.'-prop','fpages');
 	}
 }

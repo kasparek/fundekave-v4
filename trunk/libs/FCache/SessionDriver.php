@@ -72,7 +72,8 @@ class SessionDriver
 	}
 
 	function invalidateGroup( $grp ) {
-		unset($this->data[$grp]);
+		$this->data[$grp] = array();
+		unset( $this->data[$grp] );
 	}
 
 	function invalidate( ) {

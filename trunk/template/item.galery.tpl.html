@@ -1,7 +1,8 @@
 <div id="{ITEMIDHTML}" class="<!-- BEGIN hentry -->hentry<!-- END hentry -->">
 	<!-- BEGIN pagelink --><h3 class="entry-title"><a href="{PAGELINK}" class="bookmark">{PAGENAME}</a></h3><!-- END pagelink -->
 	<div class="entry-content"{ADDONSTYLEWIDTH}>
-	  <!-- BEGIN statistic --><div class="statistic">
+	  <!-- BEGIN statistic --><div class="stats">
+	  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png"></a></span> | <!-- END numcomment -->
     <!-- BEGIN tag --><span class="tagGalery">{TAG}</span> | <!-- END tag -->
     <!-- BEGIN rating --><span class="viewedTimes">{HITS}</span><!-- END rating -->
     </div><!-- END statistic -->
@@ -15,6 +16,8 @@
   </div>
 </div>
 <!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
+<!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div>
+<hr class="cleaner" /><!-- END comments -->
 
 <!-- BEGIN tooltip -->
 <div id="supernote-note-foto{ITEMIDTOOLTIP}" class="snp-mouseoffset notemenu">

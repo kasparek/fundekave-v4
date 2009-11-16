@@ -28,16 +28,9 @@ class FRules {
 		if($db->getOne("select count(1) from sys_pages where pageId='".$page."'")==0) $this->_err='ins_noexistpage';
 		if(!in_array($type,array_keys($this->_rules))) $this->_err='ins_badruletype';
 		if(empty($this->_err)) {
-			$db->query('update '.$this->_table.' set invalidatePerm=1 where userId="'.$usr.'"');
 			$db->query("delete from ".$this->_table." where ".$this->_arrCols[0]."='".$usr."' and ".$this->_arrCols[1]."='".$page."'");
-				
-			if($db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].")
-				values ('".$usr."','".$page."','".$type."')" )) 
-			return true;
-			else return false;
-				
+			$db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].")	values ('".$usr."','".$page."','".$type."')" ); 
 		}
-
 	}
 	function clear($page=0){
 		if(empty($page)) $page=$this->page;
@@ -68,8 +61,8 @@ class FRules {
 			on r.pageId=s.pageId and r.userId='".$usr."'
 			where s.pageId='".$page."'";
 			$arr = FDBTool::getRow($dot);
-						
-			if($arr[3] == $usr) $ret = true;
+			if(empty($arr)) $ret = false;			
+			elseif ($arr[3] == $usr) $ret = true;
 			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
 			elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher
 			elseif ($arr[2] < 3 && $type<2) { // not an admin page, just reading

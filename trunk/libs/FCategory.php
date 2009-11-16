@@ -124,7 +124,7 @@ class FCategory extends FDBTool {
 			if(!empty($selected)) $tpl->setVariable("OPTIONSELECTED",(($selected==$k)?(' selected="selected"'):('')));
 			$tpl->setVariable("OPTIONTEXT",$v);
 			$tpl->parse("arr".$blockname);
-				
+
 		}
 		$tpl->setVariable("SELECTNAME",$selectname);
 		$tpl->parse("kateg".$blockname);
@@ -260,26 +260,28 @@ class FCategory extends FDBTool {
 
 	static function tryGet( $newCat, $typeId ) {
 		$newCat = trim($newCat);
-		//check first if it does not exist
-		$q = "select categoryId,name from sys_pages_category where typeId='".$typeId."'";
-		$arrCat = FDBTool::getAll($q);
-		$percentHighest = 0;
-		$catIdHighest = 0;
-		foreach($arrCat as $row) {
-			$sim = similar_text(strtolower($newCat),strtolower($row[1]),$percent);
-			if($percent > $percentHighest) {
-				$percentHighest = $percent;
-				$catIdHighest = $row[0];
+		if(!empty($newCat)) {
+			//check first if it does not exist
+			$q = "select categoryId,name from sys_pages_category where typeId='".$typeId."'";
+			$arrCat = FDBTool::getAll($q);
+			$percentHighest = 0;
+			$catIdHighest = 0;
+			foreach($arrCat as $row) {
+				$sim = similar_text(strtolower($newCat),strtolower($row[1]),$percent);
+				if($percent > $percentHighest) {
+					$percentHighest = $percent;
+					$catIdHighest = $row[0];
+				}
 			}
-		}
-		if($percentHighest > 79) {
-			return $catIdHighest;
-		} else {
-			$catVO = new CategoryVO();
-			$catVO->name = $newCat;
-			$catVO->typeId = $typeId;
-			$catVO->save();
-			return $catVO->categoryId;
+			if($percentHighest > 79) {
+				return $catIdHighest;
+			} else {
+				$catVO = new CategoryVO();
+				$catVO->name = $newCat;
+				$catVO->typeId = $typeId;
+				$catVO->save();
+				return $catVO->categoryId;
+			}
 		}
 	}
 }

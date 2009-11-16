@@ -29,14 +29,13 @@ class FLeftPanel extends FDBTool {
 		$this->panels = array();
 		$this->panelsUsed = array();
 
-		$cache = FCache::getInstance( 's' );
-		if( false === ($arrSidebar = $cache->getData($this->pageId.'-page-'.($this->userId*1).'-user','sidebarSet')) ) {
+		$cache = FCache::getInstance( 'd' );
+		if( false === ($arrSidebar = $cache->getData($this->pageId.'-page-'.($this->userId * 1).'-user','sidebar_set')) ) {
 
 			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible");
-			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup='default' or fd.leftpanelGroup='".$this->pageType."')");
+			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup in ('default','".$this->pageType."'))");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 			$arrTmp = $this->getContent();
-			
 			
 			$this->queryReset();
 			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible");

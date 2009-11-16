@@ -34,9 +34,12 @@ class FAjax_galery extends FAjaxPluginBase {
 			$pageVO = new PageVO($pageId,true);	
 			$fItems->setWhere("pageId='".$pageId."' and itemIdTop is null");
 			$fItems->setOrder($pageVO->itemsOrder());
-			$ret = $fItems->render((int) $data['seq'],1);
+			$fItems->getList((int) $data['seq'],1);
+			$itemId = $fItems->data[0]->itemId;
+			$ret = $fItems->render();
 		}
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
+		FAjax::addResponse('function', 'call', 'draftSetEventListeners;fotodesc'.$itemId);
 	}
 	
 	static function delete($data) {

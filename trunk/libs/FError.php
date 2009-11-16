@@ -22,7 +22,7 @@ class FError {
 	}
 
 	static function isError($type=0){
-		if(!empty($_SESSION["errormsg"][$type])) return true;
+		if(!empty($_SESSION["errormsg"][$type])) return true; else return false;
 	}
 	
 	static function debug($die=true) {
