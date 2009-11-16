@@ -30,9 +30,9 @@ class PageVO extends Fvob {
 	);
 
 	var $defaults = array(
-    'forum'=>array('template'=>'page_ForumView','pageParams' => "<Page><home/></Page>"),
-    'blog'=>array('categoryId'=>'318','template'=>'page_ForumView','pageParams' => "<Page><home/></Page>"),
-    'galery'=>array('template'=>'page_GaleryDetail','pageParams' => "<Page><enhancedsettings><orderitems>0</orderitems><perpage>9</perpage><widthpx>170</widthpx><heightpx>170</heightpx><thumbnailstyle>2</thumbnailstyle><fotoforum>0</fotoforum></enhancedsettings></Page>"),
+    'forum'=>array('template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
+    'blog'=>array('categoryId'=>'318','template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
+    'galery'=>array('template'=>'galery.detail.php','pageParams' => "<Page><enhancedsettings><orderitems>0</orderitems><perpage>9</perpage><widthpx>170</widthpx><heightpx>170</heightpx><thumbnailstyle>2</thumbnailstyle><fotoforum>0</fotoforum></enhancedsettings></Page>"),
     'culture'=>array('template'=>'culture.view.tpl.html'));
 
 	//---db based

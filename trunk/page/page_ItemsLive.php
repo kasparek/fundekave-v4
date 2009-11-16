@@ -8,41 +8,24 @@ class page_ItemsLive implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		$typeId = $user->pageVO->typeIdChild;
-		$userId = $user->userVO->userId;
-
-		if(!FItems::isTypeValid($typeId)) $typeId = FItems::TYPE_DEFAULT;
-
-		$typeId = '';
+		$userId = (int) $user->userVO->userId;
 		
+		$cache = FCache::getInstance('f',0);
+		$p = 1;
+		$urlVar = FConf::get('pager','urlVar');
+		if(isset($_GET[$urlVar])) $p = (int) $_GET[$urlVar];
+		$cacheKey = 'live-u-'.$userId.(($p>1)?('-p-'.$p):(''));
+		$cacheGrp = 'pagelist';
+		$ret = $cache->getData($cacheKey,$cacheGrp);
+		if($ret === false) {
 		$localPerPage = $user->pageVO->perPage();
 		
-
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->showPageLabel = true;
-		
-		/*
-		$fPages = new FPages('forum', $userId);
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',i.itemId,p.typeId');
-			//$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLive"');
-			$fPages->addJoin('join sys_pages_items as i on i.pageId=p.pageId');
-			$fPages->addWhere('i.public = 1');
-			if($user->idkontrol!==true) {
-				$fPages->addWhere('p.locked < 2');
-			} else {
-				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-			}
-			$fPages->setOrder("i.itemId desc");
-			$arr = $fPages->getContent(0,4);
-			
-			$data = FPages::printPagelinkList($arr);
-			*/
-		
+				
 		$fItems = new FItems('',$user->userVO->userId);
-		
 		$fItems->addJoin('join sys_pages as p on p.pageId=sys_pages_items.pageId');
 		$fItems->addWhere('sys_pages_items.public > 0');
-		
 		$fItems->setOrder('sys_pages_items.itemId desc');
 		$fItems->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 		$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt)'):(',0')).' as newMess,sys_pages_items.itemId,sys_pages_items.typeId');
@@ -60,18 +43,20 @@ class page_ItemsLive implements iPage {
 		}
 
 		if($from > 0) $totalItems += $from;
-
+		$ret = '';
 		if($totalItems > 0) {
 			$pager->totalItems = $totalItems;
 			$pager->maybeMore = $maybeMore;
 			$pager->getPager();
-
 			//$tmptext = $fItems->render();
-
 			$tmptext = FPages::printPagelinkList($fItems->data);
 			if ($totalItems > $localPerPage) $tmptext .= $pager->links;
 
-			FBuildPage::addTab(array("MAINDATA"=>$tmptext));
+			$ret = $tmptext; 
+			
 		}
+		$cache->setData($ret,$cacheKey,$cacheGrp);
+		}
+		if(!empty($ret)) FBuildPage::addTab(array("MAINDATA"=>$ret));
 	}
 }

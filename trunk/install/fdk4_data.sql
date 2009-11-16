@@ -78,41 +78,28 @@ INSERT INTO `sys_leftpanel_functions` VALUES ('pageCategories','Kategorie', 1, 1
 truncate sys_leftpanel_defaults;
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pageCategories', 30, 1);
-/*INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pocket', 1, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_anketa', 2, 1);*/
-
 INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 20, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1);
-
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'relatedPagesList', 80, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_logged_list', 100, 1);
-
 #skupina pro kluby
 INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'rh_audit_popis', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'bookedRelatedPagesList', 90, 1);
-
 #skupina pro blogy
 INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_audit_popis', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_diar_kalendar', 20, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'bookedRelatedPagesList', 90, 1);
-
 #skupina pro galerie
 INSERT INTO `sys_leftpanel_defaults` VALUES ('galery', 'bookedRelatedPagesList', 90, 1);
-
 #pouze posta
 INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_posta_kdo', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('post', 'rh_diar_kalendar', 20, 1);
 
 truncate sys_menu_secondary;
 INSERT INTO `sys_menu_secondary` VALUES (2, 'fpost', 'Pošta', 0, 0);
-/*INSERT INTO `sys_menu_secondary` VALUES (2, 'finfo', 'Info', 0, 1);
-INSERT INTO `sys_menu_secondary` VALUES (2, 'fsurf', 'Odkazy', 0, 2);*/
-/*INSERT INTO `sys_menu_secondary` VALUES (2, 'fdiar', 'Diář', 0, 3);
-INSERT INTO `sys_menu_secondary` VALUES (2, 'ffall', 'Uživatelé', 0, 4);*/
 INSERT INTO `sys_menu_secondary` VALUES (2, 'fedit', 'Osobní', 0, 10);
 INSERT INTO `sys_menu_secondary` VALUES (2, 'sadmin', 'Admin', 0, 23);
-
 INSERT INTO `sys_menu_secondary` VALUES (4, 'galed', 'Založit galerii', 0, 4);
 INSERT INTO `sys_menu_secondary` VALUES (5, 'forne', 'Založit klub', 0, 5);
 INSERT INTO `sys_menu_secondary` VALUES (6, 'blone', 'Založit blog', 0, 5);
