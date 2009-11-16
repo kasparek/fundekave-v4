@@ -1,3 +1,5 @@
+TITLE a ALT u ikonek - oko, bubliny
+TITLE u ostatnich ovladacich odkazu
 blog - odkaz next a previous clanek
 
 //UPDATES

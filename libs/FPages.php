@@ -242,9 +242,10 @@ class FPages extends FDBTool {
 				}
 				$tpl->setVariable("PAGENAME", $page['name']);
 				$tpl->setVariable("PAGEID", $page['pageId'].'-'.FSystem::safetext($page['name']));
-				if($user->idkontrol) {
-					if($page['newMess']>0 && $page['newMess']<100000) $tpl->setVariable("PAGEPOSTSNEW", $page['newMess']);
-					//else $tpl->setVariable("PAGEPOSTSNEW", '&nbsp;');
+				if($user->idkontrol===true) {
+					if(isset($page['newMess'])) {
+						if($page['newMess']>0 && $page['newMess']<100000) $tpl->setVariable("PAGEPOSTSNEW", $page['newMess']);
+					}
 				}
 
 				//---show last item
