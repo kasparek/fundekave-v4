@@ -234,7 +234,7 @@ class FPages extends FDBTool {
 			foreach ($arrLinks as $page) {
 				$tpl->setCurrentBlock('item');
 				if($user->userVO->zforumico) {
-					if(!empty($page[3])) {
+					if(!empty($page['pageIco'])) {
 						$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
 						$tpl->setVariable("AVATARNAME", $page['name']);
 						$tpl->setVariable("AVATARALT", $page['name']);
@@ -250,7 +250,7 @@ class FPages extends FDBTool {
 
 				//---show last item
 				if(!empty($page['itemId'])) {
-					$item = new ItemVO($page['itemId'],true,array('type'=>$page['typeId'],'showPageLabel'=>true));
+					$item = new ItemVO($page['itemId'],true,array('type'=>$page['typeId'],'showPageLabel'=>true,'openPopup'=>false));
 					$tpl->setVariable("ITEM", $item->render());
 				}
 				$tpl->parseCurrentBlock();
@@ -280,15 +280,7 @@ class FPages extends FDBTool {
 		FForum::clearUnreadedMess();
 		FItems::afavAll($user->userVO->userId,$this->type);
 
-		//vypis vlastnich
-		$friendsBook = false;
-		if(!empty($user->whoIs)){
-			if($user->userVO->isFriend($user->whoIs)) {
-				$userId = $user->whoIs;
-				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userId,array('showName'=>1)));
-				$friendsBook = true;
-			}
-		} else $userId=$user->userVO->userId;
+		$userId=$user->userVO->userId;
 
 		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
 		$this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
@@ -343,7 +335,7 @@ class FPages extends FDBTool {
 		}
 
 		//vypis novych
-		if($friendsBook==false) {
+		
 			$this->queryReset();
 			$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
 			$this->addJoin('left join sys_pages_favorites as f on f.userId="'.$userId.'"');
@@ -358,7 +350,7 @@ class FPages extends FDBTool {
 				$tpl->setVariable('PAGELINKSNEW',$this->printPagelinkList($arraudit));
 
 			}
-		}
+		
 
 		if($xajax==true) {
 			$tpl->parse('bookedcontent');

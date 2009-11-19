@@ -21,7 +21,7 @@ class FBlog {
 
 				$data['datum'] = FSystem::textins($data['datum'],array('plainText'=>1));
 				$data['datum'] = FSystem::switchDate($data['datum']);
-				if(FSystem::isDate($data['datum'])) $itemVO->dateCreated = $data['datum'];
+				if(FSystem::isDate($data['datum'])) $itemVO->dateStart = $data['datum'];
 
 				if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
 
@@ -117,7 +117,7 @@ class FBlog {
 			if($itemVO->load()) {
 
 				$tpl->setVariable('EDITADDON',$itemVO->addon);
-				$tpl->setVariable('EDITDATE',$itemVO->dateCreatedLocal);
+				$tpl->setVariable('EDITDATE',$itemVO->dateStartLocal);
 
 				$textShort = $itemVO->text;
 				$textLong = $itemVO->textLong;

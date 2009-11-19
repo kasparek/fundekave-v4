@@ -25,12 +25,14 @@ class page_UserSettings implements iPage {
 
 				$newAvatar = FAvatar::processAvatar($dir.'/'.$newSource);
 				//update
-				if(!empty($user->userVO->avatar)) unlink(ROOT_AVATAR.$user->userVO->avatar);
+				if(!empty($user->userVO->avatar)) @unlink(ROOT_AVATAR.$user->userVO->avatar);
 				$user->userVO->avatar = $newAvatar;
 				$user->userVO->save();
 
 				$cache = FCache::getInstance('l');
 				$cache->invalidateGroup('Uavatar');
+				$cache = FCache::getInstance('d');
+				$cache->invalidateGroup('avatar_url');
 
 				FAjax::addResponse('avatarBox', '$html', FAvatar::showAvatar($user->userVO->userId));
 				FAjax::addResponse('function','call','msg;ok;Avatar set');
@@ -44,7 +46,7 @@ class page_UserSettings implements iPage {
 				$arr = FFile::fileList($dir,'jpg');
 				foreach($arr as $file) {
 					if(md5($file) == $md5) {
-						unlink($dir.'/'.$file);
+						@unlink($dir.'/'.$file);
 						break;
 					}
 				}

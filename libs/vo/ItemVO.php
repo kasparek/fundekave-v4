@@ -32,12 +32,15 @@ class ItemVO extends Fvob {
 	);
 
 	static $colsType = array(
-		'galery'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
-		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
-		'blog'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#date_local#}')"
-		,'dateCreatedIso'=>"date_format(dateCreated ,'{#date_iso#}')"),
+		'galery'=>array('dateStartLocal'=>"date_format(dateStart ,'{#date_local#}')"
+		,'dateStartIso'=>"date_format(dateStart ,'{#date_iso#}')"),
+		
+		'blog'=>array('dateStartLocal'=>"date_format(dateStart ,'{#date_local#}')"
+		,'dateStartIso'=>"date_format(dateStart ,'{#date_iso#}')"),
+		
 		'forum'=>array('dateCreatedLocal'=>"date_format(dateCreated ,'{#datetime_local#}')"
 		,'dateCreatedIso'=>"date_format(dateCreated ,'{#datetime_iso#}')",),
+		
 		'event'=>array('dateStartLocal'=>"date_format(dateStart ,'{#date_local#}')"
 		,'dateStartIso'=>"date_format(dateStart ,'{#date_iso#}')"
 		,'dateEndLocal'=>"date_format(dateEnd ,'{#date_local#}')"
@@ -181,7 +184,9 @@ class ItemVO extends Fvob {
 			$creating = false;
 			if($this->itemId > 0) {
 				//---update
-				$vo->addIgnore('dateCreated');
+				if($this->saveOnlyChanged===false) {
+					$vo->addIgnore('dateCreated');
+				}
 			} else {
 				//---insert
 				if(empty($this->dateCreated)) {

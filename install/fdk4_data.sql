@@ -52,14 +52,14 @@ INSERT INTO `sys_menu` VALUES ('maina', 'livea', 'Živě', 0, 6);
 INSERT INTO `sys_menu` VALUES ('maina', 'frien', 'Přátelé', 0, 7);
 INSERT INTO `sys_menu` VALUES ('maina', 'booke', 'Oblíbené', 0, 8);
 
-INSERT INTO `sys_menu` VALUES ('kRypk', 'kRypk', 'Blog', 1, 1);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'aaaaa', 'Neco o me', 1, 2);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'bbbbb', 'Hudba', 1, 3);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'galer', 'Galerie', 1, 4);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'foall', 'Kluby', 0, 5);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'bloll', 'Blogy', 0, 6);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'frien', 'Přátelé', 0, 7);
-INSERT INTO `sys_menu` VALUES ('kRypk', 'booke', 'Oblíbené', 0, 8);
+INSERT INTO `sys_menu` VALUES ('idega', 'idega', 'Blog', 1, 1);
+INSERT INTO `sys_menu` VALUES ('idega', 'ideg1', 'Neco o me', 1, 2);
+INSERT INTO `sys_menu` VALUES ('idega', 'ideg2', 'Hudba', 1, 3);
+INSERT INTO `sys_menu` VALUES ('idega', 'galer', 'Galerie', 1, 4);
+INSERT INTO `sys_menu` VALUES ('idega', 'foall', 'Kluby', 0, 5);
+INSERT INTO `sys_menu` VALUES ('idega', 'bloll', 'Blogy', 0, 6);
+INSERT INTO `sys_menu` VALUES ('idega', 'frien', 'Přátelé', 0, 7);
+INSERT INTO `sys_menu` VALUES ('idega', 'booke', 'Oblíbené', 0, 8);
 
 truncate sys_leftpanel_functions;
 INSERT INTO `sys_leftpanel_functions` VALUES ('rh_login', '', 1, 1, null,null,'depend:user;lifeTime:30');

@@ -90,7 +90,7 @@ class FRules {
 					$this->ruleText[$k]='';	
 				}
 			}
-			if($listPublic) {
+			if($listPublic===true) {
 				$arr = FDBTool::getRow("select public,userIdOwner from sys_pages where pageId='".$this->page."'");
 				if($arr) {
 					$this->public = $arr[0];
@@ -132,7 +132,7 @@ class FRules {
 	function update($data=array()) {
 		if(!empty($data)) {
 			if(isset($data['public'])) {
-				$rules->public = $data['public'];
+				$this->public = $data['public'];
 			}
 			foreach ($this->ruleText as $k=>$v) {
 				$inputName = $this->inputName($k);
@@ -160,15 +160,17 @@ class FRules {
 				}
 			}
 		}
-		//---public update
-		$this->getList(false);
-		if(count($this->ruleList['1']) != 0) $this->public=0;
+		
+		
+		if(count($this->ruleList['1']) != 0) $this->public = 0;
 
-		$dot = "update sys_pages set public='".$this->public."' where pageId='".$this->page."'";
-		FDBTool::query($dot);
-
+		FDBTool::query("update `sys_pages` set public='".$this->public."' where pageId='".$this->page."'");
+		
 		//---invalidate active users
 		FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
+		
+		//---public update
+		$this->getList(false);
 
 	}
 

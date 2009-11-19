@@ -256,9 +256,10 @@ class FGalery {
 				$this->itemVO->filesize = filesize($galdir.$file);
 				$this->itemVO->text = '';
 				$this->itemVO->hit = 0;
+				$this->itemVO->dateStart = $this->pageVO->dateContent; 
 				$this->itemVO->save();
 				$gCountFotoNew++;
-				$thumbPathArr = $this->getThumbPath();
+				$thumbPathArr = $this->getThumbPath(ROOT_GALERY_CACHE);
 				if(!FGalery::isThumb($thumbPathArr['thumb'])) $this->createThumb($thumbPathArr);
 				$items['new'][] = $this->itemVO->itemId;
 				$change = true;

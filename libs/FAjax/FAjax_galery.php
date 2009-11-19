@@ -28,8 +28,9 @@ class FAjax_galery extends FAjaxPluginBase {
 		
 		$fItems = new FItems('galery',false,$itemRenderer);
 		if(isset($data['item'])) {
-			$fItems->setWhere("itemId='".$data['item']."'");
-			$ret = $fItems->render(0,1);	
+			$itemId = (int) $data['item'];
+			$fItems->setWhere("itemId='".$itemId."'");
+			$ret = $fItems->render(0,1);
 		} else {
 			$pageVO = new PageVO($pageId,true);	
 			$fItems->setWhere("pageId='".$pageId."' and itemIdTop is null");

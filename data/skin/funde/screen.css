@@ -32,14 +32,13 @@ body {
 }
 div#pageholder {
 	position: relative;
-	zoom: 1;
 	left: 0px;
 	font-size: 1.1em;
 }
 div#header, p#footer{
 	clear:both;
 	margin-left: 0px;
-	min-width: 680px;
+	min-width: 700px;
 }
 div#header {
 	position: relative;
@@ -52,12 +51,10 @@ p#footer{
 div#pagebar {
 	float:left;
 	width:100%;
-	min-width: 440px;
-	border-left:240px solid white; /* The width and color of the left rail */
-	margin-left:-240px;
+	min-width: 700px;
 	display:inline; /* So IE plays nice */
 	background-color: white;
-	padding-bottom: 40px;
+	padding: 0 10px 40px 10px;
 }
 div#sidebar {
 	position:relative;
@@ -65,7 +62,6 @@ div#sidebar {
 	float:right;
 	width:200px;
 	margin-right:-220px;
-	padding-top: 150px;
 	background: url("img/logo-bg.jpg") no-repeat right top;
 	text-align: left;
 }
@@ -142,14 +138,9 @@ div#mainbar {
 /* HEADER CONTENT */
 
 div#logo {
-	position: absolute;
-	z-index: 100;
-	top: 0;
-	right: -200px;
-	width: 160px;
-	height: 125px;
-	margin: 20px 15px 10px 15px;
-	border-bottom: 1px solid #6b5d3d;
+	width: 134px;
+	height: 107px;
+	margin: 20px auto 5px;
 }
 /* PRIMARY MENU */
 
@@ -219,29 +210,10 @@ div#mainbar ul#menu-secondary li a {
 span.postsNew {
 	color: red;
 	font-weight: bold;
-}
-div#pageholder.hasMainBanner #mainbar {
-	/*padding-top: 80px;*/
+	float:right;
 }
 
-div#banner {
-/*
-	position: absolute;
-	z-index: 3;
-	top: 55px;
-	left: 80px;
-	width: 100%;
-	text-align: left;
-	*/
-}
-
-div#banner div.banner-content {
-  padding-left: 60;
-	width: 468;
-	margin: 0 auto;
-}
 div.sidebarBlock {
-  /*border: 1px solid #999;*/
   margin: 0 0 1em 0;
 	padding: 0.3em;
 	background: #fff;
@@ -469,6 +441,7 @@ ul#todaysInfo li span {
 div.mainpanel-content {
 	padding-right: 20px;
 }
+
 div.mainpanel-content h3 {
 	margin-top: 1.5em;
 	margin-bottom: 0.5em;
@@ -476,13 +449,12 @@ div.mainpanel-content h3 {
 	color: white;
 	background: #332200;
 }
+
 div.mainpanel-content h3 a {
 	color: white;
-	text-decoration: none;
+	text-decoration: underline;
 }
-div.mainpanel-content h3 a:hover {
-	text-decoration: underlined;
-}
+
 div.mainpanel-content div.galery span.abbr {
 	color: white;
 	margin-right: 1em;
@@ -763,6 +735,7 @@ div.galeryThumbs div.hentry {
 }
 div.galeryThumbs div.hentry div.entry-content {
 	padding: 0;
+	height: 215px;
 }
 div.galeryThumbs div.hentry div.foto {
 	text-align: center;
@@ -1044,7 +1017,7 @@ div.user-info-foto img {
 	color: #000;
 	font-size: 1.2em;
 	background-color: #fdd;
-	margin: 0 1em 0 1em;
+	margin: 0;
 	padding: 1em;
 }
 #okmsgJS {
@@ -1054,10 +1027,10 @@ div.user-info-foto img {
 	color: #000;
 	font-size: 1.2em;
 	background-color: #dfd;
-	margin: 0 1em 0 1em;
+	margin: 0;
 	padding: 1em;
 }
-.
+
 /*FUVATAR*/
 div.fuvatarbox {
   float: right;
