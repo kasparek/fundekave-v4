@@ -68,14 +68,14 @@ class FAvatar {
 				if(isset($class)) $tpl->setVariable('AVATARCLASS',$class);
 			}
 
-			if($user->idkontrol && $avatarUserId > 0) {
+			if($user->idkontrol===true && $avatarUserId > 0) {
 				$avatarUrl = FSystem::getUri('who='.$avatarUserId,'finfo','');
-				if($showName) {
+				if( $showName ) {
 					$tpl->setVariable('NAMEURL',$avatarUserName);
 					if($noTooltip === false) $tpl->setVariable('NAMECLASS','supernote-hover-avatar'.$avatarUserId);
 					$tpl->touchBlock('linknameend');
 				}
-				if($user->userVO->zavatar) {
+				if( $user->userVO->zavatar ) {
 					$tpl->setVariable('AVATARLINK',$avatarUrl);
 					if($noTooltip === false) $tpl->setVariable('AVATARLINKCLASS','supernote-hover-avatar'.$avatarUserId);
 					$tpl->touchBlock('linkavatarend');

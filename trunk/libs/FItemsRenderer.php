@@ -98,9 +98,13 @@ class FItemsRenderer {
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');
 		$vars['ITEMLINKICODIR'] = $localCSS;
 		$vars['PAGEID'] = $pageId;
-		$vars['DATELOCAL'] = $itemVO->dateCreatedLocal;
-		$vars['DATEISO'] = $itemVO->dateCreatedIso;
-		
+		if($typeId=='blog' || $typeId=='galery') {
+			$vars['DATELOCAL'] = $itemVO->dateStartLocal;
+			$vars['DATEISO'] = $itemVO->dateStartIso;
+		} else {
+			$vars['DATELOCAL'] = $itemVO->dateCreatedLocal;
+			$vars['DATEISO'] = $itemVO->dateCreatedIso;
+		}
 		if($itemVO->public != 1) {
 			$touchedBlocks['notpublished']=true;
 			$touchedBlocks['notpublishedheader']=true;
@@ -110,9 +114,9 @@ class FItemsRenderer {
 		if($itemVO->unread === true) $touchedBlocks['unread']=true;
 		if($enableEdit === true) {
 			if($itemVO->editable === true && $localUserPageId == $pageId) {
-								
+
 				$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
-				
+
 				//forum
 				$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
 				$vars['DELETECSSDIR']=$localCSS;
@@ -120,7 +124,7 @@ class FItemsRenderer {
 		}
 
 		if($this->showText === true && $itemVO->text) {
-			$vars['TEXT'] = $itemVO->text;
+			$vars['TEXT'] = FSystem::postText($itemVO->text);
 		}
 		/**/
 		if($this->showRating === true) $vars['HITS'] = $itemVO->hit;
@@ -134,8 +138,12 @@ class FItemsRenderer {
 						$this->showDetail = true;
 					}
 				}
-				if(!empty($itemVO->textLong) && $this->showDetail===true ){
-					$vars['TEXTLONG'] = $itemVO->textLong;	
+				if(!empty($itemVO->textLong)  ) {
+					if($this->showDetail===true) {
+						$vars['TEXTLONG'] = FSystem::postText($itemVO->textLong);
+					} else {
+						$vars['LONGURL'] = $vars['ITEMLINK'];
+					}
 				}
 				if( $this->showDetail===true ) {
 					$touchedBlocks['headhidden'] = true;
@@ -200,7 +208,7 @@ class FItemsRenderer {
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
 				$vars['ADDONSTYLEWIDTH'] = ' style="width: '.$itemVO->thumbWidth.'px;"';
 				//$vars['ADDONSTYLEHEIGHT'] = ' style="height: '.$itemVO->height.'px;"';
-				
+
 				if( $this->openPopup === true ) {
 					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToPopup;
 					$touchedBlocks['popupc'] = true;
@@ -248,22 +256,22 @@ class FItemsRenderer {
 		$link = FSystem::getUri('i='.$itemId.(($addon)?('-'.FSystem::safeText($addon)):('')),$pageId);;
 		//---BLOG / EVENT
 		if( $addon ) {
-			
+
 			if($this->showHeading == true) {
 				$vars['BLOGLINK'] = $link;
 				$vars['BLOGTITLE'] = $addon;
 			}
-				
+
 		}
 
 		if($this->showComments === true) {
 			$this->showCommentsNum = false;
-			
+
 			$writeRule = PageVO::getProperty($pageId,'forumSet');
 			if(false !== ($itemWriteRule = ItemVO::getProperty($itemId,'forumSet',2))) $writeRule = $itemWriteRule;
 			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
-		
-		} 
+
+		}
 		if($this->showCommentsNum === true){
 			$vars['COMMENTLINK'] = $link;
 			$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
@@ -277,7 +285,7 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
-				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true, 
+				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true,
 				array('showTooltip'=>false,'showPageLabel'=>false,'showRating'=>false,'showTag'=>false,'openPopup'=>false,'showCommentsNum'=>false));
 				if(FRules::get($localUserId, $itemVOBottom->pageId,1)) {
 					$vars['ITEMBOTTOM'] = $itemVOBottom->render();
@@ -296,23 +304,23 @@ class FItemsRenderer {
 
 		//---PAGE NAME
 		//TODO: fix this
-		
+
 		if($this->showPageLabel === true) {
-			
+
 			if($itemVO->itemIdTop > 0) {
-				
+
 				$itemTop = new ItemVO($itemVO->itemIdTop,true);
 				$vars['TOP'] = $itemTop->render();
 				$vars['HEADURL'] = FSystem::getUri('i='.$itemVO->itemIdTop,'','');
-				
+
 			}
-			
-			$touchedBlocks['haspagelabel'] = true;
-			$pageVO = new PageVO($pageId,true);
-			$vars['PAGELINK'] = FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId);
-			$vars['PAGENAME'] = $pageVO->name;
-			unset($pageVO);
-				
+
+			//$touchedBlocks['haspagelabel'] = true;
+			//$pageVO = new PageVO($pageId,true);
+			//$vars['PAGELINK'] = FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId);
+			//$vars['PAGENAME'] = $pageVO->name;
+			//unset($pageVO);
+
 		}
 		/**/
 

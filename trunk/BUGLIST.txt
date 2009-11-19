@@ -1,3 +1,13 @@
+cache blog
+blog item - specialni - pripojeni - bud item nebo stranka - mazani
+
+FUUP:
+zustane zmenseny pri jednom obr
+povedl se mi error pri uploadu .. zkusit escape ... helps - 323
+
+pocet fotek u galerie
+blog item - odkaz [Cely clanek] pokud ma neco v long textu
+pruhledny reakce - na hover zobrazit normalne
 TITLE a ALT u ikonek - oko, bubliny
 TITLE u ostatnich ovladacich odkazu
 blog - odkaz next a previous clanek

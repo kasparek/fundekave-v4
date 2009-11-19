@@ -159,6 +159,10 @@ class FSystem {
 				array_splice($safe->deleteTags, $objectKey, 1);
 				$objectKey = array_search('name',$safe->attributes);
 				array_splice($safe->attributes, $objectKey, 1);
+				if(FRules::getCurrent(2)) {
+					$objectKey = array_search('iframe',$safe->deleteTags);
+					array_splice($safe->deleteTags, $objectKey, 1);
+				}
 			}
 			$text = str_replace('\\','',$text);
 			$text = $safe->parse($text);
@@ -294,6 +298,25 @@ class FSystem {
 			if($consecutively) $return['next'] = $keys[0]; else $return['next'] = 0; //--- if not next return first
 		}
 		return $return;
+	}
+
+	static function postText($text) {
+		$regList = array(
+		"/<img src=\"http:\/\/fundekave.net\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-.*\/([0-9a-zA-Z.]*)\"[0-9a-zA-Z =\";]*?\/>/iu"
+		,"/<a href=\"http:\/\/fundekave.net\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-.*\/([0-9a-zA-Z.]*\.jpg)*?<\/a>/iu"
+		);
+		foreach($regList as $regex) {
+			if(preg_match_all($regex , $text, $matches)) {
+				$x=0;
+				foreach($matches[0] as $replace) {
+					$itemId = FDBTool::getOne("select itemId from sys_pages_items where pageId='".$matches[1][$x]."' and enclosure='".$matches[2][$x]."'");
+					$item = new ItemVO($itemId,true,array('type'=>'galery','showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
+					$text = str_replace($replace, $item->render(), $text);
+					$x++;
+				}
+			}
+		}
+		return $text;
 	}
 
 }

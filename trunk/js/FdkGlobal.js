@@ -466,13 +466,14 @@ function msg(type, text) { $("#"+type+"msgJS").html( text ); $("#"+type+"msgJS")
 // ---send and process ajax request
 function sendAjax(action,k) {
 	var data = getXMLRequest();
+	if(!k) k = gup('k',document.location);
 	$.ajax( {
 		type : "POST",
 		url : "index.php",
 		dataType : 'xml',
 		dataProcess : false,
 		cache : false,
-		data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + data,
+		data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + escape(data),
 		complete : function(data) {
 			$(data.responseXML).find("Item").each(
 					function() {

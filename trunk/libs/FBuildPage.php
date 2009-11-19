@@ -5,7 +5,7 @@ class FBuildPage {
 
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &FSystem::tpl('main.tpl.html');
+			self::$instance = &FSystem::tpl(TPL_MAIN);
 		}
 		return self::$instance;
 	}

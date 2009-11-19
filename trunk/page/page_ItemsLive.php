@@ -34,7 +34,7 @@ class page_ItemsLive implements iPage {
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
 		$fItems->map = false;
 		$fItems->getList($from,$localPerPage+1);
-		$totalItems = $fItems->getCount();
+		$totalItems = count($fItems->data);
 
 		$maybeMore = false;
 		if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {

@@ -22,7 +22,7 @@ class FAjax {
 		//---process
 		$dataProcessed = array();
 		if($ajax == true) {
-			$dataXML = stripslashes($data);
+			$dataXML = stripslashes(urldecode($data));
 			$xml = new SimpleXMLElement($dataXML);
 			foreach($xml->Request->Item as $item) {
 				$k = (String)$item['name'];
@@ -131,6 +131,7 @@ class FAjax {
 
 	static public function addResponse($target, $property, $value) {
 		$fajax = FAjax::getInstance();
+		//if(strpos($value,'<![CDATA[')===false) $value = '<![CDATA['.$value.']]>';
 		$fajax->responseData[] = array('TARGET'=>$target,'PROP'=>$property,'DATA'=>$value);
 	}
 

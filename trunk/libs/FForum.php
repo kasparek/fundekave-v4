@@ -229,6 +229,7 @@ class FForum extends FDBTool {
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
+		$logged = $user->idkontrol;
 		FProfiler::profile('FForum::show--INSTANCES');
 		$simple = false;
 		if(isset($paramsArr['simple'])) $simple = $paramsArr['simple'];
@@ -239,11 +240,11 @@ class FForum extends FDBTool {
 		$showHead = true;
 		extract($paramsArr);
 			
-		if(FUser::logon() === false && $publicWrite > 0) { $captcha = new FCaptcha(); }
+		if($logged === false && $publicWrite > 0) { $captcha = new FCaptcha(); }
 			
 		$perPage = $user->pageVO->perPage();
 			
-		if( FUser::logon() ) {
+		if( $logged === true ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
 			if($unreadedCnt > 0) {
 				if($unreadedCnt > 20 || $perPage <= $unreadedCnt) $perPage = $unreadedCnt + 5;
@@ -288,7 +289,7 @@ class FForum extends FDBTool {
 				$name = $formData['name'];
 				$cache->invalidateData($user->pageVO->pageId, 'form');
 			}
-			if ($user->idkontrol) {
+			if ($logged===true) {
 				$tpl->setVariable('USERNAMELOGGED',$user->userVO->name);
 			} else {
 				$tpl->setVariable('USERNAMENOTLOGGED',$name);
@@ -304,7 +305,7 @@ class FForum extends FDBTool {
 
 
 
-			if ($user->idkontrol) {
+			if ($logged===true) {
 				if($simple===false) {
 					$tpl->touchBlock('userlogged');
 					$tpl->touchBlock('userlogged2');

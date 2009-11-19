@@ -108,7 +108,7 @@ class page_GaleryDetail implements iPage {
 			
 			//TODO: deeplinking for comments
 			$itemIdForum = 0;
-			$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$user->idkontrol,$itemIdForum,array('simple'=>true,'showHead'=>false)));
+			$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
 			$ret = $tpl->get();
 			
 			//update page name

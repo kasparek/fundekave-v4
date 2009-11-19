@@ -147,7 +147,7 @@ class PageVO extends Fvob {
 		$orderBy = $this->getPageParam('enhancedsettings/orderitems');
 		//---legacy
 		if($orderBy==1 && $this->typeId=='galery') {
-			$orderBy = 'dateCreated desc';
+			$orderBy = 'dateStart desc';
 		}
 		if(empty($orderBy)) {
 			//---get default

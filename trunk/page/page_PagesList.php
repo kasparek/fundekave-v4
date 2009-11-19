@@ -21,7 +21,7 @@ class page_PagesList implements iPage {
 		$urlVar = FConf::get('pager','urlVar');
 		if(isset($_GET[$urlVar])) $p = (int) $_GET[$urlVar];
 		$mainCache = FCache::getInstance('f',0);
-		$cacheKey = 'p-'.$user->pageId.'-c-'.$category.'-u-'.$user->userVO->userId.(($p>1)?('-p-'.$p):(''));
+		$cacheKey = (($user->pageVO->pageIdTop)?($user->pageVO->pageIdTop):('')).'p-'.$user->pageId.'-c-'.$category.'-u-'.$user->userVO->userId.(($p>1)?('-p-'.$p):(''));
 		$cacheGrp = 'pagelist';
 		$ret = $mainCache->getData($cacheKey,$cacheGrp);
 
@@ -38,11 +38,14 @@ class page_PagesList implements iPage {
 			//---QUERY RESULTS
 			$fPages = new FPages($typeId, $userId);
 			if($category > 0) $fPages->addWhere("p.categoryId=".$category);
-							
+			if(SITE_STRICT == 1) {
+				$fPages->addWhere("p.pageIdTop = '".HOME_PAGE."'");	
+			}							
 			if($typeId == 'galery') {
 				$fPages->setSelect("p.pageId,p.name,p.userIdOwner,date_format(dateContent,'{#date_local#}') as datumcz,description,date_format(dateContent,'{#date_iso#}') as diso");
 				$fPages->setOrder("dateContent desc");
 				$fPages->addWhere('p.locked < 2');
+
 			} else {
 				$fPages->fetchmode = 1;
 				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');

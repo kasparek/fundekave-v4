@@ -39,6 +39,7 @@ class page_PageEdit implements iPage {
 			if($user->pageParam == 'a') {
 				//---new page
 				$pageVO->typeId = $user->pageVO->typeIdChild;
+				$pageVO->pageIdTop = HOME_PAGE;
 				$pageVO->setDefaults();
 				$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
 			} else {
@@ -227,7 +228,7 @@ class page_PageEdit implements iPage {
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
 							if(!empty($v['date'])) {
-								if(false === $itemVO->set('dateCreated',$v['date'],array('type'=>'date'))) {
+								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::addError(FLang::$ERROR_DATE_FORMAT);
 								}
 							}
