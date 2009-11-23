@@ -45,11 +45,12 @@ class FMenu {
 		return($menuItems);
 	}
 	
-	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='',$buttonClass='') {
+	static function secondaryMenuAddItem($link,$text,$opposite='0',$buttonId='',$buttonClass='',$listItemClass='') {
 		$button = array('LINK'=>$link,'TEXT'=>$text);
 		if( $opposite != 0 ) $button['OPPOSITE'] = 1;
 		if( $buttonId != "" ) $button['ID'] = $buttonId;
 		if( $buttonClass != "" ) $button['CLASS'] = $buttonClass;
+		if( $listItemClass != "" ) $button['LISTCLASS'] = $listItemClass;
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('l');
 		$secMenuCustom = $cache->getData('user-'.$user->pageId,'menu');

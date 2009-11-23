@@ -62,7 +62,7 @@ class FItems extends FDBTool {
 		$this->setSelect( $columnsAsed );
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
-			$this->addWhere('sys_pages_items.public = 1');
+			$this->addWhere('sys_pages_items.public > 0');
 		}
 
 	}

@@ -18,13 +18,11 @@
 	<hr class="cleaner"/>
 	<!-- BEGIN toolbar -->
 			<div class="header">
-			        
         <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-        
 				<span class="vcard"><!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --></span>
       
 		    <span class="stats">
-			  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png"></a></span> | <!-- END numcomment -->
+			  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png" alt="Komentare"></a></span> | <!-- END numcomment -->
 				<!-- BEGIN tag -->{TAG} | <!-- END tag -->
 			  <!-- BEGIN link --><span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="{ITEMLINKICODIR}/img/link_go.png" /></a></span><!-- END link -->
 			  </span>
@@ -34,7 +32,6 @@
       </div>
     <!-- END toolbar -->
 </div>
-<!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
 <!-- BEGIN participants --><div id="participants"><h3>Kdo přijde</h3>
 <!-- BEGIN participant --><div class="participant">{PARTICIPANTAVATAR}</div><!-- END participant -->
 </div><hr class="cleaner" /><!-- END participants -->

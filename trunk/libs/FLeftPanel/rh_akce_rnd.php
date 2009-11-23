@@ -2,10 +2,7 @@
 class rh_akce_rnd {
 
 	static function show() {
-		return '';
-		
-		$cache = FCache::getInstance('f',86400);
-
+				
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate('sidebar.event.tpl.html');
 		$fItems = new FItems('event',false,$itemRenderer);

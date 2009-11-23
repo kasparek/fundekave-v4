@@ -202,7 +202,7 @@ class FPages extends FDBTool {
 				//vypis jednotlivych klubu
 				if(!empty($arrForums[$category[0]])) {
 					//---add category name to title
-					$user->pageVO->name =  $category[1] . ' - ' . $user->pageVO->name;
+					$user->pageVO->htmlName =  $category[1] . ' - ' . $user->pageVO->name;
 					$tpl->setVariable("CATEGORYPAGELINKLIST",FPages::printPagelinkList($arrForums[$category[0]]));
 				}
 				$tpl->setCurrentBlock('category');
@@ -224,7 +224,7 @@ class FPages extends FDBTool {
 	 * @param unknown_type $arrLinks
 	 * @return HTML String
 	 */
-	static function printPagelinkList($arrLinks=array()) {
+	static function printPagelinkList($arrLinks=array(),$options=array()) {
 		$user = FUser::getInstance();
 		//---template init
 		$tpl = FSystem::tpl('item.pagelink.tpl.html');
@@ -232,13 +232,17 @@ class FPages extends FDBTool {
 		if(!empty($arrLinks)) {
 			$tpl->touchBlock('showicons');
 			foreach ($arrLinks as $page) {
-				$tpl->setCurrentBlock('item');
 				if($user->userVO->zforumico) {
-					if(!empty($page['pageIco'])) {
-						$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
+					
+						
+						if(!empty($page['pageIco'])) {
+							$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
+						} else if(!empty($page['typeId'])) {
+							$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page['typeId']));
+						}
 						$tpl->setVariable("AVATARNAME", $page['name']);
-						$tpl->setVariable("AVATARALT", $page['name']);
-					}
+						$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page['typeId']]);
+					
 				}
 				$tpl->setVariable("PAGENAME", $page['name']);
 				$tpl->setVariable("PAGEID", $page['pageId'].'-'.FSystem::safetext($page['name']));
@@ -253,10 +257,19 @@ class FPages extends FDBTool {
 					$item = new ItemVO($page['itemId'],true,array('type'=>$page['typeId'],'showPageLabel'=>true,'openPopup'=>false));
 					$tpl->setVariable("ITEM", $item->render());
 				}
-				$tpl->parseCurrentBlock();
+				if(isset($options['inline'])) {
+				$tpl->parse('itemlink');
+				} else {
+				$tpl->parse('item');
+				}
 			}
 		}
-		return $tpl->get();
+		if(isset($options['inline'])) {
+			$ret = $tpl->get('itemlink');
+		} else {
+			$ret = $tpl->get();
+		}
+		return $ret;
 	}
 
 	/**
@@ -282,7 +295,7 @@ class FPages extends FDBTool {
 
 		$userId=$user->userVO->userId;
 
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
+		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 		$this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
 		$this->setWhere('p.userIdOwner="'.$userId.'" and p.pageId=f.pageId and p.locked<3');
 		if($bookOrder==1) {
@@ -309,7 +322,7 @@ class FPages extends FDBTool {
 
 		//vypis oblibenych
 		$this->queryReset();
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
+		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 		$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userId.'"');
 		$this->setWhere('f.book="1" and p.userIdOwner!="'.$userId.'" and p.locked<2');
 		if($bookOrder==1) {
@@ -337,7 +350,7 @@ class FPages extends FDBTool {
 		//vypis novych
 		
 			$this->queryReset();
-			$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess');
+			$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$this->addJoin('left join sys_pages_favorites as f on f.userId="'.$userId.'"');
 			$this->setWhere('f.pageId=p.pageId and f.book="0" and f.userId!=p.userIdOwner and p.userIdOwner!="'.$userId.'" and p.locked < 2');
 			$this->setOrder('p.dateCreated desc');

@@ -135,6 +135,22 @@ div#mainbar {
 	text-align: left;
 }
 
+div#breadcrumbs {
+	margin: 0; padding: 1.2em 0 1em 0;
+}
+
+div#breadcrumbs ul {
+	margin: 0; padding: 0;
+}
+div#breadcrumbs ul li {
+	display: inline;
+	padding-left: 10px;
+	margin-right: 1em;
+	list-style: none;
+	background: url("img/arrow-brown-bg.gif") no-repeat left center;
+	font-weight: bold;
+}
+
 /* HEADER CONTENT */
 
 div#logo {
@@ -174,7 +190,7 @@ margin-bottom: -10px;
 }
 
 div#menu-secondary-holder {
-	padding-top: 20px;
+	padding-top: 0;
 	padding-right: 20px;
 	padding-bottom: 10px;
 }
@@ -198,6 +214,9 @@ div#mainbar ul#menu-secondary li {
 	border: 1px solid #999;
 	border-bottom: none;
 	background: whitesmoke;
+}
+div#mainbar ul#menu-secondary li.opposite {
+	float:right;
 }
 div#mainbar ul#menu-secondary li a {
 	font-size: 1.1em;
@@ -364,8 +383,8 @@ textarea {
 	padding: 0 5px;
 }
 div#mainbar fieldset textarea.short {
-	height: 3em;
-	float: left;
+	/*height: 3em;
+	float: left;*/
 }
 div#mainbar fieldset textarea.draftNotSave {
   border-right: 2px solid #dd0000; 
@@ -533,9 +552,19 @@ div#mainbar a.pageLink {
   font-weight: bold;
 }
 
-div#mainbar ul.pageList li a.pageLink:hover {
+div#mainbar a.pageLink:hover {
 	background: #bbbbbb;
 }
+
+div#mainbar div.entry-content a.pageLink {
+	display: inline;
+	padding: 0.6em 0.5em;
+}
+div#mainbar div.entry-content a.pageLink img {
+	margin: 0 0 -8px 0 !important;
+	float: none !important;
+}
+
 div#mainbar ul.pageList li div.hentry {
 	margin-top: 0;
 }
@@ -559,20 +588,44 @@ div.mainpanel-content div.hentry {
 	overflow: hidden;
 }
 
+div.mainpanel-content div.entry-content div.hentry {
+	margin: 0 0 0 2em;
+}
+
 div.mainpanel-content div.hentry span.tagMe img {
   margin-bottom: -2px;
   
-}
-
-div.mainpanel-content div.hasPageLabel {
-  margin-top: 0em;
 }
 
 div.mainpanel-content div.hentry div.avatar {
 	float: left;
 	margin: 0 0.5em 1em 0;
 }
- 
+div.mainpanel-content div.opacity {
+	opacity: 0.2;
+	border-left: 2px solid #ddd;
+	padding: 0 1em;
+	margin-top: 0;
+}
+div.mainpanel-content div.opacity div.vevent {
+	margin-bottom: 0;
+}
+
+div.mainpanel-content div.hentry div.completelink {
+	line-height: 2em;
+	margin-left: 50px;
+	text-align: center;
+	width: 10em;
+	clear: both;
+}
+div.mainpanel-content div.hentry div.completelink a {
+	display: block;
+	background: #eeeeee;
+	font-weight: bold;
+}
+div.mainpanel-content div.hentry div.completelink a:hover {
+	background: #ddd;
+}
 /**
  ENTRY HEADER
 **/
@@ -634,7 +687,7 @@ div.mainpanel-content div.hentry span.delete img {
 	margin-top: 2px;
 }
 
-div.mainpanel-content div.hentry span.stats {
+div.mainpanel-content span.stats {
 	float: right;
   background-color: #ddd;
 	padding: 0 1em;
@@ -733,10 +786,33 @@ div.galeryThumbs div.hentry {
 	overflow: hidden;
 	border: 1px solid #ddd;
 }
+
+div.entry-content div.alignRight {
+	float:right;
+}
+
+div.entry-content div.alignLeft {
+	float:left;
+}
+div.entry-content div.alignCenter {
+	text-align: center;
+	margin: auto 0;
+}
+
+div.entry-content div.galeryThumbs div.hentry {
+	margin: 1em 0.5em 1em 0.5em;
+}
+div.entry-content div.alignCenter div.galeryThumbs div.hentry {
+	float:none;
+	width: 170px;
+	margin: auto;
+}
+
 div.galeryThumbs div.hentry div.entry-content {
 	padding: 0;
 	height: 215px;
 }
+
 div.galeryThumbs div.hentry div.foto {
 	text-align: center;
 }
@@ -749,14 +825,24 @@ span.tagIs img {
 }
 
 span.viewedTimes {
-	padding-bottom: 0.2em;
-	padding-right: 24px;
-	background: url("img/eye.png") no-repeat right center;
+	/*padding-top: 0.2em;*/
+
+}
+span.viewedTimes img {
+	margin-bottom: -2px;
+	padding-left: 0.5em;
 }
 
 span.commentsNum {
 	padding-top: 2px;
 	padding-bottom: 0.2em;
+}
+
+span.fotoNum {
+	line-height: 2em;
+}
+span.fotoNum img {
+	margin-bottom: -2px;
 }
 
 span.commentsNum a {
@@ -842,44 +928,7 @@ div#mostPopularPages {
 	min-width: 150px;
 	margin-right: 2%;
 }
-div#mostVisitedPages ul li,
-div#newCreatedPages ul li,
-div#mostActivePages ul li,
-div#mostPopularPages ul li {
-	height: 1.6em;
-	overflow: hidden;
-}
-div.commentedItem {
-  clear: left;
-	padding: 0 0 0 60px;
 
-}
-div.commentedItemFloat {
-  /*position: absolute;
-  float: right;
-  top: 4em;
-  right: 0;
-  width: 190px;
-	border-top: 1px dashed #ddd;
-	background-color: #eeeeee;
-	padding: 10px 0 0 10px;*/
-}
-div.commentedItem div.hentry{
-	margin-top: 0;
-	margin-bottom: 0;
-  padding-top: 0;
-	padding-right: 2em;
-  border-top: none;
-}
-div.commentedItem div.category {
-	font-weight: bold;
-	font-size: 1.2em;
-	padding: 0.2em 0.6em;
-	background: #eee;
-}
-div.commentedItem h2 {
-	font-size: 1.4em;
-}
 div.pagination {
 	clear: left;
 	margin: 0.3em 0;

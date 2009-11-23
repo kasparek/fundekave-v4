@@ -102,6 +102,9 @@ class ItemVO extends Fvob {
 		var $detailHeight;
 		var $detailUrlToGalery;
 		var $detailUrlToPopup;
+		
+		//---changed
+		var $htmlName;
 
 		function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
 			if(isset($options['type'])) $this->typeId = $options['type'];
@@ -142,6 +145,7 @@ class ItemVO extends Fvob {
 				if(empty($this->typeId)) {
 					$q = "select typeId from ".$this->table." where ".$this->primaryCol. "='".$this->{$this->primaryCol}."'";
 					$this->typeId = FDBTool::getOne($q, $this->{$this->primaryCol}, 'fitType', 'l');
+					
 				}
 				$this->columns = $this->getTypeColumns();
 			}
@@ -354,8 +358,8 @@ class ItemVO extends Fvob {
 			return $arr[$this->itemId];
 		}
 
-		function getNext($onlyId=false) {
-			$itemId = $this->getSideItemId(1,true);
+		function getNext($onlyId=false, $consecutively = true) {
+			$itemId = $this->getSideItemId(1,$consecutively);
 			if($itemId > 0) {
 				if($onlyId === true) {
 					return $itemId;
@@ -368,8 +372,8 @@ class ItemVO extends Fvob {
 			return false;
 		}
 
-		function getPrev($onlyId=false) {
-			$itemId = $this->getSideItemId(-1,true);
+		function getPrev($onlyId=false, $consecutively = true) {
+			$itemId = $this->getSideItemId(-1,$consecutively);
 			if($itemId > 0) {
 				if($onlyId === true) {
 					return $itemId;

@@ -334,6 +334,7 @@ class FDBTool {
 				return $ret;
 			}
 		}
+		return false;
 	}
 
 	//---save functions

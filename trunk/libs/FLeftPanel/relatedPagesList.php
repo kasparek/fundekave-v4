@@ -6,7 +6,7 @@ class relatedPagesList {
 		$fPages->fetchmode = 1;
 		$fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
 		$fPages->addWhere('r.pageId="'.$user->pageVO->pageId.'"');
-		$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,0');
+		$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 		$arr = $fPages->getContent();
 		$tmptext = '';
 		if(!empty($arr)) {

@@ -5,9 +5,9 @@
   <li><a href="#tabs-1">Profil</a></li>
   <!-- BEGIN tabfoto --><li><a href="#tabs-2">Osobni foto</a></li><!-- END tabfoto -->
   <!-- BEGIN tabfriends --><li><a href="#tabs-3">Pratele</a></li><!-- END tabfriends -->
-	<!-- BEGIN tabpages --><li><a href="#tabs-4">Vlastni kluby, galerie, blogy</a></li><!-- END tabpages -->
-	<!-- BEGIN tabevents --><li><a href="#tabs-5">Udalosti</a></li><!-- END tabevents -->
+	<!-- BEGIN tabpages --><li><a href="#tabs-4">Vlastni</a></li><!-- END tabpages -->
 	<!-- BEGIN tabfavorites --><li><a href="#tabs-6">Oblibene</a></li><!-- END tabfavorites -->
+	<!-- BEGIN tabevents --><li><a href="#tabs-5">Udalosti</a></li><!-- END tabevents -->
 </ul>
 
 <div id="tabs-1"><div clas="user-info">
@@ -34,13 +34,19 @@
 
 <!-- BEGIN friends -->
 <div id="tabs-3">
-{FRIENDS}
+<!-- BEGIN userfriends -->{FRIENDS}<!-- END userfriends -->
+<!-- BEGIN commonfriends -->{COMMONFRIENDS}<!-- END commonfriends -->
 </div>
 <!-- END friends -->
 
 <!-- BEGIN pages -->
 <div id="tabs-4">
-{PAGES}
+<!-- BEGIN forums --><h3>Kluby</h3>
+{FORUMS}<!-- END forums -->
+<!-- BEGIN blogs --><h3>Blogy</h3>
+{BLOGS}<!-- END blogs -->
+<!-- BEGIN galerys --><h3>Galerie</h3>
+{GALERYS}<!-- END galerys -->
 </div>
 <!-- END pages -->
 
@@ -52,7 +58,12 @@
 
 <!-- BEGIN favorites -->
 <div id="tabs-6">
-{FAVORITES}
+<!-- BEGIN forumsfav --><h3>Kluby</h3>
+{FORUMSFAV}<!-- END forumsfav -->
+<!-- BEGIN blogsfav --><h3>Blogy</h3>
+{BLOGSFAV}<!-- END blogsfav -->
+<!-- BEGIN galerysfav --><h3>Galerie</h3>
+{GALERYSFAV}<!-- END galerysfav -->
 </div>
 <!-- END favorites -->
 

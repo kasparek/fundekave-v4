@@ -44,7 +44,6 @@ class PageVO extends Fvob {
 	var $categoryVO;
 	var $menuSecondaryGroup;
 	var $template;
-	var $title = ''; //---for html
 	var $name;
 	var $nameshort;
 	var $description;
@@ -68,6 +67,7 @@ class PageVO extends Fvob {
 	var $favoriteCnt;
 
 	//---changed
+	var $htmlName;
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
@@ -80,15 +80,17 @@ class PageVO extends Fvob {
 
 
 	function PageVO($pageId=0, $autoLoad = false) {
-	 $this->pageId = $pageId;
+		$this->pageId = $pageId;
 		if($autoLoad == true) {
 			$this->load();
 		}
 	}
 
 	function load() {
-		$vo = new FDBvo( $this );
-		return $this->loaded = $vo->load();
+		if(!empty($this->pageId)) {
+			$vo = new FDBvo( $this );
+			return $this->loaded = $vo->load();
+		}
 	}
 
 	function save() {
@@ -186,7 +188,7 @@ class PageVO extends Fvob {
 		$this->pageParams = $xml->asXML();
 	}
 
-	public $propDefaults = array();
+	public $propDefaults = array('forumSet'=>1);
 	function prop($propertyName,$value=null) {
 		if($value!==null) PageVO::setProperty($this->pageId,$propertyName,$value);
 		$default='';

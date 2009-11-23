@@ -25,7 +25,7 @@ INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', 'friend', null, 2, 'page_U
 
 INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 7, 'page_EventsView', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('eveac', null, 'top', 'event', null, null, 'page_EventsArchiv', 'Archiv tipu', 'Tipy archiv', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('evena', 'event', 'top', 'event', null, null, 'page_EventsEdit', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('evena', null, 'top', 'event', null, null, 'page_EventsEdit', 'Novy tip', 'Novy tip', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 /*INSERT INTO `sys_pages` VALUES ('taggi', null, 'top', 'galery', null, 4, 'page_ItemsRaggingRandoms', 'Popisky k fotkam', 'Popisky', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fsurf', null, 'top', 'friend', null, 2, 'page_UserSurf', 'Oblíbené odkazy', 'Odkazy', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -77,17 +77,17 @@ INSERT INTO `sys_leftpanel_functions` VALUES ('pageCategories','Kategorie', 1, 1
 
 truncate sys_leftpanel_defaults;
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_login', 0, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pageCategories', 30, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 20, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_audit_popis', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'pageCategories', 20, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'relatedPagesList', 80, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'rh_logged_list', 100, 1);
+#skupina top stranek
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_diar_kalendar', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_akce_rnd', 30, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'rh_galerie_rnd', 40, 1);
 #skupina pro kluby
-INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'rh_audit_popis', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('forum', 'bookedRelatedPagesList', 90, 1);
 #skupina pro blogy
-INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_audit_popis', 10, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'rh_diar_kalendar', 20, 1);
 INSERT INTO `sys_leftpanel_defaults` VALUES ('blog', 'bookedRelatedPagesList', 90, 1);
 #skupina pro galerie

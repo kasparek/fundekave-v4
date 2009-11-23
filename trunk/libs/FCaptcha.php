@@ -547,7 +547,7 @@ class FCaptcha
 				{
 					if(!is_file($this->tempfolder.$file)) continue;
 					// check for name-prefix, extension and filetime
-					if(substr($file,0,strlen($this->prefix)) == $this->prefix)
+					if(substr($file,0,strlen($this->filename_prefix)) == $this->filename_prefix)
 					{
 						if(strrchr($file, '.') == '.jpg')
 						{

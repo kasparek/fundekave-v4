@@ -28,7 +28,7 @@ class page_ItemsLive implements iPage {
 		$fItems->addWhere('sys_pages_items.public > 0');
 		$fItems->setOrder('sys_pages_items.itemId desc');
 		$fItems->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-		$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt)'):(',0')).' as newMess,sys_pages_items.itemId,sys_pages_items.typeId');
+		$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId'.(($userId > 0)?(',(p.cnt-f.cnt)'):(',0')).' as newMess,sys_pages_items.itemId,sys_pages_items.typeId');
 		
 		$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $localPerPage;

@@ -244,7 +244,7 @@ class UserVO extends Fvob {
 		$vo->VO = 'UserVO';
 		
 		$vo->setWhere("i.typeId = 'request'");
-		$vo->setWhere("i.addon = ".$this->userId);
+		$vo->setWhere("i.addon = '".$this->userId."'");
 		$vo->setOrder('sys_users.name');
 		return $vo->get();
 		

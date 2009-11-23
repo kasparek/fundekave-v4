@@ -32,6 +32,7 @@ static $LABEL_NOTREGISTEREDUSERS = 'Neprihlaseni';
 
 static $BUTTON_PAGE_SETTINGS = 'SA';
 static $BUTTON_PAGE_BACK = 'Zpět';
+static $BUTTON_PAGE_BACK_ALBUM = 'Zpět na album';
 static $BUTTON_PAGE_NEXT = 'Dalsi';
 static $BUTTON_PAGE_PREV = 'Predchozi';
 static $BUTTON_EDIT = 'Upravit';
@@ -46,6 +47,8 @@ static $SEND_MESSAGE = 'Poslat zpravu';
 static $LABEL_FRIEND_ADD = 'Pridat do pratel';
 static $LABEL_FRIEND_REMOVE = 'Odebrat z pratel';
 static $MSG_FRIEND_ADDED = 'Pritel pridan';
+static $FRIENDS = 'Pratele';
+static $FRIENDS_COMMON = 'Spolecni Pratele';
 
 static $LABEL_PAGE_NEW = 'Nová stránka';
 static $ERROR_PAGE_ADD_NONAME = 'Zadejte prosím jméno stránky';
@@ -170,5 +173,5 @@ static $DAYSSHORT=array("1"=>"Po","2"=>"Út","3"=>"St","4"=>"Ct","5"=>"Pá","6"=
 static $MONTHS=array("01"=>"Leden","02"=>"Únor","03"=>"Brezen","04"=>"Duben","05"=>"Kveten","06"=>"Cerven","07"=>"Cervenec","08"=>"Srpen","09"=>"Zárí","10"=>"Ríjen","11"=>"Listopad","12"=>"Prosinec");
 static $DIARYREMINDER=array(0=>"Nepripomínat",1=>"Den akce",2=>"Den predem",3=>"2 dny pred",4=>"3 dny pred",5=>"4 dny pred",6=>"5 dní pred",7=>"6 dní pred",8=>"7 dní pred",9=>"8 dní pred");
 static $DIARYREPEATER=array(0=>"Neopakovat",1=>"Každý rok",2=>"Každý mesíc");
-static $TYPEID = array('galery'=>'Galerie', 'forum'=>'Klub', 'blog'=>'Blog');
+static $TYPEID = array('galery'=>'Galerie', 'forum'=>'Klub', 'blog'=>'Blog', 'culture'=>'Stranka');
 }

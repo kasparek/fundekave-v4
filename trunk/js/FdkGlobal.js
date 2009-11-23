@@ -1,3 +1,5 @@
+
+
 function friendRequestInit() {
 	$('#friendrequest').show('slow');
 	fajaxform();
@@ -75,7 +77,19 @@ var formSent;
 var preventAjax = false;
 var draftdrop = false;
 
-function fconfirm(event) { setListeners('confirm', 'click', function(event) { if (!confirm($(this).attr("title"))) { preventAjax = true; event.preventDefault(); } }); };
+function fconfirm(event) { 
+$('.confirm').each(function(){ 
+	if(!$(this).hasClass('fajaxa')) {
+		$(this).bind('click',onConfirm);
+	}
+});
+};
+function onConfirm(e) { 
+	if(!confirm($(e.currentTarget).attr("title"))) { 
+	preventAjax = true; 
+	e.preventDefault(); 
+	} 
+	};
 
 function changeInit() {
  setListeners('change','change',fOnChange);
@@ -92,7 +106,10 @@ function fsubmit(event) {
 	$('.okmsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
 	$('.button',this).attr('disabled','disabled');
 	formSent = this;
-	if (preventAjax == true) { preventAjax = false; return; }
+	if (preventAjax == true) { 
+	preventAjax = false; 
+	return; 
+	}
 	var arr = $(this).formToArray(false);
 	var result = false;
 	var resultProperty = false;
@@ -114,7 +131,13 @@ function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("http://fu
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
 	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
-	if($(this).hasClass('showBusy')) $(".showProgress").attr('src','assets/loading.gif'); 
+	if($(this).hasClass('showBusy')) $(".showProgress").attr('src','assets/loading.gif');
+	if($(event.currentTarget).hasClass('confirm')) {
+		if(!confirm($(event.currentTarget).attr("title"))) { 
+			preventAjax = true; 
+			event.preventDefault(); 
+		}
+	} 
 	if (preventAjax == true) { preventAjax = false; return; }
 	var href=$(this).attr("href") ,result = false, resultProperty = false, str = gup('d', href), id = $(this).attr("id");
 	if(str) { 
@@ -179,7 +202,7 @@ $('.draftable').each( function() {
 }
 
 function unusedDraft(TAid) {
-	$('#draftdrop'+TAid).each( function(){
+	$('#draftdrop'+TAid).each( function() {
 	  addXMLRequest('result', TAid);
 		sendAjax('draft-drop');
 		$(this).remove();
@@ -203,8 +226,14 @@ function dropDraft(e) {
 	$(e.currentTarget).remove();
 }
 
-function draftOnSubmit(e) { if (draftTimeout) { clearTimeout(draftTimeout); } };
+function draftOnSubmit(e) { 
+var x, arrDraftLength = arrDraft.length;
+	for (x = 0; x < arrDraftLength; x++) {
+		if (arrDraft[x][2]) { clearTimeout(arrDraft[x][2]); }
+	}
+ };
 
+//draftable initialization
 function draftSetEventListeners(TAid) {
 	setListeners('submit', 'click', draftOnSubmit);
 	setListeners('draftable', 'keyup', draftEventHandler);
@@ -219,7 +248,7 @@ function draftSetEventListeners(TAid) {
 		}
 	}
 };
-
+//draftable check for draft exist
 function draftCheck(TAid) {
 	$(TAid).attr('disabled','disabled');
  	addXMLRequest('result', TAid);
@@ -279,6 +308,10 @@ function userin() {
 	$('#fotoList').each(function() { if(fotoTotal > 0) { galeryLoadThumb(); } });
 } 
 $(document).ready( function() {
+
+$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
+$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+
 $("#errormsgJS").css('display','block');
 $("#errormsgJS").hide();
 		switchOpen();
@@ -369,30 +402,22 @@ function galeryLoadThumb(item,type) {
 
 //---drafting ----------------------------
 // ---textarea drafting
-var arrDraft = [], //0-id, 1-lastlength
-timerRunning = false, draftTimer = 5000, draftTimeout, //---with this timer could be stopped
-draftTimeoutCounter = 0; // --if bigger than 3 stop timer - reset every time
-							// save function is called
+var arrDraft = [],draftTimer = 3000; //arrDraft[0-id, 1-lastlength, 2-timeout]
 
-function draftDoSave() {
+// save function is called
+function draftSave() {
 	var x, arrDraftLength = arrDraft.length;
 	for (x = 0; x < arrDraftLength; x++) {
-		taText = $("#" + arrDraft[x][0]).attr('value');
+		taText = $.trim($("#" + arrDraft[x][0]).attr('value'));
 		if (taText.length != arrDraft[x][1] && taText.length > 0) {
 			addXMLRequest('place', $("#" + arrDraft[x][0]).attr("id"));
 			addXMLRequest('text', taText);
 			addXMLRequest('call', 'draftSaved;' + $("#" + arrDraft[x][0]).attr("id"));
 			sendAjax('draft-save');
 			arrDraft[x][1] = taText.length;
-			draftTimeoutCounter = 0;
+      arrDraft[x][2] = 0; 
 		}
-		;
 	}
-	;
-};
-
-function draftGetLength(textareaInst) {
-	return textareaInst.value.length;
 };
 
 // set class - is saved - green - callback function from xajax
@@ -401,55 +426,29 @@ function draftSaved(textareaId) {
 	$("#" + textareaId).addClass('draftSave');
 };
 
-// check all ta and set not saved class if there is a difference between string
-// length
-function draftIsSavedSetClass() {
-	var x, ta, arrDraftLength = arrDraft.length;
-	for (x = 0; x < arrDraftLength; x++) {
-		if (arrDraft[x][1] != $("#" + arrDraft[x][0]).attr('value').length) {
-			$("#" + arrDraft[x][0]).removeClass('draftSave');
-			$("#" + arrDraft[x][0]).addClass('draftNotSave');
-		}
-	}
-};
-
-// register textarea
-function setDraftElement(tarea) {
-	var x, add = 1, arrDraftLength = arrDraft.length;
-	for (x = 0; x < arrDraftLength; x++) {
-		if (arrDraft[x][0] == $(tarea).attr('id')) {
-			add = 0;
-		}
-		;
-	}
-	;
-	if (add == 1) {
-		arrDraft.push( [ $(tarea).attr('id'), 0 ]);
-	}
-	;
-};
-
-// initiate timer, check not saved
-function startDraftTimer() {
-	if (timerRunning === false) {
-		draftTimeout = setTimeout(draftTimerHandler, draftTimer);
-		timerRunning = true;
-	}
-	draftIsSavedSetClass();
-};
-
-function draftTimerHandler() {
-	draftDoSave();
-	draftTimeout = setTimeout(draftTimerHandler, draftTimer);
-	if (draftTimeoutCounter > 3) {
-		draftTimeoutCounter = 0;
-		timerRunning = false;
-		clearTimeout(draftTimeout);
-	}
+function TAlength(TAid) {
+	return $.trim($('#'+TAid).attr('value')).length;
 };
 
 // register ib keyup
-function draftEventHandler() { unusedDraft($(this).attr('id')); setDraftElement(this); startDraftTimer(); };
+function draftEventHandler() { 
+	var TAid = $(this).attr('id'); 
+	unusedDraft(TAid); 
+	var x, add = 1, arrDraftLength = arrDraft.length, TAindex;
+	for (x = 0; x < arrDraftLength; x++) {
+		if (arrDraft[x][0] == TAid) { add = 0; TAindex=x; break; }
+	}
+	if (add == 1) {
+		arrDraft.push( [ TAid, TAlength(TAid), 0 ]);
+		TAindex = arrDraftLength;
+	}
+  if (arrDraft[TAindex][1] != TAlength(TAid)) {
+		$("#" + TAid).removeClass('draftSave');
+		$("#" + TAid).addClass('draftNotSave');
+	}
+	if(arrDraft[TAindex][2]) clearTimeout(arrDraft[TAindex][2]); 
+	arrDraft[TAindex][2]=setTimeout(draftSave,draftTimer); 
+};
 // ---end-drafting------------------------
 
 //---popup opening
@@ -463,17 +462,21 @@ function gup(name, url) { name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\
 //---print message
 function msg(type, text) { $("#"+type+"msgJS").html( text ); $("#"+type+"msgJS").show('slow'); setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000) };
 
-// ---send and process ajax request
+// ---send and process ajax request - if problems with %26 use encodeURIComponent
 function sendAjax(action,k) {
 	var data = getXMLRequest();
 	if(!k) k = gup('k',document.location);
+	$.ajaxSetup({ 
+        scriptCharset: "utf-8" , 
+        contentType: "application/x-www-form-urlencoded; charset=utf-8"
+	});
 	$.ajax( {
 		type : "POST",
 		url : "index.php",
 		dataType : 'xml',
 		dataProcess : false,
 		cache : false,
-		data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + escape(data),
+		data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + encodeURIComponent(data),
 		complete : function(data) {
 			$(data.responseXML).find("Item").each(
 					function() {
