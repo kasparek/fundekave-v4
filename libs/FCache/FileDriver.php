@@ -19,8 +19,9 @@ class FileDriver
 	var $lifeTime = 60;
 
 	function __construct() {
-		if(!is_dir(FConf::get('settings','cache_path'))) mkdir(FConf::get('settings','cache_path'),0777,true);
-		$cacheOptions['cacheDir'] = FConf::get('settings','cache_path');
+		$cacheDir = FConf::get('settings','cache_path'); 
+		if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
+		$cacheOptions['cacheDir'] = $cacheDir;
 		$cacheOptions['lifeTime'] = $this->lifeTime;
 		$this->cacheLite = new Cache_Lite($cacheOptions);
 	}

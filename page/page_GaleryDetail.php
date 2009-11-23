@@ -59,9 +59,9 @@ class page_GaleryDetail implements iPage {
 					$tpl->setVariable("THUMBNAIL",$fItems->show());
 					$tpl->parse('cell');
 				}
-				
-				$tpl->setVariable("GALERYTEXT",$user->pageVO->description);
-				$tpl->setVariable("GALERYHEAD",$user->pageVO->content);
+				if(!empty($user->pageVO->content)) {
+					$tpl->setVariable("GALERYHEAD", FSystem::postText($user->pageVO->content));
+				}
 				
 				if($perPage < $totalItems) {
 					$tpl->setVariable("PAGERSTART",$pager->links);
@@ -92,6 +92,7 @@ class page_GaleryDetail implements iPage {
 			if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
 						
 			$tpl->setVariable("HITS",$itemVO->hit);
+			$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
 			if($user->idkontrol===true) {
 				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'));
 				$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
@@ -108,11 +109,13 @@ class page_GaleryDetail implements iPage {
 			
 			//TODO: deeplinking for comments
 			$itemIdForum = 0;
+
 			$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
 			$ret = $tpl->get();
 			
 			//update page name
-			$user->pageVO->name = ($itemVO->getPos()+1) . ' / ' . $itemVO->getTotal() . ' - ' . $user->pageVO->name;
+			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
+			$user->pageVO->htmlName = $user->itemVO->htmlName . ' - ' . $user->pageVO->name;
 						
 			if(!empty($data['__ajaxResponse'])) {
 				FAjax::addResponse('backButt','href',$backUri);
@@ -125,12 +128,15 @@ class page_GaleryDetail implements iPage {
 				FAjax::addResponse('fotoBox','$html',$ret);
 				FAjax::addResponse('function','call','fajaxa');
 			} else {
-				FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,'backButt');
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash showBusy');
-				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash showBusy');
+				FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK_ALBUM,0,'backButt');
+				
+				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash showBusy','opposite');
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash showBusy','opposite');
 				
 				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}
+			
+			FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 		}
 
 	}

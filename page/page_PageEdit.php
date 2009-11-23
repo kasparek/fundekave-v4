@@ -182,6 +182,9 @@ class page_PageEdit implements iPage {
 						$pageVO->prop('forumSet',(int) $data['forumReact']);
 					}
 				}
+				if(isset($data['homesite'])) {
+					$pageVO->prop('homesite', FSystem::textins($data['homesite'],array('plainText'=>1)));
+				}
 
 				//---set current page for redirect
 				if(!empty($pageVO->pageId)) {
@@ -331,6 +334,12 @@ class page_PageEdit implements iPage {
 		if($user->pageParam!='a') {
 			$tpl->setVariable('PAGEID',$pageVO->pageId);
 			$tpl->touchBlock('extendedtab');
+			
+			if(empty($pageVO->pageIdTop)) {
+				$tpl->touchBlock('site');
+				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));	
+			}
+			 
 		}
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));

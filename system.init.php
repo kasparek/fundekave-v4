@@ -58,18 +58,18 @@ if(isset($_GET['kam'])) {
 //---u=username
 //TODO:refactor
 /*
-if(isset($_GET['u'])) {
-	$userId = FUser::getUserIdByName($_GET['u']);
-	if($userId > 0) {
-		$userVO = new UserVO();
-		$userVO->userId = $userId;
-		$userVO->load();
-		$usersPageId = $userVO->getXMLVal('personal','HomePageId');
-		if(!empty($usersPageId)) {
-			$pageId = (string) $usersPageId;
-		}
-	}
-}*/
+ if(isset($_GET['u'])) {
+ $userId = FUser::getUserIdByName($_GET['u']);
+ if($userId > 0) {
+ $userVO = new UserVO();
+ $userVO->userId = $userId;
+ $userVO->load();
+ $usersPageId = $userVO->getXMLVal('personal','HomePageId');
+ if(!empty($usersPageId)) {
+ $pageId = (string) $usersPageId;
+ }
+ }
+ }*/
 $itemId = 0;
 $itemVO = false;
 if(!empty($_REQUEST["i"])) {
@@ -80,15 +80,19 @@ if(!empty($_REQUEST["i"])) {
 }
 
 if ($itemId > 0) {
-  $itemVO = new ItemVO($itemId);
+	$itemVO = new ItemVO($itemId);
 	$itemVO->checkItem();
 	if($itemVO->itemId > 0) {
-  	if(empty($pageId)) {
-  		$pageId = $itemVO->pageId;
-  	}
+		if(empty($pageId)) {
+			$pageId = $itemVO->pageId;
+		}
+		$itemVO->load();
+		if($itemVO->itemIdTop > 0) {
+			$itemVO = new ItemVO( $itemVO->itemIdTop );
+		}
 	} else {
-    $itemVO = false;
-  }
+		$itemVO = false;
+	}
 }
 
 if(empty($pageId)) $pageId = HOME_PAGE;

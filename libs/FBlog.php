@@ -39,30 +39,7 @@ class FBlog {
 					$itemVO->typeId = 'blog';
 					$newItem=true;
 				}
-				
-				//commented = connectio
-				if(!empty($data['commented'])) {
-					
-					$objekt = $data['commented'];
-				//---check for item
-					if(preg_match("/[&?|]i=([0-9]*)/" , $objekt, $matches)) {
-						//check if it is item
-						if(FItems::itemExists($matches[1])) {
-							$itemIdBottom = $matches[1];
-							$objekt = '';
-						}
-					} else if(preg_match("/[&?|]k=([0-9a-zA-Z]*)/" , $objekt, $matches)) {
-						if(FPages::page_exist('pageId',$matches[1])) {
-							$pageIdBottom = $matches[1];
-							$objekt = '';
-						}
-					}
-					
-					if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
-					if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
-					
-				}
-				
+
 				$returnItemId = $itemVO->save();
 
 				///properties
@@ -80,9 +57,9 @@ class FBlog {
 			}
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('lastBlogPost');
-				
-				
-				
+
+
+
 
 		} else {
 			FError::addError(FLang::$ERROR_RULES_CREATE);
@@ -98,10 +75,10 @@ class FBlog {
 	}
 	static function getEditForm($itemId) {
 		$user = FUser::getInstance();
-		 
+			
 		$textAreaIdShort = FBlog::textAreaId().'short';
 		$textAreaIdLong = FBlog::textAreaId().'long';
-		 
+			
 		$tpl = FSystem::tpl('blog.editform.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
 		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
@@ -112,10 +89,8 @@ class FBlog {
 		$selectedCategory = 0;
 		if($itemId > 0) {
 			$itemVO = new ItemVO($itemId,false,array('type'=>'blog'));
-				
 
 			if($itemVO->load()) {
-
 				$tpl->setVariable('EDITADDON',$itemVO->addon);
 				$tpl->setVariable('EDITDATE',$itemVO->dateStartLocal);
 
@@ -134,19 +109,14 @@ class FBlog {
 				///properties
 				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',PageVO::getProperty($user->pageVO->pageId,'forumSet',2)));
 				$selectedCategory = $itemVO->categoryId;
-				
-				if(!empty($itemVO->itemIdBottom)) {
-					$bottom = new ItemVO($itemVO->itemIdBottom,true);
-					$tpl->setVariable('COMMENTEDITEM',$bottom->render());
-				}
 			}
 		} else {
-				
+
 			$tpl->setVariable('EDITDATE',Date("d.m.Y"));
 			$tpl->setVariable('EDITAUTOR',$user->userVO->name);
-				
+
 		}
-		
+
 		///categories
 		if($opt = FCategory::getOptions($user->pageVO->pageId,$selectedCategory,true,'')) $tpl->setVariable('CATOPTIONS',$opt);
 
@@ -162,14 +132,14 @@ class FBlog {
 		$user = FUser::getInstance();
 		$itemId = (int) $itemId;
 		$perPage = BLOG_PERPAGE;
-					 
+
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD);
 			}
 			if($user->pageParam=='a') return;
 		}
-		 
+			
 		$tpl = FSystem::tpl('blog.list.tpl.html');
 		if($user->idkontrol) $tpl->touchBlock('logged');
 
@@ -180,49 +150,60 @@ class FBlog {
 			}
 		}
 
-		$currentPage = 0;
-		if(empty($itemId)) {
-			if($user->pageVO->cnt > $perPage) {
-				$pager = new FPager($user->pageVO->cnt,$perPage);
-				$tpl->setVariable('BOTTOMPAGER',$pager->links);
-				$currentPage = $pager->getCurrentPageID()-1;
-			}
-		}
-
 		if($itemId > 0) {
-			
-			$extraParams = array('type'=>'blog','showComments'=>true); 
+
+
+			$extraParams = array('type'=>'blog','showComments'=>true);
 			if($user->pageParam=='u') {
 				$extraParams['showComments'] = false;
 			}
 			$extraParams['showDetail'] = true;
 			$itemVO = new ItemVO($itemId,true,$extraParams);
+
+			if(($itemNext = $itemVO->getNext(true,false))!==false) {
+				FMenu::secondaryMenuAddItem(FSystem::getUri('i='.$itemNext),FLang::$BUTTON_PAGE_NEXT,0,'nextButt','','opposite');
+			}
+			if(($itemPrev = $itemVO->getPrev(true,false))!==false) {
+				FMenu::secondaryMenuAddItem(FSystem::getUri('i='.$itemPrev),FLang::$BUTTON_PAGE_PREV,0,'prevButt','','opposite');
+			}
+
 			$itemVO->saveOnlyChanged = true;
 			$itemVO->set('hit',$itemVO->hit+1);
 			$itemVO->save();
-			$user->pageVO->title = $user->pageVO->name;
-			$user->pageVO->name = $itemVO->addon;
+			$user->pageVO->htmlTitle = $user->pageVO->name;
+			$user->pageVO->htmlName = $itemVO->addon;
 			$tpl->setVariable('ITEMS', $itemVO->render());
-			
+
 		} else {
 
-			if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',$user->pageVO->content);
+			if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',FSystem::postText($user->pageVO->content));
 			$itemRenderer = new FItemsRenderer();
 			$fItems = new FItems('blog',false,$itemRenderer);
 			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
-			if(isset($_REQUEST['c'])) {
-				$fItems->addWhere("categoryId='". (int) $_REQUEST['c'] ."'");	
-			} 
+			$total = $user->pageVO->cnt;
 			$fItems->addWhere('itemIdTop is null');
+			if(isset($_REQUEST['c'])) {
+				$fItems->addWhere("categoryId='". (int) $_REQUEST['c'] ."'");
+				$total = $fItems->getCount();
+			}
+
 			$fItems->setOrder("dateCreated desc");
 
+			$currentPage = 0;
+			if($total > $perPage) {
+				$pager = new FPager($user->pageVO->cnt,$perPage);
+				$tpl->setVariable('BOTTOMPAGER',$pager->links);
+				$currentPage = $pager->getCurrentPageID()-1;
+			}
+
+
 			$render = $fItems->render($currentPage * $perPage, $perPage);
-				
+
 			if(!empty($render)){
 				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 				$tpl->setVariable('ITEMS', $render);
 			}
-			
+
 		}
 
 		return $tpl->get();

@@ -64,102 +64,68 @@ class page_Main implements iPage {
 		//------LAST-CREATED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','lastCreated')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
+			$fPages->fetchmode=1;
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->setOrder('p.dateCreated desc');
 			$fPages->addWhere('p.locked < 2');
 			$fPages->setLimit(0,5);
-			$fPages->setSelect('p.pageId,p.typeId,p.name,p.description');
 			$arr = $fPages->getContent();
-			
-			while($arr) {
-				$row = array_shift($arr);
-				$tpl->setCurrentBlock('newpage');
-				$tpl->setVariable('NEWPAGEURL',FSystem::getUri('',$row[0]));
-				$tpl->setVariable('NEWPAGETITLE',FSystem::textins($row[3],array('plainText'=>1)));
-				$tpl->setVariable('NEWPAGETEXT',$row[2].' ['. FLang::$TYPEID[$row[1]].']');
-				$tpl->parseCurrentBlock();
-			}
-			$tmptext = $tpl->get('newpage');
+			$tmptext = FPages::printPagelinkList($arr);
 			$cache->setData( $tmptext );
-		} else {
-			$tpl->setVariable('NEWPAGECACHED',$tmptext);
 		}
+		$tpl->setVariable('NEWPAGECACHED',$tmptext);
 		
 		//------MOST-VISITED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostVisited')) === false) {
-			$arr = FDBTool::getCol("select pc.pageId from sys_pages_counter as pc join sys_pages as p on p.pageId=pc.pageId 
-			where pc.dateStamp > date_sub(now(), interval 1 week) 
-			and p.locked < 2
-			and pc.typeId in ('galery','forum','blog') group by pc.pageId order by sum(hit) desc limit 0,10");
-			//---cache result
-			$x = 0;
-			while($arr && $x < 6) {
-				$pageId = array_shift($arr);
-				if(FRules::get($user->userVO->userId,$pageId)) {
-					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
-					$tpl->setCurrentBlock('mostvisitedpage');
-					$tpl->setVariable('MOSTVISITEDEURL',FSystem::getUri('',$row[0]));
-					$tpl->setVariable('MOSTVISITEDTITLE',FSystem::textins($row[3],array('plainText'=>1)));
-					$tpl->setVariable('MOSTVISITEDTEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
-					$tpl->parseCurrentBlock();
-					$x++;
-				}
-			}
-			$tmptext = $tpl->get('mostvisitedpage');
+			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
+			$fPages->fetchmode=1;
+			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId');
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
+			$fPages->addWhere('p.locked < 2');
+			$fPages->addWhere('pc.dateStamp > date_sub(now(), interval 1 week)');
+			$fPages->setGroup('pc.pageId');
+			$fPages->setOrder('sum(pc.hit) desc');
+			$fPages->setLimit(0,5);
+			$arr = $fPages->getContent();
+			$tmptext = FPages::printPagelinkList($arr);
 			$cache->setData( $tmptext );
-		} else {
-			$tpl->setVariable('MOSTVISITEDECACHED',$tmptext);
 		}
+		$tpl->setVariable('MOSTVISITEDECACHED',$tmptext);
 		
 		//------MOST-ACTIVE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostActive')) === false) {
-			$arr = FDBTool::getCol("select pc.pageId from sys_pages_counter as pc join sys_pages as p on p.pageId=pc.pageId 
-			where pc.dateStamp > date_sub(now(), interval 1 week)  
-			and p.locked < 2 
-			and pc.typeId in ('galery','forum','blog') group by pc.pageId order by sum(ins) desc limit 0,10");
-			//---cache result
-			$x = 0;
-			while($arr && $x < 6) {
-				$pageId = array_shift($arr);
-				if(FRules::get($user->userVO->userId,$pageId)) {
-					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
-					$tpl->setCurrentBlock('mostactivepage');
-					$tpl->setVariable('MOSTACTIVEURL',FSystem::getUri('',$row[0]));
-					$tpl->setVariable('MOSTACTIVETITLE',FSystem::textins($row[3],array('plainText'=>1)));
-					$tpl->setVariable('MOSTACTIVETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
-					$tpl->parseCurrentBlock();
-					$x++;
-				}
-			}
-			$tmptext = $tpl->get('mostactivepage');
+			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
+			$fPages->fetchmode=1;
+			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId');
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
+			$fPages->addWhere('p.locked < 2');
+			$fPages->addWhere('pc.dateStamp > date_sub(now(), interval 1 week)');
+			$fPages->setGroup('pc.pageId');
+			$fPages->setOrder('sum(pc.ins) desc');
+			$fPages->setLimit(0,5);
+			$arr = $fPages->getContent();
+			$tmptext = FPages::printPagelinkList($arr);
 			$cache->setData( $tmptext );
-		} else {		
-			$tpl->setVariable('MOSTACTIVECACHED',$tmptext);
 		}
+		$tpl->setVariable('MOSTACTIVECACHED',$tmptext);
 
 		//------MOST-FAVOURITE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostFavourite')) === false) {
-			$arr = FDBTool::getCol("select pf.pageId from sys_pages_favorites as pf join sys_pages as p on p.pageId=pc.pageId 
-			where pf.book=1 and p.locked < 2 group by pf.pageId order by sum(pf.book) desc limit 0,10");
-			//---cache result
-			$x = 0;
-			while($arr && $x < 6) {
-				$pageId = array_shift($arr);
-				if(FRules::get($user->userVO->userId,$pageId)) {
-					$row = FDBTool::getRow("select p.pageId,p.typeId,p.name,p.description from sys_pages as p where p.pageId='".$pageId."'");
-					$tpl->setCurrentBlock('mostfavouritepage');
-					$tpl->setVariable('MOSTFAVOURITEURL',FSystem::getUri('',$row[0]));
-					$tpl->setVariable('MOSTFAVOURITETITLE',FSystem::textins($row[3],array('plainText'=>1)));
-					$tpl->setVariable('MOSTFAVOURITETEXT',$row[2].' ['.FLang::$TYPEID[$row[1]].']');
-					$tpl->parseCurrentBlock();
-					$x++;
-				}
-			}
-			$tmptext = $tpl->get('mostfavouritepage');
-			$cache->setData($tmptext);
-		} else {		
-			$tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
+			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
+			$fPages->fetchmode=1;
+			$fPages->addJoin('join sys_pages_favorites as pf on pf.pageId=p.pageId');
+			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
+			$fPages->addWhere('p.locked < 2');
+			$fPages->addWhere('pf.book=1');
+			$fPages->setGroup('pf.pageId');
+			$fPages->setOrder('sum(pf.book) desc');
+			$fPages->setLimit(0,5);
+			$arr = $fPages->getContent();
+			$tmptext = FPages::printPagelinkList($arr);
+			$cache->setData( $tmptext );
 		}
-
+		$tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
+		
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 		
 	}

@@ -1,14 +1,12 @@
 <?php
 class rh_galerie_rnd {
 	static function show() {
-		return '';
-		
+
 		$itemRenderer = new FItemsRenderer();
-		$itemRenderer->openPopup = true;
-		$itemRenderer->showPageLabel = true;
-		$itemRenderer->showTooltip = true;
+		$itemRenderer->openPopup = false;
 		$itemRenderer->showTag = true;
 		$itemRenderer->showText = true;
+		$itemRenderer->showTooltip = false;
 
 		$cache = FCache::getInstance('d');
 		$arr = $cache->getData('rndGaleryItemId','spanel');
@@ -17,7 +15,7 @@ class rh_galerie_rnd {
 		if(is_array($arr)) {
 			$len = count($arr); 
 			if($len > 0) {
-				$itemId = array_shift($arr);
+				$item = array_shift($arr);
 				//---update in cache
 				if($len > 1) {
 					$cache->setData($arr);
@@ -25,15 +23,18 @@ class rh_galerie_rnd {
 				} 
 			}
 		} 
-		if($reLoad===true) {
-			$q = "select itemId from sys_pages_items where typeId='galery' order by rand() limit 0,300";
-			$arr = FDBTool::getCol($q);
-			$itemId = array_shift($arr);
+
+		if($reLoad === true) {
+			$fi = new FItems('galery',FUser::logon());
+			$fi->setSelect('itemId');
+			$fi->setOrder('rand()');
+			$arr = $fi->getContent(0,100);
+			$item = array_shift($arr);
 			//---update in cache
 			$cache->setData($arr);
 		}
 		
-		$itemVO = new ItemVO($itemId,true,array('type'=>'galery'));
+		$itemVO = new ItemVO($item['itemId'],true,array('type'=>'galery'));
 		$itemVO->thumbInSysRes = true;
 		return $itemVO->render($itemRenderer);
 	}

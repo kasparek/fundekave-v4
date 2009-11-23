@@ -198,7 +198,7 @@ class FLeftPanel extends FDBTool {
 									$letext=$cache->getData($cacheId,$cacheGrp);
 								}
 							}
-								
+									
 							if($showBlock === true) {
 								if($letext === false) {
 									include('FLeftPanel/'.$fnc.'.php');

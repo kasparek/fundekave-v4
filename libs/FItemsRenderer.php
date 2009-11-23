@@ -21,6 +21,7 @@ class FItemsRenderer {
 	public $openPopup = true;
 	public $showRating = true;
 	public $showHentryClass = true;
+	public $inside = false;
 	public $showPocketAdd = true;
 	public $showFooter = true;
 	public $showHeading = true;
@@ -93,6 +94,10 @@ class FItemsRenderer {
 
 		//---common for all items
 		if($this->showHentryClass === true) $touchedBlocks['hentry']=true;
+		if($this->inside === true) {
+			$touchedBlocks['thumbsdiv']=true;
+			$touchedBlocks['thumbsdivend']=true;	
+		}
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');
@@ -124,23 +129,37 @@ class FItemsRenderer {
 		}
 
 		if($this->showText === true && $itemVO->text) {
-			$vars['TEXT'] = FSystem::postText($itemVO->text);
+			$vars['TEXT'] = $itemVO->text;
 		}
 		/**/
-		if($this->showRating === true) $vars['HITS'] = $itemVO->hit;
+		if($this->showRating === true) {
+			$vars['HITS'] = $itemVO->hit;
+			$vars['ITEMEYEDIR'] = $localCSS;
+		}
 
 		switch($typeId) {
 			case 'blog':
 				$user = FUser::getInstance();
+								
 				$detailId = '';
 				if($user->itemVO) {
 					if($detailId == $itemId) {
 						$this->showDetail = true;
 					}
 				}
+				
+				if($itemVO->categoryId > 0) {
+					$categoryArr = FCategory::getCategory($itemVO->categoryId);
+					$vars['CATEGORYNAME'] = $categoryArr[2];
+					$vars['CATEGORYURL'] = FSystem::getUri('c='.$itemVO->categoryId,$itemVO->pageId);
+					if( $this->showDetail===true ) {
+						$touchedBlocks['categoryhidden'] = true;	
+					}
+				}
+				
 				if(!empty($itemVO->textLong)  ) {
 					if($this->showDetail===true) {
-						$vars['TEXTLONG'] = FSystem::postText($itemVO->textLong);
+						$vars['TEXT'] .= '<br /><br />'."\n".$itemVO->textLong;
 					} else {
 						$vars['LONGURL'] = $vars['ITEMLINK'];
 					}
@@ -194,7 +213,7 @@ class FItemsRenderer {
 			case 'forum':
 				//--FORUM RENDERER
 				if( $enclosure ) {
-					$vars['ENCLOSURE'] = $this->proccessItemEnclosure($enclosure);
+					$vars['TEXT'] .= '<br /><br />' . "\n" . $this->proccessItemEnclosure($enclosure);
 				}
 				if( $localUserZavatar == 1 ) {
 					$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
@@ -285,17 +304,13 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
-				$itemVOBottom = new ItemVO($itemVO->itemIdBottom, true,
-				array('showTooltip'=>false,'showPageLabel'=>false,'showRating'=>false,'showTag'=>false,'openPopup'=>false,'showCommentsNum'=>false));
-				if(FRules::get($localUserId, $itemVOBottom->pageId,1)) {
-					$vars['ITEMBOTTOM'] = $itemVOBottom->render();
-				}
+				$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('i='.$itemVO->itemIdBottom,'','').'">'.$itemVO->itemIdBottom.'</a>';
 				unset($itemVOBottom);
 			}
 			if( $itemVO->pageIdBottom ) {
 				if( FRules::get($localUserId,$itemVO->pageIdBottom,1) ) {
 					$pageVO = new PageVO($itemVO->pageIdBottom,true);
-					$vars['ITEMBOTTOM'] = '<h3><a href="'.FSystem::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a></h3>';
+					$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a>';
 					unset($pageVO);
 				}
 			}
@@ -303,26 +318,14 @@ class FItemsRenderer {
 		/**/
 
 		//---PAGE NAME
-		//TODO: fix this
-
 		if($this->showPageLabel === true) {
-
 			if($itemVO->itemIdTop > 0) {
-
 				$itemTop = new ItemVO($itemVO->itemIdTop,true);
 				$vars['TOP'] = $itemTop->render();
-				$vars['HEADURL'] = FSystem::getUri('i='.$itemVO->itemIdTop,'','');
-
 			}
-
-			//$touchedBlocks['haspagelabel'] = true;
-			//$pageVO = new PageVO($pageId,true);
-			//$vars['PAGELINK'] = FSystem::getUri((($typeId=='forum')?('i='.$itemId.'#i'.$itemId):('')),$pageId);
-			//$vars['PAGENAME'] = $pageVO->name;
-			//unset($pageVO);
-
 		}
 		/**/
+		if(!empty($vars['TEXT'])) $vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
 
 		//---FINAL PARSE
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;
@@ -347,8 +350,8 @@ class FItemsRenderer {
 	static function proccessItemEnclosure($enclosure) {
 		$ret = false;
 		if($enclosure!='') {
-			if (preg_match("/(jpeg|jpg|gif|bmp|png|JPEG|JPG|GIF|BMP|PNG)$/",$enclosure)) {
-				$ret = '<a href="'.$enclosure.'" rel="lightbox"><img src="' . $enclosure . '"></a>';
+			if (preg_match("/(jpeg|jpg|gif|bmp|png)$/i",$enclosure)) {
+				$ret = '<img src="' . $enclosure . '" />';
 			} elseif (preg_match("/^(http:\/\/)/",$enclosure)) {
 				$ret = '<a href="' . $enclosure . '" rel="external">' . $enclosure . '</a>';
 			} else $ret = $enclosure;

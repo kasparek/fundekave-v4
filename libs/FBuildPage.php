@@ -13,13 +13,15 @@ class FBuildPage {
 	static function getTitle() {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
-			$pageTitle = $user->pageVO->name;
-			return (!empty($pageTitle)?($pageTitle.' - '):('')).(!empty($user->pageVO->title)?($user->pageVO->title.' - '):('')).BASEPAGETITLE;
+			$pageTitle = $user->pageVO->htmlName ? $user->pageVO->htmlName : $user->pageVO->name;
+			return (!empty($pageTitle)?($pageTitle.' - '):('')).(!empty($user->pageVO->htmlTitle)?($user->pageVO->htmlTitle.' - '):('')).BASEPAGETITLE;
 		}
 	}
 	static function getHeading() {
 		$user = FUser::getInstance();
-		if(empty($user->pageVO->name)) {
+		if(!empty($user->pageVO->htmlName)) {
+			return $user->pageVO->htmlName;
+		} else if(empty($user->pageVO->name)) {
 			return false;
 		} else {
 			return $user->pageVO->name;
@@ -123,7 +125,7 @@ class FBuildPage {
 					$homePage = $user->pageVO->getPageParam('home');
 					if(empty($homePage)) $homePage = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					$template='';
-					$user->pageVO->content = $homePage;
+					$user->pageVO->content = FSystem::postText($homePage);
 					break;
 
 				default:
@@ -291,24 +293,81 @@ class FBuildPage {
 			FProfiler::profile('FBuildPage--FSystem::grndbanner');
 			*/
 		if($user->pageAccess === true) {
+			$breadcrumbs = array();
+			//breadcrumbs
+				
+			$pageTop = new PageVO(!empty($user->pageVO->pageIdTop)?$user->pageVO->pageIdTop:HOME_PAGE,true);
+			if($pageTop->pageId) {
+				$homesite = $pageTop->prop('homesite');
+				if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
+				$breadcrumbs[] = array('name'=>$pageTop->name,'url'=>$homesite);
+			}
+				
+			if($pageTop->pageId!=$user->pageVO->pageId) {
+				//typ
+				if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
+					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId]);
+				}
+				//stranka
+				$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+			}
+			
+			if($user->itemVO) {
+				$categoryId = $user->itemVO->categoryId;
+			}
+			if(!empty($_REQUEST['c'])) {
+				$categoryId = (int) $_REQUEST['c']; 
+			}
+			
+			if(!empty($categoryId)) {
+				$categoryArr = FCategory::getCategory($categoryId);
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$categoryId,$user->pageVO->pageId));
+			}
+				
+			if($user->itemVO) {
+				$itemName = $user->itemVO->addon;
+				if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName; 
+				if(!empty($itemName)) {
+					$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId));
+				}
+			}
+				
+			if($user->whoIs>0) {
+				$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
+			}
+				
+			//homesite
+			//typ
+			//stranka
+			//item kategorie
+			//item
+			//			print_r($breadcrumbs);die();
+			foreach($breadcrumbs as $crumb) {
+				$tpl->setVariable('BREADNAME',$crumb['name']);
+				if(isset($crumb['url'])) {
+					$tpl->setVariable('BREADURL',$crumb['url']);
+					$tpl->touchBlock('breadlinkend');
+				}
+				$tpl->parse('bread');
+			}
+				
 			//---SECONDARY MENU
 			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
 			if(!empty($lomenuItems)) {
 				foreach($lomenuItems as $menuItem) {
-					$tpl->setCurrentBlock("secondary-menu-item");
 					$tpl->setVariable('LOLINK',$menuItem['LINK']);
 					$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
 					if(!empty($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
 					if(!empty($menuItem['CLASS'])) $tpl->setVariable('CLASS',$menuItem['CLASS']);
-					if(isset($menuItem['OPPOSITE']))  $tpl->touchBlock('secondary-menu-oppositebutton');
-					$tpl->parseCurrentBlock();
+					if(isset($menuItem['LISTCLASS']))  $tpl->setVariable('LISTCLASS',$menuItem['LISTCLASS']);
+					$tpl->parse('secondary-menu-item');
 				}
 			}
 		}
 		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
 
 		//---LEFT PANEL POPULATING
-		$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId=='top' ? $user->pageVO->typeIdChild : $user->pageVO->typeId ):(''));
+		$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 		$fLeftpanel->load();
 		$fLeftpanel->show();
 		FProfiler::profile('FBuildPage--FLeftPanel');
@@ -387,9 +446,9 @@ class FBuildPage {
 			$tpl->setVariable('BBQ_URL_JS',URL_JS);
 			$tpl->touchBlock("bbq");
 		}
-		
-		if($user->idkontrol===true) $tpl->touchBlock("userin"); 
-		
+
+		if($user->idkontrol===true) $tpl->touchBlock("userin");
+
 		FProfiler::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);

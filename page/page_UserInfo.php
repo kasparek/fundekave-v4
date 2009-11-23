@@ -31,6 +31,7 @@ class page_UserInfo implements iPage {
 			FMenu::secondaryMenuAddItem(FSystem::getUri('who='.$userVO->userId,'fpost',''),FLang::$SEND_MESSAGE);
 				
 			//users pages - galeries,forums,blogs
+			
 				
 			//button favorites
 				
@@ -87,6 +88,150 @@ class page_UserInfo implements iPage {
 		if($fUvatar->hasData()) {
 			$tpl->setVariable("WEBCAM",$fUvatar->getSwf());
 		}
+		
+		$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
+		/**
+		 * PAGES
+		 */
+		$showPagesTab = false;
+		$fp = new FPages('forum',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
+		$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('FORUMS',FPages::printPagelinkList($arrLinks));
+			$showPagesTab = true;
+		}
+
+		$fp = new FPages('blog',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
+		$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('BLOGS',FPages::printPagelinkList($arrLinks));
+			$showPagesTab = true;
+		}
+		
+		$fp = new FPages('galery',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
+		$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('GALERYS',FPages::printPagelinkList($arrLinks));
+			$showPagesTab = true;
+		}
+		if($showPagesTab === true) $tpl->touchBlock('tabpages');
+		
+		/**
+		 * pratele
+		 */
+		$showFriendsTab = false;
+		$arrFriends = $user->userVO->loadFriends();
+		if(!empty($arrFriends)) {
+		foreach($arrFriends as $friend) {
+			if($user->userVO->isFriend($friend->userId)) {
+				$arrFrCom[]=$friend;
+			} else {
+				$arrFr[]=$friend;
+			}
+		}
+		
+			if(!empty($arrFr))$tpl->setVariable('FRIENDS',FUser::usersList( $arrFr,'friends',FLang::$FRIENDS));
+			if(!empty($arrFrCom)) $tpl->setVariable('COMMONFRIENDS',FUser::usersList( $arrFrCom,'commonFriends',FLang::$FRIENDS_COMMON ));
+			$showFriendsTab=true;
+		}
+		if($showFriendsTab === true) $tpl->touchBlock('tabfriends');
+		
+		/**
+		 * FAVORITES
+		 */
+	
+		$showFavoritesTab = false;
+		$fp = new FPages('forum',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
+		$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('FORUMSFAV',FPages::printPagelinkList($arrLinks));
+			$showFavoritesTab = true;
+		}
+
+		$fp = new FPages('blog',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
+		$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('BLOGSFAV',FPages::printPagelinkList($arrLinks));
+			$showFavoritesTab = true;
+		}
+		
+		$fp = new FPages('galery',$user->userVO->userId);
+		$fp->fetchmode = 1;
+		$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
+		$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
+		$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');
+		if($bookOrder==1) {
+			$fp->setOrder('p.name');
+		} else {
+			$fp->setOrder('newMess desc,p.name');
+		}
+		$fp->setGroup('p.pageId');
+		$arrLinks = $fp->getContent();
+		if(count($arrLinks)>0){
+			//pages
+			$tpl->setVariable('GALERYSFAV',FPages::printPagelinkList($arrLinks));
+			$showFavoritesTab = true;
+		}
+		if($showFavoritesTab === true) $tpl->touchBlock('tabfavorites');
+		
+		/**
+		 * UDALOSTI - vlastni, kamaradu, opakovany vsechny, na ty ktery pujdu z tipu a vsechny vlastni
+		 */
 
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 	}

@@ -6,7 +6,7 @@ class FAvatar {
 	 * @return string - avatar pic url
 	 */
 	static function getAvatarUrl($userId=-1){
-		$picname = URL_AVATAR . AVATAR_DEFAULT;
+		$picname = AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
 			$picname = URL_AVATAR . $user->userVO->avatar; //---myself

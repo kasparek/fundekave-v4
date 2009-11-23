@@ -1,7 +1,6 @@
 <?php
 class pageCategories {
 	static function show() {
-		
 		$user = FUser::getInstance();
 		
 		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
@@ -17,8 +16,6 @@ class pageCategories {
 			$pageId = $user->pageVO->pageId;
 		}
 		
-		
-		
 		switch($pageId) {
 			case'event':
 				$total ="select count(1) from sys_pages_items where (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))) and categoryId=c.categoryId";
@@ -27,10 +24,14 @@ class pageCategories {
 				$total ="select count(1) from sys_pages_items where dateStart < date_format(NOW(),'%Y-%m-%d') and categoryId=c.categoryId";
 				break;
 			default:
-				$total ='select count(1) from sys_pages_items where categoryId=c.categoryId';
+				if($user->pageVO->typeId=='top') {
+					$total ='select count(1) from sys_pages where categoryId=c.categoryId';
+				} else {
+					$total ='select count(1) from sys_pages_items where categoryId=c.categoryId';
+				}
 		}
+		
 		$tool->setSelect('c.categoryId,c.name, ( '.$total.' ) as total');
-		$arr->debug=1;
 		$arr = $tool->getContent();
 
 		if(!empty($arr)) {

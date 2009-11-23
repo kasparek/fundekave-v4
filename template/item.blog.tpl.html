@@ -1,6 +1,5 @@
 <div id="{ITEMIDHTML}" class="hentry<!-- BEGIN notpublished --> notpublished<!-- END notpublished -->">
 	<!-- BEGIN notpublishedheader --><div class="notpublishedMsg">Nepublikovano</div><!-- END notpublishedheader -->
-	<!-- BEGIN h2 --><h2><a href="{HEADURL}">{HEAD}</h2><!-- END h2 -->
 	<div class="header">
 		<span class="author vcard">
 	    <!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --> 
@@ -10,30 +9,20 @@
 	  <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
 	  
 	  <span class="stats">
-	  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png"></a></span> | <!-- END numcomment -->
+	  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="{COMMENTSCSSDIR}/img/comments.png" alt="Komentare"></a></span> | <!-- END numcomment -->
 		<!-- BEGIN tag -->{TAG} | <!-- END tag -->
-		<!-- BEGIN rating --><span class="viewedTimes">{HITS}</span> | <!-- END rating -->
+		<!-- BEGIN rating --><span class="viewedTimes">{HITS}<img src="{ITEMEYEDIR}/img/eye.png" title="Pocet zobrazeni" alt="x zobrazeni" /></span> | <!-- END rating -->
 	  <!-- BEGIN link --><span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="{ITEMLINKICODIR}/img/link_go.png" /></a></span><!-- END link -->
 	  </span>
 	  
 	  <!-- BEGIN edit --><span class="edit"><a href="{EDITURL}">Upravit</a></span><!-- END edit -->
 	</div>
 
-  <!-- BEGIN category --><span class="category"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
-	
-  
   <!-- BEGIN useravatar --><div class="avatar">{AVATAR}</div><!-- END useravatar -->
-  
   <!-- BEGIN heading --><h2 class="entry-title summary<!-- BEGIN headhidden --> hidden<!-- END headhidden -->"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
-		
-	<div class="entry-content">
-	<div>{TEXT}</div>
-	<!-- BEGIN detailLink --><a href="{LONGURL}">Cely clanek</a><!-- END detailLink -->
-	<!-- BEGIN textlong --><div class="textLong">{TEXTLONG}</div><!-- END textlong -->
-	</div>
-  
-  <!-- BEGIN commentedItem --><div class="commentedItem">{ITEMBOTTOM}</div><!-- END commentedItem -->
-  
+  <!-- BEGIN category --><span class="category<!-- BEGIN categoryhidden --> hidden<!-- END categoryhidden -->"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
+	<div class="entry-content">{TEXT}</div>
+	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div><!-- END comments -->
 <hr class="cleaner" />

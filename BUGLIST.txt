@@ -1,24 +1,25 @@
-cache blog
-blog item - specialni - pripojeni - bud item nebo stranka - mazani
+-uzivatele - omezeny info pokud neni pritel
+-vyhledavani stranka
+	stranky
+	item
+	uzivatele
+-nej stranka
+	podle palcu za obdobi
+	podle zobrazeni za odbobi
+-udalosti
+	vlastni
+	opakujici se
+	upozorneni
+-sidebar kalendar
+	odkaz na zive s omezenim na urcity den
 
 FUUP:
 zustane zmenseny pri jednom obr
 povedl se mi error pri uploadu .. zkusit escape ... helps - 323
 
-pocet fotek u galerie
-blog item - odkaz [Cely clanek] pokud ma neco v long textu
-pruhledny reakce - na hover zobrazit normalne
-TITLE a ALT u ikonek - oko, bubliny
-TITLE u ostatnich ovladacich odkazu
-blog - odkaz next a previous clanek
-
 //UPDATES
 cache d - invalidateData($userId, 'avatar_url') - on avatar update
 cache f - invalidateGroup('avatar_'.$userId) - on avatar update 
-
-SUBDOMENA
-custom main menu - based on template - hardcoded
-custom pages - vitejte, to jsem ja, hudba, galerie, blog
 
 - last item -
 //done
@@ -28,15 +29,10 @@ insert into sys_pages_properties select pageId,'itemIdLast',max(itemId) from sys
 delete FROM `sys_pages_items_properties` WHERE name="itemLiveforum"; 
 insert into sys_pages_items_properties select itemId,'itemLiveforum',pageId from sys_pages_items where typeId='forum' and public='1' and itemIdTop is null order by dateCreated desc limit 0,100;
 
-
-tipy - do kategorii - misto - breadcrumbs
-
-
 TAGS - PALCE
 -thumb,hits history - porad to nejak blbe pocita
 -stranka nej
 -aktualizace palcu kliknuti historie - overit ze to dela dobre
-
 
 FUVATAR
 fuvatar - pridat u ikonky ze je online, odkaz na stranku se vsema kamerama, pripojena diskuze

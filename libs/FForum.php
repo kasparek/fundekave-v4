@@ -124,29 +124,8 @@ class FForum extends FDBTool {
 
 			if(isset($data["zprava"])) $zprava = trim($data["zprava"]);
 
-			if(isset($data["objekt"])) {
-				$objekt = trim($data["objekt"]);
-			}
-
 			if($cap) {
-
-				if(isset($objekt)) {
-					//---check for item
-					if(preg_match("/[&?|]i=([0-9]*)/" , $objekt, $matches)) {
-						//check if it is item
-						if(FItems::itemExists($matches[1])) {
-							$itemIdBottom = $matches[1];
-							$objekt = '';
-						}
-					} else if(preg_match("/[&?|]k=([0-9a-zA-Z]*)/" , $objekt, $matches)) {
-						if(FPages::page_exist('pageId',$matches[1])) {
-							$pageIdBottom = $matches[1];
-							$objekt = '';
-						}
-					}
-				}
-					
-				if((!empty($zprava) || !empty($objekt))) {
+				if((!empty($zprava))) {
 					if(empty($jmeno)){
 						FError::addError(FLang::$MESSAGE_NAME_EMPTY);
 						$redirect = true;
@@ -160,12 +139,8 @@ class FForum extends FDBTool {
 						$jmeno = FSystem::textins($jmeno,array('plainText'=>1));
 						if($logon === true) {
 							$zprava = FSystem::textins($zprava);
-							if(isset($objekt)) {
-								$objekt = FSystem::textins($objekt,array('plainText'=>1));
-							}
 						} else {
 							$zprava = FSystem::textins($zprava,array('plainText'=>1));
-							unset($objekt);
 						}
 
 						//---insert
@@ -174,9 +149,6 @@ class FForum extends FDBTool {
 						$itemVO->userId = $user->userVO->userId;
 						$itemVO->name = $jmeno;
 						$itemVO->text = $zprava;
-						if(!empty($objekt)) {
-							$itemVO->enclosure = $objekt;
-						}
 						if(!empty($itemIdBottom)) $itemVO->itemIdBottom = $itemIdBottom;
 						if(!empty($pageIdBottom)) $itemVO->pageIdBottom = $pageIdBottom;
 						if(!empty($data['itemIdTop'])) $itemVO->itemIdTop = $data['itemIdTop'];
@@ -196,7 +168,7 @@ class FForum extends FDBTool {
 				FError::adderror(FLang::$ERROR_CAPTCHA);
 			}
 			if(FError::isError()) {
-				$formData = array("zprava"=>$zprava,"objekt"=>(isset($objekt))?($objekt):(''),"name"=>$jmeno);
+				$formData = array("zprava"=>$zprava,"name"=>$jmeno);
 				$cache = FCache::getInstance('s',0);
 				$cache->setData($formData, $pageId, 'form');
 			}
@@ -275,7 +247,7 @@ class FForum extends FDBTool {
 
 		if($showHead===true) {
 			$desc = $user->pageVO->content;
-			if(!empty($desc)) $tpl->setVariable('PAGEDESC',$desc);
+			if(!empty($desc)) $tpl->setVariable('PAGEDESC',FSystem::postText($desc));
 		}
 		if($user->pageVO->locked == 0 && $publicWrite > 0) {
 			$tpl->setVariable('FORMACTION',FSystem::getUri());
@@ -285,7 +257,6 @@ class FForum extends FDBTool {
 			$formData = $cache->getData( $user->pageVO->pageId, 'form');
 			if($formData !== false) {
 				$zprava = $formData['zprava'];
-				$objekt = $formData['objekt'];
 				$name = $formData['name'];
 				$cache->invalidateData($user->pageVO->pageId, 'form');
 			}
@@ -307,11 +278,8 @@ class FForum extends FDBTool {
 
 			if ($logged===true) {
 				if($simple===false) {
-					$tpl->touchBlock('userlogged');
 					$tpl->touchBlock('userlogged2');
 					$tpl->setVariable('PERPAGE',$perPage);
-				} else {
-					$tpl->touchBlock('small');
 				}
 			}
 		} elseif($publicWrite == 2) {

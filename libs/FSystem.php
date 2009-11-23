@@ -191,7 +191,7 @@ class FSystem {
 		$arr = explode(' ',$str);
 		foreach ($arr as $word) {
 			$word=trim($word);
-			if(strlen($word)>$i) $arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
+			if(strlen($word)>$i && strpos($word,'http:')===false) $arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
 		}
 		if(!empty($arrRep)) {
 			foreach ($arrRep as $k=>$v) {
@@ -301,20 +301,71 @@ class FSystem {
 	}
 
 	static function postText($text) {
+		//mozna pridat pred i a k ze ma byt [&?|]
 		$regList = array(
-		"/<img src=\"http:\/\/fundekave.net\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-.*\/([0-9a-zA-Z.]*)\"[0-9a-zA-Z =\";]*?\/>/iu"
-		,"/<a href=\"http:\/\/fundekave.net\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-.*\/([0-9a-zA-Z.]*\.jpg)*?<\/a>/iu"
+		"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
+		,"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
+		,"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
+		,"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
+		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
+		,"/<\s*a\s*href=\"(http:[^\"]+[.jpg|.png|.gif])\"\s*>([^>]*)<\/a>/i"
 		);
+
+		$r=0;
 		foreach($regList as $regex) {
 			if(preg_match_all($regex , $text, $matches)) {
 				$x=0;
 				foreach($matches[0] as $replace) {
-					$itemId = FDBTool::getOne("select itemId from sys_pages_items where pageId='".$matches[1][$x]."' and enclosure='".$matches[2][$x]."'");
-					$item = new ItemVO($itemId,true,array('type'=>'galery','showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
-					$text = str_replace($replace, $item->render(), $text);
+					switch($r) {
+						case 0:
+						case 1:
+						case 2:
+							$itemId = FDBTool::getOne("select itemId from sys_pages_items where pageId='".$matches[1][$x]."' and enclosure='".$matches[2][$x]."'");
+							if($itemId > 0) {
+								$item = new ItemVO($itemId,true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
+								if($item->itemId > 0) {
+									$text = str_replace($replace, $item->render(), $text);
+								}
+							}
+							break;
+						case 3:
+							//item by id
+							$item = new ItemVO((int)$matches[1][$x],true,array('inside'=>true));
+							if($item->itemId>0) {
+								$text = str_replace($replace, $item->render(), $text);
+							}
+							break;
+						case 4:
+							//page link
+							//echo $text;print_r($matches);die();
+							$userId = FUser::logon();
+							$fPages = new FPages('', $userId);
+							$fPages->fetchmode=1;
+							$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).'');
+							if(empty($userId)) {
+								$fPages->addWhere('p.locked < 2');
+							} else {
+								$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+							}
+							$fPages->setWhere("p.pageId='".$matches[1][$x]."'");
+							$arr = $fPages->getContent();
+							if(!empty($arr)) {
+								$data = FPages::printPagelinkList($arr,array('inline'=>1));
+								$text = str_replace($replace, $data, $text);
+							}
+							break;
+						case 5:
+							if(strpos($matches[1][$x],$matches[2][$x])!==false) {
+								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?u='.$matches[1][$x].'" /></a>', $text);
+							} else {
+								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox">'.trim($matches[2][$x]).'</a>', $text);
+							}
+							break;
+					}
 					$x++;
 				}
 			}
+			$r++;
 		}
 		return $text;
 	}

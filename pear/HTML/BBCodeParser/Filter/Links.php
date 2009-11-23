@@ -88,8 +88,8 @@ class HTML_BBCodeParser_Filter_Links extends HTML_BBCodeParser_Filter
         $ce = $options['close_esc'];
 
         $schemes = implode('|', $this->_allowedSchemes);
-
-        $pattern = array(   "/(?<![\"'=".$ce."\/])(".$oe."[^".$ce."]*".$ce.")?(((".$schemes."):\/\/|www)[@-a-z0-9.]+\.[a-z]{2,4}[^\s()\[\]]*)/i",
+																																																										//1st dom \.[a-z]{2,4}
+        $pattern = array(   "/(?<![\"'=".$ce."\/])(".$oe."[^".$ce."]*".$ce.")?(((".$schemes."):\/\/|www)[@-a-z0-9.]+[^\s()\[\]]*)/i",
                             "!".$oe."url(".$ce."|\s.*".$ce.")(.*)".$oe."/url".$ce."!iU",
                             "!".$oe."url=((([a-z]*:(//)?)|www)[@-a-z0-9.]+)([^\s\[\]]*)".$ce."(.*)".$oe."/url".$ce."!i");
 
