@@ -233,16 +233,15 @@ class FPages extends FDBTool {
 			$tpl->touchBlock('showicons');
 			foreach ($arrLinks as $page) {
 				if($user->userVO->zforumico) {
-					
-						
-						if(!empty($page['pageIco'])) {
-							$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
-						} else if(!empty($page['typeId'])) {
-							$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page['typeId']));
-						}
-						$tpl->setVariable("AVATARNAME", $page['name']);
-						$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page['typeId']]);
-					
+						if(isset(FLang::$TYPEID[$page['typeId']])) {
+							if(!empty($page['pageIco'])) {
+								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
+							} else if(!empty($page['typeId'])) {
+								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page['typeId']));
+							}
+							$tpl->setVariable("AVATARNAME", $page['name']);
+							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page['typeId']]);
+					  }
 				}
 				$tpl->setVariable("PAGENAME", $page['name']);
 				$tpl->setVariable("PAGEID", $page['pageId'].'-'.FSystem::safetext($page['name']));

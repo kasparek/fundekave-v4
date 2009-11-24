@@ -335,7 +335,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('PAGEID',$pageVO->pageId);
 			$tpl->touchBlock('extendedtab');
 			
-			if(empty($pageVO->pageIdTop)) {
+			if(empty($pageVO->pageIdTop) || $pageVO->pageIdTop==$pageVO->pageId) {
 				$tpl->touchBlock('site');
 				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));	
 			}

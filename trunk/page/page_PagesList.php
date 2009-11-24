@@ -69,9 +69,8 @@ class page_PagesList implements iPage {
 			$pager = new FPager(0,$perPage ,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $perPage;
 			$fPages->setLimit( $from, $perPage+1 );
-
 			$arr = $fPages->getContent();
-				
+				                  
 			$totalItems = count($arr);
 
 			$maybeMore = false;

@@ -330,7 +330,7 @@ class FSystem {
 							break;
 						case 3:
 							//item by id
-							$item = new ItemVO((int)$matches[1][$x],true,array('inside'=>true));
+							$item = new ItemVO((int)$matches[1][$x],true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
 							if($item->itemId>0) {
 								$text = str_replace($replace, $item->render(), $text);
 							}

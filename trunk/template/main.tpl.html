@@ -34,9 +34,11 @@ if(window.location.hash) { var str=window.location.hash; if(str.split('/').lengt
       <div id="mainbar">
 				
       <form action="{SEARCHACTION}" method="post">
+      	<input type="hidden" name="k" value="{SEARCHPAGEID}" />
         <div id="search-holder">
         <div id="search">
-        <input type="text" class="short" /> <input type="submit" class="button" name="search" value="Hledat" />
+        <img src="{SEARCHCSSDIR}/img/magnifier.png" title="Vyhledavani" alt="Hledat" />
+        <input type="text" name="f" class="short" /> <input type="submit" name="search" value="Hledat" />
         </div>
         </div>
         </form>

@@ -4,7 +4,7 @@ INSERT INTO `sys_pages` VALUES ('frien', null, 'top', 'friend', null, 2, 'page_U
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, null, 'page_PagesBooked', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('livea', null, 'top', 'book', null, null, 'page_ItemsLive', 'Poslední pridane', 'FunDeLive', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
-INSERT INTO `sys_pages` VALUES ('forls', null, 'top', 'top', null, 5, 'page_Search', 'Vysledky vyhledavani', 'Vyhledavani', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('searc', null, 'top', 'top', null, 5, 'page_Search', 'Vysledky vyhledavani', 'Vyhledavani', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('forbe', null, 'top', 'top', null, 5, 'page_ItemsTags', 'Palce', 'Palce', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('paged', null, 'top', 'culture', null, 2, 'page_PageEdit', 'Nova stranka', 'Nova stranka', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
