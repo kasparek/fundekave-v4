@@ -60,7 +60,7 @@ class FPages extends FDBTool {
 				$queryBase = "select {SELECT} from ".$this->pagesTableName." as p
 				left join ".$this->pagesPermissionTableName." as up on p.".$this->pagesPrimaryCol."=up.".$this->pagesPrimaryCol." and up.userId='".$this->userId."' 
 				{JOIN} 
-				where (((p.public in (0,3) and up.rules > 1) 
+				where (((p.public in (0,3) and up.rules >= 1) 
 				or p.userIdOwner='".$this->userId."' 
 				or p.public in (1,2)) and (up.userId is null or up.rules!=0))";
 			}
