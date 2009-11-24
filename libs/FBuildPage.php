@@ -241,6 +241,12 @@ class FBuildPage {
 		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
 		$tpl->setVariable("URL_JS", URL_JS);
+		
+		//searchform
+		//$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
+		$tpl->setVariable("SEARCHPAGEID", 'searc');
+		$tpl->setVariable("SEARCHCSSDIR",$cssPath);
+		
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
 		//TODO: use wrapper when all js done

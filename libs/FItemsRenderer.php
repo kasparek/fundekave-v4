@@ -159,6 +159,7 @@ class FItemsRenderer {
 				
 				if(!empty($itemVO->textLong)  ) {
 					if($this->showDetail===true) {
+						if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
 						$vars['TEXT'] .= '<br /><br />'."\n".$itemVO->textLong;
 					} else {
 						$vars['LONGURL'] = $vars['ITEMLINK'];
@@ -213,6 +214,7 @@ class FItemsRenderer {
 			case 'forum':
 				//--FORUM RENDERER
 				if( $enclosure ) {
+					if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
 					$vars['TEXT'] .= '<br /><br />' . "\n" . $this->proccessItemEnclosure($enclosure);
 				}
 				if( $localUserZavatar == 1 ) {
@@ -304,12 +306,14 @@ class FItemsRenderer {
 		//---linked item
 		if($this->showBottomItem === true) {
 			if($itemVO->itemIdBottom > 0) {
+				if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
 				$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('i='.$itemVO->itemIdBottom,'','').'">'.$itemVO->itemIdBottom.'</a>';
 				unset($itemVOBottom);
 			}
 			if( $itemVO->pageIdBottom ) {
 				if( FRules::get($localUserId,$itemVO->pageIdBottom,1) ) {
 					$pageVO = new PageVO($itemVO->pageIdBottom,true);
+					if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
 					$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a>';
 					unset($pageVO);
 				}

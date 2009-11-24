@@ -7,7 +7,7 @@ function friendRequestInit() {
 }
 
 function enable(id) { $('#'+id).removeAttr('disabled'); };
-function tabsInit() { $("#tabs").tabs(); };
+function tabsInit() { $("#tabs").tabs(); $("#tabs").bind('tabsshow',function(event,ui){ window.location.hash = ui.tab.hash; }); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
 
 function BBQinit() {
@@ -288,9 +288,9 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
  *main init
  **/
 function userin() {
-	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
-	fajaxa();
-	fconfirm();
+	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
+	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+	
 	changeInit();
   // ---ajax textarea / tools
 	addTASwitch();
@@ -308,9 +308,9 @@ function userin() {
 	$('#fotoList').each(function() { if(fotoTotal > 0) { galeryLoadThumb(); } });
 } 
 $(document).ready( function() {
-
-$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
-$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
+fajaxa();
+fconfirm();
 
 $("#errormsgJS").css('display','block');
 $("#errormsgJS").hide();

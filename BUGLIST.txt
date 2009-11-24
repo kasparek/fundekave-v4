@@ -1,5 +1,8 @@
+-editace kategorii stranek - galerie, fora, blogy
+-RSS feed
 -uzivatele - omezeny info pokud neni pritel
 -vyhledavani stranka
+	search form
 	stranky
 	item
 	uzivatele
