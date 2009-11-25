@@ -1,5 +1,4 @@
 <?php
-require("./local.php");
 //---just display
 if(isset($_GET['f'])) {
 	$f = ROOT . $_GET['f'];
