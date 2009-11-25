@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+   <channel>
+      <title>{CHTITLE}</title>
+      <link>{CHLINK}</link>
+      <description>{CHDESCRIPTION}</description>
+      <language>{CHLANG}</language>
+      <pubDate>{CHPUBDATE}</pubDate>
+      <lastBuildDate>{CHBUILDDATE}</lastBuildDate>
+      <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+			<generator>{CHGENERATOR}</generator>
+			<ttl>60</ttl>
+			<!-- BEGIN item -->
+			<item>
+         <title>{TITLE}</title>
+         <guid isPermaLink="true">{LINK}</guid>
+         <link>{LINK}</link>
+         <description>{DESCRIPTION}</description>
+         <pubDate>{PUBDATE}</pubDate>
+      </item>
+			<!-- END item -->
+   </channel>
+</rss>
