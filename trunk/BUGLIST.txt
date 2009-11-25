@@ -1,5 +1,14 @@
+-online - cervene pocet requestu
+-tagy
+ - stranka s nahodnyma fotkama
+ - u kazdy fotky ikonka na tagovani
+ - v pratelich zebricek tagovani
+-Vyrazneji nova zprava
+-info o tom kdyz mi nekdo zmeni prava???
 -editace kategorii stranek - galerie, fora, blogy
 -RSS feed
+	-live feed
+	-page feed - galery, klub, blog
 -uzivatele - omezeny info pokud neni pritel
 -vyhledavani stranka
 	search form
@@ -16,9 +25,6 @@
 -sidebar kalendar
 	odkaz na zive s omezenim na urcity den
 
-FUUP:
-zustane zmenseny pri jednom obr
-povedl se mi error pri uploadu .. zkusit escape ... helps - 323
 
 //UPDATES
 cache d - invalidateData($userId, 'avatar_url') - on avatar update

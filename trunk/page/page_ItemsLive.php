@@ -18,44 +18,38 @@ class page_ItemsLive implements iPage {
 		$cacheGrp = 'pagelist';
 		$ret = $cache->getData($cacheKey,$cacheGrp);
 		if($ret === false) {
-		$localPerPage = $user->pageVO->perPage();
-		
-		$itemRenderer = new FItemsRenderer();
-		$itemRenderer->showPageLabel = true;
-				
-		$fItems = new FItems('',$user->userVO->userId);
-		$fItems->addJoin('join sys_pages as p on p.pageId=sys_pages_items.pageId');
-		$fItems->addWhere('sys_pages_items.public > 0');
-		$fItems->setOrder('sys_pages_items.itemId desc');
-		$fItems->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-		$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId'.(($userId > 0)?(',(p.cnt-f.cnt)'):(',0')).' as newMess,sys_pages_items.itemId,sys_pages_items.typeId');
-		
-		$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
-		$from = ($pager->getCurrentPageID()-1) * $localPerPage;
-		$fItems->map = false;
-		$fItems->getList($from,$localPerPage+1);
-		$totalItems = count($fItems->data);
-
-		$maybeMore = false;
-		if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {
-			$maybeMore = true;
-			array_pop($fItems->data);
-		}
-
-		if($from > 0) $totalItems += $from;
-		$ret = '';
-		if($totalItems > 0) {
-			$pager->totalItems = $totalItems;
-			$pager->maybeMore = $maybeMore;
-			$pager->getPager();
-			//$tmptext = $fItems->render();
-			$tmptext = FPages::printPagelinkList($fItems->data);
-			if ($totalItems > $localPerPage) $tmptext .= $pager->links;
-
-			$ret = $tmptext; 
+			$localPerPage = $user->pageVO->perPage();
+								
+			$fItems = new FItems('',$user->userVO->userId);
+			$fItems->addJoin('join sys_pages as p on p.pageId=sys_pages_items.pageId');
+			$fItems->addWhere('sys_pages_items.public > 0');
+			$fItems->setOrder('sys_pages_items.itemId desc');
+			$fItems->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+			$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId'.(($userId > 0)?(',(p.cnt-f.cnt)'):(',0')).' as newMess,sys_pages_items.itemId,sys_pages_items.typeId');
 			
-		}
-		$cache->setData($ret,$cacheKey,$cacheGrp);
+			$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
+			$from = ($pager->getCurrentPageID()-1) * $localPerPage;
+			$fItems->map = false;
+			$fItems->getList($from,$localPerPage+1);
+			$totalItems = count($fItems->data);
+	
+			$maybeMore = false;
+			if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {
+				$maybeMore = true;
+				array_pop($fItems->data);
+			}
+	
+			if($from > 0) $totalItems += $from;
+			$ret = '';
+			if($totalItems > 0) {
+				$pager->totalItems = $totalItems;
+				$pager->maybeMore = $maybeMore;
+				$pager->getPager();
+				$tmptext = FPages::printPagelinkList($fItems->data);
+				if ($totalItems > $localPerPage) $tmptext .= $pager->links;
+				$ret = $tmptext; 
+			}
+			$cache->setData($ret,$cacheKey,$cacheGrp);
 		}
 		if(!empty($ret)) FBuildPage::addTab(array("MAINDATA"=>$ret));
 	}

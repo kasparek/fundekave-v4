@@ -15,10 +15,10 @@ class page_GaleryDetail implements iPage {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$userId = $user->userVO->userId;
-
-		FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
-
-		if(empty($user->itemVO->itemId)) {
+		$itemId=0;
+		if($user->itemVO) if($user->itemVO->itemId > 0) $itemId = $user->itemVO->itemId;
+		
+		if($itemId===0) {
 				
 			if(FRules::getCurrent(2)) {
 				//---run just wher owner access
@@ -76,8 +76,6 @@ class page_GaleryDetail implements iPage {
 		} else {
 
 			//---detail foto
-			$itemId = $user->itemVO->itemId;
-			
 			$itemVO = new ItemVO($itemId,true,array('typeId'=>'galery'));
 			$itemVO->hit();
 
@@ -94,7 +92,7 @@ class page_GaleryDetail implements iPage {
 			$tpl->setVariable("HITS",$itemVO->hit);
 			$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
 			if($user->idkontrol===true) {
-				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'));
+				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$userId,'galery'));
 				$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
 			}
 			if(($itemNext = $itemVO->getNext(true))!==false) {
@@ -107,9 +105,7 @@ class page_GaleryDetail implements iPage {
 			if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=galery-show&d=item:'.$itemPrev,$pageId);
 			$backUri = FSystem::getUri(FConf::get('pager','urlVar').'='.$onPageNum, $itemVO->pageId);
 			
-			//TODO: deeplinking for comments
 			$itemIdForum = 0;
-
 			$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
 			$ret = $tpl->get();
 			
@@ -136,8 +132,7 @@ class page_GaleryDetail implements iPage {
 				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}
 			
-			FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 		}
-
+		FItems::aFav($pageId,$userId,$user->pageVO->cnt);
 	}
 }

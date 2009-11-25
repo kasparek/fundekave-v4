@@ -187,7 +187,7 @@ class FBlog {
 				$total = $fItems->getCount();
 			}
 
-			$fItems->setOrder("dateCreated desc");
+			$fItems->setOrder("dateStart desc");
 
 			$currentPage = 0;
 			if($total > $perPage) {

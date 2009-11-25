@@ -213,14 +213,8 @@ class FGalery {
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
 		$galdir = ROOT_GALERY . $this->pageVO->galeryDir.'/';
-		$handle=opendir( $galdir . '/' );
-		while ( false !== ($file = readdir( $handle )) ){
-			if (preg_match("/((.jpeg)|(.jpg)|(.gif)|(.JPEG)|(.JPG)|(.GIF)$)/",$file)) {
-				$arrFiles[] = $file;
-			}
-		}
-		closedir($handle);
-
+		$arrFiles = FFile::fileList($galdir,"png|jpg|jpeg|gif");
+		
 		$change = false;
 		
 		$arrNotInDB = array_diff($arrFiles,$arrFotoDetail);
