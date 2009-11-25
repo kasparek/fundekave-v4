@@ -8,7 +8,7 @@ if(isset($_GET['hash']) && $user->currentPage['typeId']=='forum') {
    $hash = $_GET['hash'];
    $localHash = md5($salt.$user->currentPageId);
   if($localHash == $hash) {
-    //echo $_GET['data'];
+    
     $paramsDecode = base64_decode($_GET['data']);
     $paramsDecode = urldecode($paramsDecode);
   	if($paramsDecode) {
@@ -164,7 +164,8 @@ $data = array(
   'copyright'      => '2008, Fundekave, Frantisek Kaspar',
   'managingEditor' => 'web@fundekave.net (Frantise Kaspar)',
   'webMaster'      => 'web@fundekave.net (Frantisek Kaspar)',
-  'pubDate'        => ((!empty($user->currentPage['dateContent']))?($user->currentPage['dateContent']):(((!empty($user->currentPage['dateUpdated']))?($user->currentPage['dateUpdated']):($user->currentPage['dateCreated'])))),
+  
+	'pubDate'        => ((!empty($user->currentPage['dateContent']))?($user->currentPage['dateContent']):(((!empty($user->currentPage['dateUpdated']))?($user->currentPage['dateUpdated']):($user->currentPage['dateCreated'])))),
   'lastBuildDate'  => $rssNow,
   'generator'      => 'FUNDEKAVE.net::v4::THXto::pheeder.sourceforge.net'.$processMessage,
   'docs'           => 'http://www.rssboard.org/rss-specification',
