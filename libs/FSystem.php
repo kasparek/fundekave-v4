@@ -322,7 +322,7 @@ class FSystem {
 						case 2:
 							$itemId = FDBTool::getOne("select itemId from sys_pages_items where pageId='".$matches[1][$x]."' and enclosure='".$matches[2][$x]."'");
 							if($itemId > 0) {
-								$item = new ItemVO($itemId,true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
+								$item = new ItemVO($itemId,true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>true,'openPopup'=>false));
 								if($item->itemId > 0) {
 									$text = str_replace($replace, $item->render(), $text);
 								}
@@ -330,7 +330,7 @@ class FSystem {
 							break;
 						case 3:
 							//item by id
-							$item = new ItemVO((int)$matches[1][$x],true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>false,'openPopup'=>false));
+							$item = new ItemVO((int)$matches[1][$x],true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>true,'openPopup'=>false));
 							if($item->itemId>0) {
 								$text = str_replace($replace, $item->render(), $text);
 							}

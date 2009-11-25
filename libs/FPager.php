@@ -12,6 +12,7 @@ class FPager {
     var $nextText = "&gt;&gt;";
     var $previousText = "&lt;&lt;";
     var $adjacents = 1;
+    var $hash = '';
     //result
     var $links;
     function __construct($totalItems=0,$perPage=20,$conf=array()) {
@@ -22,8 +23,8 @@ class FPager {
 		$params['totalItems'] = $totalItems;
 		$params['perPage'] = $perPage;
 		
-		if(!empty($conf)) $params = array_merge($params,$conf);
-    	
+		if(!empty($conf)) $params = array_merge($params, $conf);
+		    	
         if(!empty($params)){
 	        foreach ($params as $k=>$v) {
 	        	$this->$k = $v;
@@ -76,6 +77,10 @@ class FPager {
         if(!empty($this->extraVars)) {
             foreach ($this->extraVars as $k=>$v) $extraVarsStr .= $k.'='.$v.'&';
         }
+        $hash='';
+        if($this->hash!='') {
+        	$hash = '#'.$this->hash;
+        }
         
         $pagestring = '?' . $extraVarsStr . $this->urlVar."=";
 
@@ -97,7 +102,7 @@ class FPager {
 
             //previous button
             if ($page > 1)
-                $pagination .= '<a href="'.$targetpage.$pagestring.$prev.'">'.$this->previousText.'</a>';
+                $pagination .= '<a href="'.$targetpage.$pagestring.$prev.$hash.'">'.$this->previousText.'</a>';
             else
                 $pagination .= '<span class="disabled">'.$this->previousText.'</span>';
 
@@ -107,7 +112,7 @@ class FPager {
                 for ($counter = 1; $counter <= $lastpage; $counter++)
                 {
                     if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                    else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . '">'.$counter.'</a>';
+                    else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a>';
                 }
             }
             elseif($lastpage >= 7 + ($adjacents * 2))	//enough pages to hide some
@@ -118,44 +123,44 @@ class FPager {
                     for ($counter = 1; $counter < 4 + ($adjacents * 2); $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . '">'.$counter.'</a>';
+                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . $hash . '">'.$counter.'</a>';
                     }
                     $pagination .= '...'
-                    . '<a href="' . $targetpage . $pagestring . $lpm1 . '">'.$lpm1.'</a>'
-                    . '<a href="' . $targetpage . $pagestring . $lastpage . '">'.$lastpage.'</a>';
+                    . '<a href="' . $targetpage . $pagestring . $lpm1 . $hash . '">'.$lpm1.'</a>'
+                    . '<a href="' . $targetpage . $pagestring . $lastpage . $hash . '">'.$lastpage.'</a>';
                 }
                 //in middle; hide some front and some back
                 elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2))
                 {
-                    $pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>'
-                    . '<a href="' . $targetpage . $pagestring . '2">2</a>'
+                    $pagination .= '<a href="' . $targetpage . $pagestring . '1'.$hash.'">1</a>'
+                    . '<a href="' . $targetpage . $pagestring . '2'.$hash.'">2</a>'
                     . "...";
                     for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . '">'.$counter.'</a>';
+                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
                     }
                     $pagination .= "..."
-                    . '<a href="' . $targetpage . $pagestring . $lpm1 . '">'.$lpm1.'</a>'
-                    . '<a href="' . $targetpage . $pagestring . $lastpage . '">'.$lastpage.'</a>';
+                    . '<a href="' . $targetpage . $pagestring . $lpm1 .$hash. '">'.$lpm1.'</a>'
+                    . '<a href="' . $targetpage . $pagestring . $lastpage .$hash. '">'.$lastpage.'</a>';
                 }
                 //close to end; only hide early pages
                 else
                 {
-                    $pagination .= '<a href="' . $targetpage . $pagestring . '1">1</a>'
-                    . '<a href="' . $targetpage . $pagestring . '2">2</a>'
+                    $pagination .= '<a href="' . $targetpage . $pagestring . '1'.$hash.'">1</a>'
+                    . '<a href="' . $targetpage . $pagestring . '2'.$hash.'">2</a>'
                     . "...";
                     for ($counter = $lastpage - (1 + ($adjacents * 2)); $counter <= $lastpage; $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . '">'.$counter.'</a>';
+                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
                     }
                 }
             }
 
             //next button
             if($this->maybeMore==true) $pagination .= ' ... ';
-            if ($page < $counter - 1) $pagination .= '<a href="' . $targetpage . $pagestring . $next . '">'.$this->nextText.'</a>';
+            if ($page < $counter - 1) $pagination .= '<a href="' . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
             else $pagination .= '<span class="disabled">'.$this->nextText.'</span>';
             $pagination .= "</div>\n";
         }

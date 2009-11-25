@@ -151,8 +151,8 @@ class FDBTool {
 		}
 		else $this->addWhere('LOWER('.$column.') LIKE "%'.$string.'%"', $condition);
 	}
-	function addFulltextSearch($columns, $string, $condition = "AND",$queryExpansion=true) {
-		$this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'"'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
+	function addFulltextSearch($columns, $string, $condition = "AND",$queryExpansion=false) {
+		$this->addWhere('MATCH ('.$columns.') AGAINST ("'.$string.'" IN NATURAL LANGUAGE MODE'.(($queryExpansion==true)?(' WITH QUERY EXPANSION'):('')).')');
 	}
 	function setOrder($orderCondition='', $desc=false) {
 		$orderCondition = $orderCondition .($desc ? ' DESC' : '');
