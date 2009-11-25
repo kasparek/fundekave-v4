@@ -1,4 +1,25 @@
 <?php
+if(isset($_GET['header_handler']) || strpos($_SERVER['REQUEST_URI'],"/ca.php")===0) {
+	include('ca.php');
+	exit;
+}
+if(isset($_GET['cross'])) {
+	header('Content-Type: text/xml');
+	echo file_get_contents(ROOT.'template/crossdomain.xml');
+	exit;
+}
+if(strpos($_SERVER['REQUEST_URI'],"/pic/")===0 || strpos($_SERVER['REQUEST_URI'],"/pic.php")===0) {
+	include('pic.php');
+	exit;
+}
+if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")===0) {
+	include('files.php');
+	exit;
+}
+if(strpos($_SERVER['REQUEST_URI'],"/rss/")===0 || strpos($_SERVER['REQUEST_URI'],"/frss.php")===0) {
+	//TODO:handle RSS
+}
+
 require(INIT_FILENAME);
 
 //---process ajax requests - or alternative POST requests
