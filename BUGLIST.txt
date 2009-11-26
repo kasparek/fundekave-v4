@@ -1,20 +1,17 @@
 -online - cervene pocet requestu
+
+-Vyrazneji nova zprava
+
+-uzivatele - omezeny info pokud neni pritel
+
+-editace kategorii stranek - galerie, fora, blogy
+
+-sidebar kalendar
+	odkaz na zive s omezenim na urcity den
 -tagy
  - stranka s nahodnyma fotkama
  - u kazdy fotky ikonka na tagovani
- - v pratelich zebricek tagovani
--Vyrazneji nova zprava
--info o tom kdyz mi nekdo zmeni prava???
--editace kategorii stranek - galerie, fora, blogy
--RSS feed
-	-live feed
-	-page feed - galery, klub, blog
--uzivatele - omezeny info pokud neni pritel
--vyhledavani stranka
-	search form
-	stranky
-	item
-	uzivatele
+ - v pratelich zebricek tagovani	
 -nej stranka
 	podle palcu za obdobi
 	podle zobrazeni za odbobi
@@ -22,8 +19,7 @@
 	vlastni
 	opakujici se
 	upozorneni
--sidebar kalendar
-	odkaz na zive s omezenim na urcity den
+-info o tom kdyz mi nekdo zmeni prava???			
 
 
 //UPDATES

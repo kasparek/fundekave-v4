@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <rss version="2.0">
    <channel>
-      <title>{CHTITLE}</title>
+      <title><![CDATA[{CHTITLE}]]></title>
       <link>{CHLINK}</link>
-      <description>{CHDESCRIPTION}</description>
+      <description><![CDATA[{CHDESCRIPTION}]]></description>
       <language>{CHLANG}</language>
       <pubDate>{CHPUBDATE}</pubDate>
       <lastBuildDate>{CHBUILDDATE}</lastBuildDate>
@@ -15,7 +15,7 @@
          <title>{TITLE}</title>
          <guid isPermaLink="true">{LINK}</guid>
          <link>{LINK}</link>
-         <description>{DESCRIPTION}</description>
+         <description><![CDATA[{DESCRIPTION}]]></description>
          <pubDate>{PUBDATE}</pubDate>
       </item>
 			<!-- END item -->
