@@ -272,6 +272,9 @@ class FBuildPage {
 		 */
 
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
+		$pageVOTop = new PageVO($user->pageVO->pageIdTop,true);
+		$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
+		if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 		if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 		if(false!==($pageHeading=FBuildPage::getHeading())) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		//---BODY PARAMETERS

@@ -1,7 +1,4 @@
 <?php
-require("./local.php");
-require(INIT_FILENAME);
-
 function chunkFilename($ident,$iter) {
 	$user = FUser::getInstance();
 	if(isset($_GET['f'])) $f = '-'.$_GET['f']; else $f='';
