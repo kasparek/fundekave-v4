@@ -19,6 +19,7 @@ class FBuildPage {
 	}
 	static function getHeading() {
 		$user = FUser::getInstance();
+		if($user->pageVO) {
 		if($user->pageVO->showHeading===false) return '';
 		if(!empty($user->pageVO->htmlName)) {
 			return $user->pageVO->htmlName;
@@ -26,6 +27,7 @@ class FBuildPage {
 			return false;
 		} else {
 			return $user->pageVO->name;
+		}
 		}
 	}
 
@@ -248,8 +250,7 @@ class FBuildPage {
 		$tpl->setVariable("URL_JS", URL_JS);
 		
 		//searchform
-		//$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
-		$tpl->setVariable("SEARCHPAGEID", 'searc');
+		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
 		$tpl->setVariable("SEARCHCSSDIR",$cssPath);
 		
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());

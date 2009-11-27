@@ -35,7 +35,7 @@ class FFile {
 		if(is_dir($dir)) {
 			$handle=opendir($dir);
 			while (false!==($file = readdir($handle))) {
-				if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/",$file))) {
+				if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/i",$file))) {
 					$arrFiles[]= $file;
 				}
 			}
