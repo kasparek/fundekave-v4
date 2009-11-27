@@ -38,7 +38,7 @@ class page_GaleryDetail implements iPage {
 			}
 			
 			$totalItems = (int) $user->pageVO->cnt;
-
+			
 			if($totalItems==0) {
 
 				FError::addError(FLang::$ERROR_GALERY_NOFOTO);

@@ -157,7 +157,7 @@ class page_UserInfo implements iPage {
 			 * pratele
 			 */
 			$showFriendsTab = false;
-			$arrFriends = $user->userVO->loadFriends();
+			$arrFriends = $userVO->loadFriends();
 			if(!empty($arrFriends)) {
 				foreach($arrFriends as $friend) {
 					if($user->userVO->isFriend($friend->userId)) {

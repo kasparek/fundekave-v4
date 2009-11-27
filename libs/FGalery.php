@@ -304,7 +304,7 @@ class FGalery {
 			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 			
 			if(!empty($galery->itemVO->thumbUrl)) if(is_file($galery->itemVO->thumbUrl)) unlink($galery->itemVO->thumbUrl);
-			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) @unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 			$galery->removeThumb();
 
 			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
