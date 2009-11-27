@@ -5,6 +5,7 @@ class page_UserPost implements iPage {
 	static function process($data) {
 		$redirParam = '';
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('s');
 		//---action part - cache -pp,filtr
 		$redir = false;
@@ -15,19 +16,26 @@ class page_UserPost implements iPage {
 			}
 		}
 
-		$perPage = $cache->getData($user->pageVO->pageId,'pp');
-		if (isset($data["perpage"]) && $data["perpage"] != $perPage) {
-			$perPage = $data["perpage"]*1;
-			$cache->setData($perPage, $user->pageVO->pageId,'pp');
-			$redir = true;
+		$saction = '';
+		if(isset($data['special'])) {
+			$saction = $data['saction'];
 		}
 
-		if (isset($data["filtr"])) {
+		if($saction == 'setpp') {
+			$perPage = $cache->getData($user->pageVO->pageId,'pp');
+			if (isset($data["perpage"]) && $data["perpage"] != $perPage) {
+				$perPage = $data["perpage"]*1;
+				$cache->setData($perPage, $user->pageVO->pageId,'pp');
+				$redir = true;
+			}
+		}
+
+		if($saction == 'search') {
 			if(!empty($data["zprava"])) $cache->setData(FSystem::textins($data["zprava"]), 'text', 'filtrPost');
 			$cache->setData(FSystem::textins($data["prokoho"],array('plainText'=>1)), 'name', 'filtrPost');
 			$redir = true;
 		}
-		
+
 		//---SEND MESSAGE
 		if(isset($data["send"]) && $data["zprava"]!='') {
 			$cache->invalidateGroup('filtrPost');
@@ -54,18 +62,18 @@ class page_UserPost implements iPage {
 				}
 			}
 		}
-				
+
 		//---mazani zprav
-		if ((isset($data["delo"]) || isset($data["delbe"])) && !empty($data["del"])) {
-			if(isset($data["delbe"]) && Count($data["del"]) > 1){
+		if (($saction=='delete' || $saction=='deletebetween') && !empty($data["del"])) {
+			if($saction=='deletebetween' && Count($data["del"]) > 1){
 				$cache = FCache::getInstance('s');
 				$arrdelex = $cache->getData('displayed','post');
 				$cache->invalidateData('displayed','post');
 				$de=false;
 				for($x=0;$x<count($arrdelex);$x++){
-					if($arrdelex[$x]==$data["del"][0] && $de==false) $de=true;
-					if($de==true) $arrdel[]=$arrdelex[$x];
-					if($arrdelex[$x]==$data["del"][(Count($del)-1)]) {$de=false; break;}
+					if($arrdelex[$x] == $data["del"][0] && $de==false) $de=true;
+					if($de === true) $arrdel[] = $arrdelex[$x];
+					if($arrdelex[$x] == $data["del"][(Count($data["del"])-1)]) {$de=false; break;}
 				}
 			} else {
 				$arrdel = $data["del"];
@@ -73,16 +81,16 @@ class page_UserPost implements iPage {
 			FMessages::delete($arrdel);
 			$redir = true;
 		}
-		
-		//---redirect				
+
+		//---redirect
 		if ($redir == true) {
 			FHTTP::redirect(FSystem::getUri($redirParam));
 		}
-		
+
 	}
 
 	static function build($data=array()) {
-		
+
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 
@@ -154,7 +162,7 @@ class page_UserPost implements iPage {
 		if ($filterText || $filterUsername) {
 			$tpl->setVariable('FILTRCANCELLINK',FSystem::getUri('filtr=cancel'));
 		}
-		
+
 		if($totalItems > $perPage) {
 			$tpl->setVariable('TOPPAGER',$pager->links);
 			$tpl->setVariable('TOTAL',$totalItems);
@@ -181,17 +189,22 @@ class page_UserPost implements iPage {
 					$tpl->touchBlock("unread");
 					$tpl->touchBlock("unreadmess");
 				}
+				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
 				$tpl->setVariable("DATEISO", $post["datum"]);
 				if($post["userIdFrom"]==$user->userVO->userId) {
-					$tpl->setVariable("SENTLINK", FSystem::getUri("who=".$post["userIdTo"],'finfo'));
-					$tpl->setVariable("SENTNAME", FUser::getgidname($post["userIdTo"]));
+					$tpl->touchBlock('sent');
+					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
+					$muname = FUser::getgidname($post["userIdTo"]);
 				} else {
-					$tpl->setVariable("RECEIVEDLINK", FSystem::getUri("who=".$post["userIdTo"],'finfo'));
-					$tpl->setVariable("RECEIVEDNAME", FUser::getgidname($post["userIdFrom"]));
+					$tpl->touchBlock('received');
+					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
+					$muname = FUser::getgidname($post["userIdFrom"]);
 				}
-				$tpl->setVariable("TEXT", $post["text"]);
+				$tpl->setVariable("MULINK", $mulink);
+				$tpl->setVariable("MUNAME", $muname);
+				$tpl->setVariable("TEXT", FSystem::postText($post["text"]));
 				$tpl->parseCurrentBlock();
 
 				/*prectena*/
@@ -204,9 +217,9 @@ class page_UserPost implements iPage {
 			$cache = FCache::getInstance('s');
 			$cache->setData($displayedPostsArr,'displayed','post');
 		}
-		
+
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
-		
+
 		$tpl = FBuildPage::getInstance();
 		$tpl->touchBlock('userPostEND');
 	}

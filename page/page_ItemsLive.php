@@ -9,7 +9,7 @@ class page_ItemsLive implements iPage {
 	static function build($data=array()) {
 		$user = FUser::getInstance();
 		$userId = (int) $user->userVO->userId;
-		
+		$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('f',0);
 		$p = 1;
 		$urlVar = FConf::get('pager','urlVar');

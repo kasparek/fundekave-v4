@@ -19,6 +19,7 @@ class FBuildPage {
 	}
 	static function getHeading() {
 		$user = FUser::getInstance();
+		if($user->pageVO->showHeading===false) return '';
 		if(!empty($user->pageVO->htmlName)) {
 			return $user->pageVO->htmlName;
 		} else if(empty($user->pageVO->name)) {
@@ -272,10 +273,13 @@ class FBuildPage {
 		 */
 
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
-		$pageVOTop = new PageVO($user->pageVO->pageIdTop,true);
-		$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
-		if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
-		if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
+		if($user->pageVO) {
+			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
+			$pageVOTop = new PageVO($pageIdTop,true);
+			$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
+			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
+			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
+		}
 		if(false!==($pageHeading=FBuildPage::getHeading())) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		//---BODY PARAMETERS
 		//---MAIN MENU
@@ -304,8 +308,8 @@ class FBuildPage {
 		if($user->pageAccess === true) {
 			$breadcrumbs = array();
 			//breadcrumbs
-				
-			$pageTop = new PageVO(!empty($user->pageVO->pageIdTop)?$user->pageVO->pageIdTop:HOME_PAGE,true);
+			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
+			$pageTop = new PageVO($pageIdTop,true);
 			if($pageTop->pageId) {
 				$homesite = $pageTop->prop('homesite');
 				if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;

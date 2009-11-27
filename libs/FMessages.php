@@ -63,6 +63,8 @@ class FMessages {
 	 */
 	static function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
+		$zprava = str_replace("'","\'",$zprava);
+		
 		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom)
 		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
 		FDBTool::query($dot);

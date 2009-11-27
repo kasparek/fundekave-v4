@@ -9,7 +9,7 @@
       <lastBuildDate>{CHBUILDDATE}</lastBuildDate>
       <docs>http://blogs.law.harvard.edu/tech/rss</docs>
 			<generator>{CHGENERATOR}</generator>
-			<ttl>60</ttl>
+			<ttl>10</ttl>
 			<!-- BEGIN item -->
 			<item>
          <title>{TITLE}</title>

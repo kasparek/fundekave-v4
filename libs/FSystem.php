@@ -164,7 +164,6 @@ class FSystem {
 					array_splice($safe->deleteTags, $objectKey, 1);
 				}
 			}
-			$text = str_replace('\\','',$text);
 			$text = $safe->parse($text);
 		}
 
@@ -182,6 +181,9 @@ class FSystem {
 				}
 			}
 		}
+		
+		$text = stripslashes($text);
+		
 		return $text;
 	}
 
