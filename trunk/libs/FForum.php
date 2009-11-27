@@ -199,6 +199,7 @@ class FForum extends FDBTool {
 	 public write - 0:no write,1:public,2:only registered
 	 */
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
+		$itemId = (int) $itemId;
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$logged = $user->idkontrol;
@@ -215,7 +216,8 @@ class FForum extends FDBTool {
 		if($logged === false && $publicWrite > 0) { $captcha = new FCaptcha(); }
 			
 		$perPage = $user->pageVO->perPage();
-			
+		
+		$unreadedCnt = 0;	
 		if( $logged === true ) {
 			$unreadedCnt = FForum::getSetUnreadedForum($user->pageVO->pageId,$itemId);
 			if($unreadedCnt > 0) {
@@ -244,7 +246,6 @@ class FForum extends FDBTool {
 		/* ........ vypis nazvu auditka .........*/
 		//--FORM
 		$tpl = FSystem::tpl('forum.view.tpl.html');
-
 		if($showHead===true) {
 			$desc = $user->pageVO->content;
 			if(!empty($desc)) $tpl->setVariable('PAGEDESC',FSystem::postText($desc));
@@ -252,7 +253,6 @@ class FForum extends FDBTool {
 		if($user->pageVO->locked == 0 && $publicWrite > 0) {
 			$tpl->setVariable('FORMACTION',FSystem::getUri());
 			$name = "";
-
 			$cache = FCache::getInstance('s',0);
 			$formData = $cache->getData( $user->pageVO->pageId, 'form');
 			if($formData !== false) {
@@ -274,8 +274,6 @@ class FForum extends FDBTool {
 			$filter = $cache->getData( $user->pageVO->pageId, 'filter');
 			$tpl->setVariable('TEXTAREACONTENT',(($filter!==false)?($filter):($zprava)));
 
-
-
 			if ($logged===true) {
 				if($simple===false) {
 					$tpl->touchBlock('userlogged2');
@@ -289,55 +287,84 @@ class FForum extends FDBTool {
 		}
 		FProfiler::profile('FForum::show--FORM');
 		//---END FORM
-		$itemRenderer = new FItemsRenderer();
-		$fItems = new FItems('forum',false,$itemRenderer);
-		$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
-		if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
-		if(!empty($filterTxt)) {
-			$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$filterTxt,'or');
+		
+		
+		if($itemId>0) {
+			$itemVO = new ItemVO($itemId,true);
+			$total = $itemVO->cnt;
+		} else {
+			$total = $user->pageVO->cnt;
 		}
-		$fItems->setOrder("dateCreated DESC");
-		FItemsToolbar::setQueryTool(&$fItems);
-
-		if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
-		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
-
-		$from = ($pager->getCurrentPageID()-1) * $perPage;
-		$fItems->getList($from,$perPage+1);
-		$total = count($fItems->data);
-
-		$maybeMore = false;
-		if($total > $perPage) {
-			$maybeMore = true;
-			unset($fItems->data[(count($fItems->data)-1)]);
+		
+		$cached = false;
+		if(empty($filterTxt)) {
+			$ppUrlVar = FConf::get('pager','urlVar');
+			$pageNum = 1;
+			if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];
+			$cache = FCache::getInstance('f',0);
+			$cacheKey = $user->pageVO->pageId.'-'.$pageNum.'-'.$itemId.'-'.(int) $user->userVO->userId.'-'.$perPage;
+			$cacheGrp = 'pagelist';
+			$cached = $cache->getData($cacheKey,$cacheGrp);
 		}
-
-		if($from > 0) $total += $from;
-
-		FProfiler::profile('FForum::show--ITEMS INIT');
-
-		if($total > 0) {
-			/*.........zacina vypis prispevku.........*/
-			$pager->totalItems = $total;
-			$pager->maybeMore = $maybeMore;
-			$pager->getPager();
-			if ($total > $perPage) {
-				$tpl->setVariable('TOPPAGER',$pager->links);
-				$tpl->setVariable('BOTTOMPAGER',$pager->links);
+		
+		if($cached===false) {
+			$cached = array();
+		
+			$itemRenderer = new FItemsRenderer();
+			$fItems = new FItems('forum',false,$itemRenderer);
+			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
+			if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
+			if(!empty($filterTxt)) {
+				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$filterTxt,'or');
 			}
-			$mess = '';
-
-			$tpl->setVariable('MESSAGES',$fItems->render());
-
-			FProfiler::profile('FForum::show--ITEMS DONE');
+			$fItems->setOrder("dateCreated DESC");
+			
+			//TODO:thumbs removed for while
+			//FItemsToolbar::setQueryTool(&$fItems);
+	
+			if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
+			$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+	
+			$from = ($pager->getCurrentPageID()-1) * $perPage;
+			$fItems->getList($from,$perPage+1);
+			$total = count($fItems->data);
+	
+			$maybeMore = false;
+			if($total > $perPage) {
+				$maybeMore = true;
+				unset($fItems->data[(count($fItems->data)-1)]);
+			}
+	
+			if($from > 0) $total += $from;
+	
+			if($total > 0) {
+				/*.........zacina vypis prispevku.........*/
+				$pager->totalItems = $total;
+				$pager->maybeMore = $maybeMore;
+				$pager->getPager();
+				if ($total > $perPage) {
+					$cached['TOPPAGER'] = $pager->links;
+					$cached['BOTTOMPAGER'] = $pager->links;
+				}
+				$mess = '';
+	
+				$cached['MESSAGES'] = $fItems->render();
+      	if(isset($cacheKey)) if($unreadedCnt==0) $cache->setData($cached,$cacheKey,$cacheGrp);
+			}
+		}
+		
+		$tpl->setVariable($cached); 
+		
+		if($total > 0) {
 			/*......aktualizace novych a prectenych......*/
-			if($itemId>0) {
+			if($itemId > 0) {
 				FForum::updateReadedReactions($itemId,$user->userVO->userId);
 			} else {
 				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
 			}
-			FProfiler::profile('FForum::show--READED UPDATE');
-		} else $tpl->touchBlock('messno');
+		} else {
+		  $tpl->touchBlock('messno');
+		}
 
 		$ret = $tpl->get();
 		unset($itemRenderer);

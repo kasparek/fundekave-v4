@@ -18,6 +18,17 @@ class page_GaleryDetail implements iPage {
 		$itemId=0;
 		if($user->itemVO) if($user->itemVO->itemId > 0) $itemId = $user->itemVO->itemId;
 		
+		$ret = false;
+		
+		//---try from cache
+		$ppUrlVar = FConf::get('pager','urlVar');
+		$pageNum = 1;
+		if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];
+		$cache = FCache::getInstance('f',0);
+		$cacheKey = $pageId.'-'.$pageNum.'-'.$itemId.'-'.(int) $userId;
+		$cacheGrp = 'pagelist';
+		$ret = $cache->getData($cacheKey,$cacheGrp);
+				
 		if($itemId===0) {
 				
 			if(FRules::getCurrent(2)) {
@@ -25,89 +36,87 @@ class page_GaleryDetail implements iPage {
 				$galery = new FGalery();
 				$galery->refreshImgToDb($pageId);
 			}
+			
+			$totalItems = (int) $user->pageVO->cnt;
 
-			$itemRenderer = new FItemsRenderer();
-			$itemRenderer->showTooltip = false;
-			$itemRenderer->openPopup = ($user->userVO->zgalerytype == 0)?(false):(true);
-
-			$fItems = new FItems('galery',false,$itemRenderer);
-			$fItems->setWhere('pageId="'.$pageId.'"');
-			$fItems->addWhere('itemIdTop is null');
-			$totalItems = $fItems->getCount();
-
-			if($totalItems==0){
+			if($totalItems==0) {
 
 				FError::addError(FLang::$ERROR_GALERY_NOFOTO);
 
 			} else {
+			  if($ret===false) {
+					$itemRenderer = new FItemsRenderer();
+					$itemRenderer->showTooltip = false;
+					$itemRenderer->openPopup = false; //no more popups ($user->userVO->zgalerytype == 0)?(false):(true);
 				
-				$perPage = $user->pageVO->perPage();
-
-				$fItems->setOrder($user->pageVO->itemsOrder());
-
-				$pager = new FPager($totalItems,$perPage);
-				$od = ($pager->getCurrentPageID()-1) * $perPage;
-
-				$fItems->getList($od,$perPage);
-
-				//---nahledy
-				$tpl = FSystem::tpl('galery.thumbnails.tpl.html');
-
-				$x=0;
-				while($fItems->data && $x < $perPage) {
-					$fItems->parse();
-					$tpl->setVariable("THUMBNAIL",$fItems->show());
-					$tpl->parse('cell');
+					$fItems = new FItems('galery',false,$itemRenderer);
+					$fItems->setWhere('pageId="'.$pageId.'"');
+					$fItems->addWhere('itemIdTop is null');
+					$fItems->setOrder($user->pageVO->itemsOrder());
+					
+					$perPage = $user->pageVO->perPage();
+	
+					$pager = new FPager($totalItems,$perPage);
+					$od = ($pager->getCurrentPageID()-1) * $perPage;
+	
+					$fItems->getList($od,$perPage);
+	
+					//---nahledy
+					$tpl = FSystem::tpl('galery.thumbnails.tpl.html');
+	
+					$x=0;
+					while($fItems->data && $x < $perPage) {
+						$fItems->parse();
+						$tpl->setVariable("THUMBNAIL",$fItems->show());
+						$tpl->parse('cell');
+					}
+					if(!empty($user->pageVO->content)) {
+						$tpl->setVariable("GALERYHEAD", FSystem::postText($user->pageVO->content));
+					}
+					
+					if($perPage < $totalItems) {
+						$tpl->setVariable("PAGERSTART",$pager->links);
+						$tpl->setVariable("PAGEREND",$pager->links);
+					}
+					$tpl->parse('thumbnails');
+					$ret = $tpl->get();
+					if(isset($cacheKey)) $cache->setData($ret,$cacheKey,$cacheGrp);
 				}
-				if(!empty($user->pageVO->content)) {
-					$tpl->setVariable("GALERYHEAD", FSystem::postText($user->pageVO->content));
-				}
-				
-				if($perPage < $totalItems) {
-					$tpl->setVariable("PAGERSTART",$pager->links);
-					$tpl->setVariable("PAGEREND",$pager->links);
-				}
-				$tpl->parse('thumbnails');
-
-				$tmptext=$tpl->get();
-
-				FBuildPage::addTab(array("MAINDATA"=>$tmptext,"MAINID"=>'fotoBox'));
+				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}
 		} else {
-
 			//---detail foto
 			$itemVO = new ItemVO($itemId,true,array('typeId'=>'galery'));
 			$itemVO->hit();
-
-			$pageVO = $user->pageVO;
-				
-			$onPageNum = $itemVO->onPageNum();
-
-			$tpl = FSystem::tpl('galery.detail.tpl.html');
-
-			$tpl->setVariable("IMGALT", $pageVO->name.' '.$itemVO->enclosure );
-			$tpl->setVariable("IMGDIR", $itemVO->detailUrl );
-			if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
-						
-			$tpl->setVariable("HITS",$itemVO->hit);
-			$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
-			if($user->idkontrol===true) {
-				$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$userId,'galery'));
-				$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
-			}
-			if(($itemNext = $itemVO->getNext(true))!==false) {
-				
-				$nextUri = FSystem::getUri('m=galery-show&d=item:'.$itemNext,$pageId);
-				
-				$tpl->touchBlock('nextlinkclose');
-				$tpl->setVariable('NEXTLINK',$nextUri);
-			}
-			if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=galery-show&d=item:'.$itemPrev,$pageId);
-			$backUri = FSystem::getUri(FConf::get('pager','urlVar').'='.$onPageNum, $itemVO->pageId);
 			
-			$itemIdForum = 0;
-			$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
-			$ret = $tpl->get();
+			$pageVO = $user->pageVO;
+			$onPageNum = $itemVO->onPageNum();
+			
+			$backUri = FSystem::getUri(FConf::get('pager','urlVar').'='.$onPageNum, $itemVO->pageId);
+			if(($itemNext = $itemVO->getNext(true))!==false) $nextUri = FSystem::getUri('m=galery-show&d=item:'.$itemNext,$pageId);
+			if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=galery-show&d=item:'.$itemPrev,$pageId);
+
+			if($ret===false) {
+				$tpl = FSystem::tpl('galery.detail.tpl.html');
+				$tpl->setVariable("IMGALT", $pageVO->name.' '.$itemVO->enclosure );
+				$tpl->setVariable("IMGDIR", $itemVO->detailUrl );
+				if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
+				$tpl->setVariable("HITS",$itemVO->hit);
+				$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
+				if($user->idkontrol === true) {
+					$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$userId,'galery'));
+					//$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
+				}
+				if(isset($nextUri)) {
+					$tpl->touchBlock('nextlinkclose');
+					$tpl->setVariable('NEXTLINK',$nextUri);
+				}
+				
+				$itemIdForum = 0;
+				$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
+				$ret = $tpl->get();
+				if(isset($cacheKey)) $cache->setData($ret,$cacheKey,$cacheGrp);
+			} 
 			
 			//update page name
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
@@ -134,5 +143,11 @@ class page_GaleryDetail implements iPage {
 			
 		}
 		FItems::aFav($pageId,$userId,$user->pageVO->cnt);
+		$unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
+		if($unreadedCnt > 0) {
+			$cacheGrp = 'pagelist';
+			$mainCache = FCache::getInstance('f',0);
+			$mainCache->invalidateGroup($cacheGrp);
+		}
 	}
 }

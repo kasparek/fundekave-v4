@@ -246,7 +246,7 @@ class ItemVO extends Fvob {
 				
 				$itemTop = new ItemVO( $this->itemIdTop );
 				$itemTop->saveOnlyChanged = true;
-				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'")+1);
+				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 				$itemTop->save();
 				
 				FDBTool::query("update sys_pages_items_readed_reactions set cnt=cnt-1 where itemId='".$this->itemIdTop."'");
