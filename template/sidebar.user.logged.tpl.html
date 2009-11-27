@@ -2,10 +2,10 @@
 	<h2><a href="?k=finfo">{NAME}</a></h2>
 	<div id="avatarBox">{AVATAR}</div>
 	<ul>
-        <li class="fuvatarStart"><a href="/fuvatar/fuvatar.html?width=355&height=195" class="popupLink">FuvatarCam</a></li>
+    <!-- BEGIN fuvatar --><li class="fuvatarStart"><a href="/fuvatar/fuvatar.html?width=355&height=195" class="popupLink">FuvatarCam</a></li><!-- END fuvatar -->
 		<li class="onlineUsers"><a href="?k=frien">OnLine</a> {ONLINE}</li>
-		<li class="recentEvents"><a href="?k=fdiar">Diar</a> <!-- BEGIN diaryactive -->{DIARY}<!-- END diaryactive --></li>
-		<li class="recentMails"><a href="?k=fpost">Posta</a> <!-- BEGIN newpost -->{NEWPOST} <a href="?k=fpost" class="recentSender">{NEWPOSTFROMNAME}</a><!-- END newpost --></li>
+		<!-- BEGIN diary --><li class="recentEvents"><a href="?k=fdiar">Diar</a> <!-- BEGIN diaryactive -->{DIARY}<!-- END diaryactive --></li><!-- END diary -->
+		<li class="recentMails"><a href="?k=fpost">Posta</a> <!-- BEGIN newpost --><span class="messageNew"><a href="?k=fpost">Nove zpravy:</a><br />{NEWPOST} <a href="?k=fpost" class="recentSender">{NEWPOSTFROMNAME}</a><!-- END newpost --></span></li>
 		<li><a href="?k=elogo">Odhlaseni</a></li>
 	</ul>
 </div>

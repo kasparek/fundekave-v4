@@ -125,6 +125,7 @@ class FBuildPage {
 				case 'h':
 					$homePage = $user->pageVO->getPageParam('home');
 					if(empty($homePage)) $homePage = FLang::$MESSAGE_FORUM_HOME_EMPTY;
+					else $homePage = FSystem::postText($homePage);
 					$template='';
 					$user->pageVO->content = FSystem::postText($homePage);
 					break;
@@ -171,7 +172,10 @@ class FBuildPage {
 			}
 
 			if($user->pageVO->typeId == 'forum' && $user->pageParam!='h') {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'h'), FLang::$LABEL_HOME);
+				$homePage = $user->pageVO->getPageParam('home');
+				if(!empty($homePage)) {
+					FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'h'), FLang::$LABEL_HOME);
+				}
 			}
 
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {

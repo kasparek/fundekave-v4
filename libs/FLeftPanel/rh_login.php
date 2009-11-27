@@ -9,8 +9,10 @@ class rh_login {
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
 			$tpl->setVariable('ONLINE',FDBTool::getOne($q,'uOnC','default','s',60));
+			/*
 			$recentEvent = $user->userVO->getDiaryCnt();
 			if( $recentEvent > 0 ) $tpl->setVariable('DIARY',$recentEvent);
+			*/
 			if($user->userVO->hasNewMessages()) {
 				$tpl->setVariable('NEWPOST',$user->userVO->newPost);
 				$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);

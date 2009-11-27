@@ -156,7 +156,7 @@ div#breadcrumbs ul li {
 div#logo {
 	width: 134px;
 	height: 107px;
-	margin: 20px auto 5px;
+	margin: 15px auto 0;
 }
 /* PRIMARY MENU */
 
@@ -249,8 +249,21 @@ form#loginForm, div#loggedUserContainer {
 	margin-top: 10px;
 	padding: 0 16px;
 	padding-right: 26px;
-	min-height: 100px;
+	min-height: 90px;
 }
+
+span.messageNew {
+	position: absolute;
+	display: block;
+	font-weight: bold;
+	background: #C64226;
+	top: 20px;
+	padding: 1em;
+	width: 130px;
+	border: 2px #ffffff solid;
+	text-align: center;
+}
+
 form#loginForm label {
 	float: left;
 	width:4em;
@@ -261,12 +274,11 @@ form#loginForm input {
 	margin-bottom: 10px;
 }
 form#loginForm input#loginButton {
-	position: relative;
-	top: -1em;
 	float: right;
 	width: auto;
 	font-weight: bold;
 	background: #d0cbb5;
+	border: 1px;
 }
 form#loginForm p {
 	margin: 0; padding: 0;
