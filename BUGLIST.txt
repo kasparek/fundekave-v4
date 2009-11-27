@@ -1,11 +1,4 @@
--posta
-	-format prispevky
-	-textarea
-	-zpracovani textu
-	
 -online - cervene pocet requestu
-
--Vyrazneji nova zprava
 
 -editace kategorii stranek - galerie, fora, blogy
 
