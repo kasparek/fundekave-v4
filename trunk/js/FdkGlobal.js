@@ -160,6 +160,10 @@ function fajaxaSend(event) {
 
 function initUserPost() {
 	$("#prokoho").change(avatarfrominput);
+	$("#saction").change( function(evt) {
+		  if($("#saction option:selected").attr('value') == 'setpp') $('#ppinput').show();
+		  else $('#ppinput').hide(); 
+	});
 	$("#recipientcombo").change( function(evt) {
 		var str = "";
 		$("#recipientcombo option:selected").each( function() {

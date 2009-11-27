@@ -1,4 +1,5 @@
-truncate sys_pages;
+#truncate sys_pages;
+delete from sys_pages where typeId='top';
 INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, null, 'page_Main', '', 'Úvod', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('frien', null, 'top', 'friend', null, 2, 'page_UserFriends', 'Přátelé - Informace o uživatelích', 'Přátelé', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, null, 'page_PagesBooked', 'Oblíbené', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
@@ -20,7 +21,7 @@ INSERT INTO `sys_pages` VALUES ('blone', null, 'top', 'blog', null, null, 'page_
 
 INSERT INTO `sys_pages` VALUES ('roger', null, 'top', null, null, null, 'page_Registration', 'Registrace nového uživatele', 'Registrace', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', 'post', null, 2, 'page_UserPost', 'Pošta', 'Pošta', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', 'friend', null, null, 'page_UserInfo', 'Profil uživatele', 'Profil', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
+INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', 'friend', null, null, 'page_UserInfo', 'Profil uživatele', 'Profil', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', 'friend', null, 2, 'page_UserSettings', 'Nastavení osobního profilu', 'Nastaveni', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
 
 INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 7, 'page_EventsView', 'Tipy na kulturní a jiné akce', 'Tipy', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;

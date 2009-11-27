@@ -186,6 +186,7 @@ class ItemVO extends Fvob {
 			$vo = new FDBvo( $this );
 			$vo->resetIgnore();
 			$creating = false;
+			
 			if($this->itemId > 0) {
 				//---update
 				if($this->saveOnlyChanged===false) {

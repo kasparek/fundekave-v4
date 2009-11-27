@@ -15,6 +15,7 @@ class page_PagesList implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 		$category = 0;
 		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
 		$p = 1;

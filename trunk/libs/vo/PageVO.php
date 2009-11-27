@@ -67,6 +67,7 @@ class PageVO extends Fvob {
 	var $favoriteCnt;
 
 	//---changed
+	var $showHeading=true;
 	var $htmlName;
 	var $htmlTitle;
 	var $htmlDescription;

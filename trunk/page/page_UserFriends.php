@@ -8,6 +8,7 @@ class page_UserFriends implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 
 		
 		$tpl = FSystem::tpl('user.friends.tpl.html');

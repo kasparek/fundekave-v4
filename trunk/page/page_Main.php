@@ -9,6 +9,7 @@ class page_Main implements iPage {
 	static function build($data=array()) {
 		
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 		$userId = $user->userVO->userId;
 		$tpl = FSystem::tpl('maina.tpl.html');
 		

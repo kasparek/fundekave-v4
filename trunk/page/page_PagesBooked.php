@@ -8,6 +8,7 @@ class page_PagesBooked implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 		
 		if($user->whoIs > 0) $addUrl = '&who='.$user->whoIs; else $addUrl = '';
 		FMenu::secondaryMenuAddItem(FSystem::getUri($addUrl),FLang::$LABEL_FORUMS);
