@@ -132,6 +132,8 @@ class FBlog {
 		$user = FUser::getInstance();
 		$itemId = (int) $itemId;
 		$perPage = BLOG_PERPAGE;
+		$categoryId = 0;
+		if(isset($_GET['c'])) $categoryId = (int) $_GET['c'];
 
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$itemId) {
@@ -147,7 +149,7 @@ class FBlog {
 			$pageNum = 1;
 			if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];
 			$cache = FCache::getInstance('f',0);
-			$cacheKey = $user->pageVO->pageId.'-'.$pageNum.'-'.$itemId.'-'.(int) $user->userVO->userId;
+			$cacheKey = $user->pageVO->pageId.'-'.$pageNum.'-'.$itemId.'-'.(int) $user->userVO->userId.'-'.$categoryId;
 			$cacheGrp = 'pagelist';
 			$ret = $cache->getData($cacheKey,$cacheGrp);
 		}
@@ -194,8 +196,8 @@ class FBlog {
 				$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 				$total = $user->pageVO->cnt;
 				$fItems->addWhere('itemIdTop is null');
-				if(isset($_REQUEST['c'])) {
-					$fItems->addWhere("categoryId='". (int) $_REQUEST['c'] ."'");
+				if($categoryId > 0) {
+					$fItems->addWhere("categoryId='". $categoryId ."'");
 					$total = $fItems->getCount();
 				}
 	
@@ -203,7 +205,7 @@ class FBlog {
 	
 				$currentPage = 0;
 				if($total > $perPage) {
-					$pager = new FPager($user->pageVO->cnt,$perPage);
+					$pager = new FPager($total,$perPage);
 					$tpl->setVariable('BOTTOMPAGER',$pager->links);
 					$currentPage = $pager->getCurrentPageID()-1;
 				}
