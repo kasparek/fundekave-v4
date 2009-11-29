@@ -1,7 +1,3 @@
--online - cervene pocet requestu
-
--editace kategorii stranek - galerie, fora, blogy
-
 -sidebar kalendar
 	odkaz na zive s omezenim na urcity den
 -tagy

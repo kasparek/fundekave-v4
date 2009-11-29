@@ -20,15 +20,80 @@ class FBuildPage {
 	static function getHeading() {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
-		if($user->pageVO->showHeading===false) return '';
-		if(!empty($user->pageVO->htmlName)) {
-			return $user->pageVO->htmlName;
-		} else if(empty($user->pageVO->name)) {
-			return false;
-		} else {
-			return $user->pageVO->name;
+			if($user->pageVO->showHeading===false) return '';
+			if(!empty($user->pageVO->htmlName)) {
+				return $user->pageVO->htmlName;
+			} else if(empty($user->pageVO->name)) {
+				return false;
+			} else {
+				return $user->pageVO->name;
+			}
 		}
+	}
+
+	static function getBreadcrumbs() {
+		$user = FUser::getInstance();
+		
+		$breadcrumbs = array();
+		//breadcrumbs
+		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
+		$pageTop = new PageVO($pageIdTop,true);
+		if($pageTop->pageId) {
+			$homesite = $pageTop->prop('homesite');
+			if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
+			$breadcrumbs[] = array('name'=>$pageTop->name,'url'=>$homesite);
 		}
+
+		if($pageTop->pageId!=$user->pageVO->pageId) {
+			//typ
+			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
+				$pages = new FPages('top',$user->userVO->userId,1);
+				$pages->fetchmode=1;
+				$pages->VO = 'PageVO';
+				$pages->setSelect('p.pageId');
+				$pages->addWhere("p.typeIdChild='".$user->pageVO->typeId."' and public=1");
+				$arr = $pages->getContent();
+				if(!empty($arr)) {
+					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
+				}
+					
+				if($user->pageVO->categoryId > 0) {
+					$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
+					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
+				}
+
+			}
+
+			//stranka
+			$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+		}
+
+		if($user->itemVO) {
+			$categoryId = $user->itemVO->categoryId;
+		}
+		if(!empty($_REQUEST['c'])) {
+			$categoryId = (int) $_REQUEST['c'];
+		}
+
+		if(!empty($categoryId)) {
+			$categoryArr = FCategory::getCategory($categoryId);
+			$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$categoryId,$user->pageVO->pageId,''));
+		}
+
+		if($user->itemVO) {
+			$itemName = $user->itemVO->addon;
+			if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
+			if(!empty($itemName)) {
+				$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId));
+			}
+		}
+
+		if($user->whoIs>0) {
+			$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
+		}
+
+		unset($breadcrumbs[count($breadcrumbs)-1]['url']);
+		return $breadcrumbs;
 	}
 
 	static function addTab($arrVars) {
@@ -248,11 +313,11 @@ class FBuildPage {
 		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
 		$tpl->setVariable("URL_JS", URL_JS);
-		
+
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
 		$tpl->setVariable("SEARCHCSSDIR",$cssPath);
-		
+
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
 		//TODO: use wrapper when all js done
@@ -311,55 +376,9 @@ class FBuildPage {
 			FProfiler::profile('FBuildPage--FSystem::grndbanner');
 			*/
 		if($user->pageAccess === true) {
-			$breadcrumbs = array();
+				
 			//breadcrumbs
-			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			$pageTop = new PageVO($pageIdTop,true);
-			if($pageTop->pageId) {
-				$homesite = $pageTop->prop('homesite');
-				if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
-				$breadcrumbs[] = array('name'=>$pageTop->name,'url'=>$homesite);
-			}
-				
-			if($pageTop->pageId!=$user->pageVO->pageId) {
-				//typ
-				if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
-					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId]);
-				}
-				//stranka
-				$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
-			}
-			
-			if($user->itemVO) {
-				$categoryId = $user->itemVO->categoryId;
-			}
-			if(!empty($_REQUEST['c'])) {
-				$categoryId = (int) $_REQUEST['c']; 
-			}
-			
-			if(!empty($categoryId)) {
-				$categoryArr = FCategory::getCategory($categoryId);
-				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$categoryId,$user->pageVO->pageId));
-			}
-				
-			if($user->itemVO) {
-				$itemName = $user->itemVO->addon;
-				if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName; 
-				if(!empty($itemName)) {
-					$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId));
-				}
-			}
-				
-			if($user->whoIs>0) {
-				$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
-			}
-				
-			//homesite
-			//typ
-			//stranka
-			//item kategorie
-			//item
-			//			print_r($breadcrumbs);die();
+			$breadcrumbs = FBuildPage::getBreadcrumbs();
 			foreach($breadcrumbs as $crumb) {
 				$tpl->setVariable('BREADNAME',$crumb['name']);
 				if(isset($crumb['url'])) {
@@ -368,7 +387,7 @@ class FBuildPage {
 				}
 				$tpl->parse('bread');
 			}
-				
+
 			//---SECONDARY MENU
 			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
 			if(!empty($lomenuItems)) {
@@ -378,6 +397,7 @@ class FBuildPage {
 					if(!empty($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
 					if(!empty($menuItem['CLASS'])) $tpl->setVariable('CLASS',$menuItem['CLASS']);
 					if(isset($menuItem['LISTCLASS']))  $tpl->setVariable('LISTCLASS',$menuItem['LISTCLASS']);
+					if(isset($menuItem['TITLE']))  $tpl->setVariable('LOTITLE',$menuItem['TITLE']);
 					$tpl->parse('secondary-menu-item');
 				}
 			}

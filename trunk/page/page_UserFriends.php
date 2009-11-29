@@ -9,14 +9,32 @@ class page_UserFriends implements iPage {
 	static function build($data=array()) {
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
-
+		
+		$emptyMsg = true;
 		
 		$tpl = FSystem::tpl('user.friends.tpl.html');
-		$tpl->setVariable('FRIENDSLIST' , FUser::usersList( $user->userVO->loadFriends(), 'friend', 'Pratele' ) );
+
+		$arr = $user->userVO->loadFriends();
+		if(!empty($arr)) {
+			$emptyMsg = false;
+			$tpl->setVariable('FRIENDSLIST' , FUser::usersList( $arr, 'friend', 'Pratele' ) );
+		}
 		
-		$tpl->setVariable('REQUESTSLIST' , FUser::usersList( $user->userVO->loadRequests(), 'request', 'Requests' ) );
+		$arr = $user->userVO->loadRequests();
+		if(!empty($arr)) {
+			$emptyMsg = false;
+			$tpl->setVariable('REQUESTSLIST' , FUser::usersList( $arr, 'request', 'Requests' ) );
+		}
 		
-		$tpl->setVariable('ONLINELIST' , FUser::usersList( $user->userVO->loadOnlineFriends(), 'online', 'Online' ) );
+		$arr = $user->userVO->loadOnlineFriends();
+		if(!empty($arr)) {
+			$emptyMsg = false;
+			$tpl->setVariable('ONLINELIST' , FUser::usersList( $arr, 'online', 'Online' ) );
+		}
+		
+		if($emptyMsg===true) {
+			$tpl->touchBlock('nofriends');
+		}
 		
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 

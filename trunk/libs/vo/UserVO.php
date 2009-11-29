@@ -123,11 +123,8 @@ class UserVO extends Fvob {
 	}
 
 	function hasNewMessages(){
-		$db = FDBConn::getInstance();
-
 		$dot = "select userIdFrom from sys_users_post where readed=0 AND userIdFrom!='".$this->userId."' AND userId='".$this->userId."' order by dateCreated desc";
-		$npost = $db->getCol($dot);
-
+		$npost = FDBTool::getCol($dot);
 		if(count($npost)>0) {
 			$this->newPost = count($npost);
 			$this->newPostFrom = FUser::getgidname($npost[0]);
@@ -171,7 +168,8 @@ class UserVO extends Fvob {
 
 	function removeFriend($userId) {
 		if($this->userId > 0) {
-			FDBTool::query('delete from sys_users_friends where userId='.$this->userId.' and userIdFriend='.$userId);
+			FDBTool::query("delete from sys_users_friends where userId='".$this->userId."' and userIdFriend='".$userId."'");
+			FDBTool::query("delete from sys_users_friends where userId='".$userId."' and userIdFriend='".$this->userId."'");
 			$this->getFriends(true);
 		}
 	}
@@ -184,9 +182,14 @@ class UserVO extends Fvob {
 				$cache->invalidateGroup($cacheGroup);
 			}
 
-			$q = "SELECT p.userIdFriend,s.name
-			FROM sys_users_friends as p left join sys_users as s on p.userIdFriend = s.userId 
-			WHERE p.userId = ".$this->userId." ORDER BY s.name";
+			$q = "SELECT if(f.userIdFriend=".$this->userId.",f.userId,f.userIdFriend),
+			if(f.userIdFriend=".$this->userId.",s2.name,s1.name) as fname
+			FROM sys_users_friends as f 
+			join sys_users as s1 on f.userIdFriend = s1.userId 
+			join sys_users as s2 on f.userId = s2.userId 
+			WHERE f.userId = ".$this->userId." or f.userIdFriend = ".$this->userId." ORDER BY fname";
+			
+			
 			$arrTmp = FDBTool::getAll($q, $this->userId, $cacheGroup, 's', 0);
 
 			$arr = array();
@@ -196,20 +199,19 @@ class UserVO extends Fvob {
 					$cache->setData($row[1], $row[0], 'Uname');
 				}
 			}
-
 			return $arr;
 		}
 	}
 	
 	function loadFriends() {
 		
+		$arr = $this->getFriends();
+		
 		$vo = new FDBvo( $this );
 		$vo->VO = 'UserVO';
 		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
-		
-		$vo->addJoin('join sys_users_friends as f on f.userIdFriend=sys_users.userId');
 						
-		$vo->setWhere("f.userId = ".$this->userId);
+		$vo->setWhere("sys_users.userId in (".implode(',',$arr).")");
 		$vo->setOrder('sys_users.name');
 		return $vo->get();
 		
@@ -246,6 +248,7 @@ class UserVO extends Fvob {
 		$vo->setWhere("i.typeId = 'request'");
 		$vo->setWhere("i.addon = '".$this->userId."'");
 		$vo->setOrder('sys_users.name');
+		
 		return $vo->get();
 		
 	}

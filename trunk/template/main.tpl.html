@@ -43,16 +43,13 @@ if(window.location.hash) { var str=window.location.hash; if(str.split('/').lengt
         </form>
         
         <!-- BEGIN breadcrumbs --><div id="breadcrumbs">
-        	<ul>
-        	<!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread -->
-        	
-					</ul>
+        	<!-- BEGIN breadcrumbslist --><ul><!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread --></ul><!-- END breadcrumbslist -->
 				</div><!-- END breadcrumbs -->
 				
 
         <!-- BEGIN secondary-menu --><div id="menu-secondary-holder">
           <ul id="menu-secondary">
-            <!-- BEGIN secondary-menu-item --><li<!-- BEGIN listclass --> class="{LISTCLASS}"<!-- END listclass -->><a href="{LOLINK}"<!-- BEGIN secondary-menu-class-custom --> class="{CLASS}"<!-- END secondary-menu-class-custom --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a></li>
+            <!-- BEGIN secondary-menu-item --><li<!-- BEGIN listclass --> class="{LISTCLASS}"<!-- END listclass -->><a href="{LOLINK}"<!-- BEGIN secondary-menu-title --> title="{LOTITLE}"<!-- END secondary-menu-title --><!-- BEGIN secondary-menu-class-custom --> class="{CLASS}"<!-- END secondary-menu-class-custom --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a></li>
             <!-- END secondary-menu-item -->
           </ul>
         </div><!-- END secondary-menu -->

@@ -241,7 +241,7 @@ var x, arrDraftLength = arrDraft.length;
 function draftSetEventListeners(TAid) {
 	setListeners('submit', 'click', draftOnSubmit);
 	setListeners('draftable', 'keyup', draftEventHandler);
-	if(window.location.hash=='#dd') {
+	if(window.location.hash=='#dd' || gup('dd',window.location)==1) {
 		draftDropAll();
 		window.location.hash='';
 	} else {

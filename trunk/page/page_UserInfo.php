@@ -16,25 +16,24 @@ class page_UserInfo implements iPage {
 			$userVO->load();
 
 			if($user->idkontrol) {
-					
-				if($userVO->isFriend($user->userVO->userId)) {
-					//button remove friend
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_REMOVE, 0, 'removeFriendButt','fajaxa confirm');
-					$isFriend = true;
-				} else {
-					if(!$userVO->isRequest($user->userVO->userId)) {
-						//button send frien request
-						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, 0, 'friendButt','fajaxa');
+				if($user->userVO->userId != $userVO->userId) {
+					if($userVO->isFriend($user->userVO->userId)) {
+						//button remove friend
+						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_REMOVE, 0, 'removeFriendButt','fajaxa confirm','',FLang::$LABEL_FRIEND_REMOVE_CONFIRM);
+						$isFriend = true;
 					} else {
-						FError::addError('Request Waitin',1);
+						if(!$userVO->isRequest($user->userVO->userId)) {
+							//button send frien request
+							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, 0, 'friendButt','fajaxa');
+						} else {
+							FError::addError(FLang::$MSG_REQUEST_WAITING,1);
+						}
 					}
+					//button send message
+					FMenu::secondaryMenuAddItem(FSystem::getUri('who='.$userVO->userId,'fpost',''),FLang::$SEND_MESSAGE);
 				}
-
-				//button send message
-				FMenu::secondaryMenuAddItem(FSystem::getUri('who='.$userVO->userId,'fpost',''),FLang::$SEND_MESSAGE);
-
 			}
-				
+
 		} else {
 			if($user->idkontrol) {
 				$userVO = $user->userVO;

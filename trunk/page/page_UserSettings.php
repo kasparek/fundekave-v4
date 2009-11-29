@@ -33,9 +33,11 @@ class page_UserSettings implements iPage {
 				$cache->invalidateGroup('Uavatar');
 				$cache = FCache::getInstance('d');
 				$cache->invalidateGroup('avatar_url');
-
+				$cache = FCache::getInstance('f',0);
+				$cache->invalidateGroup('avatar_'.$user->userVO->userId);
+				
 				FAjax::addResponse('avatarBox', '$html', FAvatar::showAvatar($user->userVO->userId));
-				FAjax::addResponse('function','call','msg;ok;Avatar set');
+				FAjax::addResponse('function','call','msg;ok;'.FLANG::$MSG_AVATAR_SET);
 			}
 			if(strpos($action,'del')!==false) {
 				$user = FUser::getInstance();

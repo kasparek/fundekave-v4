@@ -7,6 +7,8 @@ class FCategory extends FDBTool {
 	var $arrInputType;
 	var $arrClass;
 	var $arrDbUsedCols;
+	var $arrDefaults;
+	var $arrOptions;
 
 	//selected category - by GET parameter
 	var $selected;
@@ -25,14 +27,15 @@ class FCategory extends FDBTool {
 	var $editlink = false;
 
 	function __construct($tableName,$primaryCol) {
-		global $ARRPUBLIC;
-		$this->arrPublic = $ARRPUBLIC;
+		$this->arrPublic = FLang::$ARRPUBLIC;
 		parent::__construct($tableName,$primaryCol);
 		//---defaults for galery,culture,linx,audit,akce
 		$this->arrHead=array(FLang::$LABEL_CATEGORY_NAME,FLang::$LABEL_CATEGORY_ORDER,FLang::$LABEL_CATEGORY_PUBLIC);
 		$this->arrInputType=array("text","text",'public');
 		$this->arrClass=array('','xShort','');
 		$this->arrDbUsedCols=array('name','ord','public');
+		$this->arrDefaults=array('','0','1');
+		
 		$this->requiredCol = 'name';
 		$this->setOrder('ord');
 		$user = FUser::getInstance();
@@ -160,17 +163,21 @@ class FCategory extends FDBTool {
 				foreach ($kat as $key=>$val) $kat[$key] = trim($val);
 				if(isset($this->arrSaveAddon)) $kat=array_merge($kat,$this->arrSaveAddon);
 				if($kat[$this->requiredCol]!='') {
-					$sCat = new fSqlSaveTool($this->table,$this->primaryCol);
+					$sCat = new FDBTool($this->table,$this->primaryCol);
 					if($k > 0){ //update
 						$kat[$this->primaryCol] = $k;
 						$dot = $sCat->buildUpdate($kat);
 					} else { //insert
 						$dot = $sCat->buildInsert($kat);
 					}
-					$this->db->query($dot);
+					$sCat->query($dot);
 				}
 			}
-			if (isset($data["del".$this->ident])) foreach ($data["del".$this->ident] as $gkid) $this->db->query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');
+			if (isset($data["del".$this->ident])) {
+				foreach ($data["del".$this->ident] as $gkid) {
+					FDBTool::query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');	
+				}	
+			}
 
 			if($redirect===true) {
 				$rediraddon = $this->getUriAddon();
@@ -227,7 +234,7 @@ class FCategory extends FDBTool {
 					//---select public
 					$this->parseComboBox('select',$col,$this->arrPublic,$kat[$arrColsSwitched[$col]+1]);
 				} elseif($this->arrInputType[$this->key]=='select') {
-					$this->parseComboBox('select',$col,$this->arrOption[$col],$kat[$arrColsSwitched[$col]+1]);
+					$this->parseComboBox('select',$col,$this->arrOptions[$col],$kat[$arrColsSwitched[$col]+1]);
 				} else {
 					$this->getInput("kateginput",$col,$kat[$arrColsSwitched[$col]+1]);
 				}
@@ -249,7 +256,7 @@ class FCategory extends FDBTool {
 				//---select public
 				$this->parseComboBox('selectnew',$col,$this->arrPublic);
 			} elseif($this->arrInputType[$this->key]=='select') {
-				$this->parseComboBox('selectnew',$col,$this->arrOption[$col]);
+				$this->parseComboBox('selectnew',$col,$this->arrOptions[$col]);
 			} else {
 				$this->getInput("kateginputnew",$col);
 			}
@@ -276,6 +283,9 @@ class FCategory extends FDBTool {
 			if($percentHighest > 79) {
 				return $catIdHighest;
 			} else {
+				
+				FMessages::send(1,'NEW CATEGORY CREATED ::' .$newCat. ' :: '.$typeId.' :: <a href="'.FSystem::getUri('who='.FUser::logon(),'finfo').'">user</a>');
+				
 				$catVO = new CategoryVO();
 				$catVO->name = $newCat;
 				$catVO->typeId = $typeId;
