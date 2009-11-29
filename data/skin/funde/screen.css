@@ -297,6 +297,12 @@ form#loginForm ul li, div#loggedUserContainer ul li {
 	background: url("img/arrow-brown-bg.gif") no-repeat left center;
 	font-weight: bold;
 }
+
+div#loggedUserContainer ul li a.requests {
+  font-weight: bold;
+  color: #ff0000;
+}
+
 div#loggedUserContainer h2 {
 	float: left;
 	font-size: 1.2em;

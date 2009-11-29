@@ -89,7 +89,7 @@ class page_PageEdit implements iPage {
 					$pageVO->menuSecondaryGroup = (int) $data['menusec'];
 				}
 			}
-
+			
 			if(!empty($data['category'])) {
 				$pageVO->categoryId = (int) $data['category'];
 			}
@@ -109,6 +109,10 @@ class page_PageEdit implements iPage {
 				//---first save - if new page to get pageId
 				if(empty($pageVO->pageId)) {
 					$pageVO->save();
+				}
+				if(!empty($data['categoryNew'])) {
+					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId);
+					$redirectAjax = true;
 				}
 
 				/* PAGE AVATAR */
@@ -252,6 +256,13 @@ class page_PageEdit implements iPage {
 					} else {
 						//if updating just message
 						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+						if(!empty($redirectAjax)) {
+							
+							FAjax::redirect(FSystem::getUri('dd=1','','e'));
+						}
+						//FAjax::addResponse('pageedit','$html',page_PageEdit::build($data));
+						//TODO: only update values in form would be best otherwise it is too much jumping
+						
 					}
 				} else {
 					FHTTP::redirect(FSystem::getUri($redirParam,'',$redirectAdd));
@@ -419,7 +430,7 @@ class page_PageEdit implements iPage {
 
 		$categoryId = (isset($pageVO->categoryId))?($pageVO->categoryId):(0);
 		$arrTmp = FDBTool::getAll('select categoryId,name from sys_pages_category where typeId="'.$pageVO->typeId.'"');
-		if(!empty($arrTmp)) $tpl->setVariable('CATEGORYOPTIONS',FCategory::getOptions($arrTmp,$categoryId));
+		if(!empty($arrTmp)) $tpl->setVariable('CATOPTIONS',FCategory::getOptions($arrTmp,$categoryId));
 
 		//---if pageParam = sa - more options to edit on page
 		//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
@@ -452,7 +463,10 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
 			}
 			/**/
-
-		FBuildPage::addTab(array("MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
+		if(!empty($data['__ajaxResponse'])) {
+			return $tpl->get();
+		} else {
+			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
+		}
 	}
 }

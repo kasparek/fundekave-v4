@@ -46,9 +46,16 @@ static $LABEL_UNBOOK = 'Nesledovat';
 static $SEND_MESSAGE = 'Poslat zpravu';
 static $LABEL_FRIEND_ADD = 'Pridat do pratel';
 static $LABEL_FRIEND_REMOVE = 'Odebrat z pratel';
+static $LABEL_FRIEND_REMOVE_CONFIRM = 'Opravdu chcete odebrat?';
+static $MSG_FRIEND_REMOVED = 'Pritel odebran';
 static $MSG_FRIEND_ADDED = 'Pritel pridan';
+static $MSG_FRIEND_CANCEL = 'Zruseno';
+static $MSG_REQUEST_WAITING = 'Pozadavek ceka na schvaleni uzivatele';
+static $MSG_FRIEND_REQUEST_ACCEPTED = "Od ted jsme pratele <br /><br />[automaticka zprava]";
 static $FRIENDS = 'Pratele';
 static $FRIENDS_COMMON = 'Spolecni Pratele';
+
+static $MSG_AVATAR_SET = 'Avatar nastaven';
 
 static $LABEL_PAGE_NEW = 'Nová stránka';
 static $ERROR_PAGE_ADD_NONAME = 'Zadejte prosím jméno stránky';

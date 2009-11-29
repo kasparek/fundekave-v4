@@ -104,7 +104,8 @@ class page_Search implements iPage {
 				$from = ($pager->getCurrentPageID()-1) * $perPage;
 				$fPages->setLimit( $from, $perPage+1 );
 				$arr = $fPages->getContent();
-				$totalItems = count($arr);
+				//$totalItems = count($arr);
+				$totalItems = $fPages->getCount();
 				$maybeMore = false;
 				if($totalItems > $perPage) {
 					$maybeMore = true;
@@ -127,6 +128,7 @@ class page_Search implements iPage {
 					$touchedBlocks['nopages'] = true;
 				}
 				$vars['FILTRPAGES'] = $pageSearchCache['filtrPages'];
+				$vars['TOTALPAGES'] = $totalItems;
 					
 				$PAGES['vars'] = $vars;
 				$PAGES['touchedblocks'] = $touchedBlocks;
@@ -166,7 +168,10 @@ class page_Search implements iPage {
 				$from = ($pager->getCurrentPageID()-1) * $perPage;
 				$fItems->map = false;
 				$fItems->getList($from,$perPage+1);
-				$totalItems = count($fItems->data);
+				$totalItems = 0;
+				if(!empty($fItems->data)) {
+					$totalItems = count($fItems->data);
+				}
 
 				$maybeMore = false;
 				if($totalItems > ($perPage-$fItems->itemsRemoved)) {
@@ -186,6 +191,7 @@ class page_Search implements iPage {
 					$touchedBlocks['noitems'] = true;
 				}
 				$vars['FILTRITEMS'] = $pageSearchCache['filtrItems'];
+				$vars['TOTALITEMS'] = ($maybeMore===true)?($perPage.'+'):($totalItems);
 					
 				$ITEMS['vars'] = $vars;
 				$ITEMS['touchedblocks'] = $touchedBlocks;
@@ -226,7 +232,10 @@ class page_Search implements iPage {
 				
 				$pager = new FPager(0,$perPage,array('noAutoparse'=>1,'hash'=>'users','urlVar'=>'pu'));
 				$from = ($pager->getCurrentPageID()-1) * $perPage;
-				$totalItems = count($arr);
+				$totalItems = 0;
+				if(!empty($arr)) {
+					$totalItems = count($arr);
+				}
 				$maybeMore = false;
 				if($totalItems > $perPage) {
 					$maybeMore = true;
@@ -244,6 +253,7 @@ class page_Search implements iPage {
 				} else {
 					$touchedBlocks['nousers'] = true;
 				}
+				$vars['TOTALUSERS'] = ($maybeMore===true)?($perPage.'+'):($totalItems);
 				$vars['FILTRUSERS'] = $pageSearchCache['filtrUsers'];
 					
 				$USERS['vars'] = $vars;

@@ -24,7 +24,10 @@ class FAjax_user extends FAjaxPluginBase {
 	}
 	
 	static function friendremove($data) {
-	
+		$user = FUser::getInstance();
+		$user->userVO->removeFriend( (int) $data['u']);
+		FError::addError(FLang::$MSG_FRIEND_REMOVED,1);
+		FAjax::redirect(FSystem::getUri('','frien',''));
 	}
 	
 	static function friendrequest($data) {
@@ -70,13 +73,16 @@ class FAjax_user extends FAjaxPluginBase {
 				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
 				
 				$itemVO->delete();
+				
+				//send message
+				FMessages::send((int) $itemVO->userId,FLang::$MSG_FRIEND_REQUEST_ACCEPTED,$user->userVO->userId);
 				break;
 			case 'requestcancel':
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['request'];
 				$itemVO->load(false);
 				
-				FError::addError('Request canceled',1);
+				FError::addError(FLang::$MSG_FRIEND_CANCEL,1);
 				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
 
 				$itemVO->delete();
