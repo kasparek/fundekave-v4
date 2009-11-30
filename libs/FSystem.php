@@ -333,7 +333,7 @@ class FSystem {
 						case 3:
 							//item by id
 							$item = new ItemVO((int)$matches[1][$x],true,array('type'=>'galery','inside'=>true,'showRating'=>true,'showTag'=>true,'showCommentsNum'=>true,'showText'=>true,'openPopup'=>false));
-							if($item->itemId>0) {
+							if($item->itemId > 0) {
 								$text = str_replace($replace, $item->render(), $text);
 							}
 							break;
@@ -358,7 +358,7 @@ class FSystem {
 							break;
 						case 5:
 							if(strpos($matches[1][$x],$matches[2][$x])!==false) {
-								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?u='.$matches[1][$x].'" /></a>', $text);
+								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?re='.$matches[1][$x].'" /></a>', $text);
 							} else {
 								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox">'.trim($matches[2][$x]).'</a>', $text);
 							}
