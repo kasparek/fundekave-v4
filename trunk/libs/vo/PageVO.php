@@ -1,7 +1,7 @@
 <?php
 class PageVO extends Fvob {
 
-	var $cacheResults = 's';
+	var $cacheResults = 'l';
 	var $table = 'sys_pages';
 	var $primaryCol = 'pageId';
 
