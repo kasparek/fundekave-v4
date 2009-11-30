@@ -297,7 +297,7 @@ class FForum extends FDBTool {
 		}
 		
 		$cached = false;
-		if(empty($filterTxt)) {
+		if(empty($filterTxt) && empty($user->userVO->userId)) {
 			$ppUrlVar = FConf::get('pager','urlVar');
 			$pageNum = 1;
 			if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];

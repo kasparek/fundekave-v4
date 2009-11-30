@@ -29,18 +29,18 @@ if(isset($_GET['r'])) {
 }
 
 //--remote
-if(isset($_GET['u'])) {
+if(isset($_GET['re'])) {
 
 	//save in tmp place
 	require(ROOT.LIBSDIR.'FConf.php');
 	$tmpDir = FConf::get('settings','remote_tmp');
-	$filename = str_replace('http://','',$_GET['u']);
+	$filename = str_replace('http://','',$_GET['re']);
 	$filename = str_replace('/','-',$filename);
 	
 	if(!file_exists($tmpDir.'/cache/'.$filename)) {
 	
 		if(!file_exists($tmpDir.$filename)) {
-			$str = file_get_contents( $_GET['u'] );
+			$str = file_get_contents( $_GET['re'] );
 			file_put_contents($tmpDir.$filename,$str);
 		}
 		if(file_exists($tmpDir.$filename)) {

@@ -157,7 +157,9 @@ class ItemVO extends Fvob {
 				$vo->load();
 				$vo->vo = false;
 				$vo = false;
-				$this->prepare();
+				if($this->itemId>0) {
+					$this->prepare();
+				}
 			} else {
 				$this->reload($itemVO);
 			}
