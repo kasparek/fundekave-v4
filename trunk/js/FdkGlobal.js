@@ -125,8 +125,8 @@ function fsubmit(event) {
 	addXMLRequest('k', gup('k', this.action));
 	sendAjax(gup('m', this.action),gup('k', this.action));
 };
-//http://fundekave.net/
-function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
+
+function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("http://fundekave.net/assets/Fuup.swf", $(this).attr('id'), "100", "25", "10.0.12", "expressInstall.swf", {config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
