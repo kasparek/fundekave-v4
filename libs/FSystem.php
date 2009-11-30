@@ -132,6 +132,7 @@ class FSystem {
 		}
 
 		$text = trim($text);
+		$text = stripslashes($text);
 		if($text=='') return '';
 
 		$user = FUser::getInstance();
@@ -181,8 +182,6 @@ class FSystem {
 				}
 			}
 		}
-		
-		$text = stripslashes($text);
 		
 		return $text;
 	}
