@@ -64,8 +64,8 @@ class FRSS {
 		
 		
 
-		$cache = FCache::getInstance('f',0);
-		$cacheKey = 'rss-'.$user->pageVO->pageId.(($pageNumber>1)?('-'.$pageNumber):(''));
+		$cache = FCache::getInstance('v',0);
+		$cacheKey = 'rss-'.$user->userVO->userId.'-'.$user->pageVO->pageId.(($pageNumber>1)?('-'.$pageNumber):(''));
 		$ret = $cache->getData($cacheKey,'pagelist');
 					
 		if($ret === false) {
@@ -74,7 +74,7 @@ class FRSS {
 			$perPage = 20;
 
 			//load items
-			$fi = new FItems(($user->pageVO->typeIdChild)?($user->pageVO->typeIdChild):($user->pageVO->typeId),0);
+			$fi = new FItems(($user->pageVO->typeIdChild)?($user->pageVO->typeIdChild):($user->pageVO->typeId),$user->userVO->userId);
 			$fi->setSelect('itemId,pageId,typeId,if(dateStart is not null, DATE_FORMAT(dateStart,"%a, %d %b %Y %T"), DATE_FORMAT(dateCreated,"%a, %d %b %Y %T")) as date,if(dateStart is not null, dateStart, dateCreated) as dateorder,addon,text,enclosure,name');
 			if($user->pageVO->typeId!='top') {
 				$fi->addWhere("pageId='".$user->pageVO->pageId."'");
@@ -82,11 +82,14 @@ class FRSS {
 			}
 			$fi->addWhere("public=1");
 			$fi->setOrder('dateorder desc');
-			$totalItems = $fi->getCount();
+			
+			if($user->pageVO->typeId!='top') {
+				$totalItems = $user->pageVO->cnt;
+			}
+			
 			if($user->pageVO->typeId=='galery') $perPage = $totalItems;
-			//$fi->debug=1;
-			$arr = $fi->getContent(($pageNumber-1)*$perPage,$perPage);
-			//print_r($arr);die();
+			$arr = $fi->getList(($pageNumber-1)*$perPage,$perPage);
+
 			$hostSpecArr = array();
 			//process errors and messages
 			$errArr = FError::getError();
@@ -99,11 +102,13 @@ class FRSS {
 					}
 				}
 			}
-
-			//send totalitems
-			$hostSpecArr[]='D:t_'.$totalItems;
-			//send current page - from 1 not 0
-			$hostSpecArr[]='D:p_'.$pageNumber;
+			
+			if(isset($totalItems)) {
+				//send totalitems
+				$hostSpecArr[]='D:t_'.$totalItems;
+				//send current page - from 1 not 0
+				$hostSpecArr[]='D:p_'.$pageNumber;
+			}
 
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 			$pageTop = new PageVO($pageIdTop,true);
@@ -118,27 +123,42 @@ class FRSS {
 			$tpl->setVariable('CHPUBDATE',$user->pageVO->dateUpdated);
 			$tpl->setVariable('CHBUILDDATE',$rssNow);
 			$tpl->setVariable('CHGENERATOR','FUNDEKAVE.net::v5|'.implode(';',$hostSpecArr));
-			$i = 1;
+			
 			if(!empty($arr)) {
 				foreach($arr as $item) {
-					$link = 'http://'.$homesite.'/'.FSystem::getUri('i='.$item['itemId'],$item['pageId']);
+					if($user->pageVO->typeId == 'top') {
+						$pageVO = new PageVO($item->pageId,true);
+					
+						$pageName = ', '.$pageVO->name;
+					} else {
+						$pageName = '';
+					} 
+					
+					$link = 'http://'.$homesite.'/'.FSystem::getUri('i='.$item->itemId,$item->pageId);
 					$tpl->setVariable('LINK',$link);
-					$tpl->setVariable('PUBDATE',$item['date'].' '.date('T'));
-					switch($item['typeId']) {
+					$tpl->setVariable('PUBDATE',$item->date.' '.date('T'));
+					switch($item->typeId) {
 						case 'galery':
-							$itemVO = new ItemVO($item['itemId'],true,array('type'=>'galery'));
-							$tpl->setVariable('TITLE',$user->pageVO->name.' '.$i.'/'.$totalItems);
-							$tpl->setVariable('DESCRIPTION','<img src="'.$itemVO->thumbUrl.'" /><br /> '.$item['text']);
+							$itemVO = new ItemVO($item->itemId,true,array('type'=>'galery'));
+							if($itemVO->pageId==$user->pageVO->pageId) {
+								$totalFoto = $user->pageVO->cnt;
+								$pageName  = $user->pageVO->name;
+							} else {
+								$pageVO = new PageVO($itemVO->pageId,true);
+								$totalFoto = $pageVO->cnt;
+								$pageName = $pageVO->name;
+							}
+							$tpl->setVariable('TITLE',$pageName.' '.($itemVO->getPos()+1).'/'.$totalFoto);
+							$tpl->setVariable('DESCRIPTION','<img src="'.$itemVO->thumbUrl.'" /><br /> '.$item->text);
 							break;
 						case 'forum':
-							$tpl->setVariable('TITLE',$item['name']);
-							$tpl->setVariable('DESCRIPTION',$item['text']);
+							$tpl->setVariable('TITLE',$item->name.$pageName);
+							$tpl->setVariable('DESCRIPTION',$item->text);
 							break;
 						default:
-							$tpl->setVariable('TITLE',$item['addon']);
-							$tpl->setVariable('DESCRIPTION',$item['text']);
+							$tpl->setVariable('TITLE',$item->addon.$pageName);
+							$tpl->setVariable('DESCRIPTION',$item->text);
 					}
-					$i++;
 					$tpl->parse('item');
 				}
 			}
