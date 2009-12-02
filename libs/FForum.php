@@ -323,6 +323,7 @@ class FForum extends FDBTool {
 			//FItemsToolbar::setQueryTool(&$fItems);
 	
 			if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who); else $arrPagerExtraVars = array();
+			if($itemIdInside > 0) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
 			$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 	
 			$from = ($pager->getCurrentPageID()-1) * $perPage;

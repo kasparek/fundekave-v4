@@ -64,6 +64,7 @@ div#sidebar {
 	margin-right:-220px;
 	background: url("img/logo-bg.jpg") no-repeat right top;
 	text-align: left;
+	font-size: 80%;
 }
 div#sidebar h2 {
 	line-height: 1.1em;
@@ -315,7 +316,7 @@ div#loggedUserContainer div#avatarBox {
 	float: right;
 }
 div#loggedUserContainer a.recentSender {
-	font-size: 0.8em;
+	
 }
 div#loggedUserContainer img.userAvatar{
   border: 1px solid #412c00;
