@@ -173,6 +173,7 @@ class FBlog {
 				}
 				$extraParams['showDetail'] = true;
 				$itemVO = new ItemVO($itemId,true,$extraParams);
+				$itemVO->hit();
 	
 				if(($itemNext = $itemVO->getNext(true,false))!==false) {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('i='.$itemNext),FLang::$BUTTON_PAGE_NEXT,0,'nextButt','','opposite');
@@ -181,9 +182,6 @@ class FBlog {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('i='.$itemPrev),FLang::$BUTTON_PAGE_PREV,0,'prevButt','','opposite');
 				}
 	
-				$itemVO->saveOnlyChanged = true;
-				$itemVO->set('hit',$itemVO->hit+1);
-				$itemVO->save();
 				$user->pageVO->htmlTitle = $user->pageVO->name;
 				$user->pageVO->htmlName = $itemVO->addon;
 				$tpl->setVariable('ITEMS', $itemVO->render());
