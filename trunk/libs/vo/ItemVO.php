@@ -331,7 +331,7 @@ class ItemVO extends Fvob {
 			if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
 				$pageVO = new PageVO($this->pageId,true);
 				$q = "select itemId from sys_pages_items where itemIdTop is null and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
-				$arr = FDBTool::getCol($q,'pageitemsid','pagelist','f',0);
+				$arr = FDBTool::getCol($q,$this->pageId.'-page', 'fitGrp');
 				$cache->setData($arr);
 			}
 			return $arr;
@@ -392,6 +392,7 @@ class ItemVO extends Fvob {
 		function getSideItemId($side=-1, $consecutively = false) {
 			$keys = $this->getPageItemsId();; //--- when key is value
 			$keyIndexes = array_flip($keys);
+			if(!isset($keyIndexes[$this->itemId])) return false;
 			$return = array();
 			//--- previous
 			if($side == -1) {

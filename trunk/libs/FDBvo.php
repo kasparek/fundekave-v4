@@ -21,7 +21,7 @@ class FDBvo extends FDBTool {
 			$keys[] =  $this->vo->{$col};
 		}
 		$arr = $this->get( implode(',',$keys) );
-		if($arr!==false) {
+		if(!empty($arr)) {
 			foreach($arr as $k=>$v) {
 				$this->vo->{$k} = $v;
 			}

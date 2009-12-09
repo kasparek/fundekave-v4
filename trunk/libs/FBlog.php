@@ -46,20 +46,19 @@ class FBlog {
 				ItemVO::setProperty($returnItemId,'forumSet',(int) $data['forumset']);
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
+			
 			} else if($action==='delete') {
+			
 				$itemVO = new ItemVO();
 				$itemVO->itemId = (int) $data['item'];
 				$itemVO->delete();
 				$returnItemId = 0;
-
 				FError::addError(FLang::$LABEL_DELETED_OK,1);
 				FAjax::redirect(FSystem::getUri('',$pageId,''));
+				
 			}
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('lastBlogPost');
-
-
-
 
 		} else {
 			FError::addError(FLang::$ERROR_RULES_CREATE);
@@ -199,7 +198,7 @@ class FBlog {
 					$total = $fItems->getCount();
 				}
 	
-				$fItems->setOrder("dateStart desc");
+				$fItems->setOrder("dateStart desc, itemId desc");
 	
 				$currentPage = 0;
 				if($total > $perPage) {

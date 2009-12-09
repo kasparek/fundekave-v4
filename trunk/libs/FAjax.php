@@ -116,6 +116,7 @@ class FAjax {
 	public $data;
 	public $responseData;
 	public $errorsLater = false;
+	public $redirecting = false;
 
 	static public function errorsLater() {
 		$fajax = FAjax::getInstance();
@@ -126,10 +127,16 @@ class FAjax {
 		$fajax = FAjax::getInstance();
 		if($fajax->data['__ajaxResponse']===true) {
 			$fajax->errorsLater = true;
+			$fajax->redirecting = true;
 			$fajax->responseData[] = array('TARGET'=>'function','PROP'=>'call','DATA'=>'redirect;'.$url);
 		} else {
 			FHTTP::redirect($url);
 		}
+	}
+	
+	static public function isRedirecting() {
+	  $fajax = FAjax::getInstance();
+	  return $fajax->redirecting;
 	}
 
 	static public function addResponse($target, $property, $value) {
