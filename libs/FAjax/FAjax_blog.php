@@ -25,15 +25,14 @@ class FAjax_blog extends FAjaxPluginBase {
 		}
 	}
 	static function submit($data) {
-
 		$itemId = FBlog::process( $data );
-		FAjax_blog::edit( array('__ajaxResponse'=>true,'item'=>$itemId) );
-
-		//refresh item preview
-		$extraParams = array('type'=>'blog','showComments'=>false,'showDetail'=>true);
-		$itemVO = new ItemVO($itemId,true,$extraParams);
-
-		FAjax::addResponse('i'.$itemId, '$replaceWith', $itemVO->render());
+		if(FAjax::isRedirecting()===false) {
+			FAjax_blog::edit( array('__ajaxResponse'=>true,'item'=>$itemId) );
+			//refresh item preview
+			$extraParams = array('type'=>'blog','showComments'=>false,'showDetail'=>true);
+			$itemVO = new ItemVO($itemId,true,$extraParams);
+			FAjax::addResponse('i'.$itemId, '$replaceWith', $itemVO->render());
+		}
 	}
 
 }
