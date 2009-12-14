@@ -31,6 +31,10 @@ class page_ItemsLive implements iPage {
 				
 			$fItems->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 			$fItems->setSelect("p.pageId,p.categoryId,p.name,p.pageIco,p.typeId".(($userId > 0)?(',(p.cnt-f.cnt)'):(',0'))." as newMess,sys_pages_items.itemId,sys_pages_items.typeId");
+			
+			if(SITE_STRICT == 1) {
+				$fItems->addWhere("p.pageIdTop = '".HOME_PAGE."'");
+			}
 				
 			if(!empty($date)) {
 				$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");

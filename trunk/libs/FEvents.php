@@ -82,6 +82,7 @@ class FEvents {
 			$itemVO = new ItemVO();
 			$itemVO->itemId = 0;
 			$itemVO->categoryId = 0;
+			$itemVO->public = 1;
 			$itemVO->dateStartLocal = Date("d.m.Y");
 		}
 
