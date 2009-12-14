@@ -137,13 +137,18 @@ class FAvatar {
 	static function processAvatar($avatarName) {
 		//---resize and crop if needed
 		list($avatarWidth,$avatarHeight,$type) = getimagesize( $avatarName );
+		
+		$newName = FAvatar::createName($avatarName);
+		$targetName = ROOT_AVATAR.$newName;
+		
 		if($avatarWidth != AVATAR_WIDTH_PX || $avatarHeight != AVATAR_HEIGHT_PX) {
 			if($type != 2) $avatarName = str_replace(FSystem::fileExt($avatarName),'jpg',$avatarName);
 			//---RESIZE
 			$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
-			$newName = FAvatar::createName($avatarName);
-			$targetName = ROOT_AVATAR.$newName;
 			FImgProcess::process($avatarName,$targetName,$resizeParams);
+		} else {
+		  copy($avatarName, $targetName);
+      chmod($targetName,0777); 
 		}
 		return $newName;
 	}
