@@ -172,7 +172,11 @@ class FBlog {
 				}
 				$extraParams['showDetail'] = true;
 				$itemVO = new ItemVO($itemId,true,$extraParams);
-				$itemVO->hit();
+				if($editMode===false) {
+					if($itemVO->userId != $user->userVO->userId) {
+						$itemVO->hit();
+					}
+				}
 	
 				if(($itemNext = $itemVO->getNext(true,false))!==false) {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('i='.$itemNext),FLang::$BUTTON_PAGE_NEXT,0,'nextButt','','opposite');
