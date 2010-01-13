@@ -104,6 +104,9 @@ class FForum extends FDBTool {
 		$redirect = false;
 
 		if(isset($data["send"])) {
+		
+			$cache = FCache::getInstance('s',0);
+			$cache->setData('', $pageId, 'filter');
 
 			$cache = FCache::getInstance('s',0);
 			$cache->invalidateGroup('forumFilter');
@@ -272,6 +275,7 @@ class FForum extends FDBTool {
 
 			$cache = FCache::getInstance('s',0);
 			$filter = $cache->getData( $user->pageVO->pageId, 'filter');
+			if(empty($filter)) $filter = false;
 			$tpl->setVariable('TEXTAREACONTENT',(($filter!==false)?($filter):($zprava)));
 
 			if ($logged===true) {
@@ -297,7 +301,7 @@ class FForum extends FDBTool {
 		}
 		
 		$cached = false;
-		if(empty($filterTxt)) {
+		if($filter!==false) {
 			$ppUrlVar = FConf::get('pager','urlVar');
 			$pageNum = 1;
 			if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];
@@ -314,8 +318,8 @@ class FForum extends FDBTool {
 			$fItems = new FItems('forum',false,$itemRenderer);
 			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 			if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
-			if(!empty($filterTxt)) {
-				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$filterTxt,'or');
+			if($filter!==false) {
+				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$filter,'or');
 			}
 			$fItems->setOrder("dateCreated DESC");
 			

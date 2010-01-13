@@ -225,7 +225,7 @@ class FBuildPage {
 				}
 			} else {
 				//NOT TEMPLATE AT ALL
-				$contentData = array("MAINDATA"=>$user->pageVO->content);
+				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content));
 			}
 
 			FProfiler::profile('FBuildPage::baseContent--CONTENT DONE');

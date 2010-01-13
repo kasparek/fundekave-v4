@@ -12,7 +12,7 @@
 			<ttl>10</ttl>
 			<!-- BEGIN item -->
 			<item>
-         <title>{TITLE}</title>
+         <title><![CDATA[{TITLE}]]></title>
          <guid isPermaLink="true">{LINK}</guid>
          <link>{LINK}</link>
          <description><![CDATA[{DESCRIPTION}]]></description>
