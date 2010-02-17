@@ -54,12 +54,6 @@ package net.fundekave.lib
 			this.heightMax = heightMax;
 			this.rotationNew = rotationNew;
 			this.outputQuality = outputQuality;
-			
-			/* init alchemy object */
-			/*
-			var jpegClib:CLibInit = new CLibInit(); //get library obejct
-            al_jpegencoder = jpegClib.init(); // initialize library exported class
-            /**/
 		}
 		
 		private var localFireRef:FileReference;
@@ -230,12 +224,7 @@ package net.fundekave.lib
         	if(!bmpd) bmpd = _resultBmpData;
         	
         	resultBytes = new ByteArray();
-        	/*
-  			var baSource: ByteArray = bmpd.getPixels( new Rectangle( 0, 0, bmpd.width, bmpd.height) );			
-			baSource.position = 0;
-			al_jpegencoder.encodeAsync(onCompressFinished, baSource, resultBytes, bmpd.width, bmpd.height, this.outputQuality );
-			/**/
-        	
+        	       	
         	var jpgEnc:JPEGEncoder = new JPEGEncoder( this.outputQuality );
         	resultBytes = jpgEnc.encode( bmpd );
         	onCompressFinished(null);

@@ -7,10 +7,10 @@ package net.fundekave.lib
 	{
 		// Static table initialization
 		private const ZigZag:Vector.<int> = Vector.<int>([
-			 0, 1, 5, 6,14,15,27,28,
-			 2, 4, 7,13,16,26,29,42,
-			 3, 8,12,17,25,30,41,43,
-			 9,11,18,24,31,40,44,53,
+			0, 1, 5, 6,14,15,27,28,
+			2, 4, 7,13,16,26,29,42,
+			3, 8,12,17,25,30,41,43,
+			9,11,18,24,31,40,44,53,
 			10,19,23,32,39,45,52,54,
 			20,22,33,38,46,51,55,60,
 			21,34,37,47,50,56,59,61,
@@ -24,32 +24,32 @@ package net.fundekave.lib
 		private var sf:int;
 		
 		private const aasf:Vector.<Number> = Vector.<Number>([
-				1.0, 1.387039845, 1.306562965, 1.175875602,
-				1.0, 0.785694958, 0.541196100, 0.275899379
-			]);
+			1.0, 1.387039845, 1.306562965, 1.175875602,
+			1.0, 0.785694958, 0.541196100, 0.275899379
+		]);
 		
 		private var YQT:Vector.<int> = Vector.<int>([
-				16, 11, 10, 16, 24, 40, 51, 61,
-				12, 12, 14, 19, 26, 58, 60, 55,
-				14, 13, 16, 24, 40, 57, 69, 56,
-				14, 17, 22, 29, 51, 87, 80, 62,
-				18, 22, 37, 56, 68,109,103, 77,
-				24, 35, 55, 64, 81,104,113, 92,
-				49, 64, 78, 87,103,121,120,101,
-				72, 92, 95, 98,112,100,103, 99
-			]);
+			16, 11, 10, 16, 24, 40, 51, 61,
+			12, 12, 14, 19, 26, 58, 60, 55,
+			14, 13, 16, 24, 40, 57, 69, 56,
+			14, 17, 22, 29, 51, 87, 80, 62,
+			18, 22, 37, 56, 68,109,103, 77,
+			24, 35, 55, 64, 81,104,113, 92,
+			49, 64, 78, 87,103,121,120,101,
+			72, 92, 95, 98,112,100,103, 99
+		]);
 		
 		private const UVQT:Vector.<int> = Vector.<int>([
-				17, 18, 24, 47, 99, 99, 99, 99,
-				18, 21, 26, 66, 99, 99, 99, 99,
-				24, 26, 56, 99, 99, 99, 99, 99,
-				47, 66, 99, 99, 99, 99, 99, 99,
-				99, 99, 99, 99, 99, 99, 99, 99,
-				99, 99, 99, 99, 99, 99, 99, 99,
-				99, 99, 99, 99, 99, 99, 99, 99,
-				99, 99, 99, 99, 99, 99, 99, 99
-			]);
-	
+			17, 18, 24, 47, 99, 99, 99, 99,
+			18, 21, 26, 66, 99, 99, 99, 99,
+			24, 26, 56, 99, 99, 99, 99, 99,
+			47, 66, 99, 99, 99, 99, 99, 99,
+			99, 99, 99, 99, 99, 99, 99, 99,
+			99, 99, 99, 99, 99, 99, 99, 99,
+			99, 99, 99, 99, 99, 99, 99, 99,
+			99, 99, 99, 99, 99, 99, 99, 99
+		]);
+		
 		private function initQuantTables(sf:int):void
 		{
 			var i:int;
@@ -65,7 +65,7 @@ package net.fundekave.lib
 				}
 				YTable[ZigZag[i]] = t;
 			}
-
+			
 			for (i = 0; i < I64; i++)
 			{
 				var u:int = int((UVQT[i]*sf+50)*0.01);
@@ -87,12 +87,12 @@ package net.fundekave.lib
 				}
 			}
 		}
-	
+		
 		private var YDC_HT:Vector.<BitString>;
 		private var UVDC_HT:Vector.<BitString>;
 		private var YAC_HT:Vector.<BitString>;
 		private var UVAC_HT:Vector.<BitString>;
-	
+		
 		private function computeHuffmanTbl(nrcodes:Vector.<int>, std_table:Vector.<int>):Vector.<BitString>
 		{
 			var codevalue:int = 0;
@@ -113,58 +113,58 @@ package net.fundekave.lib
 			}
 			return HT;
 		}
-	
+		
 		private var std_dc_luminance_nrcodes:Vector.<int> = Vector.<int>([0,0,1,5,1,1,1,1,1,1,0,0,0,0,0,0,0]);
 		private var std_dc_luminance_values:Vector.<int> = Vector.<int>([0,1,2,3,4,5,6,7,8,9,10,11]);
 		private var std_ac_luminance_nrcodes:Vector.<int> = Vector.<int>([0,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d]);
 		private var std_ac_luminance_values:Vector.<int> = Vector.<int>([0x01,0x02,0x03,0x00,0x04,0x11,0x05,0x12,
-																				0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,
-																				0x22,0x71,0x14,0x32,0x81,0x91,0xa1,0x08,
-																				0x23,0x42,0xb1,0xc1,0x15,0x52,0xd1,0xf0,
-																				0x24,0x33,0x62,0x72,0x82,0x09,0x0a,0x16,
-																				0x17,0x18,0x19,0x1a,0x25,0x26,0x27,0x28,
-																				0x29,0x2a,0x34,0x35,0x36,0x37,0x38,0x39,
-																				0x3a,0x43,0x44,0x45,0x46,0x47,0x48,0x49,
-																				0x4a,0x53,0x54,0x55,0x56,0x57,0x58,0x59,
-																				0x5a,0x63,0x64,0x65,0x66,0x67,0x68,0x69,
-																				0x6a,0x73,0x74,0x75,0x76,0x77,0x78,0x79,
-																				0x7a,0x83,0x84,0x85,0x86,0x87,0x88,0x89,
-																				0x8a,0x92,0x93,0x94,0x95,0x96,0x97,0x98,
-																				0x99,0x9a,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,
-																				0xa8,0xa9,0xaa,0xb2,0xb3,0xb4,0xb5,0xb6,
-																				0xb7,0xb8,0xb9,0xba,0xc2,0xc3,0xc4,0xc5,
-																				0xc6,0xc7,0xc8,0xc9,0xca,0xd2,0xd3,0xd4,
-																				0xd5,0xd6,0xd7,0xd8,0xd9,0xda,0xe1,0xe2,
-																				0xe3,0xe4,0xe5,0xe6,0xe7,0xe8,0xe9,0xea,
-																				0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7,0xf8,
-																				0xf9,0xfa]);
-	
+			0x21,0x31,0x41,0x06,0x13,0x51,0x61,0x07,
+			0x22,0x71,0x14,0x32,0x81,0x91,0xa1,0x08,
+			0x23,0x42,0xb1,0xc1,0x15,0x52,0xd1,0xf0,
+			0x24,0x33,0x62,0x72,0x82,0x09,0x0a,0x16,
+			0x17,0x18,0x19,0x1a,0x25,0x26,0x27,0x28,
+			0x29,0x2a,0x34,0x35,0x36,0x37,0x38,0x39,
+			0x3a,0x43,0x44,0x45,0x46,0x47,0x48,0x49,
+			0x4a,0x53,0x54,0x55,0x56,0x57,0x58,0x59,
+			0x5a,0x63,0x64,0x65,0x66,0x67,0x68,0x69,
+			0x6a,0x73,0x74,0x75,0x76,0x77,0x78,0x79,
+			0x7a,0x83,0x84,0x85,0x86,0x87,0x88,0x89,
+			0x8a,0x92,0x93,0x94,0x95,0x96,0x97,0x98,
+			0x99,0x9a,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,
+			0xa8,0xa9,0xaa,0xb2,0xb3,0xb4,0xb5,0xb6,
+			0xb7,0xb8,0xb9,0xba,0xc2,0xc3,0xc4,0xc5,
+			0xc6,0xc7,0xc8,0xc9,0xca,0xd2,0xd3,0xd4,
+			0xd5,0xd6,0xd7,0xd8,0xd9,0xda,0xe1,0xe2,
+			0xe3,0xe4,0xe5,0xe6,0xe7,0xe8,0xe9,0xea,
+			0xf1,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7,0xf8,
+			0xf9,0xfa]);
+		
 		private var std_dc_chrominance_nrcodes:Vector.<int> = Vector.<int>([0,0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0]);
 		private var std_dc_chrominance_values:Vector.<int> = Vector.<int>([0,1,2,3,4,5,6,7,8,9,10,11]);
 		private var std_ac_chrominance_nrcodes:Vector.<int> = Vector.<int>([0,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77]);
 		private var std_ac_chrominance_values:Vector.<int> = Vector.<int>([0x00,0x01,0x02,0x03,0x11,0x04,0x05,0x21,
-																				0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,
-																				0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91,
-																				0xa1,0xb1,0xc1,0x09,0x23,0x33,0x52,0xf0,
-																				0x15,0x62,0x72,0xd1,0x0a,0x16,0x24,0x34,
-																				0xe1,0x25,0xf1,0x17,0x18,0x19,0x1a,0x26,
-																				0x27,0x28,0x29,0x2a,0x35,0x36,0x37,0x38,
-																				0x39,0x3a,0x43,0x44,0x45,0x46,0x47,0x48,
-																				0x49,0x4a,0x53,0x54,0x55,0x56,0x57,0x58,
-																				0x59,0x5a,0x63,0x64,0x65,0x66,0x67,0x68,
-																				0x69,0x6a,0x73,0x74,0x75,0x76,0x77,0x78,
-																				0x79,0x7a,0x82,0x83,0x84,0x85,0x86,0x87,
-																				0x88,0x89,0x8a,0x92,0x93,0x94,0x95,0x96,
-																				0x97,0x98,0x99,0x9a,0xa2,0xa3,0xa4,0xa5,
-																				0xa6,0xa7,0xa8,0xa9,0xaa,0xb2,0xb3,0xb4,
-																				0xb5,0xb6,0xb7,0xb8,0xb9,0xba,0xc2,0xc3,
-																				0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xd2,
-																				0xd3,0xd4,0xd5,0xd6,0xd7,0xd8,0xd9,0xda,
-																				0xe2,0xe3,0xe4,0xe5,0xe6,0xe7,0xe8,0xe9,
-																				0xea,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7,0xf8,
-																				0xf9,0xfa
-																			]);
-
+			0x31,0x06,0x12,0x41,0x51,0x07,0x61,0x71,
+			0x13,0x22,0x32,0x81,0x08,0x14,0x42,0x91,
+			0xa1,0xb1,0xc1,0x09,0x23,0x33,0x52,0xf0,
+			0x15,0x62,0x72,0xd1,0x0a,0x16,0x24,0x34,
+			0xe1,0x25,0xf1,0x17,0x18,0x19,0x1a,0x26,
+			0x27,0x28,0x29,0x2a,0x35,0x36,0x37,0x38,
+			0x39,0x3a,0x43,0x44,0x45,0x46,0x47,0x48,
+			0x49,0x4a,0x53,0x54,0x55,0x56,0x57,0x58,
+			0x59,0x5a,0x63,0x64,0x65,0x66,0x67,0x68,
+			0x69,0x6a,0x73,0x74,0x75,0x76,0x77,0x78,
+			0x79,0x7a,0x82,0x83,0x84,0x85,0x86,0x87,
+			0x88,0x89,0x8a,0x92,0x93,0x94,0x95,0x96,
+			0x97,0x98,0x99,0x9a,0xa2,0xa3,0xa4,0xa5,
+			0xa6,0xa7,0xa8,0xa9,0xaa,0xb2,0xb3,0xb4,
+			0xb5,0xb6,0xb7,0xb8,0xb9,0xba,0xc2,0xc3,
+			0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xd2,
+			0xd3,0xd4,0xd5,0xd6,0xd7,0xd8,0xd9,0xda,
+			0xe2,0xe3,0xe4,0xe5,0xe6,0xe7,0xe8,0xe9,
+			0xea,0xf2,0xf3,0xf4,0xf5,0xf6,0xf7,0xf8,
+			0xf9,0xfa
+		]);
+		
 		private function initHuffmanTbl():void
 		{
 			YDC_HT = computeHuffmanTbl(std_dc_luminance_nrcodes,std_dc_luminance_values);
@@ -172,10 +172,10 @@ package net.fundekave.lib
 			YAC_HT = computeHuffmanTbl(std_ac_luminance_nrcodes,std_ac_luminance_values);
 			UVAC_HT = computeHuffmanTbl(std_ac_chrominance_nrcodes,std_ac_chrominance_values);
 		}
-	
+		
 		private var bitcode:Vector.<BitString> = new Vector.<BitString>(65535, true);
 		private var category:Vector.<int> = new Vector.<int>(65535, true);
-	
+		
 		private function initCategoryNumber():void
 		{
 			var nrlower:int = 1;
@@ -207,13 +207,13 @@ package net.fundekave.lib
 				nrupper <<= 1;
 			}
 		}
-	
+		
 		// IO functions
-	
+		
 		private var byteout:ByteArray;
 		private var bytenew:int = 0;
 		private var bytepos:int = 7;
-	
+		
 		private function writeBits(bs:BitString):void
 		{
 			var value:int = bs.val;
@@ -237,9 +237,9 @@ package net.fundekave.lib
 				}
 			}
 		}
-	
+		
 		// DCT & quantization core
-	
+		
 		private function fDCTQuant(data:Vector.<Number>, fdtbl:Vector.<Number>):Vector.<int>
 		{
 			/* Pass 1: process rows. */
@@ -250,7 +250,7 @@ package net.fundekave.lib
 			const I64:int = 64;
 			for (i=0; i<I8; ++i)
 			{	
-                d0 = data[int(dataOff)];
+				d0 = data[int(dataOff)];
 				d1 = data[int(dataOff+1)];
 				d2 = data[int(dataOff+2)];
 				d3 = data[int(dataOff+3)];
@@ -267,42 +267,42 @@ package net.fundekave.lib
 				var tmp5:Number = d2 - d5;
 				var tmp3:Number = d3 + d4;
 				var tmp4:Number = d3 - d4;
-	
+				
 				/* Even part */
 				var tmp10:Number = tmp0 + tmp3;	/* phase 2 */
 				var tmp13:Number = tmp0 - tmp3;
 				var tmp11:Number = tmp1 + tmp2;
 				var tmp12:Number = tmp1 - tmp2;
-	
+				
 				data[int(dataOff)] = tmp10 + tmp11; /* phase 3 */
 				data[int(dataOff+4)] = tmp10 - tmp11;
-	
+				
 				var z1:Number = (tmp12 + tmp13) * 0.707106781; /* c4 */
 				data[int(dataOff+2)] = tmp13 + z1; /* phase 5 */
 				data[int(dataOff+6)] = tmp13 - z1;
-	
+				
 				/* Odd part */
 				tmp10 = tmp4 + tmp5; /* phase 2 */
 				tmp11 = tmp5 + tmp6;
 				tmp12 = tmp6 + tmp7;
-	
+				
 				/* The rotator is modified from fig 4-8 to avoid extra negations. */
 				var z5:Number = (tmp10 - tmp12) * 0.382683433; /* c6 */
 				var z2:Number = 0.541196100 * tmp10 + z5; /* c2-c6 */
 				var z4:Number = 1.306562965 * tmp12 + z5; /* c2+c6 */
 				var z3:Number = tmp11 * 0.707106781; /* c4 */
-	
+				
 				var z11:Number = tmp7 + z3;	/* phase 5 */
 				var z13:Number = tmp7 - z3;
-	
+				
 				data[int(dataOff+5)] = z13 + z2;	/* phase 6 */
 				data[int(dataOff+3)] = z13 - z2;
 				data[int(dataOff+1)] = z11 + z4;
 				data[int(dataOff+7)] = z11 - z4;
-	
+				
 				dataOff += 8; /* advance pointer to next row */
 			}
-	
+			
 			/* Pass 2: process columns. */
 			dataOff = 0;
 			for (i=0; i<I8; ++i)
@@ -311,7 +311,7 @@ package net.fundekave.lib
 				d1 = data[int(dataOff + 8)];
 				d2 = data[int(dataOff + 16)];
 				d3 = data[int(dataOff + 24)];
-		        d4 = data[int(dataOff + 32)];
+				d4 = data[int(dataOff + 32)];
 				d5 = data[int(dataOff + 40)];
 				d6 = data[int(dataOff + 48)];
 				d7 = data[int(dataOff + 56)];
@@ -324,42 +324,42 @@ package net.fundekave.lib
 				var tmp5p2:Number = d2 - d5;
 				var tmp3p2:Number = d3 + d4;
 				var tmp4p2:Number = d3 - d4;
-	
+				
 				/* Even part */
 				var tmp10p2:Number = tmp0p2 + tmp3p2;	/* phase 2 */
 				var tmp13p2:Number = tmp0p2 - tmp3p2;
 				var tmp11p2:Number = tmp1p2 + tmp2p2;
 				var tmp12p2:Number = tmp1p2 - tmp2p2;
-	
+				
 				data[int(dataOff)] = tmp10p2 + tmp11p2; /* phase 3 */
 				data[int(dataOff+32)] = tmp10p2 - tmp11p2;
-	
+				
 				var z1p2:Number = (tmp12p2 + tmp13p2) * 0.707106781; /* c4 */
 				data[int(dataOff+16)] = tmp13p2 + z1p2; /* phase 5 */
 				data[int(dataOff+48)] = tmp13p2 - z1p2;
-	
+				
 				/* Odd part */
 				tmp10p2 = tmp4p2 + tmp5p2; /* phase 2 */
 				tmp11p2 = tmp5p2 + tmp6p2;
 				tmp12p2 = tmp6p2 + tmp7p2;
-	
+				
 				/* The rotator is modified from fig 4-8 to avoid extra negations. */
 				var z5p2:Number = (tmp10p2 - tmp12p2) * 0.382683433; /* c6 */
 				var z2p2:Number = 0.541196100 * tmp10p2 + z5p2; /* c2-c6 */
 				var z4p2:Number = 1.306562965 * tmp12p2 + z5p2; /* c2+c6 */
 				var z3p2:Number= tmp11p2 * 0.707106781; /* c4 */
-	
+				
 				var z11p2:Number = tmp7p2 + z3p2;	/* phase 5 */
 				var z13p2:Number = tmp7p2 - z3p2;
-	
+				
 				data[int(dataOff+40)] = z13p2 + z2p2; /* phase 6 */
 				data[int(dataOff+24)] = z13p2 - z2p2;
 				data[int(dataOff+ 8)] = z11p2 + z4p2;
 				data[int(dataOff+56)] = z11p2 - z4p2;
-	
+				
 				dataOff++; /* advance pointer to next column */
 			}
-	
+			
 			// Quantize/descale the coefficients
 			var fDCTQuant:Number;
 			for (i=0; i<I64; ++i)
@@ -370,7 +370,7 @@ package net.fundekave.lib
 			}
 			return outputfDCTQuant;
 		}
-	
+		
 		// Chunk writing
 		private function writeAPP0():void
 		{
@@ -389,7 +389,7 @@ package net.fundekave.lib
 			byteout.writeByte(0); // thumbnwidth
 			byteout.writeByte(0); // thumbnheight
 		}
-	
+		
 		private function writeSOF0(width:int, height:int):void
 		{
 			byteout.writeShort(0xFFC0); // marker
@@ -408,7 +408,7 @@ package net.fundekave.lib
 			byteout.writeByte(0x11); // HVV
 			byteout.writeByte(1);    // QTV
 		}
-	
+		
 		private function writeDQT():void
 		{
 			byteout.writeShort(0xFFDB); // marker
@@ -419,18 +419,18 @@ package net.fundekave.lib
 			const I64:int = 64;
 			for (i=0; i<I64; ++i)
 				byteout.writeByte(YTable[i]);
-				
+			
 			byteout.writeByte(1);
 			
 			for (i=0; i<I64; ++i)
 				byteout.writeByte(UVTable[i]);
 		}
-	
+		
 		private function writeDHT():void
 		{
 			byteout.writeShort(0xFFC4); // marker
 			byteout.writeShort(0x01A2); // length
-	
+			
 			byteout.writeByte(0); // HTYDCinfo
 			var i:int;
 			const I11:int = 11;
@@ -438,35 +438,35 @@ package net.fundekave.lib
 			const I161:int = 161;
 			for (i=0; i<I16; ++i)
 				byteout.writeByte(std_dc_luminance_nrcodes[int(i+1)]);
-
+			
 			for (i=0; i<=I11; ++i)
 				byteout.writeByte(std_dc_luminance_values[int(i)]);
-	
+			
 			byteout.writeByte(0x10); // HTYACinfo
 			
 			for (i=0; i<I16; ++i)
 				byteout.writeByte(std_ac_luminance_nrcodes[int(i+1)]);
-
+			
 			for (i=0; i<=I161; ++i)
 				byteout.writeByte(std_ac_luminance_values[int(i)]);
-
+			
 			byteout.writeByte(1); // HTUDCinfo
 			
 			for (i=0; i<I16; ++i)
 				byteout.writeByte(std_dc_chrominance_nrcodes[int(i+1)]);
-
+			
 			for (i=0; i<=I11; ++i)
 				byteout.writeByte(std_dc_chrominance_values[int(i)]);
-
+			
 			byteout.writeByte(0x11); // HTUACinfo
 			
 			for (i=0; i<I16; ++i)
 				byteout.writeByte(std_ac_chrominance_nrcodes[int(i+1)]);
-				
+			
 			for (i=0; i<=I161; ++i)
 				byteout.writeByte(std_ac_chrominance_values[int(i)]);
 		}
-	
+		
 		private function writeSOS():void
 		{
 			byteout.writeShort(0xFFDA); // marker
@@ -482,10 +482,10 @@ package net.fundekave.lib
 			byteout.writeByte(0x3f); // Se
 			byteout.writeByte(0); // Bf
 		}
-	
+		
 		// Core processing
 		internal var DU:Vector.<int> = new Vector.<int>(64, true);
-	
+		
 		private function processDU(CDU:Vector.<Number>, fdtbl:Vector.<Number>, DC:Number, HTDC:Vector.<BitString>, HTAC:Vector.<BitString>):Number
 		{
 			var EOB:BitString = HTAC[0x00];
@@ -538,11 +538,11 @@ package net.fundekave.lib
 			}
 			return DC;
 		}
-	
+		
 		private var YDU:Vector.<Number> = new Vector.<Number>(64, true);
 		private var UDU:Vector.<Number> = new Vector.<Number>(64, true);
 		private var VDU:Vector.<Number> = new Vector.<Number>(64, true);
-	
+		
 		private function RGB2YUV(img:BitmapData, xpos:int, ypos:int):void
 		{
 			var pos:int=0;
@@ -553,22 +553,22 @@ package net.fundekave.lib
 					var R:int = (P>>16)&0xFF;
 					var G:int = (P>> 8)&0xFF;
 					var B:int = (P    )&0xFF;
-                    YDU[int(pos)]=((( 0.29900)*R+( 0.58700)*G+( 0.11400)*B))-0x80;
+					YDU[int(pos)]=((( 0.29900)*R+( 0.58700)*G+( 0.11400)*B))-0x80;
 					UDU[int(pos)]=(((-0.16874)*R+(-0.33126)*G+( 0.50000)*B));
 					VDU[int(pos)]=((( 0.50000)*R+(-0.41869)*G+(-0.08131)*B));
 					++pos;
 				}
 			}
 		}
-	
+		
 		public function JPEGEncoder(quality:int=50)
 		{
 			if (quality <= 0)
 				quality = 1;
-		
+			
 			if (quality > 100)
 				quality = 100;
-				
+			
 			sf = quality < 50 ? int(5000 / quality) : int(200 - (quality<<1));
 			init();
 		}
@@ -592,7 +592,7 @@ package net.fundekave.lib
 			initCategoryNumber();
 			initQuantTables(sf);
 		}
-	
+		
 		public function encode(image:BitmapData):ByteArray
 		{
 			// Initialize bit writer
@@ -600,7 +600,7 @@ package net.fundekave.lib
 			
 			bytenew=0;
 			bytepos=7;
-	
+			
 			// Add JPEG headers
 			byteout.writeShort(0xFFD8); // SOI
 			writeAPP0();
@@ -629,7 +629,7 @@ package net.fundekave.lib
 					DCV = processDU(VDU, fdtbl_UV, DCV, UVDC_HT, UVAC_HT);
 				}
 			}
-	
+			
 			// Do the bit alignment of the EOI marker
 			if ( bytepos >= 0 )
 			{
