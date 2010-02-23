@@ -291,6 +291,9 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
 /**
  *main init
  **/
+function publicin() {
+	$("#loginInput").focus();
+}
 function userin() {
 	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
 	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });

@@ -1,3 +1,6 @@
+idega ga UA-12730615-1
+fundekave ga UA-515522-22
+
 -sidebar kalendar
 	odkaz na zive s omezenim na urcity den
 -tagy
