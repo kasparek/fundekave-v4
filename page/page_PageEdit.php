@@ -109,6 +109,9 @@ class page_PageEdit implements iPage {
 				//---first save - if new page to get pageId
 				if(empty($pageVO->pageId)) {
 					$pageVO->save();
+					$q = "INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) 
+						VALUES ('".$pageVO->pageId."', '".$pageVO->typeId."', '".$user->userVO->userId."', NOW() , '0')";
+					FDBTool::query($q);
 				}
 				if(!empty($data['categoryNew'])) {
 					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId);
