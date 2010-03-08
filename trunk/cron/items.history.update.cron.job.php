@@ -1,19 +1,11 @@
 <?php
 chdir("../");
-require("local.php");
-$nonUserInit = true;
-$nonDbInit = true;
+$nonIndex = true;
+require('index.php');
 require(INIT_FILENAME);
-
-if (!$db = mysql_connect($conf['db']['hostspec'], $conf['db']['username'], $conf['db']['password'])) {
-    echo 'Could not connect to mysql';
-    exit;
-}
-
-if (!mysql_select_db($conf['db']['database'], $db)) {
-    echo 'Could not select database';
-    exit;
-}
+$dbc = FConf::get('db');
+if (!$db = mysql_connect($dbc['hostspec'], $dbc['username'], $dbc['password'])) { echo 'Could not connect to mysql'; exit; }
+if (!mysql_select_db($dbc['database'], $db)) { echo 'Could not select database'; exit; }
 
 $queries = array(
 "select date_format(dateCreated,'%Y') as dateCon,itemId,3,count(itemId) as sumVal from sys_pages_items_hit where date_format(dateCreated,'%Y') >= date_format(now(),'%Y') group by dateCon,itemId"

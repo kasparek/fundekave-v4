@@ -252,7 +252,8 @@ class FUser {
 	}
 
 	function pageStat() {
-		FDBTool::query("INSERT INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`) VALUES ('".$this->pageVO->pageId."', '".$this->pageVO->typeId."', '".$this->userVO->userId."', NOW( ) , '1') on duplicate key update hit=hit+1");
+		$q = "update sys_pages_counter set hit=hit+1 where pageId='".$this->pageVO->pageId."'";
+		FDBTool::query($q);
 	}
 
 	function setWhoIs($userId) {

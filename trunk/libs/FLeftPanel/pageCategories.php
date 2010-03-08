@@ -18,19 +18,19 @@ class pageCategories {
 		
 		switch($pageId) {
 			case'event':
-				$total ="select count(1) from sys_pages_items where (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))) and categoryId=c.categoryId";
+				$total ="c.num";
 				break;
 			case'eveac':
 				$total ="select count(1) from sys_pages_items where dateStart < date_format(NOW(),'%Y-%m-%d') and categoryId=c.categoryId";
 				break;
 			default:
 				if($user->pageVO->typeId=='top') {
-					$total ='select count(1) from sys_pages where categoryId=c.categoryId';
+					$total ='c.num';
 				} else {
-					$total ='select count(1) from sys_pages_items where categoryId=c.categoryId';
+					$total ='c.num';
 				}
 		}
-		
+				
 		$tool->setSelect('c.categoryId,c.name, ( '.$total.' ) as total');
 		$arr = $tool->getContent();
 
