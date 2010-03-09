@@ -4,8 +4,6 @@ class rh_login {
 		$user = FUser::getInstance();
 		if($user->idkontrol === true) {
 		
-			
-			
 			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USER_LOGGED);
 			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
 			$tpl->setVariable('NAME',$user->userVO->name);
@@ -22,7 +20,7 @@ class rh_login {
 			$tpl->setVariable('ONLINE',$online);
 			
 			$q = "select count(1) from sys_pages_items where typeId='request' and addon='".$user->userVO->userId."'";
-			$reqNum = FDBTool::getOne($q);
+			$reqNum = FDBTool::getOne($q,'friendrequest','default','s',120);
 			if($reqNum>0)$tpl->setVariable('REQUESTSNUM',$reqNum);
 			/*
 			$recentEvent = $user->userVO->getDiaryCnt();

@@ -88,6 +88,9 @@ class FAjax_user extends FAjaxPluginBase {
 				$itemVO->delete();
 				break;
 		}
+		//clear cache 'friendrequest','default'
+		$cache = FCache::getInstance('s');
+		$cache->invalidateData('friendrequest');
 	}
 	
 	static function settings($data) {

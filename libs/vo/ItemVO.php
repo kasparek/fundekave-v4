@@ -320,8 +320,8 @@ class ItemVO extends Fvob {
 		 */
 		function hit() {
 			if(!empty($this->itemId)){
-				FDBTool::query("update sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
-				FDBTool::query("insert into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->itemId.",".FUser::logon().",now())");
+				FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
+				FDBTool::query("insert delayed into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->itemId.",".FUser::logon().",now())");
 				$this->hit++;
 			}
 		}
@@ -434,11 +434,15 @@ class ItemVO extends Fvob {
 		}
 
 		function getNumUnreadComments( $userId ) {
-			$q =' select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$userId.'"';
-			$this->cntReaded = (int) FDBTool::getOne($q,$this->itemId.'-'.$userId.'-readed','fitems','l');
-			$numComments = (int) $this->cnt;
-			if($this->cntReaded < 1) $this->cntReaded = $numComments;
-			return $numComments - $this->cntReaded;
+			$ret = 0;
+			if($userId > 0) {
+				$q =' select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$userId.'"';
+				$this->cntReaded = (int) FDBTool::getOne($q,$this->itemId.'-'.$userId.'-readed','fitems','l');
+				$numComments = (int) $this->cnt;
+				if($this->cntReaded < 1) $this->cntReaded = $numComments;
+				$ret = $numComments - $this->cntReaded;
+			}
+			return $ret;
 		}
 
 		//---support functions
@@ -450,9 +454,8 @@ class ItemVO extends Fvob {
 		 * @param Boolean $count - if true num is refreshed by database
 		 */
 		static function statPage($pageId, $userId, $count = true){
-			if($count) $str = FDBTool::getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='". (int) $userId."'");
-			else $str="ins+1";
-			FDBTool::query("update sys_pages_counter set ins=".$str." WHERE pageId='".$pageId."'and dateStamp=now() AND userId='". (int) $userId."'");
+			$user = FUser::getInstance();
+			$user->pageStat(true,$count,$pageId,$userId);
 		}
 
 }

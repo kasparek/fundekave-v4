@@ -244,15 +244,33 @@ class FUser {
 			location = '".(($pageId)?($pageId):(''))."', 
 			params = '".$this->pageParam."'    
 			where loginId='".$this->userVO->idlogin."'");
-				FDBTool::query("update sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
+				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
 				FProfiler::profile('FUser::kde::8');
 			}
 		}
 
 	}
 
-	function pageStat() {
-		$q = "update sys_pages_counter set hit=hit+1 where pageId='".$this->pageVO->pageId."'";
+	function pageStat($insert=false,$count=false,$pageId=null,$userId=null) {
+		if($pageId===null) $pageId = $this->pageVO->pageId;
+		if($userId===null) $pageId = $this->userVO->userId;
+		if($insert===true) {
+			if($count===true) $num = FDBTool::getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='". (int) $userId."'");
+			else $num = 1;
+			$str = "ins=ins+".$num;
+		} else {
+			$num = 1;
+			$str = 'hit=hit+'.$num;
+		}
+	  //---write
+		$q = "select count(1) from sys_pages_counter where pageId='".$pageId."' and userId='".(int) $userId."' and dateStamp=NOW()";
+		if(FDBTool::getOne($q)==0) {
+			$pageVO = new PageVO($pageId,true);
+			$q = "INSERT low_priority INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`,`ins`) 
+			VALUES ('".$pageId."', '".$pageVO->typeId."', '".$userId."', NOW() , '".(($insert===true)?(0):($num))."','".(($insert===true)?($num):(0))."')";
+		} else {
+			$q = "update low_priority sys_pages_counter set ".$str." where pageId='".$pageId."' and dateStamp=now() AND userId='". (int) $userId."'";
+		}
 		FDBTool::query($q);
 	}
 

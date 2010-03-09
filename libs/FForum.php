@@ -28,7 +28,9 @@ class FForum extends FDBTool {
 	}
 
 	static function updateReadedReactions($itemId,$userId) {
-		return FDBTool::query("insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
+		if($userId>0) {
+			return FDBTool::query("insert delayed into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$itemId."')");
+		}
 	}
 
 	static function setUnreadedMess($arrMessId) {
@@ -67,8 +69,11 @@ class FForum extends FDBTool {
 		$user = FUser::getInstance();
 		if($itemId == 0) $unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
 		else {
+			$unreadedCnt = 0;
+			if($user->userVO->userId>0) {
 			$dot = 'select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$itemId.'"';
 			$unreadedCnt = FDBTool::getOne($dot);
+			}
 		}
 		$unreadedCnt = (($unreadedCnt < POSTS_UNREAD_MAX)?($unreadedCnt):(POSTS_UNREAD_MAX));
 		if($unreadedCnt > 0 && $user->idkontrol) {

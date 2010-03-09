@@ -3,12 +3,17 @@ class pageCategories {
 	static function show() {
 		$user = FUser::getInstance();
 		
+		
+		
 		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
 		if($user->pageVO->typeId=='top') {
 			$tool->setWhere("c.typeId = '".$user->pageVO->typeIdChild."'");
 		} else {
 			$tool->setWhere("c.typeId = '".$user->pageVO->pageId."'");
 		}
+		if(SITE_STRICT == 1) {
+				$tool->addWhere("c.pageIdTop = '".HOME_PAGE."'");
+			}		
 		$tool->setOrder('c.ord,c.name');
 		
 		$pageId='';
