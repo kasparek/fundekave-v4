@@ -1,2 +1,0 @@
-DAILY NIGHT
-  - delete data/cache/html/
