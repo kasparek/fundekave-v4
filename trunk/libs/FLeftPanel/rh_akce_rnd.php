@@ -2,6 +2,9 @@
 class rh_akce_rnd {
 
 	static function show() {
+		$cache = FCache::getInstance('f', 86400);
+		$ret=$cache->getData('rh_akce_rnd','lp');
+		if($ret===false) {
 				
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate('sidebar.event.tpl.html');
@@ -11,8 +14,11 @@ class rh_akce_rnd {
 		$fItems->getList(0,1);
 		$data = '';
 		if(!empty($fItems->data)) {
-			return $fItems->render();
+			$ret = $fItems->render();
 		}
-		
+		$cache = FCache::getInstance('f', 86400);
+		$cache->setData($ret,'rh_akce_rnd','lp');
+		}
+		return $ret;
 	}
 }

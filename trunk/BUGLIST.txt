@@ -1,3 +1,5 @@
+missing default avatar
+
 idega ga UA-12730615-1
 fundekave ga UA-515522-22
 
