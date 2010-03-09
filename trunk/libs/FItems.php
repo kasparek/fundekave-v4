@@ -177,7 +177,7 @@ class FItems extends FDBTool {
 
 	static function aFav($pageId,$userId,$cnt,$booked=0) {
 		if(!empty($userId)){
-			$dot = "insert into sys_pages_favorites
+			$dot = "insert delayed into sys_pages_favorites
 			values ('".$userId."','".$pageId."',(select cnt from sys_pages where pageId='".$pageId."'),'".$booked."')
 			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$pageId."')";
 			FDBTool::query($dot);
