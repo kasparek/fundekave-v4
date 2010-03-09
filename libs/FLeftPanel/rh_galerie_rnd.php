@@ -1,7 +1,9 @@
 <?php
 class rh_galerie_rnd {
 	static function show() {
-
+		$cache = FCache::getInstance('f',86400);
+		$ret = $cache->getData('rh_galerie_rnd','lp');
+		if($ret===false) {
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->openPopup = false;
 		$itemRenderer->showTag = true;
@@ -25,7 +27,7 @@ class rh_galerie_rnd {
 		} 
 
 		if($reLoad === true) {
-			$fi = new FItems('galery',FUser::logon());
+			$fi = new FItems('galery',0);
 			$fi->setSelect('itemId');
 			$fi->setOrder('rand()');
 			$arr = $fi->getContent(0,100);
@@ -36,6 +38,10 @@ class rh_galerie_rnd {
 		
 		$itemVO = new ItemVO($item['itemId'],true,array('type'=>'galery'));
 		$itemVO->thumbInSysRes = true;
-		return $itemVO->render($itemRenderer);
+		$ret = $itemVO->render($itemRenderer);
+		$cache = FCache::getInstance('f');
+		$cache->setData($ret,'rh_galerie_rnd','lp');
+		}
+		return $ret;
 	}
 }
