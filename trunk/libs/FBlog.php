@@ -31,12 +31,13 @@ class FBlog {
 				if(!empty($data['category'])) $itemVO->categoryId = (int) $data['category'];
 
 				$itemVO->public = (int) $data['public'];
+				
+				$itemVO->pageId = $pageId;
+				$itemVO->typeId = 'blog';
 
 				$newItem=false;
 				if(empty($itemVO->itemId)) {
 					$itemVO->userId = $user->userVO->userId;
-					$itemVO->pageId = $pageId;
-					$itemVO->typeId = 'blog';
 					$newItem=true;
 				}
 
@@ -51,6 +52,7 @@ class FBlog {
 			
 				$itemVO = new ItemVO();
 				$itemVO->itemId = (int) $data['item'];
+				$itemVO->pageId = $pageId;
 				$itemVO->delete();
 				$returnItemId = 0;
 				FError::addError(FLang::$LABEL_DELETED_OK,1);

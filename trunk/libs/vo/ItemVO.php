@@ -223,17 +223,20 @@ class ItemVO extends Fvob {
 			$cache = FCache::getInstance('l');
 			$cache->invalidateData($this->itemId, 'fit');
 			
-			if($this->typeId=='forum' || $this->typeId=='blog') {
-				if( empty($this->itemIdTop) ) {
-					//---update last item id on page
-					$pageVO = new PageVO($this->pageId);
-					$q = "select itemId from sys_pages_items where public=1 and itemIdTop is null and pageId='".$this->pageId."' order by dateCreated desc";
-					$pageVO->prop( 'itemIdLast', FDBTool::getOne($q));
-				}
+			if( empty($this->itemIdTop) ) {
+				$this->updateItemIdLast();
 			}
 						
 			page_PagesList::invalidate();
 			return $itemId;
+		}
+		
+		function updateItemIdLast() {
+			//---update last item id on page
+			$pageVO = new PageVO($this->pageId);
+			$q = "select itemId from sys_pages_items where public=1 and itemIdTop is null and pageId='".$this->pageId."' order by dateCreated desc";
+			$itemIdLast = FDBTool::getOne($q);
+			$pageVO->prop( 'itemIdLast', $itemIdLast);
 		}
 
 		function delete() {
@@ -269,13 +272,7 @@ class ItemVO extends Fvob {
 			ItemVO::statPage($this->pageId, FUser::logon());
 			
 			//---last item
-			if($this->typeId=='forum' || $this->typeId=='blog') {
-				if( empty($this->itemIdTop) ) {
-					//---update last item id on page
-					$pageVO = new PageVO($this->pageId);
-					$pageVO->prop( 'itemIdLast', FDBTool::getOne("select max(itemId) from sys_pages_items where public=1 and pageId='".$this->pageId."'"));
-				}
-			}
+			$this->updateItemIdLast();
 			
 			page_PagesList::invalidate();
 		}
