@@ -7,10 +7,10 @@ TODO:
 <fu:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
 	xmlns:fu="net.fundekave.*" 
 	addedToStage="{ready();}" 
-	xmlns:components="net.fundekave.fuup.view.components.*"
 	>
 	<fx:Script>
 		<![CDATA[
+			import net.fundekave.fuup.view.components.FilesView;
 			//minimum size
 			public static const WIDTH:int = 400;
 			public static const HEIGHT:int = 35;
@@ -18,12 +18,16 @@ TODO:
 			public static const NAME:String = "fudeup";
 			private var facade:ApplicationFacade = ApplicationFacade.getInstance( NAME );
 			
+			public var filesView:FilesView;
+			
 			private function ready():void {
 				facade.startup(this);
 			}
+			
+			public function setup():void {
+				filesView = new FilesView();
+				this.addChild( filesView );
+			}
 		]]>
 	</fx:Script>
-	
-	<components:MainDisplay id="mainDisplay" />
-	
 </fu:Application>

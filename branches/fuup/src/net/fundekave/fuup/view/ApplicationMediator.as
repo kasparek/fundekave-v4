@@ -20,9 +20,6 @@ package net.fundekave.fuup.view
 		
 		override public function onRegister():void {
 			
-			//---register main display mediator
-			facade.registerMediator(new MainDisplayMediator(app.mainDisplay));
-			
 		}
 		
 		override public function listNotificationInterests():Array
@@ -30,7 +27,8 @@ package net.fundekave.fuup.view
 			return [ApplicationFacade.INJECTED,
 					ApplicationFacade.LOGIN_SUCCESS,
 					ApplicationFacade.CONFIG_LOADED,
-					StateMachine.CHANGED
+					StateMachine.CHANGED,
+					ApplicationFacade.SERVICE_ERROR
 					];
 		}
 		
@@ -39,6 +37,9 @@ package net.fundekave.fuup.view
 			
 			switch ( note.getName() )
 			{
+				case ApplicationFacade.SERVICE_ERROR:
+					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
+					break;
                 case ApplicationFacade.CONFIG_LOADED:
                     trace( "CONFIG >>> Loading Complete" );
 					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
@@ -52,6 +53,10 @@ package net.fundekave.fuup.view
 					var stateName:String = State( note.getBody() ).name;
             		trace(stateName);
             		switch(stateName) {
+						case StateConstants.STATE_SETUPING:
+							app.setup();
+							facade.registerMediator( new FilesViewMediator( app.filesView ) );
+							break;
             			case StateConstants.STATE_PROCESSING:
             				sendNotification( ApplicationFacade.IMAGES_PROCESS );
             			break;

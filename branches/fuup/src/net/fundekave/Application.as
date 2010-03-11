@@ -3,7 +3,7 @@ package net.fundekave
     import com.bit101.components.Component;
     import com.dncompute.canvas.BrowserCanvas;
     
-    import flash.external.ExternalInterface;
+    import flash.events.Event;
 	
 	
     public class Application extends Container
@@ -15,7 +15,7 @@ package net.fundekave
         public function Application()
         {
             super();
-            Component.initStage( stage );
+			this.addEventListener(Event.ADDED_TO_STAGE, onStage);
 			
 			var params:Object = this.loaderInfo.parameters;
 			var configUrl:String; 
@@ -24,6 +24,11 @@ package net.fundekave
 			}
             instance = this;
         }
+		
+		private function onStage(e:Event):void {
+			this.removeEventListener(Event.ADDED_TO_STAGE, onStage);
+			Component.initStage( stage );
+		}
         
         public static function get application():Application {
         	return instance;
