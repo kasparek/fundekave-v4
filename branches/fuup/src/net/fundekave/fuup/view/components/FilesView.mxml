@@ -277,17 +277,7 @@
 				<bit101:Label id="globalMessages" text="" color="0xffffff" />
 			</bit101:HBox>
 		</bit101:HBox>
-		<!--
-		<bit101:HBox>
-			<bit101:Label text="Max size:" />
-			<bit101:Label text="Width" />
-			<bit101:InputText id="newWidthInput" restrict="[0-9]" text="700" width="40" height="17" />
-			<bit101:Label text="Height" />
-			<bit101:InputText id="newHeightInput" restrict="[0-9]" text="700" width="40" height="17" />
-		</bit101:HBox>
 		
-		<bit101:HBox id="filesBox" x="5" y="30" mouseChildren="true" />
-		-->
 	</fu:Container>
     
 	<fu:Container id="filesBox" visible="{displayContent}" x="5" y="30" mouseChildren="true" />
