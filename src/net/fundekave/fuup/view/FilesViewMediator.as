@@ -37,6 +37,15 @@ package net.fundekave.fuup.view
 			filesView.addEventListener( FilesView.SETTINGS_CHANGE, onSettingsChange, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload, false, 0, true );
+			
+			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+			filesView.lang = configProxy.lang;
+			filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
+			filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
+			filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
+			filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
+			filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
+			filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
 		}
 		
 		protected function onFileCreated( e:Event ):void {
@@ -121,16 +130,6 @@ package net.fundekave.fuup.view
 					break;
 				case ApplicationFacade.IMAGES_PROCESSED:
 					imagesProcessed = true;
-					break;
-				case ApplicationFacade.CONFIG_LOADED:
-					configProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-					filesView.lang = configProxy.lang;
-					filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
-					filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
-					filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
-					filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
-					filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
-					filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
 					break;
 				case ApplicationFacade.FILE_CHECK_FAIL:
 					filesView.failFile();

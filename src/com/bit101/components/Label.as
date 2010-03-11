@@ -32,18 +32,15 @@ package com.bit101.components
 	import flash.text.AntiAliasType;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-	import flash.text.engine.TextLine;
 	
 	import flashx.textLayout.controls.TLFTextField;
 	
 	public class Label extends Component
 	{
 		
-		private static const HEIGHT:int = 18;
-		
 		private var _autoSize:Boolean = true;
 		private var _text:String = "";
-		private var _tf:TLFTextField;
+		protected var _tf:TLFTextField;
 		
 		private var recreate:Boolean = false;
 		private var _color:uint = Style.LABEL_TEXT;
@@ -55,6 +52,44 @@ package com.bit101.components
 		public function get color():uint {
 			return _color;
 		}
+		private var _size:uint = Style.SIZE_TEXT;
+		public function set size(v:uint):void {
+			_size = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get size():uint {
+			return _size;
+		}
+		
+		private var _letterSpacing:Number = Style.LETTER_SPACING;
+		public function set letterSpacing(v:Number):void {
+			_letterSpacing = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get letterSpacing():Number {
+			return _letterSpacing;
+		}
+		
+		private var _font:String = Style.FONT_TEXT;
+		public function set font(v:String):void {
+			_font = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get font():String {
+			return _font;
+		}
+		private var _align:String = TextFieldAutoSize.LEFT;
+		public function set align(v:String):void {
+			_align = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get align():String {
+			return _align;
+		}
 				
 		/**
 		 * Constructor
@@ -63,12 +98,14 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The string to use as the initial text in this component.
 		 */
-		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0)
+		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0, size:uint=0,font:String=null,align:String=null)
 		{
 			_text = text;
 			if(color>0) this.color = color;
+			if(size>0) this.size = size;
+			if(font) this.font = font;
+			if(align) this.align = align;
 			super(parent, xpos, ypos);
-			trace('LABEL::color::'+String( color ));
 		}
 		
 		/**
@@ -86,26 +123,22 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			_height = HEIGHT;
-			
 			_tf = new TLFTextField();
 			_tf.height = _height;
 			_tf.embedFonts = true;
 			_tf.selectable = false;
 			_tf.antiAliasType = AntiAliasType.ADVANCED;
 			_tf.mouseEnabled = false;
-						
-			_tf.setTextFormat( new TextFormat( "PF Ronda Seven", 8,  this.color ));
+			var tformat:TextFormat = new TextFormat( this.font, this.size,  this.color );
+			if(this.letterSpacing!==0) tformat.letterSpacing = this.letterSpacing;
+			_tf.setTextFormat( tformat );
 			_tf.text = _text;
-			_tf.y = -2;
+			_tf.autoSize = this.align;
+			_tf.sharpness = -200;
+			_tf.thickness = 0;
 			addChild(_tf);
 			
 			draw();
-		}
-		
-		private function addTextLineToContainer(textLine:flash.text.engine.TextLine):void
-		{
-			this.addChild(textLine);
 		}
 		
 		
@@ -127,19 +160,10 @@ package com.bit101.components
 			}
 			
 			_tf.text = _text;
+			_tf.autoSize = this.align;
 			
-			if(_autoSize)
-			{
-				_tf.autoSize = TextFieldAutoSize.LEFT;
-				_width = _tf.width;
-			}
-			else
-			{
-				_tf.autoSize = TextFieldAutoSize.NONE;
-				_tf.width = _width;
-			}
-			
-			_height = _tf.height = HEIGHT;
+			_width = _tf.width;
+			_height = _tf.height;
 		}
 		
 		///////////////////////////////////
@@ -169,6 +193,7 @@ package com.bit101.components
 		public function set autoSize(b:Boolean):void
 		{
 			_autoSize = b;
+			this.align = _autoSize === true ? TextFieldAutoSize.NONE : TextFieldAutoSize.LEFT;  
 		}
 		public function get autoSize():Boolean
 		{

@@ -1,10 +1,10 @@
 package net.fundekave.lib
 {
-	import de.popforge.imageprocessing.core.Image;
+	/*import de.popforge.imageprocessing.core.Image;
 	import de.popforge.imageprocessing.core.ImageFormat;
 	import de.popforge.imageprocessing.filters.color.ContrastCorrection;
 	import de.popforge.imageprocessing.filters.color.LevelsCorrection;
-	import de.popforge.imageprocessing.filters.convolution.Sharpen;
+	import de.popforge.imageprocessing.filters.convolution.Sharpen;*/
 	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -25,7 +25,6 @@ package net.fundekave.lib
 		public static const INFO:String = 'info';
 		
 		private var bmpdOrig:BitmapData;
-		private var al_jpegencoder: Object;
 		
 		public var _resultBmpData:BitmapData;
 		public function get resultBmpData():BitmapData {
@@ -99,7 +98,7 @@ package net.fundekave.lib
         		bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
         		bmpdOrig.draw( image, null, null, null, null, true );
 				//---remove image
-				image.addEventListener(Event.REMOVED_FROM_STAGE, onImageRemoved,false,0,true);
+				image.addEventListener(Event.REMOVED, onImageRemoved,false,0,true);
 			}
         	imageBmp.bitmapData.dispose();
         	image.unload(); 	
@@ -107,7 +106,7 @@ package net.fundekave.lib
   		}
 		
 		private function applyFilters(bmpd:BitmapData):BitmapData {
-			if(filtersList)
+			/*if(filtersList)
 				if(filtersList.length() > 0) {
 					var popImage:Image = new Image(bmpd.width, bmpd.height, ImageFormat.RGB);
 					popImage.loadBitmapData( bmpd );
@@ -135,12 +134,12 @@ package net.fundekave.lib
 					
 					popImage.dispose();
 					popImage = null;
-				}
+				}*/
 			return bmpd;
 		}
 		
   		private function onImageRemoved(e:Event):void {
-  			(e.target as Loader).removeEventListener(Event.REMOVED_FROM_STAGE, onBmpRemoved);
+  			e.target.removeEventListener(Event.REMOVED, onBmpRemoved);
         	//---time for filtering on bmp bitmapdatas
         	//---filtering
 			bmpdOrig = this.applyFilters(bmpdOrig); 
@@ -241,12 +240,11 @@ package net.fundekave.lib
         public function dispose():void {
         	if(_resultBmpData) _resultBmpData.dispose();
 			_resultBmpData = null;
-			al_jpegencoder = null;
 			if(resultBytes) resultBytes.clear();
 			resultBytes = null;
 			if(bmpdOrig) bmpdOrig.dispose();
 			bmpdOrig = null;
-        	this.parent.removeChild( this );
+			if(this.parent) this.parent.removeChild( this );
         }
 		
 		static public function scaleCalc(originalWidth:Number,originalHeight:Number, maxWidth:Number, maxHeight:Number):Rectangle {

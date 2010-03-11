@@ -1,31 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?>
-<fu:Container xmlns:fx="http://ns.adobe.com/mxml/2009"
-	xmlns:fu="net.fundekave.*"
-	xmlns:bit101="com.bit101.components.*"
-	width="175" height="{thumbMaxHeight + 10}"
-	backgroundColor="{0xddddee}"
-	>
+package net.fundekave.fuup.view.components
+{
+	import com.bit101.components.Component;
+	import com.bit101.components.Label;
+	import com.bit101.components.VBox;
+	import com.bit101.components.Window;
 	
-	<fx:Script>
-		<![CDATA[
-			import gs.TweenLite;
-			import gs.easing.Quad;
+	import flash.display.Bitmap;
+	import flash.display.Loader;
+	import flash.display.PixelSnapping;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.filters.DropShadowFilter;
+	import flash.net.FileReference;
+	
+	import gs.TweenLite;
+	import gs.easing.Quad;
+	
+	import net.fundekave.Application;
+	import net.fundekave.Container;
+	import net.fundekave.fuup.model.vo.FileVO;
+	import net.fundekave.lib.ImageResize;
+	
+	public class FileView extends Container
+	{
 			
-			import mx.events.CloseEvent;
-			
-			import net.fundekave.fuup.model.vo.FileVO;
-			import net.fundekave.lib.ImageResize;
-			
-			import flash.filters.DropShadowFilter;
-			import net.fundekave.Application;
-			import com.bit101.components.Component;
-			import com.bit101.components.Window;
-			/**
-			*import flash.filters.DropShadowFilte-r;
-			*import net.fundekave.Applicatio-n;
-			*import com.bit101.components.Componen-t;
-			*import com.bit101.components.Windo-w;
-			**/
+		public function FileView()
+		{
+			this.addEventListener(Event.ADDED_TO_STAGE, onStage );
+			this.setup();
+			this.width = 175;
+			this.height = thumbMaxHeight + 10;
+			this.backgroundColor = 0xdddeee;
+		}
+		private function onStage(e:Event):void {
+			this.removeEventListener(Event.ADDED_TO_STAGE, onStage );
+		}
+		
 			public static const FILE_CREATED:String = 'fileCreated';
 			public static const FILE_UPDATED:String = 'fileUpdated';
 			public static const SETTINGS_INHERIT:String = 'settingsInherit';
@@ -44,15 +54,9 @@
 			[Embed(source="/assets/show.png")]
 			private var ShowPNG:Class;
 			
-			[Bindable]
 			private var thumbMaxWidth:Number = 140;
-			[Bindable]
 			private var thumbMaxHeight:Number = 100;
-			
-			[Bindable]
-			public var statusStr:String = '';
-			
-			[Bindable]
+						
 			private var _fileVO:FileVO;
 			
 			public function get fileVO():FileVO {
@@ -72,52 +76,6 @@
 				_fileVO.file = value;
 				_fileVO.renderer = this;
 											
-				this.graphics.beginFill(0xbbbbbb);
-				this.graphics.drawRoundRect(0,0,this.width,this.height,5,5);
-				this.graphics.endFill();
-				
-				this.filters=[new DropShadowFilter(3,45,0,0.5,3,3)];
-				
-				var s1:Component = new Component();
-				s1.useHandCursor = true;
-				s1.buttonMode = true;
-				s1.addEventListener(MouseEvent.CLICK, onButtClose,false,0,true);
-				s1.width = 20;
-				s1.height = 20;
-				s1.addChild( new ClosePNG() );
-				s1.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
-				buttonBar.addChild( s1 );
-				
-				var s2:Component = new Component();
-				s2.useHandCursor = true;
-				s2.buttonMode = true;
-				s2.addEventListener(MouseEvent.CLICK, onButtCCW,false,0,true);
-				s2.width = 20;
-				s2.height = 20;
-				s2.addChild( new CCWPNG() );
-				s2.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
-				buttonBar.addChild( s2 );
-				
-				var s3:Component = new Component();
-				s3.useHandCursor = true;
-				s3.buttonMode = true;
-				s3.addEventListener(MouseEvent.CLICK, onButtCW,false,0,true);
-				s3.width = 20;
-				s3.height = 20;
-				s3.addChild( new CWPNG() );
-				s3.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
-				buttonBar.addChild( s3 );
-				
-				var s4:Component = new Component();
-				s4.useHandCursor = true;
-				s4.buttonMode = true;
-				s4.addEventListener(MouseEvent.CLICK, onButtShow,false,0,true);
-				s4.width = 20;
-				s4.height = 20;
-				s4.addChild( new ShowPNG() );
-				s4.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
-				buttonBar.addChild( s4 );
-				
 				updateThumb();
 				
 				dispatchEvent( new Event( FILE_CREATED, true ));
@@ -164,6 +122,7 @@
 					}
 					this.thumbUI.alpha = 0;
 					imageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
+					imageResize.addEventListener( ImageResize.RESIZED, drawLater ,false,0,true);
 					if(fileVO.encodedJPG) {
 						imageResize.loadBytes( fileVO.encodedJPG );
 					} else {
@@ -173,7 +132,6 @@
 							imageResize.loadReference( fileVO.file );
 						}
 					}
-					imageResize.addEventListener( ImageResize.RESIZED, drawLater ,false,0,true);
 					this.thumbUI.addChild( imageResize );
 				} else {
 					if(!fileVO.widthOriginal) {
@@ -200,13 +158,13 @@
 						statusBar.invalidate();
 				}
 				if(status!==null) {
-					this.statusStr = status;
+					this.statusLbl.text = status;
 				}
 				if(showInfo)
 				if(fileVO.encodedJPG) {
-					statusStr += ' '+fileVO.widthNew+'x'+fileVO.heightNew+' '+String(Math.round(fileVO.encodedJPG.length/1024))+'kB';
+					this.statusLbl.text += ' '+fileVO.widthNew+'x'+fileVO.heightNew+' '+String(Math.round(fileVO.encodedJPG.length/1024))+'kB';
 				} else {
-					statusStr += ' '+fileVO.widthOriginal+'x'+fileVO.heightOriginal+' '+String(Math.round(fileVO.file.size/1024))+'kB';	
+					this.statusLbl.text += ' '+fileVO.widthOriginal+'x'+fileVO.heightOriginal+' '+String(Math.round(fileVO.file.size/1024))+'kB';	
 				}
 			}
 			
@@ -221,7 +179,7 @@
 				
 			}
 			private function onRotateTween():void {
-				_fileVO.rotation = Number(rotateTo);
+				thumbUI.rotation = _fileVO.rotation = Number(rotateTo);
 			}
 			
 			private var inheritWasTrue:Boolean = false;
@@ -265,7 +223,7 @@
 				
 				previewWin.width = fileVO.widthOriginal;
 				previewWin.height = fileVO.heightOriginal + 20;
-				previewWin.addEventListener( CloseEvent.CLOSE, onClosePreview ,false,0,true);
+				previewWin.addEventListener( Window.CLOSE, onClosePreview ,false,0,true);
 				
 				previewWin.x = -previewWin.width;
 				previewWin.y = -previewWin.height;
@@ -310,7 +268,7 @@
 				TweenLite.to( loader, 0.5, {alpha:1,ease:Quad.easeInOut} );
 			}
 						
-			private function onClosePreview( e:CloseEvent ):void {
+			private function onClosePreview( e:Event ):void {
 				previewWin = null;
 				fileVO.file.data.clear();
 				Application.application.restoreHeight();
@@ -346,18 +304,75 @@
 				showResized();
 			}
 			
-		]]>
-	</fx:Script>
-	
-	<fu:Container masked="true" backgroundColor="0x000000" border="0" x="5" y="5" width="{thumbMaxWidth}" height="{thumbMaxHeight}">
-		<fu:Container id="thumbUI" rotation="{_fileVO.rotation}" x="{thumbMaxWidth/2}" y="{thumbMaxHeight/2}" />
-	</fu:Container>
-	
-	<!-- status bar -->
-	<fu:Container id="statusBar" x="5" width="{thumbMaxWidth}" y="{thumbMaxHeight-15}" height="15">
-		<bit101:Label x="0" y="-2" id="statusLbl" text="{statusStr}" />
-	</fu:Container>
-	
-	<bit101:VBox id="buttonBar" x="150" y="5" spacing="6" />
-	
-</fu:Container>
+			private var thumbUI:Container;
+			private var statusBar:Container;
+			private var statusLbl:Label;
+			private var buttonBar:VBox;
+			private var s1:Component;
+			private var s2:Component;
+			private var s3:Component;
+			private var s4:Component;
+			private function setup():void {
+				this.graphics.beginFill(0xbbbbbb);
+				this.graphics.drawRoundRect(0,0,this.width,this.height,5,5);
+				this.graphics.endFill();
+				
+				this.filters=[new DropShadowFilter(3,45,0,0.5,3,3)];
+				
+				//thumb holder
+				var box:Container = new Container(this,5,5);
+				box.width = thumbMaxWidth;
+				box.height = thumbMaxHeight
+				box.border = 0;
+				box.backgroundColor = 0x000000;
+				box.masked = true;
+				thumbUI = new Container(box,thumbMaxWidth/2,thumbMaxHeight/2);
+				//status bar
+				statusBar = new Container(this,5,thumbMaxHeight-15);
+				statusBar.width = thumbMaxWidth;
+				statusBar.height = 15;
+				statusLbl = new Label(statusBar,0,-2);
+				//button bar
+				buttonBar = new VBox(this,150,5);
+				buttonBar.spacing = 6;
+								
+				var s1:Component = new Component(buttonBar);
+				s1.useHandCursor = true;
+				s1.buttonMode = true;
+				s1.width = 20;
+				s1.height = 20;
+				s1.addChild( new ClosePNG() );
+				s1.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
+				
+				
+				var s2:Component = new Component(buttonBar);
+				s2.useHandCursor = true;
+				s2.buttonMode = true;
+				s2.width = 20;
+				s2.height = 20;
+				s2.addChild( new CCWPNG() );
+				s2.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
+				
+				var s3:Component = new Component(buttonBar);
+				s3.useHandCursor = true;
+				s3.buttonMode = true;
+				s3.width = 20;
+				s3.height = 20;
+				s3.addChild( new CWPNG() );
+				s3.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
+				
+				var s4:Component = new Component(buttonBar);
+				s4.useHandCursor = true;
+				s4.buttonMode = true;
+				s4.width = 20;
+				s4.height = 20;
+				s4.addChild( new ShowPNG() );
+				s4.filters=[new DropShadowFilter(2,45,0,0.5,2,2)];
+				
+				s1.addEventListener(MouseEvent.CLICK, onButtClose,false,0,true);
+				s2.addEventListener(MouseEvent.CLICK, onButtCCW,false,0,true);
+				s3.addEventListener(MouseEvent.CLICK, onButtCW,false,0,true);
+				s4.addEventListener(MouseEvent.CLICK, onButtShow,false,0,true);
+			}
+	}
+}

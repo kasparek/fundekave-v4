@@ -14,9 +14,9 @@ package net.fundekave.fuup.model.vo
 		public var renderer:FileView;
 		public var encodedJPG:ByteArray;
 		
-		[Bindable]
+		
 		private var _filename:String;
-		[Bindable]
+		
 		public function get filename():String { return _filename; }
 		public function set filename(s:String):void {
 			this._filename = s;
@@ -24,29 +24,21 @@ package net.fundekave.fuup.model.vo
 		}
 		public var filenameOriginal:String;
 		
-		[Bindable]
+		
 		public var widthOriginal:Number;
-		[Bindable]
 		public var heightOriginal:Number;
 		
-		[Bindable]
 		public var sizeInheritance:Boolean = true;
-		[Bindable]
 		public var widthMax:Number;
-		[Bindable]
 		public var heightMax:Number;
 		
-		[Bindable]
 		public var widthNew:Number;
-		[Bindable]
 		public var heightNew:Number;
 		
 		public var rotationCurrent:Number = 0;
 		public var rotationFromOriginal:Number = 0;
-		[Bindable]
 		public var rotation:Number = 0;
 		
-		[Bindable]
 		public var outputQuality:Number = 100;
 		
 		public var crop:Boolean = false;

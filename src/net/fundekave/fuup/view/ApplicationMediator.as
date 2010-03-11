@@ -3,6 +3,7 @@ package net.fundekave.fuup.view
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.common.constants.ActionConstants;
 	import net.fundekave.fuup.common.constants.StateConstants;
+	import net.fundekave.fuup.model.ConfigProxy;
 	
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.mediator.Mediator;
@@ -54,7 +55,8 @@ package net.fundekave.fuup.view
             		trace(stateName);
             		switch(stateName) {
 						case StateConstants.STATE_SETUPING:
-							app.setup();
+							var cnfProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+							app.setup( cnfProxy.lang );
 							facade.registerMediator( new FilesViewMediator( app.filesView ) );
 							break;
             			case StateConstants.STATE_PROCESSING:
