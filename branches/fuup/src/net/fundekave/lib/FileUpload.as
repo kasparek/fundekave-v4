@@ -1,5 +1,7 @@
 package net.fundekave.lib
 {
+	import com.dynamicflash.util.Base64;
+	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -10,9 +12,7 @@ package net.fundekave.lib
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
-	
-	import mx.utils.Base64Encoder;
-	
+		
 	public class FileUpload extends EventDispatcher
 	{
 		public static const COMPLETE:String = 'complete';
@@ -47,9 +47,7 @@ package net.fundekave.lib
 			setTimeout( ref.data.clear, 100 );
 		}
 		public function uploadBytes( bytes:ByteArray ):void {
-			var b64enc:Base64Encoder = new Base64Encoder();
-        	b64enc.encodeBytes( bytes );
-        	var encodedStr:String = b64enc.toString();
+        	var encodedStr:String = Base64.encodeByteArray( bytes );
         	//---prepare all chunks
         	if( chunkSize > 0) {
 	        	numChunks = Math.ceil( encodedStr.length / chunkSize );

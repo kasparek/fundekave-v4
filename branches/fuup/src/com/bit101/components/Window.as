@@ -35,8 +35,6 @@ package com.bit101.components
 	
 	import gs.TweenLite;
 	
-	import mx.events.CloseEvent;
-
 	public class Window extends Component
 	{
 		private var _title:String;
@@ -51,6 +49,8 @@ package com.bit101.components
 		private var _hasMinimizeButton:Boolean = false;
 		private var _hasCloseButton:Boolean = false;
 		private var _minimized:Boolean = false;
+		
+		public static const CLOSE:String = 'close';
 		
 		public var closeTween:Object;
 		public var closeTweenDuration:Number = 0.5;
@@ -208,7 +208,7 @@ package com.bit101.components
 			
 		}
 		private function onCloseTween():void {
-			dispatchEvent( new CloseEvent( CloseEvent.CLOSE ));
+			dispatchEvent( new Event( CLOSE ));
 			while(numChildren>0) removeChildAt(0);
 			this.parent.removeChild( this );
 		}

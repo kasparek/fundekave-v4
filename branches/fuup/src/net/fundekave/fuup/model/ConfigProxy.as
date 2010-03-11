@@ -48,7 +48,7 @@ package net.fundekave.fuup.model
 			}
 			
 			sendNotification( ApplicationFacade.CONFIG_LOADING );
-			var request:URLRequest = new URLRequest(((configUrl)?(configUrl):(ApplicationFacade.SERVICE_CONFIG_URL)) + ((configUrl.indexOf('?')>-1)?('&'):('?')) + 'r='+Math.random());
+			var request:URLRequest = new URLRequest(((configUrl!==null)?(configUrl):(ApplicationFacade.SERVICE_CONFIG_URL)) + ((configUrl.indexOf('?')>-1)?('&'):('?')) + 'r='+Math.random());
 			var loader:URLLoader = new URLLoader();
 			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler,false,0,true );
 			loader.addEventListener(Event.COMPLETE, loaderCompleteHandler,false,0,true );

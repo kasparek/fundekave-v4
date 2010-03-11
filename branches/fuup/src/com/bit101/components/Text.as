@@ -30,7 +30,8 @@ package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	import flash.text.TextField;
+	import flash.text.AntiAliasType;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
@@ -40,9 +41,73 @@ package com.bit101.components
 	{
 		private var _tf:TLFTextField;
 		private var _text:String = "";
-		private var _editable:Boolean = true;
-		private var _panel:Panel;
+		private var _editable:Boolean = false;
 		
+		private var recreate:Boolean = false;
+		private var _color:uint = Style.LABEL_TEXT;
+		public function set color(v:uint):void {
+			_color = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get color():uint {
+			return _color;
+		}
+		private var _size:uint = Style.SIZE_TEXT;
+		public function set size(v:uint):void {
+			_size = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get size():uint {
+			return _size;
+		}
+		private var _font:String = Style.FONT_TEXT;
+		public function set font(v:String):void {
+			_font = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get font():String {
+			return _font;
+		}
+		
+		private var _leading:int;
+		public function set leading(v:int):void {
+			_leading = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get leading():int {
+			return _leading;
+		}
+		
+		private var _textAlign:String;
+		public function set textAlign(v:String):void {
+			_textAlign = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get textAlign():String {
+			return _textAlign;
+		}
+		
+		private var _align:String = TextFieldAutoSize.LEFT;
+		public function set align(v:String):void {
+			_align = v;
+			recreate = true;
+			this.invalidate();
+		}
+		public function get align():String {
+			return _align;
+		}
+		
+		
+		override public function set width(v:Number):void {
+			super.width = v
+			recreate = true;
+			this.invalidate();
+		}
 		
 		/**
 		 * Constructor
@@ -51,11 +116,15 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The initial text to display in this component.
 		 */
-		public function Text(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "")
+		public function Text(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0, size:uint=0,font:String=null,align:String=null)
 		{
 			_text = text;
+			if(color>0) this.color = color;
+			if(size>0) this.size = size;
+			if(font) this.font = font;
+			if(align) this.align = align;
 			super(parent, xpos, ypos);
-			setSize(200, 100);
+			//setSize(200, 100);
 		}
 		
 		/**
@@ -71,21 +140,26 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			_panel = new Panel(this);
-			_panel.color = 0xffffff;
-			
 			_tf = new TLFTextField();
-			_tf.x = 2;
-			_tf.y = 0;
-			_tf.height = _height;
+			_tf.width  = _width;
 			_tf.embedFonts = true;
+			_tf.selectable = false;
+			_tf.antiAliasType = AntiAliasType.ADVANCED;
+			_tf.mouseEnabled = false;
 			_tf.multiline = true;
 			_tf.wordWrap = true;
-			_tf.selectable = true;
-			_tf.type = TextFieldType.INPUT;
-			_tf.defaultTextFormat = new TextFormat("Ronda", 8, Style.LABEL_TEXT);
-			_tf.addEventListener(Event.CHANGE, onChange,false,0,true );			
+			//_tf.type = TextFieldType.INPUT;
+			//_tf.addEventListener(Event.CHANGE, onChange,false,0,true );
+			var tformat:TextFormat = new TextFormat( this.font, this.size,  this.color );
+			if(textAlign) tformat.align = textAlign;
+			if(leading) tformat.leading = leading;
+			
+			_tf.setTextFormat( tformat );
+			_tf.text = _text;
+			_tf.autoSize = this.align;
 			addChild(_tf);
+			
+			draw();
 		}
 		
 		
@@ -102,11 +176,15 @@ package com.bit101.components
 		{
 			super.draw();
 			
-			_panel.setSize(_width, _height);
+			if(recreate===true) {
+				recreate = false;
+				this.removeChild( _tf );
+				this.addChildren();
+			}
 			
-			_tf.width = _width - 4;
-			_tf.height = _height - 4;
 			_tf.text = _text;
+			_tf.autoSize = this.align;
+			
 			if(_editable)
 			{
 				_tf.mouseEnabled = true;
@@ -119,6 +197,8 @@ package com.bit101.components
 				_tf.selectable = false;
 				_tf.type = TextFieldType.DYNAMIC;
 			}
+			
+			_height = _tf.height;
 		}
 		
 		
