@@ -252,8 +252,8 @@ class FUser {
 	}
 
 	function pageStat($insert=false,$count=false,$pageId=null,$userId=null) {
-		if($pageId===null) $pageId = $this->pageVO->pageId;
-		if($userId===null) $pageId = $this->userVO->userId;
+		if(empty($pageId)) $pageId = $this->pageVO->pageId;
+		if(empty($userId)) $userId = $this->userVO->userId;
 		if($insert===true) {
 			if($count===true) $num = FDBTool::getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='". (int) $userId."'");
 			else $num = 1;
@@ -262,15 +262,30 @@ class FUser {
 			$num = 1;
 			$str = 'hit=hit+'.$num;
 		}
+		//---get type
+		if($pageId==$this->pageVO->pageId) {
+			$typeId = $this->pageVO->typeId;
+		}
+		if(empty($typeId)) {
+			$pageVO = new PageVO($pageId,true);
+			$typeId = $pageVO->typeId; 
+		}
+		
 	  //---write
+	  /*
 		$q = "select count(1) from sys_pages_counter where pageId='".$pageId."' and userId='".(int) $userId."' and dateStamp=NOW()";
 		if(FDBTool::getOne($q)==0) {
-			$pageVO = new PageVO($pageId,true);
 			$q = "INSERT low_priority INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`,`ins`) 
 			VALUES ('".$pageId."', '".$pageVO->typeId."', '".$userId."', NOW() , '".(($insert===true)?(0):($num))."','".(($insert===true)?($num):(0))."')";
 		} else {
 			$q = "update low_priority sys_pages_counter set ".$str." where pageId='".$pageId."' and dateStamp=now() AND userId='". (int) $userId."'";
 		}
+		*/
+		
+		$q = "insert delayed into sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`,`ins`) 
+		values ('".$pageId."', '".$typeId."', '".$userId."', NOW() , '".(($insert===true)?(0):($num))."','".(($insert===true)?($num):(0))."') 
+		on duplicate key update ".$str;
+		
 		FDBTool::query($q);
 	}
 
