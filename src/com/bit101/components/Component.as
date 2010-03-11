@@ -47,9 +47,6 @@ package com.bit101.components
 	public class Component extends Sprite
 	{
 		
-		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven")]
-		private var Ronda:Class;
-		
 		protected var _width:Number = 0;
 		protected var _height:Number = 0;
 		
