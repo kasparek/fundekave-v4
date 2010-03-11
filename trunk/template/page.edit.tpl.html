@@ -12,13 +12,12 @@
     <!-- BEGIN categorytab --><li><a href="#tabs-7">Kategorie</a></li><!-- END categorytab -->
     <!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Levy panel</a></li><!-- END leftpaneltab -->
   </ul>
-  
-  <div class="buttonBar">
+  	
+<div id="tabs-1">
+	<fieldset class="buttonBar">
    	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
 		<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
-	</div>
-	
-<div id="tabs-1">
+	</fieldset>
 	<fieldset>
 		<legend>Nastaveni</legend>
 		<!-- BEGIN pageowner --><label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br /><!-- END pageowner -->
@@ -37,16 +36,17 @@
     <!-- END categories -->
     <label>Popis</label>
     <textarea id="{PAGEDESCRIPTIONID}" class="draftable" name="description">{PAGEDESCRIPTION}</textarea><br />
-    	
 	  <!-- BEGIN content -->  
 	  <label>Zahlaví / Obsah</label>
-	   <textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
+	  <textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br />
 	  <!-- END content -->  
-    
 	</fieldset>
 </div>
 <!-- BEGIN extended -->
 <div id="tabs-9">
+	<fieldset class="buttonBar">
+   	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+	</fieldset>
 	<!-- BEGIN pageavatarhandler -->
 	<fieldset>
 		<legend>Avatar</legend>      
@@ -96,16 +96,25 @@
 <!-- BEGIN end -->
 <!-- BEGIN perm -->
 <div id="tabs-2">
+	<fieldset class="buttonBar">
+   	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+	</fieldset>
    {PAGEPERMISIONSFORM}
 </div>
 <!-- END perm -->  
 <!-- BEGIN relations -->
 <div id="tabs-3">
+	<fieldset class="buttonBar">
+   	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+	</fieldset>
     {RELATIONSFORM}
 </div>
 <!-- END relations -->
 <!-- BEGIN forumspecific -->
 <div id="tabs-4">
+	<fieldset class="buttonBar">
+   	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+	</fieldset>
 <fieldset>
 <legend>Nastenka klubu</legend>
 <textarea id="{HOMEID}" name="forumhome" class="markitup draftable largeTextarea">{CONTENT}</textarea>{CONTENTTOOLBOX}<br />
@@ -113,6 +122,9 @@
 <!-- END forumspecific -->
 <!-- BEGIN galeryspecificcontent -->
 <div id="tabs-5">
+<fieldset class="buttonBar">
+  <input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+</fieldset>
 <fieldset>
 <legend>Seznam fotografii</legend>
 <label>Celkem v galerii:</label><span id="fotoTotal">{FOTOTOTAL}</span><br />
@@ -136,14 +148,18 @@
 
 <!-- BEGIN categoryedit -->
 <div id="tabs-7">
-<a name="tabs-7"></a>
+<fieldset class="buttonBar">
+  	<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+</fieldset>
 {PAGECATEGORYEDIT}
 </div>
 <!-- END categoryedit -->
 
 <!-- BEGIN leftpaneledit -->
 <div id="tabs-8">
-<a name="tabs-8"></a>
+<fieldset class="buttonBar">
+  <input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+</fieldset>
 {LEFTPANELEDIT}
 </div>
 <!-- END leftpaneledit -->
