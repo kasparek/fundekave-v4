@@ -158,44 +158,37 @@ package net.fundekave.fuup.view.components
 			currFileView.fileVO = new FileVO();
 			currFileView.fileVO.showThumb = this.displayContent;
 			currFileView.lang = this.lang;
-			
 			//---set filesbox size and child position
-			currFileView.alpha = 0;
-			var posx:Number = (filesBox.width/2) * Math.random();
-			var posy:Number = (filesBox.height/2) * Math.random();
-			currFileView.rotation = 180 * Math.random();
-			currFileView.move(posx,posy);
+			var pos:Object = this.getNextPos();
+			currFileView.x = pos.x;
+			currFileView.y = pos.y; 
 			//---wait till filesBox is resized with new element
 			currFileView.addEventListener(Event.ADDED_TO_STAGE, onFileViewFrame );
 			filesBox.addChild( currFileView );
 			//setTimeout( onFileViewFrame, 100, null);
 		}
-		
-		private function addToLayout(child:DisplayObject):void {
-			//---set filesbox size and child position
-			
+				
+		private function getNextPos(index:int=-1):Object {
+			var total:Number = index>-1 ? index : filesBox.numChildren;
+			var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH+GAP_HORIZONTAL));
+			var rowsDone:Number = Math.floor(total / cols);
+			var rest:Number = total - (cols*rowsDone);
+			return {x:rest * (FileView.WIDTH+GAP_HORIZONTAL),y:rowsDone * (FileView.HEIGHT+GAP_VERTICAL)};
 		}
 		
 		private function resetLayout():void {
 			if(filesBox.numChildren>0) {
 				var delay:Number = 0;
 				for(var i:int=0; i<filesBox.numChildren; i++) {
-					var child:DisplayObject = filesBox.getChildAt(i)
-					var total:Number = i;
-					var cols:Number = Math.floor(filesBox.width / (child.width+GAP_HORIZONTAL));
-					var rowsDone:Number = Math.floor(total / cols);
-					var rest:Number = total - (cols*rowsDone);
-					
-					var posx:Number = rest * (child.width+GAP_HORIZONTAL);
-					var posy:Number = rowsDone * (child.height+GAP_VERTICAL);
-					if(child.x != posx || child.y != posy) {
+					var child:DisplayObject = filesBox.getChildAt(i) as DisplayObject; 
+					var pos:Object = this.getNextPos(i);
+					if(child.x != pos.x || child.y != pos.y) {
+						child.x = pos.x;
+						child.y = pos.y;
 						trace('LAYOUT::SETTINGNEWPOSITION');  
-						TweenLite.to(child,0.5,{x:posx, alpha:1,y:posy,rotation:0
-							,delay:delay,ease:Quad.easeInOut, overwrite:0
-						});
-						delay +=0.01;
 					}
 				}
+				var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH+GAP_HORIZONTAL));
 				var rows:Number = Math.ceil( filesBox.numChildren / cols );
 				filesBox.height = rows * currFileView.height;
 			}
@@ -255,9 +248,8 @@ package net.fundekave.fuup.view.components
 						}
 						
 					} else {
-						
+						fileBoxHeight = 0;
 						Application.application.height = Fuup.HEIGHT;
-						
 					}
 					dispatchEvent( new Event(RESIZE) );
 				}
@@ -295,11 +287,11 @@ package net.fundekave.fuup.view.components
 			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
 			correctionsCheckbox.selected = true;
 			
-			processButt = new PushButton(box,0,0,lang.process,function():void{doAction(ACTION_PROCESS)});
+			processButt = new PushButton(box,0,0,lang.process,onProcessClick);
 			processButt.width = 60;
 			processButt.visible = !_autoUpload;
 			
-			uploadButt = new PushButton(box,0,0,lang.upload,function():void{doAction(ACTION_UPLOAD)});
+			uploadButt = new PushButton(box,0,0,lang.upload,onUploadClick);
 			uploadButt.width = 60;
 			uploadButt.visible = !autoUpload;
 			
@@ -323,6 +315,13 @@ package net.fundekave.fuup.view.components
 			filesBox.visible = displayContent;
 			
 			filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+		}
+		
+		private function onProcessClick(e:Event):void {
+			doAction(ACTION_PROCESS)
+		}
+		private function onUploadClick(e:Event):void {
+			doAction(ACTION_UPLOAD)
 		}
 		
 	}

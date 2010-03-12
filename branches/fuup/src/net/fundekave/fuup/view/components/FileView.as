@@ -23,13 +23,19 @@ package net.fundekave.fuup.view.components
 	
 	public class FileView extends Container
 	{
-			
+		
+		public static const WIDTH:Number = 175;
+		public static const HEIGHT:Number = 110;
+		
+		private var thumbMaxWidth:Number = 140;
+		private var thumbMaxHeight:Number = 100;
+		
 		public function FileView()
 		{
 			this.addEventListener(Event.ADDED_TO_STAGE, onStage );
 			this.setup();
-			this.width = 175;
-			this.height = thumbMaxHeight + 10;
+			this.width = WIDTH;
+			this.height = HEIGHT;
 			this.backgroundColor = 0xdddeee;
 		}
 		private function onStage(e:Event):void {
@@ -53,10 +59,7 @@ package net.fundekave.fuup.view.components
 			private var CWPNG:Class;
 			[Embed(source="/assets/show.png")]
 			private var ShowPNG:Class;
-			
-			private var thumbMaxWidth:Number = 140;
-			private var thumbMaxHeight:Number = 100;
-						
+									
 			private var _fileVO:FileVO;
 			
 			public function get fileVO():FileVO {
@@ -172,11 +175,14 @@ package net.fundekave.fuup.view.components
 			private function rotate(dgDiff:Number):void {
 				rotateTo += dgDiff;
 				
-				TweenLite.to( _fileVO, 0.5, {rotation:rotateTo, ease:Quad.easeInOut, onComplete:onRotateTween} );
+				TweenLite.to( _fileVO, 0.5, {rotation:rotateTo, ease:Quad.easeInOut, onUpdate:onRotateUpdateTween , onComplete:onRotateTween} );
 				
 				if(rotateTo >= 360) rotateTo -= 360;
 				if(rotateTo < 0) rotateTo += 360;  
 				
+			}
+			private function onRotateUpdateTween():void {
+				thumbUI.rotation = _fileVO.rotation;
 			}
 			private function onRotateTween():void {
 				thumbUI.rotation = _fileVO.rotation = Number(rotateTo);

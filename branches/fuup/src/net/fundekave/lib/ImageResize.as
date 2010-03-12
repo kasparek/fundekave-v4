@@ -6,6 +6,12 @@ package net.fundekave.lib
 	import de.popforge.imageprocessing.filters.color.LevelsCorrection;
 	import de.popforge.imageprocessing.filters.convolution.Sharpen;*/
 	
+	import de.popforge.imageprocessing.core.Image;
+	import de.popforge.imageprocessing.core.ImageFormat;
+	import de.popforge.imageprocessing.filters.color.ContrastCorrection;
+	import de.popforge.imageprocessing.filters.color.LevelsCorrection;
+	import de.popforge.imageprocessing.filters.convolution.Sharpen;
+	
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -106,7 +112,7 @@ package net.fundekave.lib
   		}
 		
 		private function applyFilters(bmpd:BitmapData):BitmapData {
-			/*if(filtersList)
+			if(filtersList)
 				if(filtersList.length() > 0) {
 					var popImage:Image = new Image(bmpd.width, bmpd.height, ImageFormat.RGB);
 					popImage.loadBitmapData( bmpd );
@@ -134,7 +140,7 @@ package net.fundekave.lib
 					
 					popImage.dispose();
 					popImage = null;
-				}*/
+				}
 			return bmpd;
 		}
 		
@@ -188,15 +194,16 @@ package net.fundekave.lib
   					bmp.y = bmp.height;
   				break;
   			}
-        	
+			resizeDispatched = false;
         	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2,false,0,true );
         	this.addChild( bmp );
         }
-        
+        private var resizeDispatched:Boolean;
         private function onImageReady2(e:Event):void {
+			
         	var bmp:Bitmap = e.target as Bitmap;
         	bmp.removeEventListener(Event.ENTER_FRAME, onImageReady2);
-        	
+        	if(resizeDispatched===false){
         	//---draw resized rotated bitmap
         	_resultBmpData = new BitmapData(Math.round(bmp.width), Math.round(bmp.height) );
         	_resultBmpData.draw( this, null, null, null, null, true ); 
@@ -209,7 +216,9 @@ package net.fundekave.lib
         	bmp.parent.removeChild( bmp );
         	
         	//---dispatch event image resized
+			resizeDispatched = true;
         	dispatchEvent( new Event( RESIZED ) );
+			}
         }
         
         private function onBmpRemoved(e:Event):void {

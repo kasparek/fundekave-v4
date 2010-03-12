@@ -54,10 +54,15 @@ package net.fundekave.fuup.view
 					var stateName:String = State( note.getBody() ).name;
             		trace(stateName);
             		switch(stateName) {
+						case StateConstants.STATE_INITING:
+							
+							break;
 						case StateConstants.STATE_SETUPING:
-							var cnfProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
-							app.setup( cnfProxy.lang );
-							facade.registerMediator( new FilesViewMediator( app.filesView ) );
+							if(!app.filesView) {
+								var cnfProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
+								app.setup( cnfProxy.lang );
+								facade.registerMediator( new FilesViewMediator( app.filesView ) );
+							}
 							break;
             			case StateConstants.STATE_PROCESSING:
             				sendNotification( ApplicationFacade.IMAGES_PROCESS );
