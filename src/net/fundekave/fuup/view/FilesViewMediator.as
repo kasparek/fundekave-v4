@@ -57,7 +57,7 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onFileRemove( e:Event ):void {
-			if(stateName == StateConstants.STATE_SETUPING) {
+			if(stateName===null || stateName == StateConstants.STATE_SETUPING) {
 				var fileVO:FileVO = (e.target as FileView).fileVO;
 				sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
 			}
@@ -73,6 +73,7 @@ package net.fundekave.fuup.view
 		}
 		
 		protected function onSettingsChange(e:Event):void {
+			trace(e);
 			/*
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			proxy.widthMax = Number( filesView.newWidthInput.text );

@@ -29,9 +29,11 @@ package
 		}
 		
 		public function setup(lang:Object):void {
-			filesView = new FilesView(this,0,0,lang);
-			filesView.width = WIDTH;
-			filesView.height = HEIGHT;
+			if(!filesView) {
+				filesView = new FilesView(this,0,0,lang);
+				filesView.width = WIDTH;
+				filesView.height = HEIGHT;
+			}
 		}
 	}
 }
