@@ -289,6 +289,7 @@ class FCategory extends FDBTool {
 				$catVO = new CategoryVO();
 				$catVO->name = $newCat;
 				$catVO->typeId = $typeId;
+				if(!empty(HOME_PAGE)) $catVO->pageIdTop = HOME_PAGE;
 				$catVO->save();
 				return $catVO->categoryId;
 			}
