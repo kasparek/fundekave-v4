@@ -6,6 +6,7 @@ class CategoryVO extends Fvob {
 
 	var $columns = array('categoryId' => 'categoryId',
 	'typeId' => 'typeId',
+	'pageIdTop' => 'pageIdTop',
 	'name' => 'name',
 	'description' => 'description',
 	'ord' => 'ord',
@@ -14,6 +15,7 @@ class CategoryVO extends Fvob {
 
   var $categoryId;
   var $typeId;
+  var $pageIdTop;
   var $name;
   var $description = '';
   var $ord = 0;
