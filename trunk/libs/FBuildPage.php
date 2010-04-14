@@ -417,8 +417,8 @@ class FBuildPage {
 		$cachedArr = $cache->getData('profile','FSystem');
 		$start = $cachedArr[0]['time'];
 
-		$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0);
-		$tpl->setVariable("COUNTER", $pagesSum.'::'.round((FProfiler::getmicrotime()-$start),3));
+		//$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0); $pagesSum.'::'.
+		$tpl->setVariable("COUNTER", round((FProfiler::getmicrotime()-$start),3));
 		FProfiler::profile('FBuildPage--footer');
 		//---user tooltips - one per user avatar displayed
 		$ttips = '';
