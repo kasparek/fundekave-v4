@@ -45,7 +45,7 @@ class UserVO extends Fvob {
 	var $zavatar = 1;
 	var $zforumico = 1;
 	var $zgalerytype = 0;
-	var $deleted;
+	var $deleted = 0;
 	var $hit;
 
 	//---security
