@@ -263,7 +263,15 @@ function draftCheck(TAid) {
 
 var waitingTA;
 var markitupScriptsLoaded = false;
-function markItUpInit() { var textid='.markitup'; if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } $(textid).markItUp(mySettings); markitupScriptsLoaded = true; };
+function markItUpInit() { 
+setTimeout("markItUpInitLater()",250); 
+};
+function markItUpInitLater() { 
+var textid='.markitup'; 
+if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } 
+$(textid).markItUp(mySettings); 
+markitupScriptsLoaded = true; 
+};
 
 function addTASwitch() {
 	$('.markitup').each( function() { $(this).before('<span class="textAreaResize"><a href="?textid='+$(this).attr('id')+'" class="toggleToolSize"></a></span>'); });
@@ -504,7 +512,7 @@ function sendAjax(action,k) {
 						            try {
 							            el.sheet.cssRule;
 						            } catch(e){
-							            setTimeout(arguments.callee, 20);
+							            setTimeout(arguments.callee, 200);
 							            return;
 						            };
 						            call();
