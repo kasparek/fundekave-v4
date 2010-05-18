@@ -82,7 +82,16 @@
 			updateState($fileState,$userId,$userRecipient,$state);
 			break;
 		case 5:
-			$log = checkState($fileState,$userId);
+		  $finish = time() + 50;
+			while (count($log)==0) {
+				$now = time();
+				usleep(10000);
+				if ($now <= $finish) {
+					$log = checkState($fileState,$userId);
+				} else {
+					break;	
+				}  
+			}
 			break;
 	}
 	
