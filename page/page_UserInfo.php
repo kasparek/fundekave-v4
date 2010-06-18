@@ -52,7 +52,7 @@ class page_UserInfo implements iPage {
 		$tpl->setVariable("DATECREATED",$userVO->dateCreated);
 		$tpl->setVariable("DATEUPDATED",$userVO->dateLastVisit);
 
-		if($isFriend === true) {
+		if($isFriend === true || $user->userVO->userId == $userVO->userId) {
 			if(!empty($userVO->email)) $tpl->setVariable('EMAIL',$userVO->email);
 			if(!empty($userVO->icq)) $tpl->setVariable('ICQ',$userVO->icq);
 
@@ -112,6 +112,7 @@ class page_UserInfo implements iPage {
 			if(count($arrLinks)>0){
 				//pages
 				$tpl->setVariable('FORUMS',FPages::printPagelinkList($arrLinks));
+				$tpl->touchBlock('tabforums');
 				$showPagesTab = true;
 			}
 
@@ -130,6 +131,7 @@ class page_UserInfo implements iPage {
 			if(count($arrLinks)>0){
 				//pages
 				$tpl->setVariable('BLOGS',FPages::printPagelinkList($arrLinks));
+				$tpl->touchBlock('tabblogs');
 				$showPagesTab = true;
 			}
 
@@ -148,6 +150,7 @@ class page_UserInfo implements iPage {
 			if(count($arrLinks)>0){
 				//pages
 				$tpl->setVariable('GALERYS',FPages::printPagelinkList($arrLinks));
+				$tpl->touchBlock('tabgaleries');
 				$showPagesTab = true;
 			}
 			if($showPagesTab === true) $tpl->touchBlock('tabpages');

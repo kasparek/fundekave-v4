@@ -261,7 +261,7 @@ function draftCheck(TAid) {
 	sendAjax('draft-check');
 };
 
-var waitingTA;
+var waitingTA = null;
 var markitupScriptsLoaded = false;
 function markItUpInit() { 
 setTimeout("markItUpInitLater()",250); 
@@ -283,11 +283,13 @@ function addTASwitch() {
 				if ( $("#" + TAId).hasClass('markItUpEditor') ) {
 					$("#" + TAId).markItUpRemove();
 				} else {
-					if(markitupScriptsLoaded===false) {
-						waitingTA = TAId;
-						sendAjax('void-markitup');
-					} else {
-						$("#" + TAId).markItUp(mySettings);
+					if(waitingTA===null) {
+						if(markitupScriptsLoaded===false) {
+							waitingTA = TAId;
+							sendAjax('void-markitup');
+						} else {
+							$("#" + TAId).markItUp(mySettings);
+						}
 					}
 				}
 				e.preventDefault();
@@ -301,6 +303,14 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
  **/
 function publicin() {
 	$("#loginInput").focus();
+	
+	$("textarea[class*=expand]").autoResize({
+    onResize : function() { $(this).css({opacity:0.8}); },
+    animateCallback : function() { $(this).css({opacity:1}); },
+    animateDuration : 300,
+    extraSpace : 20
+});
+
 }
 function userin() {
 	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
@@ -576,3 +586,106 @@ function getXMLRequest() { var str = '<FXajax><Request>' + xmlArray.join('') + '
 
 var call = function(){ return true; };
 var createEl = function(type,attr) { var el = document.createElement(type); $.each(attr,function(key){ if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]); }); return el; };
+
+/*
+ * jQuery autoResize (textarea auto-resizer)
+ * @copyright James Padolsey http://james.padolsey.com
+ * @version 1.04
+ */
+/*
+ * jQuery autoResize (textarea auto-resizer)
+ * @copyright James Padolsey http://james.padolsey.com
+ * @version 1.04
+ */
+
+(function($){
+    
+    $.fn.autoResize = function(options) {
+        
+        // Just some abstracted details,
+        // to make plugin users happy:
+        var settings = $.extend({
+            onResize : function(){},
+            animate : true,
+            animateDuration : 150,
+            animateCallback : function(){},
+            extraSpace : 20,
+            limit: 1000
+        }, options);
+        
+        // Only textarea's auto-resize:
+        this.filter('textarea').each(function(){
+            
+                // Get rid of scrollbars and disable WebKit resizing:
+            var textarea = $(this).css({resize:'none','overflow-y':'hidden'}),
+            
+                // Cache original height, for use later:
+                origHeight = textarea.height(),
+                
+                // Need clone of textarea, hidden off screen:
+                clone = (function(){
+                    
+                    // Properties which may effect space taken up by chracters:
+                    var props = ['height','width','lineHeight','textDecoration','letterSpacing'],
+                        propOb = {};
+                        
+                    // Create object of styles to apply:
+                    $.each(props, function(i, prop){
+                        propOb[prop] = textarea.css(prop);
+                    });
+                    
+                    // Clone the actual textarea removing unique properties
+                    // and insert before original textarea:
+                    return textarea.clone().removeAttr('id').removeAttr('name').css({
+                        position: 'absolute',
+                        top: 0,
+                        left: -9999
+                    }).css(propOb).attr('tabIndex','-1').insertBefore(textarea);
+					
+                })(),
+                lastScrollTop = null,
+                updateSize = function(textarea) {
+                    textarea=this;
+                    // Prepare the clone:
+                    clone.height(0).val($(textarea).val()).scrollTop(10000);
+					
+                    // Find the height of text:
+                    var scrollTop = Math.max(clone.scrollTop(), origHeight) + settings.extraSpace,
+                        toChange = $(textarea).add(clone);
+						
+                    // Don't do anything if scrollTip hasen't changed:
+                    if (lastScrollTop === scrollTop) { return; }
+                    lastScrollTop = scrollTop;
+					
+                    // Check for limit:
+                    if ( scrollTop >= settings.limit ) {
+                        $(textarea).css('overflow-y','');
+                        return;
+                    }
+                    // Fire off callback:
+                    settings.onResize.call(textarea);
+					
+                    // Either animate or directly apply height:
+                    settings.animate && textarea.css('display') === 'block' ?
+                        toChange.stop().animate({height:scrollTop}, settings.animateDuration, settings.animateCallback)
+                        : toChange.height(scrollTop);
+                };
+            
+            // Bind namespaced handlers to appropriate events:
+            textarea
+                .unbind('.dynSiz')
+                .bind('keyup.dynSiz', updateSize)
+                .bind('keydown.dynSiz', updateSize)
+                .bind('change.dynSiz', updateSize);
+            
+						updateSize(textarea);
+        });
+        
+        // Chain:
+        return this;
+        
+    };
+    
+    
+    
+})(jQuery);

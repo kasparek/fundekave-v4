@@ -229,6 +229,7 @@ class FItemsRenderer {
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
 				$vars['ADDONSTYLEWIDTH'] = ' style="width: '.$itemVO->thumbWidth.'px;"';
 				//$vars['ADDONSTYLEHEIGHT'] = ' style="height: '.$itemVO->height.'px;"';
+				$vars['POSITION'] = $itemVO->prop('position');
 
 				if( $this->openPopup === true ) {
 					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToPopup;
