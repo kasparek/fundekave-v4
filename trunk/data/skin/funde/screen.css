@@ -377,6 +377,10 @@ div#mainbar fieldset input.xShort {
 div#mainbar fieldset input.short {
 	width: 10em;
 }
+div#mainbar fieldset textarea.short {
+	width: 10em;
+	height: 3em;
+}
 div#mainbar .buttonBar {
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;

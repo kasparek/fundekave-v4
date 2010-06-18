@@ -44,6 +44,9 @@ class FBlog {
 				$returnItemId = $itemVO->save();
 
 				///properties
+				ItemVO::setProperty($returnItemId,'position', FSystem::textins($data['position'],array('plainText'=>1)));
+				ItemVO::setProperty($returnItemId,'journeyTo', FSystem::textins($data['journeyto'],array('plainText'=>1)));
+				ItemVO::setProperty($returnItemId,'journeyFrom', FSystem::textins($data['journeyfrom'],array('plainText'=>1)));
 				ItemVO::setProperty($returnItemId,'forumSet',(int) $data['forumset']);
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
@@ -110,6 +113,10 @@ class FBlog {
 				///properties
 				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',PageVO::getProperty($user->pageVO->pageId,'forumSet',2)));
 				$selectedCategory = $itemVO->categoryId;
+				
+				$tpl->setVariable('POSITION',ItemVO::getProperty($itemVO->itemId,'position',''));
+				$tpl->setVariable('JOURNEYTO',ItemVO::getProperty($itemVO->itemId,'journeyTo',''));
+				$tpl->setVariable('JOURNEYFROM',ItemVO::getProperty($itemVO->itemId,'journeyFrom',''));
 			}
 		} else {
 

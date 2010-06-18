@@ -189,6 +189,12 @@ class page_PageEdit implements iPage {
 				if(isset($data['homesite'])) {
 					$pageVO->prop('homesite', FSystem::textins($data['homesite'],array('plainText'=>1)));
 				}
+				if(isset($data['position'])) {
+					$position = FSystem::textins($data['position'],array('plainText'=>1));
+				  if(!empty($position)) {
+						$pageVO->prop('position', $position);
+					}
+				}
 
 				//---set current page for redirect
 				if(!empty($pageVO->pageId)) {
@@ -234,6 +240,8 @@ class page_PageEdit implements iPage {
 							$itemVO = new ItemVO($k,true,array('type'=>'ignore'));
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
+							$position = FSystem::textins($v['position'],array('plainText'=>1));
+							if(!empty($position)) $itemVO->prop('position',$position);
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::addError(FLang::$ERROR_DATE_FORMAT);
@@ -350,7 +358,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('site');
 				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));	
 			}
-			 
+			$tpl->setVariable('POSITION',$pageVO->prop('position')); 
 		}
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));
