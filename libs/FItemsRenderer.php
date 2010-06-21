@@ -331,6 +331,73 @@ class FItemsRenderer {
 		}
 		/**/
 		if(!empty($vars['TEXT'])) $vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
+		
+		/* google maps */
+		$position = $itemVO->prop('position');
+		if(!empty($position)) {
+		
+		$vars['MAPDIVITEMID'] = $itemVO->itemId;
+		
+		$position = str_replace(' ','',trim($position));
+		
+			$to = explode("\n",$itemVO->prop('journeyTo'));
+		   $to[] = $position;
+		   $from = explode("\n",$itemVO->prop('journeyFrom'));
+		   $merge = array_merge($to,$from);
+			if(isset($_GET['map'])) {
+				$touchedBlocks['maplarge']=true;
+			 //get bound points
+			 $swArr = array(90,180); 
+			 $neArr = array(-90,-180);
+			 foreach($merge as $k=>$v) {
+			    $wpLatLong = explode(',',str_replace(' ','',trim($v)));
+			    if($wpLatLong[0] < $swArr[0]) $swArr[0] = $wpLatLong[0];
+			    if($wpLatLong[0] > $neArr[0]) $neArr[0] = $wpLatLong[0];
+			    if($wpLatLong[1] < $swArr[1]) $swArr[1] = $wpLatLong[1];
+			    if($wpLatLong[1] > $neArr[1]) $neArr[1] = $wpLatLong[1];
+			 }
+			 $sw = implode(',',$swArr); 
+			 $ne = implode(',',$neArr);
+			 $vars['MAPITEMID'] = $itemVO->itemId;
+			 $vars['INITPOS'] = $position;
+			 $vars['ITEMCONTENT'] = '<strong>'.$addon.'</strong><br />.'.str_replace(array("\n","\r"),'',$itemVO->text); 
+			 $vars['ITEMPOS'] = $position;
+			 $vars['ITEMTITLE'] = $addon;
+			 $vars['SWBOUND'] = $sw;
+			 $vars['NEBOUND'] = $ne;
+			 $vars['MAPCLASS'] = 'maplarge';
+			 
+			 $vars['JOURNEYITEMID'] = $itemVO->itemId;
+			 while(count($merge)>0) {
+			 	$wp = str_replace(' ','',trim(array_shift($merge)));
+			 	$tpl->setVariable('WPPOS',$wp);
+			 	if(count($merge)>0) { $tpl->touchBlock('wpeol'); }
+				$tpl->parse('waypoint');
+			 }
+			 		   
+			 $vars['JOURNEYCOLOR'] = 'ff0000';
+		   $vars['JOURNEYSIZE'] = '2';
+			 
+			} else {
+			
+		   $vars['STATICITEMID'] = $itemVO->itemId;
+		   $vars['STATICITEMTITLE'] = $addon;
+		   $vars['STATICWIDTH'] = 200;
+		   $vars['STATICHEIGHT'] = 200;
+		   $vars['STATICMARKERPOS'] = $position;
+		   $vars['STATICJOURNEYCOLOR'] = 'ff0000';
+		   $vars['STATICJOURNEYSIZE'] = '2';
+		   $vars['MAPCLASS'] = 'mapsmall';
+		   
+		   while(count($merge)>0) {
+			 	$wp = str_replace(' ','',trim(array_shift($merge)));
+			 	$tpl->setVariable('STATICWPPOS',$wp);
+			 	if(count($merge)>0) { $tpl->touchBlock('staticwpeol'); }
+				$tpl->parse('staticwp');
+			 }
+			 }
+		}
+		/**/
 
 		//---FINAL PARSE
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;

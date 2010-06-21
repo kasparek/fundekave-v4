@@ -22,6 +22,29 @@
   <!-- BEGIN heading --><h2 class="entry-title summary<!-- BEGIN headhidden --> hidden<!-- END headhidden -->"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
   <!-- BEGIN category --><span class="category<!-- BEGIN categoryhidden --> hidden<!-- END categoryhidden -->"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
 	<div class="entry-content">{TEXT}</div>
+	
+	<!-- BEGIN map --><div id="map{MAPDIVITEMID}" class="{MAPCLASS}">
+	<!-- BEGIN staticmap --><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="{STATICWIDTH}" height="{STATICHEIGHT}" src="http://maps.google.com/maps/api/staticmap?size={STATICWIDTH}x{STATICHEIGHT}&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0x{STATICJOURNEYCOLOR}|weight:{STATICJOURNEYSIZE}|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a><!-- END staticmap -->
+	</div><!-- END map -->
+	
+	<!-- BEGIN dynamicmap -->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+function gmapinit{MAPITEMID}() {
+	var mapDiv = document.getElementById('map{MAPITEMID}');
+	var map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng({INITPOS}), zoom: 9, mapTypeId: google.maps.MapTypeId.TERRAIN });
+	<!-- BEGIN item -->
+	<!-- BEGIN journey -->var journeyPath{JOURNEYITEMID} = new google.maps.Polyline({ path: [<!-- BEGIN waypoint -->new google.maps.LatLng({WPPOS})<!-- BEGIN wpeol -->,<!-- END wpeol --><!-- END waypoint -->], strokeColor: "#{JOURNEYCOLOR}", strokeOpacity: 1.0, strokeWeight: {JOURNEYSIZE} });
+  journeyPath{JOURNEYITEMID}.setMap(map);<!-- END journey -->
+	var content{MAPITEMID} = new google.maps.InfoWindow({ content: '{ITEMCONTENT}' });
+	var marker{MAPITEMID} = new google.maps.Marker({ position: new google.maps.LatLng({ITEMPOS}), map: map, title:"{ITEMTITLE}" });
+	google.maps.event.addListener(marker{MAPITEMID}, 'click', function() { content{MAPITEMID}.open(map,marker{MAPITEMID}); });<!-- END item -->
+	<!-- BEGIN fitbounds -->map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng({SWBOUND}), new google.maps.LatLng({NEBOUND})));<!-- END fitbounds -->
+}
+google.maps.event.addDomListener(window, 'load', gmapinit{MAPITEMID});
+</script>
+<!-- END dynamicmap -->
+
 	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div><!-- END comments -->

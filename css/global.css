@@ -288,3 +288,17 @@ DIV#recipientcombo {
   float: left;
   clear: left;
 }
+
+.mapsmall {
+	float: right;
+  clear: right;
+}
+.maplarge {
+	width: 100%;
+  height: 600px;
+}
+.mapselector {
+ 	width: 200px;
+  height: 200px;
+  position: absolute;
+}
