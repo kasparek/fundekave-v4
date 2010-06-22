@@ -132,14 +132,27 @@ function initPositionSelector() {
 	setListeners('positionSelector','change',mapSelectorUpdate);
 	setListeners('positionSelector','focusout',mapSelectorRemove);
 }
+var targetPositionElId;
 function mapSelectorCreate() {
 	var position = $(this).position();
-	addXMLRequest('left', position.left + $(this).width() );
-	addXMLRequest('top', position.top);
-	addXMLRequest('pos', $(this).val());
-	addXMLRequest('el', $(this).attr('id'));
-	sendAjax('map-selector',gup('k',$(".fajaxform").attr('action')));
+	var left = position.left + $(this).width();
+	var top = position.top;
+	var latLong = $(this).val();
+	var elementId = $(this).attr('id');
+	
+	$("body").append( '<div id="mapsel'+elementId+'" class="mapselector"></div>' );
+	$("#mapsel"+elementId).css({ position: "absolute",marginLeft: 0, marginTop: 0, top: top, left: left });
+	
+	var mapDiv = document.getElementById("mapsel"+elementId);
+	var map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng(0,0), zoom: 3, mapTypeId: google.maps.MapTypeId.TERRAIN });
+	
+	var clickWindow = new google.maps.InfoWindow();
+	targetPositionElId = elementId;
+	google.maps.event.addListener(map, 'click', function(event) {
+		$("#"+targetPositionElId).val( event.latLng.toUrlValue(4) ); 
+	});
 }
+
 function mapSelectorUpdate() {
 }
 function mapSelectorRemove() {
