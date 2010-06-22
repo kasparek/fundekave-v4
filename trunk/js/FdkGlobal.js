@@ -1,11 +1,4 @@
-
-
-function friendRequestInit() {
-	$('#friendrequest').show('slow');
-	fajaxform();
-	$('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()});
-}
-
+function friendRequestInit() { $('#friendrequest').show('slow'); fajaxform(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); }
 function enable(id) { $('#'+id).removeAttr('disabled'); };
 function tabsInit() { $("#tabs").tabs(); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
@@ -127,6 +120,30 @@ function fsubmit(event) {
 };
 
 function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("http://fundekave.net/assets/load.swf", $(this).attr('id'), "120", "25", "10.0.12", "expressInstall.swf", {file:"http://fundekave.net/assets/Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
+
+function initJourneySelector() {
+	/*
+	setListeners('journeySelector','click',fOnChange);
+	setListeners('journeySelector','change',fOnChange);
+	*/
+}
+function initPositionSelector() {
+	setListeners('positionSelector','click',mapSelectorCreate);
+	setListeners('positionSelector','change',mapSelectorUpdate);
+	setListeners('positionSelector','focusout',mapSelectorRemove);
+}
+function mapSelectorCreate() {
+	var position = $(this).position();
+	addXMLRequest('left', position.left + $(this).width() );
+	addXMLRequest('top', position.top);
+	addXMLRequest('pos', $(this).val());
+	addXMLRequest('el', $(this).attr('id'));
+	sendAjax('map-selector',gup('k',$(".fajaxform").attr('action')));
+}
+function mapSelectorUpdate() {
+}
+function mapSelectorRemove() {
+}
 
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
@@ -318,7 +335,7 @@ $("textarea[class*=expand]").keydown();
 function userin() {
 	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
 	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
-	
+	initPositionSelector();
 	changeInit();
   // ---ajax textarea / tools
 	addTASwitch();
