@@ -33,7 +33,6 @@
 function gmapinit{MAPITEMID}() {
 	var mapDiv = document.getElementById('map{MAPITEMID}');
 	var map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng({INITPOS}), zoom: 9, mapTypeId: google.maps.MapTypeId.TERRAIN });
-	<!-- BEGIN item -->
 	<!-- BEGIN journey -->var journeyPath{JOURNEYITEMID} = new google.maps.Polyline({ path: [<!-- BEGIN waypoint -->new google.maps.LatLng({WPPOS})<!-- BEGIN wpeol -->,<!-- END wpeol --><!-- END waypoint -->], strokeColor: "#{JOURNEYCOLOR}", strokeOpacity: 1.0, strokeWeight: {JOURNEYSIZE} });
   journeyPath{JOURNEYITEMID}.setMap(map);<!-- END journey -->
 	var content{MAPITEMID} = new google.maps.InfoWindow({ content: '{ITEMCONTENT}' });
