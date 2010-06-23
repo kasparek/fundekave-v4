@@ -338,12 +338,20 @@ class FItemsRenderer {
 		
 		$vars['MAPDIVITEMID'] = $itemVO->itemId;
 		
+		$to = array();
 		$position = str_replace(' ','',trim($position));
-		
-			$to = explode("\n",$itemVO->prop('journeyTo'));
+		  $journeyTo = $itemVO->prop('journeyTo');
+		  if(!empty($journeyTo)) {
+			$to = explode("\n",$journeyTo);
+			}
 		   $to[] = $position;
+		   $journeyFrom = $itemVO->prop('journeyFrom');
+		   if(!empty($journeyFrom)) {
 		   $from = explode("\n",$itemVO->prop('journeyFrom'));
 		   $merge = array_merge($to,$from);
+		   } else {
+			 $merge = $to;
+			 }
 			if(isset($_GET['map'])) {
 				$touchedBlocks['maplarge']=true;
 			 //get bound points
