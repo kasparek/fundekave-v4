@@ -121,41 +121,125 @@ function fsubmit(event) {
 
 function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF("http://fundekave.net/assets/load.swf", $(this).attr('id'), "120", "25", "10.0.12", "expressInstall.swf", {file:"http://fundekave.net/assets/Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 
+// degrees, mins, secs to decimal degrees
+function dms_to_d(d,m,s,dir)
+{
+	//alert( "d:"+d+" m:"+m+" s:"+s );
+	d = d-0;
+	m = m-0;
+	var sign = ( dir=='W' || dir=='S' ) ? -1 : 1;
+	return (((s/60+m)/60)+d)*sign;
+}
+
+
 function initJourneySelector() {
+	
+	setListeners('journeySelector','click',journeySelectorCreate);
 	/*
-	setListeners('journeySelector','click',fOnChange);
 	setListeners('journeySelector','change',fOnChange);
 	*/
 }
 function initPositionSelector() {
 	setListeners('positionSelector','click',mapSelectorCreate);
 	setListeners('positionSelector','change',mapSelectorUpdate);
-	setListeners('positionSelector','focusout',mapSelectorRemove);
+	setListeners('positionSelector','blur',mapSelectorRemove);
 }
+var mapElTarget;
 var targetPositionElId;
+var marker;
+var journeyPath;
+var map
+var journey = false;
+
+function journeySelectorCreate() {
+	journey = true;
+	mapElTarget = this;
+	mapCreate();
+}
 function mapSelectorCreate() {
-	var position = $(this).position();
-	var left = position.left + $(this).width();
-	var top = position.top;
-	var latLong = $(this).val();
-	var elementId = $(this).attr('id');
-	
-	$("body").append( '<div id="mapsel'+elementId+'" class="mapselector"></div>' );
-	$("#mapsel"+elementId).css({ position: "absolute",marginLeft: 0, marginTop: 0, top: top, left: left });
-	
-	var mapDiv = document.getElementById("mapsel"+elementId);
-	var map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng(0,0), zoom: 3, mapTypeId: google.maps.MapTypeId.TERRAIN });
-	
-	var clickWindow = new google.maps.InfoWindow();
-	targetPositionElId = elementId;
-	google.maps.event.addListener(map, 'click', function(event) {
-		$("#"+targetPositionElId).val( event.latLng.toUrlValue(4) ); 
-	});
+  journey = false;
+  mapElTarget = this;
+  mapCreate();
 }
 
+function mapCreate() {
+var i=0
+	var zoom = 3;
+	var position = $(mapElTarget).position();
+	var left = position.left + $(mapElTarget).outerWidth();
+	var top = position.top;
+	var latLong = $(mapElTarget).val();
+	var latLongArr = [[0,0]];
+	if(latLong.length>0) {
+	 latLongArr = latLong.split("\n");
+	 for(i=0;i<latLongArr.length;i++) {
+	 latLongArr[i] = latLongArr[i].split(','); 
+	 if(latLongArr[i].length==2) {
+		jQuery.trim(latLongArr[i][0]);
+		jQuery.trim(latLongArr[i][1]);
+		zoom = 7;
+	 }
+	 }
+	}
+	targetPositionElId = $(mapElTarget).attr('id');
+	if ($('#mapsel'+targetPositionElId).length == 0) {
+		$("body").append( '<div id="mapsel'+targetPositionElId+'" class="mapselector"></div>' );
+		$("#mapsel"+targetPositionElId).css({ position: "absolute",marginLeft: 0, marginTop: 0, top: top, left: left });
+		
+		var mapDiv = document.getElementById("mapsel"+targetPositionElId);
+		map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), zoom: zoom, mapTypeId: google.maps.MapTypeId.TERRAIN });
+		if(zoom==7) {
+		  if(journey===false) {
+			marker = new google.maps.Marker({ position: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), map: map, title:"Current position" });
+			} else {
+			var path = [];
+			for(i=0;i<latLongArr.length;i++) {
+				path.push( new google.maps.LatLng(latLongArr[i][0],latLongArr[i][1]) );
+			}
+			journeyPath = new google.maps.Polyline({ map:map,path: [path], strokeColor: "#ff0000", strokeOpacity: 1.0, strokeWeight: 2, geodesic:true });
+  		
+			}
+		}
+		google.maps.event.addListener(map, 'click', function(event) { 
+		$("#"+targetPositionElId).val( (journey===true? $("#"+targetPositionElId).val()+"\n" : '') + event.latLng.toUrlValue(4) );
+		mapSelectorUpdate(); 
+		});
+	}
+}
 function mapSelectorUpdate() {
+var latLong = $('#'+targetPositionElId).val();
+	var latLong = $(mapElTarget).val();
+	var latLongArr = [[0,0]];
+	if(latLong.length>0) {
+	 latLongArr = latLong.split("\n");
+	 for(i=0;i<latLongArr.length;i++) {
+	 latLongArr[i] = latLongArr[i].split(','); 
+	 if(latLongArr[i].length==2) {
+		jQuery.trim(latLongArr[i][0]);
+		jQuery.trim(latLongArr[i][1]);
+		zoom = 7;
+	 }
+	 }
+	}
+
+		//if map update marker
+		if ($('#mapsel'+targetPositionElId).length > 0) {
+		    if(journey===false) {
+		    if(marker) marker.setMap(null);
+			marker = new google.maps.Marker({ position: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), map: map, title:"Current position" });
+			} else {
+			if(journeyPath) journeyPath.setMap(null);
+			var path = [];
+			for(i=0;i<latLongArr.length;i++) {
+				path.push( new google.maps.LatLng(latLongArr[i][0],latLongArr[i][1]) );
+			}
+			journeyPath = new google.maps.Polyline({ map:map,path: [path], strokeColor: "#ff0000", strokeOpacity: 1.0, strokeWeight: 2, geodesic:true });
+  		
+			}
+		}
 }
 function mapSelectorRemove() {
+	$('#mapsel'+targetPositionElId).remove();
 }
 
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
@@ -348,6 +432,7 @@ $("textarea[class*=expand]").keydown();
 function userin() {
 	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
 	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+	initJourneySelector();
 	initPositionSelector();
 	changeInit();
   // ---ajax textarea / tools
