@@ -224,7 +224,7 @@ class FBlog {
 				$render = $fItems->render($currentPage * $perPage, $perPage);
 	
 				if(!empty($render)){
-					FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+					FItems::aFav($user->pageVO->pageId,$user->userVO->userId);
 					$tpl->setVariable('ITEMS', $render);
 				}
 	

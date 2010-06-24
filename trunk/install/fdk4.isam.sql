@@ -236,7 +236,7 @@ CREATE INDEX `item-dateCreated` ON sys_pages_items (dateCreated DESC);
 CREATE TABLE `sys_pages_items_properties` (
   itemId mediumint unsigned NOT NULL,
   `name` varchar(20) NOT NULL,
-  `value` varchar(100) NOT NULL,
+  `value` text NOT NULL,
   PRIMARY KEY  (`itemId`,`name`)
 ) ;
 
