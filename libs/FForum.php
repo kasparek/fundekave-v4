@@ -370,7 +370,7 @@ class FForum extends FDBTool {
 			if($itemId > 0) {
 				FForum::updateReadedReactions($itemId,$user->userVO->userId);
 			} else {
-				FItems::aFav($user->pageVO->pageId,$user->userVO->userId,$user->pageVO->cnt);
+				FItems::aFav($user->pageVO->pageId,$user->userVO->userId);
 			}
 		} else {
 		  $tpl->touchBlock('messno');

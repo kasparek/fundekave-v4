@@ -142,7 +142,7 @@ class page_GaleryDetail implements iPage {
 			}
 			
 		}
-		FItems::aFav($pageId,$userId,$user->pageVO->cnt);
+		FItems::aFav($pageId,$userId);
 		$unreadedCnt = $user->pageVO->cnt - $user->pageVO->favoriteCnt;
 		if($unreadedCnt > 0) {
 			$cacheGrp = 'pagelist';
