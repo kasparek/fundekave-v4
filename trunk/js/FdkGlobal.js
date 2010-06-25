@@ -1,35 +1,81 @@
 // degrees, mins, secs to decimal degrees
-function dms_to_d(d,m,s,dir)
+// 5 10 30W
+function mapSelectorPositionCheckFormat(position)
 {
-	//alert( "d:"+d+" m:"+m+" s:"+s );
-	d = d-0;
-	m = m-0;
-	var sign = ( dir=='W' || dir=='S' ) ? -1 : 1;
-	return (((s/60+m)/60)+d)*sign;
+	position = jQuery.trim(position);
+	var dir = position.charAt(position.length-1).toUpperCase(); 
+	if(dir=='W' || dir=='E' || dir=='N' || dir=='S') {
+		var posArr = position.substr(0,position.length-2).split(' ');
+		var d = posArr[0]-0;
+		var m = posArr.length>1 ? posArr[1]-0 : 0;
+		var s = posArr.length>2 ? posArr[2]-0 : 0;
+		var sign = ( dir=='W' || dir=='S' ) ? -1 : 1;
+		return (((s/60+m)/60)+d)*sign;
+	}
+	return position-0;
+}
+
+function mapSelectorProcessInput(val) {
+	var result = [];
+	if(val.length>0) {
+		arr = val.split("\n");
+		for(i=0;i<arr.length;i++) {
+			arr[i] = arr[i].split(','); 
+			if(arr[i].length==2) {
+				arr[i][0] = mapSelectorPositionCheckFormat(arr[i][0]);
+				arr[i][1] = mapSelectorPositionCheckFormat(arr[i][1]);
+				if(arr[i][0]==0 && arr[i][1]==0) arr[i] = false;
+			} else {
+				arr[i] = false;
+			}
+		}
+		for(i=0;i<arr.length;i++) {
+			if(arr[i]!==false) result.push(arr[i]);
+		}
+	}
+	return result;
+}
+
+function mapSelectorCreateMarks(arr) {
+	if (journey === false) {
+		if(marker) marker.setMap(null);
+		marker = new google.maps.Marker( {
+			position : new google.maps.LatLng(arr[0][0], arr[0][1]),
+			map : map,
+			title : "Current position"
+		});
+	} else {
+		if(journeyPath) journeyPath.setMap(null);
+		var path = [];
+		for (i = 0; i < arr.length; i++) {
+			path.push(new google.maps.LatLng(arr[i][0], arr[i][1]));
+		}
+		journeyPath = new google.maps.Polyline( {
+			map : map,
+			path : [ path ],
+			strokeColor : "#ff0000",
+			strokeOpacity : 1.0,
+			strokeWeight : 2,
+			geodesic : true
+		});
+	}
 }
 
 
 function initJourneySelector() {
-	
 	setListeners('journeySelector','click',journeySelectorCreate);
-	setListeners('positionSelector','change',mapSelectorUpdate);
-	//setListeners('positionSelector','blur',mapSelectorRemove);
-	
-	$(document).click(function(e) { 
-		alert('clicked'); 
-	});
-
+	setListeners('journeySelector','change',mapSelectorUpdate);
 	
 }
 function initPositionSelector() {
 	setListeners('positionSelector','click',mapSelectorCreate);
 	setListeners('positionSelector','change',mapSelectorUpdate);
-	setListeners('positionSelector','blur',mapSelectorRemove);
 }
 
 var mapElTarget;
 var marker;
 var journeyPath;
+var mapBox;
 var map;
 var journey = false;
 
@@ -39,94 +85,80 @@ function journeySelectorCreate() {
 	mapCreate();
 }
 function mapSelectorCreate() {
-  journey = false;
-  mapElTarget = this;
-  mapCreate();
-}
-
-function mapClick() {
-	alert('mapClicked');
-	$(mapElTarget).focus();
+	journey = false;
+	mapElTarget = this;
+	mapCreate();
 }
 
 function mapCreate() {
-var i=0
-	var zoom = 1;
+	var i = 0
 	var position = $(mapElTarget).position();
 	var left = position.left + $(mapElTarget).outerWidth();
 	var top = position.top;
-	var latLong = $(mapElTarget).val();
-	var latLongArr = [[0,0]];
-	if(latLong.length>0) {
-	 latLongArr = latLong.split("\n");
-	 for(i=0;i<latLongArr.length;i++) {
-	 latLongArr[i] = latLongArr[i].split(','); 
-	 if(latLongArr[i].length==2) {
-		jQuery.trim(latLongArr[i][0]);
-		jQuery.trim(latLongArr[i][1]);
-		zoom = 7;
-	 }
-	 }
-	}
-	
-	if ($('#mapsel').length == 0) {
-		$("body").append( '<div id="mapsel" class="mapselector"></div>' );
-	}
-	$("#mapsel").css({ position: "absolute",marginLeft: 0, marginTop: 0, top: top, left: left });
-	
-		var mapDiv = document.getElementById("mapsel");
-		map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), zoom: zoom, mapTypeId: google.maps.MapTypeId.TERRAIN });
-		if(zoom==7) {
-		  if(journey===false) {
-			marker = new google.maps.Marker({ position: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), map: map, title:"Current position" });
-			} else {
-			var path = [];
-			for(i=0;i<latLongArr.length;i++) {
-				path.push( new google.maps.LatLng(latLongArr[i][0],latLongArr[i][1]) );
-			}
-			journeyPath = new google.maps.Polyline({ map:map,path: [path], strokeColor: "#ff0000", strokeOpacity: 1.0, strokeWeight: 2, geodesic:true });
-  		
-			}
-		}
-		google.maps.event.addListener(map, 'click', function(event) { 
-		$(mapElTarget).val( (journey===true? $(mapElTarget).val()+"\n" : '') + event.latLng.toUrlValue(4) );
-		mapSelectorUpdate(); 
-		});
-	
-}
-function mapSelectorUpdate() {
-	var latLong = $(mapElTarget).val();
-	var latLongArr = [[0,0]];
-	if(latLong.length>0) {
-	 latLongArr = latLong.split("\n");
-	 for(i=0;i<latLongArr.length;i++) {
-	 latLongArr[i] = latLongArr[i].split(','); 
-	 if(latLongArr[i].length==2) {
-		jQuery.trim(latLongArr[i][0]);
-		jQuery.trim(latLongArr[i][1]);
-		zoom = 7;
-	 }
-	 }
+	var sw = [90,180]; 
+	var ne = [-90,-180];
+
+	var wpArr = mapSelectorProcessInput($(mapElTarget).val());
+	if (wpArr.length > 0) {
+		// set bounds and auto zoom
+		for(i=0;i<wpArr.length;i++) {
+		    if(wpArr[i][0] < sw[0]) sw[0] = wpArr[i][0];
+		    if(wpArr[i][0] > ne[0]) ne[0] = wpArr[i][0];
+		    if(wpArr[i][1] < sw[1]) sw[1] = wpArr[i][1];
+		    if(wpArr[i][1] > ne[1]) ne[1] = wpArr[i][1];
+		 }
+	} else {
+		// set some default position and zoom
 	}
 
-		//if map update marker
-		if ($('#mapsel').length > 0) {
-		    if(journey===false) {
-		    if(marker) marker.setMap(null);
-			marker = new google.maps.Marker({ position: new google.maps.LatLng(latLongArr[0][0],latLongArr[0][1]), map: map, title:"Current position" });
-			} else {
-			if(journeyPath) journeyPath.setMap(null);
-			var path = [];
-			for(i=0;i<latLongArr.length;i++) {
-				path.push( new google.maps.LatLng(latLongArr[i][0],latLongArr[i][1]) );
-			}
-			journeyPath = new google.maps.Polyline({ map:map,path: [path], strokeColor: "#ff0000", strokeOpacity: 1.0, strokeWeight: 2, geodesic:true });
-  		
-			}
-		}
+	if (!mapBox) {
+		$("body").append('<div id="mapsel" class="mapselector"></div>');
+		mapBox = $("#mapsel");
+		$(document).bind('click', mapSelectorRemove);
+	}
+	$(mapBox).css( {
+		position : "absolute",
+		marginLeft : 0,
+		marginTop : 0,
+		top : top,
+		left : left
+	});
+
+	map = new google.maps.Map(document.getElementById('mapsel'), { mapTypeId : google.maps.MapTypeId.TERRAIN });
+	if(wpArr.length>0) map.setCenter(new google.maps.LatLng(wpArr[0][0], wpArr[0][1]))
+	map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(sw[0],sw[1]), new google.maps.LatLng(ne[0],ne[1])));
+	if(wpArr.length > 0) {
+		mapSelectorCreateMarks(wpArr);
+	}
+	google.maps.event.addListener(map, 'click', function(event) {
+		$(mapElTarget).val(
+				(journey === true ? ($(mapElTarget).val().length > 0 ? $(
+						mapElTarget).val()
+						+ "\n" : '') : '')
+						+ event.latLng.toUrlValue(4));
+		mapSelectorUpdate();
+	});
+
 }
-function mapSelectorRemove() {
-	$('#mapsel').remove();
+
+function mapSelectorUpdate() {
+	if(journey===true) {
+		$(mapElTarget).keydown();
+	}
+	if (mapElTarget) {
+		if (mapBox) {
+			mapSelectorCreateMarks(mapSelectorProcessInput($(mapElTarget).val()));
+
+		}
+	}
+}
+
+function mapSelectorRemove(event) {
+	if (event.target != mapElTarget && !event.target != mapBox && !$(event.target).parents().is('#mapsel')) {
+		$(document).unbind('click', mapSelectorRemove);
+		$(mapBox).remove();
+		mapBox = null;
+	}
 }
 
 
@@ -432,16 +464,10 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
  **/
 function publicin() {
 	$("#loginInput").focus();
-	
-	$("textarea[class*=expand]").autoResize({
-    onResize : function() { $(this).css({opacity:0.8}); },
-    animateCallback : function() { $(this).css({opacity:1}); },
-    animateDuration : 300,
-    extraSpace : 20
-});
-$("textarea[class*=expand]").keydown();
-
+	$("textarea[class*=expand]").autogrow();
+	$("textarea[class*=expand]").keydown();
 }
+
 function userin() {
 	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
 	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
@@ -488,9 +514,6 @@ $("#errormsgJS").hide();
 								allowFullScreen : "true"
 							});
 				});
-		// ---round corners
-		//DD_roundies.addRule('.radcon', 5);
-		
 	});
 
 var fotoTotal = 0;
@@ -721,48 +744,36 @@ function getXMLRequest() { var str = '<FXajax><Request>' + xmlArray.join('') + '
 var call = function(){ return true; };
 var createEl = function(type,attr) { var el = document.createElement(type); $.each(attr,function(key){ if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]); }); return el; };
 
-/*
- * jQuery autoResize (textarea auto-resizer)
- * @copyright James Padolsey http://james.padolsey.com
- * @version 1.04
- */
-(function($){ $.fn.autoResize = function(options) {
-        var settings = $.extend({ onResize : function(){}, animate : true, animateDuration : 150, animateCallback : function(){}, extraSpace : 20, limit: 1000 }, options);
-        // Only textarea's auto-resize:
-        this.filter('textarea').each(function(){
-            $(this).removeAttr('rows').removeAttr('cols');
-            // Get rid of scrollbars and disable WebKit resizing:
-            var textarea = $(this).css({resize:'none','overflow-y':'hidden'}),
-            // Cache original height, for use later:
-						origHeight = textarea.height(),
-            // Need clone of textarea, hidden off screen:
-            clone = (function(){
-                    // Properties which may effect space taken up by chracters:
-                    var props = ['height','width','lineHeight','textDecoration','letterSpacing'], propOb = {};
-                    // Create object of styles to apply:
-                    $.each(props, function(i, prop){ propOb[prop] = textarea.css(prop); });
-                    // Clone the actual textarea removing unique properties
-                    // and insert before original textarea:
-                    return textarea.clone().removeAttr('id').removeAttr('name').css({ position: 'absolute', top: 0, left: -9999 }).css(propOb).attr('tabIndex','-1').insertBefore(textarea);
-					   })(), lastScrollTop = null,
-                updateSize = function() {
-                    // Prepare the clone:
-                    clone.height(0).val($(this).val()).scrollTop(10000);
-                    // Find the height of text:
-                    var scrollTop = Math.max(clone.scrollTop(), origHeight) + settings.extraSpace, toChange = $(this).add(clone);
-                    // Don't do anything if scrollTip hasen't changed:
-                    if (lastScrollTop === scrollTop) { return; }
-                    lastScrollTop = scrollTop;
-                    // Check for limit:
-                    if ( scrollTop >= settings.limit ) { $(this).css('overflow-y',''); return; }
-                    // Fire off callback:
-                    settings.onResize.call(this);
-                    // Either animate or directly apply height:
-                    settings.animate && textarea.css('display') === 'block' ? toChange.stop().animate({height:scrollTop}, settings.animateDuration, settings.animateCallback) : toChange.height(scrollTop);
-                };
-            // Bind namespaced handlers to appropriate events:
-            textarea.unbind('.dynSiz').bind('keyup.dynSiz', updateSize).bind('keydown.dynSiz', updateSize).bind('change.dynSiz', updateSize);
-        });
-        return this;
-    };
+(function($) {
+	$.fn.autogrow = function(options) {
+		this.filter('textarea').each( function() {
+			var $this = $(this), minHeight = $this.height(), lineHeight = $this.css('lineHeight');
+			var shadow = $('<div></div>').css( { position : 'absolute', top : -10000, left : -10000, width : $(this).width(), fontSize : $this.css('fontSize'), fontFamily : $this.css('fontFamily'), lineHeight : $this.css('lineHeight'), resize : 'none' }).appendTo(document.body);
+			var update = function() {
+				var val = this.value.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g,'&amp;').replace(/\n/g, '<br/>');
+				shadow.html(val);
+				$(this).css('height',Math.max(shadow.height() + 20,minHeight));
+			}
+			$(this).change(update).keyup(update).keydown(update);
+			update.apply(this);
+		});
+		return this;
+	}
 })(jQuery);
+
+google.maps.LatLng.prototype.NMTo = function(a) {
+	var e = Math, ra = e.PI / 180;
+	var b = this.lat() * ra, c = a.lat() * ra, d = b - c;
+	var g = this.lng() * ra - a.lng() * ra;
+	var f = 2 * e.asin(e.sqrt(e.pow(e.sin(d / 2), 2) + e.cos(b) * e.cos(c)
+			* e.pow(e.sin(g / 2), 2)));
+	return f * 3440.07;
+}
+
+google.maps.Polyline.prototype.inNM = function(n) {
+	var a = this.getPath(n), len = a.getLength(), dist = 0;
+	for ( var i = 0; i < len - 1; i++) {
+		dist += a.getAt(i).kmTo(a.getAt(i + 1));
+	}
+	return dist;
+}
