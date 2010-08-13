@@ -81,8 +81,8 @@ package com.bit101.components
 			_bar.scaleX = 0;
 			_bar.graphics.endFill();
 			
-			_label.autoSize = true;
-			_label.move(_width / 2 - _label.width / 2, _height / 2 - _label.height / 2);
+			
+			_label.move((_width - _label.width) / 2, (_height - _label.height) / 2);
 		}
 		
 		
@@ -127,7 +127,6 @@ package com.bit101.components
 		public function set label(l:String):void {
 			_label.text = l;
 			_label.draw();
-			_label.move((_width-_label.width)/2, (_height-_label.height)/2);
 			this.invalidate();
 		}
 		

@@ -1,17 +1,10 @@
 package net.fundekave.lib
 {
-	/*import de.popforge.imageprocessing.core.Image;
-	import de.popforge.imageprocessing.core.ImageFormat;
-	import de.popforge.imageprocessing.filters.color.ContrastCorrection;
-	import de.popforge.imageprocessing.filters.color.LevelsCorrection;
-	import de.popforge.imageprocessing.filters.convolution.Sharpen;*/
-	
+	import de.polygonal.gl.codec.JPEGEncode;
 	import de.popforge.imageprocessing.core.Image;
 	import de.popforge.imageprocessing.core.ImageFormat;
-	import de.popforge.imageprocessing.filters.color.ContrastCorrection;
-	import de.popforge.imageprocessing.filters.color.LevelsCorrection;
 	import de.popforge.imageprocessing.filters.convolution.Sharpen;
-	
+		
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -22,10 +15,9 @@ package net.fundekave.lib
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
-	
+		
 	public class ImageResize extends Sprite
 	{
-		
 		public static const RESIZED:String = 'resized';
 		public static const ENCODED:String = 'encoded';
 		public static const INFO:String = 'info';
@@ -120,17 +112,9 @@ package net.fundekave.lib
 					for each( filXML in filtersList) {
 						var filId:String = String( filXML.attribute('id') );
 						switch( filId ) {
-							case 'levels':
-								var filter1: LevelsCorrection = new LevelsCorrection( true );
-								filter1.apply( popImage );
-								break;
 							case 'sharpen':
 								var filter2: Sharpen = new Sharpen(0.1);
 								filter2.apply( popImage );
-								break;
-							case 'contrast':
-								var filter3: ContrastCorrection = new ContrastCorrection( 1.2 );
-								filter3.apply( popImage );
 								break;
 						}
 					}
@@ -232,8 +216,8 @@ package net.fundekave.lib
         	if(!bmpd) bmpd = _resultBmpData;
         	
         	resultBytes = new ByteArray();
-        	       	
-        	var jpgEnc:JPEGEncoder = new JPEGEncoder( this.outputQuality );
+			        	       	
+        	var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
         	resultBytes = jpgEnc.encode( bmpd );
         	onCompressFinished(null);
         	/**/

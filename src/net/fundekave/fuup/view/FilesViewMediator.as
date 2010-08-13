@@ -33,8 +33,6 @@ package net.fundekave.fuup.view
 			filesView.addEventListener( FileView.FILE_CREATED, onFileCreated, false, 0, true );
 			filesView.addEventListener( FileView.FILE_REMOVE, onFileRemove, false, 0, true );
 			filesView.addEventListener( FilesView.FILE_CHECK_EXITS, onFileCheck, false, 0, true );
-			filesView.addEventListener( FileView.SETTINGS_INHERIT, onFileIhnerit, false, 0, true );
-			filesView.addEventListener( FilesView.SETTINGS_CHANGE, onSettingsChange, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload, false, 0, true );
 			
@@ -43,6 +41,7 @@ package net.fundekave.fuup.view
 			filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
 			filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
 			filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
+			filesView.settingsOn = Number( configProxy.getValue("settingsOn") )==1 ? true : false;
 			filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
 			filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
 			filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
@@ -66,22 +65,7 @@ package net.fundekave.fuup.view
 		protected function onFileCheck( e:Event ):void {
 			sendNotification( ApplicationFacade.FILE_CHECK_EXISTS, filesView.currFile.name );
 		}
-		
-		protected function onFileIhnerit( e:Event ):void {
-			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-			proxy.updateFiles();
-		}
-		
-		protected function onSettingsChange(e:Event):void {
-			trace(e);
-			/*
-			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-			proxy.widthMax = Number( filesView.newWidthInput.text );
-			proxy.heightMax = Number( filesView.newHeightInput.text );
-			proxy.updateFiles();
-			*/
-		}
-		
+				
 		protected function onProcess(e:Event):void {
 			var useFilters:Boolean = filesView.correctionsCheckbox.selected;
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;

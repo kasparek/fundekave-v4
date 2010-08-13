@@ -68,10 +68,8 @@ package net.fundekave.fuup.model
         	}
         }
         public function updateFile( fileVO:FileVO ):void {
-        	if(fileVO.sizeInheritance == true) {
-        		fileVO.widthMax = widthMax
-        		fileVO.heightMax = heightMax
-        	}
+       		fileVO.widthMax = widthMax
+       		fileVO.heightMax = heightMax
         	fileVO.outputQuality = outputQuality
 			fileVO.crop = crop;
 			fileVO.showThumb = displayContent;

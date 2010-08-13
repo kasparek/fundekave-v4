@@ -23,16 +23,10 @@ package net.fundekave.fuup.view.components
 			this.setup();
 		}
 		
-		import flashx.textLayout.formats.TextAlign;
-		
-		import gs.TweenLite;
-		import gs.easing.Quad;
-		
 		import net.fundekave.fuup.model.vo.FileVO;
 		
 		public static const RESIZE:String = 'resize';
 		
-		public static const SETTINGS_CHANGE:String = 'settingsChange';
 		public static const ACTION_PROCESS:String = 'actionProcess';
 		public static const ACTION_UPLOAD:String = 'actionUpload';
 		public static const FILE_CHECK_EXITS:String = 'fileCheckExits';
@@ -44,7 +38,7 @@ package net.fundekave.fuup.view.components
 		
 		public var filesNumMax:int;
 		public var multiFiles:Boolean = true;
-		
+				
 		private var _settingsVisible:Boolean = true;
 		public function get settingsVisible():Boolean {
 			return _settingsVisible;
@@ -54,8 +48,9 @@ package net.fundekave.fuup.view.components
 			if(correctionsCheckboxHolder) {
 				correctionsCheckboxHolder.visible = _settingsVisible;
 			}
-		} 
+		}
 		
+		public var settingsOn:Boolean = false;
 		
 		private var _autoProcess:Boolean = false;
 		public function set autoProcess(v:Boolean):void { _autoProcess = v; processButt.visible = !v }
@@ -145,7 +140,7 @@ package net.fundekave.fuup.view.components
 				errWin.height = 50;
 				errWin.width = 200;
 				errWin.close();
-				errWin.setContentAlignHorizontal(TextAlign.CENTER);
+				errWin.setContentAlignHorizontal('center');
 				errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
 				
 				globalProgressBar.visible = false;
@@ -259,11 +254,7 @@ package net.fundekave.fuup.view.components
 		private function doAction(actionStr:String):void {
 			dispatchEvent( new Event( actionStr ));
 		}
-		
-		private function onChange(e:Event):void {
-			dispatchEvent( new Event(SETTINGS_CHANGE) );
-		}
-		
+				
 		private var selectFilesButt:PushButton;
 		private var correctionsCheckboxHolder:Container;
 		public var correctionsCheckbox:CheckBox;
@@ -285,7 +276,7 @@ package net.fundekave.fuup.view.components
 			correctionsCheckboxHolder.height = 20;
 			correctionsCheckboxHolder.visible = _settingsVisible;
 			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
-			correctionsCheckbox.selected = true;
+			correctionsCheckbox.selected = settingsOn;
 			
 			processButt = new PushButton(box,0,0,lang.process,onProcessClick);
 			processButt.width = 60;

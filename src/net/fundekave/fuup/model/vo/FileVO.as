@@ -28,7 +28,6 @@ package net.fundekave.fuup.model.vo
 		public var widthOriginal:Number;
 		public var heightOriginal:Number;
 		
-		public var sizeInheritance:Boolean = true;
 		public var widthMax:Number;
 		public var heightMax:Number;
 		

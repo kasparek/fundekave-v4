@@ -42,8 +42,6 @@ package com.bit101.components
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
 	
-	import flashx.textLayout.formats.TextAlign;
-
 	public class Component extends Sprite
 	{
 		
@@ -147,7 +145,7 @@ package com.bit101.components
 		public function draw():void
 		{
 			switch(alignHorizontal) {
-				case TextAlign.CENTER:
+				case 'center':
 					for(var i:int=0;i<this.numChildren;i++) {
 						var child:DisplayObject = this.getChildAt(i) as DisplayObject;
 						child.x = (this.width/2) - (child.width/2);
