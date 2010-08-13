@@ -33,8 +33,6 @@ package com.bit101.components
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	
-	import flashx.textLayout.formats.TextAlign;
-	
 	[DefaultProperty( "content" )]
 	
 	public class Panel extends Component
@@ -106,7 +104,7 @@ package com.bit101.components
 			super.draw();
 			
 			switch(alignHorizontal) {
-				case TextAlign.CENTER:
+				case 'center':
 					var i:int;
 					var child:DisplayObject;
 					for(i=0;i<this.numChildren;i++) {

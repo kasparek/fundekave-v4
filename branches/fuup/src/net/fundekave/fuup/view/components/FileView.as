@@ -4,6 +4,8 @@ package net.fundekave.fuup.view.components
 	import com.bit101.components.Label;
 	import com.bit101.components.VBox;
 	import com.bit101.components.Window;
+	import com.greensock.TweenLite;
+	import com.greensock.easing.Quad;
 	
 	import flash.display.Bitmap;
 	import flash.display.Loader;
@@ -11,10 +13,8 @@ package net.fundekave.fuup.view.components
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filters.DropShadowFilter;
+	import flash.geom.Rectangle;
 	import flash.net.FileReference;
-	
-	import gs.TweenLite;
-	import gs.easing.Quad;
 	
 	import net.fundekave.Application;
 	import net.fundekave.Container;
@@ -44,7 +44,6 @@ package net.fundekave.fuup.view.components
 		
 			public static const FILE_CREATED:String = 'fileCreated';
 			public static const FILE_UPDATED:String = 'fileUpdated';
-			public static const SETTINGS_INHERIT:String = 'settingsInherit';
 			public static const FILE_REMOVE:String = 'fileRemove';
 			
 			public static const STATE_PROCESSING:String = 'processing';
@@ -121,7 +120,8 @@ package net.fundekave.fuup.view.components
 				if( fileVO.showThumb === true ) { 
 					if(this.thumbUI.numChildren > 0) {
 						this.thumbUI.removeChildAt( 0 );
-						rotateTo = 0;
+						//rotateTo = 0;
+						thumbUI.rotation = 0;
 					}
 					this.thumbUI.alpha = 0;
 					imageResize = new ImageResize(thumbMaxWidth,thumbMaxHeight);
@@ -187,21 +187,7 @@ package net.fundekave.fuup.view.components
 			private function onRotateTween():void {
 				thumbUI.rotation = _fileVO.rotation = Number(rotateTo);
 			}
-			
-			private var inheritWasTrue:Boolean = false;
-			private function onInheritChange():void {
-				/*
-				if(resizeInheritCheckbox.selected == true && inheritWasTrue==true) {
-					setTimeout( laterOnInheritChange, 1 );
-				} else {
-					inheritWasTrue = true;
-				}
-				*/
-			}
-			private function laterOnInheritChange():void {
-				dispatchEvent(new Event(SETTINGS_INHERIT,true));
-			}
-			
+						
 			private var previewWin:Window;
 			
 			private function showResized():void {
@@ -227,8 +213,15 @@ package net.fundekave.fuup.view.components
 				previewWin.hasMinimizeButton = true;
 				previewWin.hasCloseButton = true;
 				
-				previewWin.width = fileVO.widthOriginal;
-				previewWin.height = fileVO.heightOriginal + 20;
+				if(fileVO.widthOriginal > fileVO.widthMax) {
+					var resize:Rectangle = ImageResize.scaleCalc(fileVO.widthOriginal, fileVO.heightOriginal, fileVO.widthMax, fileVO.heightMax);
+					previewWin.width = resize.width;
+					previewWin.height = resize.height + 20;
+				} else {
+					previewWin.width =  fileVO.widthOriginal ;
+					previewWin.height = fileVO.heightOriginal + 20;	
+				}
+				
 				previewWin.addEventListener( Window.CLOSE, onClosePreview ,false,0,true);
 				
 				previewWin.x = -previewWin.width;
@@ -254,6 +247,8 @@ package net.fundekave.fuup.view.components
 					image.loadBytes( fileVO.encodedJPG );
 					image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
 					win.content.addChild( image );
+					image.width = win.width;
+					image.height = win.height-20;
 				} else if(fileVO.file.data) {
 					fileVO.file.addEventListener(Event.COMPLETE, onFileLoaded );
 					fileVO.file.load();
@@ -271,6 +266,10 @@ package net.fundekave.fuup.view.components
 			private function onLoaderPreview(e:Event):void {
 				var loader:Loader = e.target.loader as Loader;
 				loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoaderPreview );
+				
+				loader.content.width = previewWin.width;
+				loader.content.height = previewWin.height-20;
+				
 				TweenLite.to( loader, 0.5, {alpha:1,ease:Quad.easeInOut} );
 			}
 						

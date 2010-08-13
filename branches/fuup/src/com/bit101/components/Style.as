@@ -31,10 +31,11 @@ package com.bit101.components
 {
 	public class Style
 	{
-		
-		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven")]
+		/*
+		[Embed(source="/assets/pf_ronda_seven.ttf", fontFamily="PF Ronda Seven"
+            ,embedAsCFF="false", mimeType="application/x-font")]
 		private var Ronda:Class;
-		
+		*/
 		public static var BACKGROUND:uint = 0xCCCCCC;
 		public static var BUTTON_FACE:uint = 0xFFFFFF;
 		public static var INPUT_TEXT:uint = 0x333333;

@@ -1,11 +1,16 @@
 package
 {
 	import flash.events.Event;
+	import flash.text.Font;
+	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormat;
 	
 	import net.fundekave.Application;
 	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.view.components.FileView;
 	import net.fundekave.fuup.view.components.FilesView;
+	import net.fundekave.fuup.view.RondaFont;
 	
 	public class Fuup extends Application
 	{

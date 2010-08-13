@@ -28,12 +28,12 @@
  
 package com.bit101.components
 {
+	import com.greensock.TweenLite;
+	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	
-	import gs.TweenLite;
 	
 	public class Window extends Component
 	{

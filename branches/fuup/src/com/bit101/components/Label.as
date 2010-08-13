@@ -30,17 +30,19 @@ package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.text.AntiAliasType;
+	import flash.text.Font;
+	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import flashx.textLayout.controls.TLFTextField;
+	import net.fundekave.fuup.view.RondaFont;
 	
 	public class Label extends Component
 	{
 		
 		private var _autoSize:Boolean = true;
 		private var _text:String = "";
-		protected var _tf:TLFTextField;
+		protected var _tf:TextField;
 		
 		private var recreate:Boolean = false;
 		private var _color:uint = Style.LABEL_TEXT;
@@ -123,22 +125,34 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			_tf = new TLFTextField();
-			_tf.height = _height;
+			
+			var rondaFont:RondaFont;
+			var format:TextFormat = new TextFormat();
+			format.size = this.size;
+			format.font = this.font;
+			format.color = this.color;
+			if(this.letterSpacing!==0) format.letterSpacing = this.letterSpacing;
+			
+			_tf = new TextField();
+			_tf.autoSize = this.align;
 			_tf.embedFonts = true;
+			_tf.height = _height;
+			_tf.text = _text;
+			_tf.defaultTextFormat = format;
+						
 			_tf.selectable = false;
 			_tf.antiAliasType = AntiAliasType.ADVANCED;
 			_tf.mouseEnabled = false;
-			var tformat:TextFormat = new TextFormat( this.font, this.size,  this.color );
-			if(this.letterSpacing!==0) tformat.letterSpacing = this.letterSpacing;
-			_tf.setTextFormat( tformat );
-			_tf.text = _text;
-			_tf.autoSize = this.align;
+			
 			_tf.sharpness = -200;
 			_tf.thickness = 0;
+			
 			addChild(_tf);
 			
 			draw();
+			
+			
+			
 		}
 		
 		
