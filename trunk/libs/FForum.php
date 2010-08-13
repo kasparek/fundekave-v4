@@ -207,6 +207,7 @@ class FForum extends FDBTool {
 	 public write - 0:no write,1:public,2:only registered
 	 */
 	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
+		$filter = false;
 		$itemId = (int) $itemId;
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;

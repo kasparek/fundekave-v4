@@ -3,6 +3,7 @@
 	<Config>
 		<Settings>
 			<Item name="settingsEnabled">1</Item>
+			<Item name="settingsOn">1</Item>
 			<Item name="autoProcess">0</Item>
 			<Item name="autoUpload">0</Item>
 			<Item name="displayContent">1</Item>
@@ -27,8 +28,8 @@
 		</Services>
 	</Config>
 	<Filters>
-		<Filter id="contrast" enabled="1" visible="0">
-			<name>Contrast Correction</name>
+		<Filter id="sharpen" enabled="1" visible="0">
+			<name>Sharpen</name>
 		</Filter>
 	</Filters>
 	<Lang>
