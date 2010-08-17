@@ -1,9 +1,9 @@
 /**
  * InputText.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,17 +29,16 @@ package com.bit101.components
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
-	import flashx.textLayout.controls.TLFTextField;
-	
 	public class InputText extends Component
 	{
-		private var _back:Sprite;
-		private var _password:Boolean = false;
-		private var _text:String = "";
-		private var _tf:TLFTextField;
+		protected var _back:Sprite;
+		protected var _password:Boolean = false;
+		protected var _text:String = "";
+		protected var _tf:TextField;
 		
 		/**
 		 * Constructor
@@ -51,11 +50,11 @@ package com.bit101.components
 		 */
 		public function InputText(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", defaultHandler:Function = null)
 		{
-			_text = text;
+			this.text = text;
 			super(parent, xpos, ypos);
 			if(defaultHandler != null)
 			{
-				addEventListener(Event.CHANGE, defaultHandler,false,0,true );
+				addEventListener(Event.CHANGE, defaultHandler);
 			}
 		}
 		
@@ -77,13 +76,13 @@ package com.bit101.components
 			_back.filters = [getShadow(2, true)];
 			addChild(_back);
 			
-			_tf = new TLFTextField();
-			_tf.embedFonts = true;
+			_tf = new TextField();
+			_tf.embedFonts = Style.embedFonts;
 			_tf.selectable = true;
 			_tf.type = TextFieldType.INPUT;
-			_tf.defaultTextFormat = new TextFormat("PF Ronda Seven", 8, Style.INPUT_TEXT);
+			_tf.defaultTextFormat = new TextFormat(Style.fontName, Style.fontSize, Style.INPUT_TEXT);
 			addChild(_tf);
-			_tf.addEventListener(Event.CHANGE, onChange,false,0,true );
+			_tf.addEventListener(Event.CHANGE, onChange);
 			
 		}
 		
@@ -107,7 +106,14 @@ package com.bit101.components
 			
 			_tf.displayAsPassword = _password;
 			
-			_tf.text = _text;
+			if(_text != null)
+			{
+				_tf.text = _text;
+			}
+			else 
+			{
+				_tf.text = "";
+			}
 			_tf.width = _width - 4;
 			if(_tf.text == "")
 			{
@@ -146,19 +152,26 @@ package com.bit101.components
 		// getter/setters
 		///////////////////////////////////
 		
-		[Bindable( "change" )]
-		
 		/**
 		 * Gets / sets the text shown in this InputText.
 		 */
 		public function set text(t:String):void
 		{
 			_text = t;
+			if(_text == null) _text = "";
 			invalidate();
 		}
 		public function get text():String
 		{
 			return _text;
+		}
+		
+		/**
+		 * Returns a reference to the internal text field in the component.
+		 */
+		public function get textField():TextField
+		{
+			return _tf;
 		}
 		
 		/**
@@ -197,5 +210,15 @@ package com.bit101.components
 		{
 			return _password;
 		}
+
+        /**
+         * Sets/gets whether this component is enabled or not.
+         */
+        public override function set enabled(value:Boolean):void
+        {
+            super.enabled = value;
+            _tf.tabEnabled = value;
+        }
+
 	}
 }

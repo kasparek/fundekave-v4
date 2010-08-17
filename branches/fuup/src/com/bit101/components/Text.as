@@ -1,11 +1,14 @@
 /**
- * Label.as
+ *TODO:
+ *implement leading,fontsize,font,textAlign
+ *   
+ * Text.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A Text component for displaying multiple lines of text.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,84 +33,19 @@ package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	import flash.text.AntiAliasType;
-	import flash.text.TextFieldAutoSize;
+	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
-	import flashx.textLayout.controls.TLFTextField;
-	
 	public class Text extends Component
 	{
-		private var _tf:TLFTextField;
-		private var _text:String = "";
-		private var _editable:Boolean = false;
+		protected var _tf:TextField;
+		protected var _text:String = "";
+		protected var _editable:Boolean = true;
+		protected var _panel:Panel;
+		protected var _selectable:Boolean = true;
+		protected var _html:Boolean = false;
 		
-		private var recreate:Boolean = false;
-		private var _color:uint = Style.LABEL_TEXT;
-		public function set color(v:uint):void {
-			_color = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get color():uint {
-			return _color;
-		}
-		private var _size:uint = Style.SIZE_TEXT;
-		public function set size(v:uint):void {
-			_size = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get size():uint {
-			return _size;
-		}
-		private var _font:String = Style.FONT_TEXT;
-		public function set font(v:String):void {
-			_font = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get font():String {
-			return _font;
-		}
-		
-		private var _leading:int;
-		public function set leading(v:int):void {
-			_leading = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get leading():int {
-			return _leading;
-		}
-		
-		private var _textAlign:String;
-		public function set textAlign(v:String):void {
-			_textAlign = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get textAlign():String {
-			return _textAlign;
-		}
-		
-		private var _align:String = TextFieldAutoSize.LEFT;
-		public function set align(v:String):void {
-			_align = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get align():String {
-			return _align;
-		}
-		
-		
-		override public function set width(v:Number):void {
-			super.width = v
-			recreate = true;
-			this.invalidate();
-		}
 		
 		/**
 		 * Constructor
@@ -116,15 +54,11 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The initial text to display in this component.
 		 */
-		public function Text(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0, size:uint=0,font:String=null,align:String=null)
+		public function Text(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "")
 		{
-			_text = text;
-			if(color>0) this.color = color;
-			if(size>0) this.size = size;
-			if(font) this.font = font;
-			if(align) this.align = align;
+			this.text = text;
 			super(parent, xpos, ypos);
-			//setSize(200, 100);
+			setSize(200, 100);
 		}
 		
 		/**
@@ -140,26 +74,21 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			_tf = new TLFTextField();
-			_tf.width  = _width;
-			_tf.embedFonts = true;
-			_tf.selectable = false;
-			_tf.antiAliasType = AntiAliasType.ADVANCED;
-			_tf.mouseEnabled = false;
+			_panel = new Panel(this);
+			_panel.color = 0xffffff;
+			
+			_tf = new TextField();
+			_tf.x = 2;
+			_tf.y = 2;
+			_tf.height = _height;
+			_tf.embedFonts = Style.embedFonts;
 			_tf.multiline = true;
 			_tf.wordWrap = true;
-			//_tf.type = TextFieldType.INPUT;
-			//_tf.addEventListener(Event.CHANGE, onChange,false,0,true );
-			var tformat:TextFormat = new TextFormat( this.font, this.size,  this.color );
-			if(textAlign) tformat.align = textAlign;
-			if(leading) tformat.leading = leading;
-			
-			_tf.setTextFormat( tformat );
-			_tf.text = _text;
-			_tf.autoSize = this.align;
+			_tf.selectable = true;
+			_tf.type = TextFieldType.INPUT;
+			_tf.defaultTextFormat = new TextFormat(Style.fontName, Style.fontSize, Style.LABEL_TEXT);
+			_tf.addEventListener(Event.CHANGE, onChange);			
 			addChild(_tf);
-			
-			draw();
 		}
 		
 		
@@ -176,15 +105,19 @@ package com.bit101.components
 		{
 			super.draw();
 			
-			if(recreate===true) {
-				recreate = false;
-				this.removeChild( _tf );
-				this.addChildren();
+			_panel.setSize(_width, _height);
+			_panel.draw();
+			
+			_tf.width = _width - 4;
+			_tf.height = _height - 4;
+			if(_html)
+			{
+				_tf.htmlText = _text;
 			}
-			
-			_tf.text = _text;
-			_tf.autoSize = this.align;
-			
+			else
+			{
+				_tf.text = _text;
+			}
 			if(_editable)
 			{
 				_tf.mouseEnabled = true;
@@ -193,12 +126,10 @@ package com.bit101.components
 			}
 			else
 			{
-				_tf.mouseEnabled = false;
-				_tf.selectable = false;
+				_tf.mouseEnabled = _selectable;
+				_tf.selectable = _selectable;
 				_tf.type = TextFieldType.DYNAMIC;
 			}
-			
-			_height = _tf.height;
 		}
 		
 		
@@ -208,6 +139,9 @@ package com.bit101.components
 		// event handlers
 		///////////////////////////////////
 		
+		/**
+		 * Called when the text in the text field is manually changed.
+		 */
 		protected function onChange(event:Event):void
 		{
 			_text = _tf.text;
@@ -224,11 +158,20 @@ package com.bit101.components
 		public function set text(t:String):void
 		{
 			_text = t;
+			if(_text == null) _text = "";
 			invalidate();
 		}
 		public function get text():String
 		{
 			return _text;
+		}
+		
+		/**
+		 * Returns a reference to the internal text field in the component.
+		 */
+		public function get textField():TextField
+		{
+			return _tf;
 		}
 		
 		/**
@@ -243,5 +186,41 @@ package com.bit101.components
 		{
 			return _editable;
 		}
+		
+		/**
+		 * Gets / sets whether or not this text component will be selectable. Only meaningful if editable is false.
+		 */
+		public function set selectable(b:Boolean):void
+		{
+			_selectable = b;
+			invalidate();
+		}
+		public function get selectable():Boolean
+		{
+			return _selectable;
+		}
+		
+		/**
+		 * Gets / sets whether or not text will be rendered as HTML or plain text.
+		 */
+		public function set html(b:Boolean):void
+		{
+			_html = b;
+			invalidate();
+		}
+		public function get html():Boolean
+		{
+			return _html;
+		}
+
+        /**
+         * Sets/gets whether this component is enabled or not.
+         */
+        public override function set enabled(value:Boolean):void
+        {
+            super.enabled = value;
+            _tf.tabEnabled = value;
+        }
+
 	}
 }

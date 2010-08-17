@@ -13,6 +13,7 @@ package net.fundekave
         private var _children:Vector.<DisplayObject>;
         private var childrenChanged:Boolean = false;
         
+		//TODO: do setter with invalidate()
         public var backgroundColor:Number;
         public var backgroundAlpha:Number=1;
         public var masked:Boolean = false;

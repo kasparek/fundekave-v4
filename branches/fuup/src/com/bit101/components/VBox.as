@@ -1,11 +1,11 @@
 /**
  * VBox.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A layout container for vertically aligning other components.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,13 @@
  
 package com.bit101.components
 {
-	import flash.display.DisplayObject;
+    import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	
-	import net.fundekave.Container;
 
-	public class VBox extends Container
+	public class VBox extends Component
 	{
-		private var _spacing:Number = 5;
+		protected var _spacing:Number = 5;
 		
 		
 		/**
@@ -54,14 +52,36 @@ package com.bit101.components
 		/**
 		 * Override of addChild to force layout;
 		 */
-		override public function addChild(child:DisplayObject) : DisplayObject
+		override public function addChildAt(child:DisplayObject, index:int) : DisplayObject
 		{
-			super.addChild(child);
-			child.addEventListener(Event.RESIZE, onResize,false,0,true );
+			super.addChildAt(child, index);
+			child.addEventListener(Event.RESIZE, onResize);
 			invalidate();
 			return child;
 		}
+
+        /**
+         * Override of removeChild to force layout;
+         */
+        override public function removeChild(child:DisplayObject):DisplayObject
+        {
+            super.removeChild(child);            
+            child.removeEventListener(Event.RESIZE, onResize);
+            invalidate();
+            return child;
+        }
 		
+        /**
+         * Override of removeChild to force layout;
+         */
+        override public function removeChildAt(index:int):DisplayObject
+        {
+            var child:DisplayObject = super.removeChildAt(index);
+            child.removeEventListener(Event.RESIZE, onResize);
+            invalidate();
+            return child;
+        }
+
 		/**
 		 * Internal handler for resize event of any attached component. Will redo the layout based on new size.
 		 */
@@ -75,21 +95,20 @@ package com.bit101.components
 		 */
 		override public function draw() : void
 		{
-			var maxWidth:Number = 0;
+			_width = 0;
+			_height = 0;
 			var ypos:Number = 0;
-			
 			for(var i:int = 0; i < numChildren; i++)
 			{
 				var child:DisplayObject = getChildAt(i);
 				child.y = ypos;
 				ypos += child.height;
 				ypos += _spacing;
-				
-				maxWidth = Math.max( maxWidth, child.height );
+				_height += child.height;
+				_width = Math.max(_width, child.width);
 			}
-			
-			width = maxWidth;
-			height = ypos;
+			_height += _spacing * (numChildren - 1);
+			dispatchEvent(new Event(Event.RESIZE));
 		}
 		
 		/**

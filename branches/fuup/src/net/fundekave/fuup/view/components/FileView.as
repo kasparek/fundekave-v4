@@ -1,5 +1,6 @@
 package net.fundekave.fuup.view.components
 {
+	import com.bit101.components.CloseWindow;
 	import com.bit101.components.Component;
 	import com.bit101.components.Label;
 	import com.bit101.components.VBox;
@@ -152,13 +153,11 @@ package net.fundekave.fuup.view.components
 						//---set red background
 						statusBar.backgroundColor = 0xffaa66;
 						statusBar.backgroundAlpha = 0.9;
-						statusBar.invalidate();
 						break;
 					default:
 						//---set default background
 						statusBar.backgroundColor = 0xffffff;
 						statusBar.backgroundAlpha = 0.7;
-						statusBar.invalidate();
 				}
 				if(status!==null) {
 					this.statusLbl.text = status;
@@ -188,7 +187,7 @@ package net.fundekave.fuup.view.components
 				thumbUI.rotation = _fileVO.rotation = Number(rotateTo);
 			}
 						
-			private var previewWin:Window;
+			private var previewWin:CloseWindow;
 			
 			private function showResized():void {
 				if(previewWin) {
@@ -206,8 +205,7 @@ package net.fundekave.fuup.view.components
 				+ ' '
 				+ String( Math.round(((fileVO.encodedJPG)?(fileVO.encodedJPG.length):(fileVO.file.size))/1024) ) + 'kB';
 					
-				
-				previewWin = new Window(Application.application, 0, 0, title);
+				previewWin = new CloseWindow(Application.application, 0, 0, title);
 				previewWin.addEventListener( Event.RESIZE, onWinReady ,false,0,true);
 				previewWin.draggable = true;
 				previewWin.hasMinimizeButton = true;
@@ -222,7 +220,7 @@ package net.fundekave.fuup.view.components
 					previewWin.height = fileVO.heightOriginal + 20;	
 				}
 				
-				previewWin.addEventListener( Window.CLOSE, onClosePreview ,false,0,true);
+				previewWin.addEventListener( Event.CLOSE, onClosePreview ,false,0,true);
 				
 				previewWin.x = -previewWin.width;
 				previewWin.y = -previewWin.height;

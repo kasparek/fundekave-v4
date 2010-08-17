@@ -1,11 +1,11 @@
 /**
  * HUISlider.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A Horizontal slider with a label and a value label.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,24 +28,23 @@
  
 package com.bit101.components
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
+    import flash.display.DisplayObjectContainer;
 
-	public class HUISlider extends UISlider
+    public class HUISlider extends UISlider
 	{
 		
 		/**
 		 * Constructor
 		 * @param parent The parent DisplayObjectContainer on which to add this HUISlider.
-		 * @param xpos The x position to place this component.
-		 * @param ypos The y position to place this component.
+		 * @param x The x position to place this component.
+		 * @param y The y position to place this component.
 		 * @param label The string to use as the label for this component.
 		 * @param defaultHandler The event handling function to handle the default event for this component.
 		 */
-		public function HUISlider(parent:DisplayObjectContainer = null, x:Number = 0, y:Number = 0, label:String = "", defaultEventHandler:Function = null)
+		public function HUISlider(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, label:String = "", defaultHandler:Function = null)
 		{
 			_sliderClass = HSlider;
-			super(parent, x, y, label, defaultEventHandler);
+			super(parent, xpos, ypos, label, defaultHandler);
 		}
 		
 		/**

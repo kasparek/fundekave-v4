@@ -1,20 +1,47 @@
+/**
+ * PushButton.as
+ * Keith Peters
+ * version 0.9.5
+ * 
+ * A basic button component with a label.
+ * 
+ * Copyright (c) 2010 Keith Peters
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+ 
 package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	import flash.text.TextFieldAutoSize;
 
 	public class PushButton extends Component
 	{
-		private var _back:Sprite;
-		private var _face:Sprite;
-		private var _label:Label;
-		private var _labelText:String = "";
-		private var _over:Boolean = false;
-		private var _down:Boolean = false;
-		private var _selected:Boolean = false;
-		private var _toggle:Boolean = false;
+		protected var _back:Sprite;
+		protected var _face:Sprite;
+		protected var _label:Label;
+		protected var _labelText:String = "";
+		protected var _over:Boolean = false;
+		protected var _down:Boolean = false;
+		protected var _selected:Boolean = false;
+		protected var _toggle:Boolean = false;
 		
 		/**
 		 * Constructor
@@ -27,11 +54,9 @@ package com.bit101.components
 		public function PushButton(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, label:String = "", defaultHandler:Function = null)
 		{
 			super(parent, xpos, ypos);
-			width = 100;
-			height = 19;
 			if(defaultHandler != null)
 			{
-				addEventListener(MouseEvent.CLICK, defaultHandler,false,0,true );
+				addEventListener(MouseEvent.CLICK, defaultHandler);
 			}
 			this.label = label;
 		}
@@ -44,7 +69,7 @@ package com.bit101.components
 			super.init();
 			buttonMode = true;
 			useHandCursor = true;
-			setSize(width, height);
+			setSize(100, 20);
 		}
 		
 		/**
@@ -67,8 +92,8 @@ package com.bit101.components
 			_label = new Label();
 			addChild(_label);
 			
-			addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown,false,0,true );
-			addEventListener(MouseEvent.ROLL_OVER, onMouseOver,false,0,true );
+			addEventListener(MouseEvent.MOUSE_DOWN, onMouseGoDown);
+			addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
 		}
 		
 		
@@ -94,12 +119,24 @@ package com.bit101.components
 			_face.graphics.drawRect(0, 0, _width - 2, _height - 2);
 			_face.graphics.endFill();
 			
-			//_label.align = TextFieldAutoSize.CENTER;
+			_label.autoSize = true;
 			_label.text = _labelText;
+			if(_label.width > _width - 4)
+			{
+				_label.autoSize = false;
+				_label.width = _width - 4;
+			}
+			else
+			{
+				_label.autoSize = true;
+			}
 			_label.draw();
-			_label.move(((_width-_label.width)  / 2), ((_height-_label.height)  / 2)-2);
+			_label.move(_width / 2 - _label.width / 2, _height / 2 - _label.height / 2);
 			
 		}
+		
+		
+		
 		
 		///////////////////////////////////
 		// event handlers
@@ -112,7 +149,7 @@ package com.bit101.components
 		protected function onMouseOver(event:MouseEvent):void
 		{
 			_over = true;
-			addEventListener(MouseEvent.ROLL_OUT, onMouseOut,false,0,true );
+			addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
 		}
 		
 		/**
@@ -126,24 +163,25 @@ package com.bit101.components
 			{
 				_face.filters = [getShadow(1)];
 			}
+			removeEventListener(MouseEvent.ROLL_OUT, onMouseOut);
 		}
 		
 		/**
 		 * Internal mouseOut handler.
 		 * @param event The MouseEvent passed by the system.
 		 */
-		protected function onMouseDown(event:MouseEvent):void
+		protected function onMouseGoDown(event:MouseEvent):void
 		{
 			_down = true;
 			_face.filters = [getShadow(1, true)];
-			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp,false,0,true );
+			stage.addEventListener(MouseEvent.MOUSE_UP, onMouseGoUp);
 		}
 		
 		/**
 		 * Internal mouseUp handler.
 		 * @param event The MouseEvent passed by the system.
 		 */
-		protected function onMouseUp(event:MouseEvent):void
+		protected function onMouseGoUp(event:MouseEvent):void
 		{
 			if(_toggle  && _over)
 			{
@@ -151,7 +189,7 @@ package com.bit101.components
 			}
 			_down = _selected;
 			_face.filters = [getShadow(1, _selected)];
-			stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseGoUp);
 		}
 		
 		

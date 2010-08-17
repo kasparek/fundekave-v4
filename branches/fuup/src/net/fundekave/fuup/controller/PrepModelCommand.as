@@ -12,12 +12,9 @@ package net.fundekave.fuup.controller
 	{
 		override public function execute ( note:INotification ) : void
 		{
-
 			facade.registerProxy( new ConfigProxy() );
-			//facade.registerProxy( new LoginProxy() );
 			facade.registerProxy( new FileProxy() );
 			facade.registerProxy( new ExtInterfaceProxy() );
-			
 		}
 	}
 }

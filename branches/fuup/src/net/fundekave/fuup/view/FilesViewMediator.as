@@ -130,11 +130,9 @@ package net.fundekave.fuup.view
 					stateName = String( note.getBody() );
 					switch(stateName) {
 						case StateConstants.STATE_PROCESSING:
-							filesView.globalProgressBar.label = filesView.lang.processing;
 							filesView.globalProgressBar.maximum = proxy.fileList.length;
 						break;
 						case StateConstants.STATE_UPLOADING:
-							filesView.globalProgressBar.label = filesView.lang.uploading;
 							filesView.globalProgressBar.maximum = proxy.fileList.length;
 						break;
 					}

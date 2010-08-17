@@ -1,3 +1,31 @@
+/**
+ * ProgressBar.as
+ * Keith Peters
+ * version 0.9.5
+ * 
+ * A progress bar component for showing a changing value in relation to a total.
+ * 
+ * Copyright (c) 2010 Keith Peters
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+ 
 package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
@@ -5,10 +33,10 @@ package com.bit101.components
 	
 	public class ProgressBar extends Component
 	{
-		private var _back:Sprite;
-		private var _bar:Sprite;
-		private var _value:Number = 0;
-		private var _max:Number = 1;
+		protected var _back:Sprite;
+		protected var _bar:Sprite;
+		protected var _value:Number = 0;
+		protected var _max:Number = 1;
 
 		/**
 		 * Constructor
@@ -45,8 +73,6 @@ package com.bit101.components
 			_bar.y = 1;
 			_bar.filters = [getShadow(1)];
 			addChild(_bar);
-			
-			_label = new Label(this,0,0,'');
 		}
 		
 		/**
@@ -78,11 +104,8 @@ package com.bit101.components
 			_bar.graphics.clear();
 			_bar.graphics.beginFill(Style.PROGRESS_BAR);
 			_bar.graphics.drawRect(0, 0, _width - 2, _height - 2);
-			_bar.scaleX = 0;
 			_bar.graphics.endFill();
-			
-			
-			_label.move((_width - _label.width) / 2, (_height - _label.height) / 2);
+			update();
 		}
 		
 		
@@ -121,13 +144,6 @@ package com.bit101.components
 		public function get value():Number
 		{
 			return _value;
-		}
-		
-		private var _label:Label;
-		public function set label(l:String):void {
-			_label.text = l;
-			_label.draw();
-			this.invalidate();
 		}
 		
 	}

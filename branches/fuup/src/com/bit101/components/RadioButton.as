@@ -1,12 +1,12 @@
 /**
  * RadioButton.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A basic radio button component, meant to be used in groups, where only one button in the group can be selected.
  * Currently only one group can be created.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,14 @@ package com.bit101.components
 	
 	public class RadioButton extends Component
 	{
-		private var _back:Sprite;
-		private var _button:Sprite;
-		private var _selected:Boolean = false;
-		private var _label:Label;
-		private var _labelText:String = "";
+		protected var _back:Sprite;
+		protected var _button:Sprite;
+		protected var _selected:Boolean = false;
+		protected var _label:Label;
+		protected var _labelText:String = "";
+		protected var _groupName:String = "defaultRadioGroup";
 		
-		private static var buttons:Array;
+		protected static var buttons:Array;
 		
 		
 		/**
@@ -68,7 +69,7 @@ package com.bit101.components
 		 * Static method to add the newly created RadioButton to the list of buttons in the group.
 		 * @param rb The RadioButton to add.
 		 */
-		private static function addButton(rb:RadioButton):void
+		protected static function addButton(rb:RadioButton):void
 		{
 			if(buttons == null)
 			{
@@ -82,11 +83,11 @@ package com.bit101.components
 		 * This could use some rethinking or better naming.
 		 * @param rb The RadioButton to remain selected.
 		 */
-		private static function clear(rb:RadioButton):void
+		protected static function clear(rb:RadioButton):void
 		{
 			for(var i:uint = 0; i < buttons.length; i++)
 			{
-				if(buttons[i] != rb)
+				if(buttons[i] != rb && buttons[i].groupName == rb.groupName)
 				{
 					buttons[i].selected = false;
 				}
@@ -124,6 +125,7 @@ package com.bit101.components
 			_label = new Label(this, 0, 0, _labelText);
 			draw();
 			
+			mouseChildren = false;
 		}
 		
 		
@@ -208,6 +210,20 @@ package com.bit101.components
 		{
 			return _labelText;
 		}
+
+		/**
+		 * Sets / gets the group name, which allows groups of RadioButtons to function seperately.
+		 */
+		public function get groupName():String
+		{
+			return _groupName;
+		}
+
+		public function set groupName(value:String):void
+		{
+			_groupName = value;
+		}
+
 		
 	}
 }
