@@ -7,15 +7,22 @@ echo 'died';
 die();
 }
 /**/
-$data = $_POST['data'];
+
 $seq = (int)  $_POST['seq'];
 $total = (int)  $_POST['total'];
-$filename = $_POST['filename'];
-if(!empty($data)) {
+if(!empty($_FILES)) {
+	$file = $_FILES['Filedata'];
+	$filename = $file["name"];
+	move_uploaded_file($file["tmp_name"], 'chunks/chunk-'.$filename.'-'.$seq.'.txt' );
 
-file_put_contents('chunks/chunk-'.$filename.'-'.$seq.'.txt',$data);
-		
+} else {
+	$filename = $_POST['filename'];
+	$data = $_POST['data'];
+	if(!empty($data)) {
+  	file_put_contents('chunks/chunk-'.$filename.'-'.$seq.'.txt',$data);
+	}
 }
+
 
 $allExists = true; 
 for($i=0;$i<$total;$i++) {
@@ -24,17 +31,24 @@ $allExists = false;
 }
 }
 
-
-if($allExists === true) {
+$targetFile = 'images/'.$filename.'.jpg';
+if($allExists === true && !file_exists($targetFile)) {
 	//--concat all files
-	$encData = '';
+	
+	$handleW = fopen($targetFile, "a");
+	
 	for($i=0;$i<$total;$i++) {
 	 $file = 'chunks/chunk-'.$filename.'-'.$i.'.txt';
-		$encData .= trim(file_get_contents($file));
-		//unlink($file);
+		//$encData .= trim(file_get_contents($file));
+		$handle = fopen($file, "rb");
+		fwrite($handleW, fread($handle, filesize($file)-2));
+		fclose($handle);
+		unlink($file);
 	}
 
-	file_put_contents('images/'.$filename.'.jpg',base64_decode( $encData ));
+  fclose($handleW);
+	//file_put_contents('images/'.$filename.'.jpg',base64_decode( $encData ));
+	//file_put_contents('images/'.$filename.'.jpg', $encData );
 }
 
 echo 1;
