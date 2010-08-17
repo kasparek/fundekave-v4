@@ -1,11 +1,13 @@
 /**
+ *TODO: implement color,size,letterSpacing,font,align
+ * 
  * Label.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A Label component for displaying a single line of text.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,70 +31,17 @@
 package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
-	import flash.text.AntiAliasType;
-	import flash.text.Font;
+	import flash.events.Event;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	
-	import net.fundekave.fuup.view.RondaFont;
-	
 	public class Label extends Component
 	{
-		
-		private var _autoSize:Boolean = true;
-		private var _text:String = "";
+		protected var _autoSize:Boolean = true;
+		protected var _text:String = "";
 		protected var _tf:TextField;
 		
-		private var recreate:Boolean = false;
-		private var _color:uint = Style.LABEL_TEXT;
-		public function set color(v:uint):void {
-			_color = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get color():uint {
-			return _color;
-		}
-		private var _size:uint = Style.SIZE_TEXT;
-		public function set size(v:uint):void {
-			_size = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get size():uint {
-			return _size;
-		}
-		
-		private var _letterSpacing:Number = Style.LETTER_SPACING;
-		public function set letterSpacing(v:Number):void {
-			_letterSpacing = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get letterSpacing():Number {
-			return _letterSpacing;
-		}
-		
-		private var _font:String = Style.FONT_TEXT;
-		public function set font(v:String):void {
-			_font = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get font():String {
-			return _font;
-		}
-		private var _align:String = TextFieldAutoSize.LEFT;
-		public function set align(v:String):void {
-			_align = v;
-			recreate = true;
-			this.invalidate();
-		}
-		public function get align():String {
-			return _align;
-		}
-				
 		/**
 		 * Constructor
 		 * @param parent The parent DisplayObjectContainer on which to add this Label.
@@ -100,13 +49,9 @@ package com.bit101.components
 		 * @param ypos The y position to place this component.
 		 * @param text The string to use as the initial text in this component.
 		 */
-		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "", color:uint=0, size:uint=0,font:String=null,align:String=null)
+		public function Label(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, text:String = "")
 		{
-			_text = text;
-			if(color>0) this.color = color;
-			if(size>0) this.size = size;
-			if(font) this.font = font;
-			if(align) this.align = align;
+			this.text = text;
 			super(parent, xpos, ypos);
 		}
 		
@@ -125,35 +70,19 @@ package com.bit101.components
 		 */
 		override protected function addChildren():void
 		{
-			
-			var rondaFont:RondaFont;
-			var format:TextFormat = new TextFormat();
-			format.size = this.size;
-			format.font = this.font;
-			format.color = this.color;
-			if(this.letterSpacing!==0) format.letterSpacing = this.letterSpacing;
-			
+			_height = 18;
 			_tf = new TextField();
-			_tf.autoSize = this.align;
-			_tf.embedFonts = true;
 			_tf.height = _height;
-			_tf.text = _text;
-			_tf.defaultTextFormat = format;
-						
+			_tf.embedFonts = Style.embedFonts;
 			_tf.selectable = false;
-			_tf.antiAliasType = AntiAliasType.ADVANCED;
 			_tf.mouseEnabled = false;
-			
-			_tf.sharpness = -200;
-			_tf.thickness = 0;
-			
+			_tf.defaultTextFormat = new TextFormat(Style.fontName, Style.fontSize, Style.LABEL_TEXT);
+			_tf.text = _text;			
 			addChild(_tf);
-			
 			draw();
-			
-			
-			
 		}
+		
+		
 		
 		
 		///////////////////////////////////
@@ -166,18 +95,19 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
-			
-			if(recreate===true) {
-				recreate = false;
-				this.removeChild( _tf );
-				this.addChildren();
-			}
-			
 			_tf.text = _text;
-			_tf.autoSize = this.align;
-			
-			_width = _tf.width;
-			_height = _tf.height;
+			if(_autoSize)
+			{
+				_tf.autoSize = TextFieldAutoSize.LEFT;
+				_width = _tf.width;
+				dispatchEvent(new Event(Event.RESIZE));
+			}
+			else
+			{
+				_tf.autoSize = TextFieldAutoSize.NONE;
+				_tf.width = _width;
+			}
+			_height = _tf.height = 18;
 		}
 		
 		///////////////////////////////////
@@ -194,6 +124,7 @@ package com.bit101.components
 		public function set text(t:String):void
 		{
 			_text = t;
+			if(_text == null) _text = "";
 			invalidate();
 		}
 		public function get text():String
@@ -207,11 +138,18 @@ package com.bit101.components
 		public function set autoSize(b:Boolean):void
 		{
 			_autoSize = b;
-			this.align = _autoSize === true ? TextFieldAutoSize.NONE : TextFieldAutoSize.LEFT;  
 		}
 		public function get autoSize():Boolean
 		{
 			return _autoSize;
+		}
+		
+		/**
+		 * Gets the internal TextField of the label if you need to do further customization of it.
+		 */
+		public function get textField():TextField
+		{
+			return _tf;
 		}
 	}
 }

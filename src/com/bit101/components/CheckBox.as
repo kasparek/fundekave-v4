@@ -1,11 +1,11 @@
 /**
  * CheckBox.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A basic CheckBox component.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ package com.bit101.components
 	
 	public class CheckBox extends Component
 	{
-		private var _back:Sprite;
-		private var _button:Sprite;
-		private var _label:Label;
-		private var _labelText:String = "";
-		private var _selected:Boolean = false;
+		protected var _back:Sprite;
+		protected var _button:Sprite;
+		protected var _label:Label;
+		protected var _labelText:String = "";
+		protected var _selected:Boolean = false;
 		
 		
 		/**
@@ -55,7 +55,7 @@ package com.bit101.components
 			super(parent, xpos, ypos);
 			if(defaultHandler != null)
 			{
-				addEventListener(MouseEvent.CLICK, defaultHandler,false,0,true );
+				addEventListener(MouseEvent.CLICK, defaultHandler);
 			}
 		}
 		
@@ -67,6 +67,7 @@ package com.bit101.components
 			super.init();
 			buttonMode = true;
 			useHandCursor = true;
+			mouseChildren = false;
 		}
 		
 		/**
@@ -86,7 +87,7 @@ package com.bit101.components
 			_label = new Label(this, 0, 0, _labelText);
 			draw();
 			
-			addEventListener(MouseEvent.CLICK, onClick,false,0,true );
+			addEventListener(MouseEvent.CLICK, onClick);
 		}
 		
 		
@@ -114,7 +115,7 @@ package com.bit101.components
 			_label.text = _labelText;
 			_label.draw();
 			_label.x = 12;
-			_label.y = ((6 - _label.height) / 2);
+			_label.y = (10 - _label.height) / 2;
 			_width = _label.width + 12;
 			_height = 10;
 		}
@@ -167,6 +168,15 @@ package com.bit101.components
 		public function get selected():Boolean
 		{
 			return _selected;
+		}
+
+		/**
+		 * Sets/gets whether this component will be enabled or not.
+		 */
+		public override function set enabled(value:Boolean):void
+		{
+			super.enabled = value;
+			mouseChildren = false;
 		}
 
 	}

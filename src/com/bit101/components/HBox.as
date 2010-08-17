@@ -1,11 +1,11 @@
 /**
  * VBox.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A layout container for vertically aligning other components.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,10 @@ package com.bit101.components
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	
-	import net.fundekave.Container;
 
-	public class HBox extends Container
+	public class HBox extends Component
 	{
-		private var _spacing:Number = 5;
+		protected var _spacing:Number = 5;
 		
 		
 		/**
@@ -51,17 +49,39 @@ package com.bit101.components
 			super(parent, xpos, ypos);
 		}
 		
-		/**
-		 * Override of addChild to force layout;
-		 */
-		override public function addChild(child:DisplayObject) : DisplayObject
-		{
-			super.addChild(child);
-			child.addEventListener(Event.RESIZE, onResize,false,0,true );
-			invalidate();
-			return child;
-		}
-		
+        /**
+         * Override of addChild to force layout;
+         */
+        override public function addChildAt(child:DisplayObject, index:int) : DisplayObject
+        {
+            super.addChildAt(child, index);
+            child.addEventListener(Event.RESIZE, onResize);
+            invalidate();
+            return child;
+        }
+
+        /**
+         * Override of removeChild to force layout;
+         */
+        override public function removeChild(child:DisplayObject):DisplayObject
+        {
+            super.removeChild(child);
+            child.removeEventListener(Event.RESIZE, onResize);
+            invalidate();
+            return child;
+        }
+
+        /**
+         * Override of removeChild to force layout;
+         */
+        override public function removeChildAt(index:int):DisplayObject
+        {
+            var child:DisplayObject = super.removeChildAt(index);
+            child.removeEventListener(Event.RESIZE, onResize);
+            invalidate();
+            return child;
+        }
+
 		protected function onResize(event:Event):void
 		{
 			invalidate();
@@ -72,9 +92,9 @@ package com.bit101.components
 		 */
 		override public function draw() : void
 		{
-			var maxHeight:Number = 0;
+			_width = 0;
+			_height = 0;
 			var xpos:Number = 0;
-			
 			for(var i:int = 0; i < numChildren; i++)
 			{
 				var child:DisplayObject = getChildAt(i);
@@ -82,12 +102,12 @@ package com.bit101.components
 					child.x = xpos;
 					xpos += child.width;
 					xpos += _spacing;
-					maxHeight = Math.max( maxHeight, child.height );
+					_width += child.width;
+					_height = Math.max(_height, child.height);
 				}
 			}
-			
-			width = xpos;
-			height = maxHeight;
+			_width += _spacing * (numChildren - 1);
+			dispatchEvent(new Event(Event.RESIZE));
 		}
 		
 		/**

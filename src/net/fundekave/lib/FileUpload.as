@@ -9,7 +9,6 @@ package net.fundekave.lib
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
-	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 		
@@ -18,6 +17,8 @@ package net.fundekave.lib
 		public static const COMPLETE:String = 'complete';
 		public static const ERROR:String = 'error';
 		public static const PROGRESS:String = 'progress';
+		
+		public var isMultipart:Boolean = true;
 		
 		public var serviceURL:String;
 		public var filename:String;
@@ -46,21 +47,44 @@ package net.fundekave.lib
 			this.uploadBytes( ref.data );
 			setTimeout( ref.data.clear, 100 );
 		}
+		
+		private function stringChunks( bytes:ByteArray ):void {
+			var encodedStr:String = Base64.encodeByteArray( bytes );
+			if( chunkSize > 0) {
+				numChunks = Math.ceil( encodedStr.length / chunkSize );
+			} else {
+				numChunks = 1;
+				chunkSize = encodedStr.length+1;
+			}
+			chunks = [];
+			for(var i:int=0;i < numChunks; i++) {
+				chunks.push( {filename:filename ,seq:i,total:numChunks,data:encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )} );	
+			}
+			encodedStr = null;
+		}
+		
+		private function byteChunks( bytes:ByteArray ):void {
+			if( chunkSize > 0) {
+				numChunks = Math.ceil( bytes.length / chunkSize );
+			} else {
+				numChunks = 1;
+				chunkSize = bytes.length+1;
+			}
+			chunks = [];
+			for(var i:int=0;i < numChunks; i++) {
+				var chunk:ByteArray = new ByteArray();
+				var length:Number = bytes.length < (i*chunkSize)+chunkSize ? bytes.length-i*chunkSize : chunkSize;
+				chunk.writeBytes( bytes,i*chunkSize , length );
+				chunks.push( {filename:filename ,seq:i,total:numChunks,data:chunk} );	
+			}
+		}
+		
 		public function uploadBytes( bytes:ByteArray ):void {
-        	var encodedStr:String = Base64.encodeByteArray( bytes );
-        	//---prepare all chunks
-        	if( chunkSize > 0) {
-	        	numChunks = Math.ceil( encodedStr.length / chunkSize );
-	        } else {
-	        	numChunks = 1;
-	        	chunkSize = encodedStr.length+1;
-	        }
-	        chunks = [];
-        	for(var i:int=0;i < numChunks; i++) {
-        		chunks.push( {filename:filename ,seq:i,total:numChunks,data:encodedStr.slice( i*chunkSize, (i*chunkSize)+chunkSize )} );	
-        	}
-        	encodedStr = null;
-        	
+			if(isMultipart===true) {
+				byteChunks(bytes);
+			} else {
+				stringChunks(bytes);
+			}
         	upload();
 		}
 		
@@ -74,21 +98,16 @@ package net.fundekave.lib
 	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError ,false,0,true );
 	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError ,false,0,true );
 	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError ,false,0,true );
-        		
-        		var vars:URLVariables = new URLVariables();
-        		var dataObj:Object = chunks.shift();
-     			vars.data = dataObj.data;  
-     			vars.seq = dataObj.seq;
-     			vars.total = dataObj.total;
-     			vars.filename = dataObj.filename;
-        		
+				
+				service.isMultipart = isMultipart;
+        		        		
         		service.url = serviceURL;
-        		service.variables = vars; 
+        		service.variables = chunks.shift(); 
 				service.send();
 				
 				chunksUploading++;
 				
-				trace('CHUNK::UPLOADING::file::'+String(dataObj.filename)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
+				trace('CHUNK::UPLOADING::file::'+String(service.variables.filename)+'::chunk::'+String(currentChunk)+'/'+String(numChunks));
 				
 				//---start more chunks if uploadLimit
 				if(chunks.length>0) setTimeout( upload, 500 );

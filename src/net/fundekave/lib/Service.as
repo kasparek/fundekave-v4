@@ -3,18 +3,23 @@ package net.fundekave.lib
 	import flash.events.ErrorEvent;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
+	import flash.net.URLRequestHeader;
+	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
 	
 	public class Service extends URLLoader
 	{
 		public static const ATTEMPTS_ERROR:String = 'attemptsError';
 		
+		public var isMultipart:Boolean = false;
+		
 		public var attemptsLimit:int = 3;
 		public var attempts:int = 0;
 		
 		public var url:String;
-		public var variables:URLVariables;
+		public var variables:Object;
 		public var request:URLRequest;
 		
 		public function Service(request:URLRequest=null)
@@ -31,8 +36,34 @@ package net.fundekave.lib
 			if( request ) this.request = request;
 			else {
 				this.request = new URLRequest( this.url );
-				this.request.method = 'POST';
-				this.request.data = this.variables;
+				this.request.method = URLRequestMethod.POST;
+			}
+			
+			if(isMultipart===true) {
+				//this.request.contentType = 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary();
+				
+				var strippedVars:Object = {};
+				for(var name:String in variables) {
+					if(name != 'filename' && name != 'data') {
+						strippedVars[name] = variables[name];
+					}
+				}
+				
+				this.request.data = UploadPostHelper.getPostData( variables.filename, variables.data, strippedVars);
+				
+				this.request.requestHeaders.push( new URLRequestHeader( 'Cache-Control', 'no-cache' ) );
+				this.request.requestHeaders.push( new URLRequestHeader('Content-type', 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary()) );
+				
+				this.dataFormat = URLLoaderDataFormat.BINARY;
+				
+			} else {
+				var vars:URLVariables = new URLVariables();
+				vars.data = variables.data;  
+				vars.seq = variables.seq;
+				vars.total = variables.total;
+				vars.filename = variables.filename;
+				this.request.data = vars;
+				this.dataFormat = URLLoaderDataFormat.TEXT;
 			}
 			
 			super.load( this.request );

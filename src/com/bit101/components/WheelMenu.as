@@ -1,11 +1,11 @@
 /**
  * WheelMenu.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A radial menu that pops up around the mouse.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,24 +34,23 @@
 package com.bit101.components
 {
 	import flash.display.DisplayObjectContainer;
-	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.filters.DropShadowFilter;
 
 	public class WheelMenu extends Component
 	{
-		private var _borderColor:uint = 0xcccccc;
-		private var _buttons:Array;
-		private var _color:uint = 0xffffff;
-		private var _highlightColor:uint = 0xeeeeee;
-		private var _iconRadius:Number;
-		private var _innerRadius:Number;
-		private var _items:Array;
-		private var _numButtons:int;
-		private var _outerRadius:Number;
-		private var _selectedIndex:int = -1;
-		private var _startingAngle:Number = -90;
+		protected var _borderColor:uint = 0xcccccc;
+		protected var _buttons:Array;
+		protected var _color:uint = 0xffffff;
+		protected var _highlightColor:uint = 0xeeeeee;
+		protected var _iconRadius:Number;
+		protected var _innerRadius:Number;
+		protected var _items:Array;
+		protected var _numButtons:int;
+		protected var _outerRadius:Number;
+		protected var _selectedIndex:int = -1;
+		protected var _startingAngle:Number = -90;
 		
 		
 		/**
@@ -68,6 +67,7 @@ package com.bit101.components
 			_outerRadius = outerRadius;
 			_iconRadius = iconRadius;
 			_innerRadius = innerRadius;
+			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			super(parent);
 			
 			if(defaultHandler != null)
@@ -90,7 +90,6 @@ package com.bit101.components
 			makeButtons();
 
 			filters = [new DropShadowFilter(4, 45, 0, 1, 4, 4, .2, 4)];
-			hide();
 		}
 		
 		/**
@@ -120,7 +119,10 @@ package com.bit101.components
 		public function hide():void
 		{
 			visible = false;
-			stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+			if(stage != null)
+			{
+				stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+			}
 		}
 		
 		/**
@@ -141,16 +143,34 @@ package com.bit101.components
 		public function show():void
 		{
 			parent.addChild(this);
-			x = Math.round(parent.mouseX)
+			x = Math.round(parent.mouseX);
 			y = Math.round(parent.mouseY);
 			_selectedIndex = -1;
 			visible = true;
-			stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+			stage.addEventListener(MouseEvent.MOUSE_UP, onStageMouseUp, true);
 		}
 		
 		///////////////////////////////////
 		// event handlers
 		///////////////////////////////////
+		
+		/**
+		 * Called when the component is added to the stage. Adds mouse listeners to the stage.
+		 */
+		protected function onAddedToStage(event:Event):void
+		{
+			hide();
+			addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+		}
+		
+		/**
+		 * Called when the component is removed from the stage. Removes mouse listeners from stage.
+		 */
+		protected function onRemovedFromStage(event:Event):void
+		{
+			stage.removeEventListener(MouseEvent.MOUSE_UP, onStageMouseUp);
+			removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+		}
 		
 		/**
 		 * Called when one of the buttons is selected. Sets selected index and dispatches select event.
@@ -213,7 +233,7 @@ package com.bit101.components
 			_highlightColor = value;
 			for(var i:int = 0; i < _numButtons; i++)
 			{
-				_buttons[i].selectedColor = _highlightColor;
+				_buttons[i].highlightColor = _highlightColor;
 			}
 		}
 		public function get highlightColor():uint
@@ -250,7 +270,6 @@ import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
-import flash.utils.getDefinitionByName;
 import flash.display.Shape;
 import com.bit101.components.Label;
 
@@ -258,16 +277,16 @@ class ArcButton extends Sprite
 {
 	public var id:int;
 	
-	private var _arc:Number;
-	private var _bg:Shape;
-	private var _borderColor:uint = 0xcccccc;
-	private var _color:uint = 0xffffff;
-	private var _highlightColor:uint = 0xeeeeee;
-	private var _icon:DisplayObject;
-	private var _iconHolder:Sprite;
-	private var _iconRadius:Number;
-	private var _innerRadius:Number;
-	private var _outerRadius:Number;
+	protected var _arc:Number;
+	protected var _bg:Shape;
+	protected var _borderColor:uint = 0xcccccc;
+	protected var _color:uint = 0xffffff;
+	protected var _highlightColor:uint = 0xeeeeee;
+	protected var _icon:DisplayObject;
+	protected var _iconHolder:Sprite;
+	protected var _iconRadius:Number;
+	protected var _innerRadius:Number;
+	protected var _outerRadius:Number;
 	
 	/**
 	 * Constructor.
@@ -291,11 +310,11 @@ class ArcButton extends Sprite
 		drawArc(0xffffff);
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-		addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		addEventListener(MouseEvent.MOUSE_UP, onMouseGoUp);
 	}
 	
 	///////////////////////////////////
-	// private methods
+	// protected methods
 	///////////////////////////////////
 	
 	/**
@@ -338,7 +357,7 @@ class ArcButton extends Sprite
 		while(_iconHolder.numChildren > 0) _iconHolder.removeChildAt(0);
 		if(iconOrLabel is Class)
 		{
-			_icon = new iconOrLabel() as DisplayObject;
+			_icon = new (iconOrLabel as Class)() as DisplayObject;
 		}
 		else if(iconOrLabel is DisplayObject)
 		{
@@ -384,7 +403,7 @@ class ArcButton extends Sprite
 	/**
 	 * Called when mouse is released over this button. Dispatches select event.
 	 */
-	protected function onMouseUp(event:MouseEvent):void
+	protected function onMouseGoUp(event:MouseEvent):void
 	{
 		dispatchEvent(new Event(Event.SELECT));
 	}

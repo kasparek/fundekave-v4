@@ -9,6 +9,7 @@ package net.fundekave.fuup.view.components
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 	import flash.net.FileReferenceList;
+	import flash.text.TextFormat;
 	import flash.utils.setTimeout;
 	
 	import net.fundekave.Application;
@@ -87,7 +88,6 @@ package net.fundekave.fuup.view.components
 				globalProgressBar.visible = true;
 				globalProgressBar.maximum = filesArr.length;
 				globalProgressBar.value = 0;
-				globalProgressBar.label = lang.loading; 
 				
 				populateFiles();
 			}
@@ -134,13 +134,12 @@ package net.fundekave.fuup.view.components
 			//---check for limit
 			if(filesBox.numChildren >= filesNumMax) {
 				//---show error
-				var errWin:Window = new Window(this,200,5,"ERROR");
+				var errWin:CloseWindow = new CloseWindow(this,200,5,"ERROR");
 				errWin.color = 0xff8888;
 				errWin.closeTween = {alpha:0,delay:5};
 				errWin.height = 50;
 				errWin.width = 200;
 				errWin.close();
-				errWin.setContentAlignHorizontal('center');
 				errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
 				
 				globalProgressBar.visible = false;
@@ -293,13 +292,13 @@ package net.fundekave.fuup.view.components
 			globalProgressBar.maximum = 100; 
 			
 			globalMessagesBox = new HBox(box);
-			globalMessagesBox.alignHorizontal = 'center';
 			globalMessagesBox.visible = false;
 			globalMessagesBox.width = 275;
 			globalMessagesBox.height = 20;
-			globalMessagesBox.backgroundColor = 0xaa3333;
+			//globalMessagesBox.backgroundColor = 0xaa3333;
 			
-			globalMessages = new Label(globalMessagesBox,0,0,'',0xffffff);
+			globalMessages = new Label(globalMessagesBox);
+			globalMessages.textField.defaultTextFormat.color = 0xffffff;
 			
 			filesBox = new Container(this,5,30);
 			filesBox.mouseChildren = true;

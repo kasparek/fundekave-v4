@@ -1,11 +1,11 @@
 /**
  * Component.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * Base class for all components
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,8 @@
  
 package com.bit101.components
 {
-	import flash.display.DisplayObject;
+	import com.bit101.components.layouts.ILayout;
+	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.display.Stage;
@@ -41,14 +42,15 @@ package com.bit101.components
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.filters.DropShadowFilter;
-	
+
 	public class Component extends Sprite
 	{
-		
+		public var layout:ILayout;
+	
 		protected var _width:Number = 0;
 		protected var _height:Number = 0;
-		
-		public var alignHorizontal:String;
+		protected var _tag:int = -1;
+		protected var _enabled:Boolean = true;
 		
 		public static const DRAW:String = "draw";
 
@@ -98,10 +100,13 @@ package com.bit101.components
 		/**
 		 * Marks the component to be redrawn on the next frame.
 		 */
-		public function invalidate():void
+		protected function invalidate():void
 		{
-			addEventListener(Event.ENTER_FRAME, onInvalidate,false,0,true );
+			addEventListener(Event.ENTER_FRAME, onInvalidate);
 		}
+		
+		
+		
 		
 		///////////////////////////////////
 		// public methods
@@ -144,13 +149,8 @@ package com.bit101.components
 		 */
 		public function draw():void
 		{
-			switch(alignHorizontal) {
-				case 'center':
-					for(var i:int=0;i<this.numChildren;i++) {
-						var child:DisplayObject = this.getChildAt(i) as DisplayObject;
-						child.x = (this.width/2) - (child.width/2);
-					}
-					break;
+			if(layout) {
+				//render items by layout
 			}
 			dispatchEvent(new Event(Component.DRAW));
 		}
@@ -171,7 +171,9 @@ package com.bit101.components
 			draw();
 		}
 		
-	
+		
+		
+		
 		///////////////////////////////////
 		// getter/setters
 		///////////////////////////////////
@@ -205,6 +207,18 @@ package com.bit101.components
 		}
 		
 		/**
+		 * Sets/gets in integer that can identify the component.
+		 */
+		public function set tag(value:int):void
+		{
+			_tag = value;
+		}
+		public function get tag():int
+		{
+			return _tag;
+		}
+		
+		/**
 		 * Overrides the setter for x to always place the component on a whole pixel.
 		 */
 		override public function set x(value:Number):void
@@ -219,5 +233,21 @@ package com.bit101.components
 		{
 			super.y = Math.round(value);
 		}
+
+		/**
+		 * Sets/gets whether this component is enabled or not.
+		 */
+		public function set enabled(value:Boolean):void
+		{
+			_enabled = value;
+			mouseEnabled = mouseChildren = _enabled;
+            tabEnabled = value;
+			alpha = _enabled ? 1.0 : 0.5;
+		}
+		public function get enabled():Boolean
+		{
+			return _enabled;
+		}
+
 	}
 }

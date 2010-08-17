@@ -1,11 +1,11 @@
 /**
  * UISlider.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A Slider with a label and value label. Abstract base class for VUISlider and HUISlider
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,10 @@ package com.bit101.components
 		protected var _label:Label;
 		protected var _valueLabel:Label;
 		protected var _slider:Slider;
-		private var _precision:int = 1;
+		protected var _precision:int = 1;
 		protected var _sliderClass:Class;
-		private var _labelText:String;
-		private var _tick:Number = 1;
+		protected var _labelText:String;
+		protected var _tick:Number = 1;
 		
 		
 		/**
@@ -50,13 +50,13 @@ package com.bit101.components
 		 * @param label The initial string to display as this component's label.
 		 * @param defaultHandler The event handling function to handle the default event for this component (change in this case).
 		 */
-		public function UISlider(parent:DisplayObjectContainer = null, x:Number = 0, y:Number = 0, label:String = "", defaultEventHandler:Function = null)
+		public function UISlider(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, label:String = "", defaultHandler:Function = null)
 		{
 			_labelText = label;
-			super(parent, x, y);
-			if(defaultEventHandler != null)
+			super(parent, xpos, ypos);
+			if(defaultHandler != null)
 			{
-				addEventListener(Event.CHANGE, defaultEventHandler);
+				addEventListener(Event.CHANGE, defaultHandler);
 			}
 			formatValueLabel();
 		}
@@ -122,7 +122,7 @@ package com.bit101.components
 		override public function draw():void
 		{
 			super.draw();
-			_label.text = _labelText
+			_label.text = _labelText;
 			_label.draw();
 			formatValueLabel();
 		}

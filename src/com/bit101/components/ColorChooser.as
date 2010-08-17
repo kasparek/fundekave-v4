@@ -1,11 +1,11 @@
 /**
  * ColorChooser.as
  * Keith Peters
- * version 0.97
+ * version 0.9.5
  * 
  * A Color Chooser component, allowing textual input, a default gradient, or custom image.
  * 
- * Copyright (c) 2009 Keith Peters
+ * Copyright (c) 2010 Keith Peters
  * 
  * popup color choosing code by Rashid Ghassempouri
  * 
@@ -40,29 +40,29 @@ package com.bit101.components
 	import flash.display.InterpolationMethod;
 	import flash.display.SpreadMethod;
 	import flash.display.Sprite;
+	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
-	
-	[Event(name="change", type="flash.events.Event")]
+	import flash.geom.Point;
 	
 	public class ColorChooser extends Component
 	{
-		private var _input:InputText;
-		private var _swatch:Sprite;
-		private var _value:uint = 0xff0000;
-
 		public static const TOP:String = "top";
 		public static const BOTTOM:String = "bottom";
 		
-		private var _usePopup:Boolean = false;
-		private var _model:DisplayObject;
-		private var _defaultModelColors:Array=[0xFF0000, 0xFFFF00, 0x00FF00, 0x00FFFF, 0x0000FF, 0xFF00FF, 0xFF0000,0xFFFFFF,0x000000];
-		private var _colors:BitmapData;
-		private var _colorsContainer:Sprite;
-		private var _popupAlign:String = BOTTOM;
-		private var _tmpColorChoice:uint = _value;
-		private var _oldColorChoice:uint = _value;
+		protected var _colors:BitmapData;
+		protected var _colorsContainer:Sprite;
+		protected var _defaultModelColors:Array=[0xFF0000, 0xFFFF00, 0x00FF00, 0x00FFFF, 0x0000FF, 0xFF00FF, 0xFF0000,0xFFFFFF,0x000000];
+		protected var _input:InputText;
+		protected var _model:DisplayObject;
+		protected var _oldColorChoice:uint = _value;
+		protected var _popupAlign:String = BOTTOM;
+		protected var _stage:Stage;
+		protected var _swatch:Sprite;
+		protected var _tmpColorChoice:uint = _value;
+		protected var _usePopup:Boolean = false;
+		protected var _value:uint = 0xff0000;
 		
 		
 		/**
@@ -76,8 +76,7 @@ package com.bit101.components
 		
 		public function ColorChooser(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number =  0, value:uint = 0xff0000, defaultHandler:Function = null)
 		{
-			_value = value;		
-			_oldColorChoice = _tmpColorChoice = _value;
+			_oldColorChoice = _tmpColorChoice = _value = value;
 			
 			super(parent, xpos, ypos);
 			
@@ -199,7 +198,7 @@ package com.bit101.components
 			}
 		}
 		
-		private function drawColors(d:DisplayObject):void{
+		protected function drawColors(d:DisplayObject):void{
 			_colors = new BitmapData(d.width, d.height);
 			_colors.draw(d);
 			while (_colorsContainer.numChildren) _colorsContainer.removeChildAt(0);
@@ -238,38 +237,39 @@ package com.bit101.components
 		 * The color picker mode Handlers 
 		 */
 		
-		private function onColorsRemovedFromStage(e:Event):void {
-			stage.removeEventListener(MouseEvent.CLICK, onStageClick);
+		protected function onColorsRemovedFromStage(e:Event):void {
+			_stage.removeEventListener(MouseEvent.CLICK, onStageClick);
 		}
 		
-		private function onColorsAddedToStage(e:Event):void {
-			stage.addEventListener(MouseEvent.CLICK, onStageClick);
+		protected function onColorsAddedToStage(e:Event):void {
+			_stage = stage;
+			_stage.addEventListener(MouseEvent.CLICK, onStageClick);
 		}
 		
-		private function onStageClick(e:MouseEvent):void {
+		protected function onStageClick(e:MouseEvent):void {
 			displayColors();
 		}
 		 
 		
-		private function onSwatchClick(event:MouseEvent):void 
+		protected function onSwatchClick(event:MouseEvent):void 
 		{
 			event.stopImmediatePropagation();
 			displayColors();
 		}
 		
-		private function backToColorChoice(e:MouseEvent):void 
+		protected function backToColorChoice(e:MouseEvent):void 
 		{
 			value = _oldColorChoice;
 		}
 		
-		private function setColorChoice(e:MouseEvent):void {
+		protected function setColorChoice(e:MouseEvent):void {
 			value = _colors.getPixel(_colorsContainer.mouseX, _colorsContainer.mouseY);
 			_oldColorChoice = value;
 			dispatchEvent(new Event(Event.CHANGE));
 			displayColors();
 		}
 		
-		private function browseColorChoice(e:MouseEvent):void 
+		protected function browseColorChoice(e:MouseEvent):void 
 		{
 			_tmpColorChoice = _colors.getPixel(_colorsContainer.mouseX, _colorsContainer.mouseY);
 			value = _tmpColorChoice;
@@ -279,26 +279,29 @@ package com.bit101.components
 		 * The color picker mode Display functions
 		 */
 		
-		private function displayColors():void 
+		protected function displayColors():void 
 		{
+			placeColors();
 			if (_colorsContainer.parent) _colorsContainer.parent.removeChild(_colorsContainer);
 			else stage.addChild(_colorsContainer);
 		}		
 		
-		private function placeColors():void{
-			switch (_popupAlign) 
+		protected function placeColors():void{
+			var point:Point = new Point(x, y);
+			if(parent) point = parent.localToGlobal(point);
+			switch (_popupAlign)
 			{
 				case TOP : 
-					_colorsContainer.x = x;
-					_colorsContainer.y = y-_colorsContainer.height - 4;
+					_colorsContainer.x = point.x;
+					_colorsContainer.y = point.y - _colorsContainer.height - 4;
 				break;
 				case BOTTOM : 
-					_colorsContainer.x =x;
-					_colorsContainer.y = y+22;
+					_colorsContainer.x = point.x;
+					_colorsContainer.y = point.y + 22;
 				break;
 				default: 
-					_colorsContainer.x = x;
-					_colorsContainer.y = y+22;
+					_colorsContainer.x = point.x;
+					_colorsContainer.y = point.y + 22;
 				break;
 			}
 		}
@@ -307,7 +310,7 @@ package com.bit101.components
 		 * Create the default gradient Model
 		 */
 
-		private function getDefaultModel():Sprite {	
+		protected function getDefaultModel():Sprite {	
 			var w:Number = 100;
 			var h:Number = 100;
 			var bmd:BitmapData = new BitmapData(w, h);
@@ -333,9 +336,8 @@ package com.bit101.components
 			return(s);
 		}
 		
-		private function getGradientSprite(w:Number, h:Number, ca:Array):Sprite 
+		protected function getGradientSprite(w:Number, h:Number, gc:Array):Sprite 
 		{
-			var gc:Array = ca;
 			var gs:Sprite = new Sprite();
 			var g:Graphics = gs.graphics;
 			var gn:int = gc.length;
