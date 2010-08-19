@@ -10,6 +10,8 @@ package net.fundekave.fuup
 		public static const SERVICE_CONFIG_URL:String = 'xml/config.xml';
 
 		public static const STARTUP:String = 'startup';
+		
+		public static const CANCEL:String = 'cancel';
 				
 		// State constants	
 		public static const INJECTED:String 	    = 'injected';		
@@ -88,6 +90,8 @@ package net.fundekave.fuup
 			
 			registerCommand( IMAGES_CHECK_FOR_UPLOADING, ImagesCheckForUploading );
 			registerCommand( IMAGES_UPLOAD, UploadFilesCommand );
+			
+			registerCommand( CANCEL, CancelCommand);
 		}
 	}
 }

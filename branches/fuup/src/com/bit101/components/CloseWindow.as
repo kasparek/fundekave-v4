@@ -77,7 +77,6 @@ package com.bit101.components
 			_closeButton.graphics.lineTo(3, -5);
 			_closeButton.graphics.lineTo(0, -1.5);
 			_closeButton.graphics.endFill();
-			_closeButton.x = 10;
 			_closeButton.y = 10;
 			_closeButton.useHandCursor = true;
 			_closeButton.buttonMode = true;
@@ -90,22 +89,6 @@ package com.bit101.components
 		///////////////////////////////////
 		// public methods
 		///////////////////////////////////
-		
-		/**
-		 * Draws the visual ui of the component.
-		 */
-		/*override public function draw():void
-		{
-			super.draw();
-			_titleBar.color = _color;
-			_panel.color = _color;
-			_titleBar.width = width;
-			_titleLabel.x = 5;
-			_titleLabel.x += _hasMinimizeButton ? 15 : 0;
-			_titleLabel.x += _hasCloseButton ? 15 : 0;
-			_panel.setSize(_width, _height - 20);
-		}*/
-
 		public function close():void {
 			onClose(null);
 		}

@@ -51,6 +51,11 @@ package net.fundekave.fuup.model
 		public function get useFilters():Boolean {
 			return _useFilters;
 		}
+		
+		public function initSettings(v:Boolean):void {
+			_useFilters = v;
+			_useFiltersPrev = v;
+		}
         
         public function FileProxy( )
         {
@@ -77,13 +82,18 @@ package net.fundekave.fuup.model
         
         //---processing
         public function processFiles():void {
+			isCancel = false;
         	currentFile = 0;
         	processFile();
         }
+		
+		public function cancel():void {
+			isCancel = true;
+		}
         
         private function processFile():void {
         	var len:int = fileList.length;
-        	if(currentFile < len) {
+        	if(currentFile < len && isCancel===false) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
 				var compareW:int = 0;
 				var compareH:int = 0;
@@ -94,7 +104,7 @@ package net.fundekave.fuup.model
 					compareW = fileVO.widthOriginal
 					compareH = fileVO.heightOriginal
 				}
-        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev) {
+        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev || fileVO.file.size > this.maxSize) {
 					fileVO.renderer.setLocalState( FileView.STATE_PROCESSING );
 					var rot:Number = fileVO.rotation+fileVO.rotationFromOriginal;
 					if(rot<0) rot += 360;
@@ -154,14 +164,17 @@ package net.fundekave.fuup.model
         }
         
         public function uploadFiles():void {
+			isCancel = false;
         	currentFile = 0;
         	uploadFile();
         }
         
+		private var isCancel:Boolean = false;
         private function uploadFile():void {
         	var len:int = fileList.length;
 			var noUpload:Boolean = true;
-        	if(len > 0) {
+			
+        	if(len > 0 && isCancel===false) {
 				var i:int = 0;
 				while(i<len) {
 	        		fileVO = fileList[i] as FileVO;
@@ -181,7 +194,7 @@ package net.fundekave.fuup.model
 		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );
 		        		if(ref) fileUpload.uploadReference( ref );
 						else fileUpload.uploadBytes( data );
-						noUpload=false;
+						noUpload = false;
 						break;
 					} else {
 						//---show error on file
@@ -191,7 +204,7 @@ package net.fundekave.fuup.model
 				}
         	} 
         	
-			if(noUpload===true) {
+			if(noUpload===true || isCancel===true) {
 	    		//---upload complete
 	    		trace('FILEPROXY::UPLOAD COMPLETE');
 	    		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );

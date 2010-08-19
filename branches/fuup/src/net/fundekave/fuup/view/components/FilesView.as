@@ -30,6 +30,7 @@ package net.fundekave.fuup.view.components
 		
 		public static const ACTION_PROCESS:String = 'actionProcess';
 		public static const ACTION_UPLOAD:String = 'actionUpload';
+		public static const ACTION_CANCEL:String = 'actionCancel';
 		public static const FILE_CHECK_EXITS:String = 'fileCheckExits';
 		
 		public static const GAP_HORIZONTAL:int = 5;
@@ -86,11 +87,24 @@ package net.fundekave.fuup.view.components
 			if(filesArr.length>0) {
 				//---init global progress bar
 				globalProgressBar.visible = true;
+				cancelButt.visible = true;
 				globalProgressBar.maximum = filesArr.length;
 				globalProgressBar.value = 0;
 				
 				populateFiles();
+				
+				this.addEventListener(ACTION_CANCEL, onCancel);
 			}
+		}
+
+		private function onCancel(e:Event):void
+		{
+			this.removeEventListener(ACTION_CANCEL, onCancel);
+			
+			globalProgressBar.visible = false;
+			cancelButt.visible = false;
+			currFile = null;
+			filesArr = [];
 		}
 		
 		private function onFileSelect(e:Event):void {
@@ -143,6 +157,7 @@ package net.fundekave.fuup.view.components
 				errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
 				
 				globalProgressBar.visible = false;
+				cancelButt.visible = false;
 				currFile = null;
 				filesArr = null;
 				return;
@@ -211,6 +226,7 @@ package net.fundekave.fuup.view.components
 			if(globalProgressBar.value == globalProgressBar.maximum) {
 				//---hide progress bar
 				globalProgressBar.visible = false;
+				cancelButt.visible = false;
 			}
 		}
 		
@@ -241,7 +257,7 @@ package net.fundekave.fuup.view.components
 							Application.application.height = filesBox.height + Fuup.HEIGHT + 300;
 						}
 						
-					} else {
+					} else if(Application.application.height != Fuup.HEIGHT) {
 						fileBoxHeight = 0;
 						Application.application.height = Fuup.HEIGHT;
 					}
@@ -259,46 +275,50 @@ package net.fundekave.fuup.view.components
 		public var correctionsCheckbox:CheckBox;
 		private var processButt:PushButton;
 		private var uploadButt:PushButton;
+		public var cancelButt:PushButton;
 		public var globalProgressBar:ProgressBar;
-		public var globalMessagesBox:HBox;
+		public var globalMessagesBox:Container;
 		public var globalMessages:Label;
 		private var filesBox:Container;
 		private function setup():void {
-			var box:HBox = new HBox(this,5,5);
-			box.height = 25;
-			
-			selectFilesButt = new PushButton(box,0,0,lang.selectfiles,browseFiles);
+			selectFilesButt = new PushButton(this,5,5,lang.selectfiles,browseFiles);
 			selectFilesButt.width = 60;
 			
-			correctionsCheckboxHolder = new Container(box);
+			correctionsCheckboxHolder = new Container(this,70,5);
 			correctionsCheckboxHolder.width = 60;
 			correctionsCheckboxHolder.height = 20;
 			correctionsCheckboxHolder.visible = _settingsVisible;
 			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
 			correctionsCheckbox.selected = settingsOn;
 			
-			processButt = new PushButton(box,0,0,lang.process,onProcessClick);
+			processButt = new PushButton(this,135,5,lang.process,onProcessClick);
 			processButt.width = 60;
 			processButt.visible = !_autoUpload;
 			
-			uploadButt = new PushButton(box,0,0,lang.upload,onUploadClick);
+			uploadButt = new PushButton(this,200,5,lang.upload,onUploadClick);
 			uploadButt.width = 60;
 			uploadButt.visible = !autoUpload;
 			
-			globalProgressBar = new ProgressBar(box);
+			cancelButt = new PushButton(this,200,5,lang.cancel,onCancelClick);
+			cancelButt.width = 60;
+			cancelButt.visible = false;
+			
+			globalProgressBar = new ProgressBar(this,5,5);
 			globalProgressBar.visible = false;
-			globalProgressBar.width = 275;
+			globalProgressBar.width = 190;
 			globalProgressBar.height = 20;
 			globalProgressBar.maximum = 100; 
 			
-			globalMessagesBox = new HBox(box);
+			globalMessagesBox = new Container(this,200,5);
 			globalMessagesBox.visible = false;
-			globalMessagesBox.width = 275;
+			globalMessagesBox.width = 200;
 			globalMessagesBox.height = 20;
-			//globalMessagesBox.backgroundColor = 0xaa3333;
+			globalMessagesBox.backgroundColor = 0xaa3333;
 			
-			globalMessages = new Label(globalMessagesBox);
-			globalMessages.textField.defaultTextFormat.color = 0xffffff;
+			globalMessages = new Label(globalMessagesBox,5,0);
+			var format:TextFormat = globalMessages.textField.defaultTextFormat;
+			format.color = 0xffffff;
+			globalMessages.textField.defaultTextFormat = format;
 			
 			filesBox = new Container(this,5,30);
 			filesBox.mouseChildren = true;
@@ -313,6 +333,8 @@ package net.fundekave.fuup.view.components
 		private function onUploadClick(e:Event):void {
 			doAction(ACTION_UPLOAD)
 		}
-		
+		private function onCancelClick(e:Event):void {
+			doAction(ACTION_CANCEL)
+		}
 	}
 }

@@ -139,7 +139,7 @@ package com.bit101.components
 			_titleBar.width = width;
 			_titleBar.draw();
 			_titleLabel.x = _hasMinimizeButton ? 20 : 5;
-			_closeButton.x = _width - 14;
+			_closeButton.x = _width - 10;
 			_grips.x = _titleLabel.x + _titleLabel.width;
 			if(_hasCloseButton)
 			{

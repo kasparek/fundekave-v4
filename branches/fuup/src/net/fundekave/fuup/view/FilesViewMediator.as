@@ -35,16 +35,27 @@ package net.fundekave.fuup.view
 			filesView.addEventListener( FilesView.FILE_CHECK_EXITS, onFileCheck, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_PROCESS, onProcess, false, 0, true );
 			filesView.addEventListener( FilesView.ACTION_UPLOAD, onUpload, false, 0, true );
+			filesView.addEventListener( FilesView.ACTION_CANCEL, onCancel, false, 0, true );
 			
 			var configProxy:ConfigProxy = facade.retrieveProxy( ConfigProxy.NAME ) as ConfigProxy;
 			filesView.lang = configProxy.lang;
 			filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
 			filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
 			filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
+			
 			filesView.settingsOn = Number( configProxy.getValue("settingsOn") )==1 ? true : false;
+			
+			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+			proxy.initSettings( filesView.settingsOn );
+			
 			filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
 			filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
 			filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
+		}
+
+		private function onCancel(e:Event):void
+		{
+			sendNotification( ApplicationFacade.CANCEL );
 		}
 		
 		protected function onFileCreated( e:Event ):void {
@@ -125,6 +136,7 @@ package net.fundekave.fuup.view
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 					filesView.globalProgressBar.visible = true;
+					filesView.cancelButt.visible = true;
 					filesView.globalProgressBar.value = 0;
 					filesView.globalMessagesBox.visible = false;
 					stateName = String( note.getBody() );
@@ -147,6 +159,7 @@ package net.fundekave.fuup.view
             		switch( stateName ) {
             			case StateConstants.STATE_SETUPING:
             				filesView.globalProgressBar.visible = false;
+							filesView.cancelButt.visible = false;
 							if(filesView.autoUpload===true) {
 								if(this.imagesProcessed===true || filesView.autoProcess===false) {
 									this.imagesProcessed=false;
