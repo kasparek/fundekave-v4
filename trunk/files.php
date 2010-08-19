@@ -26,16 +26,26 @@ if( $user->idkontrol ) {
 		$tpl->show();
 		exit;
 	}
-
-	$data = $_POST['data'];
+	
+	//---SAVE FILE CHUNK
+	$isMultipart = false;
 	$seq = (int)  $_POST['seq'];
 	$total = (int)  $_POST['total'];
-	$filename = $_POST['filename'];
-	if(!empty($data)) {
-		FFile::makeDir(FConf::get("settings","fuup_chunks_path"));
-		file_put_contents(chunkFilename($filename,$seq),$data);
+	FFile::makeDir(FConf::get("settings","fuup_chunks_path"));
+	if(!empty($_FILES)) {
+		$file = $_FILES['Filedata'];
+		$filename = $file["name"];
+		move_uploaded_file($file["tmp_name"], chunkFilename($filename,$seq) );
+		$isMultipart = true;
+	} else {
+		$filename = $_POST['filename'];
+		$data = $_POST['data'];
+		if(!empty($data)) {
+  		file_put_contents(chunkFilename($filename,$seq),$data);
+		}
 	}
-
+	
+	//---CHECK FILE CHUNKS
 	$allExists = true;
 	for($i=0;$i<$total;$i++) {
 		if(!file_exists(chunkFilename($filename,$i)))  {
@@ -45,13 +55,7 @@ if( $user->idkontrol ) {
 
 	//---file complete
 	if($allExists === true) {
-
 		//--concat all files
-		$encData = '';
-		for($i=0;$i<$total;$i++) {
-			$encData .= trim(file_get_contents(chunkFilename($filename,$i)));
-		}
-		$write = true;
 		switch($f) {
 			case 'uava':
 				$user = FUser::getInstance();
@@ -65,15 +69,13 @@ if( $user->idkontrol ) {
 						unlink(ROOT_AVATAR.$user->userVO->avatar);
 					}
 				}
-					
 				$folderSize = FFile::folderSize($dir) / 1024;
-				
 				if($folderSize < FConf::get('settings','personal_foto_limit')) {
-					file_put_contents($imagePath, base64_decode( $encData ));
+					//OK to save file
 				} else {
 					FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
+					$imagePath = '';
 				}
-				$write = false;
 				break;
 			case 'pava':
 				$imageName = 'pageAvatar-'.$pageId.'.jpg';
@@ -103,11 +105,25 @@ if( $user->idkontrol ) {
 				$imagePath = ROOT_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
 		}
 
-		if($write===true) file_put_contents($imagePath, base64_decode( $encData ));
-		for($i=0;$i<$total;$i++) {
-	  unlink(chunkFilename($filename,$i));
+		//---PUT CHUNKS TOGETHER
+		if(!empty($imagePath)) {
+			if(file_exists($imagePath)) unlink($imagePath);
+			$handleW = fopen($imagePath, "w");
+		  for($i=0;$i<$total;$i++) {
+				$fileChunk = chunkFilename($filename,$i);
+				$handle = fopen($fileChunk, "rb");
+				fwrite($handleW, fread($handle, filesize($fileChunk)-($isMultipart===true?2:0)));
+				fclose($handle);
+				unlink($fileChunk);
+			}
+		  fclose($handleW);
 		}
+		
+		//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART 
+		if($isMultipart===false) {
+			file_put_contents($imagePath, base64_decode( file_get_contents($imagePath) ));
+		}
+		
 	}
-
 	echo 1;
 }
