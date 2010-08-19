@@ -10,12 +10,12 @@
 			<Item name="crop">0</Item>
 			<Item name="multi">1</Item>
 			<Item name="permissions">0</Item>
-			<Item name="maxSize">230000</Item>
-			<Item name="chunkSize">15000</Item>
+			<Item name="maxSize">307200</Item>
+			<Item name="chunkSize">32768</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">80</Item>
 			<Item name="imageQuality">80</Item>
-			<Item name="imageWidthMax">700</Item>
+			<Item name="imageWidthMax">900</Item>
 			<Item name="imageHeightMax">700</Item>
 			<Item name="embedWidth">-1</Item>
 			<Item name="embedHeight">150</Item>
@@ -28,11 +28,10 @@
 		</Services>
 	</Config>
 	<Filters>
-		<Filter id="sharpen" enabled="1" visible="0">
-			<name>Sharpen</name>
-		</Filter>
+		<Filter id="sharpen" enabled="1" visible="0"><name>Sharpen</name></Filter>
 	</Filters>
 	<Lang>
+		<Item name="cancel"><![CDATA[STOP]]></Item>
 		<Item name="selectfiles"><![CDATA[Vybrat]]></Item>
 		<Item name="corections"><![CDATA[Korekce]]></Item>
 		<Item name="process"><![CDATA[Zmensit]]></Item>

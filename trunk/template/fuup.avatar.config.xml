@@ -28,11 +28,10 @@
 		</Services>
 	</Config>
 	<Filters>
-		<Filter id="sharpen" enabled="1" visible="0">
-			<name>Sharpen</name>
-		</Filter>
+		<Filter id="sharpen" enabled="1" visible="0"><name>Sharpen</name></Filter>
 	</Filters>
 	<Lang>
+		<Item name="cancel"><![CDATA[STOP]]></Item>
 		<Item name="selectfiles"><![CDATA[Vybrat]]></Item>
 		<Item name="corections"><![CDATA[Korekce]]></Item>
 		<Item name="process"><![CDATA[Zmensit]]></Item>
