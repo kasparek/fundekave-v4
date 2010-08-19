@@ -206,7 +206,7 @@ package net.fundekave.fuup.view.components
 				+ String( Math.round(((fileVO.encodedJPG)?(fileVO.encodedJPG.length):(fileVO.file.size))/1024) ) + 'kB';
 					
 				previewWin = new CloseWindow(Application.application, 0, 0, title);
-				previewWin.addEventListener( Event.RESIZE, onWinReady ,false,0,true);
+				previewWin.alpha = 0;
 				previewWin.draggable = true;
 				previewWin.hasMinimizeButton = true;
 				previewWin.hasCloseButton = true;
@@ -221,43 +221,37 @@ package net.fundekave.fuup.view.components
 				}
 				
 				previewWin.addEventListener( Event.CLOSE, onClosePreview ,false,0,true);
-				
-				previewWin.x = -previewWin.width;
-				previewWin.y = -previewWin.height;
+				previewWin.content.mouseChildren = false;
+				previewWin.content.addEventListener(MouseEvent.CLICK, onPreviewwinContentClick);
 				previewWin.closeTween = {alpha:0,ease:Quad.easeInOut};
 				previewWin.closeTweenDuration = 0.2;
 				
 				if(previewWin.height > Application.application.height) {
 					Application.application.height = previewWin.height + 10;
 				}
-			}
 			
-			private function onWinReady(e:Event):void {
-				var win:Window = e.target as Window;
-				win.removeEventListener( Event.RESIZE, onWinReady );
-				TweenLite.to( win, 0.5, {x:0,y:0,ease:Quad.easeInOut,onComplete:onTweenPreviewWin,onCompleteParams:[win]} );
-			}
-			
-			private function onTweenPreviewWin(win:Window):void {
 				if(fileVO.encodedJPG) {
 					var image:Loader = new Loader();
-					image.alpha = 0;
 					image.loadBytes( fileVO.encodedJPG );
-					image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
-					win.content.addChild( image );
-					image.width = win.width;
-					image.height = win.height-20;
+					previewWin.content.addChild( image );
+					TweenLite.to( previewWin, 0.2, {alpha:1,ease:Quad.easeInOut} );
 				} else if(fileVO.file.data) {
 					fileVO.file.addEventListener(Event.COMPLETE, onFileLoaded );
 					fileVO.file.load();
 				}
 			}
+
+		private function onPreviewwinContentClick(event:MouseEvent):void
+		{
+			previewWin.close();
+		}
+			
 			private function onFileLoaded(e:Event):void {
 				fileVO.file.removeEventListener(Event.COMPLETE, onFileLoaded );
+				
 				var image:Loader = new Loader();
-				image.alpha = 0;
-				image.loadBytes( fileVO.file.data );
 				image.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderPreview ,false,0,true);
+				image.loadBytes( fileVO.file.data );
 				previewWin.content.addChild( image );
 			}
 			
@@ -268,7 +262,7 @@ package net.fundekave.fuup.view.components
 				loader.content.width = previewWin.width;
 				loader.content.height = previewWin.height-20;
 				
-				TweenLite.to( loader, 0.5, {alpha:1,ease:Quad.easeInOut} );
+				TweenLite.to( previewWin, 0.2, {alpha:1,ease:Quad.easeInOut} );
 			}
 						
 			private function onClosePreview( e:Event ):void {
@@ -329,9 +323,15 @@ package net.fundekave.fuup.view.components
 				box.border = 0;
 				box.backgroundColor = 0x000000;
 				box.masked = true;
+				box.addEventListener(MouseEvent.CLICK, onButtShow,false,0,true);
+				box.mouseChildren = false;
+				box.buttonMode = true;
+				box.useHandCursor = true;
 				thumbUI = new Container(box,thumbMaxWidth/2,thumbMaxHeight/2);
 				//status bar
 				statusBar = new Container(this,5,thumbMaxHeight-15);
+				statusBar.backgroundColor = 0xffffff;
+				statusBar.backgroundAlpha = 0.7;
 				statusBar.width = thumbMaxWidth;
 				statusBar.height = 15;
 				statusLbl = new Label(statusBar,0,-2);

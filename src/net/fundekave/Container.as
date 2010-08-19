@@ -13,11 +13,40 @@ package net.fundekave
         private var _children:Vector.<DisplayObject>;
         private var childrenChanged:Boolean = false;
         
-		//TODO: do setter with invalidate()
-        public var backgroundColor:Number;
-        public var backgroundAlpha:Number=1;
-        public var masked:Boolean = false;
-        public var border:int = 0;
+        private var _backgroundColor:Number;
+		public function get backgroundColor():Number { return _backgroundColor }
+		public function set backgroundColor(v:Number):void {
+			_backgroundColor = v;
+			this.invalidate();
+		}
+		
+        private var _backgroundAlpha:Number=1;
+		public function get backgroundAlpha():Number { return _backgroundAlpha }
+		public function set backgroundAlpha(v:Number):void {
+			_backgroundAlpha = v;
+			this.invalidate();
+		}
+		
+		private var _masked:Boolean=false;
+		public function get masked():Boolean { return _masked }
+		public function set masked(v:Boolean):void {
+			_masked = v;
+			this.invalidate();
+		}
+				
+		private var _border:Number=0;
+		public function get border():Number { return _border }
+		public function set border(v:Number):void {
+			_border = v;
+			this.invalidate();
+		}
+		
+		private var _borderColor:Number=0;
+		public function get borderColor():Number { return _borderColor }
+		public function set borderColor(v:Number):void {
+			_borderColor = v;
+			this.invalidate();
+		}
         
         /**
          * Array of DisplayObject instances to be added as children
@@ -69,8 +98,8 @@ package net.fundekave
         		this.graphics.drawRect(0,0,this.width,this.height);
         		this.graphics.endFill();
         	}
-        	if(border>0) {
-        		this.graphics.lineStyle(border,0x000000);
+        	if(border > 0) {
+        		this.graphics.lineStyle(border,borderColor);
         		this.graphics.drawRect(0,0,this.width,this.height);
         	}
             

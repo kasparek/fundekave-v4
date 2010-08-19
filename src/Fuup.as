@@ -1,7 +1,9 @@
 /**
+ *
+ * Image resizer and uploader
+ * Author: Frantisek Kaspar fundekave.net 
+ *
  * 
- * TODO: cancel button during progress
- * buggy resized image viewing, probably due to new closewindow 
  * 
  * 
  * 
