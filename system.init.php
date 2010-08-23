@@ -48,6 +48,7 @@ if(!empty($_REQUEST["k"])) {
 
 //---backward compatibility
 if(isset($_GET['kam'])) {
+	$add = '';
 	if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
 	elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
 	$els='';

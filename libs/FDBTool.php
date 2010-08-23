@@ -612,7 +612,7 @@ class FDBTool {
 					$queries++;
 				}
 				$filename = FConf::get('settings','logs_path').'FDBTool-query-slow.log';
-				$data = 'Total time:'.$total."\n".'Total queries:'.$queries."\n".$text;
+				$data = $text."\n";
 				$h = fopen($filename, 'a');
 				fwrite($h, $data);
 				fclose($h);
