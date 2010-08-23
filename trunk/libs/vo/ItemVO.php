@@ -318,7 +318,14 @@ class ItemVO extends Fvob {
 		function hit() {
 			if(!empty($this->itemId)){
 				FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
-				FDBTool::query("insert delayed into sys_pages_items_hit (itemId,userId,dateCreated) values (".$this->itemId.",".FUser::logon().",now())");
+				
+				//---write
+				$filename = FConf::get('settings','logs_path').'item-counter/'.$this->itemId.'.log';
+				$data = 'userId='.FUser::logon().';time='.Date('U')."\n";
+				$h = fopen($filename, 'a');
+				fwrite($h, $data);
+				fclose($h);
+				
 				$this->hit++;
 			}
 		}

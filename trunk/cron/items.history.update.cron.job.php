@@ -1,4 +1,5 @@
 <?php
+/*  CURRENTLY NOT IN USE
 chdir("../");
 $nonIndex = true;
 require('index.php');
@@ -63,6 +64,6 @@ foreach($queries as $query) {
     mysql_query($cron,$db);  
   
 }
-
+*/
 
 

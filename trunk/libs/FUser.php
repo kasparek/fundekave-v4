@@ -277,21 +277,11 @@ class FUser {
 		}
 		
 	  //---write
-	  /*
-		$q = "select count(1) from sys_pages_counter where pageId='".$pageId."' and userId='".(int) $userId."' and dateStamp=NOW()";
-		if(FDBTool::getOne($q)==0) {
-			$q = "INSERT low_priority INTO sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`,`ins`) 
-			VALUES ('".$pageId."', '".$pageVO->typeId."', '".$userId."', NOW() , '".(($insert===true)?(0):($num))."','".(($insert===true)?($num):(0))."')";
-		} else {
-			$q = "update low_priority sys_pages_counter set ".$str." where pageId='".$pageId."' and dateStamp=now() AND userId='". (int) $userId."'";
-		}
-		*/
-		
-		$q = "insert delayed into sys_pages_counter (`pageId` ,`typeId` ,`userId` ,`dateStamp` ,`hit`,`ins`) 
-		values ('".$pageId."', '".$typeId."', '".$userId."', NOW() , '".(($insert===true)?(0):($num))."','".(($insert===true)?($num):(0))."') 
-		on duplicate key update ".$str;
-		
-		FDBTool::query($q);
+		$filename = FConf::get('settings','logs_path').'page-counter/'.$pageId.'.log';
+		$data = 'typeId='.$typeId.';userId='.$userId.';time='.Date('U').';hit='.(($insert===true)?(0):($num)).';ins='.(($insert===true)?($num):(0))."\n";
+		$h = fopen($filename, 'a');
+		fwrite($h, $data);
+		fclose($h);
 	}
 
 	function setWhoIs($userId) {

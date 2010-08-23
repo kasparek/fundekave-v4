@@ -38,6 +38,11 @@ class page_PagesList implements iPage {
 
 			//---QUERY RESULTS
 			$fPages = new FPages($typeId, $userId);
+			
+			$fItems->cacheResults = 'f';
+			$fItems->cacheGroup = 'fdb-pagelist';
+			$fItems->lifeTime = '86400';
+					
 			if($category > 0) {
 				$categoryArr = FCategory::getCategory($category);
 				$user->pageVO->htmlName =  $categoryArr[2] . ' - ' . $user->pageVO->name;
@@ -93,6 +98,7 @@ class page_PagesList implements iPage {
 
 				//---results
 				if($typeId == 'galery') {
+				
 					$itemRenderer = new FItemsRenderer();
 					$itemRenderer->showTooltip = false;
 					$itemRenderer->showText = false;
@@ -105,13 +111,18 @@ class page_PagesList implements iPage {
 					$itemRenderer->showComments = false;
 					$itemRenderer->showCommentsNum = false;
 					$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
+					$fItems->cacheResults = 'f';
+					$fItems->cacheGroup = 'fdb-galery';
+					$fItems->lifeTime = '86400'; 
 					$fItems->thumbInSysRes = true;
 					$fItems->setOrder('hit desc');
 
 					$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 					foreach ($arr as $gal) {
+						
 						$fItems->setWhere('pageId="'.$gal[0].'"');
 						$fotoThumb = $fItems->render(0,1);
+
 						$tplGal->setCurrentBlock('item');
 						$tplGal->setVariable("THUMB",$fotoThumb);
 						$tplGal->setVariable("PAGEID",$gal[0]);
