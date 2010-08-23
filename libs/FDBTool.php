@@ -23,6 +23,14 @@ class FDBTool {
 	 * f - cache in file
 	 **/
 	var $cacheResults = 0;
+	
+	/**
+	 *
+	 * cache group
+	 *	 
+	 */	 	 	
+	var $cacheGroup = 'fdb';
+	
 	/**
 	 * lifetime in seconds of cached results
 	 *
@@ -279,13 +287,13 @@ class FDBTool {
 	function getCount() {
 		$dot = $this->buildGetCount();
 		if($this->debug == 1) echo "GETCOUNT RUN: ".$dot." <br />\n"; ;
-		return FDBTool::getOne($dot, md5($dot), 'fdb', $this->cacheResults, $this->lifeTime);
+		return FDBTool::getOne($dot, md5($dot), $this->cacheGroup, $this->cacheResults, $this->lifeTime);
 	}
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
 		$cacheId = (($cacheId!==false)?($cacheId):(md5($dot)));
-		$arr = FDBTool::getAll($dot,$cacheId,'fdb',$this->cacheResults,$this->lifeTime,$this->fetchmode);
+		$arr = FDBTool::getAll($dot,$cacheId,$this->cacheGroup, $this->cacheResults,$this->lifeTime,$this->fetchmode);
 		if(!empty($arr)) {
 			if(!empty($this->VO)) {
 				if(class_exists($this->VO)) {
@@ -571,7 +579,8 @@ class FDBTool {
 			$cache = FCache::getInstance('l');
 			$statArr = $cache->getdata('stat','FDBTool');
 			if($statArr===false) $statArr = array();
-			$statArr[] = array('time'=>$qTime, 'q'=>$query);
+			$statArr['page'][] = array('time'=>$qTime, 'q'=>$query);
+			if($qTime>0.5) $statArr['slow'][] = array('time'=>$qTime, 'q'=>$query);
 			$cache->setdata($statArr);
 		}
 		return $ret;
@@ -585,13 +594,29 @@ class FDBTool {
 			$text = '';
 			$total = 0;
 			$queries = 0;
-			if(empty($statArr)) return;
-			foreach($statArr as $query) {
-				$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
-				$total += $query['time'];
-				$queries++;
+			if(!empty($statArr['page'])) {;
+				foreach($statArr['page'] as $query) {
+					$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
+					$total += $query['time'];
+					$queries++;
+				}
+				file_put_contents(FConf::get('settings','logs_path').'FDBTool-query-times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
 			}
-			file_put_contents(FConf::get('settings','logs_path').'FDBTool-query-times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
+			$text = '';
+			$queries = 0;
+			$total = 0;
+			if(!empty($statArr['slow'])) {
+				foreach($statArr['slow'] as $query) {
+					$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
+					$total += $query['time'];
+					$queries++;
+				}
+				$filename = FConf::get('settings','logs_path').'FDBTool-query-slow.log';
+				$data = 'Total time:'.$total."\n".'Total queries:'.$queries."\n".$text;
+				$h = fopen($filename, 'a');
+				fwrite($h, $data);
+				fclose($h);
+			}
 			$cache->invalidatedata('stat','FDBTool');
 		}
 	}

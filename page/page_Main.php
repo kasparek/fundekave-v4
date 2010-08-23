@@ -62,6 +62,7 @@ class page_Main implements iPage {
 			if(!empty($dataArr)) $tpl->setVariable('LASTBLOGPOSTS',$dataArr[1]);
 		}
 
+		/*
 		//------LAST-CREATED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','lastCreated')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
@@ -126,7 +127,7 @@ class page_Main implements iPage {
 			$cache->setData( $tmptext );
 		}
 		$tpl->setVariable('MOSTFAVOURITECACHED',$tmptext);
-		
+		*/
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 		
 	}

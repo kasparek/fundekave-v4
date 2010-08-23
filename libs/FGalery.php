@@ -306,10 +306,10 @@ class FGalery {
 			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) @unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 			$galery->removeThumb();
 
-			FDBTool::query("delete from sys_pages_items_tag where itemId = '".$id."'");
-			FDBTool::query("delete from sys_pages_items_hit where itemId='".$id."'");
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");
 			FDBTool::query("update sys_pages set dateUpdated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");
+			
+			$galery->itemVO->delete();
 
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');

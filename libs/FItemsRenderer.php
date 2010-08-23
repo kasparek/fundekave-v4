@@ -229,7 +229,7 @@ class FItemsRenderer {
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
 				$vars['ADDONSTYLEWIDTH'] = ' style="width: '.$itemVO->thumbWidth.'px;"';
 				//$vars['ADDONSTYLEHEIGHT'] = ' style="height: '.$itemVO->height.'px;"';
-				$vars['POSITION'] = $itemVO->prop('position');
+				//$vars['POSITION'] = $itemVO->prop('position');
 
 				if( $this->openPopup === true ) {
 					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToPopup;
@@ -333,7 +333,8 @@ class FItemsRenderer {
 		if(!empty($vars['TEXT'])) $vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
 		
 		/* google maps */
-		$position = $itemVO->prop('position');
+		//TODO: fix caching position
+		//$position = $itemVO->prop('position');
 		if(!empty($position)) {
 		
 		$vars['MAPDIVITEMID'] = $itemVO->itemId;
