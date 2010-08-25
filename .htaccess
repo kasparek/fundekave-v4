@@ -3,6 +3,9 @@ RewriteEngine on
 RewriteCond %{HTTP_HOST} ^www.fundekave.net$
 RewriteRule (.*) http://fundekave.net/$1 [R=301,QSA,L]
 
+RewriteCond %{HTTP_HOST} noiz.cz$
+RewriteRule (.*) http://noiz.fundekave.net/$1 [R=301,QSA,L]
+
 RewriteRule (.*\.css)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.js)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.gif)$ index.php?header_handler=1&c=$1 [L]

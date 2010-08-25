@@ -280,7 +280,7 @@ class ItemVO extends Fvob {
 		function prepare() {
 			switch ($this->typeId) {
 				case 'galery':
-					FGalery::prepare(&$this);
+					FGalery::prepare( $this );
 					break;
 				case 'forum':
 					$this->unread = FForum::isUnreadedMess($this->itemId);

@@ -39,7 +39,7 @@ class Fvob {
 	}
 
 	function save(){
-		$vo = new FDBvo( &$this );
+		$vo = new FDBvo( $this );
 		$vo->feed();
 		if($vo->hasKey()) {
 			$this->dateUpdated = 'now()';
@@ -58,7 +58,7 @@ class Fvob {
 	}
 	
 	function delete() {
-	   $vo = new FDBvo( &$this );
+	   $vo = new FDBvo( $this );
 	   $vo->delete();
 	}
   	
