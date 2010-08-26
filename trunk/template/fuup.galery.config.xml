@@ -10,13 +10,13 @@
 			<Item name="crop">0</Item>
 			<Item name="multi">1</Item>
 			<Item name="permissions">0</Item>
-			<Item name="maxSize">307200</Item>
+			<Item name="maxSize">512000</Item>
 			<Item name="chunkSize">32768</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">80</Item>
 			<Item name="imageQuality">80</Item>
-			<Item name="imageWidthMax">900</Item>
-			<Item name="imageHeightMax">700</Item>
+			<Item name="imageWidthMax">1600</Item>
+			<Item name="imageHeightMax">1600</Item>
 			<Item name="embedWidth">-1</Item>
 			<Item name="embedHeight">150</Item>
 			<Item name="onLoaded">fuupLoaded</Item>

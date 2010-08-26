@@ -35,7 +35,7 @@ if(isset($_GET['re'])) {
 	require(ROOT.LIBSDIR.'FConf.php');
 	$tmpDir = FConf::get('settings','remote_tmp');
 	
-	echo $URL = base64_decode($_GET['re']);
+	$URL = base64_decode($_GET['re']);
 	
 	//$filename = str_replace('http://','',$URL);
 	//$filename = str_replace('/','-',$filename);
@@ -44,9 +44,7 @@ if(isset($_GET['re'])) {
 	if(!file_exists($tmpDir.'/cache/'.$filename)) {
 	
 		if(!file_exists($tmpDir.$filename)) {
-			echo $URL;
-			echo $str = file_get_contents( $URL );
-			die();
+			$str = file_get_contents( $URL );
 			file_put_contents($tmpDir.$filename,$str);
 		}
 		if(file_exists($tmpDir.$filename)) {
@@ -62,7 +60,7 @@ if(isset($_GET['re'])) {
 		}
 	}
 	
-	//header('Content-Type: image/jpeg');
+	header('Content-Type: image/jpeg');
 	if(!file_exists($tmpDir.'/cache/'.$filename)) {
 		echo file_get_contents($tmpDir.$filename);
 	} else {
