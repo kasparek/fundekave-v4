@@ -177,6 +177,11 @@ class FBuildPage {
 				case 'e':
 					$template = 'page_PageEdit';
 					break;
+					
+					/* calendar for events linked to page - forum/blog */
+				case 'k':
+					$template = 'page_ForumView';
+					break;
 
 					/* poll */
 				case 'p':
@@ -264,6 +269,7 @@ class FBuildPage {
 			if(FRules::get($user->userVO->userId,'sadmi',2)) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
 			}
+						
 			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/
 		}
@@ -313,6 +319,8 @@ class FBuildPage {
 		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
 		$tpl->setVariable("URL_JS", URL_JS);
+		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
+		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));

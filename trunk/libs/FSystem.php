@@ -119,7 +119,7 @@ class FSystem {
 	 * @param boolean $wrap - wrap long words
 	 */
 	static function textins($text,$paramsArr=array()) {
-
+																							 
 		$breakLong = 1;
 		$endOfLine = 1;
 
@@ -147,9 +147,8 @@ class FSystem {
 			$parser->setText($text);
 			$parser->parse();
 			$text = $parser->getParsed();
-
 		}
-
+                                               
 		if($paramsArr['formatOption'] < 2) {
 			require_once(ROOT.'pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
@@ -174,7 +173,9 @@ class FSystem {
 			$text = nl2br($text);
 		}
 		elseif($endOfLine==2) $text = FSystem::textinsBr2nl($text);
+		                                           echo $text;
 		if($breakLong==1) $text = FSystem::wordWrap($text);
+		
 		if(isset($paramsArr['lengthLimit'])) {
 			if($paramsArr['lengthLimit'] > 0) {
 				if(mb_strlen($text) > $paramsArr['lengthLimit']) { $text = mb_substr($text,0,$paramsArr['lengthLimit']);
@@ -192,7 +193,15 @@ class FSystem {
 		$arr = explode(' ',$str);
 		foreach ($arr as $word) {
 			$word=trim($word);
-			if(strlen($word)>$i && strpos($word,'http:')===false) $arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
+			echo $word;
+			if(strlen($word)>$i && strpos($word,'http:')===false) {
+			echo 'wrapping';
+				$arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
+			}
+			               echo '<br><br>';
+		}
+		if(count($arr)>1) {
+		die();
 		}
 		if(!empty($arrRep)) {
 			foreach ($arrRep as $k=>$v) {
@@ -357,7 +366,7 @@ class FSystem {
 							break;
 						case 5:
 							if(strpos($matches[1][$x],$matches[2][$x])!==false) {
-								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?re='.$matches[1][$x].'" /></a>', $text);
+								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?re='.base64_encode($matches[1][$x]).'" /></a>', $text);
 							} else {
 								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox">'.trim($matches[2][$x]).'</a>', $text);
 							}

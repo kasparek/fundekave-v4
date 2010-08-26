@@ -1,14 +1,8 @@
-propojeni - pokud je fotka pripojena k clanku u fotky ukazat to propojeni, stejny u eventu - ?u vsech?
-
 events - tipy -> udalosti
 soukromy - vidi pouze pratele
 osobni - vidim pouze ja a vybrani pratele
 repetitini - jako v diary
 upozorneni - pro vsechny kdo prijdou 
-
-search box
-result stranka se zalozkama
-uzivatele | prispevky | stranky
 
 kalendar - diary
  - pro kazdou stranku
@@ -26,7 +20,3 @@ WEBCAM
   - moznost aktivovat webcam swf
   - stranka s online webcam
   - nastaveni prav pro prohlizeni, pro seznam uzivatelu, pro pratele, vsechny ...
-  
-//---version TBC
-SOCIAL list
- - kdo kdy kde s kym - lama automat - to ted frci

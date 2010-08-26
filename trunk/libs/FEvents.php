@@ -1,5 +1,60 @@
 <?php
 class FEvents {
+	
+	static function view($archiv=false) {
+		$user = FUser::getInstance();
+		$userId = $user->userVO->userId;
+		$pageId = $user->pageVO->pageId;
+		$itemId = 0;
+		if($user->itemVO) $itemId = (int) $user->itemVO->itemId;
+		
+		if($user->pageParam=='u') {
+			
+			page_EventsEdit::build();
+			
+		} else {
+			
+			
+			$ppUrlVar = FConf::get('pager','urlVar');
+			$pageNum = 1;
+			if(isset($_GET[$ppUrlVar])) $pageNum = (int) $_GET[$ppUrlVar];
+			$cache = FCache::getInstance('f',0);
+			$cacheKey = $pageId.$user->pageParam.'-'.$pageNum.'-'.$itemId.'-'.(int) $userId;
+			$cacheGrp = 'pagelist';
+			$ret = $cache->getData($cacheKey,$cacheGrp);
+			
+			if($ret === false) {
+			
+				if( $user->itemVO ) {
+	
+					$itemVO = new ItemVO($user->itemVO->itemId, true ,array('type'=>'event','showComments'=>true) );
+					$tpl = FSystem::tpl('events.tpl.html');
+					$tpl->setVariable('ITEMS',$itemVO->render());
+					$ret = $tpl->get();
+	
+				} else {
+					
+					$ret = FEvents::show($archiv);
+					
+				}
+			
+				if(isset($cacheKey)) $cache->setData($ret,$cacheKey,$cacheGrp);
+			
+			}
+			FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fajaxContent'));
+		}
+	}
+	
+	static function process($data) {
+		$user = FUser::getInstance();
+		if($user->pageParam == 'u') {
+			FEvents::processForm($data, true);
+		}
+		else 
+		{
+			FForum::process($data);
+		}
+	}
 
 	static function thumbName($flyerName) {
 		return str_replace(FFile::fileExt($flyerName),'jpg',$flyerName);
@@ -49,6 +104,11 @@ class FEvents {
 			//---archiv
 			$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
 			$fItems->setOrder('dateStart desc');
+		}
+		
+		//--page type forum,blog - items with topid klubu
+		if($user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'blog') {
+			$fItems->addWhere("pageId = '".$user->pageVO->pageId."'");
 		}
 
 		//--listovani
@@ -159,7 +219,11 @@ class FEvents {
 		if(!isset($itemVO)) {
 			$itemVO = new ItemVO();
 			$itemVO->typeId = 'event';
-			$itemVO->pageId = 'event';
+			if($user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'blog') {
+				$itemVO->pageId = $user->pageVO->pageId;
+			} else {
+				$itemVO->pageId = 'event';	
+			}
 			$itemVO->userId = $user->userVO->userId;
 			$itemVO->name = $user->userVO->name;
 		}

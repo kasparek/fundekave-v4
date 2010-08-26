@@ -13,9 +13,9 @@ RewriteRule (.*\.jpg)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.png)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.ico)$ index.php?header_handler=1&c=$1 [L]
 
-RewriteBase /
+RewriteBase /fdk5/
 RewriteRule ^pic/|pic.php.* index.php [QSA,L]
 RewriteRule ^files/|files.php.* index.php [QSA,L]
-RewriteRule ^rss/|frss.php.* index.php [QSA,L]
+RewriteRule ^rss|frss.php.* index.php [QSA,L]
 RewriteRule ^crossdomain.xml index.php?cross=1 [L]
 RewriteRule ^ca.php.* index.php [QSA,L]

@@ -1,3 +1,4 @@
+
 <?php
 include_once('iPage.php');
 class page_ForumView implements iPage {
@@ -23,6 +24,16 @@ class page_ForumView implements iPage {
 	static function build($data=array()) {
 		$user = FUser::getInstance();
 		FProfiler::profile('page_ForumView--START');
+		
+		if(empty($user->params)) {
+			FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'k'),FLang::$LABEL_CALENDAR);
+		}
+		if($user->params=='k') {
+			//---events archiv
+			FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'k'),FLang::$LABEL_EVENTS_ARCHIV);
+			//---new event
+			FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'u'),FLang::$LABEL_EVENTS_CREATE);
+		}
 		
 		/* PALCE FILTER TOOLBAR */
 		/*
@@ -57,6 +68,7 @@ class page_ForumView implements iPage {
 			/* FORUM */
 			FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
 			FProfiler::profile('page_ForumView--FForum::show-DONE');
+			
 		}
 
 	}
