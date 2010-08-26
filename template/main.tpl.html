@@ -4,6 +4,7 @@
 <head>
 <script type="text/javascript">
 if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); } };
+var ASSETS_URL = '{ASSETS_URL}';
 </script>
   <title>{TITLE}</title>
   <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
@@ -82,9 +83,10 @@ if(window.location.hash) { var str=window.location.hash; if(str.split('/').lengt
 	<!-- BEGIN users-floating-tooltips -->{USERTOOLTIPS}<!-- END users-floating-tooltips -->
 <!-- javascript section -->
 <!-- BEGIN wrappedjs --><script src="{WRAPPEDJS}"></script><!-- END wrappedjs -->
-<script type="text/javascript" src="{URL_JS}jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="{URL_JS}DD_roundies_0.0.1a-min.js"></script>
 <!-- BEGIN juiEND --><script type="text/javascript" src="{JUI_URL_JS}jquery-ui.core.js"></script><!-- END juiEND -->
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="{URL_JS}FdkGlobal.js"></script>
 <!-- BEGIN slimboxEND --><script type="text/javascript" src="{SLIMBOX_URL_JS}slimbox2.js"></script>
 <script type="text/javascript">$(document).ready(function(){ initSlimbox(); });</script><!-- END slimboxEND -->
@@ -104,8 +106,7 @@ if(window.location.hash) { var str=window.location.hash; if(str.split('/').lengt
 <script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
 <!-- BEGIN bbq --><script type="text/javascript" src="{BBQ_URL_JS}jquery.ba-bbq.min.js"></script>
 <script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
-<!-- BEGIN userin --><script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript">$(document).ready(function(){ userin(); });</script><!-- END userin -->
+<!-- BEGIN userin --><script type="text/javascript">$(document).ready(function(){ userin(); });</script><!-- END userin -->
 <script type="text/javascript">$(document).ready(function(){ publicin(); });</script>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -113,7 +114,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 </script>
 <script type="text/javascript">
 try {
-var pageTracker = _gat._getTracker("UA-515522-22");
+var pageTracker = _gat._getTracker("{GOOGLEID}");
 pageTracker._trackPageview();
 } catch(err) {};
 </script>

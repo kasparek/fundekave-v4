@@ -1,6 +1,8 @@
 <?php
-error_reporting(E_ALL ^ E_DEPRECATED);
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+ini_set ("display_errors", "1");	
 date_default_timezone_set("Europe/London");
+ob_start("ob_gzhandler");
 //----error catching
 function obHandler($buffer) {
 	$arr = explode('<?xml',$buffer);

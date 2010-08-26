@@ -18,6 +18,7 @@ static $LABEL_FORUMS = 'Kluby';
 static $LABEL_BLOGS = 'Blogy';
 static $LABEL_GALERIES = 'Galerie';
 static $LABEL_THUMBS = 'Palce';
+static $LABEL_CALENDAR = 'Kalendar';
 
 static $LABEL_POCKET_PUSH = 'Do kapsy';
 

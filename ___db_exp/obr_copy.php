@@ -1,11 +1,13 @@
 <?php
 set_time_limit(3000);
-$ftp_server = 'xspace.cz';
-$ftp_user_name = 'admin.fundekave.net';
-$ftp_user_pass = 'funka4';
-$dirRoot = '/home/fundekave/www/fundekave/obr/';
+$ftp_server = 'ftp.awake33.com';
+$ftp_user_name = 'awakecom';
+$ftp_user_pass = 'PZzd6gTrWa';
+
+$dirRoot = '/home/www/fundekave.net/subdomeny/www/obr/';
 //---relative to login path
-$dirRootDestionation = 'subdomeny/www/obr/';
+//$dirRootDestionation = '/data/www/vhosts/awake33.com/httpdocs/obr';
+$dirRootDestionation = '/httpdocs/obr';
 
 // set up basic connection
 $conn_id = ftp_connect($ftp_server); 
@@ -32,7 +34,7 @@ function copyRecursive($thisdir='') {
                 if(!is_dir($dirRoot.$thisdir.'/'.$file)) {
                 // upload the file
                     if(ftp_size($conn_id, $file)>0) { 
-                        //echo 'File Exists :: '.$thisdir.'::'.$file.'<br>';
+                        echo 'File Exists :: '.$thisdir.'::'.$file.'<br>';
                     } else {
                         $upload = ftp_put($conn_id, $file, $dirRoot.$thisdir."/".$file, FTP_BINARY);
                         if (!$upload) echo "FTP upload has failed! :: ".$dirRoot.$thisdir."/".$file.'<br />';
@@ -41,7 +43,7 @@ function copyRecursive($thisdir='') {
                     }
                 } else {
                     echo '<strong>Create Directory:: '.$file.'</strong><br>';
-                    @ftp_mkdir($conn_id, $file);
+                    ftp_mkdir($conn_id, $file);
                     ftp_chdir($conn_id, $file);
                     copyRecursive($thisdir.'/'.$file);
                 }

@@ -1,10 +1,7 @@
 missing default avatar
 
-idega ga UA-12730615-1
-fundekave ga UA-515522-22
-
 -sidebar kalendar
-	odkaz na zive s omezenim na urcity den
+	odkaz na zive s omezenim na urcity den - omezeni na den funguje
 -tagy
  - stranka s nahodnyma fotkama
  - u kazdy fotky ikonka na tagovani
