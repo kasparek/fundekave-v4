@@ -140,11 +140,6 @@ class FUser {
 				//---user allright
 				$ret = true;
 			} else {
-			echo 'ipcheck'; var_dump($userVO->ipcheck);
-			echo '------';
-			echo $userVO->idlogin.'----';
-			print_r($vid);
-			die();
 				//---user was logged but is lost - do logout acction
 				FUser::logout( $userVO->userId );
 				FError::addError(FLang::$ERROR_USER_KICKED);

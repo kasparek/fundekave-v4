@@ -10,7 +10,11 @@ class FAjax {
 	}
 
 	static function process($actionStr,$data) {
-
+		if(strpos($data,'<')===false) {
+			$data = base64_decode($data);
+			$data = urldecode($data);
+		}
+		
 		$arr = explode('-',$actionStr);
 		$mod = $arr[0];
 		$action = $arr[1];
