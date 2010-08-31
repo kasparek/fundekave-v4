@@ -60,8 +60,13 @@ class FFile {
 	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
 		if(!file_exists($dir)) {
-			 $ret = @mkdir($dir, $mode, $recursive);
-			 @chmod($dir, 0777);
+			 $ret = mkdir($dir, $mode, $recursive);
+			 $dirArr = explode('/',$dir);
+			 $dir = '';
+			 while(count($dirArr)>0) {
+			 	$dir .= (($dir=='')?(''):('/')).array_shift($dirArr); 
+			 	chmod($dir, $mode);
+			 }
 			 return $ret;
 		}
 	}
@@ -81,5 +86,22 @@ class FFile {
 			return rmdir($filepath);
 		}
 		if(file_exists($filepath)) return unlink($filepath);
+	}
+	
+	static function chmod_recursive($filepath,$mode=0777) {
+		if (is_dir($filepath) && !is_link($filepath)) {
+			if ($dh = opendir($filepath)) {
+				while (($sf = readdir($dh)) !== false) {
+					if ($sf != '.' && $sf != '..') {
+						if (!FFile::chmod_recursive($filepath.'/'.$sf)) {
+							FError::addError($filepath.'/'.$sf.' mode could not be changed.');
+						}
+					}
+				}
+				closedir($dh);
+			}
+			return chmod($filepath, $mode);
+		}
+		if(file_exists($filepath)) return chmod($filepath, $mode);
 	}
 }
