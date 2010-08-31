@@ -270,33 +270,32 @@ class FImgProcess {
 
 		if(!$this->image) {
 			//return original
-			$ret  = file_get_contents($this->sourceUrl);
-			if(empty($this->targetUrl)) echo $ret;
+			$data  = file_get_contents($this->sourceUrl);
+			if(empty($this->targetUrl)) echo $data;
 		} else {
 			switch($this->targetMimeType) {
 				case 1: //gif
 					imageTrueColorToPalette($this->image, true, 256);
-					$ret = @imageGIF($this->image, $this->targetUrl);
+					$data = @imageGIF($this->image, $this->targetUrl);
 					break;
 				case 3: //png
 					imageSaveAlpha($this->image, true);
 					imageAlphaBlending($this->image, false);
-					$ret = imagePNG($this->image, $this->targetUrl);
+					$data = imagePNG($this->image, $this->targetUrl);
 					break;
 				default:
 				case 2: //jpg
 					imageAlphaBlending($this->image, true);
-					$ret = imagejpeg($this->image,$this->targetUrl,$this->quality);
+					$data = imagejpeg($this->image,$this->targetUrl,$this->quality);
 					break;
 			}
 			imagedestroy($this->image);
 		}
 		if(empty($this->targetUrl)) {
 			$data = ob_get_contents();
-			//$dataLength = ob_get_length();
 			ob_end_clean(); // stop this output buffer
-			return $data;
-		} else return $ret;
+		}
+		return $data;
 	}
 
 	function unsharpMask($amount=80, $radius=0.5, $threshold=3) {
