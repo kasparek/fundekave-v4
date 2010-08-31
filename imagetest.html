@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>IMAGE TEST</title>
+</head>
+<body>
+<div id="imgHolder">
+	<img id="myimg" src="image/600/prop/kasparek/20091022_tedede_COUYL/img_0172.jpg" />
+</div>
+
+
+<div id="size"></div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript">
+
+var width,height,timeout;
+
+function onResize() {
+	
+	if(timeout) clearTimeout( timeout );
+	
+
+	//width = Math.round(($(window).width()-50) / 50)*50;
+	//height = Math.round(($(window).height()-50) / 50)*50;
+	
+	width = Math.floor(($(window).width()) / 200)*200;
+	height = Math.floor(($(window).height()) / 200)*200;
+
+	$('#size').prepend('<div>' + $(window).width() + 'x' + $(window).height() + ' ['+width+'x'+height+']' + '</div>');
+	
+	timeout = setTimeout(sendClient,500);
+			
+}
+
+function sendClient() {
+	//if(timeout) clearTimeout( timeout );
+	//$.ajax({url: 'setclient.php',data: {window:width + 'x' + height},success: onClient});
+
+	var src = $("#myimg").attr("src").split('/');
+	src[1] = width;
+	$("#myimg").attr("src", src.join('/'));
+}
+
+function onClient(e) {
+	d = new Date();
+	
+}
+
+$(document).ready(function(){ 
+
+		$(window).resize(onResize);
+		onResize();
+	
+});
+
+</script>
+</body>
+</html>
