@@ -46,7 +46,7 @@ if(!in_array($sideParam, $sideOptionList)) {
 
 if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
 
-$processParams = array('quality'=>90,'width'=>$sideParam,'height'=>$sideParam);
+$processParams = array('quality'=>90);
 if($cutParam=='crop') $processParams['crop'] = 1;
 if($cutParam=='prop') $processParams['proportional'] = 1;
 if($c->sharpen===true) $processParams['unsharpMask'] = 1;
@@ -108,11 +108,14 @@ if($cutParam=='prop') {
  * checking if ration is too big from original
  * stop scaling images to much up
  */
+
 if($ratio > $c->maxScaleUpRatio) {
 	 $maxWidth = $imageSize[0] * $c->maxScaleUpRatio;
 	 //get closest valid width
 	 foreach ($sideOptionList as $fib) {
-        $diff[$fib] = (int) abs($maxWidth - $fib);
+	 	if($maxWidth - $fib > 0) {
+        	$diff[$fib] = (int) $maxWidth - $fib;
+	 	}
     }
 	$fibs = array_flip($diff);
 	$sideParam = $fibs[min($diff)];
@@ -129,6 +132,9 @@ if(!isset($targetImage)) {
 		//require files only when needed
 		require($c->libraryBasePath.'libs/FImgProcess.php');
 		require($c->libraryBasePath.'libs/FFile.php');
+		
+		$processParams['width'] = $sideParam;
+		$processParams['height'] = $sideParam;
 		
 		//check if directory exists
 		$dirArr = explode('/',$targetImage);

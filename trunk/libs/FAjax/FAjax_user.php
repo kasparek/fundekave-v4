@@ -1,5 +1,10 @@
 <?php
 class FAjax_user extends FAjaxPluginBase {
+	
+	static function clientInfo($data) {
+		//echo 'aaa';
+		FAjax::addResponse('void','void','1');
+	}
 
 	static function switchFriend($data) {
 		$userIdFriend = $data['user'];

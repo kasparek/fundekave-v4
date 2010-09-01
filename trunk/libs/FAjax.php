@@ -98,7 +98,7 @@ class FAjax {
 				}
 			} else {
 				if($ajax === true) {
-					FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
+					//FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
 				}
 			}
 

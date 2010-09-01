@@ -23,7 +23,7 @@ function class_autoloader($c) {
 spl_autoload_register("class_autoloader");
 setlocale(LC_ALL,'cs_CZ.UTF-8');
 //--------------------------------------------------------config + constant init
-FConf::getInstance();
+FConf::getInstance(CONFIG_FILENAME);
 //-------------------------------------------------------------time for debuging
 FProfiler::profile('START');
 

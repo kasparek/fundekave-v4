@@ -7,7 +7,7 @@
 </head>
 <body>
 <div id="imgHolder">
-	<img id="myimg" src="image/600/prop/Kaucuk/20100724_cherbourg_OB4YS/img_1071.jpg" />
+	<img id="myimg" src="image/600/prop/kasparek/20091029_posledni-vikend_lrExApa240001.jpg" />
 </div>
 
 
@@ -20,24 +20,18 @@ var width,height,timeout;
 
 function onResize() {
 	
-	if(timeout) clearTimeout( timeout );
 	
-
-	//width = Math.round(($(window).width()-50) / 50)*50;
-	//height = Math.round(($(window).height()-50) / 50)*50;
-	
-	width = Math.floor(($(window).width()) / 200)*200;
-	height = Math.floor(($(window).height()) / 200)*200;
 
 	$('#size').prepend('<div>' + $(window).width() + 'x' + $(window).height() + ' ['+width+'x'+height+']' + '</div>');
-	
+
+	if(timeout) clearTimeout( timeout );
 	timeout = setTimeout(sendClient,500);
 			
 }
 
 function sendClient() {
-	//if(timeout) clearTimeout( timeout );
-	//$.ajax({url: 'setclient.php',data: {window:width + 'x' + height},success: onClient});
+	width = Math.floor(($(window).width()) / 200)*200;
+	height = Math.floor(($(window).height()) / 200)*200;
 
 	var src = $("#myimg").attr("src").split('/');
 	src[1] = width;
