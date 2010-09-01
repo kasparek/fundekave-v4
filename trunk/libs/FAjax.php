@@ -98,7 +98,8 @@ class FAjax {
 				}
 			} else {
 				if($ajax === true) {
-					//FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
+					//redirect to same page because of user does not have permission to access this page
+					FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
 				}
 			}
 
@@ -182,9 +183,7 @@ class FAjax {
 					break;
 			}
 		}
-
-
-
+    $tpl->touchBlock('__global__');
 		$tpl->parse();
 		FAjax::resetResponse();
 		return $tpl->get();
