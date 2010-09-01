@@ -32,7 +32,14 @@ if($processMain===true) {
 
 	//---process ajax requests - or alternative POST requests
 	if(isset($_REQUEST['m'])) {
-		FAjax::process( $_REQUEST['m'], (isset($_REQUEST['d']))?($_REQUEST['d']):($_POST) );
+		if(strpos($_REQUEST['m'],'-x')!==false) {
+			if(isset($_REQUEST['d'])) {
+				$data = $_REQUEST['d'];
+			} else {
+				$data = $HTTP_RAW_POST_DATA;
+			}
+		} 
+		FAjax::process( $_REQUEST['m'], (!empty($data))?($data):($_POST) );
 	}
 	FProfiler::profile('FAJAX PROCESSED DONE');
 	//---process post/get for page

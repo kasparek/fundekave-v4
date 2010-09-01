@@ -59,7 +59,8 @@ class FGalery {
 			if(empty($fGalery->itemVO->thumbWidth)) $fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 		}
-		$fGalery->itemVO->detailUrl = URL_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
+		//TODO: get client screen size
+		$fGalery->itemVO->detailUrl = 'image/800/prop/' . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 		$toTestDetail = ROOT_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
 		if(file_exists( $toTestDetail )) {
 			list($width,$height) = getimagesize( $toTestDetail );
