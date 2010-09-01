@@ -10,6 +10,12 @@
  * @version  CVS: $Id: IT.php,v 1.27 2008/11/14 23:57:17 kguest Exp $
  * @link     http://pear.php.net/packages/HTML_Template_IT
  * @access   public
+ * 
+ *	TODO:
+ *	1. vars {var} - get from php
+ *	2. escaping {var|escape} - echo htmlspecialchars($var, ENT_QUOTES, 'UTF-8')
+ *	3. template extending {extends blabla.tpl}    
+ *   
  */ 
 define('IT_OK', 1);
 define('IT_ERROR', -1);
