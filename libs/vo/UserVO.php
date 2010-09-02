@@ -67,6 +67,10 @@ class UserVO extends Fvob {
 	var $requestMessage;
 	
 	var $activityPageId;
+	
+	//client
+	var $clientWidth=0;
+	var $clientHeight=0;
 
 	function UserVO($userId=0, $autoLoad = false) {
 		$this->userId = $userId;

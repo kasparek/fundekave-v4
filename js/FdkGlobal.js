@@ -525,9 +525,13 @@ function onResize() {
 }
 
 function sendClientInfo() {
-	addXMLRequest('view-width', $(window).width());
-	addXMLRequest('view-height', $(window).height());
-	sendAjax('user-clientInfo');
+	var w = $(window).width();
+	var h = $(window).height();
+	if(w!=CLIENT_WIDTH || h!=CLIENT_HEIGHT) {
+		addXMLRequest('view-width', w);
+		addXMLRequest('view-height', h);
+		sendAjax('user-clientInfo');
+	}
 }
 
 
