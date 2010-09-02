@@ -31,6 +31,10 @@ $contentType = $c->contentType;
  */
 $sideOptionList = explode(',',$c->sideOptions);
 $cutOptionsList = explode(',',$c->cutOptions);
+
+if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
+if($cutParam=='flush') $sideOptionList[] = 0; 
+
 if(!in_array($sideParam, $sideOptionList)) {
 	if(empty($sideParam)) {
 		$sideParam = $c->sideDefault;
@@ -43,9 +47,7 @@ if(!in_array($sideParam, $sideOptionList)) {
 		$sideParam = $fibs[min($diff)];
 	}
 }
-
-if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
-
+  
 $processParams = array('quality'=>90);
 if($cutParam=='crop') $processParams['crop'] = 1;
 if($cutParam=='prop') $processParams['proportional'] = 1;
@@ -67,7 +69,7 @@ if(!file_exists($sourceImage)) {
 	echo 'file not found';
 	exit;
 	
-} else if(is_dir($sourceImage)) {
+} else if(is_dir($sourceImage) && $cutParam != 'flush') {
 	
 	//TODO: error loging
 	echo 'file is dir';
@@ -79,11 +81,20 @@ if(!file_exists($sourceImage)) {
  * $cutParam == 'flush' delete cached images
  */
 if($cutParam === 'flush') {
+	if($sideParam!=0) {
+		$sideOptionList = array($sideParam);
+	}
 	foreach($sideOptionList as $side) {
 		foreach($cutOptionsList as $cut) {
+			if($fileParam{strlen($fileParam)}=='/') $fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end 
 		   $targetImage = $c->targetBasePath.$side.'/'.$cut.'/'.$fileParam;
 		   if(file_exists($targetImage)) {
-		   	unlink($targetImage);
+		   	if(is_dir($targetImage)) {
+		   		require($c->libraryBasePath.'libs/FFile.php');
+		   		FFile::rm_recursive($targetImage);
+				} else {
+		   		unlink($targetImage);
+		   	}
 		   }
 		}
 	}

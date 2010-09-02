@@ -1,4 +1,12 @@
 <?php
+/**
+ *TODO:
+ *remove ROOT_GALERY_CACHE
+ *remove ROOT_GALERY_CACHE_SYSTEM
+ *replace ROOT_GALERY with conf->sourceUrlBase
+ *add conf->targetUrlBase   
+ *
+ **/   
 class FGalery {
 	//---active galery page
 	var $pageVO;
@@ -89,8 +97,17 @@ class FGalery {
 	 *
 	 * @return strinf url
 	 */
-	function  getDetailUrl($root=URL_GALERY) {
-		return $root . $this->pageVO->galeryDir . '/' . $this->itemVO->enclosure;
+	function  getDetailUrl($root=null,$sideSize=null,$cutOption=null) {
+		
+		if(!$root) $root = $this->conf->targetUrlBase;
+		
+		if(!$sideSize) {
+			$sideSize = $this->conf->sizeDefault;
+		}
+		if(!$cutOption) $cutOption = 'prop'; //---proportional resize
+		
+		return $root . $sideSize .'/'. $cutOption .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
+		
 	}
 	
 	/**
@@ -303,15 +320,18 @@ class FGalery {
 			$galery->itemVO = new ItemVO($id, true);
 			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 			
-			if(!empty($galery->itemVO->thumbUrl)) if(is_file($galery->itemVO->thumbUrl)) unlink($galery->itemVO->thumbUrl);
 			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) @unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
-			$galery->removeThumb();
+			
+			$url = $galery->getDetailUrl(null,0,'flush');
+			//request url to do action
+			file_get_contents( $url );
 
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");
 			FDBTool::query("update sys_pages set dateUpdated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");
 			
 			$galery->itemVO->delete();
 
+			//TODO:---notify observer item deleted do additional action, clearing cache atd;
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
 			return true;
@@ -324,18 +344,19 @@ class FGalery {
 	 * @return void
 	 */
 	function removeThumb() {
-		$thumbPathArr = $this->getThumbPath(ROOT_GALERY_CACHE);
-		if(FGalery::isThumb($thumbPathArr['thumb'])) {
-			if(!unlink($thumbPathArr['thumb'])) {
-				FError::addError('Cannot delete thumb: '.$thumbPathArr['thumb']);
-			}
-		}
-		//---delete system thumb
-		$thumbPathArr = $this->getThumbPath( ROOT_GALERY_CACHE_SYSTEM );
-		if(FGalery::isThumb($thumbPathArr['thumb'])) {
-			@unlink($thumbPathArr['thumb']);
-		}
+		//thumbs size
+		//TODO:suply size to flush not all
+		$url = $galery->getDetailUrl(null,0,'flush');
+		//request url to do action
+		file_get_contents( $url );
+		
+		//system thumbs size
+		//TODO:suply size to flush not all
+		$url = $galery->getDetailUrl(null,0,'flush');
+		//request url to do action
+		file_get_contents( $url );
 	}
+	
 	/**
 	 * delete all thumbs
 	 * 
@@ -343,10 +364,9 @@ class FGalery {
 	static function deleteThumbs( $pageId ) {
 		$galery = new FGalery();
 		$galery->pageVO = new PageVO($pageId, true);
-		$cachePath = $galery->getThumbCachePath( ROOT_GALERY_CACHE );
-		FFile::rm_recursive($cachePath);
-		$systemCachePath = $galery->getThumbCachePath( ROOT_GALERY_CACHE_SYSTEM );
-		FFile::rm_recursive($systemCachePath);
+		$url = $galery->getDetailUrl(null,0,'flush');
+		//request url to do action
+		file_get_contents( $url );
 	} 
 	
 }
