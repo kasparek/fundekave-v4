@@ -2,7 +2,9 @@
 class FAjax_user extends FAjaxPluginBase {
 	
 	static function clientInfo($data) {
-		//echo 'aaa';
+		$user = FUser::getInstance();
+		$user->userVO->clientWidth = $data['view-width'];
+		$user->userVO->clientHeight = $data['view-height']; 
 		FAjax::addResponse('void','void','1');
 	}
 

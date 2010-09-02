@@ -321,6 +321,9 @@ class FBuildPage {
 		$tpl->setVariable("URL_JS", URL_JS);
 		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
+		
+		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth);
+		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight);
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));

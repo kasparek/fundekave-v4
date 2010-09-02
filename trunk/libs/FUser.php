@@ -32,7 +32,7 @@ class FUser {
 
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new FUser();
+			self::$instance = new FUser();
 		}
 		return self::$instance;
 	}
@@ -159,12 +159,14 @@ class FUser {
 	 */
 	function kde() {
 		if( $this->userVO===null ) {
+			
 			//---try to load user from cache
 			$cache = FCache::getInstance('s');
-			//require(ROOT.LIBSDIR.'vo/UserVO.php');
+			
 			if(false === ($this->userVO = &$cache->getPointer('user'))) {
 				$this->userVO = new UserVO();
 			}
+			
 		}
 		$userId = $this->userVO->userId;
 		$pageAccess = $this->pageAccess = true;
