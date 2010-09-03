@@ -252,6 +252,8 @@ class FGalery {
 			$galery->itemVO->delete();
 
 			//TODO:---notify observer item deleted do additional action, clearing cache atd;
+			FCommand::run('itemDeleted');
+			
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
 			return true;
