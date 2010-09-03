@@ -98,8 +98,6 @@ class ItemVO extends Fvob {
 		var $thumbHeight;
 
 		var $detailUrl;
-		var $detailWidth;
-		var $detailHeight;
 		var $detailUrlToGalery;
 		var $detailUrlToPopup;
 		
