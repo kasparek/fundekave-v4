@@ -44,60 +44,35 @@ class FGalery {
 		//---check thumbnail
 		if($fGalery->itemVO->thumbInSysRes == true) {
 			//---system resolution thumbnail
-			$thumbPathArr = $fGalery->getThumbPath(ROOT_GALERY_CACHE_SYSTEM);
-			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
-				$fGalery->createThumb($thumbPathArr
-					,array('width'=>$fGalery->conf['widthThumb']
-						,'height'=>$fGalery->conf['heightThumb'])
-					);	
-			}
-			$thumbPathArr = $fGalery->getThumbPath(URL_GALERY_CACHE_SYSTEM);
-			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
 			$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			$fGalery->itemVO->heightWidth = $fGalery->conf['heightThumb'];
+			$thumbnailstyle = 2;
 		} else {
-			$thumbPathArr = $fGalery->getThumbPath(ROOT_GALERY_CACHE);
-			if(!FGalery::isThumb($thumbPathArr['thumb'])) {
-				$fGalery->createThumb($thumbPathArr);
-			}
-			$thumbPathArr = $fGalery->getThumbPath();
-			$fGalery->itemVO->thumbUrl = $thumbPathArr['url'];
+			$thumbnailstyle = (int) $this->pageVO->getPageParam('enhancedsettings/thumbnailstyle');
+			if($thumbnailstyle===false) $thumbnailstyle = 2;
+			
 			$fGalery->itemVO->thumbWidth = (String) $fGalery->pageVO->getPageParam('enhancedsettings/widthpx');
 			$fGalery->itemVO->thumbHeight = (String) $fGalery->pageVO->getPageParam('enhancedsettings/heightpx');
 			if(empty($fGalery->itemVO->thumbWidth)) $fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
 			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
 		}
+
 		//TODO: get client screen size
-		$fGalery->itemVO->detailUrl = 'image/800/prop/' . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
-		$toTestDetail = ROOT_GALERY . $fGalery->pageVO->galeryDir . '/' . $fGalery->itemVO->enclosure;
-		if(file_exists( $toTestDetail )) {
-			list($width,$height) = getimagesize( $toTestDetail );
-			$fGalery->itemVO->detailWidth = $width;
-			$fGalery->itemVO->detailHeight = $height;
-			$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
-			$fGalery->itemVO->detailUrlToPopup = FSystem::getUri('i='.$fGalery->itemVO->itemId.'&width='.($width+60).'&height='.($height+60).'&u='.FUser::logon(),'','','pic.php');
-		} else {
-			FError::addError('File not exists: '.$fGalery->itemVO->detailUrl);
-		}
+		$fGalery->itemVO->thumbUrl = $this->getTargetUrl(null,$fGalery->itemVO->thumbWidth.'x'.$fGalery->itemVO->thumbHeight,$thumbnailstyle==2?'crop':'prop');
+		$fGalery->itemVO->detailUrl = $this->getTargetUrl(null,800,'prop');
+		
+		$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
+		$fGalery->itemVO->detailUrlToPopup = FSystem::getUri('i='.$fGalery->itemVO->itemId.'&width='.($width+60).'&height='.($height+60).'&u='.FUser::logon(),'','','pic.php');
+		
 		return $fGalery->itemVO;
 	}
 		
 	/**
-	 * return cache url
+	 * get url of target
 	 *
-	 * @param string $cacheDir - alternative cache root
 	 * @return string url
 	 */
-	function getThumbCachePath($cacheDir='') {
-		if($this->pageVO) return (($cacheDir!='') ? ( $cacheDir ):( URL_GALERY_CACHE )) . $this->pageVO->pageId . '-' . FSystem::safeText($this->pageVO->name);
-	}
-	
-	/**
-	 * get url of detail
-	 *
-	 * @return strinf url
-	 */
-	function  getDetailUrl($root=null,$sideSize=null,$cutOption=null) {
+	function  getTargetUrl($root=null,$sideSize=null,$cutOption=null) {
 		
 		if(!$root) $root = $this->conf->targetUrlBase;
 		
@@ -109,71 +84,12 @@ class FGalery {
 		return $root . $sideSize .'/'. $cutOption .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
 		
 	}
-	
-	/**
-	 * return array with directions to thumb
-	 *
-	 * @param string $cacheDir - alternative
-	 * @return array [path,filename,thumb,url]
-	 */
-	function getThumbPath( $cacheDir = '' ) {
-		$pathUrl = $this->getThumbCachePath($cacheDir);
-		$arrFilename = explode('.',$this->itemVO->enclosure);
-		$filenameExtStriped = implode('.',array_slice($arrFilename,0,count($arrFilename)-1));
-		$filename = FSystem::safeText($filenameExtStriped) . '.jpg';
-		return array(
-    		'path' => $pathUrl,
-    		'filename' => $filename,
-    		'thumb' => $pathUrl . '/' . $filename,
-    		'url' => $pathUrl . '/' . $filename
-		);
-	}
-	
-	/**
-	 * check if thumbnail exist
-	 *
-	 * @param string $path - url
-	 * @return boolean
-	 */
-	static function isThumb( $path ) {
-		return file_exists( $path );
-	}
-	
-	/**
-	 * generate thumb
-	 * @param $thumbPathArr
-	 * @param $params
-	 * @return void
-	 */
-	function createThumb($thumbPathArr,$params=array()) {
-		//check
-		if(!$this->isThumb($thumbPathArr['thumb'])) {
-			if(!empty($thumbPathArr['path'])) {
-				if(!is_dir($thumbPathArr['path'])) {
-					FFile::makeDir($thumbPathArr['path']);
-				}
-			}
-			//Create file
-			if(isset($params['source'])) $sourceImgUrl = $params['source'];	else $sourceImgUrl = $this->getDetailUrl(ROOT_GALERY);
-			if(isset($params['quality'])) $quality = $params['quality']; else $quality = $this->conf['quality'];
-			if(isset($params['thumbnailstyle'])) $thumbnailstyle = (int) $params['thumbnailstyle']; else $thumbnailstyle = (int) $this->pageVO->getPageParam('enhancedsettings/thumbnailstyle');
-			if(isset($params['width'])) $width = (int) $params['width']; else $width = (int) ($this->pageVO->getPageParam('enhancedsettings/widthpx') < 10)?($this->conf['widthThumb']):((String) $this->pageVO->getPageParam('enhancedsettings/widthpx'));
-			if(isset($params['height'])) $height = (int) $params['height']; else $height = (int) ($this->pageVO->getPageParam('enhancedsettings/heightpx') < 10)?($this->conf['heightThumb']):((String) $this->pageVO->getPageParam('enhancedsettings/heightpx'));
-
-			$processParams = array(
-			'quality'=>$quality,'width'=>$width,'height'=>$height
-			//,'reflection'=>1
-			//,'unsharpMask'=>1
-			);
-			if($thumbnailstyle==2) $processParams['crop'] = 1; else $processParams['proportional'] = 1;
-			$fProcess = new FImgProcess($sourceImgUrl,$thumbPathArr['thumb'],$processParams);
-		}
-	}
-		
+			
 	/**
 	 * callback function when processing forum attached to gallery
 	 * @return void
 	 */
+	//TODO:observer on invalidate from forum invalidate grup
 	static function callbackForumProcess() {
 		//---clear cache
 		$cache = FCache::getInstance('f');
@@ -186,6 +102,8 @@ class FGalery {
 	 * @param $fotoId - item
 	 * @return String - BINARY
 	 */
+	//TODO:not needed
+	/*
 	static function getRaw($itemId) {
 		$galery = new FGalery();
 		$galery->itemVO = new ItemVO($itemId, true, array('type'=>'galery'));
@@ -193,7 +111,8 @@ class FGalery {
 		$galery->itemVO->hit();
 		return file_get_contents( $galery->getDetailUrl(ROOT_GALERY) );
 	}
-
+*/
+	
 	/**
 	 * refresh data for galery in db by files in folder
 	 * @param $pageId
@@ -297,6 +216,7 @@ class FGalery {
 		
 		//---invalidate all cache places
 		if($change == true) {
+			//TODO:send notification to observer
 			$cache = FCache::getInstance('f');
 			$cache->invalidateGroup('calendarlefthand');
 		}
@@ -322,7 +242,7 @@ class FGalery {
 			
 			if(is_file(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) @unlink(ROOT_GALERY . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 			
-			$url = $galery->getDetailUrl(null,0,'flush');
+			$url = $galery->getTargetUrl(null,0,'flush');
 			//request url to do action
 			file_get_contents( $url );
 
@@ -346,13 +266,13 @@ class FGalery {
 	function removeThumb() {
 		//thumbs size
 		//TODO:suply size to flush not all
-		$url = $galery->getDetailUrl(null,0,'flush');
+		$url = $galery->getTargetUrl(null,0,'flush');
 		//request url to do action
 		file_get_contents( $url );
 		
 		//system thumbs size
 		//TODO:suply size to flush not all
-		$url = $galery->getDetailUrl(null,0,'flush');
+		$url = $galery->getTargetUrl(null,0,'flush');
 		//request url to do action
 		file_get_contents( $url );
 	}
@@ -364,7 +284,7 @@ class FGalery {
 	static function deleteThumbs( $pageId ) {
 		$galery = new FGalery();
 		$galery->pageVO = new PageVO($pageId, true);
-		$url = $galery->getDetailUrl(null,0,'flush');
+		$url = $galery->getTargetUrl(null,0,'flush');
 		//request url to do action
 		file_get_contents( $url );
 	} 

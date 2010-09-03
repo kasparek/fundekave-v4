@@ -73,10 +73,12 @@ class FBlog {
 
 		return $returnItemId;
 	}
+	
 	static function textAreaId() {
 		$user = FUser::getInstance();
 		return 'Blog'.$user->pageVO->pageId;
 	}
+	
 	static function getEditForm($itemId) {
 		$user = FUser::getInstance();
 			
@@ -136,6 +138,7 @@ class FBlog {
 
 		return $tpl->get();
 	}
+	
 	static function listAll($itemId = 0,$editMode = false) {
 		$user = FUser::getInstance();
 		$itemId = (int) $itemId;
