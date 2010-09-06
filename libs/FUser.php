@@ -151,13 +151,8 @@ class FUser {
 		}
 		return $ret;
 	}
-
-	/**
-	 * BASE FUNCTION to verify page access and user validation
-	 * @param $xajax - only reason is when called from ajax function not to count into page statistics
-	 * @return void
-	 */
-	function kde() {
+	
+	function init() {
 		if( $this->userVO===null ) {
 			
 			//---try to load user from cache
@@ -168,6 +163,14 @@ class FUser {
 			}
 			
 		}
+	}
+
+	/**
+	 * BASE FUNCTION to verify page access and user validation
+	 * @param $xajax - only reason is when called from ajax function not to count into page statistics
+	 * @return void
+	 */
+	function kde() {
 		$userId = $this->userVO->userId;
 		$pageAccess = $this->pageAccess = true;
 		$pageId = $this->pageId;
@@ -184,6 +187,7 @@ class FUser {
 			}
 			//---try load current page
 			$this->pageVO = new PageVO($pageId,true);
+			
 			FProfiler::profile('FUser::kde::2');
 			if( $this->pageVO->loaded !== true ) {
 				$pageAccess = $this->pageAccess = false;

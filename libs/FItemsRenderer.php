@@ -232,7 +232,7 @@ class FItemsRenderer {
 				$vars['POSITION'] = $itemVO->prop('position');
 
 				if( $this->openPopup === true ) {
-					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToPopup;
+					$vars['IMGURLDETAIL'] = $itemVO->detailUrl;
 					$touchedBlocks['popupc'] = true;
 					$vars['POPUPCLIGHTBOXGROUP'] = '-'.$pageId;
 				} else {
@@ -241,7 +241,7 @@ class FItemsRenderer {
 				if($this->showTooltip === true) {
 					$vars['ITEMIDTOOLTIP'] = $itemId;
 					$vars['PAGEIDTOOLTIP'] = $pageId;
-					$vars['LINKPOPUP'] = $itemVO->detailUrlToPopup;
+					$vars['LINKPOPUP'] = $itemVO->detailUrl;
 				}
 				unset($pageVO);
 				break;

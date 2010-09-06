@@ -212,7 +212,7 @@ class FEvents {
 			if($data['item']>0) {
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['item'];
-				$itemVO->load(false);
+				$itemVO->load();
 			}
 		}
 

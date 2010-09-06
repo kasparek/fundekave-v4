@@ -72,7 +72,7 @@ class FAjax_user extends FAjaxPluginBase {
 			case 'requestaccept':
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['request'];
-				$itemVO->load(false);
+				$itemVO->load();
 				
 				$user = FUser::getInstance();
 				$user->userVO->addFriend( (int) $itemVO->userId );
@@ -87,7 +87,7 @@ class FAjax_user extends FAjaxPluginBase {
 			case 'requestcancel':
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['request'];
-				$itemVO->load(false);
+				$itemVO->load();
 				
 				FError::addError(FLang::$MSG_FRIEND_CANCEL,1);
 				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);

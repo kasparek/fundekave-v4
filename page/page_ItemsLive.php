@@ -48,7 +48,7 @@ class page_ItemsLive implements iPage {
 				
 			$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $localPerPage;
-			$fItems->map = false;
+			//$fItems->map = false;
 				
 			//$fItems->debug=1;
 				

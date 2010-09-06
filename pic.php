@@ -68,12 +68,3 @@ if(isset($_GET['re'])) {
 	}
 	exit;
 }
-
-//---galery item
-require(INIT_FILENAME);
-if($user->itemVO->itemId > 0){
-	header('Content-Type: image/jpeg');
-	echo FGalery::getRaw($user->itemVO->itemId);
-} else {
-	echo 'MISSING PHOTO PARAMETER';
-}

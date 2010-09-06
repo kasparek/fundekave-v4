@@ -11,9 +11,8 @@ class page_ForumView implements iPage {
 			if($user->pageVO->typeId=='blog') {
 				if(!$user->itemVO) return;
 				$data['itemIdTop'] = $user->itemVO->itemId;
-				FForum::process($data,"FBlog::callbackForumProcess");
+				FForum::process($data);
 			}
-			
 			if($user->pageVO->typeId=='forum') {
 				FForum::process($data);
 			}
