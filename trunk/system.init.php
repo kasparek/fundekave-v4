@@ -1,15 +1,5 @@
 <?php
-error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
-ini_set ("display_errors", "1");	
-date_default_timezone_set("Europe/London");
 ob_start("ob_gzhandler");
-//----error catching
-function obHandler($buffer) {
-	$arr = explode('<?xml',$buffer);
-	file_put_contents(ROOT."tmp/php.log",file_get_contents(ROOT."tmp/php.log")."\n\n".$arr[0]);
-	return $buffer;
-}
-ob_start("obHandler");
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) {
@@ -21,9 +11,12 @@ function class_autoloader($c) {
 	require( $c . '.php' );
 }
 spl_autoload_register("class_autoloader");
+//--------------------------------------------------------error handler
+FError::init(PHPLOG);
 setlocale(LC_ALL,'cs_CZ.UTF-8');
 //--------------------------------------------------------config + constant init
 FConf::getInstance(CONFIG_FILENAME);
+date_default_timezone_set(FConf::get('internationalization','timezone'));
 //-------------------------------------------------------------time for debuging
 FProfiler::profile('START');
 

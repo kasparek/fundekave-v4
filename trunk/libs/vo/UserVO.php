@@ -83,8 +83,6 @@ class UserVO extends Fvob {
 		$vo = new FDBvo( $this );
 		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 		$vo->load();
-		$vo->vo = false;
-		$vo = false;
 	}
 
 	function save(){

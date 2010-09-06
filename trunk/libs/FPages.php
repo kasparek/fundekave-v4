@@ -42,8 +42,8 @@ class FPages extends FDBTool {
 		
 		$this->VO = 'PageVO';
 		$this->fetchmode = 1;
-		
-		$this->columns = PageVO::columns;
+		$pageVO = new PageVO();
+		$this->columns = $pageVO->getColumns();
 		
 		$this->getListPages();
 	}

@@ -13,10 +13,10 @@ class PageVO extends Fvob {
 
 	var $cacheResults = 'l';
 	
-	static $table = 'sys_pages';
-	static $primaryCol = 'pageId';
+	var $table = 'sys_pages';
+	var $primaryCol = 'pageId';
 
-	static $columns = array('pageId' => 'pageId',
+	var $columns = array('pageId' => 'pageId',
 	'pageIdTop' => 'pageIdTop',
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
@@ -40,7 +40,7 @@ class PageVO extends Fvob {
 	'pageParams' => 'pageParams'
 	);
 	
-	static $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
 	
 	var $defaults = array(
     'forum'=>array('template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),

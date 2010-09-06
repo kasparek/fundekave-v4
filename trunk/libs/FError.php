@@ -30,4 +30,41 @@ class FError {
 		print_r($_SESSION["errormsg"][1]);
 		if($die===true) die();
 	}
+	
+	//GLOBAL ERROR HANDLING
+	private static $phplog;
+	private static $starttime;
+	
+	static function getmicrotime(){
+		list($usec, $sec) = explode(" ",microtime());
+		return ((float)$usec + (float)$sec);
+	}
+	
+	static function init($filename) {
+		self::$phplog = $filename;
+		self::$starttime = FError::getmicrotime();
+		register_shutdown_function('FError::shutdownFunction');
+		set_error_handler("FError::handle_error"); 
+	}
+	
+	static function write_log($errText) {
+		$handle = fopen(self::$phplog, "a");
+		fwrite($handle,'date='.date(DATE_ATOM).';runtime='.( round(FError::getmicrotime()-self::$starttime,4) ).';memory='.round(memory_get_usage()/1024).';peak='.round(memory_get_peak_usage()/1024)."\n".$errText."\n\n");
+		fclose($handle);
+	}
+	
+	static function shutDownFunction() { 
+	    $e = error_get_last();
+	    if($e['message']) {
+	    	FError::write_log($e['type'].'='.$e['message'].';line='.$e['line'].';file='.$e['file']);
+	    }
+	}
+	
+	static function handle_error ($errno, $errstr, $errfile, $errline) {
+	    FError::write_log("$errstr in $errfile on line $errline");
+	    if($errno == FATAL || $errno == ERROR){
+	        ob_end_flush();
+	        exit(0);
+	    }
+	}
 }

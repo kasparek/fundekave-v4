@@ -88,4 +88,3 @@ FDBTool::profileLog();
 session_write_close();
 $db = FDBConn::getInstance();
 $db->kill();
-ob_end_flush();

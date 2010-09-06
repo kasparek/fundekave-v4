@@ -4,8 +4,8 @@ class FDBvo extends FDBTool {
 	var $vo;
 
 	function __construct( &$vo ) {
-		$this->columns = $vo->columns;
-		parent::__construct($vo->table, $vo->primaryCol);
+		$this->columns = $vo->getColumns();
+		parent::__construct($vo->getTable(), $vo->getPrimaryCol());
 		$this->fetchmode = 1;
 		if(!isset($vo->cacheResults)) {
 			$this->cacheResults = 'l';
@@ -16,6 +16,9 @@ class FDBvo extends FDBTool {
 	}
 	
 	function load() {
+		if(!$this->primaryCol) {
+			write_log('FDBvo::load:20 missing primaryCol');
+		}
 		$primCol = explode(',',$this->primaryCol);
 		foreach($primCol as $col) {
 			$keys[] =  $this->vo->{$col};
@@ -48,7 +51,7 @@ class FDBvo extends FDBTool {
 		}
 	}
 
-	function save() {
+	function save( $cols=array(), $notQuoted=array() ) {
 		if($this->vo->changed === true || $this->vo->saveOnlyChanged === false) {
 			$this->feed();
 			$this->vo->changed = false;
@@ -64,7 +67,7 @@ class FDBvo extends FDBTool {
 		}
 	}
 
-	function delete() {
+	function delete($id ) {
 		$primCol = explode(',',$this->primaryCol);
 		foreach($primCol as $col) {
 			$delArr[$col] = $this->vo->{$col}; 
