@@ -1,11 +1,22 @@
 <?php
+/**
+ *
+ * TODO:
+ * migrate xml pageparams to properties
+ * build properties list
+ * put ItemVO prop handling to Fvob
+ * check columns in project 
+ * project - newMess -> this->unreaded    
+ *
+ */   
 class PageVO extends Fvob {
 
 	var $cacheResults = 'l';
-	var $table = 'sys_pages';
-	var $primaryCol = 'pageId';
+	
+	static $table = 'sys_pages';
+	static $primaryCol = 'pageId';
 
-	var $columns = array('pageId' => 'pageId',
+	static $columns = array('pageId' => 'pageId',
 	'pageIdTop' => 'pageIdTop',
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
@@ -28,7 +39,9 @@ class PageVO extends Fvob {
 	'galeryDir' => 'galeryDir',
 	'pageParams' => 'pageParams'
 	);
-
+	
+	static $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	
 	var $defaults = array(
     'forum'=>array('template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
     'blog'=>array('categoryId'=>'318','template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
@@ -63,8 +76,17 @@ class PageVO extends Fvob {
 
 	//---dedicted
 	//---based on logged user
-	var $favorite;
-	var $favoriteCnt;
+	var $favorite; //is booked
+	var $favoriteCnt; //readed items
+	
+	function __get($name) {
+		switch($name) {
+			case 'unreaded':
+				$unreaded = $this->cnt - $this->favoriteCnt;
+				if($unreaded > 0) return $unreaded; else return 0;
+			break;
+		}
+	}          
 
 	//---changed
 	var $showHeading=true;
@@ -78,6 +100,8 @@ class PageVO extends Fvob {
 	var $changed = false;
 	var $loaded = false;
 	var $xmlChanged = false;
+	
+	var $properties;
 
 	static function get( $pageId, $autoLoad = false ) {
 		$user = FUser::getInstance();

@@ -345,7 +345,6 @@ class FSystem {
 							//echo $text;print_r($matches);die();
 							$userId = FUser::logon();
 							$fPages = new FPages('', $userId);
-							$fPages->fetchmode=1;
 							$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).'');
 							if(empty($userId)) {
 								$fPages->addWhere('p.locked < 2');

@@ -98,7 +98,6 @@ class page_UserInfo implements iPage {
 			 */
 			$showPagesTab = false;
 			$fp = new FPages('forum',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
 			$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
@@ -117,7 +116,6 @@ class page_UserInfo implements iPage {
 			}
 
 			$fp = new FPages('blog',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
 			$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
@@ -136,7 +134,6 @@ class page_UserInfo implements iPage {
 			}
 
 			$fp = new FPages('galery',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
 			$fp->setWhere('p.userIdOwner="'.$userVO->userId.'" and p.pageId=f.pageId and p.locked<3');
@@ -181,7 +178,6 @@ class page_UserInfo implements iPage {
 
 			$showFavoritesTab = false;
 			$fp = new FPages('forum',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
 			$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');
@@ -199,7 +195,6 @@ class page_UserInfo implements iPage {
 			}
 
 			$fp = new FPages('blog',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
 			$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');
@@ -217,7 +212,6 @@ class page_UserInfo implements iPage {
 			}
 
 			$fp = new FPages('galery',$user->userVO->userId);
-			$fp->fetchmode = 1;
 			$fp->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
 			$fp->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
 			$fp->setWhere('f.book="1" and p.userIdOwner!="'.$userVO->userId.'" and p.locked<2');

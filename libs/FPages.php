@@ -1,23 +1,50 @@
 <?php
+/**
+ *
+ * setup columns, follow FItems initlist
+ * unify columns select
+ * add f.cnt if registered   - newMess -> unreaded
+ * check project total -> cnt
+ * FCalendarPlugins - refactor, based on fitems  
+ 
+		date_format(i.dateCreated ,'{#date_iso#}')
+		date_format(i.dateCreated ,'{#date_local#}') "
+		
+		addjoin on propertie
+		pplastitem.value as itemId
+		
+		date_format(dateContent,'{#date_local#}') as datumcz,
+		date_format(dateContent,'{#date_iso#}') as diso
+		
+		
+		
+		   
+ *
+ */   
 class FPages extends FDBTool {
+	
 	var $type = ''; //type of pages for listing - galery,forum,blog...
 	var $userId = 0; //when it is 0 it work like not logged
 	var $permission = 1; //---read access / 2 - edit/admin access
 	var $sa = false; //---superadmin - selet true to list all pages
-	var $pagesTableName = 'sys_pages';
+	
 	var $pagesPermissionTableName = 'sys_users_perm';
-	var $pagesPrimaryCol = 'pageId';
+	
 	var $availableTypeArr = array('forum','blog','galery');
 
 	function __construct($type,$userId,$permission=1) {
 
 		$this->type = $type;
-		$this->userId = $userId * 1;
+		$this->userId = (int) $userId * 1;
 		$this->permission = $permission;
 
-		parent::__construct();
-		$this->primaryCol = $this->pagesPrimaryCol;
-
+		parent::__construct('sys_pages','pageId');
+		
+		$this->VO = 'PageVO';
+		$this->fetchmode = 1;
+		
+		$this->columns = PageVO::columns;
+		
 		$this->getListPages();
 	}
 
@@ -49,24 +76,24 @@ class FPages extends FDBTool {
 	function getListPages() {
 		if($this->permission == 1) {
 			if($this->sa === true) {
-				$queryBase = "select {SELECT} from ".$this->pagesTableName." as p
+				$queryBase = "select {SELECT} from ".$this->table." as p
 				{JOIN} 
 				where 1";
 			} else if($this->userId == 0) {
-				$queryBase = "select {SELECT} from ".$this->pagesTableName." as p
+				$queryBase = "select {SELECT} from ".$this->table." as p
 				{JOIN} 
 				where p.public=1";
 			} else {
-				$queryBase = "select {SELECT} from ".$this->pagesTableName." as p
-				left join ".$this->pagesPermissionTableName." as up on p.".$this->pagesPrimaryCol."=up.".$this->pagesPrimaryCol." and up.userId='".$this->userId."' 
+				$queryBase = "select {SELECT} from ".$this->table." as p
+				left join ".$this->pagesPermissionTableName." as up on p.".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
 				{JOIN} 
 				where (((p.public in (0,3) and up.rules >= 1) 
 				or p.userIdOwner='".$this->userId."' 
 				or p.public in (1,2)) and (up.userId is null or up.rules!=0))";
 			}
 		} else {
-			$queryBase = "select {SELECT} from ".$this->pagesTableName." as p
-				left join ".$this->pagesPermissionTableName." as up on p.".$this->pagesPrimaryCol."=up.".$this->pagesPrimaryCol." and up.userId='".$this->userId."' 
+			$queryBase = "select {SELECT} from ".$this->table." as p
+				left join ".$this->pagesPermissionTableName." as up on p.".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
 				{JOIN} 
 				where ( p.userIdOwner='".$this->userId."' 
 				or (up.userId is not null and up.rules=".$this->permission.") )";
@@ -311,7 +338,7 @@ class FPages extends FDBTool {
 				$tpl->setVariable('OWNERNEW',$newSum);
 			}
 		}
-
+    
 		//vypis oblibenych
 		$this->queryReset();
 		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');

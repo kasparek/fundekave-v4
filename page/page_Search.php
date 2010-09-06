@@ -88,7 +88,6 @@ class page_Search implements iPage {
 				$touchedBlocks = array();
 				//---QUERY RESULTS
 				$fPages = new FPages(array('galery','forum','blog'), $userId);
-				$fPages->fetchmode=1;
 				if(!empty($pageSearchCache['filtrPages'])){
 					$fPages->addWhereSearch(array('p.name','p.description','p.authorContent','p.dateContent'),$pageSearchCache['filtrPages'],'OR');
 				}

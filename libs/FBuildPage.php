@@ -48,8 +48,6 @@ class FBuildPage {
 			//typ
 			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
 				$pages = new FPages('top',$user->userVO->userId,1);
-				$pages->fetchmode=1;
-				$pages->VO = 'PageVO';
 				$pages->setSelect('p.pageId');
 				$pages->addWhere("p.typeIdChild='".$user->pageVO->typeId."' and public=1");
 				$arr = $pages->getContent();

@@ -18,7 +18,6 @@ class page_Main implements iPage {
 		$data = $cache->getData(($user->userVO->userId*1).'-mainforum','pagelist');
 		if($data === false) {
 			$fPages = new FPages('forum', $userId);
-			$fPages->fetchmode=1;
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 			if($user->idkontrol!==true) {
@@ -39,7 +38,6 @@ class page_Main implements iPage {
 		$dataArr = $cache->getData(($user->userVO->userId*1).'-mainblog','pagelist');
 		if($dataArr===false) {
 			$fPages = new FPages('blog', $userId);
-			$fPages->fetchmode=1;
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 			if($user->idkontrol!==true) {
@@ -66,7 +64,6 @@ class page_Main implements iPage {
 		//------LAST-CREATED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','lastCreated')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
-			$fPages->fetchmode=1;
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->setOrder('p.dateCreated desc');
 			$fPages->addWhere('p.locked < 2');
@@ -80,7 +77,6 @@ class page_Main implements iPage {
 		//------MOST-VISITED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostVisited')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
-			$fPages->fetchmode=1;
 			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId');
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->addWhere('p.locked < 2');
@@ -97,7 +93,6 @@ class page_Main implements iPage {
 		//------MOST-ACTIVE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostActive')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
-			$fPages->fetchmode=1;
 			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId');
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->addWhere('p.locked < 2');
@@ -114,7 +109,6 @@ class page_Main implements iPage {
 		//------MOST-FAVOURITE-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostFavourite')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
-			$fPages->fetchmode=1;
 			$fPages->addJoin('join sys_pages_favorites as pf on pf.pageId=p.pageId');
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->addWhere('p.locked < 2');
