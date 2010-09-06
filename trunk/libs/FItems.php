@@ -26,8 +26,7 @@ class FItems extends FDBTool {
 		$this->fetchmode = 1;
 		if($typeId!='') $this->typeId = $typeId;
 
-		$vo = new ItemVO();
-		$this->columns = $vo->columns;
+		$this->columns = ItemVO::columns;
 
 		$this->initList($this->typeId,$byPermissions);
 
@@ -44,22 +43,26 @@ class FItems extends FDBTool {
 	}
 
 	function initList($typeId='', $byPermissions = false) {
+		
 		$this->queryReset();
 		if(FItems::isTypeValid($typeId)) {
 			$this->typeId = $typeId;
 			$this->addWhere("typeId='".$typeId."'");
 		}
 		$doPagesJoin = true;
+		
 		//---check permissions for given user
 		if($byPermissions!==false) {
 			$this->byPermissions = $byPermissions;
 		}
+		
 		//---set select
 		foreach($this->columns as $k=>$v) {
 			if(strpos($v,' as ')===false) $v .= ' as '.$k;
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
+		
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
 			$this->addWhere('sys_pages_items.public > 0');
@@ -105,18 +108,9 @@ class FItems extends FDBTool {
 		}
 
 		if(!empty($arr)) {
-			//---map items
-			/*if($this->map === true) {
-				foreach($arr as $row) {
-					$itemVO = new ItemVO();
-					$itemVO->thumbInSysRes = $this->thumbInSysRes;
-					$itemVO->map( $row );
-					$this->data[] = $itemVO;
-				}
-			} else {*/
-				$this->data = $arr;
-			//}
 			
+			$this->data = $arr;
+						
 			foreach($this->data as $itemVO) {
 				$itemIdList[] = $itemVO->itemId;
 			}

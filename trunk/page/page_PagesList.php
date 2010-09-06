@@ -60,7 +60,6 @@ class page_PagesList implements iPage {
 					$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
 				}
 			} else {
-				$fPages->fetchmode = 1;
 				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 				$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
 				if($user->idkontrol!==true) {

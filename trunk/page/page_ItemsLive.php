@@ -37,21 +37,24 @@ class page_ItemsLive implements iPage {
 			}
 				
 			if(!empty($date)) {
+			
 				$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
+				
 				$fItems->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y%m%d'))
 					or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y%m%d')) 
 					or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y%m%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y%m%d'))");
+				
 				$fItems->setOrder('dateLive desc');
+				
 			} else {
+			
 				$fItems->setOrder('sys_pages_items.itemId desc');
+				
 			}
 				
 			$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $localPerPage;
-			//$fItems->map = false;
-				
-			//$fItems->debug=1;
-				
+							
 			$fItems->getList($from,$localPerPage+1);
 			$totalItems = count($fItems->data);
 

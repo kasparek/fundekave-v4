@@ -1,10 +1,11 @@
 <?php
 class Fvob {
 	
-	public $table;
-	public $primaryCol; //---string
+	static $table;
+	static $primaryCol;
 	
-	public $columns = array();
+	static $columns;
+	static $propertiesList;
 	
 	//---watcher
 	public $saveOnlyChanged = false;
@@ -62,5 +63,20 @@ class Fvob {
 	   $vo = new FDBvo( $this );
 	   $vo->delete();
 	}
-  	
+  
+  public getTable() {
+		return self::$columns;
+	}
+	
+	public getPrimaryCol() {
+		return self::$columns;
+	}
+  
+	public getColumns() {
+		return self::$columns;
+	}
+	
+	public getPropertiesList() {
+	  return self::$propertiesList;
+	}	
 }

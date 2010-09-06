@@ -132,9 +132,17 @@ class FDBTool {
 		}
 		$this->_where[] = ' '.$where.' ';
 	}
+	
+	function joinOnPropertie($prop) {
+		$this->autojoin = true;
+		$this->addSelect($prop.'.value as '.$prop.'_prop');
+		$this->addJoin('left join '.$this->table.'_properties as '.$prop.' on '.$prop.'.'.$this->primaryCol.'='.$this->table.'.'.$this->primaryCol.' and '.$prop.'.name = "'.$prop.'"');
+	}
+	
 	function addJoin($condition) {
 		$this->_join .= ' '.$condition;
 	}
+	
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
 		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$joinColumn. '=' .$table.'.'.$joinColumn;
 		$this->autojoin = true;
@@ -303,6 +311,14 @@ class FDBTool {
 						foreach($item as $k=>$v) {
 							if(property_exists($this->VO, $k)) {
 								$vo->{$k} = $v;
+							} else {
+								if(strpos($k,'_prop')!==false) {
+								  $propName = str_replace('_prop','',$k)
+								  $propList = $vo->getPropertiesList();
+								  if(in_array($propName,$propList)) {
+										$vo->properties[$propName] = $v;
+									}
+								}
 							}
 						}
 						$arr[$i] = $vo;

@@ -3,7 +3,6 @@ class relatedPagesList {
 	static function show() {
 		$user = FUser::getInstance();
 		$fPages = new FPages('',$user->userVO->userId);
-		$fPages->fetchmode = 1;
 		$fPages->addJoin('join sys_pages_relations as r on p.pageId = r.pageIdRelative');
 		$fPages->addWhere('r.pageId="'.$user->pageVO->pageId.'"');
 		$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
