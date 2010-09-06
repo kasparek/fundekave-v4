@@ -96,7 +96,7 @@ class FForum extends FDBTool {
 	 * @param array $data
 	 * @param string $callbackFunction - function name
 	 */
-	static function process( $data, $callbackFunction=false) {
+	static function process( $data, $command=false) {
 		$redirectParam = '';
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
@@ -195,9 +195,16 @@ class FForum extends FDBTool {
 		}
 		//---redirect
 		if($redirect==true) {
-			$cache = FCache::getInstance('f');
-			$cache->invalidateData('lastForumPost');
-			if($callbackFunction) call_user_func($callbackFunction);
+			//TODO: test commands
+			//$commandList[] = itemAdded;
+			//$cache->invalidateData('lastForumPost');
+			if($callbackFunction) {
+				//galery - lastForumPost
+				//blog - lastForumPost,lastBlogPost
+				$commandList[] = $command;
+			}
+			//FCommand::run($commandList);
+			
 			FHTTP::redirect(FSystem::getUri($redirectParam));
 		}
 	}
@@ -300,7 +307,13 @@ class FForum extends FDBTool {
 		
 		
 		if($itemId>0) {
-			$itemVO = new ItemVO($itemId,true);
+			if($user->itemVO) {
+				if($itemId == $user->itemVO->itemdId) {
+					$itemVO = $user->itemVO;
+				}
+			} else {
+				$itemVO = new ItemVO($itemId,true);
+			}
 			$total = $itemVO->cnt;
 		} else {
 			$total = $user->pageVO->cnt;

@@ -238,15 +238,4 @@ class FBlog {
 		}
 		return $ret;	
 	}
-
-	/**
-	 * callback function when processing forum attached to gallery
-	 * @return void
-	 */
-	static function callbackForumProcess() {
-		//---clear cache
-		$cache = FCache::getInstance('f');
-		$cache->invalidateGroup('lastForumPost');
-		$cache->invalidateGroup('lastBlogPost');
-	}
 }

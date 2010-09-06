@@ -101,8 +101,8 @@ if( $user->idkontrol ) {
 				$imageName = strtolower($filename);
 				$ext = FFile::fileExt($imageName);
 				$imageName =str_replace('.'.$ext,'',$imageName);
-				FFile::makeDir(ROOT_GALERY.$galeryUrl);
-				$imagePath = ROOT_GALERY.$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+				FFile::makeDir(FConf::get("galery","sourceServerBase").$galeryUrl);
+				$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
 		}
 
 		//---PUT CHUNKS TOGETHER

@@ -6,7 +6,7 @@ class page_GaleryDetail implements iPage {
 		$user = FUser::getInstance();
 		if($user->itemVO) {
 			$data['itemIdTop'] = $user->itemVO->itemId;
-			FForum::process($data, "FGalery::callbackForumProcess");
+			FForum::process($data);
 		}
 
 	}
@@ -16,8 +16,12 @@ class page_GaleryDetail implements iPage {
 		$pageId = $user->pageVO->pageId;
 		$userId = $user->userVO->userId;
 		$itemId=0;
-		if($user->itemVO) if($user->itemVO->itemId > 0) $itemId = $user->itemVO->itemId;
-		
+		if($user->itemVO) {
+			if($user->itemVO->itemId > 0) {
+				$itemId = $user->itemVO->itemId;	
+			}	
+		}
+				
 		$ret = false;
 		
 		//---try from cache
@@ -27,8 +31,8 @@ class page_GaleryDetail implements iPage {
 		$cache = FCache::getInstance('f',0);
 		$cacheKey = $pageId.'-'.$pageNum.'-'.$itemId.'-'.(int) $userId;
 		$cacheGrp = 'pagelist';
-		$ret = $cache->getData($cacheKey,$cacheGrp);
-				
+		//$ret = $cache->getData($cacheKey,$cacheGrp);
+		
 		if($itemId===0) {
 				
 			if(FRules::getCurrent(2)) {
@@ -85,10 +89,20 @@ class page_GaleryDetail implements iPage {
 				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}
 		} else {
-			//---detail foto
-			$itemVO = new ItemVO($itemId,true,array('typeId'=>'galery'));
-			$itemVO->hit();
 			
+			//---detail foto
+			if($user->itemVO) {
+				if($itemId == $user->itemVO->itemId) {
+					$itemVO = $user->itemVO;		
+				}
+			}
+			
+			if(!$itemVO) {
+				$itemVO = new ItemVO($itemId,true,array('typeId'=>'galery'));
+			}
+			
+			$itemVO->hit();
+						
 			$pageVO = $user->pageVO;
 			$onPageNum = $itemVO->onPageNum();
 			
@@ -103,10 +117,12 @@ class page_GaleryDetail implements iPage {
 				if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
 				$tpl->setVariable("HITS",$itemVO->hit);
 				$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
+
 				if($user->idkontrol === true) {
 					$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$userId,'galery'));
 					//$tpl->setVariable('POCKET',FPocket::getLink($itemVO->itemId));
 				}
+				
 				if(isset($nextUri)) {
 					$tpl->touchBlock('nextlinkclose');
 					$tpl->setVariable('NEXTLINK',$nextUri);
@@ -114,6 +130,7 @@ class page_GaleryDetail implements iPage {
 				
 				$itemIdForum = 0;
 				$tpl->setVariable('COMMENTS',FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),$itemIdForum,array('simple'=>true,'showHead'=>false)));
+				
 				$ret = $tpl->get();
 				if(isset($cacheKey)) $cache->setData($ret,$cacheKey,$cacheGrp);
 			} 

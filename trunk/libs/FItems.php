@@ -7,7 +7,7 @@ class FItems extends FDBTool {
 	private $typeId;
 	//---list of ItemVOs
 	public $data;
-	public $map = true; //---map data onto object 
+	//public $map = true; //---map data onto object 
 	//---renderer
 	public $fItemsRenderer;
 
@@ -22,12 +22,12 @@ class FItems extends FDBTool {
 
 	function __construct($typeId='',$byPermissions=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
+		$this->VO = 'ItemVO';
 		$this->fetchmode = 1;
 		if($typeId!='') $this->typeId = $typeId;
 
-		$itemVO = new ItemVO();
-		$this->columns = $itemVO->getTypeColumns( $this->typeId );
-		$itemVO = false;
+		$vo = new ItemVO();
+		$this->columns = $vo->columns;
 
 		$this->initList($this->typeId,$byPermissions);
 
@@ -73,7 +73,6 @@ class FItems extends FDBTool {
 
 	function getList($from=0, $count=0) {
 		$this->data = array();
-		$itemTypeId = $this->typeId;
 
 		if($this->byPermissions === false) {
 			$arr = $this->getContent($from, $count);
@@ -90,7 +89,7 @@ class FItems extends FDBTool {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
 						//---check premissions
-						if(FRules::get($this->byPermissions,$row['pageId'],1)) {
+						if(FRules::get($this->byPermissions,$row->pageId,1)) {
 							$arr[] = $row;
 							$itemsCount++;
 							if($itemsCount == $count && $count!=0) break;
@@ -107,15 +106,44 @@ class FItems extends FDBTool {
 
 		if(!empty($arr)) {
 			//---map items
-			if($this->map === true) {
+			/*if($this->map === true) {
 				foreach($arr as $row) {
 					$itemVO = new ItemVO();
 					$itemVO->thumbInSysRes = $this->thumbInSysRes;
 					$itemVO->map( $row );
 					$this->data[] = $itemVO;
 				}
-			} else {
+			} else {*/
 				$this->data = $arr;
+			//}
+			
+			foreach($this->data as $itemVO) {
+				$itemIdList[] = $itemVO->itemId;
+			}
+			
+			$q = "select itemId,name,value from sys_pages_items_properties where itemId in (".implode(',',$itemIdList).")";
+			$props = FDBTool::getAll($q);
+			if(!empty($props))
+			foreach($this->data as $itemVO) {
+				$i = count($props)-1;
+				$invalidate = false;
+				while(count($props)>0 && $i>=0) {
+					if($props[$i][0]==$itemVO->itemId) {
+						$prop = array_pop($props);
+						$itemVO->properties[$prop[1]] = $prop[2];
+						$invalidate = true;
+					}
+					$i--;
+				}
+				foreach(ItemVO::$propertiesList as $prop) {
+					if(!isset($itemVO->properties[$prop])) {
+						$itemVO->properties[$prop] = false;
+						$invalidate = true;
+					}
+				}
+				if($invalidate===true) {
+					$itemVO->cache();
+				}
 			}
 		}
 

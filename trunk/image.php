@@ -90,7 +90,7 @@ if($cutParam === 'flush') {
 		   $targetImage = $c->targetBasePath.$side.'/'.$cut.'/'.$fileParam;
 		   if(file_exists($targetImage)) {
 		   	if(is_dir($targetImage)) {
-		   		require($c->libraryBasePath.'libs/FFile.php');
+		   		require_once($c->libraryBasePath.'libs/FFile.php');
 		   		FFile::rm_recursive($targetImage);
 				} else {
 		   		unlink($targetImage);
@@ -119,7 +119,6 @@ if($cutParam=='prop') {
  * checking if ration is too big from original
  * stop scaling images to much up
  */
-
 if($ratio > $c->maxScaleUpRatio) {
 	 $maxWidth = $imageSize[0] * $c->maxScaleUpRatio;
 	 //get closest valid width
@@ -142,7 +141,7 @@ if(!isset($targetImage)) {
 	if(!file_exists($targetImage)) {
 		//require files only when needed
 		require($c->libraryBasePath.'libs/FImgProcess.php');
-		require($c->libraryBasePath.'libs/FFile.php');
+		require_once($c->libraryBasePath.'libs/FFile.php');
 		
 		$processParams['width'] = $sideParam;
 		$processParams['height'] = $sideParam;

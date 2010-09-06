@@ -3,6 +3,7 @@ class Fvob {
 	
 	public $table;
 	public $primaryCol; //---string
+	
 	public $columns = array();
 	
 	//---watcher

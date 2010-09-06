@@ -134,7 +134,7 @@ class page_PageEdit implements iPage {
 					if(empty($pageVO->galeryDir)) {
 						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
-						$dir = ROOT_GALERY .$pageVO->galeryDir;
+						$dir = FConf::get("galery","sourceServerBase") .$pageVO->galeryDir;
 						FFile::makeDir($dir);
 					}
 
@@ -159,7 +159,9 @@ class page_PageEdit implements iPage {
 						
 					//---if setting changed on edited galery delete thumbs
 					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
-						FGalery::deleteThumbs( $pageVO->pageId );
+						$galery = new FGalery();
+						$galery->pageVO = PageVO::get($pageVO->pageId, true);
+						$galery->flush();
 					}
 				}
 
@@ -215,7 +217,7 @@ class page_PageEdit implements iPage {
 				if($pageVO->typeId == 'galery') {
 					if(!empty($data['__files'])) {
 						//---upload new foto
-						$adr = ROOT_GALERY . $pageVO->galeryDir;
+						$adr = FConf::get("galery","sourceServerBase") . $pageVO->galeryDir;
 						foreach ($_FILES as $foto) {
 							if ($foto["error"]==0) $up=FSystem::upload($foto,$adr,500000);
 						}

@@ -32,14 +32,23 @@ if($processMain===true) {
 
 	//---process ajax requests - or alternative POST requests
 	if(isset($_REQUEST['m'])) {
-		if(strpos($_REQUEST['m'],'-x')!==false) {
-			if(isset($_REQUEST['d'])) {
+		if(isset($_REQUEST['d'])) {
 				$data = $_REQUEST['d'];
-			} else {
+		}
+		if(strpos($_REQUEST['m'],'-x')!==false) {
+			if(empty($data)) {
 				$data = $HTTP_RAW_POST_DATA;
+			} else {
+				if(strpos($data,'<')===false) {
+					$data = base64_decode($data);
+					$data = urldecode($data);
+				}
 			}
+		}
+		if(empty($data)) {
+			$data = $_POST;
 		} 
-		FAjax::process( $_REQUEST['m'], (!empty($data))?($data):($_POST) );
+		FAjax::process( $_REQUEST['m'], $data );
 	}
 	FProfiler::profile('FAJAX PROCESSED DONE');
 	//---process post/get for page

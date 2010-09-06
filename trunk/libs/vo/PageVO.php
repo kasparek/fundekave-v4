@@ -79,6 +79,18 @@ class PageVO extends Fvob {
 	var $loaded = false;
 	var $xmlChanged = false;
 
+	static function get( $pageId, $autoLoad = false ) {
+		$user = FUser::getInstance();
+		if($user->pageVO) {
+			if($user->pageVO->pageId == $pageId) {
+				
+				$pageVO = $user->pageVO;
+				 
+			}
+		}
+		$pageVO = new PageVO($pageId, $autoLoad);
+		return $pageVO;
+	}
 
 	function PageVO($pageId=0, $autoLoad = false) {
 		$this->pageId = $pageId;

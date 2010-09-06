@@ -36,6 +36,9 @@ ini_set('session.save_path', ROOT_SESSION);
 
 session_start();
 
+$user = FUser::getInstance();
+$user->init();
+
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
 	$pageId = array_shift($kArr);
@@ -89,12 +92,13 @@ if ($itemId > 0) {
 		if(empty($pageId)) {
 			$pageId = $itemVO->pageId;
 		}
+		//load item
 		$itemVO->load();
 		if($itemVO->itemIdTop > 0) {
 			$itemVO = new ItemVO( $itemVO->itemIdTop );
 		}
 	} else {
-		$itemVO = false;
+		$itemVO = null;
 	}
 }
 
@@ -102,7 +106,6 @@ if(empty($pageId)) $pageId = HOME_PAGE;
 $pageId = FSystem::processK($pageId);
 
 //setup userVO
-$user = FUser::getInstance();
 if( $itemVO ) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);

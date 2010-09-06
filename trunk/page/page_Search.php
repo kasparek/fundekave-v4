@@ -166,7 +166,7 @@ class page_Search implements iPage {
 					
 				$pager = new FPager(0,$perPage,array('noAutoparse'=>1,'hash'=>'items','urlVar'=>'pi'));
 				$from = ($pager->getCurrentPageID()-1) * $perPage;
-				$fItems->map = false;
+				//$fItems->map = false;
 				$fItems->getList($from,$perPage+1);
 				$totalItems = 0;
 				if(!empty($fItems->data)) {

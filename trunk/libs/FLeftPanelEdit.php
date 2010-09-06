@@ -19,7 +19,7 @@ class FLeftPanelEdit extends FDBTool {
 		$arr = $this->getContent();
 		
 		$lPanel = new FLeftPanel($this->pageId, $this->userId, $this->pageType);
-		$lPanel->load(true);
+		$lPanel->load();
 		
 		foreach ($arr as $row) {
 			if(!in_array($row[0],$lPanel->panelsUsed)) {
@@ -117,7 +117,7 @@ class FLeftPanelEdit extends FDBTool {
 		$tpl = FSystem::tpl('leftpanel.page.set.tpl.html');
 
 		$lPanel = new FLeftPanel($this->pageId, $this->userId, $this->pageType);
-		$lPanel->load(true);
+		$lPanel->load();
 
 		foreach ($lPanel->panels as $panel) {
 			$tpl->setCurrentBlock('panelrow');

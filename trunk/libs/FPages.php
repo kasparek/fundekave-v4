@@ -89,17 +89,10 @@ class FPages extends FDBTool {
 		//---galery - delete photos
 		if($pageVO->typeId=='galery') {
 			//---delete photo
-			$dir = $pageVO->galeryDir;
 			$galery = new FGalery();
 			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and itemIdTop is null");
 			foreach ($arrd as $df) $galery->removeFoto($df);
-			if(!empty($dir)) {
-				FFile::rm_recursive( ROOT_GALERY . $dir );
-				$cachePath = $galery->getThumbCachePath();
-				FFile::rm_recursive($cachePath);
-				$systemCachePath = $galery->getThumbCachePath( URL_GALERY_CACHE_SYSTEM );
-				FFile::rm_recursive($systemCachePath);
-			}
+			
 		}
 
 		//TODO: ---event - delete flyer
@@ -234,7 +227,7 @@ class FPages extends FDBTool {
 			foreach ($arrLinks as $page) {
 				if($user->userVO->zforumico) {
 						if(isset(FLang::$TYPEID[$page['typeId']])) {
-							if(!empty($page['pageIco'])) {
+							if(!empty($page->pageIco)) {
 								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
 							} else if(!empty($page['typeId'])) {
 								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page['typeId']));
