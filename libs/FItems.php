@@ -25,8 +25,9 @@ class FItems extends FDBTool {
 		$this->VO = 'ItemVO';
 		$this->fetchmode = 1;
 		if($typeId!='') $this->typeId = $typeId;
-
-		$this->columns = ItemVO::columns;
+	
+		$itemVO = new ItemVO();
+		$this->columns = $itemVO->getColumns();
 
 		$this->initList($this->typeId,$byPermissions);
 

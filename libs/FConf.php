@@ -16,6 +16,8 @@ class FConf
 		return self::$instance;
 	}
 
+	private $type;
+	
 	public $a;
 
 	function loadConfigFile($filename) {
@@ -24,7 +26,7 @@ class FConf
 			$arr = explode('/',$filename);
 			$configFilename = array_pop($arr);
 			$configClassnameArr = explode('.',$configFilename);
-			$type = array_pop($configClassnameArr); //remove extension
+			$this->type = array_pop($configClassnameArr); //remove extension
 			$configClassname = implode('_',$configClassnameArr);
 			 
 			if($this->type=='php') {

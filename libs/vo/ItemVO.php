@@ -30,7 +30,7 @@ class ItemVO extends Fvob {
 	'public' => 'public'
 	);
 	
-	static $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
 
 	public function __get($name) {
 		
@@ -173,8 +173,6 @@ class ItemVO extends Fvob {
 		if(($itemVO = $cache->getData($this->itemId, 'cachedItemVO')) === false) {
 			$vo = new FDBvo( $this );
 			$vo->load();
-			$vo->vo = false;
-			$vo = false;
 			if($this->itemId > 0) {
 				$this->prepare();
 			}
