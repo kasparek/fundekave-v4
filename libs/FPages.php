@@ -253,27 +253,27 @@ class FPages extends FDBTool {
 			$tpl->touchBlock('showicons');
 			foreach ($arrLinks as $page) {
 				if($user->userVO->zforumico) {
-						if(isset(FLang::$TYPEID[$page['typeId']])) {
+						if(isset(FLang::$TYPEID[$page->typeId])) {
 							if(!empty($page->pageIco)) {
-								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page['pageIco']);
-							} else if(!empty($page['typeId'])) {
-								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page['typeId']));
+								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco);
+							} else if(!empty($page->typeId)) {
+								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId));
 							}
-							$tpl->setVariable("AVATARNAME", $page['name']);
-							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page['typeId']]);
+							$tpl->setVariable("AVATARNAME", $page->name);
+							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);
 					  }
 				}
-				$tpl->setVariable("PAGENAME", $page['name']);
-				$tpl->setVariable("PAGEID", $page['pageId'].'-'.FSystem::safetext($page['name']));
+				$tpl->setVariable("PAGENAME", $page->name);
+				$tpl->setVariable("PAGEID", $page->pageId.'-'.FSystem::safetext($page->name));
 				if($user->idkontrol===true) {
-					if(isset($page['newMess'])) {
-						if($page['newMess']>0 && $page['newMess']<100000) $tpl->setVariable("PAGEPOSTSNEW", $page['newMess']);
+					if(isset($page->unreaded)) {
+						if($page->unreaded>0 && $page->unreaded<100000) $tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
 					}
 				}
 
 				//---show last item
-				if(!empty($page['itemId'])) {
-					$item = new ItemVO($page['itemId'],true,array('type'=>$page['typeId'],'showPageLabel'=>true,'openPopup'=>false));
+				if(!empty($page->itemId)) {
+					$item = new ItemVO($page->itemId,true,array('showPageLabel'=>true,'openPopup'=>false));
 					$tpl->setVariable("ITEM", $item->render());
 				}
 				if(isset($options['inline'])) {
