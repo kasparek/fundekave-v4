@@ -40,7 +40,8 @@ class FBanner {
 				$banner = $strictBanner[rand(0,count($strictBanner)-1)];
 			}
 			$imgname = URL_BANNER . $banner[1];
-			$imglink = 'bannredir.php?bid='.$banner[0];
+			$imglink = 'index.php?bannerclick='.$banner[0];
+			//TODO: navigate to FBanner::bannerRedirect($_GET["bannerclick"]);
 
 			if(preg_match("/(.swf)$/",$imgname))
 			$ret= '<object type="application/x-shockwave-flash" data="'.$imgname.'" width="468" height="60"><param name="movie" value="'.$imgname.'" /></object>';

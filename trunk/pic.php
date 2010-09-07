@@ -1,5 +1,16 @@
 <?php
+/**
+ *
+ * TOBE DELETED AFTER TESTING IMAGE FUNC
+ * 
+ */  
 //---just display
+/**
+ *only used in Fajax_event to display temporary saved image in non public folder
+ *TODO: - save tmp images in /obr/tmp/
+ *  
+ * 
+ */
 if(isset($_GET['f'])) {
 	$f = ROOT . $_GET['f'];
 	if(file_exists($f)) {
@@ -12,6 +23,11 @@ if(isset($_GET['f'])) {
 }
 
 //---diplay with resize
+/**
+ *only used in Fajax_event to display temporary saved image in non public folder
+ *TODO: - use tmp images in /image/170x0/crop/tmp/image.jpg 
+ * 
+ */
 if(isset($_GET['r'])) {
 	$f = $_GET['r'];
 	$f = ROOT . $f;
@@ -28,6 +44,12 @@ if(isset($_GET['r'])) {
 	exit;
 }
 
+/**
+ *TODO:
+ *  used only in FSystem line 363 to resize images in forum
+ * /image/size/prop/remote/md5(salt+base64encoded(url))-base64encoded(url)
+ *  
+ */  
 //--remote
 if(isset($_GET['re'])) {
 
