@@ -107,14 +107,14 @@ class FAjax_user extends FAjaxPluginBase {
 	static function avatar($data) {
 		//---list user images
 		$user = FUser::getInstance();
-		$dir = ROOT_AVATAR . $user->userVO->name;
+		$dir = FAvatar::profileBasePath();
 		$arr = FFile::fileList($dir,'jpg');
 		sort($arr);
 		$arr = array_reverse($arr);
 		$tpl = FSystem::tpl("users.personal.html");
 		$ret = '';
 		foreach($arr as $img) {
-			$tpl->setVariable("IMGURL",URL_AVATAR.$user->userVO->name.'/'.$img);
+			$tpl->setVariable("IMGURL",FAvatar::profileBaseUrl().'/'.$img);
 			$tpl->setVariable("IMGID",md5($img));
 			$tpl->parse('personalImage');
 		}

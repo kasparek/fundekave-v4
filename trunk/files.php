@@ -60,13 +60,13 @@ if( $user->idkontrol ) {
 			case 'uava':
 				$user = FUser::getInstance();
 				$imageName = FAvatar::createName($filename);
-				$dir = ROOT_AVATAR . $user->userVO->name;
+				$dir = FAvatar::profileBasePath();
 				$imagePath = $dir . '/' . $imageName;
 				FFile::makeDir($dir);
 				//delete old
 				if($user->userVO->avatar) {
-					if(file_exists(ROOT_AVATAR.$user->userVO->avatar)) {
-						unlink(ROOT_AVATAR.$user->userVO->avatar);
+					if(file_exists(FAvatar::avatarBasePath().'/'.$user->userVO->avatar)) {
+						unlink(FAvatar::avatarBasePath().'/'.$user->userVO->avatar);
 					}
 				}
 				$folderSize = FFile::folderSize($dir) / 1024;

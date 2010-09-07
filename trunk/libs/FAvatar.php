@@ -9,15 +9,15 @@ class FAvatar {
 		$picname = AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
-			$picname = URL_AVATAR . $user->userVO->avatar; //---myself
+			$picname = FAvatar::avatarBaseUrl() . $user->userVO->avatar; //---myself
 		} elseif($userId > 0) {
 			$cache = FCache::getInstance('d',0);
 			$avatarUrl = $cache->getData($userId,'avatar_url');
 			if( $avatarUrl === false ) {
 				$userAvatar = FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
 				if(!empty($userAvatar)) {
-					if(file_exists( ROOT_AVATAR.$userAvatar ) && !is_dir( ROOT_AVATAR.$userAvatar )) {
-						$picname = URL_AVATAR.$userAvatar;
+					if(file_exists( FAvatar::avatarBasePath().$userAvatar ) && !is_dir( FAvatar::avatarBasePath().$userAvatar )) {
+						$picname = FAvatar::avatarBaseUrl().$userAvatar;
 					}
 				}
 				$cache->setData($picname ,$userId,'avatar_url');
@@ -134,12 +134,29 @@ class FAvatar {
 		$user = FUser::getInstance();
 		return FSystem::safeText($user->userVO->name).".".$user->userVO->userId.".".date('U').".".FFile::fileExt($fileOrig);
 	}
+	
+	static function profileBasePath() {
+		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/profile';
+	}
+	
+	static function profileBaseUrl() {
+		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/profile';
+	}
+	
+	static function avatarBasePath() {
+		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/avatar';
+	}
+	
+	static function avatarBaseUrl() {
+		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/avatar';
+	}
+	
 	static function processAvatar($avatarName) {
 		//---resize and crop if needed
 		list($avatarWidth,$avatarHeight,$type) = getimagesize( $avatarName );
 		
 		$newName = FAvatar::createName($avatarName);
-		$targetName = ROOT_AVATAR.$newName;
+		$targetName = FAvatar::avatarBasePath().$newName;
 		
 		if($avatarWidth != AVATAR_WIDTH_PX || $avatarHeight != AVATAR_HEIGHT_PX) {
 			if($type != 2) $avatarName = str_replace(FSystem::fileExt($avatarName),'jpg',$avatarName);
