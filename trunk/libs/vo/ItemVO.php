@@ -33,9 +33,10 @@ class ItemVO extends Fvob {
 	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
 
 	public function __get($name) {
+		if(!$name) return;
 		
-		if($this->$name) {
-			return $this->$name;
+		if($this->{$name}) {
+			return $this->{$name};
 		}
 
 		$type = $this->typeId;
@@ -69,23 +70,25 @@ class ItemVO extends Fvob {
 				$key = str_replace('Local','',$name);
 				break;
 		}
-		echo $name.';'.$format.';'.$key.'<br>';
+		
+		
 		if($format) {
-			$this->$name = $this->date($this->$value,$format);
-			return $this->$name;
+			$this->$name = $this->date($this->$key,$format);
+			return $this->{$name};
 		}
+		
 		return null;
 	}
 
-	public function date($name,$format) {
-		if(!$this->$name) return null;
+	public function date($value,$format) {
+		if(!$value) return null;
 		if($format==='iso') {
 			$format = DATE_ATOM;
 		} else {
 			$format = FConf::get('internationalization',$format);
 		}
 		if(!$format) return null;
-		return date($format, strtotime($this->$name));
+		return date($format, strtotime($value));
 	}
 
 	var $itemId = null;

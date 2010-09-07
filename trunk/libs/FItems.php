@@ -130,7 +130,8 @@ class FItems extends FDBTool {
 					}
 					$i--;
 				}
-				foreach(ItemVO::$propertiesList as $prop) {
+				$propList = $itemVO->getPropertiesList(); 
+				foreach($propList as $prop) {
 					if(!isset($itemVO->properties[$prop])) {
 						$itemVO->properties[$prop] = false;
 						$invalidate = true;
