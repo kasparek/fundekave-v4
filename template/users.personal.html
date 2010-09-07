@@ -6,7 +6,7 @@
   <li><a href="#tabs-5">Osobni foto</a></li>
   <li><a href="#tabs-2">Nastaveni</a></li>
 	<li><a href="#tabs-3">Heslo</a></li>
-	<li><a href="#tabs-4">Webcam</a></li>
+	<!-- BEGIN webcamButton --><li><a href="#tabs-4">Webcam</a></li><!-- END webcamButton -->
 </ul>
 
 <div class="buttonBar">
@@ -71,6 +71,7 @@
 <!--
 <label>Skin</label><select name="skin">{SKINOPTIONS}</select><br />
 -->
+<!-- BEGIN banners -->
 <div>
 <label>Bannery</label>
 <select name="zbanner">
@@ -78,6 +79,7 @@
 <option value="1"<!-- BEGIN zbanner --> selected="selected"<!-- END zbanner -->>Zobrazovat</option>
 </select>
 </div>
+<!-- END banners -->
 <label>Ikony klubů</label>
 <select name="zaudico">
 <option value="0">Nezobrazovat</option>
@@ -90,11 +92,13 @@
 <option value="1"<!-- BEGIN zidico --> selected="selected"<!-- END zidico -->>Zobrazovat</option>
 </select>
 <br />
+<!-- BEGIN galeryStyle -->
 <label>Styl galerie</label>
 <select name="galtype">
 <option value="0">Fotky se otvirají do stejného okna</option>
 <option value="1"<!-- BEGIN galtype --> selected="selected"<!-- END galtype -->>Do nového okna</option>
 </select><br />
+<!-- END galeryStyle -->
 <label>Radit oblibene</label>
 <select name="bookedorder">
 <option value="0">Podle novych prispevku</option>
@@ -111,6 +115,7 @@
 </fieldset>
 </div>
 
+<!-- BEGIN webcamTab -->
 <div id="tabs-4">
 <fieldset>
 <legend>Webcam nastaveni</legend>
@@ -143,5 +148,6 @@
 </select><br />
 </fieldset>
 </div>
+<!-- END webcamTab -->
 </div>
 </form>

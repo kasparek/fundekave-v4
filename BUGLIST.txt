@@ -1,4 +1,6 @@
+
 TODO:
+0. events images / thumb location
 1. object maping by default everywhere
 2. page properties in one
 3. image/ for personal,flyers,avatar,local images

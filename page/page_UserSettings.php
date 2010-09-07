@@ -13,7 +13,7 @@ class page_UserSettings implements iPage {
 
 				$md5 = str_replace('avatar','',$data['action']);
 
-				$dir = ROOT_AVATAR . $user->userVO->name;
+				$dir = FAvatar::profileBasePath();
 				$arr = FFile::fileList($dir,'jpg');
 
 				foreach($arr as $file) {
@@ -25,7 +25,7 @@ class page_UserSettings implements iPage {
 
 				$newAvatar = FAvatar::processAvatar($dir.'/'.$newSource);
 				//update
-				if(!empty($user->userVO->avatar)) @unlink(ROOT_AVATAR.$user->userVO->avatar);
+				if(!empty($user->userVO->avatar)) @unlink(FAvatar::avatarBasePath().$user->userVO->avatar);
 				$user->userVO->avatar = $newAvatar;
 				$user->userVO->save();
 
@@ -44,7 +44,7 @@ class page_UserSettings implements iPage {
 
 				$md5 = str_replace('del','',$data['action']);
 
-				$dir = ROOT_AVATAR . $user->userVO->name;
+				$dir = FAvatar::profileBasePath();
 				$arr = FFile::fileList($dir,'jpg');
 				foreach($arr as $file) {
 					if(md5($file) == $md5) {
@@ -132,8 +132,8 @@ class page_UserSettings implements iPage {
 				$avatarFile = $data['__files']["idfoto"];
 				if ($avatarFile["error"] == 0){
 					$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
-					if(FSystem::upload($avatarFile, ROOT_AVATAR, 20000)) {
-						$userVO->avatar = FAvatar::processAvatar(ROOT_AVATAR.$avatarFile['name']);
+					if(FSystem::upload($avatarFile, FAvatar::avatarBasePath(), 20000)) {
+						$userVO->avatar = FAvatar::processAvatar(FAvatar::avatarBasePath().$avatarFile['name']);
 					}
 				}
 			}
@@ -149,7 +149,9 @@ class page_UserSettings implements iPage {
 	}
 
 	static function build($data=array()) {
-
+    $isWebcamEnabled = false;
+    $isBannerEnabled = false;
+    $isGaleryStyleEnabled = false;
 
 
 		$user = FUser::getInstance();
@@ -183,40 +185,53 @@ class page_UserSettings implements iPage {
 		$tpl->setVariable("USERJIDLO",$userVO->getXMLVal('personal','food'));
 		$tpl->setVariable("USERHOBBY",$userVO->getXMLVal('personal','hobby'));
 		$tpl->setVariable("USERABOUT",FSystem::textToTextarea($userVO->getXMLVal('personal','about')));
-
-		if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
+		
+		if($isBannerEnabled===true) {
+			$tpl->touchBlock('banners');
+			if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
+		}
+		
 		if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');
 		if($userVO->zavatar == 1) $tpl->touchBlock('zidico');
-		if($userVO->zgalerytype == 1) $tpl->touchBlock('galtype');
+		
+		if($isGaleryStyleEnabled===true) {
+			$tpl->touchBlock('galeryStyle');
+			if($userVO->zgalerytype == 1) $tpl->touchBlock('galtype');
+		}
+		
 		if($userVO->getXMLVal('settings','bookedorder') == 1) $tpl->touchBlock('bookedorder');
 
-		//webcam
-		switch($userVO->getXMLVal('webcam','public')) {
-			case 1:
-				$tpl->touchBlock('campublicregistered');
-				break;
-			case 2:
-				$tpl->touchBlock('campublicfriends');
-				break;
-			case 3:
-				$tpl->touchBlock('campublicchosen');
-				break;
+    if($isWebcamEnabled===true) {
+    	$tpl->touchBlock('webcamButton');
+			//webcam
+			switch($userVO->getXMLVal('webcam','public')) {
+				case 1:
+					$tpl->touchBlock('campublicregistered');
+					break;
+				case 2:
+					$tpl->touchBlock('campublicfriends');
+					break;
+				case 3:
+					$tpl->touchBlock('campublicchosen');
+					break;
+			}
+		
+			$arrChosen = explode(',',$userVO->getXMLVal('webcam','chosen'));
+			foreach ($arrChosen as $userIdFor) {
+				$arrUsernames[] = FUser::getgidname($userIdFor);
+			}
+			$tpl->setVariable('CAMCHOSEN',implode(',',$arrUsernames));
+	
+			if($userVO->getXMLVal('webcam','avatar') == 1) $tpl->touchBlock('camavatar');
+			if($userVO->getXMLVal('webcam','resolution') == 1) $tpl->touchBlock('camresolution1');
+	
+			$tpl->setVariable('CAMINTERVAL',$userVO->getXMLVal('webcam','interval'));
+			$tpl->setVariable('CAMQUALITY',$userVO->getXMLVal('webcam','quality'));
+	
+			if($userVO->getXMLVal('webcam','motion') == 0) $tpl->touchBlock('cammotion');
 		}
-		$arrChosen = explode(',',$userVO->getXMLVal('webcam','chosen'));
-		foreach ($arrChosen as $userIdFor) {
-			$arrUsernames[] = FUser::getgidname($userIdFor);
-		}
-		$tpl->setVariable('CAMCHOSEN',implode(',',$arrUsernames));
 
-		if($userVO->getXMLVal('webcam','avatar') == 1) $tpl->touchBlock('camavatar');
-		if($userVO->getXMLVal('webcam','resolution') == 1) $tpl->touchBlock('camresolution1');
-
-		$tpl->setVariable('CAMINTERVAL',$userVO->getXMLVal('webcam','interval'));
-		$tpl->setVariable('CAMQUALITY',$userVO->getXMLVal('webcam','quality'));
-
-		if($userVO->getXMLVal('webcam','motion') == 0) $tpl->touchBlock('cammotion');
-
-		$dir = ROOT_AVATAR . $user->userVO->name;
+		$dir = FAvatar::profileBasePath();
 
 		$tpl->setVariable('FOLDERSIZE',round(FFile::folderSize($dir)/1024).'kB');
 		$tpl->setVariable('FOLDERLIMIT', FConf::get('settings','personal_foto_limit').'kB');

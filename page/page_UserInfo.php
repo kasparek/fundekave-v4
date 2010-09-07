@@ -73,7 +73,7 @@ class page_UserInfo implements iPage {
 
 
 
-			$dir = ROOT_AVATAR . $userVO->name;
+			$dir = FAvatar::profileBasePath();
 			$arr = FFile::fileList($dir,'jpg|png|gif');
 			if(!empty($arr)) {
 				$tpl->touchBlock('tabfoto');
@@ -81,7 +81,7 @@ class page_UserInfo implements iPage {
 				$arr = array_reverse($arr);
 				$ret = '';
 				foreach($arr as $img) {
-					$tpl->setVariable("IMGURL",URL_AVATAR.$userVO->name.'/'.$img);
+					$tpl->setVariable("IMGURL",FAvatar::profileBaseUrl().'/'.$img);
 					$tpl->parse('foto');
 				}
 			}
