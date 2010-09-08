@@ -62,9 +62,5 @@ class FError {
 	
 	static function handle_error ($errno, $errstr, $errfile, $errline) {
 	    FError::write_log("$errstr in $errfile on line $errline");
-	    if($errno == FATAL || $errno == ERROR){
-	        ob_end_flush();
-	        exit(0);
-	    }
 	}
 }

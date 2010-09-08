@@ -1,16 +1,30 @@
 <?php
 class Fvob {
-	
+
 	var $table;
 	var $primaryCol;
-	
+
 	var $columns;
 	var $propertiesList;
-	
+
 	//---watcher
 	public $saveOnlyChanged = false;
 	public $changed = false;
-	
+
+	public function date($value,$format) {
+		if(!$value) return null;
+		switch($format) {
+			case 'iso':
+				$format = DATE_ATOM;
+				break;
+			default:
+				$formatConf = FConf::get('internationalization',$format);
+				if($formatConf) $format = $formatConf;
+		}
+		if(!$format) return null;
+		return date($format, strtotime($value));
+	}
+
 	function set($key, $value, $params=array()) {
 		$changed = false;
 		if(property_exists($this,$key)) {
@@ -30,11 +44,11 @@ class Fvob {
 			}
 			//---set
 			$this->{$key} = $value;
-				
+
 		}
 		return $changed;
 	}
-	
+
 	function load() {
 		$vo = new FDBvo( $this );
 		$vo->load();
@@ -58,25 +72,25 @@ class Fvob {
 			return true;
 		}
 	}
-	
+
 	function delete() {
-	   $vo = new FDBvo( $this );
-	   $vo->delete();
+		$vo = new FDBvo( $this );
+		$vo->delete();
 	}
-  
-  public function getTable() {
+
+	public function getTable() {
 		return $this->table;
 	}
-	
+
 	public function getPrimaryCol() {
 		return $this->primaryCol;
 	}
-  
+
 	public function getColumns() {
 		return $this->columns;
 	}
-	
+
 	public function getPropertiesList() {
-	  return $this->propertiesList;
-	}	
+		return $this->propertiesList;
+	}
 }

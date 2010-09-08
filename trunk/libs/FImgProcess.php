@@ -59,29 +59,31 @@ class FImgProcess {
 		if(isset($mode['quality'])) $this->quality = (int) $mode['quality'];
 		if(!empty($target)) {
 			$p = pathinfo($target);
-			($this->targetMimeType = $this->__mime_metaphone[metaphone($p['extension'])])
-			|| ($this->targetMimeType = $this->__mime_soundex[soundex($p['extension'])]);
+			if(!empty($p['extension'])) {
+				($this->targetMimeType = $this->__mime_metaphone[metaphone($p['extension'])])
+				|| ($this->targetMimeType = $this->__mime_soundex[soundex($p['extension'])]);
+			}
 		}
 		if(isset($mode['targetMimeType'])) $this->targetMimeType = (int) $mode['targetMimeType'];
 
 		if(isset($mode['width']) || isset($mode['height'])) {
-				
+
 			if(isset($mode['width'])) $width = $mode['width']; else $width = 0;
 			if(isset($mode['height'])) $height = $mode['height']; else $height = 0;
 			$this->widthMax = $width;
 			$this->heightMax = $height;
-				
+
 			if($this->open() === false) return false;
-				
+
 			if(isset($mode['unsharpMask'])) $this->unsharpMask();
-			
+				
 			$this->resize($width,$height);
-			
+				
 			if($this->image) {
 				if(isset($mode['reflection'])) $this->reflection();
 				if(isset($mode['rotate'])) $this->rotate();
 			}
-			
+				
 			$this->data = $this->save();
 		}
 	}
@@ -97,40 +99,40 @@ class FImgProcess {
 			$this->errorArr[] = 'ImgProcessing: file not found::'.$this->sourceUrl;
 			return false;
 		}
-		
+
 		$this->sourceWidth = $props[0];
 		$this->sourceHeight = $props[1];
 		$this->sourceMimeType = $props[2];
-		if($props['source']) $this->sourceUrl = $props['source'];
-		
-			$upsize = true;
-			if(isset($this->mode['upsize'])) $upsize = $this->mode['upsize'];
+		if(isset($props['source'])) $this->sourceUrl = $props['source'];
 
-			if($upsize === false) {
-				$doNotResize = true;
-				if($this->widthMax > 0) {
-					if($this->sourceWidth > $this->widthMax) {
-						$doNotResize = false;
-					}
-				}
-				if($this->heightMax > 0) {
-					if($this->heightWidth > $this->heightMax) {
-						$doNotResize = false;
-					}
-				}
-				if($doNotResize === true) {
-					//return not resized image
-					return;
+		$upsize = true;
+		if(isset($this->mode['upsize'])) $upsize = $this->mode['upsize'];
+
+		if($upsize === false) {
+			$doNotResize = true;
+			if($this->widthMax > 0) {
+				if($this->sourceWidth > $this->widthMax) {
+					$doNotResize = false;
 				}
 			}
-
-			if(!in_array($this->sourceMimeType,$this->supportedMimeTypes)) $this->errorArr[] = 'ImgProcessing - OPEN: not supported image type::'.$this->sourceUrl;
-			else {
-				if($this->sourceMimeType == 1) $this->image = imagecreatefromgif($this->sourceUrl);
-				elseif($this->sourceMimeType == 3) $this->image = imagecreatefrompng($this->sourceUrl);
-				else $this->image = imagecreatefromjpeg($this->sourceUrl);
+			if($this->heightMax > 0) {
+				if($this->heightWidth > $this->heightMax) {
+					$doNotResize = false;
+				}
 			}
-		
+			if($doNotResize === true) {
+				//return not resized image
+				return;
+			}
+		}
+
+		if(!in_array($this->sourceMimeType,$this->supportedMimeTypes)) $this->errorArr[] = 'ImgProcessing - OPEN: not supported image type::'.$this->sourceUrl;
+		else {
+			if($this->sourceMimeType == 1) $this->image = imagecreatefromgif($this->sourceUrl);
+			elseif($this->sourceMimeType == 3) $this->image = imagecreatefrompng($this->sourceUrl);
+			else $this->image = imagecreatefromjpeg($this->sourceUrl);
+		}
+
 	}
 	/**
 	 * resize function
@@ -308,9 +310,9 @@ class FImgProcess {
 		}
 		return $data;
 	}
-	
+
 	static function getimagesize($image_url) {
-	
+
 		//check if file exists localy
 		if(file_exists($image_url)) {
 			//check file is not dir
@@ -318,44 +320,43 @@ class FImgProcess {
 			//return image size
 			return getimagesize($image_url);
 		}
-		
+
 		//filename is not URL
 		if(strpos($image_url,'http://')===false && strpos($image_url,'http://')===false) return false;
-		
+
 		$temp_file = tempnam(sys_get_temp_dir(), 'Tux');
-    
+
 		$handle = fopen ($image_url, "rb");
 		if (!$handle) return false;
-    
+
 		//read file
 		$contents = "";
-    do {
-        $count += 1;
-        $data = fread($handle, 8192);
-        if (strlen($data) == 0) {
-            break;
-       }
-    	$contents .= $data;
-    } while(true);
-    fclose ($handle);
-    
-    $handle = fopen($temp_file, "w");
+		do {
+			$data = fread($handle, 8192);
+			if (strlen($data) == 0) {
+				break;
+			}
+			$contents .= $data;
+		} while(true);
+		fclose ($handle);
+
+		$handle = fopen($temp_file, "w");
 		fwrite($handle, $contents);
 		fclose($handle);
 		$contents = '';
-		
+
 		if(!file_exists($temp_file)) return false;
-		
+
 		try {
 			$imageSize = getimagesize($temp_file);
 			$imageSize['source'] = $temp_file;
-			
+				
 		} catch (Exception $e) {
-    	return false;
+			return false;
 		}
-		
-		return $imageSize; 
-}
+
+		return $imageSize;
+	}
 
 	function unsharpMask($amount=80, $radius=0.5, $threshold=3) {
 		if(!$this->image) return false;

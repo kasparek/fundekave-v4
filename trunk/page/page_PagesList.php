@@ -52,13 +52,7 @@ class page_PagesList implements iPage {
 				$fPages->addWhere("p.pageIdTop = '".HOME_PAGE."'");
 			}
 			if($typeId == 'galery') {
-				$fPages->setSelect("p.pageId,p.name,p.userIdOwner,date_format(dateContent,'{#date_local#}') as datumcz,description,date_format(dateContent,'{#date_iso#}') as diso,p.cnt as total".(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')));
 				$fPages->setOrder("dateContent desc");
-				if($user->idkontrol!==true) {
-					$fPages->addWhere('p.locked < 2');
-				} else {
-					$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-				}
 			} else {
 				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
 				$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
@@ -109,30 +103,33 @@ class page_PagesList implements iPage {
 					$itemRenderer->showPocketAdd = false;
 					$itemRenderer->showComments = false;
 					$itemRenderer->showCommentsNum = false;
+					
 					$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
+					//TODO: file caching?
+					/*
 					$fItems->cacheResults = 'f';
 					$fItems->cacheGroup = 'fdb-galery';
-					$fItems->lifeTime = '86400'; 
+					$fItems->lifeTime = '86400';
+					*/ 
 					$fItems->thumbInSysRes = true;
 					$fItems->setOrder('hit desc');
 
 					$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 					foreach ($arr as $gal) {
 						
-						$fItems->setWhere('pageId="'.$gal[0].'"');
+						$fItems->setWhere('pageId="'.$gal->pageId.'"');
 						$fotoThumb = $fItems->render(0,1);
 
 						$tplGal->setCurrentBlock('item');
 						$tplGal->setVariable("THUMB",$fotoThumb);
-						$tplGal->setVariable("PAGEID",$gal[0]);
-						$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal[0]));
-						$tplGal->setVariable("PAGENAME",$gal[1]);
-						$tplGal->setVariable("DATELOCAL",$gal[3]);
-						$tplGal->setVariable("DATEISO",$gal[5]);
-						$tplGal->setVariable("GALERYTEXT",$gal[4]);
-						$tplGal->setVariable("FOTOCSSDIR",FSystem::getSkinCSSFilename());
-						if($gal[7]>0)$tplGal->setVariable("FOTONEW",$gal[7]);
-						$tplGal->setVariable("FOTONUM",$gal[6]);
+						$tplGal->setVariable("PAGEID",$gal->pageId);
+						$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId));
+						$tplGal->setVariable("PAGENAME",$gal->name);
+						$tplGal->setVariable("DATELOCAL",$gal->date('dateContent','date'));
+						$tplGal->setVariable("DATEISO",$gal->date('dateContent','iso'));
+						$tplGal->setVariable("GALERYTEXT",$gal->description);
+						if($gal->unreaded>0)$tplGal->setVariable("FOTONEW",$gal->unreaded);
+						$tplGal->setVariable("FOTONUM",$gal->cnt);
 						$tplGal->parseCurrentBlock();
 					}
 					$tpl->setVariable('PAGELINKS',$tplGal->get());
