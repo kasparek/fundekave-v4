@@ -26,7 +26,7 @@ class page_ItemsLive implements iPage {
 			$localPerPage = $user->pageVO->perPage();
 			
 			$pages = new FPages(null, $userId);
-			$pages->addJoin('right join sys_pages_items as sys_pages_items on sys_pages_items.pageId=sys_pages.pageId')
+			$pages->addJoin('right join sys_pages_items as sys_pages_items on sys_pages_items.pageId=sys_pages.pageId');
 			//TODO: do not use pplastitem
 			$pages->addSelect('itemId as pplastitem');
 			
@@ -57,7 +57,7 @@ class page_ItemsLive implements iPage {
 			$totalItems = count($data);
 
 			$maybeMore = false;
-			if($totalItems > ($localPerPage-$fItems->itemsRemoved)) {
+			if($totalItems > $localPerPage) {
 				$maybeMore = true;
 				array_pop($data);
 			}

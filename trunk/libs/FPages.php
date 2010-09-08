@@ -54,8 +54,8 @@ class FPages extends FDBTool {
 		$this->setSelect( $columnsAsed );
 		
 		if(!empty($userId)) {
-			$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-			$fPages->addSelect('count(1) as favorite,f.cnt as favoriteCnt');
+			$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+			$this->addSelect('count(1) as favorite,f.cnt as favoriteCnt');
 		}
 		
 		$this->getListPages();
@@ -285,7 +285,7 @@ class FPages extends FDBTool {
 				}
 
 				//---show last item
-				$itemId = $this->getProperty('pplastitem',false,false);
+				$itemId = $page->getProperty('pplastitem',false,false);
 				if($itemId) {
 					$item = new ItemVO($page->itemId,true);
 					$tpl->setVariable("ITEM", $item->render());
