@@ -257,7 +257,7 @@ class FSystem {
 		return($numip);
 	}
 
-	function getUserIp() {
+	static function getUserIp() {
 		$IPadresa=$_SERVER["REMOTE_ADDR"]."@";
 		if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])) $IPadresa.=$_SERVER["HTTP_X_FORWARDED_FOR"];
 		$IPadresa.="@";

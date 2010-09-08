@@ -26,7 +26,7 @@ class FHTTP
      * @param   bool    $rfc2616 Wheter to output a hypertext note where we're
      *                  redirecting to (Redirecting to <a href="...">...</a>.)
      */
-    function redirect($url, $exit = true, $rfc2616 = false)
+    static function redirect($url, $exit = true, $rfc2616 = false)
     {
         if (headers_sent()) {
             return false;
@@ -66,7 +66,7 @@ class FHTTP
      * @param   string  $protocol Protocol to use when redirecting URIs.
      * @param   integer $port A new port number.
      */
-    function absoluteURI($url = null, $protocol = null, $port = null)
+    static function absoluteURI($url = null, $protocol = null, $port = null)
     {
         // filter CR/LF
         $url = str_replace(array("\r", "\n"), ' ', $url);
