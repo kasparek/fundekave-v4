@@ -10,8 +10,6 @@
  *
  */   
 class PageVO extends Fvob {
-
-	var $cacheResults = 'l';
 	
 	var $table = 'sys_pages';
 	var $primaryCol = 'pageId';
@@ -40,7 +38,8 @@ class PageVO extends Fvob {
 	'pageParams' => 'pageParams'
 	);
 	
-	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	var $propertiesList = array('position','pplastitem','forumSet');
+	public $propDefaults = array('forumSet'=>1);
 	
 	var $defaults = array(
     'forum'=>array('template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
@@ -78,7 +77,7 @@ class PageVO extends Fvob {
 	//---based on logged user
 	var $favorite; //is booked
 	var $favoriteCnt; //readed items
-	
+		
 	function __get($name) {
 		switch($name) {
 			case 'unreaded':
@@ -101,8 +100,6 @@ class PageVO extends Fvob {
 	var $loaded = false;
 	var $xmlChanged = false;
 	
-	var $properties;
-
 	static function get( $pageId, $autoLoad = false ) {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
@@ -224,26 +221,5 @@ class PageVO extends Fvob {
 		}
 		$this->pageParams = $xml->asXML();
 	}
-
-	public $propDefaults = array('forumSet'=>1);
-	function prop($propertyName,$value=null) {
-		if($value!==null) PageVO::setProperty($this->pageId,$propertyName,$value);
-		$default='';
-		if(isset($this->propDefaults[$propertyName])) $default = $this->propDefaults[$propertyName];
-		return PageVO::getProperty($this->pageId,$propertyName,$default);
-	}
-
-	//---special properties
-	static function getProperty($pageId,$propertyName,$default=false) {
-		$q = "select value from sys_pages_properties where pageId='".$pageId."' and name='".$propertyName."'";
-		$value = FDBTool::getOne($q,$pageId.'-'.$propertyName.'-prop','fpages','l');
-		if($value === false || $value === null) $value = $default;
-		return $value;
-	}
-
-	static function setProperty($pageId,$propertyName,$propertyValue) {
-		FDBTool::query("insert into sys_pages_properties (pageId,name,value) values ('".$pageId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
-		$cache = FCache::getInstance('l');
-		$cache->invalidateData($pageId.'-'.$propertyName.'-prop','fpages');
-	}
+	
 }

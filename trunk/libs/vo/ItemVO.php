@@ -31,6 +31,7 @@ class ItemVO extends Fvob {
 	);
 	
 	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0);
 
 	public function __get($name) {
 		if(!$name) return;
@@ -131,9 +132,6 @@ class ItemVO extends Fvob {
 	var $detailUrlToGalery;
 	var $detailUrlToPopup;
 	
-	//extra array of key/value array properties
-	var $properties;
-
 	//---changed
 	var $htmlName;
 
@@ -161,8 +159,8 @@ class ItemVO extends Fvob {
 
 	function load() {
 		//---try load from cache cache
-		$cache = FCache::getInstance('l');
-		if(($itemVO = $cache->getData($this->itemId, 'cachedItemVO')) === false) {
+		$itemVO = $this->memGet();
+		if(($itemVO === false) {
 			$vo = new FDBvo( $this );
 			$vo->load();
 			if($this->itemId > 0) {
@@ -188,14 +186,9 @@ class ItemVO extends Fvob {
 		}
 		$this->prepare();
 		//---save in cache
-		$this->cache();
+		$this->memStore();
 	}
 	
-	function cache() {
-		$cache = FCache::getInstance('l');
-		$cache->setData( $this, $this->itemId, 'cachedItemVO');
-	}
-
 	function save() {
 		$vo = new FDBvo( $this );
 		$vo->resetIgnore();
@@ -223,8 +216,11 @@ class ItemVO extends Fvob {
 			} else {
 				FPages::cntSet( $this->pageId, 1 );
 			}
+			
+			//TODO: resolve what is this for
 			$cache = FCache::getInstance('f');
 			$cache->invalidateData($this->pageId.'-page', 'fitGrp');
+			
 			$creating = true;
 		}
 
@@ -232,8 +228,7 @@ class ItemVO extends Fvob {
 		//---update stats
 		ItemVO::statPage($this->pageId, FUser::logon(), false);
 		//---update in cache
-		$cache = FCache::getInstance('l');
-		$cache->invalidateData($this->itemId, 'cachedItemVO');
+		$this->memFlush();
 			
 		if( empty($this->itemIdTop) ) {
 			$this->updateItemIdLast();
@@ -288,8 +283,8 @@ class ItemVO extends Fvob {
 			
 		page_PagesList::invalidate();
 		
-		$cache = FCache::getInstance('l');
-		$cache->invalidateData($this->itemId, 'cachedItemVO');
+		$this->memFlush();
+		
 	}
 
 	function prepare() {
@@ -350,6 +345,7 @@ class ItemVO extends Fvob {
 	}
 
 	function getPageItemsId() {
+		//TODO: store in memory cache / only local prop
 		$cache = FCache::getInstance('f');
 		if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
 			$pageVO = new PageVO($this->pageId,true);
@@ -431,49 +427,6 @@ class ItemVO extends Fvob {
 			} else {
 				if($consecutively) return $keys[0]; else return 0; //--- if not next return first
 			}
-		}
-	}
-
-	
-	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0);
-	
-	function prop($propertyName,$value=null) {
-		if($value!==null) $this->setProperty($propertyName,$value);
-		$default='';
-		if(isset($this->propDefaults[$propertyName])) $default = $this->propDefaults[$propertyName];
-		return $this->getProperty($propertyName,$default);
-	}
-
-	//---special properties
-	function getProperty($propertyName,$default=false) {
-		if(isset($this->properties[$propertyName])) {
-			$value = $this->properties[$propertyName];
-		} else {
-			$q = "select value from sys_pages_items_properties where itemId='".$this->itemId."' and name='".$propertyName."'";
-			$value = FDBTool::getOne($q);
-			//---set in list
-			if(empty($value)) $value = false;
-			$this->properties[$propertyName] = $value;
-			//---save in cache
-			$this->cache();
-		}
-		if($value === false || $value === null) $value = $default;
-		return $value;
-	}
-
-	function setProperty($propertyName,$propertyValue) {
-		if($propertyValue!=$this->properties[$propertyName]) {
-			//save in db
-			if(empty($propertyValue)) {
-				FDBTool::query("delete from sys_pages_items_properties where itemId='".$this->itemId."' and name='".$propertyName."'");
-				$propertyValue = false;	
-			} else {
-				FDBTool::query("insert into sys_pages_items_properties (itemId,name,value) values ('".$this->itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
-			}
-			//---save in cache
-			$this->properties[$propertyName] = $propertyValue;
-			//---update cache
-			$this->cache();
 		}
 	}
 

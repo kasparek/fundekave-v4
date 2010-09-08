@@ -133,10 +133,28 @@ class FDBTool {
 		$this->_where[] = ' '.$where.' ';
 	}
 	
-	function joinOnPropertie($prop) {
+	/**
+	 *
+	 *	@param order 0 - not ordering, 1-ascemding, 2-descending, 3-asc numeric, 4-desc numeric	 
+	 */	 	
+	function joinOnPropertie($prop,$order=0) {
 		$this->autojoin = true;
 		$this->addSelect($prop.'.value as '.$prop.'_prop');
 		$this->addJoin('left join '.$this->table.'_properties as '.$prop.' on '.$prop.'.'.$this->primaryCol.'='.$this->table.'.'.$this->primaryCol.' and '.$prop.'.name = "'.$prop.'"');
+		switch($order) {
+		  case 1:
+		  $this->addOrder($prop.".value");
+			break;
+		  case 2:
+		  $this->addOrder($prop.".value desc");
+			break;
+		  case 3:
+		  $this->addOrder("(".$prop.".value+0.0)");
+		  break;
+		  case 4:
+			$this->addOrder("(".$prop.".value+0.0) desc");
+			break;
+		}
 	}
 	
 	function addJoin($condition) {
