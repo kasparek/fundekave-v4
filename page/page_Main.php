@@ -18,16 +18,8 @@ class page_Main implements iPage {
 		$data = $cache->getData(($user->userVO->userId*1).'-mainforum','pagelist');
 		if($data === false) {
 			$fPages = new FPages('forum', $userId);
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
-			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
-			if($user->idkontrol!==true) {
-				$fPages->addWhere('p.locked < 2');
-			} else {
-				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-			}
-			$fPages->setOrder("(pplastitem.value+0.0) desc");
+			$fPages->joinOnPropertie('pplastitem',4);
 			$arr = $fPages->getContent(0,4);
-			
 			$data = FPages::printPagelinkList($arr);
 			$cache->setData($data);
 		}
@@ -38,14 +30,7 @@ class page_Main implements iPage {
 		$dataArr = $cache->getData(($user->userVO->userId*1).'-mainblog','pagelist');
 		if($dataArr===false) {
 			$fPages = new FPages('blog', $userId);
-			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
-			$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
-			if($user->idkontrol!==true) {
-				$fPages->addWhere('p.locked < 2');
-			} else {
-				$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-			}
-			$fPages->setOrder("(pplastitem.value+0.0) desc");
+			$fPages->joinOnPropertie('pplastitem',4);
 			$arr = $fPages->getContent(0,4);
 			$dataArr = array();
 			if(!empty($arr)) {

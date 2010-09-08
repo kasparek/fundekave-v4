@@ -285,8 +285,9 @@ class FPages extends FDBTool {
 				}
 
 				//---show last item
-				if(!empty($page->itemId)) {
-					$item = new ItemVO($page->itemId,true,array('showPageLabel'=>true,'openPopup'=>false));
+				$itemId = $this->getProperty('pplastitem',false,false);
+				if($itemId) {
+					$item = new ItemVO($page->itemId,true);
 					$tpl->setVariable("ITEM", $item->render());
 				}
 				if(isset($options['inline'])) {
