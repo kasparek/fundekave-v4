@@ -43,7 +43,20 @@ class FPages extends FDBTool {
 		$this->VO = 'PageVO';
 		$this->fetchmode = 1;
 		$pageVO = new PageVO();
+		
 		$this->columns = $pageVO->getColumns();
+		
+		//---set select
+		foreach($this->columns as $k=>$v) {
+			if(strpos($v,' as ')===false) $v .= ' as '.$k;
+			$columnsAsed[]=$v;
+		}
+		$this->setSelect( $columnsAsed );
+		
+		if(!empty($userId)) {
+			$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+			$fPages->addSelect('count(1) as favorite,f.cnt as favoriteCnt');
+		}
 		
 		$this->getListPages();
 	}
@@ -82,7 +95,7 @@ class FPages extends FDBTool {
 			} else if($this->userId == 0) {
 				$queryBase = "select {SELECT} from ".$this->table." as p
 				{JOIN} 
-				where p.public=1";
+				where p.public=1 and p.locked<2";
 			} else {
 				$queryBase = "select {SELECT} from ".$this->table." as p
 				left join ".$this->pagesPermissionTableName." as up on p.".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 

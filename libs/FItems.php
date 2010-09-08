@@ -113,6 +113,7 @@ class FItems extends FDBTool {
 			$this->data = $arr;
 						
 			foreach($this->data as $itemVO) {
+				$itemVO->prepare();
 				$itemIdList[] = $itemVO->itemId;
 			}
 			

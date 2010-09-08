@@ -80,17 +80,6 @@ class ItemVO extends Fvob {
 		return null;
 	}
 
-	public function date($value,$format) {
-		if(!$value) return null;
-		if($format==='iso') {
-			$format = DATE_ATOM;
-		} else {
-			$format = FConf::get('internationalization',$format);
-		}
-		if(!$format) return null;
-		return date($format, strtotime($value));
-	}
-
 	var $itemId = null;
 	var $itemIdTop;
 	var $itemIdBottom;
@@ -307,6 +296,9 @@ class ItemVO extends Fvob {
 		switch ($this->typeId) {
 			case 'galery':
 				FGalery::prepare( $this );
+//				echo 'ItemVO::prepare';
+//				var_dump($this);
+//				die();
 				break;
 			case 'forum':
 				$this->unread = FForum::isUnreadedMess($this->itemId);
