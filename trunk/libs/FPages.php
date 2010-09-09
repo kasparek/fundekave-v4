@@ -11,7 +11,7 @@
 		date_format(i.dateCreated ,'{#date_local#}') "
 		
 		addjoin on propertie
-		pplastitem.value as itemId
+		itemIdLast.value as itemId
 		
 		date_format(dateContent,'{#date_local#}') as datumcz,
 		date_format(dateContent,'{#date_iso#}') as diso
@@ -48,17 +48,25 @@ class FPages extends FDBTool {
 		
 		//---set select
 		foreach($this->columns as $k=>$v) {
-			if(strpos($v,' as ')===false) $v .= ' as '.$k;
+			if(strpos($v,' as ')===false) $v = $pageVO->getTable().'.'.$v.' as '.$k;
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
 		
 		if(!empty($userId)) {
-			$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-			$this->addSelect('count(1) as favorite,f.cnt as favoriteCnt');
+			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$userId."'");
+			$this->addSelect("count(1) as favorite,f.cnt as favoriteCnt");
 		}
 		
 		$this->getListPages();
+	}
+	
+	function queryReset() {
+		parent::queryReset();
+		if(!empty($this->userId)) {
+			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$userId."'");
+			$this->addSelect("count(1) as favorite,f.cnt as favoriteCnt");
+		}
 	}
 
 	static function setBooked($pageId,$userId,$book) {
@@ -89,33 +97,33 @@ class FPages extends FDBTool {
 	function getListPages() {
 		if($this->permission == 1) {
 			if($this->sa === true) {
-				$queryBase = "select {SELECT} from ".$this->table." as p
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
 				{JOIN} 
 				where 1";
 			} else if($this->userId == 0) {
-				$queryBase = "select {SELECT} from ".$this->table." as p
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
 				{JOIN} 
-				where p.public=1 and p.locked<2";
+				where ".$this->table.".public=1 and ".$this->table.".locked<2";
 			} else {
-				$queryBase = "select {SELECT} from ".$this->table." as p
-				left join ".$this->pagesPermissionTableName." as up on p.".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
+				left join ".$this->pagesPermissionTableName." as up on ".$this->table.".".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
 				{JOIN} 
-				where (((p.public in (0,3) and up.rules >= 1) 
-				or p.userIdOwner='".$this->userId."' 
-				or p.public in (1,2)) and (up.userId is null or up.rules!=0))";
+				where (((".$this->table.".public in (0,3) and up.rules >= 1) 
+				or ".$this->table.".userIdOwner='".$this->userId."' 
+				or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
 			}
 		} else {
-			$queryBase = "select {SELECT} from ".$this->table." as p
-				left join ".$this->pagesPermissionTableName." as up on p.".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
+			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
+				left join ".$this->pagesPermissionTableName." as up on ".$this->table.".".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
 				{JOIN} 
-				where ( p.userIdOwner='".$this->userId."' 
+				where ( ".$this->table.".userIdOwner='".$this->userId."' 
 				or (up.userId is not null and up.rules=".$this->permission.") )";
 		}
 		if(!empty($this->type)) {
 			if(!is_array($this->type)) {
-				$queryBase.=" and p.typeId='".$this->type."'";
+				$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
 			} else {
-				$queryBase.=" and p.typeId in ('".implode("','",$this->type)."')";
+				$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
 			}
 		}
 		$queryBase .= '  and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
@@ -192,11 +200,6 @@ class FPages extends FDBTool {
 	function category($categoryId) {
 		$userId = FUser::logon();
 		if(empty($this->type)) $this->type = FDBTool::getOne('select typeId from sys_pages_category where categoryId="'.$categoryId.'"');
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId)?(',(p.cnt-f.cnt) as newMess'):(',0')));
-		$this->addWhere('p.locked < 2');
-		if ($userId) {
-			$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-		}
 		$this->addWhere('p.categoryId='.$categoryId);
 		$this->setOrder('p.name');
 	}
@@ -285,10 +288,10 @@ class FPages extends FDBTool {
 				}
 
 				//---show last item
-				$itemId = $page->getProperty('pplastitem',false,false);
+				$itemId = $page->getProperty('itemIdLast',false,false);
 				if($itemId) {
-					$item = new ItemVO($page->itemId,true);
-					$tpl->setVariable("ITEM", $item->render());
+					$itemVO = new ItemVO($itemId,true);
+					$tpl->setVariable("ITEM", $itemVO->render());
 				}
 				if(isset($options['inline'])) {
 				$tpl->parse('itemlink');
@@ -311,6 +314,7 @@ class FPages extends FDBTool {
 	 * @param Boolean $xajax - if true return html without top div
 	 * @return hmtl String
 	 */
+	//TODO: refactor - not setselect
 	function printBookedList($xajax=false) {
 		$this->fetchmode = 1;
 		
@@ -328,17 +332,16 @@ class FPages extends FDBTool {
 
 		$userId=$user->userVO->userId;
 
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
-		$this->addJoin('left join sys_pages_favorites as f on f.userId=p.userIdOwner');
-		$this->setWhere('p.userIdOwner="'.$userId.'" and p.pageId=f.pageId and p.locked<3');
+		$this->setWhere('sys_pages.userIdOwner="'.$userId.'" and sys_pages.pageId=f.pageId and sys_pages.locked<3');
 		if($bookOrder==1) {
-			$this->setOrder('p.name');
+			$this->setOrder('name');
 		} else {
-			$this->setOrder('newMess desc,p.name');
+			$this->setOrder('(cnt-favoriteCnt) desc,name');
 		}
+		$this->setGroup('sys_pages.pageId');
 
-		$this->setGroup('p.pageId');
 		$arraudit = $this->getContent();
+		
 
 		if(count($arraudit)>0){
 
@@ -346,7 +349,7 @@ class FPages extends FDBTool {
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
-				$newSum += $forum['newMess'];
+				$newSum += $forum->unreaded;
 			}
 			if($newSum>0) {
 				$tpl->setVariable('OWNERNEW',$newSum);
@@ -355,16 +358,14 @@ class FPages extends FDBTool {
     
 		//vypis oblibenych
 		$this->queryReset();
-		$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
-		$this->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId="'.$userId.'"');
-		$this->setWhere('f.book="1" and p.userIdOwner!="'.$userId.'" and p.locked<2');
+		$this->setWhere('f.book="1" and sys_pages.userIdOwner!="'.$userId.'" and sys_pages.locked<2');
 		if($bookOrder==1) {
-			$this->setOrder('p.name');
+			$this->setOrder('sys_pages.name');
 		} else {
-			$this->setOrder('newMess desc,p.name');
+			$this->setOrder('(cnt-favoriteCnt) desc,sys_pages.name');
 		}
 
-		$this->setGroup('p.pageId');
+		$this->setGroup('sys_pages.pageId');
 		$arraudit = $this->getContent();
 
 		if(count($arraudit)>0){
@@ -373,7 +374,7 @@ class FPages extends FDBTool {
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
-				$newSum += $forum['newMess'];
+				$newSum += $forum->unreaded;
 			}
 			if($newSum>0) {
 				$tpl->setVariable('BOOKEDNEW',$newSum);
@@ -383,11 +384,10 @@ class FPages extends FDBTool {
 		//vypis novych
 		
 			$this->queryReset();
-			$this->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,(p.cnt-f.cnt) as newMess,p.typeId');
-			$this->addJoin('left join sys_pages_favorites as f on f.userId="'.$userId.'"');
-			$this->setWhere('f.pageId=p.pageId and f.book="0" and f.userId!=p.userIdOwner and p.userIdOwner!="'.$userId.'" and p.locked < 2');
-			$this->setOrder('p.dateCreated desc');
-			$this->setGroup('p.pageId');
+			
+			$this->setWhere('f.pageId=sys_pages.pageId and f.book="0" and f.userId!=sys_pages.userIdOwner and sys_pages.userIdOwner!="'.$userId.'" and sys_pages.locked < 2');
+			$this->setOrder('sys_pages.dateCreated desc');
+			$this->setGroup('sys_pages.pageId');
 			$this->setLimit(0,6);
 			$arraudit = $this->getContent();
 

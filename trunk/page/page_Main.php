@@ -15,10 +15,11 @@ class page_Main implements iPage {
 		
 		$cache = FCache::getInstance('f',0);
 		//--------------LAST-FORUM-POSTS
-		$data = $cache->getData(($user->userVO->userId*1).'-mainforum','pagelist');
+		//$data = $cache->getData(($user->userVO->userId*1).'-mainforum','pagelist');
+		$data=false;
 		if($data === false) {
 			$fPages = new FPages('forum', $userId);
-			$fPages->joinOnPropertie('pplastitem',4);
+			$fPages->joinOnPropertie('itemIdLast',4);
 			$arr = $fPages->getContent(0,4);
 			$data = FPages::printPagelinkList($arr);
 			$cache->setData($data);
@@ -30,7 +31,7 @@ class page_Main implements iPage {
 		$dataArr = $cache->getData(($user->userVO->userId*1).'-mainblog','pagelist');
 		if($dataArr===false) {
 			$fPages = new FPages('blog', $userId);
-			$fPages->joinOnPropertie('pplastitem',4);
+			$fPages->joinOnPropertie('itemIdLast',4);
 			$arr = $fPages->getContent(0,4);
 			$dataArr = array();
 			if(!empty($arr)) {

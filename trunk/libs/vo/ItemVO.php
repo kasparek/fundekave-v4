@@ -160,7 +160,7 @@ class ItemVO extends Fvob {
 	function load() {
 		//---try load from cache cache
 		$itemVO = $this->memGet();
-		if(($itemVO === false) {
+		if($itemVO === false) {
 			$vo = new FDBvo( $this );
 			$vo->load();
 			if($this->itemId > 0) {
