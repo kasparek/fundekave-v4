@@ -130,7 +130,7 @@ class Fvob {
 	}
 	function memGet() {
 		$cache = FCache::getInstance('l');
-		$cache->getData($this->itemId, 'cached'.$this->getTable());
+		return $cache->getData($this->itemId, 'cached'.$this->getTable());
 	}
 	function memFlush() {
 		$cache = FCache::getInstance('l');

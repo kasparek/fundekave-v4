@@ -38,7 +38,7 @@ class PageVO extends Fvob {
 	'pageParams' => 'pageParams'
 	);
 	
-	var $propertiesList = array('position','pplastitem','forumSet');
+	var $propertiesList = array('position','itemIdLast','forumSet');
 	public $propDefaults = array('forumSet'=>1);
 	
 	var $defaults = array(
