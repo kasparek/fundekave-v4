@@ -69,7 +69,6 @@ if(!in_array($sideParam, $sideOptionList)) {
 $processParams = array('quality'=>$c->quality);
 if($cutParam=='crop') $processParams['crop'] = 1;
 if($cutParam=='prop') $processParams['proportional'] = 1;
-if($c->sharpen===true) $processParams['unsharpMask'] = 1;
 
 /**
  * validate source filename
@@ -119,7 +118,7 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
 				
 		}
 
-		if($imageProps['source']) {
+		if(isset($imageProps['source'])) {
 			$sourceImage = $imageProps['source'];
 		}
 	}
@@ -134,7 +133,7 @@ if($cutParam === 'flush') {
 	}
 	foreach($sideOptionList as $side) {
 		foreach($cutOptionsList as $cut) {
-			if($fileParam{strlen($fileParam)}=='/') $fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end
+			if($fileParam{(strlen($fileParam)-1)}=='/') $fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end
 			if($remote===true) {
 				//TODO:flush remote
 			} else {
@@ -155,6 +154,12 @@ if($cutParam === 'flush') {
 
 if(isset($imageProps)) {
 	$ratio = $sideParam/$imageProps[0];
+	
+	if($ratio < 0.6) {
+	    if($c->optimize===true) {
+				$processParams['optimize'] = 1;
+			}
+	}
 
 	if($cutParam=='prop') {
 		/**
