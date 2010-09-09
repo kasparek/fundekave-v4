@@ -38,29 +38,19 @@ class page_PagesList implements iPage {
 
 			//---QUERY RESULTS
 			$fPages = new FPages($typeId, $userId);
-			
-			$fItems->cacheResults = 'f';
-			$fItems->cacheGroup = 'fdb-pagelist';
-			$fItems->lifeTime = '86400';
-					
+								
 			if($category > 0) {
 				$categoryArr = FCategory::getCategory($category);
 				$user->pageVO->htmlName =  $categoryArr[2] . ' - ' . $user->pageVO->name;
-				$fPages->addWhere("p.categoryId=".$category);
+				$fPages->addWhere("sys_pages.categoryId=".$category);
 			}
 			if(SITE_STRICT == 1) {
-				$fPages->addWhere("p.pageIdTop = '".HOME_PAGE."'");
+				$fPages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");
 			}
 			if($typeId == 'galery') {
 				$fPages->setOrder("dateContent desc");
 			} else {
-				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',pplastitem.value as itemId,p.typeId');
-				$fPages->addJoin('left join sys_pages_properties as pplastitem on pplastitem.pageId=p.pageId and pplastitem.name = "itemIdLast"');
-				if($user->idkontrol!==true) {
-					$fPages->addWhere('p.locked < 2');
-				} else {
-					$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
-				}
+				$fPages->joinOnPropertie('itemIdLast');
 				$fPages->setOrder("p.dateUpdated desc");
 			}
 
@@ -105,12 +95,6 @@ class page_PagesList implements iPage {
 					$itemRenderer->showCommentsNum = false;
 					
 					$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
-					//TODO: file caching?
-					/*
-					$fItems->cacheResults = 'f';
-					$fItems->cacheGroup = 'fdb-galery';
-					$fItems->lifeTime = '86400';
-					*/ 
 					$fItems->thumbInSysRes = true;
 					$fItems->setOrder('hit desc');
 
