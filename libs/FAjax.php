@@ -4,7 +4,7 @@ class FAjax {
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
-			self::$instance = &new FAjax();
+			self::$instance = new FAjax();
 		}
 		return self::$instance;
 	}
