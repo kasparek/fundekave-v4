@@ -8,9 +8,7 @@ class rh_galerie_rnd {
 		$itemRenderer->openPopup = false;
 		$itemRenderer->showTag = true;
 		$itemRenderer->showText = true;
-		$itemRenderer->showTooltip = false;
-
-		
+				
 			$fi = new FItems('galery',0);
 			$fi->setSelect('itemId');
 			$fi->setOrder('rand()');

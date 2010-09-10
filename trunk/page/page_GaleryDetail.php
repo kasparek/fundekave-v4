@@ -50,7 +50,6 @@ class page_GaleryDetail implements iPage {
 			} else {
 			  if($ret===false) {
 					$itemRenderer = new FItemsRenderer();
-					$itemRenderer->showTooltip = false;
 					$itemRenderer->openPopup = false; //no more popups ($user->userVO->zgalerytype == 0)?(false):(true);
 				
 					$fItems = new FItems('galery',false,$itemRenderer);

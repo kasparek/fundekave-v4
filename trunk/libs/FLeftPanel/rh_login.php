@@ -5,7 +5,7 @@ class rh_login {
 		if($user->idkontrol === true) {
 		
 			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_USER_LOGGED);
-			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1,array('noTooltip'=>1)));
+			$tpl->setVariable('AVATAR',FAvatar::showAvatar(-1));
 			$tpl->setVariable('NAME',$user->userVO->name);
 
 			$q = "select userId from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute) < dateUpdated";

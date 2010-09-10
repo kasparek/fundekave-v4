@@ -17,7 +17,6 @@ class FItemsRenderer {
 	public $showComments = false;
 	public $showCommentsNum = true;
 	public $showText = true;
-	public $showTooltip = false;
 	public $openPopup = true;
 	public $showRating = true;
 	public $showHentryClass = true;
@@ -237,11 +236,6 @@ class FItemsRenderer {
 					$vars['POPUPCLIGHTBOXGROUP'] = '-'.$pageId;
 				} else {
 					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToGalery;
-				}
-				if($this->showTooltip === true) {
-					$vars['ITEMIDTOOLTIP'] = $itemId;
-					$vars['PAGEIDTOOLTIP'] = $pageId;
-					$vars['LINKPOPUP'] = $itemVO->detailUrl;
 				}
 				unset($pageVO);
 				break;
