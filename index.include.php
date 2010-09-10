@@ -1,6 +1,54 @@
 <?php
-if(isset($_GET['header_handler']) || strpos($_SERVER['REQUEST_URI'],"/ca.php")!==false) {
-	include('ca.php');
+if(isset($_GET['header_handler'])) {
+	$c = $_GET['c'];
+	if(strpos($c,'.jpg')!==false) {
+		$contentType = 'image/jpeg';
+	} else if(strpos($c,'.gif')!==false) {
+		$contentType = 'image/gif';
+	} else if(strpos($c,'.png')!==false) {
+		$contentType = 'image/x-png';
+	} else if(strpos($c,'.ico')!==false) {
+		$contentType = 'image/x-icon';
+	} else if(strpos($c,'.css')!==false) {
+		$contentType = 'text/css';
+	} else {
+		header('Content-type: text/javascript');
+	}
+	switch($_GET['header_handler']) {
+	case 'css':
+	   //compile global css with skin css
+	   $data = '';
+	   $filename = 'css/global.css';
+	   $dataLastChange = filemtime($filename);
+	   $fp = fopen($filename, 'rb');
+	   $filesize = filesize($filename);
+	   $data .= fread($fp,$filesize);
+	   fclose($fp);
+		 $filename = 'css/skin/'.str_replace('.css','',$c).'/screen.css';
+		 if(filemtime($filename) < $dataLastChange) $dataLastChange = filemtime($filename);
+		 $filesize += filesize($filename); 
+	   $fp = fopen($filename, 'rb');
+	   $data .= fread($fp,filesize($filename));
+	   fclose($fp);
+	   $fp=null;
+	break;
+	default:
+		$fp = fopen($c, 'rb');
+		$dataLastChange = filemtime($c);
+		$filesize = filesize($c);
+	}
+	if(isset($contentType)) header('Content-Type: '.$contentType);
+	header("Content-Length: " . $filesize);
+	header("Cache-control: max-age=290304000, public");
+	header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
+	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
+	ob_start("ob_gzhandler");
+	if(!empty($fp)) {
+		fpassthru($fp);
+		fclose($fp);
+	} else if(!empty($data)) {
+		echo $data;
+	}
 	exit;
 }
 if(isset($_GET['cross'])) {
