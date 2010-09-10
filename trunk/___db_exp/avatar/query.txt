@@ -1,1 +1,0 @@
-SELECT foto FROM `sys_id` WHERE foto is not null and CHARACTER_LENGTH(foto)>3
