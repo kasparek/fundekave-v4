@@ -1,6 +1,3 @@
-prisli mi novy gumy na kolo, jak jsem pichnul tak jsem zjistil ze ta predni je uz uplne na hadry popraskna .. continental ultra gatorskin http://www.conti-online.com/generator/www/de/en/continental/bicycle/themes/race/recetyres/ultra_gatorskin/ultragatorskin_en.html
-
-
 TODO:
 -1. CSS - on css/fdk.css combine global.css and screen.css and set header based on change date
 0. events images / thumb location
