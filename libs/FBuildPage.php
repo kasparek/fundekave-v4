@@ -48,13 +48,12 @@ class FBuildPage {
 			//typ
 			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
 				$pages = new FPages('top',$user->userVO->userId,1);
-				$pages->setSelect('p.pageId');
-				$pages->addWhere("p.typeIdChild='".$user->pageVO->typeId."' and public=1");
+				$pages->addWhere("sys_pages.typeIdChild='".$user->pageVO->typeId."' and sys_pages.public=1");
 				$arr = $pages->getContent();
 				if(!empty($arr)) {
 					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
 				}
-					
+				
 				if($user->pageVO->categoryId > 0) {
 					$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
 					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));

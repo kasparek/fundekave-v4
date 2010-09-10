@@ -51,11 +51,12 @@ class FPages extends FDBTool {
 			if(strpos($v,' as ')===false) $v = $pageVO->getTable().'.'.$v.' as '.$k;
 			$columnsAsed[]=$v;
 		}
+		
 		$this->setSelect( $columnsAsed );
 		
 		if(!empty($userId)) {
 			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$userId."'");
-			$this->addSelect("count(1) as favorite,f.cnt as favoriteCnt");
+			$this->addSelect("count(f.1) as favorite,f.cnt as favoriteCnt");
 		}
 		
 		$this->getListPages();
@@ -138,7 +139,7 @@ class FPages extends FDBTool {
 		if($pageVO->typeId=='galery') {
 			//---delete photo
 			$galery = new FGalery();
-			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and itemIdTop is null");
+			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and !itemIdTop");
 			foreach ($arrd as $df) $galery->removeFoto($df);
 			
 		}
@@ -182,7 +183,7 @@ class FPages extends FDBTool {
 	static function cntSet($pageId, $value = 1, $refresh=false) {
 		$incStr = '';
 		if($refresh===true) {
-			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and itemIdTop is null)';
+			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and !itemIdTop)';
 		} else if($value > 0) {
 			$incStr = 'cnt + '.$value;
 		} else if($value < 0) {

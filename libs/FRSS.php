@@ -78,7 +78,7 @@ class FRSS {
 			$fi->setSelect('itemId,pageId,typeId,if(dateStart is not null, DATE_FORMAT(dateStart,"%a, %d %b %Y %T"), DATE_FORMAT(dateCreated,"%a, %d %b %Y %T")) as date,if(dateStart is not null, dateStart, dateCreated) as dateorder,addon,text,enclosure,name');
 			if($user->pageVO->typeId!='top') {
 				$fi->addWhere("pageId='".$user->pageVO->pageId."'");
-				$fi->addWhere("itemIdTop is null");
+				$fi->addWhere("!itemIdTop");
 			}
 			$fi->addWhere("public=1");
 			$fi->setOrder('dateorder desc');

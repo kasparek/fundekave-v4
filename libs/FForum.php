@@ -213,7 +213,7 @@ class FForum extends FDBTool {
 	 * forum Print
 	 public write - 0:no write,1:public,2:only registered
 	 */
-	function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
+	static function show($itemId = 0,$publicWrite=1,$itemIdInside=0,$paramsArr=array()) {
 		$filter = false;
 		$itemId = (int) $itemId;
 		$user = FUser::getInstance();
@@ -306,12 +306,13 @@ class FForum extends FDBTool {
 		//---END FORM
 		
 		
-		if($itemId>0) {
+		if($itemId > 0) {
 			if($user->itemVO) {
-				if($itemId == $user->itemVO->itemdId) {
+				if($itemId == $user->itemVO->itemId) {
 					$itemVO = $user->itemVO;
 				}
-			} else {
+			} 
+			if(!$itemVO) {
 				$itemVO = new ItemVO($itemId,true);
 			}
 			$total = $itemVO->cnt;

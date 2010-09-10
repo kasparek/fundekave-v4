@@ -425,7 +425,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('gorddate');
 			}
 			$fItems = new FItems('galery',false);
-			$fItems->setWhere("pageId='".$pageVO->pageId."' and itemIdTop is null");
+			$fItems->setWhere("pageId='".$pageVO->pageId."' and !itemIdTop");
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 
 			/* UPLOAD INPUTS */

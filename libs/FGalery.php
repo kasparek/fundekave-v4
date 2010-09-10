@@ -119,7 +119,7 @@ class FGalery {
 		
 		$fItems = new FItems('galery',false);
 		$fItems->setWhere('pageId="'.$pageId.'"');
-		$fItems->addWhere('itemIdTop is null');
+		$fItems->addWhere('!itemIdTop');
 		$totalItems = $fItems->getCount();
 		$itemList = $fItems->getList();
 		

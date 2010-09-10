@@ -67,7 +67,7 @@ class FDBvo extends FDBTool {
 		}
 	}
 
-	function delete($id ) {
+	function delete( $id ) {
 		$primCol = explode(',',$this->primaryCol);
 		foreach($primCol as $col) {
 			$delArr[$col] = $this->vo->{$col}; 
