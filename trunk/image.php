@@ -111,11 +111,11 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
 		$imageProps = FImgProcess::getimagesize($sourceImage);
 
 		if( $imageProps===false ) {
-				
+
 			//TODO: error loging
 			echo 'file not found';
 			exit;
-				
+
 		}
 
 		if(isset($imageProps['source'])) {
@@ -154,11 +154,11 @@ if($cutParam === 'flush') {
 
 if(isset($imageProps)) {
 	$ratio = $sideParam/$imageProps[0];
-	
+
 	if($ratio < 0.6) {
-	    if($c->optimize===true) {
-				$processParams['optimize'] = 1;
-			}
+		if($c->optimize===true) {
+			$processParams['optimize'] = 1;
+		}
 	}
 
 	if($cutParam=='prop') {
@@ -197,7 +197,7 @@ if(!isset($targetImage)) {
 	} else {
 		$targetImage = $c->targetBasePath.$sideParam.'/'.$cutParam.'/remote/'.md5($fileParam);
 	}
-	 
+
 	if(!file_exists($targetImage)) {
 		//require files only when needed
 		require_once($c->libraryBasePath.'libs/FFile.php');

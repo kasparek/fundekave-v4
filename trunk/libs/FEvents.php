@@ -87,6 +87,8 @@ class FEvents {
 	}
 
 	static function show($archiv=false) {
+		$user = FUser::getInstance();
+		
 		$adruh = 0;
 		$filtr = '';
 

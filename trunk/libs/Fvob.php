@@ -7,7 +7,7 @@ class Fvob {
 	var $columns;
 	var $propertiesList;
 	public $propDefaults;
-	
+
 	//extra array of key/value array properties
 	var $properties;
 
@@ -81,7 +81,7 @@ class Fvob {
 		$vo = new FDBvo( $this );
 		$vo->delete();
 	}
-	
+
 	function prop($propertyName,$value=null,$load=true) {
 		if($value!==null) $this->setProperty($propertyName,$value);
 		$default='';
@@ -91,10 +91,11 @@ class Fvob {
 
 	//---special properties
 	function getProperty($propertyName,$default=false,$load=false) {
+		$value = null;
 		if(isset($this->properties[$propertyName])) {
 			$value = $this->properties[$propertyName];
 		} else {
-				if($load===true) {
+			if($load===true) {
 				$q = "select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->itemId."' and name='".$propertyName."'";
 				$value = FDBTool::getOne($q);
 				//---set in list
@@ -113,7 +114,7 @@ class Fvob {
 			//save in db
 			if(empty($propertyValue)) {
 				FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->itemId."' and name='".$propertyName."'");
-				$propertyValue = false;	
+				$propertyValue = false;
 			} else {
 				FDBTool::query("insert into ".$this->getTable()."_properties (".$this->getPrimaryCol().",name,value) values ('".$this->itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
 			}
@@ -123,7 +124,7 @@ class Fvob {
 			$this->memStore();
 		}
 	}
-	
+
 	function memStore() {
 		$cache = FCache::getInstance('l');
 		$cache->setData( $this, $this->itemId, 'cached'.$this->getTable());

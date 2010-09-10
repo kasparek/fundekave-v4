@@ -360,7 +360,8 @@ class FSystem {
 							break;
 						case 5:
 							if(strpos($matches[1][$x],$matches[2][$x])!==false) {
-								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="pic.php?re='.base64_encode(str_replace("\n","",$matches[1][$x])).'" /></a>', $text);
+								$urlEncoded = base64_encode(str_replace("\n","",$matches[1][$x]));
+								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox"><img src="/image/300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>', $text);
 							} else {
 								$text = str_replace($replace, '<a href="'.$matches[1][$x].'" rel="lightbox">'.trim($matches[2][$x]).'</a>', $text);
 							}

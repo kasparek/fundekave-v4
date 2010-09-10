@@ -44,10 +44,10 @@ class FBlog {
 				$returnItemId = $itemVO->save();
 
 				///properties
-				ItemVO::setProperty($returnItemId,'position', FSystem::textins($data['position'],array('plainText'=>1)));
-				ItemVO::setProperty($returnItemId,'journeyTo', FSystem::textins($data['journeyto'],array('plainText'=>1)));
-				ItemVO::setProperty($returnItemId,'journeyFrom', FSystem::textins($data['journeyfrom'],array('plainText'=>1)));
-				ItemVO::setProperty($returnItemId,'forumSet',(int) $data['forumset']);
+				$itemVO->setProperty('position', FSystem::textins($data['position'],array('plainText'=>1)));
+				$itemVO->setProperty('journeyTo', FSystem::textins($data['journeyto'],array('plainText'=>1)));
+				$itemVO->setProperty('journeyFrom', FSystem::textins($data['journeyfrom'],array('plainText'=>1)));
+				$itemVO->setProperty('forumSet',(int) $data['forumset']);
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
 			
@@ -113,12 +113,12 @@ class FBlog {
 					$tpl->touchBlock('statpublic');
 				}
 				///properties
-				$tpl->touchBlock('fforum'.ItemVO::getProperty($itemVO->itemId,'forumSet',PageVO::getProperty($user->pageVO->pageId,'forumSet',2)));
+				$tpl->touchBlock('fforum'.$itemVO->getProperty('forumSet',$user->pageVO->getProperty('forumSet',2)));
 				$selectedCategory = $itemVO->categoryId;
 				
-				$tpl->setVariable('POSITION',ItemVO::getProperty($itemVO->itemId,'position',''));
-				$tpl->setVariable('JOURNEYTO',ItemVO::getProperty($itemVO->itemId,'journeyTo',''));
-				$tpl->setVariable('JOURNEYFROM',ItemVO::getProperty($itemVO->itemId,'journeyFrom',''));
+				$tpl->setVariable('POSITION',$itemVO->getProperty('position',''));
+				$tpl->setVariable('JOURNEYTO',$itemVO->getProperty('journeyTo',''));
+				$tpl->setVariable('JOURNEYFROM',$itemVO->getProperty('journeyFrom',''));
 			}
 		} else {
 
@@ -208,7 +208,7 @@ class FBlog {
 				$fItems = new FItems('blog',false,$itemRenderer);
 				$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 				$total = $user->pageVO->cnt;
-				$fItems->addWhere('itemIdTop is null');
+				$fItems->addWhere('!itemIdTop');
 				if($categoryId > 0) {
 					$fItems->addWhere("categoryId='". $categoryId ."'");
 					$total = $fItems->getCount();

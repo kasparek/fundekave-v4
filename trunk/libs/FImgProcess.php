@@ -1,9 +1,9 @@
 <?php
 /**
  *TODO: imagick suppport
- *  
  *
- **/   
+ *
+ **/
 class FImgProcess {
 	var $userImagick = true;
 	//---type - 1-GIF,2-JPG,3-PNG,4-SWF,5-PSD,6-BMP,7-TIFF,8-TIFF,9-JPC,10-JP2,11-JPX,12-JB2,13-SWC,14-IFF,15-WBMP,16-XBM
@@ -85,16 +85,16 @@ class FImgProcess {
 			if(isset($mode['optimize'])) {
 				if($this->imagick) {
 					$this->imagick->normalizeImage();
-					$this->imagick->unsharpMaskImage(0 , 0.5 , 1 , 0.05); 
+					$this->imagick->unsharpMaskImage(0 , 0.5 , 1 , 0.05);
 				}
 			}
-				
+
 			$this->resize($width,$height);
-				
+
 			if($this->image) {
 				if(isset($mode['rotate'])) $this->rotate();
 			}
-				
+
 			$this->data = $this->save();
 		}
 	}
@@ -106,7 +106,7 @@ class FImgProcess {
 
 	function open() {
 		$props = FImgProcess::getimagesize($this->sourceUrl);
-		
+
 		if($props===false) {
 			$this->errorArr[] = 'ImgProcessing: file not found::'.$this->sourceUrl;
 			return false;
@@ -143,9 +143,9 @@ class FImgProcess {
 			if($this->userImagick===true) {
 				try {
 					FError::write_log('FImgProcess::open trying IMAGICK');
-					 $this->imagick = new Imagick( $this->sourceUrl );
-					 $this->imagick->stripImage();
-					 return true;
+					$this->imagick = new Imagick( $this->sourceUrl );
+					$this->imagick->stripImage();
+					return true;
 				} catch (Exception $e) {
 					$this->userImagick = false;
 				}
@@ -168,9 +168,9 @@ class FImgProcess {
 	 * @param array $mode - additional params - proportional,crop,frame(frameWidth,frameHeight,bgColorHex or bgColorRGB - array(R=>0-255,G=>0-255,B=>0-255))
 	 */
 	function resize($width,$height,$mode=array()) {
-		
+
 		if(!$this->image && !$this->imagick) return;
-		
+
 		if(empty($this->errorArr)) {
 			if(empty($mode)) $mode = $this->mode;
 
@@ -229,13 +229,13 @@ class FImgProcess {
 			if($targetWidth == 0) $targetWidth = $p_width;
 			if($targetHeight == 0) $targetHeight = $p_height;
 
-      if(!$this->imagick) {
+			if(!$this->imagick) {
 				$targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 			}
 
 			//TODO: test and fix for imagick
 			/*
-			if(isset($mode['frame'])) {
+			 if(isset($mode['frame'])) {
 				//FIXME: kombinace crop a frame zlobi protoze tohle
 				$targetX = ($targetWidth / 2) - ($p_width / 2);
 				$targetY = ($targetHeight / 2) - ($p_height / 2);
@@ -243,15 +243,15 @@ class FImgProcess {
 				//TODO: Imagick::colorFloodfillImage
 				if(isset($mode['bgColorHex'])) $bgColorHex = $mode['bgColorHex'];
 				if(isset($mode['bgColorRGB'])) $bgColorHex = imageColorAllocate($targetImage, $mode['bgColorRGB']['R'], $mode['bgColorRGB']['G'], $mode['bgColorRGB']['B']);
-				if(isset($bgColorHex)) ImageFill($targetImage,1,1,$bgColorHex);   
+				if(isset($bgColorHex)) ImageFill($targetImage,1,1,$bgColorHex);
 				else {
-					//---works just for PNG target
-					$colorTransparent = imagecolorallocatealpha($targetImage, 0, 0, 0, 127);
-				 imagefill($targetImage, 0, 0, $colorTransparent);
+				//---works just for PNG target
+				$colorTransparent = imagecolorallocatealpha($targetImage, 0, 0, 0, 127);
+				imagefill($targetImage, 0, 0, $colorTransparent);
 				}
-			}
-			*/
-			
+				}
+				*/
+				
 			if($this->imagick) {
 				$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
 				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1  , true );  //true to best fit in
@@ -263,16 +263,16 @@ class FImgProcess {
 	}
 
 	function rotate($angle=0) {
-	  if(isset($this->mode['rotate'])) $angle = (int) $this->mode['rotate'];
-	  $circles = floor($angle/360);
+		if(isset($this->mode['rotate'])) $angle = (int) $this->mode['rotate'];
+		$circles = floor($angle/360);
 		$angle = $angle - $circles*360;
-		
+
 		if($angle==0) return false;
-	  
+		 
 		if($this->imagick) {
 			$this->imagick->rotateImage(new ImagickPixel(), $angle);
-		} 
-		
+		}
+
 		if(!$this->image) return false;
 
 		//--- -1 - rotating clockwise
@@ -280,7 +280,7 @@ class FImgProcess {
 		if(isset($mode['bgColorHex'])) $bgColorHex = $mode['bgColorHex'];
 		if(isset($mode['bgColorRGB'])) $bgColorHex = imageColorAllocate($this->image, $mode['bgColorRGB']['R'], $mode['bgColorRGB']['G'], $mode['bgColorRGB']['B']);
 		$this->image = ImageRotate($this->image, $angle * -1, $bgColorHex);
-		
+
 	}
 
 	function save() {
@@ -289,29 +289,29 @@ class FImgProcess {
 		if($this->imagick) {
 			switch($this->targetMimeType) {
 				case 1: //gif
-				$this->imagick->setImageFormat('gif');
-				break;
-				 case 3: //png
+					$this->imagick->setImageFormat('gif');
+					break;
+				case 3: //png
 				 $this->imagick->setImageFormat('png');
 				 break;
-				 default:
+				default:
 				case 2: //jpg
-				$this->imagick->setCompression(Imagick::COMPRESSION_JPEG); 
-				$this->imagick->setImageFormat('jpeg');
-      $this->imagick->setImageCompressionQuality($this->quality);
-				}
-			
-			
+					$this->imagick->setCompression(Imagick::COMPRESSION_JPEG);
+					$this->imagick->setImageFormat('jpeg');
+					$this->imagick->setImageCompressionQuality($this->quality);
+			}
+				
+				
 			if($this->targetUrl) {
 				$data = $this->imagick->writeImage($this->targetUrl);
 			} else {
 				//get only data
 				$data = $this->imagick->getImage();
-  
+
 			}
 			$this->imagick->clear();
 			$this->imagick->destroy();
-			
+				
 		} else {
 			if(empty($this->targetUrl)) ob_start(); // start a new output buffer
 			switch($this->targetMimeType) {
@@ -336,8 +336,8 @@ class FImgProcess {
 				ob_end_clean(); // stop this output buffer
 			}
 		}
-		
-		FError::write_log('FImgProcess:: TRANSFORMATION COMPLETE - '.$this->targetUrl);		
+
+		FError::write_log('FImgProcess:: TRANSFORMATION COMPLETE - '.$this->targetUrl);
 		return $data;
 	}
 
@@ -380,12 +380,12 @@ class FImgProcess {
 		try {
 			$imageSize = getimagesize($temp_file);
 			$imageSize['source'] = $temp_file;
-				
+
 		} catch (Exception $e) {
 			return false;
 		}
 
 		return $imageSize;
 	}
-	
+
 }

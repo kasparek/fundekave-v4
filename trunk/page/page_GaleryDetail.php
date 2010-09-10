@@ -55,7 +55,7 @@ class page_GaleryDetail implements iPage {
 				
 					$fItems = new FItems('galery',false,$itemRenderer);
 					$fItems->setWhere('pageId="'.$pageId.'"');
-					$fItems->addWhere('itemIdTop is null');
+					$fItems->addWhere('!itemIdTop');
 					$fItems->setOrder($user->pageVO->itemsOrder());
 					
 					$perPage = $user->pageVO->perPage();

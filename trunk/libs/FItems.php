@@ -139,7 +139,7 @@ class FItems extends FDBTool {
 					}
 				}
 				if($invalidate===true) {
-					$itemVO->cache();
+					$itemVO->memStore();
 				}
 			}
 		}
