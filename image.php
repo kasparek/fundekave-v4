@@ -31,7 +31,18 @@ date_default_timezone_set('Europe/Prague');
 
 //INPUT
 $fileParam = isset($_GET['img']) ? $_GET['img'] : '';
-$sideParam = isset($_GET['side']) ? (int) $_GET['side'] : 0;
+$widthParam = 0;
+$heightParam = 0;
+if(isset($_GET['side']) {
+	$getSide = $_GET['side'];
+	if(strpos($getSide,'x')!==false) {
+		$getSideList = explode('x',$getSide);
+		$widthParam = (int) $getSideList[0];
+		$heightParam = (int) $getSideList[1];
+	} else {
+	  $widthParam = $heightParam = (int) $getSide;
+	} 
+}
 $cutParam = isset($_GET['cut']) ? $_GET['cut'] : '';
 
 //CONFIGURATION
@@ -53,18 +64,22 @@ $cutOptionsList = explode(',',$c->cutOptions);
 if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
 if($cutParam=='flush') $sideOptionList[] = 0;
 
-if(!in_array($sideParam, $sideOptionList)) {
-	if(empty($sideParam)) {
-		$sideParam = $c->sideDefault;
-	} else {
-	 //get closest valid width
-	 foreach ($sideOptionList as $fib) {
-	 	$diff[$fib] = (int) abs($sideParam - $fib);
-	 }
-		$fibs = array_flip($diff);
-		$sideParam = $fibs[min($diff)];
+function validateSideParam( $sideParam, $sideOptionList, $default ) {
+	if(!in_array($sideParam, $sideOptionList)) {
+		if(empty($sideParam)) {
+			return $default;
+		} else {
+		 //get closest valid width
+		 foreach ($sideOptionList as $fib) {
+		 	$diff[$fib] = (int) abs($sideParam - $fib);
+		 }
+			$fibs = array_flip($diff);
+			return $fibs[min($diff)];
+		}
 	}
 }
+$widthParam = validateSideParam($widthParam, $sideOptionList, $c->sideDefault);
+$heightParam = validateSideParam($heightParam, $sideOptionList, $c->sideDefault);
 
 $processParams = array('quality'=>$c->quality);
 if($cutParam=='crop') $processParams['crop'] = 1;
@@ -87,7 +102,7 @@ if(strpos($fileParam,'remote')===0) {
 	$fileParam = base64_decode($remotePartList[2]);
 	$sourceImage = $fileParam;
 
-	$targetImage = $c->targetBasePath.$sideParam.'/'.$cutParam.'/remote/'.md5($fileParam);
+	$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
 	if(!file_exists($targetImage)) $targetImage = null;
 
 } else {
@@ -128,16 +143,17 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
  * $cutParam == 'flush' delete cached images
  */
 if($cutParam === 'flush') {
-	if($sideParam!=0) {
-		$sideOptionList = array($sideParam);
+	if($widthParam!=0) {
+		$sideOptionList = array($widthParam);
 	}
-	foreach($sideOptionList as $side) {
+	foreach($sideOptionList as $width) {
+	foreach($sideOptionList as $height) {
 		foreach($cutOptionsList as $cut) {
 			if($fileParam{(strlen($fileParam)-1)}=='/') $fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end
 			if($remote===true) {
 				//TODO:flush remote
 			} else {
-				$targetImage = $c->targetBasePath.$side.'/'.$cut.'/'.$fileParam;
+				$targetImage = $c->targetBasePath.$width.'x'.$height.'/'.$cut.'/'.$fileParam;
 			}
 			if(file_exists($targetImage)) {
 				if(is_dir($targetImage)) {
@@ -149,11 +165,12 @@ if($cutParam === 'flush') {
 			}
 		}
 	}
+	}
 	exit;
 }
 
 if(isset($imageProps)) {
-	$ratio = $sideParam/$imageProps[0];
+	$ratio = $widthParam/$imageProps[0];
 
 	if($ratio < 0.6) {
 		if($c->optimize===true) {
@@ -170,40 +187,54 @@ if(isset($imageProps)) {
 			$targetImage = $sourceImage;
 			$contentType = $imageProps['mime'];
 		}
+	} else if($cutParam=='crop') {
+		/**
+		 *output original image if size is exactly same
+		 */
+		if($widthParam==$imageProps[0] && $heightParam==$imageProps[1]) {
+			//display original
+			$targetImage = $sourceImage;
+			$contentType = $imageProps['mime'];
+		} 		 		
 	}
 
 	/**
 	 * checking if ration is too big from original
 	 * stop scaling images to much up
 	 */
-	if($ratio > $c->maxScaleUpRatio) {
-	 $maxWidth = $imageProps[0] * $c->maxScaleUpRatio;
+function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRatio) {
+	$ratio = $sideParam/$sideOriginal;
+	if($ratio > $maxScaleUpRatio) {
+	 $maxSize = $sideOriginal * $maxScaleUpRatio;
 	 //get closest valid width
 	 foreach ($sideOptionList as $fib) {
-	 	if($maxWidth - $fib > 0) {
-	 		$diff[$fib] = (int) $maxWidth - $fib;
+	 	if($maxSize - $fib > 0) {
+	 		$diff[$fib] = (int) $maxSize - $fib;
 	 	}
 	 }
 	 $fibs = array_flip($diff);
-	 $sideParam = $fibs[min($diff)];
+	 return $fibs[min($diff)];
 	}
+	return $sideParam;
 }
+$widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
+$heightParam = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
 /**
  * cache file if not exist
  */
 if(!isset($targetImage)) {
 	if($remote===false) {
-		$targetImage = $c->targetBasePath.$sideParam.'/'.$cutParam.'/'.$fileParam;
+		$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/'.$fileParam;
 	} else {
-		$targetImage = $c->targetBasePath.$sideParam.'/'.$cutParam.'/remote/'.md5($fileParam);
+		$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
 	}
 
 	if(!file_exists($targetImage)) {
 		//require files only when needed
 		require_once($c->libraryBasePath.'libs/FFile.php');
 
-		$processParams['width'] = $sideParam;
-		$processParams['height'] = $sideParam;
+		$processParams['width'] = $widthParam;
+		$processParams['height'] = $heightParam;
 
 		//check if directory exists
 		$dirArr = explode('/',$targetImage);

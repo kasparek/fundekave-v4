@@ -5,7 +5,11 @@ class FAvatar {
 	 * @param $userId
 	 * @return string - avatar pic url
 	 */
-	static function getAvatarUrl($userId=-1){
+	static function getAvatarUrl($userId=-1) {
+		//TODO:
+		//check fimgprocess that croping does not resize if it match
+		//return /image/AVATAR_WIDTH_PXxAVATAR_HEIGHT_PX/crop/username/profile/selectedimage
+		//return /image/AVATAR_WIDTH_PXxAVATAR_HEIGHT_PX/crop/AVATAR_DEFAULT = default/useravatar.jpg
 		$picname = AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();

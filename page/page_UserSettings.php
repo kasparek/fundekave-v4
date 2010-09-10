@@ -25,6 +25,7 @@ class page_UserSettings implements iPage {
 
 				$newAvatar = FAvatar::processAvatar($dir.'/'.$newSource);
 				//update
+				//TODO: just set new avatar to url to selected image in /profile
 				if(!empty($user->userVO->avatar)) @unlink(FAvatar::avatarBasePath().$user->userVO->avatar);
 				$user->userVO->avatar = $newAvatar;
 				$user->userVO->save();
