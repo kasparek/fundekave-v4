@@ -342,7 +342,7 @@ class FBuildPage {
 		 }
 		 }
 		 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLiteCompressed-1.0.js');
-		 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/supernote.js');
+		 
 		 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
 		 }
 		 if($wrap = $JSWrapper->get()) {
@@ -428,18 +428,12 @@ class FBuildPage {
 		//$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0); $pagesSum.'::'.
 		$tpl->setVariable("COUNTER", round((FProfiler::getmicrotime()-$start),3));
 		FProfiler::profile('FBuildPage--footer');
-		//---user tooltips - one per user avatar displayed
-		$ttips = '';
-		$cache = FCache::getInstance('l');
-		if(($arrUserAvatarTips = $cache->getGroup('UavatarTip')) !==false ) $ttips .= implode("\n", $arrUserAvatarTips);
-		$tpl->setVariable('USERTOOLTIPS',$ttips);
-		FProfiler::profile('FBuildPage--user tooltips');
+		
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
 		$useTabs = false;
 		$useSlimbox = false;
-		$useSupernote = false;
 		$useFajaxform = false;
 		$useSwfobject = false;
 		$useFuup = false;
@@ -449,7 +443,6 @@ class FBuildPage {
 			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
-			//			if(strpos($item, 'supernote-') !== false) { $useSupernote = true; }
 			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
 			if(strpos($item, 'fajaxa') !== false && strpos($item, 'hash') !== false) { $useBBQ = true; }
 		}
@@ -462,7 +455,6 @@ class FBuildPage {
 			$tpl->touchBlock("datepickerEND"); //---javascript on the end of the page
 		}
 		if($useSlimbox === true) {
-			$tpl->touchBlock("slimboxHEAD");
 			$tpl->setVariable('SLIMBOX_URL_JS',URL_JS);
 			$tpl->touchBlock("slimboxEND");
 		}
@@ -479,10 +471,6 @@ class FBuildPage {
 			$tpl->touchBlock("tabsEND");
 			$tpl->setVariable('JUI_URL_JS',URL_JS);
 			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
-		}
-		if($useSupernote === true) {
-			$tpl->setVariable('SUPERNOTE_URL_JS',URL_JS);
-			$tpl->touchBlock("supernoteEND");
 		}
 		if($useFajaxform === true) {
 			$tpl->setVariable('FORM_URL_JS',URL_JS);

@@ -83,7 +83,6 @@ class page_PagesList implements iPage {
 				if($typeId == 'galery') {
 				
 					$itemRenderer = new FItemsRenderer();
-					$itemRenderer->showTooltip = false;
 					$itemRenderer->showText = false;
 					$itemRenderer->showTag = false;
 					$itemRenderer->showPageLabel = false;
