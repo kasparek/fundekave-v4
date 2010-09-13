@@ -3,8 +3,9 @@
  *
  * HEADERS PROCESSING
  *
- */   
+ */
 if(isset($_GET['header_handler'])) {
+	date_default_timezone_set("Europe/Prague");
 	$c = $_GET['c'];
 	if(strpos($c,'.jpg')!==false) {
 		$contentType = 'image/jpeg';
@@ -19,23 +20,26 @@ if(isset($_GET['header_handler'])) {
 	} else {
 		header('Content-type: text/javascript');
 	}
-	
+
 	if($_GET['header_handler']=='css' && strpos($c,'/')===false) {
-	   //compile global css with skin css
-	   $data = '';
-	   $filename = 'css/global.css';
-	   $dataLastChange = filemtime($filename);
-	   $fp = fopen($filename, 'rb');
-	   $filesize = filesize($filename);
-	   $data .= fread($fp,$filesize);
-	   fclose($fp);
-		 $filename = 'css/skin/'.str_replace('.css','',$c).'/screen.css';
-		 if(filemtime($filename) < $dataLastChange) $dataLastChange = filemtime($filename);
-		 $filesize += filesize($filename); 
-	   $fp = fopen($filename, 'rb');
-	   $data .= fread($fp,filesize($filename));
-	   fclose($fp);
-	   $fp=null;
+		//compile global css with skin css
+		$data = '';
+		$filename = 'css/global.css';
+		$dataLastChange = filemtime($filename);
+		$fp = fopen($filename, 'rb');
+		$filesize = filesize($filename);
+		$data .= fread($fp,$filesize);
+		$data = str_replace('url(','url(css/',$data);
+		fclose($fp);
+		
+		$filename = 'css/skin/'.str_replace('.css','',$c).'/screen.css';
+		if(filemtime($filename) < $dataLastChange) $dataLastChange = filemtime($filename);
+		$filesize += filesize($filename);
+		$fp = fopen($filename, 'rb');
+		$data .= str_replace('url(','url(css/skin/'.str_replace('.css','',$c).'/',fread($fp,filesize($filename)));
+		fclose($fp);
+		
+		$fp=null;
 	} else {
 		$fp = fopen($c, 'rb');
 		$dataLastChange = filemtime($c);
@@ -58,7 +62,7 @@ if(isset($_GET['header_handler'])) {
 
 /**
  * CROSSDOMAIN.XML
- * */ 
+ * */
 if(isset($_GET['cross'])) {
 	header('Content-Type: text/xml');
 	echo file_get_contents(ROOT.'template/crossdomain.xml');
@@ -67,9 +71,9 @@ if(isset($_GET['cross'])) {
 
 /**
  *
- * MAIN PAGE PROCESSING 
+ * MAIN PAGE PROCESSING
  *
- **/  
+ **/
 require(INIT_FILENAME);
 
 $processMain = true;
@@ -78,97 +82,97 @@ $processMain = true;
  *
  * FILES UPLOAD PROCESSING
  *
- **/  
+ **/
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
-	 
-if( $user->idkontrol ) {
-	if(isset($_GET['f'])) $f = $_GET['f']; else $f='';
-	if($f=='cnf') {
-		FFile::printConfigFile( $_GET['c'] );
-		exit;
-	}
-	
-	//PARAMS
-	$isMultipart = false;
-	$seq = (int)  $_POST['seq'];
-	$total = (int)  $_POST['total'];
-	if(!empty($_FILES)) {
-		$file = $_FILES['Filedata'];
-		$isMultipart = true;
-	} else if(isset($_POST['filename'])) {
-		$file['name'] = $_POST['filename'];
-		$data['data'] = $_POST['data'];
-	}
-	$filename = $file['name']; 
-	
-  FFile::storeChunk($file,$seq);
-	
-	//---file complete
-	if(FFile::hasAllChunks($filename,$total) === true) {
-		//--concat all files
-		switch($f) {
-			case 'uava':
-				$user = FUser::getInstance();
-				$imageName = FAvatar::createName($filename);
-				$dir = FAvatar::profileBasePath();
-				$imagePath = $dir . '/' . $imageName;
-				FFile::makeDir($dir);
-				//delete old
-				if($user->userVO->avatar) {
-					if(file_exists(FAvatar::avatarBasePath().'/'.$user->userVO->avatar)) {
-						unlink(FAvatar::avatarBasePath().'/'.$user->userVO->avatar);
-					}
-				}
-				$folderSize = FFile::folderSize($dir) / 1024;
-				if($folderSize < FConf::get('settings','personal_foto_limit')) {
-					//OK to save file
-				} else {
-					FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
-					$imagePath = '';
-				}
-				break;
-			case 'pava':
-				$imageName = 'pageAvatar-'.$pageId.'.jpg';
-				$imagePath = ROOT_PAGE_AVATAR.$imageName;
-				//update db
-				$pageVO = new PageVO($pageId,true);
-				$pageVO->saveOnlyChanged = true;
-				$pageVO->set('pageIco',$imageName);
-				$pageVO->save();
-				break;
-			case 'futip':
-				$user = FUser::getInstance();
-				//---upload in tmp folder in user folder and save filename in db cache
-				$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
-				$imagePath = $dir . '/' .  $filename;
-				FFile::makeDir($dir);
-				$cache = FCache::getInstance('d');
-				$cache->setData($filename,'event','user-'.$user->userVO->userId);
-				break;
-			default:
-				$pageVO = new PageVO($pageId,true);
-				$galeryUrl = $pageVO->galeryDir;
-				$imageName = strtolower($filename);
-				$ext = FFile::fileExt($imageName);
-				$imageName =str_replace('.'.$ext,'',$imageName);
-				FFile::makeDir(FConf::get("galery","sourceServerBase").$galeryUrl);
-				$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+
+	if( $user->idkontrol ) {
+		if(isset($_GET['f'])) $f = $_GET['f']; else $f='';
+		if($f=='cnf') {
+			FFile::printConfigFile( $_GET['c'] );
+			exit;
 		}
 
-		FFile::mergeChunks($imagePath, $filename, $total, $isMultipart);
+		//PARAMS
+		$isMultipart = false;
+		$seq = (int)  $_POST['seq'];
+		$total = (int)  $_POST['total'];
+		if(!empty($_FILES)) {
+			$file = $_FILES['Filedata'];
+			$isMultipart = true;
+		} else if(isset($_POST['filename'])) {
+			$file['name'] = $_POST['filename'];
+			$data['data'] = $_POST['data'];
+		}
+		$filename = $file['name'];
 
+		FFile::storeChunk($file,$seq);
+
+		//---file complete
+		if(FFile::hasAllChunks($filename,$total) === true) {
+			//--concat all files
+			switch($f) {
+				case 'uava':
+					$user = FUser::getInstance();
+					$imageName = FAvatar::createName($filename);
+					$dir = FAvatar::profileBasePath();
+					$imagePath = $dir . '/' . $imageName;
+					FFile::makeDir($dir);
+					//delete old
+					if($user->userVO->avatar) {
+						if(file_exists(FAvatar::avatarBasePath().'/'.$user->userVO->avatar)) {
+							unlink(FAvatar::avatarBasePath().'/'.$user->userVO->avatar);
+						}
+					}
+					$folderSize = FFile::folderSize($dir) / 1024;
+					if($folderSize < FConf::get('settings','personal_foto_limit')) {
+						//OK to save file
+					} else {
+						FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
+						$imagePath = '';
+					}
+					break;
+				case 'pava':
+					$imageName = 'pageAvatar-'.$pageId.'.jpg';
+					$imagePath = ROOT_PAGE_AVATAR.$imageName;
+					//update db
+					$pageVO = new PageVO($pageId,true);
+					$pageVO->saveOnlyChanged = true;
+					$pageVO->set('pageIco',$imageName);
+					$pageVO->save();
+					break;
+				case 'futip':
+					$user = FUser::getInstance();
+					//---upload in tmp folder in user folder and save filename in db cache
+					$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
+					$imagePath = $dir . '/' .  $filename;
+					FFile::makeDir($dir);
+					$cache = FCache::getInstance('d');
+					$cache->setData($filename,'event','user-'.$user->userVO->userId);
+					break;
+				default:
+					$pageVO = new PageVO($pageId,true);
+					$galeryUrl = $pageVO->galeryDir;
+					$imageName = strtolower($filename);
+					$ext = FFile::fileExt($imageName);
+					$imageName =str_replace('.'.$ext,'',$imageName);
+					FFile::makeDir(FConf::get("galery","sourceServerBase").$galeryUrl);
+					$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+			}
+
+			FFile::mergeChunks($imagePath, $filename, $total, $isMultipart);
+
+		}
+		echo 1;
 	}
-	echo 1;
-}
-	
+
 	$processMain = false;
 }
 
 /**
  *
  * BUILD RSS
- * 
- **/   
+ *
+ **/
 if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_URI'],"/frss.php")!==false) {
 	FRSS::process($_GET);
 	FRSS::build($_GET);
@@ -180,7 +184,7 @@ if($processMain===true) {
 	//---process ajax requests - or alternative POST requests
 	if(isset($_REQUEST['m'])) {
 		if(isset($_REQUEST['d'])) {
-				$data = $_REQUEST['d'];
+			$data = $_REQUEST['d'];
 		}
 		if(strpos($_REQUEST['m'],'-x')!==false) {
 			if(empty($data)) {
@@ -194,20 +198,20 @@ if($processMain===true) {
 		}
 		if(empty($data)) {
 			$data = $_POST;
-		} 
+		}
 		FAjax::process( $_REQUEST['m'], $data );
 	}
-	
+
 	FProfiler::profile('FAJAX PROCESSED DONE');
-	
+
 	//---process post/get for page
 	$data = $_POST;
 	if(!empty($_FILES))  $data['__files'] = $_FILES;
 	if(!empty($_GET))  $data['__get'] = $_GET;
 	FBuildPage::process( $data );
-	
+
 	FProfiler::profile('PAGE PROCESSED DONE');
-	
+
 	if($user->pageAccess == true) {
 		//---page stats counted just if not any redirect
 		$user->pageStat();
@@ -216,23 +220,23 @@ if($processMain===true) {
 			FItemsToolbar::setTagToolbar();
 		}
 	}
-	
+
 	FProfiler::profile('PAGE STAT/TOOLBAR');
-	
+
 	//---shows message that page is locked
 	if($user->pageVO)
 	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
 		FError::addError(FLang::$MESSAGE_PAGE_LOCKED);
 		if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 	}
-	
+
 	FProfiler::profile('PAGE BEFORE SHOW');
-	
+
 	//TODO: create headers
 	//header("Cache-control: max-age=290304000, public");
 	//header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
 	//header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
-	
+
 	//---generate page
 	FBuildPage::show();
 

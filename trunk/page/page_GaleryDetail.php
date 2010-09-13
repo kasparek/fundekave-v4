@@ -54,7 +54,7 @@ class page_GaleryDetail implements iPage {
 				
 					$fItems = new FItems('galery',false,$itemRenderer);
 					$fItems->setWhere('pageId="'.$pageId.'"');
-					$fItems->addWhere('!itemIdTop');
+					$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 					$fItems->setOrder($user->pageVO->itemsOrder());
 					
 					$perPage = $user->pageVO->perPage();
@@ -115,7 +115,6 @@ class page_GaleryDetail implements iPage {
 				$tpl->setVariable("IMGDIR", $itemVO->detailUrl );
 				if(!empty($itemVO->text)) $tpl->setVariable("INFO",$itemVO->text);
 				$tpl->setVariable("HITS",$itemVO->hit);
-				$tpl->setVariable("ITEMEYEDIR",FSystem::getSkinCSSFilename() );
 
 				if($user->idkontrol === true) {
 					$tpl->setVariable('TAG',FItemTags::getTag($itemVO->itemId,$userId,'galery'));

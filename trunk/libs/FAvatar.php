@@ -6,30 +6,18 @@ class FAvatar {
 	 * @return string - avatar pic url
 	 */
 	static function getAvatarUrl($userId=-1) {
-		//TODO:
-		//check fimgprocess that croping does not resize if it match
-		//return /image/AVATAR_WIDTH_PXxAVATAR_HEIGHT_PX/crop/username/profile/selectedimage
-		//return /image/AVATAR_WIDTH_PXxAVATAR_HEIGHT_PX/crop/AVATAR_DEFAULT = default/useravatar.jpg
-		$picname = AVATAR_DEFAULT;
+		$urlBase = FConf::get('galery','targetUrlBase').AVATAR_WIDTH_PX.'x'.AVATAR_HEIGHT_PX.'/crop/';
+		$avatar = 'default/'.AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
-			$picname = FAvatar::avatarBaseUrl() . $user->userVO->avatar; //---myself
-		} elseif($userId > 0) {
-			$cache = FCache::getInstance('d',0);
-			$avatarUrl = $cache->getData($userId,'avatar_url');
-			if( $avatarUrl === false ) {
-				$userAvatar = FDBTool::getOne("SELECT avatar FROM sys_users WHERE userId = '".$userId."'");
-				if(!empty($userAvatar)) {
-					if(file_exists( FAvatar::avatarBasePath().$userAvatar ) && !is_dir( FAvatar::avatarBasePath().$userAvatar )) {
-						$picname = FAvatar::avatarBaseUrl().$userAvatar;
-					}
-				}
-				$cache->setData($picname ,$userId,'avatar_url');
-			} else {
-				$picname = $avatarUrl;
+			$userId = $user->userVO->userId;
+		}
+		if($userId > 0) {
+			if(file_exists(FConf::get('galery','sourceServerBase').'/default/profile/'.$userId.'.jpg')) {
+				$avatar = 'default/profile/'.$userId.'.jpg';
 			}
 		}
-		return($picname);
+		return $urlBase.$avatar;
 	}
 
 	/**
@@ -89,45 +77,24 @@ class FAvatar {
 
 	static function createName($fileOrig) {
 		$user = FUser::getInstance();
-		return FSystem::safeText($user->userVO->name).".".$user->userVO->userId.".".date('U').".".FFile::fileExt($fileOrig);
+		return $user->userVO->userId.".jpg";
 	}
-	
+
 	static function profileBasePath() {
 		$user = FUser::getInstance();
 		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/profile';
 	}
-	
-	static function profileBaseUrl() {
+
+	static function profileBaseUrl($dir=null) {
 		$user = FUser::getInstance();
 		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/profile';
 	}
-	
-	static function avatarBasePath() {
-		$user = FUser::getInstance();
-		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/avatar';
-	}
-	
-	static function avatarBaseUrl() {
-		$user = FUser::getInstance();
-		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/avatar';
-	}
-	
+
 	static function processAvatar($avatarName) {
-		//---resize and crop if needed
-		list($avatarWidth,$avatarHeight,$type) = getimagesize( $avatarName );
-		
 		$newName = FAvatar::createName($avatarName);
-		$targetName = FAvatar::avatarBasePath().$newName;
-		
-		if($avatarWidth != AVATAR_WIDTH_PX || $avatarHeight != AVATAR_HEIGHT_PX) {
-			if($type != 2) $avatarName = str_replace(FSystem::fileExt($avatarName),'jpg',$avatarName);
-			//---RESIZE
-			$resizeParams = array('quality'=>80,'crop'=>1,'width'=>AVATAR_WIDTH_PX,'height'=>AVATAR_HEIGHT_PX);
-			FImgProcess::process($avatarName,$targetName,$resizeParams);
-		} else {
-		  copy($avatarName, $targetName);
-      chmod($targetName,0777); 
-		}
+		$targetName = FConf::get('galery','sourceServerBase').'/default/profile/'.$newName;
+		copy($avatarName, $targetName);
+		chmod($targetName,0777);
 		return $newName;
 	}
 }

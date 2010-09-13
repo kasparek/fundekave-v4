@@ -141,12 +141,12 @@ class FImgProcess {
 		if(!in_array($this->sourceMimeType,$this->supportedMimeTypes)) $this->errorArr[] = 'ImgProcessing - OPEN: not supported image type::'.$this->sourceUrl;
 		else {
 			if($this->userImagick===true) {
-				try {
+				if(class_exists('Imagick')) {
 					FError::write_log('FImgProcess::open trying IMAGICK');
 					$this->imagick = new Imagick( $this->sourceUrl );
 					$this->imagick->stripImage();
 					return true;
-				} catch (Exception $e) {
+				} else {
 					$this->userImagick = false;
 				}
 			}
@@ -251,7 +251,7 @@ class FImgProcess {
 				}
 				}
 				*/
-				
+
 			if($this->imagick) {
 				$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
 				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1  , true );  //true to best fit in
@@ -268,7 +268,7 @@ class FImgProcess {
 		$angle = $angle - $circles*360;
 
 		if($angle==0) return false;
-		 
+			
 		if($this->imagick) {
 			$this->imagick->rotateImage(new ImagickPixel(), $angle);
 		}
@@ -300,8 +300,8 @@ class FImgProcess {
 					$this->imagick->setImageFormat('jpeg');
 					$this->imagick->setImageCompressionQuality($this->quality);
 			}
-				
-				
+
+
 			if($this->targetUrl) {
 				$data = $this->imagick->writeImage($this->targetUrl);
 			} else {
@@ -311,7 +311,7 @@ class FImgProcess {
 			}
 			$this->imagick->clear();
 			$this->imagick->destroy();
-				
+
 		} else {
 			if(empty($this->targetUrl)) ob_start(); // start a new output buffer
 			switch($this->targetMimeType) {

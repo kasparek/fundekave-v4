@@ -312,8 +312,6 @@ class FBuildPage {
 			FError::resetError(1);
 		}
 		//---HEADER
-		$cssPath = FSystem::getSkinCSSFilename();
-		$tpl->setVariable("CSSSKIN", $cssPath);
 		$tpl->setVariable("CHARSET", CHARSET);
 		$tpl->setVariable("URL_JS", URL_JS);
 		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
@@ -324,7 +322,6 @@ class FBuildPage {
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
-		$tpl->setVariable("SEARCHCSSDIR",$cssPath);
 
 		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
 
@@ -486,6 +483,17 @@ class FBuildPage {
 		FProfiler::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);
-		$tpl->show();
+		
+		$data = $tpl->get();
+		//replace super variables
+		//TODO: do supervariable some coolway
+		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
+		$superVars = array('SKINURL'=>'css/skin/default');
+		foreach($superVars as $k=>$v) {
+			$data = str_replace('[['.$k.']]',$v,$data);
+			 
+		}
+				
+		echo $data;
 	}
 }

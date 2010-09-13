@@ -145,7 +145,7 @@ class FEvents {
 			$itemVO->itemId = 0;
 			$itemVO->categoryId = 0;
 			$itemVO->public = 1;
-			$itemVO->dateStartLocal = Date("d.m.Y");
+			$itemVO->dateStart = Date("Y-m-d");
 		}
 
 		$tpl = FSystem::tpl('events.edit.tpl.html');

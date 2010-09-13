@@ -1,5 +1,53 @@
 <?php
 /**
+ * check size
+ *
+ * @param number $sideParam
+ * @param array $sideOptionList
+ * @param number $default
+ * @return number validated size
+ */
+function validateSideParam( $sideParam, $sideOptionList, $default ) {
+
+	if(!in_array($sideParam, $sideOptionList)) {
+		if(empty($sideParam)) {
+			return $default;
+		} else {
+			//get closest valid width
+			foreach ($sideOptionList as $fib) {
+				$diff[$fib] = (int) abs($sideParam - $fib);
+			}
+			$fibs = array_flip($diff);
+			return $fibs[min($diff)];
+		}
+	} else {
+		return $sideParam;
+	}
+}
+/**
+ * checking if ration is too big from original
+ * stop scaling images to much up
+ */
+function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRatio) {
+	if(empty($sideOriginal)) return $sideParam;
+	$ratio = $sideParam/$sideOriginal;
+	if($ratio > $maxScaleUpRatio) {
+		$maxSize = $sideOriginal * $maxScaleUpRatio;
+		//get closest valid width
+		foreach ($sideOptionList as $fib) {
+			if($maxSize - $fib > 0) {
+				$diff[$fib] = (int) $maxSize - $fib;
+			}
+		}
+		if($diff) {
+			$fibs = array_flip($diff);
+			return $fibs[min($diff)];
+		}
+	}
+	return $sideParam;
+}
+
+/**
  *
  *
  * TODO:
@@ -33,15 +81,17 @@ date_default_timezone_set('Europe/Prague');
 $fileParam = isset($_GET['img']) ? $_GET['img'] : '';
 $widthParam = 0;
 $heightParam = 0;
-if(isset($_GET['side']) {
+$customSize = false;
+if(isset($_GET['side'])) {
 	$getSide = $_GET['side'];
 	if(strpos($getSide,'x')!==false) {
 		$getSideList = explode('x',$getSide);
 		$widthParam = (int) $getSideList[0];
 		$heightParam = (int) $getSideList[1];
+		$customSize = true;
 	} else {
-	  $widthParam = $heightParam = (int) $getSide;
-	} 
+		$widthParam = $heightParam = (int) $getSide;
+	}
 }
 $cutParam = isset($_GET['cut']) ? $_GET['cut'] : '';
 
@@ -64,22 +114,13 @@ $cutOptionsList = explode(',',$c->cutOptions);
 if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
 if($cutParam=='flush') $sideOptionList[] = 0;
 
-function validateSideParam( $sideParam, $sideOptionList, $default ) {
-	if(!in_array($sideParam, $sideOptionList)) {
-		if(empty($sideParam)) {
-			return $default;
-		} else {
-		 //get closest valid width
-		 foreach ($sideOptionList as $fib) {
-		 	$diff[$fib] = (int) abs($sideParam - $fib);
-		 }
-			$fibs = array_flip($diff);
-			return $fibs[min($diff)];
-		}
-	}
+if($customSize) {
+	$widthParam = $widthParam > $c->maxSize ? $c->maxSize : $widthParam;
+	$heightParam = $widthParam > $c->maxSize ? $c->maxSize : $heightParam;
+} else {
+	$widthParam = validateSideParam($widthParam, $sideOptionList, $c->sideDefault);
+	$heightParam = validateSideParam($heightParam, $sideOptionList, $c->sideDefault);
 }
-$widthParam = validateSideParam($widthParam, $sideOptionList, $c->sideDefault);
-$heightParam = validateSideParam($heightParam, $sideOptionList, $c->sideDefault);
 
 $processParams = array('quality'=>$c->quality);
 if($cutParam=='crop') $processParams['crop'] = 1;
@@ -92,6 +133,7 @@ if($fileParam{0}=='/') $fileParam = substr($fileParam,1);
 
 $remote = false;
 if(strpos($fileParam,'remote')===0) {
+
 	//remote file
 	$remotePartList = explode('/',$fileParam);
 	if($remotePartList[1] != md5($c->salt.$remotePartList[2])) {
@@ -120,19 +162,14 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
 	exit;
 
 } else {
-
 	if(empty($targetImage)) {
 		require_once($c->libraryBasePath.'libs/FImgProcess.php');
 		$imageProps = FImgProcess::getimagesize($sourceImage);
-
 		if( $imageProps===false ) {
-
 			//TODO: error loging
 			echo 'file not found';
 			exit;
-
 		}
-
 		if(isset($imageProps['source'])) {
 			$sourceImage = $imageProps['source'];
 		}
@@ -147,24 +184,26 @@ if($cutParam === 'flush') {
 		$sideOptionList = array($widthParam);
 	}
 	foreach($sideOptionList as $width) {
-	foreach($sideOptionList as $height) {
-		foreach($cutOptionsList as $cut) {
-			if($fileParam{(strlen($fileParam)-1)}=='/') $fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end
-			if($remote===true) {
-				//TODO:flush remote
-			} else {
-				$targetImage = $c->targetBasePath.$width.'x'.$height.'/'.$cut.'/'.$fileParam;
-			}
-			if(file_exists($targetImage)) {
-				if(is_dir($targetImage)) {
-					require_once($c->libraryBasePath.'libs/FFile.php');
-					FFile::rm_recursive($targetImage);
+		foreach($sideOptionList as $height) {
+			foreach($cutOptionsList as $cut) {
+				if($fileParam{(strlen($fileParam)-1)}=='/') {
+					$fileParam = substr($fileParam,0,-1); //if fileparam is folder with slash at the end
+				}
+				if($remote===true) {
+					//TODO:flush remote
 				} else {
-					unlink($targetImage);
+					$targetImage = $c->targetBasePath.$width.'x'.$height.'/'.$cut.'/'.$fileParam;
+				}
+				if(file_exists($targetImage)) {
+					if(is_dir($targetImage)) {
+						require_once($c->libraryBasePath.'libs/FFile.php');
+						FFile::rm_recursive($targetImage);
+					} else {
+						unlink($targetImage);
+					}
 				}
 			}
 		}
-	}
 	}
 	exit;
 }
@@ -176,6 +215,8 @@ if(isset($imageProps)) {
 		if($c->optimize===true) {
 			$processParams['optimize'] = 1;
 		}
+	} else if($ratio < 1) {
+		$processParams['optimize'] = 1;
 	}
 
 	if($cutParam=='prop') {
@@ -195,57 +236,43 @@ if(isset($imageProps)) {
 			//display original
 			$targetImage = $sourceImage;
 			$contentType = $imageProps['mime'];
-		} 		 		
+		}
+	}
+
+	if($widthParam==$heightParam) {
+		$heightParam = $widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
+	} else {
+		$widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
+		$heightParam = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
 	}
 
 	/**
-	 * checking if ration is too big from original
-	 * stop scaling images to much up
+	 * cache file if not exist
 	 */
-function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRatio) {
-	$ratio = $sideParam/$sideOriginal;
-	if($ratio > $maxScaleUpRatio) {
-	 $maxSize = $sideOriginal * $maxScaleUpRatio;
-	 //get closest valid width
-	 foreach ($sideOptionList as $fib) {
-	 	if($maxSize - $fib > 0) {
-	 		$diff[$fib] = (int) $maxSize - $fib;
-	 	}
-	 }
-	 $fibs = array_flip($diff);
-	 return $fibs[min($diff)];
-	}
-	return $sideParam;
-}
-$widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
-$heightParam = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
-/**
- * cache file if not exist
- */
-if(!isset($targetImage)) {
-	if($remote===false) {
-		$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/'.$fileParam;
-	} else {
-		$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
-	}
+	if(!isset($targetImage)) {
+		if($remote===false) {
+			$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/'.$fileParam;
+		} else {
+			$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
+		}
 
-	if(!file_exists($targetImage)) {
-		//require files only when needed
-		require_once($c->libraryBasePath.'libs/FFile.php');
+		if(!file_exists($targetImage)) {
+			//require files only when needed
+			require_once($c->libraryBasePath.'libs/FFile.php');
 
-		$processParams['width'] = $widthParam;
-		$processParams['height'] = $heightParam;
+			$processParams['width'] = $widthParam;
+			$processParams['height'] = $heightParam;
 
-		//check if directory exists
-		$dirArr = explode('/',$targetImage);
-		array_pop($dirArr);
-		FFile::makeDir(implode('/',$dirArr));
+			//check if directory exists
+			$dirArr = explode('/',$targetImage);
+			array_pop($dirArr);
+			FFile::makeDir(implode('/',$dirArr));
 
-		//process new file
-		FImgProcess::process($sourceImage,$targetImage,$processParams);
+			//process new file
+			FImgProcess::process($sourceImage,$targetImage,$processParams);
+		}
 	}
 }
-
 /**
  * output cached file
  */

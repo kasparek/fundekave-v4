@@ -41,7 +41,7 @@ class FCalendarPlugins {
     date_format(i.dateCreated ,'{#date_local#}') 
     ");
     $fPages->addJoin("join sys_pages_items as i on p.pageId=i.pageId");
-    $fPages->addWhere("i.dateCreated like '".$year."-".$month."%' and !itemIdTop");
+    $fPages->addWhere("i.dateCreated like '".$year."-".$month."%' and (itemIdTop is null or itemIdTop=0)");
     return $fPages->getContent();
   }
   static function galeryItems($year,$month,$userId,$pageId = '') {

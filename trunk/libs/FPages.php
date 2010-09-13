@@ -56,7 +56,7 @@ class FPages extends FDBTool {
 		
 		if(!empty($userId)) {
 			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$userId."'");
-			$this->addSelect("count(f.1) as favorite,f.cnt as favoriteCnt");
+			$this->addSelect("f.book as favorite,f.cnt as favoriteCnt");
 		}
 		
 		$this->getListPages();
@@ -65,7 +65,7 @@ class FPages extends FDBTool {
 	function queryReset() {
 		parent::queryReset();
 		if(!empty($this->userId)) {
-			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$userId."'");
+			$this->addJoin("left join sys_pages_favorites as f on ".$this->table.".pageId=f.pageId and f.userId= '".$this->userId."'");
 			$this->addSelect("count(1) as favorite,f.cnt as favoriteCnt");
 		}
 	}
@@ -139,7 +139,7 @@ class FPages extends FDBTool {
 		if($pageVO->typeId=='galery') {
 			//---delete photo
 			$galery = new FGalery();
-			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and !itemIdTop");
+			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
 			foreach ($arrd as $df) $galery->removeFoto($df);
 			
 		}
@@ -183,7 +183,7 @@ class FPages extends FDBTool {
 	static function cntSet($pageId, $value = 1, $refresh=false) {
 		$incStr = '';
 		if($refresh===true) {
-			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and !itemIdTop)';
+			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and (itemIdTop is null or itemIdTop=0))';
 		} else if($value > 0) {
 			$incStr = 'cnt + '.$value;
 		} else if($value < 0) {
@@ -317,12 +317,9 @@ class FPages extends FDBTool {
 	 */
 	//TODO: refactor - not setselect
 	function printBookedList($xajax=false) {
-		$this->fetchmode = 1;
 		
 		$user = FUser::getInstance();
 		$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
-			
-		if(!in_array($this->type,$this->availableTypeArr)) $this->type = $this->availableTypeArr[0];
 			
 		//---template init
 		$tpl = FSystem::tpl('forums.booked.tpl.html');
@@ -333,11 +330,11 @@ class FPages extends FDBTool {
 
 		$userId=$user->userVO->userId;
 
-		$this->setWhere('sys_pages.userIdOwner="'.$userId.'" and sys_pages.pageId=f.pageId and sys_pages.locked<3');
+		$this->setWhere('sys_pages.userIdOwner="'.$userId.'" and sys_pages.locked<3');
 		if($bookOrder==1) {
 			$this->setOrder('name');
 		} else {
-			$this->setOrder('(cnt-favoriteCnt) desc,name');
+			$this->setOrder('(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 		}
 		$this->setGroup('sys_pages.pageId');
 
@@ -363,7 +360,7 @@ class FPages extends FDBTool {
 		if($bookOrder==1) {
 			$this->setOrder('sys_pages.name');
 		} else {
-			$this->setOrder('(cnt-favoriteCnt) desc,sys_pages.name');
+			$this->setOrder('(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 		}
 
 		$this->setGroup('sys_pages.pageId');

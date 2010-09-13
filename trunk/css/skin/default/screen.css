@@ -1,4 +1,3 @@
-/* IMPORTANT */
 /* css fundekave, http://www.fundekave.net/ */
 /* css released under Creative Commons License - http://creativecommons.org/licenses/by-nc-sa/1.0/  */
 /* All associated graphics copyright (c) 2008, filip mares */
@@ -6,7 +5,7 @@
 
 /* BASIC ELEMENTS */
 
-@media screen,projection {
+/*@media screen,projection {*/
 
 body { 
 	text-align: center;
@@ -28,7 +27,7 @@ body {
 	margin:0;
 	margin-left:30px;
 	padding-right:240px;
-	background: #eae6da url("img/page-bg.gif") repeat-x right top;
+	background: #eae6da url(img/page-bg.gif) repeat-x right top;
 }
 div#pageholder {
 	position: relative;
@@ -62,7 +61,7 @@ div#sidebar {
 	float:right;
 	width:200px;
 	margin-right:-220px;
-	background: url("img/logo-bg.jpg") no-repeat right top;
+	background: url(img/logo-bg.jpg) no-repeat right top;
 	text-align: left;
 	font-size: 80%;
 }
@@ -148,7 +147,7 @@ div#breadcrumbs ul li {
 	padding-left: 10px;
 	margin-right: 1em;
 	list-style: none;
-	background: url("img/arrow-brown-bg.gif") no-repeat left center;
+	background: url(img/arrow-brown-bg.gif) no-repeat left center;
 	font-weight: bold;
 }
 
@@ -170,7 +169,7 @@ ul#menu li {
 	padding-top: 11px;
 	margin-right: 5px;
 	list-style: none;
-	background: url("img/primary-nav-bg.gif") repeat-x left top;
+	background: url(img/primary-nav-bg.gif) repeat-x left top;
 }
 ul#menu li a {
 	padding: 0 0.8em;
@@ -295,7 +294,7 @@ form#loginForm ul, div#loggedUserContainer ul {
 form#loginForm ul li, div#loggedUserContainer ul li {
 	padding-left: 10px;
 	list-style: none;
-	background: url("img/arrow-brown-bg.gif") no-repeat left center;
+	background: url(img/arrow-brown-bg.gif) no-repeat left center;
 	font-weight: bold;
 }
 
@@ -456,7 +455,7 @@ span.textAreaResize {
 }
 span.textAreaResize a {
   text-decoration: none;
-  background: url("img/windows.png") no-repeat left top;
+  background: url(img/windows.png) no-repeat left top;
   display: block;
   width: 16px;
   height: 16px;
@@ -980,7 +979,7 @@ div.friends ul li {
 }
 div.friends ul li ul li {
 	padding-left: 1em;
-	background: url("img/arrow-white-bg.gif") no-repeat left center;
+	background: url(img/arrow-white-bg.gif) no-repeat left center;
 }
 div.friends ul li div,
 div.friends ul li ul {
@@ -1107,4 +1106,4 @@ div.user-info-foto img {
 div.fuvatarbox {
   float: right;
 }
-} /* END MEDIA SCREEN */
+/*} /* END MEDIA SCREEN */
