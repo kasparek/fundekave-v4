@@ -1,3 +1,7 @@
+SIMPLE VERSION
+-layout with no right bar
+-in right bar only login and categories
+
 events - tipy -> udalosti
 soukromy - vidi pouze pratele
 osobni - vidim pouze ja a vybrani pratele

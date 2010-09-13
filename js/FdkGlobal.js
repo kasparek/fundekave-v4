@@ -463,9 +463,15 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
  *main init
  **/
 function publicin() {
-	$("#loginInput").focus();
+	var w = $(window).width();
+	if(w>800) $("#loginInput").focus();
+	if ($("#sidebar").length == 0) {
+		$('body').addClass('bodySidebarOff');
+	}
+
 	$("textarea[class*=expand]").autogrow();
 	$("textarea[class*=expand]").keydown();
+	
 }
 
 function userin() {

@@ -147,7 +147,7 @@ class FUvatar {
         }
       }
       
-      return $ret.'<hr class="cleaner" />';
+      return $ret.'<div class="clearbox" />';
       
     }
     
