@@ -28,7 +28,7 @@ class page_ItemsLive implements iPage {
 			$pages = new FPages(null, $userId);
 			$pages->addJoin('right join sys_pages_items as sys_pages_items on sys_pages_items.pageId=sys_pages.pageId');
 			//TODO: do not use pplastitem
-			$pages->addSelect('itemId as pplastitem');
+			$pages->addSelect('itemId as itemIdLast_prop');
 			
 			if(SITE_STRICT == 1) {
 				$pages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");
@@ -52,7 +52,6 @@ class page_ItemsLive implements iPage {
 				
 			$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $localPerPage;
-							
 			$data = $pages->getContent($from,$localPerPage+1);
 			$totalItems = count($data);
 

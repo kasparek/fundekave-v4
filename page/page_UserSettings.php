@@ -8,6 +8,9 @@ class page_UserSettings implements iPage {
 		if(isset($data['action'])) $action = $data['action'];
 
 		if(isset($action)) {
+			/*
+			 * select new profile image
+			 */
 			if(strpos($action,'avatar')!==false) {
 				$user = FUser::getInstance();
 
@@ -23,23 +26,15 @@ class page_UserSettings implements iPage {
 					}
 				}
 
-				$newAvatar = FAvatar::processAvatar($dir.'/'.$newSource);
-				//update
-				//TODO: just set new avatar to url to selected image in /profile
-				if(!empty($user->userVO->avatar)) @unlink(FAvatar::avatarBasePath().$user->userVO->avatar);
-				$user->userVO->avatar = $newAvatar;
-				$user->userVO->save();
+				FAvatar::processAvatar($dir.'/'.$newSource);
 
-				$cache = FCache::getInstance('l');
-				$cache->invalidateGroup('Uavatar');
-				$cache = FCache::getInstance('d');
-				$cache->invalidateGroup('avatar_url');
 				$cache = FCache::getInstance('f',0);
 				$cache->invalidateGroup('avatar_'.$user->userVO->userId);
 				
 				FAjax::addResponse('avatarBox', '$html', FAvatar::showAvatar($user->userVO->userId));
 				FAjax::addResponse('function','call','msg;ok;'.FLANG::$MSG_AVATAR_SET);
 			}
+
 			if(strpos($action,'del')!==false) {
 				$user = FUser::getInstance();
 

@@ -46,7 +46,7 @@ class FAjax_galery extends FAjaxPluginBase {
 			$ret = $fItems->render(0,1);
 		} else {
 			$pageVO = new PageVO($pageId,true);
-			$fItems->setWhere("pageId='".$pageId."' and !itemIdTop");
+			$fItems->setWhere("pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
 			$fItems->setOrder($pageVO->itemsOrder());
 			$fItems->getList((int) $data['seq'],1);
 			$itemId = $fItems->data[0]->itemId;

@@ -241,7 +241,7 @@ class ItemVO extends Fvob {
 	function updateItemIdLast() {
 		//---update last item id on page
 		$pageVO = new PageVO($this->pageId);
-		$q = "select itemId from sys_pages_items where public=1 and !itemIdTop and pageId='".$this->pageId."' order by dateCreated desc";
+		$q = "select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc";
 		$itemIdLast = FDBTool::getOne($q);
 		$pageVO->prop( 'itemIdLast', $itemIdLast);
 	}
@@ -349,7 +349,7 @@ class ItemVO extends Fvob {
 		$cache = FCache::getInstance('f');
 		if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
 			$pageVO = new PageVO($this->pageId,true);
-			$q = "select itemId from sys_pages_items where !itemIdTop and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
+			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
 			$arr = FDBTool::getCol($q,$this->pageId.'-page', 'fitGrp');
 			$cache->setData($arr);
 		}

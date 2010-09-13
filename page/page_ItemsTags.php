@@ -21,7 +21,7 @@ class page_ItemsTags implements iPage {
 		
 		$fItems = new FItems($user->pageVO->typeIdChild,$userId,$itemRenderer);
 		$fItems->setOrder('dateCreated desc');
-		$fItems->addWhere('!itemIdTop');
+		$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 		FItemsToolbar::setQueryTool(&$fItems);
 
 		$pager = new FPager(0,$perpage,array('noAutoparse'=>1));

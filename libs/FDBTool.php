@@ -297,7 +297,6 @@ class FDBTool {
 		$query = str_replace('{ORDER}',$this->getOrder(),$query);
 		$query = str_replace('{LIMIT}',$this->getLimit(),$query);
 		$query = $this->replaceKeys($query);
-		if($this->debug == 1) echo "BUILDED: ".$query." <br />\n";
 		return $query;
 	}
 	function buildGetCount($count = '') {

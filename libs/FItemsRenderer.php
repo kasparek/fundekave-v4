@@ -41,7 +41,6 @@ class FItemsRenderer {
 			$this->localVars['localUserPageId'] = $user->pageVO->pageId;
 			$this->localVars['localUserZavatar'] = $user->userVO->zavatar;
 			$this->localVars['localUserIdkontrol'] = $user->idkontrol;
-			$this->localVars['localCSS'] = FSystem::getSkinCSSFilename();
 		}
 		return $this->localVars;
 	}
@@ -65,6 +64,7 @@ class FItemsRenderer {
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
 		$pageId = $itemVO->pageId;
+		$pageVO  = new PageVO($pageId);
 		$typeId = $itemVO->typeId;
 		$addon = $itemVO->addon;
 		$enclosure = $itemVO->enclosure;
@@ -100,7 +100,6 @@ class FItemsRenderer {
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');
-		$vars['ITEMLINKICODIR'] = $localCSS;
 		$vars['PAGEID'] = $pageId;
 		if($typeId=='blog' || $typeId=='galery') {
 			$vars['DATELOCAL'] = $itemVO->dateStartLocal;
@@ -123,7 +122,6 @@ class FItemsRenderer {
 
 				//forum
 				$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
-				$vars['DELETECSSDIR']=$localCSS;
 			}
 		}
 
@@ -133,7 +131,7 @@ class FItemsRenderer {
 		/**/
 		if($this->showRating === true) {
 			$vars['HITS'] = $itemVO->hit;
-			$vars['ITEMEYEDIR'] = $localCSS;
+			
 		}
 
 		switch($typeId) {
@@ -193,7 +191,7 @@ class FItemsRenderer {
 					$vars['IMGEVENTTITLE'] = $addon;
 					$vars['IMGEVENTALT'] = $addon;
 				} else {
-					$vars['FLYERTHUMBURLDEFAULT'] = $localCSS . '/img/flyer_default.png';
+					$vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 				}
 				if($this->showComments === true) {
 					if($itemVO->tag_weight > 0) {
@@ -222,7 +220,7 @@ class FItemsRenderer {
 				break;
 			case 'galery':
 				//--- GALERY RENDERER
-				$pageVO  = new PageVO($pageId,true);
+				$pageVO->load();
 				$vars['IMGALT'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGTITLE'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
@@ -283,8 +281,8 @@ class FItemsRenderer {
 		if($this->showComments === true) {
 			$this->showCommentsNum = false;
 
-			$writeRule = PageVO::getProperty($pageId,'forumSet');
-			if(false !== ($itemWriteRule = ItemVO::getProperty($itemId,'forumSet',2))) $writeRule = $itemWriteRule;
+			$writeRule = $pageVO->getProperty($pageId,'forumSet');
+			if(false !== ($itemWriteRule = $itemVO->getProperty('forumSet',2))) $writeRule = $itemWriteRule;
 			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
 
 		}
@@ -293,7 +291,6 @@ class FItemsRenderer {
 			$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
 			if($unReadedReactions > 0) { $vars['ALLNEWCNT'] = $unReadedReactions; }
 			$vars['CNTCOMMENTS'] = $itemVO->cnt;
-			$vars['COMMENTSCSSDIR'] = $localCSS;
 		}
 
 		/**/

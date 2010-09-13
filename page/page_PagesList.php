@@ -14,18 +14,23 @@ class page_PagesList implements iPage {
 	}
 
 	static function build($data=array()) {
+		
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
 		$category = 0;
 		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
 		$p = 1;
 		$urlVar = FConf::get('pager','urlVar');
+		
+		/*
 		if(isset($_GET[$urlVar])) $p = (int) $_GET[$urlVar];
 		$mainCache = FCache::getInstance('f',0);
 		$cacheKey = (($user->pageVO->pageIdTop)?($user->pageVO->pageIdTop):('')).'p-'.$user->pageId.'-c-'.$category.'-u-'.$user->userVO->userId.(($p>1)?('-p-'.$p):(''));
 		$cacheGrp = 'pagelist';
 		$ret = $mainCache->getData($cacheKey,$cacheGrp);
-
+*/
+		$ret = false;
+		
 		if(false === $ret) {
 
 			$userId = $user->userVO->userId;
@@ -51,7 +56,7 @@ class page_PagesList implements iPage {
 				$fPages->setOrder("dateContent desc");
 			} else {
 				$fPages->joinOnPropertie('itemIdLast');
-				$fPages->setOrder("p.dateUpdated desc");
+				$fPages->setOrder("dateUpdated desc");
 			}
 
 			$perPage = $user->pageVO->perPage();
@@ -100,7 +105,7 @@ class page_PagesList implements iPage {
 					$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 					foreach ($arr as $gal) {
 						
-						$fItems->setWhere('pageId="'.$gal->pageId.'"');
+						$fItems->setWhere('pageId="'.$gal->pageId.'" and (itemIdTop is null or itemIdTop=0)');
 						$fotoThumb = $fItems->render(0,1);
 
 						$tplGal->setCurrentBlock('item');
@@ -130,7 +135,7 @@ class page_PagesList implements iPage {
 				$tpl->touchBlock('noresults');
 			}
 			$ret = $tpl->get();
-			$mainCache->setData($ret,$cacheKey,$cacheGrp);
+			//$mainCache->setData($ret,$cacheKey,$cacheGrp);
 		}
 
 		FBuildPage::addTab(array( "MAINDATA"=>$ret ));

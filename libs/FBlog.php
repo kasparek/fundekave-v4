@@ -208,7 +208,7 @@ class FBlog {
 				$fItems = new FItems('blog',false,$itemRenderer);
 				$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 				$total = $user->pageVO->cnt;
-				$fItems->addWhere('!itemIdTop');
+				$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 				if($categoryId > 0) {
 					$fItems->addWhere("categoryId='". $categoryId ."'");
 					$total = $fItems->getCount();

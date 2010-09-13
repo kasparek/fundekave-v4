@@ -132,7 +132,7 @@ class page_PageEdit implements iPage {
 				if($pageVO->typeId == 'galery') {
 					//---create folder string if not set
 					if(empty($pageVO->galeryDir)) {
-						$pageVO->galeryDir = FUser::getgidname($pageVO->userIdOwner) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
+						$pageVO->galeryDir = FSystem::safeText(FUser::getgidname($pageVO->userIdOwner)) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
 						$dir = FConf::get("galery","sourceServerBase") .$pageVO->galeryDir;
 						FFile::makeDir($dir);
@@ -425,7 +425,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('gorddate');
 			}
 			$fItems = new FItems('galery',false);
-			$fItems->setWhere("pageId='".$pageVO->pageId."' and !itemIdTop");
+			$fItems->setWhere("pageId='".$pageVO->pageId."' and (itemIdTop is null or itemIdTop=0)");
 			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
 
 			/* UPLOAD INPUTS */

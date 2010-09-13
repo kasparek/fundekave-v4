@@ -61,23 +61,15 @@ class FItemTags {
 		}
 		$template = str_replace('{TYPE}',$typeId,$template);
 		
-		//$tpl = FSystem::tpl($template);
-		
 		$tpl = file_get_contents(ROOT.ROOT_TEMPLATES.$template);
+		
 		if($isTagged !== true) {
-			//$tpl->setVariable('URLACCEPT',FSystem::getUri('m=user-tag&d=item:'.$itemId.';a:a'));
 			$tpl = str_replace('{URLACCEPT}',FSystem::getUri('m=user-tag&d=item:'.$itemId.';a:a'),$tpl);
 		} else {
 			$tpl = str_replace('{URLREMOVE}',FSystem::getUri('m=user-tag&d=item:'.$itemId.';a:r'),$tpl);
 		}
-		/*
-		$tpl->setVariable('ITEMID',$itemId);
-		$tpl->setVariable('CSSSKINURL',FUser::getSkinCSSFilename());
-		$tpl->setVariable('SUM',FItemTags::totalTags($itemId));
-		return $tpl->get();
-		*/
+		
 		$tpl = str_replace('{ITEMID}',$itemId,$tpl);
-		$tpl = str_replace('{CSSSKINURL}',FSystem::getSkinCSSFilename(),$tpl);
 		$tpl = str_replace('{SUM}',(($sum!==false)?($sum):(FItemTags::totalTags($itemId))),$tpl);
 		return $tpl;
 	}

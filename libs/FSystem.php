@@ -2,7 +2,7 @@
 class FSystem {
 
 	//TEMPLATE HELPER
-	static function tpl($templatefile,$root = '',$removeUnknownVariables=TRUE, $removeEmptyBlocks=TRUE){
+	static function tpl($templatefile,$root = '', $removeUnknownVariables=true, $removeEmptyBlocks=true){
 		if($root == '') $root = ROOT.ROOT_TEMPLATES;
 		$tpl = new FHTMLTemplateIT($root);
 		$tpl->loadTemplatefile($templatefile, $removeUnknownVariables, $removeEmptyBlocks);
@@ -28,24 +28,13 @@ class FSystem {
 	}
 
 	/**
-	 * get skin name
-	 * @return string - url
-	 */
-	static function getSkinCSSFilename() {
-		$skin = SKIN_DEFAULT;
-		//---TODO: from userVO load custom skin name
-		//if(is_dir(WEB_REL_CSS.$this->skinDir) $skin = $this->skinDir;
-		return( URL_CSS . $skin );
-	}
-
-	/**
 	 * Build local path for redirects, buttons, etc.
 	 * @param $otherParams
 	 * @param $pageId
 	 * @param $pageParam
 	 * @return string - URL
 	 */
-	static function getUri($otherParams='',$pageId='',$pageParam=false, $scriptName=BASESCRIPTNAME) {
+	static function getUri($otherParams='', $pageId='', $pageParam=false, $scriptName=BASESCRIPTNAME) {
 		$arrAcnchor = explode('#',$otherParams);
 		$otherParams = $arrAcnchor[0];
 		$anchor = '';
@@ -119,7 +108,7 @@ class FSystem {
 	 * @param boolean $wrap - wrap long words
 	 */
 	static function textins($text,$paramsArr=array()) {
-																							 
+
 		$breakLong = 1;
 		$endOfLine = 1;
 
@@ -148,7 +137,7 @@ class FSystem {
 			$parser->parse();
 			$text = $parser->getParsed();
 		}
-                                               
+		 
 		if($paramsArr['formatOption'] < 2) {
 			require_once(ROOT.'pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
@@ -173,9 +162,9 @@ class FSystem {
 			$text = nl2br($text);
 		}
 		elseif($endOfLine==2) $text = FSystem::textinsBr2nl($text);
-		                                           
+		 
 		if($breakLong==1) $text = FSystem::wordWrap($text);
-		
+
 		if(isset($paramsArr['lengthLimit'])) {
 			if($paramsArr['lengthLimit'] > 0) {
 				if(mb_strlen($text) > $paramsArr['lengthLimit']) { $text = mb_substr($text,0,$paramsArr['lengthLimit']);
@@ -183,7 +172,7 @@ class FSystem {
 				}
 			}
 		}
-		
+
 		return $text;
 	}
 
@@ -196,7 +185,7 @@ class FSystem {
 			if(strlen($word)>$i && strpos($word,'http:')===false) {
 				$arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
 			}
-			               
+
 		}
 		if(!empty($arrRep)) {
 			foreach ($arrRep as $k=>$v) {

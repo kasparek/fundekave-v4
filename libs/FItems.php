@@ -7,7 +7,7 @@ class FItems extends FDBTool {
 	private $typeId;
 	//---list of ItemVOs
 	public $data;
-	//public $map = true; //---map data onto object 
+	//public $map = true; //---map data onto object
 	//---renderer
 	public $fItemsRenderer;
 
@@ -25,7 +25,7 @@ class FItems extends FDBTool {
 		$this->VO = 'ItemVO';
 		$this->fetchmode = 1;
 		if($typeId!='') $this->typeId = $typeId;
-	
+
 		$itemVO = new ItemVO();
 		$this->columns = $itemVO->getColumns();
 
@@ -44,26 +44,26 @@ class FItems extends FDBTool {
 	}
 
 	function initList($typeId='', $byPermissions = false) {
-		
+
 		$this->queryReset();
 		if(FItems::isTypeValid($typeId)) {
 			$this->typeId = $typeId;
 			$this->addWhere("typeId='".$typeId."'");
 		}
 		$doPagesJoin = true;
-		
+
 		//---check permissions for given user
 		if($byPermissions!==false) {
 			$this->byPermissions = $byPermissions;
 		}
-		
+
 		//---set select
 		foreach($this->columns as $k=>$v) {
 			if(strpos($v,' as ')===false) $v .= ' as '.$k;
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
-		
+
 		//---check for public
 		if(!FRules::getCurrent( 2 )) {
 			$this->addWhere('sys_pages_items.public > 0');
@@ -84,7 +84,7 @@ class FItems extends FDBTool {
 			$itemsCount = 0;
 			$page = 0;
 			$arr = array();
-				
+
 			while(count($arr) < $count || $count==0) {
 				$arrTmp = $this->getContent($from + ($page*$count), $count);
 				$page++;
@@ -109,14 +109,14 @@ class FItems extends FDBTool {
 		}
 
 		if(!empty($arr)) {
-			
+				
 			$this->data = $arr;
-						
+
 			foreach($this->data as $itemVO) {
 				$itemVO->prepare();
 				$itemIdList[] = $itemVO->itemId;
 			}
-			
+				
 			$q = "select itemId,name,value from sys_pages_items_properties where itemId in (".implode(',',$itemIdList).")";
 			$props = FDBTool::getAll($q);
 			if(!empty($props))
@@ -131,7 +131,7 @@ class FItems extends FDBTool {
 					}
 					$i--;
 				}
-				$propList = $itemVO->getPropertiesList(); 
+				$propList = $itemVO->getPropertiesList();
 				foreach($propList as $prop) {
 					if(!isset($itemVO->properties[$prop])) {
 						$itemVO->properties[$prop] = false;
@@ -181,20 +181,24 @@ class FItems extends FDBTool {
 
 	//---aktualizace oblibenych / prectenych prispevku
 	/*.......aktualizace FAV KLUBU............*/
-	static function aFavAll($usrId,$typeId='forum') {
+	static function aFavAll($usrId,$typeArr='forum') {
+		if(!is_array($typeArr)) $typeArr = array($typeArr);
+
 		if(!empty($usrId)){
-			//file cache until somebody create new page
-			$q = "SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'";
-			$klo=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-1','aFavAll','f',0);
-			$q = "SELECT pageId FROM sys_pages where typeId = '".$typeId."'";
-			$kls=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-2','aFavAll','f',0);
-			if(!isset($klo[0])) $res=$kls;
-			else $res = array_diff($kls,$klo);
-			if(!empty($res)) {
-				$cache = FCache::getInstance('f');
-				$cache->invalidateGroup('aFavAll');
-				foreach($res as $r) {
-					FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+			foreach($typeArr as $typeId) {
+				//file cache until somebody create new page
+				$q = "SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'";
+				$klo=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-1','aFavAll','f',0);
+				$q = "SELECT pageId FROM sys_pages where typeId = '".$typeId."'";
+				$kls=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-2','aFavAll','f',0);
+				if(!isset($klo[0])) $res=$kls;
+				else $res = array_diff($kls,$klo);
+				if(!empty($res)) {
+					$cache = FCache::getInstance('f');
+					$cache->invalidateGroup('aFavAll');
+					foreach($res as $r) {
+						FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
+					}
 				}
 			}
 		}

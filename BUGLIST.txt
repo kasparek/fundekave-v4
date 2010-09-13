@@ -1,4 +1,8 @@
 TODO:
+1. osobni - opravit nahravani - novy adresar
+
+
+TODO:
 -2. avatars using /image/ - page and user
 -1. CSS - on css/fdk.css combine global.css and screen.css and set header based on change date
 0. events images / thumb location
