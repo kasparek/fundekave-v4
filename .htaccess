@@ -3,7 +3,7 @@ RewriteEngine on
 RewriteCond %{HTTP_HOST} ^www.awake33.com$
 RewriteRule (.*) http://awake33.com/$1 [R=301,QSA,L]
 
-RewriteBase /
+RewriteBase /fdk5/
 RewriteRule ^image/([0-9x]*)/([a-z]*)/(.*) image.php?side=$1&cut=$2&img=$3 [QSA,L]
 
 RewriteRule (.*\.css)$ index.php?header_handler=css&c=$1 [L]

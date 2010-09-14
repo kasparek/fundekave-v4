@@ -96,7 +96,7 @@ class Fvob {
 			$value = $this->properties[$propertyName];
 		} else {
 			if($load===true) {
-				$q = "select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->itemId."' and name='".$propertyName."'";
+				$q = "select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'";
 				$value = FDBTool::getOne($q);
 				//---set in list
 				if(empty($value)) $value = false;

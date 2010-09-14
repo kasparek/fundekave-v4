@@ -350,7 +350,7 @@ class FBuildPage {
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
 		if($user->pageVO) {
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			$pageVOTop = new PageVO($pageIdTop,true);
+			$pageVOTop = new PageVO($pageIdTop);
 			$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
