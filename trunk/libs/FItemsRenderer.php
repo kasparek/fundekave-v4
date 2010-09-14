@@ -224,8 +224,6 @@ class FItemsRenderer {
 				$vars['IMGALT'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGTITLE'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
-				$vars['ADDONSTYLEWIDTH'] = ' style="width: '.$itemVO->thumbWidth.'px;"';
-				//$vars['ADDONSTYLEHEIGHT'] = ' style="height: '.$itemVO->height.'px;"';
 				$vars['POSITION'] = $itemVO->prop('position');
 
 				if( $this->openPopup === true ) {

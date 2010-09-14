@@ -1,6 +1,6 @@
 <!-- BEGIN thumbsdiv --><div class="galeryThumbs"><!-- END thumbsdiv -->
 <div id="{ITEMIDHTML}"<!-- BEGIN hentry --> class="hentry"<!-- END hentry -->>
-	<div class="entry-content"{ADDONSTYLEWIDTH}>
+	<div class="entry-content">
 	  <!-- BEGIN statistic --><div class="stats">
 	  <!-- BEGIN numcomment --><span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="[[SKINURL]]/img/comments.png" alt="Komentare"></a></span> | <!-- END numcomment -->
 		<!-- BEGIN tag -->{TAG} | <!-- END tag -->
@@ -9,21 +9,9 @@
     <div class="foto">
     <!-- BEGIN raw -->
       <a href="{IMGURLDETAIL}" id="{ITEMIDHTML}"<!-- BEGIN popupc --> rel="lightbox{POPUPCLIGHTBOXGROUP}"<!-- END popupc --> <!-- BEGIN tip --> class="<!-- BEGIN xajaxSwitch -->xajaxSwitch <!-- END xajaxSwitch -->supernote-hover-foto{ITEMID}"<!-- END tip -->>
-      <img src="{IMGURLTHUMB}" alt="{IMGALT}" title="{IMGTITLE}" /></a>
+      <img src="{IMGURLTHUMB}" alt="{IMGALT}" title="{TEXT}" /></a>
     <!-- END raw -->
     </div>
-    <!-- BEGIN info --><p>{TEXT}</p><!-- END info -->
   </div>
 </div>
 <!-- BEGIN thumbsdivend --></div><!-- END thumbsdivend -->
-<!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div>
-<div class="clearbox" /><!-- END comments -->
-<!-- BEGIN tooltip -->
-<div id="supernote-note-foto{ITEMIDTOOLTIP}" class="snp-mouseoffset notemenu">
-  <ul>
-    <li><a href="{LINKPOPUP}" rel="lightbox">Ukázat celou</a></li>
-    <li><a href="?k={PAGEIDTOOLTIP}&amp;i={ITEMIDTOOLTIP}">Prohlédnout galerii</a></li>
-    <!-- BEGIN pocket --><li>{POCKET}</li><!-- END pocket -->
-  </ul>
-</div>
-<!-- END tooltip -->
