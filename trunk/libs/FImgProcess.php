@@ -204,13 +204,13 @@ class FImgProcess {
 
 			if(!empty($mode['crop'])) {
 				$ptmp_width = $width;
-				$ptmp_height = round($this->sourceHeight * $width / $this->sourceWidth);
+				$ptmp_height = $this->sourceHeight * $width / $this->sourceWidth;
 				if($ptmp_height < $height) {
-					$cropWidth = round( $width * $cropHeight / $height );
-					$cropX = round(($this->sourceWidth-$cropWidth) / 2);
+					$cropWidth = $width * $cropHeight / $height;
+					$cropX = ($this->sourceWidth-$cropWidth) / 2;
 				} else {
-					$cropHeight = round( $height * $cropWidth / $width );
-					$cropY = round(($this->sourceHeight-$cropHeight) / 2);
+					$cropHeight = $height * $cropWidth / $width;
+					$cropY = ($this->sourceHeight-$cropHeight) / 2;
 				}
 			}
 
@@ -253,8 +253,10 @@ class FImgProcess {
 				*/
 
 			if($this->imagick) {
-				$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
-				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1  , true );  //true to best fit in
+				if(!empty($mode['crop'])) {
+					$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
+				}
+				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1, true );  //true to best fit in
 			} else {
 				imagecopyresampled($targetImage, $this->image, $targetX, $targetY, $cropX, $cropY, $p_width, $p_height, $cropWidth, $cropHeight);
 				$this->image = $targetImage;
