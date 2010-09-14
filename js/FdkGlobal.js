@@ -290,7 +290,13 @@ function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
 	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
-	if($(this).hasClass('showBusy')) $(".showProgress").attr('src',ASSETS_URL+'loading.gif');
+	if($(this).hasClass('showBusy')) {
+		$(".showProgress").addClass('lbLoading');
+		$(".showProgress").css('width','600');
+		$(".showProgress").css('height','600');
+		$(".showProgress").css("marginLeft","auto");
+		$(".showProgress").css("marginRight","auto");
+	}
 	if($(event.currentTarget).hasClass('confirm')) {
 		if(!confirm($(event.currentTarget).attr("title"))) { 
 			preventAjax = true; 
@@ -683,8 +689,10 @@ function sendAjax(action,k) {
 		cache : false,
 		//data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + $.base64Encode(encodeURIComponent(data)),
 		data : data,
-		complete : function(data) {
-			$(data.responseXML).find("Item").each(
+		error: function(ajaxRequest, textStatus, error) { },
+		success: function(data, textStatus, ajaxRequest) {  },
+		complete : function(ajaxRequest, textStatus) {
+			$(ajaxRequest.responseXML).find("Item").each(
 					function() {
 						var item = $(this);
 						var command = '';

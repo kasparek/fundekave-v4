@@ -40,6 +40,9 @@ if(isset($_GET['header_handler'])) {
 		fclose($fp);
 		
 		$fp=null;
+		                                
+		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
+		
 	} else {
 		$fp = fopen($c, 'rb');
 		$dataLastChange = filemtime($c);

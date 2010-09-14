@@ -46,6 +46,7 @@
 	.col4 {width: 25%;}
 	.col5 {width: 20%;}
 	.noscreen {position: absolute;top: 0;left: -999em;width: 1em;}
+	.bottomPadded { margin-bottom: 1em; }
 }
 /* END BASIC ELEMENTS */
 /* BASIC PRINT ELEMENTS */
@@ -68,16 +69,6 @@
 }
 /* END BASIC SCREEN ELEMENTS */
 
-/*POST PAGE*/
-DIV#recipientavatar {
-  float: left;
-  clear: left;
-}
-DIV#recipientcombo {
-  float: left;
-  clear: left;
-}
-
 /* GOOGLE MAPS styles */
 .mapsmall {
 	float: right;
@@ -93,11 +84,11 @@ DIV#recipientcombo {
   position: absolute;
 }
 
-/*PAGER*/
-div.pagination {padding: 3px;margin: 3px;}
-div.pagination a {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #AAAADD;text-decoration: none;color: #000099;}
-div.pagination a:hover, div.pagination a:active {border: 1px solid #000099;color: #000;}
-div.pagination span.current {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #000099;font-weight: bold;background-color: #000099;color: #FFF;}
+/* PAGER */
+div.pagination {clear: left;margin: 0.3em 0;padding: 1em 0;}
+div.pagination a {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #6b5d3d;text-decoration: none;color: #332200;}
+div.pagination a:hover, div.pagination a:active {border: 1px solid #332200;color: #000;}
+div.pagination span.current {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #6b5d3d;font-weight: bold;background-color: #332200;color: #FFF;}
 div.pagination span.disabled {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #EEE;color: #DDD;}
 
 /* SLIMBOX */
