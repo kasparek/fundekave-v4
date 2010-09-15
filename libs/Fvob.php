@@ -110,19 +110,21 @@ class Fvob {
 	}
 
 	function setProperty($propertyName,$propertyValue) {
-		if($propertyValue!=$this->properties[$propertyName]) {
-			//save in db
-			if(empty($propertyValue)) {
-				FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->itemId."' and name='".$propertyName."'");
-				$propertyValue = false;
-			} else {
-				FDBTool::query("insert into ".$this->getTable()."_properties (".$this->getPrimaryCol().",name,value) values ('".$this->itemId."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
-			}
-			//---save in cache
-			$this->properties[$propertyName] = $propertyValue;
-			//---update cache
-			$this->memStore();
+		//check if needed to be saved
+		if(isset($this->properties[$propertyName])) {
+			if($propertyValue==$this->properties[$propertyName]) return;
 		}
+		//save in db
+		if(empty($propertyValue)) {
+			FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
+			$propertyValue = false;
+		} else {
+			FDBTool::query("insert into ".$this->getTable()."_properties (".$this->getPrimaryCol().",name,value) values ('".$this->{$this->getPrimaryCol()}."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+		}
+		//---save in cache
+		$this->properties[$propertyName] = $propertyValue;
+		//---update cache
+		$this->memStore();
 	}
 
 	function memStore() {

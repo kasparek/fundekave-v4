@@ -95,7 +95,7 @@ class page_PageEdit implements iPage {
 			}
 
 			if(isset($data['forumhome'])) {
-				$pageVO->setXML('home', FSystem::textins($data['forumhome']));
+				$pageVO->prop('home', FSystem::textins($data['forumhome']));
 			}
 
 			if(!FError::isError()) {
@@ -139,23 +139,18 @@ class page_PageEdit implements iPage {
 					}
 
 					//---load settings from defaults if not in limits
-					$xperpage = FConf::get('galery','perpage');
-					$xwidthpx = FConf::get('galery','widthThumb');
-					$xheightpx = FConf::get('galery','heightThumb');
-					$thumbStyle = 2;
-						
-					if(isset($data['xperpage'])) if($data['xperpage'] > 2) $xperpage = (int) $data['xperpage'];
+					$thumbCut = FConf::get('galery','thumbCut');
+					list($xwidthpx,$xheightpx) = explode('x',substr($thumbCut,0,strpos($thumbCut,'/'))); //thumbCut = 170x170/crop
+					
 					if(isset($data['xwidthpx'])) if($data['xwidthpx'] > 20) $xwidthpx = (int) $data['xwidthpx'];
 					if(isset($data['xheightpx'])) if($data['xheightpx'] > 20) $xheightpx = (int) $data['xheightpx'];
-
-					$pageVO->setXML('enhancedsettings','perpage',$xperpage);
-					$pageVO->setXML('enhancedsettings','widthpx',$xwidthpx);
-					$pageVO->setXML('enhancedsettings','heightpx',$xheightpx);
+					
+					$thumbStyleSelectedIndex = 2;
+					if(isset($data['xthumbstyle'])) $thumbStyleSelectedIndex = (int) $data['xthumbstyle'];
+					$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop'; 
+					$pageVO->prop('thumbCut',$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle);
 						
-					if(isset($data['xthumbstyle'])) $thumbStyle = (int) $data['xthumbstyle'];
-					$pageVO->setXML('enhancedsettings','thumbnailstyle',$thumbStyle);
-						
-					if(isset($data['galeryorder'])) $pageVO->setXML('enhancedsettings','orderitems',(int) $data['galeryorder']);
+					if(isset($data['galeryorder'])) $pageVO->prop('order',(int) $data['galeryorder']);
 						
 					//---if setting changed on edited galery delete thumbs
 					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
@@ -402,20 +397,21 @@ class page_PageEdit implements iPage {
 			//enable avatar
 			$tpl->touchBlock('forumspecifictab');
 			//FORUM HOME
-			$home = FSystem::textToTextarea($pageVO->getPageParam('home'));
+			$home = FSystem::textToTextarea($pageVO->prop('home'));
 			$tpl->setVariable('CONTENT',$home);
 			$tpl->setVariable('HOMEID',$textareaIdForumHome);
 		}
 
 		if($user->pageParam != 'a') {
 			if($pageVO->typeId == 'galery') {
-				$tpl->setVariable('PERPAGE',$pageVO->getPageParam('enhancedsettings/perpage'));
-				$tpl->setVariable('GTHUMBWIDTH',$pageVO->getPageParam('enhancedsettings/widthpx'));
-				$tpl->setVariable('GTHUMBHEIGHT',$pageVO->getPageParam('enhancedsettings/heightpx'));
-				if($pageVO->getPageParam('enhancedsettings/thumbnailstyle') == 2) $tpl->touchBlock('galerythumbstyle2');
-				$tpl->touchBlock('fforum'.(PageVO::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+				$thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
+				$thumbSizeList = explode('x',$thumbPropList[0]);
+				$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
+				$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
+				if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
+				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 			} elseif ($pageVO->typeId=='blog') {
-				$tpl->touchBlock('fforum'.(PageVO::getProperty($user->pageVO->pageId,'forumSet',1)*1));
+				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 			}
 		}
 
@@ -473,6 +469,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
 			}
 			/**/
+			
 		if(!empty($data['__ajaxResponse'])) {
 			return $tpl->get();
 		} else {

@@ -113,12 +113,12 @@ class FBlog {
 					$tpl->touchBlock('statpublic');
 				}
 				///properties
-				$tpl->touchBlock('fforum'.$itemVO->getProperty('forumSet',$user->pageVO->getProperty('forumSet',2)));
+				$tpl->touchBlock('fforum'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
 				$selectedCategory = $itemVO->categoryId;
 				
-				$tpl->setVariable('POSITION',$itemVO->getProperty('position',''));
-				$tpl->setVariable('JOURNEYTO',$itemVO->getProperty('journeyTo',''));
-				$tpl->setVariable('JOURNEYFROM',$itemVO->getProperty('journeyFrom',''));
+				$tpl->setVariable('POSITION',$itemVO->prop('position'));
+				$tpl->setVariable('JOURNEYTO',$itemVO->prop('journeyTo'));
+				$tpl->setVariable('JOURNEYFROM',$itemVO->prop('journeyFrom'));
 			}
 		} else {
 

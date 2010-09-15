@@ -91,7 +91,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = $_GET['f']; else $f='';
 		if($f=='cnf') {
-			FFile::printConfigFile( $_GET['c'] );
+			FFile::printConfigFile( $_GET['c'], $pageVO );
 			exit;
 		}
 

@@ -270,8 +270,8 @@ class FItemsRenderer {
 		if($this->showComments === true) {
 			$this->showCommentsNum = false;
 
-			$writeRule = $pageVO->getProperty($pageId,'forumSet');
-			if(false !== ($itemWriteRule = $itemVO->getProperty('forumSet',2))) $writeRule = $itemWriteRule;
+			$writeRule = $pageVO->prop('forumSet');
+			if(false !== ($itemWriteRule = $itemVO->prop('forumSet'))) $writeRule = $itemWriteRule;
 			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
 
 		}

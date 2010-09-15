@@ -16,17 +16,6 @@ class FGalery {
 	}
 
 	/**
-	 * ordering in galery
-	 * @return number
-	 */
-	function orderBy() {
-		$orderBy = 0;
-		$orderByXML = (String) $this->pageVO->getPageParam('enhancedsettings/orderitems');
-		if( $orderByXML ) $orderBy = $orderByXML;
-		return $orderBy;
-	}
-
-	/**
 	 * for FItems
 	 * prepare function - creating extra options for items type galery
 	 * @param $itemVO
@@ -37,22 +26,13 @@ class FGalery {
 		$fGalery->itemVO = $itemVO;
 		$fGalery->pageVO = new PageVO($itemVO->pageId,true);
 		//---check thumbnail
-		if($fGalery->itemVO->thumbInSysRes == true) {
-			//---system resolution thumbnail
-			$fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
-			$fGalery->itemVO->heightWidth = $fGalery->conf['heightThumb'];
-			$thumbnailstyle = 2;
-		} else {
-			$thumbnailstyle = (int) $fGalery->pageVO->getPageParam('enhancedsettings/thumbnailstyle');
-			if($thumbnailstyle===false) $thumbnailstyle = 2;
-				
-			$fGalery->itemVO->thumbWidth = (String) $fGalery->pageVO->getPageParam('enhancedsettings/widthpx');
-			$fGalery->itemVO->thumbHeight = (String) $fGalery->pageVO->getPageParam('enhancedsettings/heightpx');
-			if(empty($fGalery->itemVO->thumbWidth)) $fGalery->itemVO->thumbWidth = $fGalery->conf['widthThumb'];
-			if(empty($fGalery->itemVO->thumbHeight)) $fGalery->itemVO->thumbHeight = $fGalery->conf['heightThumb'];
+		$thumbCut = $fGalery->conf['thumbCut'];
+		
+		if($fGalery->itemVO->thumbInSysRes == false) {
+			$thumbCut = $fGalery->pageVO->getProperty('thumbCut',$thumbCut,true);
 		}
 
-		$fGalery->itemVO->thumbUrl = $fGalery->getTargetUrl(null,$fGalery->itemVO->thumbWidth.'x'.$fGalery->itemVO->thumbHeight,$thumbnailstyle==2?'crop':'prop');
+		$fGalery->itemVO->thumbUrl = $fGalery->getTargetUrl(null,$thumbCut);
 
 		//get optional sizes list
 		$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
@@ -86,20 +66,17 @@ class FGalery {
 	 *
 	 * @return string url
 	 */
-	function  getTargetUrl($root=null,$sideSize=null,$cutOption=null) {
+	function  getTargetUrl($root=null,$thumbCut=null) {
 
 		if($root===null) {
 			$root = $this->conf['targetUrlBase'];
 		}
 
-		if($sideSize===null) {
-			$sideSize = $this->conf['sizeDefault'];
+		if($thumbCut===null) {
+			$sideSize = $this->conf['thumbCut'];
 		}
-		if($cutOption===null) {
-			$cutOption = 'prop'; //---proportional resize
-		}
-
-		return $root . $sideSize .'/'. $cutOption .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
+		
+		return $root . $thumbCut .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
 	}
 		
 	/**
@@ -233,7 +210,9 @@ class FGalery {
 				
 			$galery->flush();
 				
-			if(is_file($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) @unlink($this->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			if(is_file($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
+				@unlink($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			}
 				
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");
 			FDBTool::query("update sys_pages set dateUpdated = now(),cnt=cnt-1 where pageId='".$galery->itemVO->pageId."'");

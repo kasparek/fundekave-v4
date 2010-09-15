@@ -103,4 +103,5 @@ if( $itemVO ) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 $user->kde(); //---check user / load info / load page content / chechk page exist
+$pageVO = $user->pageVO; 
 FProfiler::profile('USER/PAGE CHECK DONE');
