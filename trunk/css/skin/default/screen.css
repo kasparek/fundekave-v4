@@ -3,7 +3,7 @@
 /*@media screen,projection {*/
 body {text-align: center; }
 a {color: #320;}
-h1 {font-size: 1.5em;}
+h1 {font-size: 1.5em; padding: 0 10px 0 10px;}
 h2 {font-size: 1.3em;font-weight: bold;}
 div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;font-size: 1.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
@@ -31,7 +31,7 @@ ul#menu li a {padding: 0 0.8em;display: block;font-size: 1.2em;text-decoration: 
 ul#menu li.active a {background-color: white;}
 
 /* SECONDARY MENU */
-div#menu-secondary-holder {padding-top: 0;padding-right: 10px;padding-bottom: 10px;}
+div#menu-secondary-holder {padding: 0 10px 10px 10px;}
 div#mainbar ul#menu-secondary {margin: 0;padding: 0;width: 100%;display: table;border-bottom: 1px solid #999;}
 div#mainbar ul#menu-secondary li {position: relative;padding-left: 0;list-style: none;display: block;margin-right: 5px;float: left;line-height: 2em;border: 1px solid #999;border-bottom: none;background: whitesmoke;}
 div#mainbar ul#menu-secondary li.opposite {float:right;}

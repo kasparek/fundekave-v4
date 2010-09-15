@@ -282,7 +282,7 @@ class FBuildPage {
 		$tabsArr = FBuildPage::getTabs();
 		if($tabsArr) {
 			foreach($tabsArr as $tab) {
-				$tpl->setCurrentBlock('maincontent-recurrent');
+				$tpl->setCurrentBlock('content');
 				foreach ($tab as $k=>$v)  {
 					if($v!='') $tpl->setVariable($k, $v);
 				}
@@ -313,7 +313,6 @@ class FBuildPage {
 		}
 		//---HEADER
 		$tpl->setVariable("CHARSET", CHARSET);
-		$tpl->setVariable("URL_JS", URL_JS);
 		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
 		
@@ -448,40 +447,38 @@ class FBuildPage {
 		}
 
 		if($useDatePicker === true) {
-			$tpl->touchBlock("juiHEAD"); //---js in the header
-			$tpl->setVariable('JUI_URL_JS',URL_JS);
-			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
-			$tpl->setVariable('DATEPICKER_URL_JS',URL_JS);
-			$tpl->touchBlock("datepickerEND"); //---javascript on the end of the page
+			$tpl->touchBlock("juiCSS"); //---js in the header
+			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
+			
+			$tpl->touchBlock("datepickerLoad"); //---javascript on the end of the page
+			$tpl->touchBlock("datepickerInit");
 		}
 		if($useSlimbox === true) {
-			$tpl->setVariable('SLIMBOX_URL_JS',URL_JS);
-			$tpl->touchBlock("slimboxEND");
+			$tpl->touchBlock("slimboxLoad");
+			$tpl->touchBlock("slimboxInit");
 		}
 		if($useSwfobject === true) {
-			$tpl->setVariable('SWFO_URL_JS',URL_JS);
-			$tpl->touchBlock("swfo");
+			$tpl->touchBlock("swfoLoad");
 		}
 		if($useFuup === true) {
-			$tpl->touchBlock("fuup");
+			$tpl->touchBlock("fuupInit");
 		}
 		if($useTabs === true) {
-			$tpl->touchBlock("juiHEAD"); //---js in the header
-			$tpl->setVariable('TABS_URL_JS',URL_JS);
-			$tpl->touchBlock("tabsEND");
-			$tpl->setVariable('JUI_URL_JS',URL_JS);
-			$tpl->touchBlock("juiEND"); //---javascript on the end of the page
+			$tpl->touchBlock("juiCSS"); //---js in the header
+			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
 		}
 		if($useFajaxform === true) {
-			$tpl->setVariable('FORM_URL_JS',URL_JS);
-			$tpl->touchBlock("fajaxformEND");
+			$tpl->touchBlock("fajaxformLoad");
+			$tpl->touchBlock("fajaxformInit");
 		}
 		if($useBBQ===true) {
-			$tpl->setVariable('BBQ_URL_JS',URL_JS);
-			$tpl->touchBlock("bbq");
+			$tpl->touchBlock("bbqLoad");
+			$tpl->touchBlock("bbqInit");
 		}
 
-		if($user->idkontrol===true) $tpl->touchBlock("userin");
+		if($user->idkontrol===true) {
+			$tpl->touchBlock("signedInit");
+		}
 
 		FProfiler::profile('FBuildPage--custom js sections');
 		//---PRINT PAGE
@@ -490,6 +487,7 @@ class FBuildPage {
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
+		$data = preg_replace('/\s\s+/', ' ', $data);
 				
 		echo $data;
 	}

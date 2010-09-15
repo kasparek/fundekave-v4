@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); } };
+if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&amp;d='); window.location.replace(str); } };
 var ASSETS_URL = '{ASSETS_URL}';
 var CLIENT_WIDTH = {CLIENT_WIDTH};
 var CLIENT_HEIGHT = {CLIENT_HEIGHT};
@@ -16,7 +16,7 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
   <link rel="shortcut icon" href="[[SKINURL]]/img/favicon.ico" type="image/x-icon" />
   <link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
   <link rel="stylesheet" type="text/css" href="default.css" media="all" title="fundekave" />
-  <!-- BEGIN juiHEAD --><link type="text/css" href="css/themes/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" /><!-- END juiHEAD -->
+  <!-- BEGIN juiCSS --><link type="text/css" href="css/themes/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" /><!-- END juiCSS -->
 </head>
 <body>
   <div id="pageholder"<!-- BEGIN hasMainBanner --> class="hasMainBanner"<!-- END hasMainBanner -->>
@@ -28,7 +28,6 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
     </div>
     <div id="pagebar">
       <div id="mainbar">
-				
       <form action="{SEARCHACTION}" method="post">
         <div id="search-holder">
         <div id="search">
@@ -37,30 +36,24 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
         </div>
         </div>
         </form>
-        
         <!-- BEGIN breadcrumbs --><div id="breadcrumbs">
         	<!-- BEGIN breadcrumbslist --><ul><!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread --></ul><!-- END breadcrumbslist -->
 				</div><!-- END breadcrumbs -->
-				
-
         <!-- BEGIN secondary-menu --><div id="menu-secondary-holder">
           <ul id="menu-secondary">
             <!-- BEGIN secondary-menu-item --><li<!-- BEGIN listclass --> class="{LISTCLASS}"<!-- END listclass -->><a href="{LOLINK}"<!-- BEGIN secondary-menu-title --> title="{LOTITLE}"<!-- END secondary-menu-title --><!-- BEGIN secondary-menu-class-custom --> class="{CLASS}"<!-- END secondary-menu-class-custom --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a></li>
             <!-- END secondary-menu-item -->
           </ul>
         </div><!-- END secondary-menu -->
-                
         <div id="errormsgJS" class="errormsg"></div>
         <div id="okmsgJS" class="okmsg"></div>
         <!-- BEGIN errormsg --><div class="errormsg static">{ERRORMSG}</div><!-- END errormsg -->
         <!-- BEGIN okmsg --><div class="okmsg static">{OKMSG}</div><!-- END okmsg -->
-        
         <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
-        <div id="thumbToolbar"></div>
-        <!-- BEGIN maincontent-recurrent --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
+        <!-- BEGIN content --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
         <!-- BEGIN contentheading --><h2><!-- BEGIN tabid --><a name="{TABID}" id="{TABID}"><!-- END tabid -->{MAINHEAD}<!-- BEGIN tabidclose --></a><!-- END tabidclose --></h2><!-- END contentheading -->
         {MAINDATA}
-        </div><!-- END maincontent-recurrent -->
+        </div><!-- END content -->
       </div>
       <!-- BEGIN sidebar --><div id="sidebar">
       	<div id="logo"><a href="http://fundekave.net/"><img src="css/skin/default/img/fundekave-logo.gif" title="FUNDEKAVE.NET" alt="FunDeKave.net" /></a></div>
@@ -75,32 +68,18 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
     <!-- BEGIN footer --><div id="footer"><span>deSIGNed by <a href="http://www.filip-mares.co.uk/">nakashi</a> &amp; <a href="http://fundekave.net">fundekave.net</a> - <a href="http://frantisek-kaspar.co.uk" title="php web developer">kasparek</a></span>{COUNTER}</div><!-- END footer -->
   </div>
 	<!-- BEGIN banner --><div id="banner"><div class="banner-content">{BANNER}</div></div><!-- END banner -->
-<!-- javascript section -->
-<!-- BEGIN wrappedjs --><script src="{WRAPPEDJS}"></script><!-- END wrappedjs -->
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<!-- BEGIN juiEND --><script type="text/javascript" src="{JUI_URL_JS}jquery-ui.core.js"></script><!-- END juiEND -->
-<script type="text/javascript" src="{URL_JS}FdkGlobal.js"></script>
-<!-- BEGIN slimboxEND --><script type="text/javascript" src="{SLIMBOX_URL_JS}slimbox2.js"></script>
-<script type="text/javascript">$(document).ready(function(){ initSlimbox(); });</script><!-- END slimboxEND -->
-<!-- BEGIN supernoteEND --><script type="text/javascript" src="{SUPERNOTE_URL_JS}supernote.js"></script>
-<script type="text/javascript">$(document).ready(function(){ initSupernote(); });</script><!-- END supernoteEND -->
-<!-- BEGIN swfo --><script type="text/javascript" src="{SWFO_URL_JS}swfo.js"></script><!-- END swfo -->
-<!-- BEGIN fuup --><script type="text/javascript">$(document).ready(function(){ fuupInit(); });</script><!-- END fuup -->
-<!-- BEGIN datepickerEND --><script type="text/javascript" src="{DATEPICKER_URL_JS}jquery-ui.datepicker.js"></script>
-<script type="text/javascript" src="{DATEPICKER_URL_JS}i18n/ui.datepicker-cs.js"></script>
-<script type="text/javascript">$(document).ready(function(){ datePickerInit(); });</script><!-- END datepickerEND -->
-<!-- BEGIN fajaxformEND --><script type="text/javascript" src="{FORM_URL_JS}jquery.form.fcut.min.js"></script>
-<script type="text/javascript">$(document).ready(function(){ fajaxform(); });</script><!-- END fajaxformEND -->
-<!-- BEGIN userPostEND --><script type="text/javascript">$(document).ready(function(){ initUserPost(); });</script><!-- END userPostEND -->
-<!-- BEGIN tabsEND --><script type="text/javascript" src="{TABS_URL_JS}jquery-ui.tabs.js"></script>
-<script type="text/javascript">$(document).ready(function(){ tabsInit(); });</script><!-- END tabsEND -->
-<!-- BEGIN bbq --><script type="text/javascript" src="{BBQ_URL_JS}jquery.ba-bbq.min.js"></script>
-<script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
-<!-- BEGIN bbq --><script type="text/javascript" src="{BBQ_URL_JS}jquery.ba-bbq.min.js"></script>
-<script type="text/javascript">$(document).ready(function(){ BBQinit(); });</script><!-- END bbq -->
-<!-- BEGIN userin --><script type="text/javascript">$(document).ready(function(){ userin(); });</script><!-- END userin -->
-<script type="text/javascript">$(document).ready(function(){ publicin(); });</script>
+<!-- BEGIN juiLoad --><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script><!-- END juiLoad -->
+<!-- BEGIN swfoLoad --><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script><!-- END swfoLoad -->
+<script type="text/javascript" src="[[URL_JS]]FdkGlobal.js"></script>
+<!-- BEGIN slimboxLoad --><script type="text/javascript" src="[[URL_JS]]slimbox2.js"></script><!-- END slimboxLoad -->
+<!-- BEGIN datepickerLoad --><script type="text/javascript" src="[[URL_JS]]i18n/ui.datepicker-cs.js"></script><!-- END datepickerLoad -->
+<!-- BEGIN fajaxformLoad --><script type="text/javascript" src="[[URL_JS]]jquery.form.fcut.min.js"></script><!-- END fajaxformLoad -->
+<!-- BEGIN bbqLoad --><script type="text/javascript" src="[[URL_JS]]jquery.ba-bbq.min.js"></script><!-- END bbqLoad -->
+<script type="text/javascript">
+$(document).ready(function(){publicin();<!-- BEGIN slimboxInit -->initSlimbox();<!-- END slimboxInit --><!-- BEGIN tabsEND -->tabsInit();<!-- END tabsEND --><!-- BEGIN fuupInit -->fuupInit();<!-- END fuupInit --><!-- BEGIN signedInit -->userin();<!-- END signedInit --><!-- BEGIN userPostInit -->initUserPost();<!-- END userPostInit --><!-- BEGIN datepickerInit -->datePickerInit();<!-- END datepickerInit --><!-- BEGIN fajaxformInit -->fajaxform();<!-- END fajaxformInit --><!-- BEGIN bbqInit -->BBQinit();<!-- END bbqInit -->});
+</script>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));

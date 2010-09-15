@@ -115,6 +115,7 @@ class FItems extends FDBTool {
 			$this->data = $arr;
 
 			foreach($this->data as $itemVO) {
+				$itemVO->thumbInSysRes = $this->thumbInSysRes;
 				$itemVO->prepare();
 				$itemIdList[] = $itemVO->itemId;
 			}
@@ -158,7 +159,6 @@ class FItems extends FDBTool {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
 		if($itemVO = array_shift($this->data)) {
-			$itemVO->thumbInSysRes = $this->thumbInSysRes;
 			$this->fItemsRenderer->render( $itemVO );
 			FProfiler::profile('FItems::parse--ITEM PARSED');
 		}

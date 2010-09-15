@@ -4,7 +4,8 @@ class FSystem {
 	static function superVars($data) {
 		//TODO: do supervariable some coolway
 		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
-		$superVars = array('SKINURL'=>'css/skin/default');
+		$superVars = array('SKINURL'=>'css/skin/default',
+		'URL_JS'=>URL_JS);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
 			 
