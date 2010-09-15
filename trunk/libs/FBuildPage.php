@@ -192,7 +192,7 @@ class FBuildPage {
 
 					/* home */
 				case 'h':
-					$homePage = $user->pageVO->getPageParam('home');
+					$homePage = $user->pageVO->prop('home');
 					if(empty($homePage)) $homePage = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					else $homePage = FSystem::postText($homePage);
 					$template='';
@@ -241,7 +241,7 @@ class FBuildPage {
 			}
 
 			if($user->pageVO->typeId == 'forum' && $user->pageParam!='h') {
-				$homePage = $user->pageVO->getPageParam('home');
+				$homePage = $user->pageVO->prop('home');
 				if(!empty($homePage)) {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'h'), FLang::$LABEL_HOME);
 				}

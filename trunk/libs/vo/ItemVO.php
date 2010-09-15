@@ -31,7 +31,7 @@ class ItemVO extends Fvob {
 	);
 	
 	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
-	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0);
+	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>2);
 
 	public function __get($name) {
 		if(!$name) return;
@@ -125,8 +125,6 @@ class ItemVO extends Fvob {
 
 	var $thumbInSysRes = false;
 	var $thumbUrl;
-	var $thumbWidth;
-	var $thumbHeight;
 
 	var $detailUrl;
 	var $detailUrlToGalery;

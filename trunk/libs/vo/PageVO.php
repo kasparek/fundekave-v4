@@ -6,7 +6,9 @@
  * build properties list
  * put ItemVO prop handling to Fvob
  * check columns in project 
- * project - newMess -> this->unreaded    
+ * project - newMess -> this->unreaded 
+ * //TODO: migrate pageParams home from forum, blog
+	//TODO: migrate pageParams orderitems from galery    
  *
  */   
 class PageVO extends Fvob {
@@ -34,17 +36,16 @@ class PageVO extends Fvob {
 	'cnt' => 'cnt',
 	'locked' => 'locked',
 	'authorContent' => 'authorContent',
-	'galeryDir' => 'galeryDir',
-	'pageParams' => 'pageParams'
+	'galeryDir' => 'galeryDir'
 	);
 	
-	var $propertiesList = array('position','itemIdLast','forumSet');
-	public $propDefaults = array('forumSet'=>1);
+	var $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
+	public $propDefaults = array('forumSet'=>1,'home'=>'');
 	
 	var $defaults = array(
-    'forum'=>array('template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
-    'blog'=>array('categoryId'=>'318','template'=>'forum.view.php','pageParams' => "<Page><home/></Page>"),
-    'galery'=>array('template'=>'galery.detail.php','pageParams' => "<Page><enhancedsettings><orderitems>0</orderitems><perpage>9</perpage><widthpx>170</widthpx><heightpx>170</heightpx><thumbnailstyle>2</thumbnailstyle><fotoforum>0</fotoforum></enhancedsettings></Page>"),
+    'forum'=>array('template'=>'forum.view.php'),
+    'blog'=>array('categoryId'=>'318','template'=>'forum.view.php'),
+    'galery'=>array('template'=>'galery.detail.php'),
     'culture'=>array('template'=>'culture.view.tpl.html'));
 
 	//---db based
@@ -67,7 +68,6 @@ class PageVO extends Fvob {
 	var $locked = 0;
 	var $authorContent;
 	var $galeryDir;
-	var $pageParams = "<Page></Page>";
 	var $cnt;
 	var $dateContent;
 	var $dateCreated;
@@ -172,7 +172,6 @@ class PageVO extends Fvob {
 		}
 		//get from cache if is custom
 		if(!empty($SperPage)) $perPage = $SperPage;
-		if(empty($perPage)) $perPage = (String) $this->getPageParam('enhancedsettings/perpage');
 		if(empty($perPage)) $perPage = FConf::get('perpage',$this->pageId);
 		if(empty($perPage) && !empty($this->typeIdChild)) $perPage = FConf::get('perpage',$this->typeIdChild);
 		if(empty($perPage) && !empty($this->typeId)) $perPage = FConf::get('perpage',$this->typeId);
@@ -181,7 +180,7 @@ class PageVO extends Fvob {
 	}
 
 	function itemsOrder() {
-		$orderBy = $this->getPageParam('enhancedsettings/orderitems');
+		$orderBy = $this->prop('order');
 		//---legacy
 		if($orderBy==1 && $this->typeId=='galery') {
 			$orderBy = 'dateStart desc';
@@ -197,30 +196,6 @@ class PageVO extends Fvob {
 			}
 		}
 		return $orderBy;
-	}
-
-	function getPageParam($paramName) {
-		if(!empty($this->pageParams)) {
-			$xml = new SimpleXMLElement($this->pageParams);
-			$result = $xml->xpath($paramName);
-			if(isset($result[0])) {
-				$ret = (String) $result[0];
-				return 	$ret;
-			}
-		}
-		return false;
-	}
-
-	function setXML($branch,$node,$value=false) {
-		$xml = new SimpleXMLElement($this->pageParams);
-		if($value === false) {
-			if((String) $xml->$branch != $node) $this->xmlChanged = true;
-			$xml->$branch = $node;
-		} else {
-			if((String) $xml->$branch->$node != $value) $this->xmlChanged = true;
-			$xml->$branch->$node = $value;
-		}
-		$this->pageParams = $xml->asXML();
 	}
 	
 }

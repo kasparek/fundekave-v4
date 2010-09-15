@@ -65,7 +65,7 @@ function mergeChunks($imagePath, $filename, $total, $isMultipart) {
  * print config file for uploader
  * 
  **/  
-function printConfigFile($c) {
+static function printConfigFile($c,$pageVO) {
 	switch($c) {
 		case 'uava':
 			$tpl = FSystem::tpl('fuup.avatar.config.xml');
@@ -79,7 +79,7 @@ function printConfigFile($c) {
 		default:
 			$tpl = FSystem::tpl('fuup.galery.config.xml');
 	}
-	$tpl->setVariable('URL','files.php?k='.$pageId.(($c)?('&f='.$c):('')));
+	$tpl->setVariable('URL','files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):('')));
 	$tpl->show();
 }	
 	
