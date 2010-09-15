@@ -5,14 +5,16 @@ class FItems extends FDBTool {
 
 	//---current type
 	private $typeId;
+	
 	//---list of ItemVOs
 	public $data;
-	//public $map = true; //---map data onto object
+		
 	//---renderer
 	public $fItemsRenderer;
 
 	//---using user permissions
 	private $byPermissions = false;
+	
 	//---items removed because no access
 	public $itemsRemoved = 0;
 
@@ -156,6 +158,7 @@ class FItems extends FDBTool {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
 		if($itemVO = array_shift($this->data)) {
+			$itemVO->thumbInSysRes = $this->thumbInSysRes;
 			$this->fItemsRenderer->render( $itemVO );
 			FProfiler::profile('FItems::parse--ITEM PARSED');
 		}
