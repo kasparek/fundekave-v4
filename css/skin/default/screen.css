@@ -183,14 +183,14 @@ div.galleryList div.thumbnail {float: left;margin-right: 15px;padding-top: 0;mar
 div.galleryList div.hentry {clear: both;min-height: 140px;padding: 0;margin-bottom: 1em;}
 div.galleryList div.hentry h3.entry-title {padding: 0.5em 0;}
 div.galleryList div.hentry span.abbr {line-height: 2em;}
-div.galeryThumbs div.hentry {float: left;clear: none;margin: 0 0.5em 1em 0.5em;padding: 0.3em 0.6em;overflow: hidden;border: 1px solid #ddd;}
+div.galeryThumb {float: left;clear: none !important;margin: 0 0.5em 1em 0.5em;padding: 0.3em 0.6em;border: 1px solid #ddd;}
 div.entry-content div.alignRight {float:right;}
 div.entry-content div.alignLeft {float:left;}
 div.entry-content div.alignCenter {text-align: center;margin: auto 0;}
-div.entry-content div.galeryThumbs div.hentry {margin: 1em 0.5em 1em 0.5em;}
-div.entry-content div.alignCenter div.galeryThumbs div.hentry {float:none;width: 170px;margin: auto;}
-div.galeryThumbs div.hentry div.entry-content {padding: 0;}
-div.galeryThumbs div.hentry div.foto {text-align: center;}
+div.entry-content div.galeryThumb {margin: 1em 0.5em 1em 0.5em !important;}
+div.entry-content div.alignCenter div.galeryThumb {float:none;width: 170px;margin: auto;}
+div.galeryThumb div.entry-content {padding: 0;}
+div.galeryThumb div.foto {text-align: center;}
 div#fotoBox div.back {margin-bottom: 1em;text-align: center;}
 div.fotoDetailBox,div.fotoDetailBox p {text-align: center;}
 

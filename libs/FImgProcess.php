@@ -82,18 +82,23 @@ class FImgProcess {
 
 			if($this->open() === false) return false;
 
+			$sharpen = false;
+			$normalize = false;
 			if(isset($mode['optimize'])) {
-				if($this->imagick) {
-					$this->imagick->normalizeImage();
-					$this->imagick->unsharpMaskImage(0 , 0.5 , 1 , 0.05);
-				}
+				$sharpen = true;
+				$normalize = true;	
+			}
+			if(isset($mode['sharpen'])) $sharpen=true;
+			if(isset($mode['normalize'])) $normalize=true;
+			
+			if($this->imagick) {
+				if($normalize) $this->imagick->normalizeImage();
+				if($sharpen) $this->imagick->unsharpMaskImage(0 , 0.5 , 1 , 0.05);
 			}
 
 			$this->resize($width,$height);
 
-			if($this->image) {
-				if(isset($mode['rotate'])) $this->rotate();
-			}
+			if(isset($mode['rotate'])) $this->rotate();
 
 			$this->data = $this->save();
 		}
@@ -173,6 +178,8 @@ class FImgProcess {
 
 		if(empty($this->errorArr)) {
 			if(empty($mode)) $mode = $this->mode;
+			$crop = false;
+			if(!empty($mode['crop'])) $crop = true;
 
 			$cropX = 0;
 			$cropY = 0;
@@ -202,10 +209,8 @@ class FImgProcess {
 				if(empty($mode['crop'])) $mode['proportional'] = 1;
 			}
 
-			if(!empty($mode['crop'])) {
-				$ptmp_width = $width;
-				$ptmp_height = $this->sourceHeight * $width / $this->sourceWidth;
-				if($ptmp_height < $height) {
+			if($crop) {
+				if(($this->sourceHeight * $width / $this->sourceWidth) < $height) {
 					$cropWidth = $width * $cropHeight / $height;
 					$cropX = ($this->sourceWidth-$cropWidth) / 2;
 				} else {
@@ -233,30 +238,11 @@ class FImgProcess {
 				$targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 			}
 
-			//TODO: test and fix for imagick
-			/*
-			 if(isset($mode['frame'])) {
-				//FIXME: kombinace crop a frame zlobi protoze tohle
-				$targetX = ($targetWidth / 2) - ($p_width / 2);
-				$targetY = ($targetHeight / 2) - ($p_height / 2);
-				//---set backgroung color
-				//TODO: Imagick::colorFloodfillImage
-				if(isset($mode['bgColorHex'])) $bgColorHex = $mode['bgColorHex'];
-				if(isset($mode['bgColorRGB'])) $bgColorHex = imageColorAllocate($targetImage, $mode['bgColorRGB']['R'], $mode['bgColorRGB']['G'], $mode['bgColorRGB']['B']);
-				if(isset($bgColorHex)) ImageFill($targetImage,1,1,$bgColorHex);
-				else {
-				//---works just for PNG target
-				$colorTransparent = imagecolorallocatealpha($targetImage, 0, 0, 0, 127);
-				imagefill($targetImage, 0, 0, $colorTransparent);
-				}
-				}
-				*/
-
 			if($this->imagick) {
-				if(!empty($mode['crop'])) {
+				if($crop) {
 					$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
 				}
-				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1, true );  //true to best fit in
+				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1 );
 			} else {
 				imagecopyresampled($targetImage, $this->image, $targetX, $targetY, $cropX, $cropY, $p_width, $p_height, $cropWidth, $cropHeight);
 				$this->image = $targetImage;

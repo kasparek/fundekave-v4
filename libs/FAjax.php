@@ -22,9 +22,9 @@ class FAjax {
 		$dataProcessed = array();
 		if($ajax == true) {
 			$dataXML = stripslashes( $data );
-			 
+
 			$xml = new SimpleXMLElement($dataXML);
-			
+				
 			foreach($xml->Request->Item as $item) {
 				$k = (String)$item['name'];
 				$v = (String)$item;
@@ -38,7 +38,7 @@ class FAjax {
 					$dataProcessed[ $k ] = $v;
 				}
 			}
-			
+				
 			$dataProcessed['__ajaxResponse'] = true;
 		} else {
 			if(is_array($data)) {
@@ -108,6 +108,9 @@ class FAjax {
 
 		if($ajax === true) {
 			header ("content-type: text/xml");
+			//do super vars
+			$ret = FSystem::superVars($ret);
+			
 			echo $ret;
 			exit();
 		}
@@ -133,10 +136,10 @@ class FAjax {
 			FHTTP::redirect($url);
 		}
 	}
-	
+
 	static public function isRedirecting() {
-	  $fajax = FAjax::getInstance();
-	  return $fajax->redirecting;
+		$fajax = FAjax::getInstance();
+		return $fajax->redirecting;
 	}
 
 	static public function addResponse($target, $property, $value) {
@@ -178,7 +181,7 @@ class FAjax {
 					break;
 			}
 		}
-    $tpl->touchBlock('__global__');
+		$tpl->touchBlock('__global__');
 		$tpl->parse();
 		FAjax::resetResponse();
 		return $tpl->get();

@@ -410,11 +410,14 @@ class FBuildPage {
 		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
 
 		//---LEFT PANEL POPULATING
-		$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
-		$fLeftpanel->load();
-		$fLeftpanel->show();
-		FProfiler::profile('FBuildPage--FLeftPanel');
-		$fLeftpanel = false;
+		$showSidebar = true;
+		if($user->pageVO) $showSidebar=$user->pageVO->showSidebar;
+		if($showSidebar) {
+			$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
+			$fLeftpanel->load();
+			$fLeftpanel->show();
+			FProfiler::profile('FBuildPage--FLeftPanel');
+		}
 
 
 		//---FOOTER INFO
@@ -486,13 +489,7 @@ class FBuildPage {
 		
 		$data = $tpl->get();
 		//replace super variables
-		//TODO: do supervariable some coolway
-		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
-		$superVars = array('SKINURL'=>'css/skin/default');
-		foreach($superVars as $k=>$v) {
-			$data = str_replace('[['.$k.']]',$v,$data);
-			 
-		}
+		$data = FSystem::superVars($data);
 				
 		echo $data;
 	}

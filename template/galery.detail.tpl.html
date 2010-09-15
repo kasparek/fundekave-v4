@@ -1,10 +1,9 @@
-<!-- BEGIN fotodetail --><div class="fotoDetailBox">
+<div class="fotoDetailBox">
 <!-- BEGIN statistic --><div class="stats">
-    <!-- BEGIN tag --><span class="tagGalery">{TAG}</span> | <!-- END tag -->
-    <!-- BEGIN rating --><span class="viewedTimes">{HITS}<img src="[[SKINURL]]/img/eye.png" title="Pocet zobrazeni" alt="x zobrazeni" /></span><!-- END rating -->
+    <!-- BEGIN tag --><span class="tagGalery" id="tag">{TAG}</span> | <!-- END tag -->
+    <!-- BEGIN rating --><span class="viewedTimes" id="hit">{HITS}<img src="[[SKINURL]]/img/eye.png" title="Pocet zobrazeni" alt="x zobrazeni" /></span><!-- END rating -->
 </div><!-- END statistic -->
-<!-- BEGIN nextlink --><a href="{NEXTLINK}" class="fajaxa hash" title="Dalsi fotografie"><!-- END nextlink --><div class="showProgress"><img src="{IMGDIR}" alt="{IMGALT}" /></div><!-- BEGIN nextlinkclose --></a><!-- END nextlinkclose -->
-<!-- BEGIN info --><p>{INFO}</p><!-- END info -->
+<!-- BEGIN nextlink --><a href="{NEXTLINK}#foto" id="detailNext" name="foto" class="fajaxa hash showBusy" title="Dalsi fotografie"><!-- END nextlink --><div class="showProgress"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" /></div><!-- BEGIN nextlinkclose --></a><!-- END nextlinkclose -->
+<p id="desription">{INFO}</p>
 </div>
-<!-- BEGIN comments --><div class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
-<!-- END fotodetail -->
+<!-- BEGIN comments --><div id="comments" class="comments"><h3>Diskuze</h3>{COMMENTS}</div><!-- END comments -->
