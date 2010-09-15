@@ -209,6 +209,22 @@ if($cutParam === 'flush') {
 }
 
 if(isset($imageProps)) {
+	
+	$widthParamTmp = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
+	$heightParamTmp = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
+	if($widthParam==$heightParam) {
+		if($widthParamTmp > $heightParamTmp) {
+			$widthParam = $widthParamTmp;
+			$heightParam = $widthParamTmp; 
+		} else {
+			$widthParam = $heightParamTmp;
+			$heightParam = $heightParamTmp;
+		}
+	} else {
+		$widthParam = $widthParamTmp;
+		$heightParam = $heightParamTmp;
+	}
+	
 	$ratio = $widthParam/$imageProps[0];
 
 	if($ratio < 0.6) {
@@ -223,7 +239,7 @@ if(isset($imageProps)) {
 		/**
 		 * output original image if it is really close to current side size
 		 */
-		if($ratio<$c->maxNoScaleRatio && $ratio>$c->minNoScaleRatio) {
+		if($ratio < $c->maxNoScaleRatio && $ratio > $c->minNoScaleRatio) {
 			//display original
 			$targetImage = $sourceImage;
 			$contentType = $imageProps['mime'];
@@ -238,14 +254,7 @@ if(isset($imageProps)) {
 			$contentType = $imageProps['mime'];
 		}
 	}
-
-	if($widthParam==$heightParam) {
-		$heightParam = $widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
-	} else {
-		$widthParam = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
-		$heightParam = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
-	}
-
+	
 	/**
 	 * cache file if not exist
 	 */

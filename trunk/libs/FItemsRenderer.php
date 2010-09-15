@@ -1,10 +1,6 @@
 <?php
 class FItemsRenderer {
 
-	function __construct() {
-
-	}
-
 	var $debug = false;
 
 	private $tpl = false;
@@ -20,7 +16,6 @@ class FItemsRenderer {
 	public $openPopup = true;
 	public $showRating = true;
 	public $showHentryClass = true;
-	public $inside = false;
 	public $showPocketAdd = true;
 	public $showFooter = true;
 	public $showHeading = true;
@@ -93,10 +88,6 @@ class FItemsRenderer {
 
 		//---common for all items
 		if($this->showHentryClass === true) $touchedBlocks['hentry']=true;
-		if($this->inside === true) {
-			$touchedBlocks['thumbsdiv']=true;
-			$touchedBlocks['thumbsdivend']=true;	
-		}
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');

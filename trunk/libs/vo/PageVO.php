@@ -93,6 +93,7 @@ class PageVO extends Fvob {
 	var $htmlTitle;
 	var $htmlDescription;
 	var $htmlKeywords;
+	var $showSidebar = true;
 
 	//---watcher
 	var $saveOnlyChanged = false;
