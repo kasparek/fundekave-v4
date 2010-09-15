@@ -63,9 +63,10 @@ class page_ForumView implements iPage {
 		} else {
 				
 			/* WEBCAMS */
-			$fuvatar =  new FUvatar();
-			FBuildPage::addTab(array("MAINDATA"=>$fuvatar->getLive()));
-			$fuvatar = false;
+			//$fuvatar =  new FUvatar();
+			//FBuildPage::addTab(array("MAINDATA"=>$fuvatar->getLive()));
+			//$fuvatar = false;
+			
 			FProfiler::profile('page_ForumView--FForum::show-BEFORE');
 			/* FORUM */
 			FBuildPage::addTab(array("MAINDATA"=>FForum::show()));

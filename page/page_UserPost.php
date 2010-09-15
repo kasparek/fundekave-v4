@@ -221,6 +221,6 @@ class page_UserPost implements iPage {
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 
 		$tpl = FBuildPage::getInstance();
-		$tpl->touchBlock('userPostEND');
+		$tpl->touchBlock('userPostInit');
 	}
 }
