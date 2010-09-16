@@ -168,6 +168,7 @@ function tabsInit() { $("#tabs").tabs(); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
 
 function BBQinit() {
+
     var url = $.param.fragment();
     if(url) {
     var urlArr = url.split('/');
@@ -183,9 +184,9 @@ function BBQinit() {
 		}
     sendAjax(urlArr[0]);
     }
+    
 };
 
-//http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js
 function fuupUploadOneComplete() {
 	sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));
 };
