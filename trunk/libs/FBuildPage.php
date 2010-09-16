@@ -454,7 +454,6 @@ class FBuildPage {
 			$tpl->touchBlock("datepickerInit");
 		}
 		if($useSlimbox === true) {
-			$tpl->touchBlock("slimboxLoad");
 			$tpl->touchBlock("slimboxInit");
 		}
 		if($useSwfobject === true) {
@@ -468,12 +467,10 @@ class FBuildPage {
 			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
 		}
 		if($useFajaxform === true) {
-			$tpl->touchBlock("fajaxformLoad");
 			$tpl->touchBlock("fajaxformInit");
 		}
 		if($useBBQ===true) {
-			$tpl->touchBlock("bbqLoad");
-			$tpl->touchBlock("bbqInit");
+			$tpl->touchBlock("hashchangeInit");
 		}
 
 		if($user->idkontrol===true) {
