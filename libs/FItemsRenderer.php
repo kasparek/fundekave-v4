@@ -316,34 +316,32 @@ class FItemsRenderer {
 		//TODO: fix caching position
 		$position = $itemVO->prop('position');
 		if(!empty($position)) {
+			$journey = array();
+			if(strpos($position,';')!==false) {
+				$journey = explode(';',$position);
+				$position = $journey[count($journey)-1]; //last item of journey used like position 
+			}
 		
 		$vars['MAPDIVITEMID'] = $itemVO->itemId;
 		
-		$to = array();
-		$position = str_replace(' ','',trim($position));
-		  $journeyTo = $itemVO->prop('journeyTo');
-		  if(!empty($journeyTo)) {
-			$to = explode("\n",$journeyTo);
-			}
-		   $to[] = $position;
-		   $journeyFrom = $itemVO->prop('journeyFrom');
-		   if(!empty($journeyFrom)) {
-		   $from = explode("\n",$itemVO->prop('journeyFrom'));
-		   $merge = array_merge($to,$from);
-		   } else {
-			 $merge = $to;
-			 }
 			if(isset($_GET['map'])) {
 				$touchedBlocks['maplarge']=true;
 			 //get bound points
 			 $swArr = array(90,180); 
 			 $neArr = array(-90,-180);
-			 foreach($merge as $k=>$v) {
-			    $wpLatLong = explode(',',str_replace(' ','',trim($v)));
+			 if(!empty($journey)) {
+			 foreach($journey as $k=>$v) {
+			    $wpLatLong = explode(',',$v);
 			    if($wpLatLong[0] < $swArr[0]) $swArr[0] = $wpLatLong[0];
 			    if($wpLatLong[0] > $neArr[0]) $neArr[0] = $wpLatLong[0];
 			    if($wpLatLong[1] < $swArr[1]) $swArr[1] = $wpLatLong[1];
 			    if($wpLatLong[1] > $neArr[1]) $neArr[1] = $wpLatLong[1];
+			 }
+			 } else {
+			 		//bounds base on position
+			 		$wpLatLong = explode(',',$position);
+			    $swArr = array($wpLatLong[0]+5,$wpLatLong[1]+5); 
+			 		$neArr = array($wpLatLong[0]-5,$wpLatLong[1]-5);
 			 }
 			 $sw = implode(',',$swArr); 
 			 $ne = implode(',',$neArr);
@@ -357,10 +355,9 @@ class FItemsRenderer {
 			 $vars['MAPCLASS'] = 'maplarge';
 			 
 			 $vars['JOURNEYITEMID'] = $itemVO->itemId;
-			 while(count($merge)>0) {
-			 	$wp = str_replace(' ','',trim(array_shift($merge)));
-			 	$tpl->setVariable('WPPOS',$wp);
-			 	if(count($merge)>0) { $tpl->touchBlock('wpeol'); }
+			 while(count($journey)>0) {
+			 	$tpl->setVariable('WPPOS',array_shift($journey));
+			 	if(count($journey)>0) { $tpl->touchBlock('wpeol'); }
 				$tpl->parse('waypoint');
 			 }
 			 		   
@@ -368,22 +365,23 @@ class FItemsRenderer {
 		   $vars['JOURNEYSIZE'] = '2';
 			 
 			} else {
-			
-		   $vars['STATICITEMID'] = $itemVO->itemId;
-		   $vars['STATICITEMTITLE'] = $addon;
-		   $vars['STATICWIDTH'] = 200;
-		   $vars['STATICHEIGHT'] = 200;
-		   $vars['STATICMARKERPOS'] = $position;
-		   $vars['STATICJOURNEYCOLOR'] = 'ff0000';
-		   $vars['STATICJOURNEYSIZE'] = '2';
-		   $vars['MAPCLASS'] = 'mapsmall';
-		   
-		   while(count($merge)>0) {
-			 	$wp = str_replace(' ','',trim(array_shift($merge)));
-			 	$tpl->setVariable('STATICWPPOS',$wp);
-			 	if(count($merge)>0) { $tpl->touchBlock('staticwpeol'); }
-				$tpl->parse('staticwp');
-			 }
+			   $vars['STATICITEMID'] = $itemVO->itemId;
+			   $vars['STATICITEMTITLE'] = $addon;
+			   $vars['STATICWIDTH'] = 200;
+			   $vars['STATICHEIGHT'] = 200;
+			   $vars['STATICMARKERPOS'] = $position;
+			   $vars['STATICJOURNEYCOLOR'] = 'ff0000';
+			   $vars['STATICJOURNEYSIZE'] = '2';
+			   $vars['MAPCLASS'] = 'mapsmall';
+			   if(!empty($journey)) {
+			   while(count($journey)>0) {
+				 	$tpl->setVariable('STATICWPPOS',array_shift($journey));
+				 	if(count($merge)>0) $tpl->touchBlock('staticwpeol');
+					$tpl->parse('staticwp');
+				 }
+				 } else {
+				    $vars['STATICZOOMLEVEL'] = '12';
+				 }
 			 }
 		}
 		/**/

@@ -44,9 +44,15 @@ class FBlog {
 				$returnItemId = $itemVO->save();
 
 				///properties
-				$itemVO->setProperty('position', FSystem::textins($data['position'],array('plainText'=>1)));
-				$itemVO->setProperty('journeyTo', FSystem::textins($data['journeyto'],array('plainText'=>1)));
-				$itemVO->setProperty('journeyFrom', FSystem::textins($data['journeyfrom'],array('plainText'=>1)));
+				//validate position list
+				$posList = explode("\n",FSystem::textins($data['position'],array('plainText'=>1)));
+				foreach($posList as $pos) {
+					$latLng = explode(',',$pos);
+					$latLng[0] = trim($latLng[0])*1;
+					$latLng[1] = trim($latLng[1])*1;
+					$posListNew[] = $latLng[0].','.$latLng[1];
+				}
+				$itemVO->setProperty('position', implode(';',$posListNew));
 				$itemVO->setProperty('forumSet',(int) $data['forumset']);
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
@@ -116,9 +122,7 @@ class FBlog {
 				$tpl->touchBlock('fforum'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
 				$selectedCategory = $itemVO->categoryId;
 				
-				$tpl->setVariable('POSITION',$itemVO->prop('position'));
-				$tpl->setVariable('JOURNEYTO',$itemVO->prop('journeyTo'));
-				$tpl->setVariable('JOURNEYFROM',$itemVO->prop('journeyFrom'));
+				$tpl->setVariable('POSITION',str_replace(';',"\n",$itemVO->prop('position')));
 			}
 		} else {
 

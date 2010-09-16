@@ -24,7 +24,7 @@
 	<div class="entry-content">{TEXT}</div>
 	
 	<!-- BEGIN map --><div id="map{MAPDIVITEMID}" class="{MAPCLASS}">
-	<!-- BEGIN staticmap --><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="{STATICWIDTH}" height="{STATICHEIGHT}" src="http://maps.google.com/maps/api/staticmap?size={STATICWIDTH}x{STATICHEIGHT}&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0x{STATICJOURNEYCOLOR}|weight:{STATICJOURNEYSIZE}|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a><!-- END staticmap -->
+	<!-- BEGIN staticmap --><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="{STATICWIDTH}" height="{STATICHEIGHT}" src="http://maps.google.com/maps/api/staticmap?size={STATICWIDTH}x{STATICHEIGHT}<!-- BEGIN zoom -->&zoom={STATICZOOMLEVEL}<!-- END zoom -->&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0x{STATICJOURNEYCOLOR}|weight:{STATICJOURNEYSIZE}|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a><!-- END staticmap -->
 	</div><!-- END map -->
 	
 	<!-- BEGIN dynamicmap -->

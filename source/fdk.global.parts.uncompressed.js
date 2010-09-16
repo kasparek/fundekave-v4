@@ -10,7 +10,7 @@
 				var val = this.value.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g,'&amp;').replace(/\n/g, '<br/>');
 				shadow.html(val);
 				$(this).css('height',Math.max(shadow.height() + 20,minHeight));
-			}
+			};
 			$(this).change(update).keyup(update).keydown(update);
 			update.apply(this);
 		});
@@ -62,7 +62,7 @@
 				}
 			}
 			return string;
-		}
+		};
 		$.extend({
 			base64Encode: function(input) {
 				var output = "";
