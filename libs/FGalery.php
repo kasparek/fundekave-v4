@@ -53,7 +53,7 @@ class FGalery {
 		$fibs = array_flip($diff);
 		$sideParam = $fibs[min($diff)];
 
-		$fGalery->itemVO->detailUrl = $fGalery->getTargetUrl(null,$sideParam,'prop');
+		$fGalery->itemVO->detailUrl = $fGalery->getTargetUrl(null,$sideParam.'/prop');
 
 
 		$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
