@@ -30,7 +30,7 @@ class ItemVO extends Fvob {
 	'public' => 'public'
 	);
 	
-	var $propertiesList = array('position','journeyTo','journeyFrom','forumSet');
+	var $propertiesList = array('position','forumSet');
 	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>2);
 
 	public function __get($name) {
