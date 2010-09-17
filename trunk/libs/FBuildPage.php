@@ -465,6 +465,7 @@ class FBuildPage {
 		if($useTabs === true) {
 			$tpl->touchBlock("juiCSS"); //---js in the header
 			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
+			$tpl->touchBlock("tabsInit");
 		}
 		if($useFajaxform === true) {
 			$tpl->touchBlock("fajaxformInit");
