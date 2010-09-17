@@ -23,40 +23,16 @@
   <!-- BEGIN category --><span class="category<!-- BEGIN categoryhidden --> hidden<!-- END categoryhidden -->"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
 	<div class="entry-content">{TEXT}</div>
 	
-	<!-- BEGIN map --><div id="map{MAPDIVITEMID}" class="{MAPCLASS}">
+	<!-- BEGIN map --><div id="map{MAPID}" class="mapLarge">
+	<!-- BEGIN mapdata -->
+	<div class="mapsData hidden">
+		<input type="hidden" name="mapLargeData" class="mapData" value="{MAPPOSITION}" />
+		<input type="hidden" name="mapTitle" class="mapTitle" value="{MAPTITLE}" />
+		<div class="mapInfo">{MAPINFO}TODO: marker/hentry description, link, distance will be added by js so contain something like [[DISTANCE]]</div>
+	</div>
+	<!-- END mapdata -->
 	<!-- BEGIN staticmap --><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="{STATICWIDTH}" height="{STATICHEIGHT}" src="http://maps.google.com/maps/api/staticmap?size={STATICWIDTH}x{STATICHEIGHT}<!-- BEGIN zoom -->&zoom={STATICZOOMLEVEL}<!-- END zoom -->&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0x{STATICJOURNEYCOLOR}|weight:{STATICJOURNEYSIZE}|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a><!-- END staticmap -->
 	</div><!-- END map -->
-	
-	<!-- BEGIN dynamicmap -->
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript">
-function gmapinit{MAPITEMID}() {
-	var mapDiv = document.getElementById('map{MAPITEMID}');
-	var map = new google.maps.Map(mapDiv, { center: new google.maps.LatLng({INITPOS}), zoom: 9, mapTypeId: google.maps.MapTypeId.TERRAIN });
-	<!-- BEGIN journey -->var journeyPath{JOURNEYITEMID} = new google.maps.Polyline({ path: [<!-- BEGIN waypoint -->new google.maps.LatLng({WPPOS})<!-- BEGIN wpeol -->,<!-- END wpeol --><!-- END waypoint -->], strokeColor: "#{JOURNEYCOLOR}", strokeOpacity: 1.0, strokeWeight: {JOURNEYSIZE} });
-  journeyPath{JOURNEYITEMID}.setMap(map);
-	/*
-  var distanceWindow = new google.maps.InfoWindow({});
-  google.maps.event.addListener(journeyPath{JOURNEYITEMID}, 'mouseover', function() {
-  	distanceWindow.setContent = 'Vzdalenost: '+journeyPath{JOURNEYITEMID}.inNM()+'NM';
-  	distanceWindow.setPosition();
-  	distanceWindow.open(map);
-  }
-  google.maps.event.addListener(journeyPath{JOURNEYITEMID}, 'mouseout', function() {
-  	distanceWindow.close();
-  }
-  */  
-  });
-	<!-- END journey -->
-	var content{MAPITEMID} = new google.maps.InfoWindow({ content: '{ITEMCONTENT}' });
-	var marker{MAPITEMID} = new google.maps.Marker({ position: new google.maps.LatLng({ITEMPOS}), map: map, title:"{ITEMTITLE}" });
-	google.maps.event.addListener(marker{MAPITEMID}, 'click', function() { content{MAPITEMID}.open(map,marker{MAPITEMID}); });<!-- END item -->
-	<!-- BEGIN fitbounds -->map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng({SWBOUND}), new google.maps.LatLng({NEBOUND})));<!-- END fitbounds -->
-}
-google.maps.event.addDomListener(window, 'load', gmapinit{MAPITEMID});
-</script>
-<!-- END dynamicmap -->
-
 	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div><!-- END comments -->

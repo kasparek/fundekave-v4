@@ -316,64 +316,24 @@ class FItemsRenderer {
 		//TODO: fix caching position
 		$position = $itemVO->prop('position');
 		if(!empty($position)) {
-			$journey = array();
-			if(strpos($position,';')!==false) {
-				$journey = explode(';',$position);
-				$position = $journey[count($journey)-1]; //last item of journey used like position 
-			}
-		
-		$vars['MAPDIVITEMID'] = $itemVO->itemId;
-		
+			
 			if(isset($_GET['map'])) {
-				$touchedBlocks['maplarge']=true;
-			 //get bound points
-			 $swArr = array(90,180); 
-			 $neArr = array(-90,-180);
-			 if(!empty($journey)) {
-			 foreach($journey as $k=>$v) {
-			    $wpLatLong = explode(',',$v);
-			    if($wpLatLong[0] < $swArr[0]) $swArr[0] = $wpLatLong[0];
-			    if($wpLatLong[0] > $neArr[0]) $neArr[0] = $wpLatLong[0];
-			    if($wpLatLong[1] < $swArr[1]) $swArr[1] = $wpLatLong[1];
-			    if($wpLatLong[1] > $neArr[1]) $neArr[1] = $wpLatLong[1];
-			 }
-			 } else {
-			 		//bounds base on position
-			 		$wpLatLong = explode(',',$position);
-			    $swArr = array($wpLatLong[0]+5,$wpLatLong[1]+5); 
-			 		$neArr = array($wpLatLong[0]-5,$wpLatLong[1]-5);
-			 }
-			 $sw = implode(',',$swArr); 
-			 $ne = implode(',',$neArr);
-			 $vars['MAPITEMID'] = $itemVO->itemId;
-			 $vars['INITPOS'] = $position;
-			 $vars['ITEMCONTENT'] = '<strong>'.$addon.'</strong><br />.'.str_replace(array("\n","\r"),'',$itemVO->text); 
-			 $vars['ITEMPOS'] = $position;
-			 $vars['ITEMTITLE'] = $addon;
-			 $vars['SWBOUND'] = $sw;
-			 $vars['NEBOUND'] = $ne;
-			 $vars['MAPCLASS'] = 'maplarge';
-			 
-			 $vars['JOURNEYITEMID'] = $itemVO->itemId;
-			 while(count($journey)>0) {
-			 	$tpl->setVariable('WPPOS',array_shift($journey));
-			 	if(count($journey)>0) { $tpl->touchBlock('wpeol'); }
-				$tpl->parse('waypoint');
-			 }
-			 		   
-			 $vars['JOURNEYCOLOR'] = 'ff0000';
-		   $vars['JOURNEYSIZE'] = '2';
-			 
+			 $vars['MAPID'] = $itemVO->itemId;
+			 $vars['MAPPOSITION'] = str_replace(";","\n",$position);
+			 $vars['MAPTITLE'] = $addon;
+			 $vars['MAPINFO'] = '<strong>'.$addon.'</strong><br />.'.str_replace(array("\n","\r"),'',$itemVO->text).'<br /><br />Distance: [[DISTANCE]]NM';
 			} else {
+				$journey = explode(';',$position);
+				$journeyLen = count($journey);		
 			   $vars['STATICITEMID'] = $itemVO->itemId;
 			   $vars['STATICITEMTITLE'] = $addon;
 			   $vars['STATICWIDTH'] = 200;
 			   $vars['STATICHEIGHT'] = 200;
-			   $vars['STATICMARKERPOS'] = $position;
+			   $vars['STATICMARKERPOS'] = $journey[$journeyLen-1];
 			   $vars['STATICJOURNEYCOLOR'] = 'ff0000';
 			   $vars['STATICJOURNEYSIZE'] = '2';
 			   $vars['MAPCLASS'] = 'mapsmall';
-			   if(!empty($journey)) {
+			   if($journeyLen>0) {
 			   while(count($journey)>0) {
 				 	$tpl->setVariable('STATICWPPOS',array_shift($journey));
 				 	if(count($merge)>0) $tpl->touchBlock('staticwpeol');
