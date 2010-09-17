@@ -22,17 +22,14 @@
   <!-- BEGIN heading --><h2 class="entry-title summary<!-- BEGIN headhidden --> hidden<!-- END headhidden -->"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
   <!-- BEGIN category --><span class="category<!-- BEGIN categoryhidden --> hidden<!-- END categoryhidden -->"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
 	<div class="entry-content">{TEXT}</div>
-	
-	<!-- BEGIN map --><div id="map{MAPID}" class="mapLarge">
-	<!-- BEGIN mapdata -->
-	<div class="mapsData hidden">
+	<!-- BEGIN map --><div class="mapLarge">
+	<!-- BEGIN mapdata --><div class="mapsData hidden">
 		<input type="hidden" name="mapLargeData" class="mapData" value="{MAPPOSITION}" />
 		<input type="hidden" name="mapTitle" class="mapTitle" value="{MAPTITLE}" />
-		<div class="mapInfo">{MAPINFO}TODO: marker/hentry description, link, distance will be added by js so contain something like [[DISTANCE]]</div>
-	</div>
-	<!-- END mapdata -->
-	<!-- BEGIN staticmap --><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="{STATICWIDTH}" height="{STATICHEIGHT}" src="http://maps.google.com/maps/api/staticmap?size={STATICWIDTH}x{STATICHEIGHT}<!-- BEGIN zoom -->&zoom={STATICZOOMLEVEL}<!-- END zoom -->&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0x{STATICJOURNEYCOLOR}|weight:{STATICJOURNEYSIZE}|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a><!-- END staticmap -->
+		<div class="mapInfo"><h3>{MAPTITLE}</h3><div>{MAPINFO}</div><div><strong>Vzdalenost: [[DISTANCE]]NM</strong></div></div>
+	</div><!-- END mapdata -->
 	</div><!-- END map -->
+	<!-- BEGIN staticmap --><div class="mapSmall"><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200<!-- BEGIN zoom -->&zoom={STATICZOOMLEVEL}<!-- END zoom -->&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0xff0000|weight:2|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END staticmap -->
 	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div><!-- END comments -->

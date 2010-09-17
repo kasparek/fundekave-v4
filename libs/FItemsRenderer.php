@@ -318,21 +318,15 @@ class FItemsRenderer {
 		if(!empty($position)) {
 			
 			if(isset($_GET['map'])) {
-			 $vars['MAPID'] = $itemVO->itemId;
 			 $vars['MAPPOSITION'] = str_replace(";","\n",$position);
 			 $vars['MAPTITLE'] = $addon;
-			 $vars['MAPINFO'] = '<strong>'.$addon.'</strong><br />.'.str_replace(array("\n","\r"),'',$itemVO->text).'<br /><br />Distance: [[DISTANCE]]NM';
+			 $vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
 			} else {
 				$journey = explode(';',$position);
 				$journeyLen = count($journey);		
 			   $vars['STATICITEMID'] = $itemVO->itemId;
 			   $vars['STATICITEMTITLE'] = $addon;
-			   $vars['STATICWIDTH'] = 200;
-			   $vars['STATICHEIGHT'] = 200;
 			   $vars['STATICMARKERPOS'] = $journey[$journeyLen-1];
-			   $vars['STATICJOURNEYCOLOR'] = 'ff0000';
-			   $vars['STATICJOURNEYSIZE'] = '2';
-			   $vars['MAPCLASS'] = 'mapsmall';
 			   if($journeyLen>0) {
 			   while(count($journey)>0) {
 				 	$tpl->setVariable('STATICWPPOS',array_shift($journey));
