@@ -1,9 +1,26 @@
-//use jquery dialog
 /*
+TODO: 
+	if htmp contain mapLarge
+	
+	for each mapLarge.mapsData create path and marker on map added to mapLarge
+	mapLarge.mapsData.mapData - position
+	mapLarge.mapsData.mapTitle - title for marker
+	mapLarge.mapsData.mapInfo - content div for window
 
-
-
-*/
+  var mapInfoWindow = new google.maps.InfoWindow({content:mapInfo}); //TODO: replace [[DISTANCE]] in mapInfo
+  function mapInfoWindowShow(event) {
+  	//todo: get mapInfoWindow based on path or marker
+  	mapInfoWindow.setPosition(event.latLng);
+  	mapInfoWindow.open(map);
+	}
+	function mapInfoWindowHide() {
+		mapInfoWindow.close();
+	}  
+  google.maps.event.addListener(journeyPath, 'mouseover', mapInfoWindowShow);
+  google.maps.event.addListener(journeyPath, 'mouseout', mapInfoWindowHide);
+  google.maps.event.addListener(marker, 'mouseover', mapInfoWindowShow);
+  google.maps.event.addListener(marker, 'mouseout', mapInfoWindowHide);
+  */
 // degrees, mins, secs to decimal degrees
 // 5 10 30W
 function distance(lat1,lon1,lat2,lon2) {
@@ -18,7 +35,7 @@ function distance(lat1,lon1,lat2,lon2) {
 	return Math.round(d);
 }
 
-//f checked
+//possible format 20.5468,15.1568 or 20 10 30 N,15 23 40 W
 function mapSelectorPositionCheckFormat(position)
 {
 	position = jQuery.trim(position);
@@ -55,6 +72,11 @@ function mapSelectorProcessInput(val) {
 	return result;
 }
 
+function resetJourneyWP() {
+	if(journeyPath) {
+		journeyPath.setPath([]);
+	}
+}
 function addJourneyWP(lat,lng) {
    if(!journeyPath) journeyPath = new google.maps.Polyline( {
 			map : map,
@@ -89,13 +111,9 @@ function setMarker(lat,lng) {
 
 function initJourneySelector() {
 	setListeners('journeySelector','click',journeySelectorCreate);
-	//setListeners('journeySelector','change',mapSelectorUpdate);
-	
 }
 function initPositionSelector() {
 	setListeners('positionSelector','click',mapSelectorCreate);
-	//setListeners('positionSelector','change',mapSelectorUpdate);
-	//TODO: check if mapSelectorUpdate needed
 }
 
 var mapElTarget;
@@ -104,7 +122,6 @@ var journeyPath;
 var mapBox;
 var map;
 var journey = false;
-var dialog;
 
 function journeySelectorCreate() {
 	journey = true;
@@ -116,57 +133,46 @@ function mapSelectorCreate() {
 	mapElTarget = this;
 	mapCreate();
 }
-var bounds;
-function fitbounds() {
-map.fitBounds(bounds);
-}
-function mapCreate() {
-	var i = 0
-	var sw = [90,180]; 
-	var ne = [-90,-180];
-	var center = [0,0];
-	var zoom = 5;
 
-	var wpArr = mapSelectorProcessInput($(mapElTarget).val());
-	if (wpArr.length > 0) {
-		center = [wpArr[0][0],wpArr[0][1]];
+function getBounds() {
+	var bounds = null;
+  if(journeyPath) {
+     bounds = new google.maps.LatLngBounds();
+     journeyPath.getPath().forEach(function(el,ind){bounds.extend(el)});
 	}
-	
-	if (wpArr.length > 1) {
-		bounds = new google.maps.LatLngBounds();
-		// set bounds and auto zoom
-		zoom=0;
-		for(i=0;i<wpArr.length;i++) {
-				/*
-		    if(wpArr[i][0] < sw[0]) sw[0] = wpArr[i][0];
-		    if(wpArr[i][0] > ne[0]) ne[0] = wpArr[i][0];
-		    if(wpArr[i][1] < sw[1]) sw[1] = wpArr[i][1];
-		    if(wpArr[i][1] > ne[1]) ne[1] = wpArr[i][1];
-		    */
-		    bounds.extend(new google.maps.LatLng(wpArr[i][0], wpArr[i][1]));
-		 }
-	}
+	return bounds;
+}
+
+function mapCreate() {
+	var i = 0, center = [50,0], zoom = 5, bounds;
 
 	if (!mapBox) {
 		$("body").append('<div id="mapsel"></div>');
 		mapBox = document.getElementById('mapsel');
 		map = new google.maps.Map(mapBox, { mapTypeId : google.maps.MapTypeId.TERRAIN });
 	}
-	if(zoom > 0) {
+	
+	
+	var wpArr = mapSelectorProcessInput($(mapElTarget).val());
+	if (wpArr.length > 0) {
+		center = [wpArr[0][0],wpArr[0][1]];
+		setMarker(center[0],center[1]);
+	}
+	
+	if (wpArr.length > 1) {
+		resetJourneyWP();
+		for(i=0;i<wpArr.length;i++) {
+			addJourneyWP(wpArr[i][0],wpArr[i][1]);
+		}
+		bounds = getBounds();
+	}
+	
+	if(bounds) {
+		map.setZoom(24); 
+		setTimeout(function() { map.fitBounds(bounds); })
+	}	else {
 		map.setCenter(new google.maps.LatLng(center[0], center[1]))
 		map.setZoom(zoom);
-	}	else {
-		
-		//map.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(sw[0],sw[1]), new google.maps.LatLng(ne[0],ne[1])));
-		map.setZoom(16); 
-		//map.fitBounds(bounds);
-		setTimeout(fitbounds)
-		//map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds));
-		//map.setZoom(16);
-
-		
-		//map.panToBounds(new google.maps.LatLngBounds(new google.maps.LatLng(sw[0],sw[1]), new google.maps.LatLng(ne[0],ne[1])));
-		
 	}
 	
 	$("#mapsel").dialog({
@@ -179,10 +185,7 @@ function mapCreate() {
 				}
 			}
 		});
-	
-	//TODO: update marks from input
-	
-	
+		
 	google.maps.event.addListener(map, 'click', function(event) {
 		$(mapElTarget).val((journey === true ? ($(mapElTarget).val().length > 0 ? $(	mapElTarget).val() + "\n" : '') : '')	+ event.latLng.toUrlValue(4));
 		if(journey) addJourneyWP(event.latLng.lat(),event.latLng.lng()); else setMarker(event.latLng.lat(),event.latLng.lng());
@@ -197,15 +200,11 @@ function mapSelectorUpdate() {
 	if (mapElTarget) {
 		if (mapBox) {
 			mapSelectorCreateMarks(mapSelectorProcessInput($(mapElTarget).val()));
-
 		}
 	}
 }
 
-function mapSelectorRemove(event) {
-		//$(mapBox).remove();
-		//mapBox = null;
-}
+function mapSelectorRemove(event) {}
 
 
 function friendRequestInit() { $('#friendrequest').show('slow'); fajaxform(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); }
