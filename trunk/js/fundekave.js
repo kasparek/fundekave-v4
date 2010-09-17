@@ -20,7 +20,86 @@ TODO:
   google.maps.event.addListener(journeyPath, 'mouseout', mapInfoWindowHide);
   google.maps.event.addListener(marker, 'mouseover', mapInfoWindowShow);
   google.maps.event.addListener(marker, 'mouseout', mapInfoWindowHide);
+  
+  <div class="mapsData hidden">
+		<input type="hidden" class="mapData" value="{MAPPOSITION}" />
+		<input type="hidden" class="mapTitle" value="{MAPTITLE}" />
+		<div class="mapInfo">{MAPINFO}TODO: marker/hentry description, link, distance will be added by js so contain something like [[DISTANCE]]</div>
+	</div>
   */
+function mapData() {
+	this.dataEl=null;
+	this.title='';
+	this.infoEl=null;
+	this.map=null;
+	this.marker=null;
+	this.path=null;
+}
+function mapHolder(mapEl) {
+	this.mapEl=mapEl;
+	this.mapDataList=[];
+	this.map = null;
+}
+var mapHoldersList=[],infoWindow;
+function initMapData() {
+	$('.mapLarge').each(function(){
+		var holder = new mapHolder(this);
+		$(this).find ('.mapsData').each(function(){
+			var data = new mapData();
+			$(this.children).each(function(){
+				switch($(this).attr("class")) {
+				case "mapData":
+					data.dataEl = this;
+					break;
+				case "mapTitle":
+					data.title = $(this).attr('value');
+					break;
+				case "mapInfo":
+					data.infoEl = this;
+					break;
+				};
+			});
+			holder.mapDataList.push(data);
+		});
+		mapHoldersList.push(holder);
+	});
+}
+function initMap() {
+	for(var k=0;k<mapHoldersList.length;k++) {
+		var holder = mapHoldersList[k];
+		//data retrieved - time to create map
+		holder.map = new google.maps.Map(holder.mapEl, { mapTypeId : google.maps.MapTypeId.TERRAIN });
+		var bounds = new google.maps.LatLngBounds();
+		for(var i=0;i<holder.mapDataList.length;i++) {
+			var data = holder.mapDataList[i];
+			data.map = holder.map;
+			//setup marker
+			var wpArr = mapSelectorProcessInput($(data.dataEl).val());
+			if (wpArr.length > 0) {
+				data.marker = new google.maps.Marker( {position : new google.maps.LatLng(wpArr[0][0], wpArr[0][1]),map : holder.map,title : data.title});
+				data.marker.html = data.infoEl;
+				bounds.extend(data.marker.getPosition());
+			}
+			//setup path
+			if (wpArr.length > 1) {
+				var wpList = [];
+				var dist = 0;
+				for(var j=0;j<wpArr.length;j++) {
+					var latLng = new google.maps.LatLng(wpArr[j][0],wpArr[j][1]);
+					wpList.push(latLng);
+					bounds.extend(latLng);
+					if(j>0) dist += distance(wpArr[j-1][0],wpArr[j-1][1],wpArr[j][0],wpArr[j][1]);
+				}
+				$(data.infoEl).text($(data.infoEl).text().replace('[[DISTANCE]]',dist));
+				data.path = new google.maps.Polyline( {map : holder.map,path : wpList,strokeColor : "#ff0000",strokeOpacity : 1.0,strokeWeight : 2,geodesic : true});
+			}
+			//setup listeners   
+			 google.maps.event.addListener(data.marker, 'click', function(event) {if(!infoWindow) infoWindow = new google.maps.InfoWindow();infoWindow.setContent(this.html);infoWindow.open(data.map,this);});
+		}
+		holder.map.setZoom(24); 
+		setTimeout(function() { holder.map.fitBounds(bounds); })
+	}
+};
 // degrees, mins, secs to decimal degrees
 // 5 10 30W
 function distance(lat1,lon1,lat2,lon2) {
@@ -100,13 +179,9 @@ function addJourneyWP(lat,lng) {
 }
 
 function setMarker(lat,lng) {
-		var latLng = new google.maps.LatLng(lat, lng);
-  	if(!marker) marker = new google.maps.Marker( {
-			position : latLng,
-			map : map,
-			title : "Current position"
-		});
-		else marker.setPosition(latLng);
+	var latLng = new google.maps.LatLng(lat, lng);
+	if(!marker) marker = new google.maps.Marker( {position : latLng,map : map,title : "Current position"});
+	else marker.setPosition(latLng);
 }
 
 function initJourneySelector() {
@@ -144,15 +219,17 @@ function getBounds() {
 }
 
 function mapCreate() {
-	var i = 0, center = [50,0], zoom = 5, bounds;
+	
 
-	if (!mapBox) {
+	if (!mapHoldersList) {
 		$("body").append('<div id="mapsel"></div>');
-		mapBox = document.getElementById('mapsel');
-		map = new google.maps.Map(mapBox, { mapTypeId : google.maps.MapTypeId.TERRAIN });
+		var holder = new mapHolder(document.getElementById('mapsel'));
+		holder.map = new google.maps.Map(mapBox, { mapTypeId : google.maps.MapTypeId.TERRAIN });
+		mapHoldersList[holder];
 	}
-	
-	
+	data = new mapData();
+	//TODO: fill data, send to righ place neasi
+	var center = [50,0], zoom = 5, bounds;
 	var wpArr = mapSelectorProcessInput($(mapElTarget).val());
 	if (wpArr.length > 0) {
 		center = [wpArr[0][0],wpArr[0][1]];
