@@ -87,24 +87,16 @@ function initMap() {
 			if (wpArr.length > 0) {
 				var markerPos = new google.maps.LatLng(wpArr[wpArr.length-1][0], wpArr[wpArr.length-1][1]);
 				data.updateMarker(markerPos);
-				//if(!data.marker) data.marker = new google.maps.Marker( {position : markerPos, map : holder.map, title : data.title});
-				//else data.marker.setPosition(markerPos);
 				bounds.extend(data.marker.getPosition()); boundNum++;
 			}
 			//setup path
 			if (wpArr.length > 1) {
-				//var wpList = [];
-				//data.distance = 0;
 				data.resetWP();
 				for(var j=0;j<wpArr.length;j++) {
 					var latLng = new google.maps.LatLng(wpArr[j][0],wpArr[j][1]);
 					data.addWP(latLng);
-					//wpList.push(latLng);
 					bounds.extend(latLng); boundNum++;
-					//if(j>0) data.distance += distance(wpArr[j-1][0],wpArr[j-1][1],wpArr[j][0],wpArr[j][1]);
 				}
-				//if(!data.path) data.path = new google.maps.Polyline( {map : holder.map,path : wpList,strokeColor : "#ff0000",strokeOpacity : 1.0,strokeWeight : 2,geodesic : true});
-				//else data.path.setPath(wpList);
 				data.updateDistance();
 			}
 			if(data.infoEl) { 
@@ -205,31 +197,6 @@ function mapCreate(data) {
 	
 	initMap();
 	
-	/*
-	var center = [50,0], zoom = 5, bounds;
-	var wpArr = mapSelectorProcessInput($(mapElTarget).val());
-	if (wpArr.length > 0) {
-		center = [wpArr[0][0],wpArr[0][1]];
-		setMarker(center[0],center[1]);
-	}
-	
-	if (wpArr.length > 1) {
-		resetJourneyWP();
-		for(i=0;i<wpArr.length;i++) {
-			addJourneyWP(wpArr[i][0],wpArr[i][1]);
-		}
-		
-	}
-	
-	if(bounds) {
-		map.setZoom(24); 
-		setTimeout(function() { map.fitBounds(bounds); })
-	}	else {
-		map.setCenter(new google.maps.LatLng(center[0], center[1]))
-		map.setZoom(zoom);
-	}
-	*/
-	
 	$("#mapsel").dialog({
 			modal: true,
 			width: $(window).width()*0.8, height: $(window).height()*0.8,
@@ -239,6 +206,7 @@ function mapCreate(data) {
 				}
 			}
 		});
+		
 	if(setListener) {	
 	google.maps.event.addListener(holder.map, 'click', function(event) {
 		data = mapHoldersList[0].mapDataList[0];

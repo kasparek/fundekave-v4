@@ -29,7 +29,8 @@
 		<div class="mapInfo"><div style="width:300px"><h3>{MAPTITLE}</h3><div>{MAPINFO}</div><div><strong>Vzdalenost: [[DISTANCE]]NM</strong></div></div></div>
 	</div><!-- END mapdata -->
 	</div><!-- END map -->
-	<!-- BEGIN staticmap --><div class="mapSmall"><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200<!-- BEGIN zoom -->&zoom={STATICZOOMLEVEL}<!-- END zoom -->&markers=color:blue|label:A|{STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path=color:0xff0000|weight:2|<!-- BEGIN staticwp -->{STATICWPPOS}<!-- BEGIN staticwpeol -->|<!-- END staticwpeol --><!-- END staticwp --><!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END staticmap -->
+	<!-- BEGIN staticmap --><div class="mapSmall"><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}">
+	<img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers={STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path={STATICWPLIST}<!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END staticmap -->
 	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>
 <!-- BEGIN comments --><div class="comments"><h3>Komentare</h3>{COMMENTS}</div><!-- END comments -->

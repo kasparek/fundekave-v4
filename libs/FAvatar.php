@@ -10,12 +10,11 @@ class FAvatar {
 		$avatar = 'default/'.AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
-			$userId = $user->userVO->userId;
+			$userVO = $user->userVO;
+			$userId = $userVO->userId; 
 		}
 		if($userId > 0) {
-			if(file_exists(FConf::get('galery','sourceServerBase').'/default/profile/'.$userId.'.jpg')) {
-				$avatar = 'default/profile/'.$userId.'.jpg';
-			}
+				if(!empty($userVO->avatar)) $avatar = $userVO->avatar; //'default/profile/'.$userId.'.jpg';
 		}
 		return $urlBase.$avatar;
 	}
@@ -75,11 +74,6 @@ class FAvatar {
 		return $ret;
 	}
 
-	static function createName($fileOrig) {
-		$user = FUser::getInstance();
-		return $user->userVO->userId.".jpg";
-	}
-
 	static function profileBasePath() {
 		$user = FUser::getInstance();
 		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/profile';
@@ -90,11 +84,4 @@ class FAvatar {
 		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/profile';
 	}
 
-	static function processAvatar($avatarName) {
-		$newName = FAvatar::createName($avatarName);
-		$targetName = FConf::get('galery','sourceServerBase').'/default/profile/'.$newName;
-		copy($avatarName, $targetName);
-		chmod($targetName,0777);
-		return $newName;
-	}
 }

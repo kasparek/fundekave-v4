@@ -78,13 +78,15 @@ class UserVO extends Fvob {
 			$this->load();
 		}
 	}
-
+	
+	/*
 	function load() {
 		$vo = new FDBvo( $this );
 		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 		$vo->load();
 	}
-
+	*/
+	
 	function save(){
 		$vo = new FDBvo( $this );
 		$vo->addIgnore('dateLastVisit');
