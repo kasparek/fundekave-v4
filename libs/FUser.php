@@ -257,34 +257,6 @@ class FUser {
 
 	}
 
-	function pageStat($insert=false,$count=false,$pageId=null,$userId=null) {
-		if(empty($pageId)) $pageId = $this->pageVO->pageId;
-		if(empty($userId)) $userId = $this->userVO->userId;
-		if($insert===true) {
-			if($count===true) $num = FDBTool::getOne("select count(1) from sys_pages_items where pageId='".$pageId."' AND userId='". (int) $userId."'");
-			else $num = 1;
-			$str = "ins=ins+".$num;
-		} else {
-			$num = 1;
-			$str = 'hit=hit+'.$num;
-		}
-		//---get type
-		if($pageId==$this->pageVO->pageId) {
-			$typeId = $this->pageVO->typeId;
-		}
-		if(empty($typeId)) {
-			$pageVO = new PageVO($pageId,true);
-			$typeId = $pageVO->typeId; 
-		}
-		
-	  //---write
-		$filename = FConf::get('settings','logs_path').'page-counter/'.$pageId.'.log';
-		$data = 'typeId='.$typeId.';userId='.$userId.';time='.Date('U').';hit='.(($insert===true)?(0):($num)).';ins='.(($insert===true)?($num):(0))."\n";
-		$h = fopen($filename, 'a');
-		fwrite($h, $data);
-		fclose($h);
-	}
-
 	function setWhoIs($userId) {
 		if(FUser::isUserIdRegistered($userId)) $this->whoIs = $userId; else $this->whoIs=0;
 	}

@@ -151,7 +151,6 @@ class FPages extends FDBTool {
 
 		FDBTool::query("delete from sys_pages_relations where pageId='".$pageId."' or pageIdRelative='".$pageId."'");
 		FDBTool::query("delete from sys_pages_favorites where pageId='".$pageId."'");
-		FDBTool::query("delete from sys_pages_counter where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_users_perm where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_pages where pageId='".$pageId."'");
 			

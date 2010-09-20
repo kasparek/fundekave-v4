@@ -63,7 +63,7 @@ class page_Main implements iPage {
 		//------MOST-VISITED-PAGES
 		if(($tmptext = $cache->getData(($user->userVO->userId*1).'-main','mostVisited')) === false) {
 			$fPages = new FPages(array('blog','galery','forum'),$user->userVO->userId);
-			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId');
+			$fPages->addJoin('join sys_pages_counter as pc on pc.pageId=p.pageId'); //TODO: no sys_pages_counter
 			$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId');
 			$fPages->addWhere('p.locked < 2');
 			$fPages->addWhere('pc.dateStamp > date_sub(now(), interval 1 week)');
