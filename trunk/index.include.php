@@ -216,8 +216,6 @@ if($processMain===true) {
 	FProfiler::profile('PAGE PROCESSED DONE');
 
 	if($user->pageAccess == true) {
-		//---page stats counted just if not any redirect
-		$user->pageStat();
 		//---tag toolbar set up
 		if($user->idkontrol === true) {
 			FItemsToolbar::setTagToolbar();

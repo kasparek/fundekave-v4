@@ -223,8 +223,7 @@ class ItemVO extends Fvob {
 		}
 
 		$itemId = $vo->save();
-		//---update stats
-		ItemVO::statPage($this->pageId, FUser::logon(), false);
+		
 		//---update in cache
 		$this->memFlush();
 			
@@ -273,8 +272,6 @@ class ItemVO extends Fvob {
 		FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
 		FDBTool::query("delete from sys_pages_items_hit where itemId='".$itemId."'");
 		FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."'");
-		//---statistics
-		ItemVO::statPage($this->pageId, FUser::logon());
 			
 		//---last item
 		$this->updateItemIdLast();
@@ -329,14 +326,11 @@ class ItemVO extends Fvob {
 	 */
 	function hit() {
 		if(!empty($this->itemId)){
-			FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
+		  //due to locking update hit sometimes from _hit table
+			//FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
 
 			//---write
-			$filename = FConf::get('settings','logs_path').'item-counter/'.$this->itemId.'.log';
-			$data = 'userId='.FUser::logon().';time='.Date('U')."\n";
-			$h = fopen($filename, 'a');
-			fwrite($h, $data);
-			fclose($h);
+			FDBTool::query("insert into sys_pages_items_hit values ('".(FUser::logon()*1)."','".$this->itemId."',now())");
 
 			$this->hit++;
 		}
@@ -438,19 +432,6 @@ class ItemVO extends Fvob {
 			$ret = $numComments - $this->cntReaded;
 		}
 		return $ret;
-	}
-
-	//---support functions
-	/**
-	 * items for page statistics
-	 *
-	 * @param string $pageId
-	 * @param int $userId
-	 * @param Boolean $count - if true num is refreshed by database
-	 */
-	static function statPage($pageId, $userId, $count = true){
-		$user = FUser::getInstance();
-		$user->pageStat(true,$count,$pageId,$userId);
 	}
 
 }
