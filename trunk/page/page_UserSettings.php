@@ -26,7 +26,8 @@ class page_UserSettings implements iPage {
 					}
 				}
 
-				FAvatar::processAvatar($dir.'/'.$newSource);
+				$user->userVO->avatar = FAvatar::profileBaseUrl() . '/' . $newSource;
+				$user->userVO->save();
 
 				$cache = FCache::getInstance('f',0);
 				$cache->invalidateGroup('avatar_'.$user->userVO->userId);
@@ -127,9 +128,9 @@ class page_UserSettings implements iPage {
 			if(isset($data['__files']["idfoto"])) {
 				$avatarFile = $data['__files']["idfoto"];
 				if ($avatarFile["error"] == 0){
-					$avatarFile['name'] = FAvatar::createName($avatarFile["name"]);
+					$avatarFile['name'] = FFile::safeFilename($avatarFile["name"]);
 					if(FSystem::upload($avatarFile, FAvatar::avatarBasePath(), 20000)) {
-						$userVO->avatar = FAvatar::processAvatar(FAvatar::avatarBasePath().$avatarFile['name']);
+						$userVO->avatar = FAvatar::avatarBaseUrl().'/'.$avatarFile['name'];
 					}
 				}
 			}

@@ -323,19 +323,10 @@ class FItemsRenderer {
 			 $vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
 			} else {
 				$journey = explode(';',$position);
-				$journeyLen = count($journey);		
 			   $vars['STATICITEMID'] = $itemVO->itemId;
 			   $vars['STATICITEMTITLE'] = $addon;
 			   $vars['STATICMARKERPOS'] = $journey[$journeyLen-1];
-			   if($journeyLen>0) {
-			   while(count($journey)>0) {
-				 	$tpl->setVariable('STATICWPPOS',array_shift($journey));
-				 	if(count($merge)>0) $tpl->touchBlock('staticwpeol');
-					$tpl->parse('staticwp');
-				 }
-				 } else {
-				    $vars['STATICZOOMLEVEL'] = '12';
-				 }
+			   if(count($journey)>1) $vars['STATICWPLIST'] = str_replace(';','|',$journey);
 			 }
 		}
 		/**/

@@ -1,5 +1,99 @@
 <?php
 class FFile {
+var $isFtpMode = false;
+var $ftpServer;
+var $ftpConn;
+var $ftpUser;
+var $ftpPass;
+var $ftpDir='.';
+
+function __construct($ftpServer='',$ftpUser='',$ftpPass='') {
+	if(!empty($ftpServer)) {
+		$this->isFtpMode = true;
+		$this->ftpServer = $ftpServer;
+		$this->ftpUser = $ftpUser;
+		$this->ftpPass = $ftpPass;
+		$this->ftpConn = ftp_connect($this->ftpServer);
+		ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
+	}
+}
+
+function __destruct() {
+	if($this->isFtpMode) {
+		ftp_close($this->ftpConn);
+	}
+}
+
+function file_exists($filename) {
+	if(!$this->isFtpMode) return file_exists($filename);
+	if(strpos($filename,'/')!==false) {
+		$f = explode('/',$filename);
+		$filename = $f[count($f)-1];
+	}
+	$list = ftp_nlist($this->ftpConn,$this->ftpDir)
+	return in_array($filename);
+}
+
+function is_file($filename) {
+  if(!$this->isFtpMode) return is_file($filename);
+  if (ftp_chdir($this->ftpConn, $filename)) {
+    ftp_chdir($this->ftpConn, '..');
+    return false;
+  } else {
+    return true;
+  }
+}
+
+function filesize($filename) {
+	if(!$this->isFtpMode) return filesize($filename);
+	return ftp_size($this->ftpConn, $filename);
+}
+
+function is_dir($filename) {
+	if(!$this->isFtpMode) return is_dir($filename);
+  if (ftp_chdir($this->ftpConn, $filename)) {
+    ftp_chdir($this->ftpConn, '..');
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function is_link($filename) {
+	if(!$this->isFtpMode) return is_link($filename);
+	return false;
+}
+
+function unlink($filename) {
+  if(!$this->isFtpMode) return unlink($filename);
+  if(strpos($filename,'/')!==false) {
+		$f = explode('/',$filename);
+		$filename = array_pop($f);
+		ftp_chdir($this->ftpConn, implode('/',$filename));
+	}
+  return ftp_delete($this->ftpConn, $filename);
+}
+
+function mkdir($filename, $mode=0777, $recursive=true) {
+  if(!$this->isFtpMode) return mkdir($filename, $mode, $recursive);
+  //TODO:do recursive create
+  return ftp_mkdir($this->ftpConn, $filename);
+}
+
+function rmdir($filename) {
+  if(!$this->isFtpMode) return rmdir($filename);
+  return ftp_rmdir($this->ftpConn, $filename);
+}
+
+function chmod($filename,$mode=0777) {
+  if(!$this->isFtpMode) return chmod($filename,$mode);
+  return ftp_chmod($this->ftpConn,$mode,$filename);
+}
+
+function move_uploaded_file($source, $target) {
+	if(!$this->isFtpMode) return move_uploaded_file($source, $target);
+	return ftp_put($this->ftpConn, $source, $target, FTP_BINARY); 
+}
 
 /**
  * get file name for chunk
@@ -43,7 +137,11 @@ function mergeChunks($imagePath, $filename, $total, $isMultipart) {
 	//---PUT CHUNKS TOGETHER
 	if(!empty($imagePath)) {
 		if(file_exists($imagePath)) unlink($imagePath);
-		$handleW = fopen($imagePath, "w");
+		if($this->isFtpMode) {
+			$handleW = tmpfile();
+		} else {
+			$handleW = fopen($imagePath, "w");
+		}
 	  for($i=0;$i<$total;$i++) {
 			$fileChunk = chunkFilename($filename,$i);
 			$handle = fopen($fileChunk, "rb");
@@ -51,14 +149,24 @@ function mergeChunks($imagePath, $filename, $total, $isMultipart) {
 			fclose($handle);
 			unlink($fileChunk);
 		}
+		
+		//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART 
+		if($isMultipart===false) {
+				$data = '';
+				ftruncate($handleW,0);
+				rewind($handleW); 
+			  while (!feof($handleW)) {
+				  $data .= fread($handleW, 8192);
+				}
+				fwrite($handleW, base64_decode( $data ));
+		}
+		
+		if($this->isFtpMode) {
+		   ftp_fput($this->ftpConn,$imagePath,$handleW,FTP_BINARY)
+		}
 	  fclose($handleW);
 	}
-	//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART 
-	if($isMultipart===false) {
-		if(file_exists($imagePath)) {
-			file_put_contents($imagePath, base64_decode( file_get_contents($imagePath) ));
-		}
-	}
+	
 }
 
 /**
@@ -93,11 +201,11 @@ static function printConfigFile($c,$pageVO) {
 		if (!is_uploaded_file($file["tmp_name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTLOADED);
 		else if($file['size'] > $size) FError::addError(FLang::$ERROR_UPLOAD_TOBIG);
 		else if (!in_array($file['type'],$types)) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDTYPE);
-		else if(file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::addError(FLang::$ERROR_UPLOAD_FILEEXISTS);
+		else if($this->file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::addError(FLang::$ERROR_UPLOAD_FILEEXISTS);
 		else if(!FSystem::checkFilename($file['name'])) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
-		else if (!$res = move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTSAVED);
+		else if (!$res = $this->move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTSAVED);
 		else {
-			chmod($kam.'/'.$file["name"],0777); //---upsesne ulozeno
+			$this->chmod($kam.'/'.$file["name"],0777); //---upsesne ulozeno
 			$ret["kam"] = $kam;
 			$ret["name"] = $file["name"];
 		}
@@ -107,16 +215,28 @@ static function printConfigFile($c,$pageVO) {
 	/**
 	 * list all files in folder
 	 **/	 	
-	static function fileList($dir,$type="") {
+	function fileList($dir,$type="") {
 		$arrFiles = array();
-		if(is_dir($dir)) {
-			$handle=opendir($dir);
-			while (false!==($file = readdir($handle))) {
-				if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/i",$file))) {
-					$arrFiles[]= $file;
+		if(!$this->isFtpMode) {
+		  //local
+			if(is_dir($dir)) {
+				$handle=opendir($dir);
+				while (false!==($file = readdir($handle))) {
+					if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/i",$file))) {
+						$arrFiles[]= $file;
+					}
+				}
+				closedir($handle);
+			}
+		} else {
+		  //ftp
+			$list = ftp_nlist($this->ftpConn,$dir);
+			foreach($list as $file) {
+			  if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/i",$file))) {
+						$arrFiles[]= $file;
 				}
 			}
-			closedir($handle);
+		
 		}
 		return $arrFiles;
 	}
@@ -124,14 +244,14 @@ static function printConfigFile($c,$pageVO) {
 	/**
 	 * calculate folder size
 	 **/	 	
-	static function folderSize($dir) {
-		$arr = FFile::fileList($dir);
+	function folderSize($dir) {
+		$arr = $this->fileList($dir);
 		$size = 0;
 		if(!empty($arr))
 		foreach($arr as $file) {
 			$filename = $dir.'/'.$file;
-			if(is_file($filename)) {
-				$size += filesize($filename);	
+			if($this->is_file($filename)) {
+				$size += $this->filesize($filename);	
 			}
 		}
 		return $size;
@@ -142,13 +262,13 @@ static function printConfigFile($c,$pageVO) {
 	 * 
 	 **/	 	 	
 	static function makeDir($dir,$mode=0777,$recursive=true) {
-		if(!file_exists($dir)) {
-			 $ret = mkdir($dir, $mode, $recursive);
+		if(!$this->file_exists($dir)) {
+			 $ret = $this->mkdir($dir, $mode, $recursive);
 			 $dirArr = explode('/',$dir);
 			 $dir = '';
 			 while(count($dirArr)>0) {
 			 	$dir .= (($dir=='')?(''):('/')).array_shift($dirArr); 
-			 	chmod($dir, $mode);
+			 	$this->chmod($dir, $mode);
 			 }
 			 return $ret;
 		}
@@ -156,6 +276,7 @@ static function printConfigFile($c,$pageVO) {
 	
 	/**
 	 * recursive folder delete
+	 * TODO: handle ftp	 
 	 **/	 	
 	static function rm_recursive($filepath) {
 		if (is_dir($filepath) && !is_link($filepath)) {
@@ -176,9 +297,10 @@ static function printConfigFile($c,$pageVO) {
 	
 	/**
 	 * recursive chmod
+	 * TODO: handle ftp	 
 	 **/	 	
 	static function chmod_recursive($filepath,$mode=0777) {
-		if (is_dir($filepath) && !is_link($filepath)) {
+		if ($this->is_dir($filepath) && !$this->is_link($filepath)) {
 			if ($dh = opendir($filepath)) {
 				while (($sf = readdir($dh)) !== false) {
 					if ($sf != '.' && $sf != '..') {
@@ -189,9 +311,9 @@ static function printConfigFile($c,$pageVO) {
 				}
 				closedir($dh);
 			}
-			return chmod($filepath, $mode);
+			return $this->chmod($filepath, $mode);
 		}
-		if(file_exists($filepath)) return chmod($filepath, $mode);
+		if($this->file_exists($filepath)) return $this->chmod($filepath, $mode);
 	}
 	
 	/**
@@ -206,6 +328,12 @@ static function printConfigFile($c,$pageVO) {
 	 **/	 	
 	static function checkDirname($dirname) {
 		return preg_match("/(^[a-zA-Z0-9]+([a-zA-Z\_0-9-\/]*))$/" , $dirname);
+	}
+	
+	static function safeFilename($filename) {
+		$arr = explode('.',strtolower($filename));
+		$ext = array_pop($arr);
+		return FSystem::safeText(implode('',$arr)) .'.'. FSystem::safeText($ext);  
 	}
 	
 	/**

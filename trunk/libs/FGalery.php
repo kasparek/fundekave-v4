@@ -209,9 +209,10 @@ class FGalery {
 			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 				
 			$galery->flush();
-				
-			if(is_file($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
-				@unlink($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+			
+			$file = new FFile();	
+			if($file->is_file($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
+				$file->unlink($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 			}
 				
 			FDBTool::query("delete from sys_pages_items where itemId='".$id."'");

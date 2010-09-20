@@ -115,17 +115,11 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			//--concat all files
 			switch($f) {
 				case 'uava':
+					//TODO: only upload to profile, no avatar set. check filename
 					$user = FUser::getInstance();
-					$imageName = FAvatar::createName($filename);
 					$dir = FAvatar::profileBasePath();
-					$imagePath = $dir . '/' . $imageName;
+					$imagePath = $dir . '/' . FFile::safeFilename($filename);
 					FFile::makeDir($dir);
-					//delete old
-					if($user->userVO->avatar) {
-						if(file_exists(FAvatar::avatarBasePath().'/'.$user->userVO->avatar)) {
-							unlink(FAvatar::avatarBasePath().'/'.$user->userVO->avatar);
-						}
-					}
 					$folderSize = FFile::folderSize($dir) / 1024;
 					if($folderSize < FConf::get('settings','personal_foto_limit')) {
 						//OK to save file
@@ -147,7 +141,8 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					$user = FUser::getInstance();
 					//---upload in tmp folder in user folder and save filename in db cache
 					$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
-					$imagePath = $dir . '/' .  $filename;
+					$filename = FFile::safeFilename($filename);
+					$imagePath = $dir . '/' . $filename;
 					FFile::makeDir($dir);
 					$cache = FCache::getInstance('d');
 					$cache->setData($filename,'event','user-'.$user->userVO->userId);
@@ -155,11 +150,8 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 				default:
 					$pageVO = new PageVO($pageId,true);
 					$galeryUrl = $pageVO->galeryDir;
-					$imageName = strtolower($filename);
-					$ext = FFile::fileExt($imageName);
-					$imageName =str_replace('.'.$ext,'',$imageName);
 					FFile::makeDir(FConf::get("galery","sourceServerBase").$galeryUrl);
-					$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FSystem::safeText($imageName).'.'.$ext;
+					$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FFile::safeFilename($filename);
 			}
 
 			FFile::mergeChunks($imagePath, $filename, $total, $isMultipart);
