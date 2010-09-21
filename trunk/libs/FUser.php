@@ -36,6 +36,14 @@ class FUser {
 		}
 		return self::$instance;
 	}
+	
+	function setRemoteAuthToken($v) {
+	  $this->userVO->idlogin = $v;
+	}
+	
+	function getRemoteAuthToken() {
+		return $this->userVO->idlogin;
+	}
 
 	/**
 	 * check if user is logged in or not
@@ -110,21 +118,35 @@ class FUser {
 	 */
 	function check( $userVO ) {
 		$ret = false;
-		if($userVO->userId > 0) { //---check only if user was logged
-			if( $this->pageId ) {
-				$q = "SELECT ul.loginId, ul.invalidatePerm, pf.book, pf.cnt
-            	FROM sys_users_logged as ul  
-            	LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageId."'  
-            	where ul.userId = '".$userVO->userId."'";
+		if($userVO->userId > 0 || !empty($userVO->idlogin)) { //---check only if user was logged
+		  if($userVO->userId > 0) {
+				$q = "select ul.loginId";
 			} else {
-				$q = "SELECT loginId, invalidatePerm
-            	FROM sys_users_logged    
-            	where userId = '".$userVO->userId."'";	
+			  $q = "select ul.userId";
+			}
+			if( $this->pageId ) {
+				$q .= ", ul.invalidatePerm, pf.book, pf.cnt FROM sys_users_logged as ul LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageId."' ";
+			} else {
+				$q .= ", ul.invalidatePerm FROM sys_users_logged as ul ";	
+			}
+			if($userVO->userId > 0) {
+				$q .= "where ul.userId = '".$userVO->userId."'";
+			} else {
+			  $q .= "where ul.loginId = '".$userVO->idlogin."'";
 			}
 			$vid = FDBTool::getRow($q);
 			$idloginInDb = null;
 			if(!empty($vid)) {
-				$idloginInDb = $vid[0];
+				if($userVO->userId > 0) {
+					$idloginInDb = $vid[0];
+				} else {
+					if($vid[0] > 0) {
+					   $userVO->userId = $vid[0];
+					   $idloginInDb = $userVO->idlogin;
+						 $userVO->load();
+						 $userVO->idlogin = $idloginInDb; 
+					}
+				}
 				if($vid[1] == 1) {
 					FRules::invalidate();	
 				}
@@ -134,15 +156,16 @@ class FUser {
 				}
 			}
 
-			//---ip address checking
-			if(($userVO->ipcheck === false || $userVO->ip == FSystem::getUserIp())
-			&& ($userVO->idlogin == $idloginInDb)) {
+			//---ip address checking - disabled 21/9/2010 ($userVO->ipcheck === false || $userVO->ip == FSystem::getUserIp())
+			if($userVO->idlogin == $idloginInDb) {
 				//---user allright
 				$ret = true;
 			} else {
 				//---user was logged but is lost - do logout acction
-				FUser::logout( $userVO->userId );
-				FError::addError(FLang::$ERROR_USER_KICKED);
+				if( $userVO->userId>0 ) {
+					FUser::logout( $userVO->userId );
+					FError::addError(FLang::$ERROR_USER_KICKED);
+				}
 				if( $this->pageVO ) {
 					//---do redirect
 					FHTTP::redirect(FSystem::getUri());
@@ -203,7 +226,7 @@ class FUser {
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
-			if($userId>0) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
+			if($userId>0 || !empty($this->userVO->idlogin)) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
 			FProfiler::profile('FUser::kde::4');
 				
 			//---check permissions needed for current page

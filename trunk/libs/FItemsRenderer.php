@@ -13,7 +13,7 @@ class FItemsRenderer {
 	public $showComments = false;
 	public $showCommentsNum = true;
 	public $showText = true;
-	public $openPopup = true;
+	public $openPopup = false;
 	public $showRating = true;
 	public $showHentryClass = true;
 	public $showPocketAdd = true;
@@ -201,9 +201,9 @@ class FItemsRenderer {
 				break;
 			case 'forum':
 				//--FORUM RENDERER
-				if( $enclosure ) {
+				if(!empty($enclosure)) {
 					if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
-					$vars['TEXT'] .= '<br /><br />' . "\n" . $this->proccessItemEnclosure($enclosure);
+					$vars['TEXT'] .= '<br /><br />' . "\n" . $enclosure;
 				}
 				if( $localUserZavatar == 1 ) {
 					$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
@@ -347,20 +347,4 @@ class FItemsRenderer {
 		}
 		return $ret;
 	}
-
-	/**
-	 * SUPPORT
-	 * */
-	static function proccessItemEnclosure($enclosure) {
-		$ret = false;
-		if($enclosure!='') {
-			if (preg_match("/(jpeg|jpg|gif|bmp|png)$/i",$enclosure)) {
-				$ret = '<img src="' . $enclosure . '" />';
-			} elseif (preg_match("/^(http:\/\/)/",$enclosure)) {
-				$ret = '<a href="' . $enclosure . '" rel="external">' . $enclosure . '</a>';
-			} else $ret = $enclosure;
-		}
-		return $ret;
-	}
-
 }

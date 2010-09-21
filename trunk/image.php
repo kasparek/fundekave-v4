@@ -13,6 +13,7 @@ function validateSideParam( $sideParam, $sideOptionList, $default ) {
 		if(empty($sideParam)) {
 			return $default;
 		} else {
+			$diff = array();
 			//get closest valid width
 			foreach ($sideOptionList as $fib) {
 				$diff[$fib] = (int) abs($sideParam - $fib);
@@ -30,6 +31,7 @@ function validateSideParam( $sideParam, $sideOptionList, $default ) {
  */
 function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRatio) {
 	if(empty($sideOriginal)) return $sideParam;
+	$diff = array();
 	$ratio = $sideParam/$sideOriginal;
 	if($ratio > $maxScaleUpRatio) {
 		$maxSize = $sideOriginal * $maxScaleUpRatio;

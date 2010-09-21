@@ -31,6 +31,9 @@ session_start();
 
 $user = FUser::getInstance();
 $user->init();
+if(isset($_GET['auth'])) {
+	$user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
+}
 
 if(!empty($_REQUEST["k"])) {
 	$kArr = explode(SEPARATOR,$_REQUEST["k"]);

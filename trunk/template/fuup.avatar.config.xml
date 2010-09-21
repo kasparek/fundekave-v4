@@ -25,6 +25,7 @@
 		</Settings>
 		<Services>
 			<Service name="files">{URL}</Service>
+			<Service name="auth">{AUTH}</Service>
 		</Services>
 	</Config>
 	<Filters>
