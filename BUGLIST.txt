@@ -1,10 +1,14 @@
 TODO:
-1. osobni - opravit nahravani - novy adresar
-
+- galery - testovat, nahravani, pozice, ajax listovani, loading progress, back button
+- galery otestovat ftp nahravani
+- clean up - kesovani vseho, projit stranky
+- osobni - opravit nahravani - novy adresar
+- osobni - otestovat ftp nahravani
+- events - nahravani letaku - novy adresat, novy url na thumnail, neni potreba generovat
+- events - otestovat ftp nahravani
 
 TODO:
 -2. avatars using /image/ - page and user
--1. CSS - on css/fdk.css combine global.css and screen.css and set header based on change date
 0. events images / thumb location
 1. object maping by default everywhere
 2. page properties in one

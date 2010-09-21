@@ -14,6 +14,7 @@ class FItems extends FDBTool {
 
 	//---using user permissions
 	private $byPermissions = false;
+	private $access = true;
 	
 	//---items removed because no access
 	public $itemsRemoved = 0;
@@ -45,31 +46,54 @@ class FItems extends FDBTool {
 		return in_array($type, $types);
 	}
 
+	function setPage($pageId) {
+		$this->addWhere("sys_pages_items.pageId='".$pageId."'");
+		if($this->byPermissions !== false) {
+			if(FRules::get($this->byPermissions,$pageId)===false) {
+				//have no access for this page so no items
+				$this->access = false;
+				return false;
+			} else {
+			  $this->byPermissions = false;
+			}
+		}
+		return true;
+	}
+	
+	function hasReactions($value=false) {
+		if($value===false) {
+	   $this->addWhere("(itemIdTop is null or itemIdTop=0)");
+	  }
+	}
+
 	function initList($typeId='', $byPermissions = false) {
 
 		$this->queryReset();
-		if(FItems::isTypeValid($typeId)) {
-			$this->typeId = $typeId;
-			$this->addWhere("typeId='".$typeId."'");
+		if($typeId!='') {
+			if(FItems::isTypeValid($typeId)) {
+				$this->typeId = $typeId;
+				$this->addWhere("typeId='".$typeId."'");
+			}
 		}
 		$doPagesJoin = true;
 
 		//---check permissions for given user
-		if($byPermissions!==false) {
+		if($byPermissions===-1) {
+		   $this->addWhere('sys_pages_items.public = 1');
+		} else if($byPermissions!==false) {
 			$this->byPermissions = $byPermissions;
 		}
-
+		
+    if($byPermissions !== -1 && !FRules::getCurrent( 2 )) { //---check for public
+			$this->addWhere('sys_pages_items.public > 0');
+		}
+			
 		//---set select
 		foreach($this->columns as $k=>$v) {
 			if(strpos($v,' as ')===false) $v .= ' as '.$k;
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
-
-		//---check for public
-		if(!FRules::getCurrent( 2 )) {
-			$this->addWhere('sys_pages_items.public > 0');
-		}
 
 	}
 
@@ -79,7 +103,9 @@ class FItems extends FDBTool {
 
 	function getList($from=0, $count=0) {
 		$this->data = array();
-
+		
+		if($this->access===false) $this->data;
+		
 		if($this->byPermissions === false) {
 			$arr = $this->getContent($from, $count);
 		} else {

@@ -69,7 +69,7 @@ class FGalery {
 	function  getTargetUrl($root=null,$thumbCut=null) {
 
 		if($root===null) {
-			$root = $this->conf['targetUrlBase'];
+			$root = 'http://' . $this->conf["ftpServer"] .'/'. $this->conf['targetUrlBase'];
 		}
 
 		if($thumbCut===null) {
@@ -237,7 +237,7 @@ class FGalery {
 	function flush( $resolution=0 ) {
 		if(!is_array($resolution)) $resolution = array($resolution);
 		foreach($resolution as $side) {
-			$url = SITE_URL.$this->getTargetUrl(null,$side,'flush');
+			$url = $this->getTargetUrl(null,$side,'flush');
 			//request url to do action
 			file_get_contents( $url );
 		}

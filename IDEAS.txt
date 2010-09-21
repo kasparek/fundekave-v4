@@ -12,13 +12,11 @@ kalendar - diary
  - pro kazdou stranku
  - kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
  - rewrite page_UserDiary
-
-minimize left bloks
-<!-- BEGIN sidebar-block-toolbar --><div class="sidebarBlockToolbar" style="display:none;"><a href="{MOVEUP}">u</a><a href="{MOVEDOWN}">d</a><a href="{MINIMIZE}">m</a></div><!-- END sidebar-block-toolbar -->
-
-rss-
-events - just events
-main - last blogs, posts, events
+ 
+feed
+	- pro homesite
+	- vybrat ci stranky se budou ukazovat v zive, zive jako hlavni stranka
+	- RSS - pouze dva druhy - zive, k - stranka
  
 WEBCAM
   - moznost aktivovat webcam swf

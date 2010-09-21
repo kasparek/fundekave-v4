@@ -29,6 +29,10 @@ class FDBConn extends mysqli
 		}
 		return self::$instance;
 	}
+	
+	public function escape($text) {
+		return $this->real_escape_string($text);
+	}
 
 	public function getOne($q) {
 		$ret = false;

@@ -79,6 +79,12 @@ if(isset($_GET['cross'])) {
  **/
 require(INIT_FILENAME);
 
+if(isset($_GET['authCheck'])) {
+	if($user->idkontrol===true) echo '1';
+	else echo '0';
+	exit;
+}
+
 $processMain = true;
 
 /**

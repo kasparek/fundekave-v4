@@ -54,40 +54,42 @@ class FRSS {
 		//typeId - galery|forum|blog page feed
 		//pageId event - event feed
 		//rest live feed
-		//no access - exit;
+		
 		$user = FUser::getInstance();
 
 		$pageNumber = 1;
 		if(isset($_GET['p'])) {
 			$pageNumber = (int) $data['p'];
 		}
-		
-		
 
 		$cache = FCache::getInstance('v',0);
-		$cacheKey = 'rss-'.$user->userVO->userId.'-'.$user->pageVO->pageId.(($pageNumber>1)?('-'.$pageNumber):(''));
+		$cacheKey = 'rss-'.$user->pageVO->pageId.(($pageNumber>1)?('-'.$pageNumber):(''));
 		$ret = $cache->getData($cacheKey,'pagelist');
 					
 		if($ret === false) {
 
-			//$perPage = $user->pageVO->perPage();
 			$perPage = 20;
 
 			//load items
-			$fi = new FItems(($user->pageVO->typeIdChild)?($user->pageVO->typeIdChild):($user->pageVO->typeId),$user->userVO->userId);
-			$fi->setSelect('itemId,pageId,typeId,if(dateStart is not null, DATE_FORMAT(dateStart,"%a, %d %b %Y %T"), DATE_FORMAT(dateCreated,"%a, %d %b %Y %T")) as date,if(dateStart is not null, dateStart, dateCreated) as dateorder,addon,text,enclosure,name');
-			if($user->pageVO->typeId!='top') {
-				$fi->addWhere("pageId='".$user->pageVO->pageId."'");
-				$fi->addWhere("(itemIdTop is null or itemIdTop=0)");
+			$fi = new FItems('',-1);
+			//TODO: decide ordering
+			//$fi->addSelect('if(sys_pages_items.dateStart is not null, sys_pages_items.dateStart, sys_pages_items.dateCreated) as dateorder');
+			
+			if($user->pageVO->typeId != 'top') {
+				$fi->setPage($user->pageVO->pageId);
+				$fi->hasReactions(false);
+				$pageName = $pageVO->name;
+				$totalFoto = $pageVO->cnt;
 			}
-			$fi->addWhere("public=1");
-			$fi->setOrder('dateorder desc');
+			//$fi->setOrder('dateorder desc');
+			$fi->setOrder('sys_pages_items.dateCreated desc');
 			
 			if($user->pageVO->typeId!='top') {
 				$totalItems = $user->pageVO->cnt;
 			}
 			
 			if($user->pageVO->typeId=='galery') $perPage = $totalItems;
+			
 			$arr = $fi->getList(($pageNumber-1)*$perPage,$perPage);
 
 			$hostSpecArr = array();
@@ -116,7 +118,7 @@ class FRSS {
 
 			$rssNow = date("Y-m-d H:i:s");
 			$tpl = FSystem::tpl('rss.xml');
-			$tpl->setVariable('CHTITLE',$user->pageVO->name .' '. $homesite);
+			$tpl->setVariable('CHTITLE',$user->pageVO->name . (($homesite!=$user->pageVO->name)?(' - '. $homesite):('')));
 			$tpl->setVariable('CHLINK','http://'.$homesite.'/'.FSystem::getUri('',$user->pageVO->pageId));
 			$tpl->setVariable('CHDESCRIPTION',$user->pageVO->description);
 			$tpl->setVariable('CHLANG','cz');
@@ -126,43 +128,32 @@ class FRSS {
 			
 			if(!empty($arr)) {
 				foreach($arr as $item) {
-					if($user->pageVO->typeId == 'top') {
+					if($item->typeId == 'galery' && empty($totalFoto)) {
 						$pageVO = new PageVO($item->pageId,true);
-					
-						$pageName = ', '.$pageVO->name;
-					} else {
-						$pageName = '';
-					} 
+						$pageName = $pageVO->name;
+						$totalFoto = $pageVO->cnt;
+					}
 					
 					$link = 'http://'.$homesite.'/'.FSystem::getUri('i='.$item->itemId,$item->pageId);
 					$tpl->setVariable('LINK',$link);
-					$tpl->setVariable('PUBDATE',$item->date.' '.date('T'));
+					$tpl->setVariable('PUBDATE',$item->dateStart ? $item->dateStartIso : $item->dateCreatedIso);
+					
 					switch($item->typeId) {
 						case 'galery':
-							$itemVO = new ItemVO($item->itemId,true,array('type'=>'galery'));
-							if($itemVO->pageId==$user->pageVO->pageId) {
-								$totalFoto = $user->pageVO->cnt;
-								$pageName  = $user->pageVO->name;
-							} else {
-								$pageVO = new PageVO($itemVO->pageId,true);
-								$totalFoto = $pageVO->cnt;
-								$pageName = $pageVO->name;
-							}
-							$tpl->setVariable('TITLE',$pageName.' '.($itemVO->getPos()+1).'/'.$totalFoto);
-							$tpl->setVariable('DESCRIPTION','<img src="'.$itemVO->thumbUrl.'" /><br /> '.$item->text);
+							$tpl->setVariable('TITLE',$pageName.' '.($item->getPos()+1).'/'.$totalFoto);
+							$tpl->setVariable('DESCRIPTION','<img src="'.$item->thumbUrl.'" /><br /> '.$item->text);
 							break;
 						case 'forum':
-							$tpl->setVariable('TITLE',$item->name.$pageName);
-							$tpl->setVariable('DESCRIPTION',$item->text);
+							$tpl->setVariable('TITLE',$item->name);
+							$tpl->setVariable('DESCRIPTION',FSystem::postText($item->text . (!empty($item->enclosure) ? '<br /><br />' . "\n" . $item->enclosure : '')));
 							break;
 						default:
-							$tpl->setVariable('TITLE',$item->addon.$pageName);
+							$tpl->setVariable('TITLE',$item->addon);
 							$tpl->setVariable('DESCRIPTION',$item->text);
 					}
 					$tpl->parse('item');
 				}
 			}
-
 			$ret = $tpl->get();
 			$cache->setData($ret,$cacheKey,'pagelist');
 		}

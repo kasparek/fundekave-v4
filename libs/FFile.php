@@ -8,7 +8,7 @@ class FFile {
 	var $ftpDir='.';
 
 	function __construct($ftpServer='',$ftpUser='',$ftpPass='') {
-		if(!empty($ftpServer)) {
+		if(!empty($ftpServer) && !empty($ftpUser)) {
 			$this->isFtpMode = true;
 			$this->ftpServer = $ftpServer;
 			$this->ftpUser = $ftpUser;
@@ -185,6 +185,8 @@ class FFile {
 				$tpl = FSystem::tpl('fuup.galery.config.xml');
 		}
 		$tpl->setVariable('URL','files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):('')));
+		$user = FUser::getInstance();
+		$tpl->setVariable('AUTH',$user->getRemoteAuthToken());
 		$tpl->show();
 	}
 
