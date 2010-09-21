@@ -1,3 +1,5 @@
+//TODO:handle back button in galery
+
 var mapHoldersList,infoWindow;
 
 function mapData() {
@@ -235,6 +237,7 @@ function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+
 
 function hashchangeInit() {
 	//TODO: this is not really working, event need to be bind on this
+	/*
     var url = $.param.fragment();
     if(url) {
     var urlArr = url.split('/');
@@ -250,7 +253,7 @@ function hashchangeInit() {
 		}
     sendAjax(urlArr[0]);
     }
-    
+    */
 };
 
 function fuupUploadOneComplete() {
@@ -363,6 +366,9 @@ function fajaxaSend(event) {
 		$(".showProgress").css('height','600');
 		$(".showProgress").css("marginLeft","auto");
 		$(".showProgress").css("marginRight","auto");
+		$("#detailFoto").each(function(){
+			$(this).css('display','none');
+		});
 	}
 	if($(event.currentTarget).hasClass('confirm')) {
 		if(!confirm($(event.currentTarget).attr("title"))) { 
@@ -511,8 +517,7 @@ var markitupSettings = {
 		{name:'Picture', key:'P', openWith:'<img src="', closeWith:'" />' },
 		{name:'Link', key:'L', openWith:'<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>', closeWith:'</a>', placeHolder:'Your text to link...' },
 		{separator:'---------------' },
-		{name:'Clean', className:'clean', replaceWith:function(markitup) { return markitup.selection.replace(/<(.*?)>/g, "") } },		
-		{name:'Preview', className:'preview',  call:'preview'}
+		{name:'Clean', className:'clean', replaceWith:function(markitup) { return markitup.selection.replace(/<(.*?)>/g, "") } }
 	]
 }
 var waitingTA = null;
@@ -542,7 +547,7 @@ function addTASwitch() {
 							waitingTA = TAId;
 							sendAjax('void-markitup');
 						} else {
-							$("#" + TAId).markItUp(mySettings);
+							$("#" + TAId).markItUp(markitupSettings);
 						}
 					}
 				}
@@ -628,27 +633,18 @@ var galeryCheckRunning = false;
 function galeryRefresh(itemsNew,itemsUpdated,total) {
 	fotoTotal = parseInt( total );
 	$("#fotoTotal").text(total);
-	
 	var itemsNewArr=[],itemsUpdatedArr=[];
 	if(itemsNew.length>0) itemsNewArr = itemsNew.split(',');
 	if(itemsUpdated.length>0) itemsUpdatedArr = itemsUpdated.split(',');
-	while(itemsNewArr.length>0) {
-		itemsNewList.push(itemsNewArr.shift());
-	}
-	while(itemsUpdatedArr.length>0) { 
-		itemsUpdatedList.push(itemsUpdatedArr.shift());
-	}
+	while(itemsNewArr.length>0) { itemsNewList.push(itemsNewArr.shift()); }
+	while(itemsUpdatedArr.length>0) { itemsUpdatedList.push(itemsUpdatedArr.shift()); }
 	if(!galeryCheckRunning) galeryCheck();
 }
 
 function galeryCheck() {
-	if(itemsUpdatedList.length>0) {
-		galeryLoadThumb(itemsUpdatedList.shift(),'U');
-	} else if(itemsNewList.length>0) {
-	  galeryLoadThumb(itemsNewList.shift(),'N');
-	} else if(fotoLoaded < fotoTotal) {
-		galeryLoadThumb();
-	}
+	if(itemsUpdatedList.length>0) {	galeryLoadThumb(itemsUpdatedList.shift(),'U');
+	} else if(itemsNewList.length>0) { galeryLoadThumb(itemsNewList.shift(),'N'); 
+	} else if(fotoLoaded < fotoTotal) {	galeryLoadThumb(); }
 }
 
 function galeryLoadThumb(item,type) {
@@ -673,6 +669,8 @@ function galeryLoadThumb(item,type) {
 	addXMLRequest('call', 'fajaxform');
 	addXMLRequest('call', 'datePickerInit');
 	addXMLRequest('call', 'bindDeleteFoto');
+	addXMLRequest('call', 'initPositionSelector');
+	addXMLRequest('call', 'initJourneySelector');
 	fotoLoaded++;
 	if(fotoLoaded < fotoTotal) {
 		addXMLRequest('call', 'galeryCheck');

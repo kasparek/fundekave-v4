@@ -70,14 +70,8 @@
 /* END BASIC SCREEN ELEMENTS */
 
 /* GOOGLE MAPS styles */
-.mapSmall {
-	float: right;
-  clear: right;
-}
-.mapLarge {
-	width: 100%;
-  height: 600px;
-}
+.mapSmall {float: right;clear: right;}
+.mapLarge {width: 100%;height: 600px;}
 
 /* PAGER */
 div.pagination {clear: left;margin: 0.3em 0;padding: 1em 0;}

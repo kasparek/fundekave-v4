@@ -1,7 +1,7 @@
 <?php
 /**
- *TODO: imagick suppport
- *
+ * image processing
+ * imagick support implemented
  *
  **/
 class FImgProcess {

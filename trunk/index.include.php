@@ -108,10 +108,12 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		$filename = $file['name'];
 
-		FFile::storeChunk($file,$seq);
+		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+		
+		$ffile->storeChunk($file,$seq);
 
 		//---file complete
-		if(FFile::hasAllChunks($filename,$total) === true) {
+		if($ffile->hasAllChunks($filename,$total) === true) {
 			//--concat all files
 			switch($f) {
 				case 'uava':
@@ -150,11 +152,12 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 				default:
 					$pageVO = new PageVO($pageId,true);
 					$galeryUrl = $pageVO->galeryDir;
-					FFile::makeDir(FConf::get("galery","sourceServerBase").$galeryUrl);
-					$imagePath = FConf::get("galery","sourceServerBase").$galeryUrl.'/'.FFile::safeFilename($filename);
+					$dir = FConf::get("galery","sourceServerBase").$galeryUrl;
+					$ffile->makeDir($dir);
+					$imagePath = $dir.'/'.FFile::safeFilename($filename);
 			}
-
-			FFile::mergeChunks($imagePath, $filename, $total, $isMultipart);
+			
+			$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
 
 		}
 		echo 1;

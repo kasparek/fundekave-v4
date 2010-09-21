@@ -1,6 +1,8 @@
 <?php
 class rh_galerie_rnd {
 	static function show() {
+		return '';
+		
 		$cache = FCache::getInstance('f',86400);
 		$ret = $cache->getData('rh_galerie_rnd','lp');
 		if($ret===false) {

@@ -115,7 +115,8 @@ class FGalery {
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
 		$galdir = $this->conf['sourceServerBase'] . $this->pageVO->galeryDir.'/';
-		$arrFiles = FFile::fileList($galdir,"png|jpg|jpeg|gif");
+		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+		$arrFiles = $ffile->fileList($galdir,"png|jpg|jpeg|gif");
 
 		$change = false;
 

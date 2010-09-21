@@ -3,8 +3,6 @@ class pageCategories {
 	static function show() {
 		$user = FUser::getInstance();
 		
-		
-		
 		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
 		if($user->pageVO->typeId=='top') {
 			$tool->setWhere("c.typeId = '".$user->pageVO->typeIdChild."'");
@@ -40,11 +38,11 @@ class pageCategories {
 		$arr = $tool->getContent();
 
 		if(!empty($arr)) {
-			$tpl = FSystem::tpl(FLang::$TPL_SIDEBAR_PAGE_CATEGORIES);
+			$tpl = FSystem::tpl('item.pagelink.tpl.html');
 			foreach ($arr as $category) {
 				if($category[2] > 0) {
 					$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$user->pageId,''));
-					$tpl->setVariable('NAME', $category[1]);
+					$tpl->setVariable('PAGENAME', $category[1]);
 					$tpl->setVariable('SUM', $category[2]);
 					$tpl->parse('item');
 				}

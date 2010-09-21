@@ -852,7 +852,7 @@ class FHTMLTemplateIT
 
         $filename = $this->fileRoot . $filename;
 
-        if (!($fh = @fopen($filename, 'r'))) {
+        if (!($fh = fopen($filename, 'r'))) {
             $this->err[] = $this->errorMessage(IT_TPL_NOT_FOUND) . ': "' .$filename .'"';
             return "";
         }
