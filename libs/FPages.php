@@ -266,7 +266,6 @@ class FPages extends FDBTool {
 		$tpl = FSystem::tpl('item.pagelink.tpl.html');
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
-			$tpl->touchBlock('showicons');
 			foreach ($arrLinks as $page) {
 				if($user->userVO->zforumico) {
 						if(isset(FLang::$TYPEID[$page->typeId])) {
@@ -280,7 +279,7 @@ class FPages extends FDBTool {
 					  }
 				}
 				$tpl->setVariable("PAGENAME", $page->name);
-				$tpl->setVariable("PAGEID", $page->pageId.'-'.FSystem::safetext($page->name));
+				$tpl->setVariable("URL", '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
 				if($user->idkontrol===true) {
 					if(isset($page->unreaded)) {
 						if($page->unreaded>0 && $page->unreaded<100000) $tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);

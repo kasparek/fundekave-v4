@@ -375,6 +375,7 @@ class FEvents {
 			$cache->invalidateData('event','user-'.$user->userVO->userId);
 			if(!empty($filename)) {
 				//---set flyer
+				//TODO: fix uploading
 				$flyerName = FEvents::createFlyerName($itemVO->itemId, $filename);
 				if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
 				$flyerTarget = ROOT_FLYER.$flyerName;

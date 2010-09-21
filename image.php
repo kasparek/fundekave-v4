@@ -161,7 +161,7 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
 	echo 'file is dir';
 	exit;
 
-} else {
+} else if($cutParam != 'flush') {
 	if(empty($targetImage)) {
 		require_once($c->libraryBasePath.'libs/FImgProcess.php');
 		$imageProps = FImgProcess::getimagesize($sourceImage);
@@ -183,6 +183,8 @@ if($cutParam === 'flush') {
 	if($widthParam!=0) {
 		$sideOptionList = array($widthParam);
 	}
+	require_once($c->libraryBasePath.'libs/FFile.php');
+	$ffile = new FFile();
 	foreach($sideOptionList as $width) {
 		foreach($sideOptionList as $height) {
 			foreach($cutOptionsList as $cut) {
@@ -196,10 +198,9 @@ if($cutParam === 'flush') {
 				}
 				if(file_exists($targetImage)) {
 					if(is_dir($targetImage)) {
-						require_once($c->libraryBasePath.'libs/FFile.php');
-						FFile::rm_recursive($targetImage);
+						$ffile->rm_recursive($targetImage);
 					} else {
-						unlink($targetImage);
+						$ffile->unlink($targetImage);
 					}
 				}
 			}
@@ -275,7 +276,8 @@ if(isset($imageProps)) {
 			//check if directory exists
 			$dirArr = explode('/',$targetImage);
 			array_pop($dirArr);
-			FFile::makeDir(implode('/',$dirArr));
+			$file = new FFile();
+			$file->makeDir(implode('/',$dirArr));
 
 			//process new file
 			FImgProcess::process($sourceImage,$targetImage,$processParams);

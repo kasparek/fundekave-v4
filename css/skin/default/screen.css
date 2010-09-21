@@ -86,7 +86,7 @@ div#mainbar fieldset textarea.draftNotSave {border-right: 2px solid #dd0000;}
 div#mainbar fieldset textarea.draftSave {border-right: 2px solid #00dd00;}
 div#mainbar fieldset textarea.largeTextarea {width: 95%;height:14em;}
 span.textAreaResize {float: left;}
-span.textAreaResize a {text-decoration: none;background: url(img/windows.png) no-repeat left top;display: block;width: 16px;height: 16px;margin-top: 2px;margin-right: 3px;margin-left: -19px;}
+span.textAreaResize a {text-decoration: none;background: url(img/windows.png) no-repeat left top;display: block;width: 16px;height: 16px;margin-top: 2px;margin-right: 4px;margin-left: -20px;}
 
 /* ARTICLE CONTENT */
 div.mainpanel-content {padding-left: 10px;padding-right: 10px;}
@@ -102,22 +102,22 @@ div.mainpanel-content div#categories h3 a{color: black;}
 div.mainpanel-content div#categories ul {margin-left: 30px;}
 
 /* LINK LIST */
-div#mainbar ul.pageList {list-style: none;}
-div#mainbar ul.pageList li a.pageLink img {padding: 0;margin: 0;float: left;margin-right: 0.5em;margin-left: -1em;}
-div#mainbar ul.pageList li {margin-top: 0.1em;clear: left;padding-left: 0;background: none;}
-div#mainbar a.pageLink {clear: both;line-height: 25px;display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;padding: 0 1em; font-weight: bold;}
-div#mainbar a.pageLink:hover {background: #bbbbbb;}
+div#mainbar ul.linkList {list-style: none;}
+div#mainbar ul.linkList li a.linkItem img {padding: 0;margin: 0;float: left;margin-right: 0.5em;margin-left: -1em;}
+div#mainbar ul.linkList li {margin-top: 0.1em;clear: left;padding-left: 0;background: none;}
+div#mainbar a.linkItem {clear: both;line-height: 25px;display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;padding: 0 1em; font-weight: bold;}
+div#mainbar a.linkItem:hover {background: #bbbbbb;}
 /* LINK LIST customs for inline displaying */
-div#mainbar div.entry-content a.pageLink {display: inline;padding: 0.6em 0.5em;}
-div#mainbar div.entry-content a.pageLink img {margin: 0 0 -8px 0 !important;float: none !important;}
-div#mainbar ul.pageList li div.hentry {margin-top: 0;}
+div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
+div#mainbar div.entry-content a.linkItem img {margin: 0 0 -8px 0 !important;float: none !important;}
+div#mainbar ul.linkList li div.hentry {margin-top: 0;}
 /* LINK LIST customs for sidebar */
-div#sidebar ul.showPageAvatar {list-style: none;padding: 0;margin: 0;line-height: 25px;}
-div#sidebar ul.showPageAvatar postsNew {display: none;}
-div#sidebar ul.showPageAvatar img {float: left;margin-right: 0.5em;}
-div#sidebar ul.showPageAvatar li {clear: left;overflow: hidden;background: none;list-style: none;height: 25px;}
-div#sidebar ul.showPageAvatar li a {display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;font-weight: bold;vertical-align: middle;}
-div#sidebar ul.showPageAvatar li a:hover {background: #bbbbbb}
+div#sidebar ul.linkList {list-style: none;padding: 0;margin: 0;line-height: 25px;}
+div#sidebar ul.linkList postsNew {display: none;}
+div#sidebar ul.linkList img {float: left;margin-right: 0.5em;}
+div#sidebar ul.linkList li {clear: left;overflow: hidden;background: none;list-style: none;height: 25px;}
+div#sidebar ul.linkList li a {display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;font-weight: bold;vertical-align: middle;padding: 0 1em;}
+div#sidebar ul.linkList li a:hover {background: #bbbbbb}
 
 /* HENTRY */
 div.mainpanel-content div.hentry {clear: left;margin-top: 2.3em;padding-top: 0;padding-bottom: 0.5em;position: relative;border-top: 1px solid #ddd;overflow: hidden;}

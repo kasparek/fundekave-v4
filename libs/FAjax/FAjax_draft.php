@@ -11,7 +11,7 @@ class FAjax_draft extends FAjaxPluginBase {
 			FAjax::addResponse('function', 'call', 'draftableSaveTA;'.$data['result']);
 			FAjax::addResponse($data['result'], $data['resultProperty'], htmlentities($draft,ENT_QUOTES,'UTF-8'));
 			FAjax::addResponse($data['result'], '$addClass', 'draft');
-			FAjax::addResponse($data['result'], '$before', '<a id="draftdrop'.$data['result'].'" href="?ta='.$data['result'].'" style="margin-left: -20px; padding-right:4px;" title="Zahodit draft" onClick="dropDraft(event)"><img src="data/skin/funde/img/clean.png" /></a>');
+			FAjax::addResponse($data['result'], '$before', '<a id="draftdrop'.$data['result'].'" href="?ta='.$data['result'].'" style="margin-left: -20px; padding-right:4px;" title="Zahodit draft" onClick="dropDraft(event)"><img src="css/skin/default/img/clean.png" /></a>');
 		}
 	}
 	static function drop($data) {

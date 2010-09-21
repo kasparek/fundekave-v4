@@ -286,9 +286,6 @@ class ItemVO extends Fvob {
 		switch ($this->typeId) {
 			case 'galery':
 				FGalery::prepare( $this );
-//				echo 'ItemVO::prepare';
-//				var_dump($this);
-//				die();
 				break;
 			case 'forum':
 				$this->unread = FForum::isUnreadedMess($this->itemId);
@@ -315,6 +312,7 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
+		if(empty($this->typeId)) { var_dump($this); }
 		$itemRenderer->render( $this );
 		return $itemRenderer->show();
 	}

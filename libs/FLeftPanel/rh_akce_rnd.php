@@ -2,6 +2,8 @@
 class rh_akce_rnd {
 
 	static function show() {
+		return '';
+		
 		$cache = FCache::getInstance('f', 86400);
 		$ret=$cache->getData('rh_akce_rnd','lp');
 		if($ret===false) {
