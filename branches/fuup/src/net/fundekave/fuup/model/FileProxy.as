@@ -35,6 +35,7 @@ package net.fundekave.fuup.model
         
         //uploading
         public var serviceURL:String;
+		public var authToken:String;
 		public var maxSize:int = 100000;
         public var chunkSize:int = 5000;
         public var uploadLimit:int = 3;
@@ -97,14 +98,17 @@ package net.fundekave.fuup.model
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
 				var compareW:int = 0;
 				var compareH:int = 0;
+				var fileSize:uint = fileVO.file.size;
 				if(fileVO.encodedJPG) {
+					fileSize = fileVO.encodedJPG.length;
 					compareW = fileVO.widthNew;
 					compareH = fileVO.heightNew;
 				} else {
 					compareW = fileVO.widthOriginal
 					compareH = fileVO.heightOriginal
 				}
-        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev || fileVO.file.size > this.maxSize) {
+        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev
+					|| fileSize > this.maxSize) {
 					fileVO.renderer.setLocalState( FileView.STATE_PROCESSING );
 					var rot:Number = fileVO.rotation+fileVO.rotationFromOriginal;
 					if(rot<0) rot += 360;
@@ -189,6 +193,7 @@ package net.fundekave.fuup.model
 					}
 					if(size < this.maxSize) {
 		        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
+						fileUpload.extraVars = {auth:this.authToken};
 		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete,false,0,true );
 		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress,false,0,true );
 		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );

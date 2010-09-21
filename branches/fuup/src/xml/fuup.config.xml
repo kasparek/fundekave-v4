@@ -25,6 +25,7 @@
 		</Settings>
 		<Services>
 			<Service name="files">files.php</Service>
+			<Service name="auth">123</Service>
 		</Services>
 	</Config>
 	<Filters>

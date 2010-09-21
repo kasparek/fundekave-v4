@@ -309,7 +309,7 @@ package net.fundekave.fuup.view.components
 			globalProgressBar.height = 20;
 			globalProgressBar.maximum = 100; 
 			
-			globalMessagesBox = new Container(this,200,5);
+			globalMessagesBox = new Container(this,270,5);
 			globalMessagesBox.visible = false;
 			globalMessagesBox.width = 200;
 			globalMessagesBox.height = 20;
