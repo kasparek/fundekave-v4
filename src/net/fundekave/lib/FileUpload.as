@@ -28,9 +28,11 @@ package net.fundekave.lib
 		private var chunks:Array;
 		private var numChunks:int = 0;
 		private var currentChunk:int = 0;
-        private var chunksUploading:int = 0
+        private var chunksUploading:int = 0;
 		
-		public function FileUpload(url:String,filename:String, chunkSize:int=0, uploadLimit:int=1)
+		public var extraVars:Object = {};
+		
+		public function FileUpload(url:String, filename:String, chunkSize:int=0, uploadLimit:int=1)
 		{
 			this.serviceURL = url;
 			this.filename = filename;
@@ -102,7 +104,10 @@ package net.fundekave.lib
 				service.isMultipart = isMultipart;
         		        		
         		service.url = serviceURL;
-        		service.variables = chunks.shift(); 
+        		service.variables = chunks.shift();
+				for(var name:String in extraVars) {
+					service.variables[name] = extraVars[name]; 
+				}
 				service.send();
 				
 				chunksUploading++;

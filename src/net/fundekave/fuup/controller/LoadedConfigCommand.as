@@ -29,6 +29,7 @@ package net.fundekave.fuup.controller
 			fileProxy.filtersList = configProxy.filters;
 			
 			fileProxy.serviceURL = String( configProxy.getService('files') );
+			fileProxy.authToken = String( configProxy.getService('auth') );
 			fileProxy.maxSize = Number( configProxy.getValue('maxSize') );
 	        fileProxy.chunkSize = Number( configProxy.getValue('chunkSize') );
 	        fileProxy.uploadLimit = Number( configProxy.getValue('chunkLimit') );
