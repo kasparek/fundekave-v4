@@ -8,15 +8,12 @@ class FAjax_blog extends FAjaxPluginBase {
 
 			FAjax::addResponse('editnew', '$html', $ret);
 
-			require('FAjax_void.php');
-			FAjax_void::datepicker($data);
-
-			FAjax::addResponse('function','call','addTASwitch');
-			FAjax::addResponse('function','call','fajaxform');
+      FAjax::addResponse('function','call','datePickerInit');
+			FAjax::addResponse('function','call','markItUpSwitchInit');
+			FAjax::addResponse('function','call','fajaxformInit');
 			FAjax::addResponse('function','call','tabsInit');
-				
-			FAjax::addResponse('function','call','draftSetEventListeners');
-
+			FAjax::addResponse('function','call','draftInit');
+			FAjax::addResponse('function','call','fconfirmInit');
 				
 		} else {
 

@@ -44,7 +44,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$ret = $tpl->get();
 		FAjax::addResponse('function','call','remove;friendrequest,1');
 		FAjax::addResponse('okmsgJS','$after',$ret);
-		FAjax::addResponse('function','getScript',URL_JS.'jquery.form.fcut.min.js;friendRequestInit');
+		FAjax::addResponse('function','call','friendRequestInit');
 	}
 	
 	static function friendrequestsend($data) {
@@ -121,9 +121,9 @@ class FAjax_user extends FAjaxPluginBase {
 		$ret .= $tpl->get('personalImage');
 		FAjax::addResponse('personalfoto', '$html', $ret);
 		FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
-		FAjax::addResponse('function','call','fconfirm');
-		FAjax::addResponse('function','call','fajaxform');
-		FAjax::addResponse('function','call','initSlimbox');
+		FAjax::addResponse('function','call','fconfirmInit');
+		FAjax::addResponse('function','call','fajaxformInit');
+		FAjax::addResponse('function','call','slimboxInit');
 	}
 	
 	static function book($data) {
@@ -165,7 +165,7 @@ class FAjax_user extends FAjaxPluginBase {
 			//---create response
 			if($data['__ajaxResponse']==true) { 
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
-				FAjax::addResponse('function','call','fajaxa');
+				FAjax::addResponse('function','call','fajaxaInit');
 			}
 		}
 	}
