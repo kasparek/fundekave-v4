@@ -118,8 +118,7 @@ $ret=false;
 				FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 				FAjax::addResponse('document','title',FBuildPage::getTitle());
 
-				//FAjax::addResponse('fotoBox','$html',$ret);
-				FAjax::addResponse('function','call','fajaxa');
+				FAjax::addResponse('function','call','fajaxaInit');
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
@@ -132,8 +131,8 @@ $ret=false;
 				
 				FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK_ALBUM,0,'backButt');
 
-				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash showBusy','opposite');
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash showBusy','opposite');
+				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash','opposite');
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash','opposite');
 
 				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
 			}

@@ -432,18 +432,13 @@ class FBuildPage {
 		//--- js and css included just when needed
 		$useDatePicker = false;
 		$useTabs = false;
-		$useSlimbox = false;
-		$useFajaxform = false;
 		$useSwfobject = false;
 		$useFuup = false;
-		$useBBQ = false;
+		
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
-			if(strpos($item, 'lightbox') !== false) { $useSlimbox = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
-			if(strpos($item, 'fajaxform') !== false) { $useFajaxform = true; }
-			if(strpos($item, 'fajaxa') !== false && strpos($item, 'hash') !== false) { $useBBQ = true; }
 		}
 
 		if($useDatePicker === true) {
@@ -452,9 +447,6 @@ class FBuildPage {
 			
 			$tpl->touchBlock("datepickerLoad"); //---javascript on the end of the page
 			$tpl->touchBlock("datepickerInit");
-		}
-		if($useSlimbox === true) {
-			$tpl->touchBlock("slimboxInit");
 		}
 		if($useSwfobject === true) {
 			$tpl->touchBlock("swfoLoad");
@@ -467,13 +459,6 @@ class FBuildPage {
 			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
 			$tpl->touchBlock("tabsInit");
 		}
-		if($useFajaxform === true) {
-			$tpl->touchBlock("fajaxformInit");
-		}
-		if($useBBQ===true) {
-			$tpl->touchBlock("hashchangeInit");
-		}
-
 		if($user->idkontrol===true) {
 			$tpl->touchBlock("signedInit");
 		}

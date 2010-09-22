@@ -229,26 +229,16 @@ function mapEditor(data) {
 }
 //---GOOGLE MAPS END
 
-//TODO: implement hash change event
+//TODO: when hit back to original and hash is "" load first image
+//TODO: use base function with progress somehow - fajaxaSend
+var hashOld;
 function hashchangeInit() {
-	//TODO: this is not really working, event need to be bind on this
-	/*
-    var url = $.param.fragment();
-    if(url) {
-    var urlArr = url.split('/');
-    if(urlArr[1]) {
-    var arr = urlArr[1].split(';');
-		while (arr.length > 0) {
-			var rowStr = arr.shift();
-			var row = rowStr.split(':');
-			addXMLRequest(row[0], row[1]);
-			if (row[0] == 'result') result = true;
-			if (row[0] == 'resultProperty') resultProperty = true;
-		}
-		}
-    sendAjax(urlArr[0]);
-    }
-    */
+	$(window).hashchange( function(){
+		if(location.hash != hashOld) {
+			hashOld = location.hash;
+			fajaxaAction(location.hash.replace('#',''));
+		} 
+  });
 };
 
 /**
@@ -314,28 +304,45 @@ function fsubmit(event) {
 
 /**
  * AJAX LINK HANDLING
- */ 
+ */
 function fajaxaSend(event) {
-	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
-	if($(this).hasClass('showBusy')) {
+	event.preventDefault();
+	var k = gup('k', this.href),id = $(this).attr("id");
+	if(!k) k = 0;
+	var action = gup('m',this.href)+'/'+gup('d',this.href)+'/'+k;
+	if(id) { action += '/'+id; } 
+	if($(event.currentTarget).hasClass('confirm')) { action += '/confirm='; }
+	if($(this).hasClass('hash')) {
+		document.location.hash = action;
+		return;
+	}
+	fajaxaAction(action);
+}
+//action = m/d/k|0/linkElId/confirm
+function fajaxaAction(action) {
+	actionList = action.split('/');
+	if(!actionList[4]) actionList[4] = 'void';
+	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],confirm=actionList[4]=='confirm'?true:false,result = false, resultProperty = false;
+	if(k==0) k=null;
+	
+	if($(".showProgress").length>0) {
 		$(".showProgress").addClass('lbLoading');
 		$(".showProgress").css('height',$(".showProgress img").height()+'px');
 		$(".showProgress").css("marginLeft","auto");
 		$(".showProgress").css("marginRight","auto");
-		
 		$(".showProgress img").hide();
 		$(".showProgress img").bind('load',onImgLoaded)
 	}
-	if($(event.currentTarget).hasClass('confirm')) {
-		if(!confirm($(event.currentTarget).attr("title"))) { 
+	
+	if(confirm && id) {
+		if(!confirm($("#"+id).attr("title"))) { 
 			preventAjax = true; 
 			event.preventDefault(); 
 		}
 	} 
 	if (preventAjax == true) { preventAjax = false; return; }
-	var href=$(this).attr("href") ,result = false, resultProperty = false, str = gup('d', href), id = $(this).attr("id");
-	if(str) { 
-		var arr = str.split(';');
+	if(d) { 
+		var arr = d.split(';');
 		while (arr.length > 0) {
 			var rowStr = arr.shift();
 			var row = rowStr.split(':');
@@ -345,11 +352,10 @@ function fajaxaSend(event) {
 		}
 	}
 	if(id) {
-		if (result == false) addXMLRequest('result', $(this).attr("id"));
+		if (result == false) addXMLRequest('result', id);
 		if (resultProperty == false) addXMLRequest('resultProperty', '$html');
 	}
-	sendAjax(gup('m', href),gup('k', href));
-	event.preventDefault();
+	sendAjax(m,k);
 };
 function onImgLoaded() {
 	setTimeout(function(){$(".showProgress").css('height','auto');},500);
@@ -409,6 +415,7 @@ function markItUpSwitchInit() {
  */ 
 //signed in users initialization
 function userInit() {
+	fajaxformInit();
 	initJourneySelector();
 	initPositionSelector();
   // ---ajax textarea / tools
@@ -447,6 +454,10 @@ $(document).ready( function() {
 	onResize();
 	initMapData(); 
 	initMap();
+	if($(".hash").length>0) {
+		hashchangeInit();
+	}
+	slimboxInit();
 });
 //datepicker init
 function datePickerInit() {
@@ -462,9 +473,9 @@ function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobj
 //tabs init
 function tabsInit() { $("#tabs").tabs(); };
 //request init
-function friendRequestInit() { $('#friendrequest').show('slow'); fajaxformInit(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); }
+function friendRequestInit() { $('#friendrequest').show('slow'); fajaxformInit(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); };
 //ajax form init
-function fajaxformInit(event) { setListeners('button', 'click', onButtonClick); setListeners('fajaxform', 'submit', fsubmit ); };
+function fajaxformInit(event) { if($(".fajaxform").length>0) { setListeners('button', 'click', onButtonClick); setListeners('fajaxform', 'submit', fsubmit ); } };
 //ajax link init
 function fajaxaInit(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fconfirmInit(event) { $('.confirm').each(function(){ if(!$(this).hasClass('fajaxa')) { $(this).bind('click',onConfirm); } }); };
@@ -684,6 +695,7 @@ function draftEventHandler() {
 // ---send and process ajax request - if problems with %26 use encodeURIComponent
 function sendAjax(action,k) {
 	var data = getXMLRequest();
+	if(k==0) k=null;
 	if(!k) k = gup('k',document.location);
 	$.ajaxSetup({ 
         scriptCharset: "utf-8" , 
