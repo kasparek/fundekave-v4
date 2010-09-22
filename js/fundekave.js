@@ -231,9 +231,10 @@ function mapEditor(data) {
 
 //TODO: when hit back to original and hash is "" load first image
 //TODO: use base function with progress somehow - fajaxaSend
-var hashOld;
+var hashOld='';
 function hashchangeInit() {
 	$(window).hashchange( function(){
+		if(location.hash=='' && hasOld.length>0) window.location.reload();
 		if(location.hash != hashOld) {
 			hashOld = location.hash;
 			fajaxaAction(location.hash.replace('#',''));
