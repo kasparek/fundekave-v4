@@ -28,19 +28,14 @@ class FAjax_event extends FAjaxPluginBase {
 		}
 
 		FAjax::addResponse($data['result'], '$html', FEvents::editForm($data['item']));
-		FAjax::addResponse('function','call','draftSetEventListeners');
+		FAjax::addResponse('function','call','draftInit');
 
-		FAjax::addResponse('function','getScript',URL_JS.'jquery-ui.datepicker.js;datePickerInit');
-		FAjax::addResponse('function','getScript',URL_JS.'i18n/ui.datepicker-cs.js');
-		FAjax::addResponse('function','css','css/themes/ui-lightness/jquery-ui-1.7.2.custom.css');
+		FAjax::addResponse('function','call','datePickerInit');
 		
-		FAjax::addResponse('function','css','css/slimbox2.css');
-		FAjax::addResponse('function','getScript',URL_JS.'slimbox2.js');
-
-		FAjax::addResponse('function','getScript',URL_JS.'swfo.js;fuupInit');
-		FAjax::addResponse('function','call','fajaxform');
-		FAjax::addResponse('function','call','fconfirm');
-		FAjax::addResponse('function','call','addTASwitch');
+		FAjax::addResponse('function','call','fuupInit');
+		FAjax::addResponse('function','call','fajaxformInit');
+		FAjax::addResponse('function','call','fconfirmInit');
+		FAjax::addResponse('function','call','markItUpSwitchInit');
 	}
 
 	static function submit($data) {
@@ -70,11 +65,11 @@ class FAjax_event extends FAjaxPluginBase {
 			if($itemVO) $itemId = $itemVO->itemId;
 			FAjax::addResponse('fajaxContent', '$html', FEvents::editForm($itemId));
 
-			FAjax::addResponse('function','call','draftSetEventListeners');
+			FAjax::addResponse('function','call','draftInit');
 			FAjax::addResponse('function','call','datePickerInit');
-			FAjax::addResponse('function','call','fajaxform');
-			FAjax::addResponse('function','call','fconfirm');
-			FAjax::addResponse('function','call','initSlimbox');
+			FAjax::addResponse('function','call','fajaxformInit');
+			FAjax::addResponse('function','call','fconfirmInit');
+			FAjax::addResponse('function','call','slimboxInit');
 			FAjax::addResponse('function','call','tabsInit');
 			FAjax::addResponse('function','call','fuupInit');
 			

@@ -5,6 +5,8 @@
 <script type="text/javascript">
 if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); } };
 var ASSETS_URL = '{ASSETS_URL}';
+var JS_URL = '[[URL_JS]]';
+var CSS_URL = 'css/';
 var CLIENT_WIDTH = {CLIENT_WIDTH};
 var CLIENT_HEIGHT = {CLIENT_HEIGHT};
 </script>
@@ -75,7 +77,7 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
 <script type="text/javascript" src="[[URL_JS]]fundekave.js"></script>
 <!-- BEGIN datepickerLoad --><script type="text/javascript" src="[[URL_JS]]i18n/ui.datepicker-cs.js"></script><!-- END datepickerLoad -->
 <script type="text/javascript">
-$(document).ready(function(){publicin();<!-- BEGIN slimboxInit -->initSlimbox();<!-- END slimboxInit --><!-- BEGIN tabsInit -->tabsInit();<!-- END tabsInit --><!-- BEGIN fuupInit -->fuupInit();<!-- END fuupInit --><!-- BEGIN signedInit -->userin();<!-- END signedInit --><!-- BEGIN userPostInit -->initUserPost();<!-- END userPostInit --><!-- BEGIN datepickerInit -->datePickerInit();<!-- END datepickerInit --><!-- BEGIN fajaxformInit -->fajaxform();<!-- END fajaxformInit --><!-- BEGIN hashchangeInit -->hashchangeInit();<!-- END hashchangeInit -->});
+$(document).ready(function(){<!-- BEGIN slimboxInit -->slimboxInit();<!-- END slimboxInit --><!-- BEGIN tabsInit -->tabsInit();<!-- END tabsInit --><!-- BEGIN fuupInit -->fuupInit();<!-- END fuupInit --><!-- BEGIN signedInit -->userInit();<!-- END signedInit --><!-- BEGIN datepickerInit -->datePickerInit();<!-- END datepickerInit --><!-- BEGIN fajaxformInit -->fajaxformInit();<!-- END fajaxformInit --><!-- BEGIN hashchangeInit -->hashchangeInit();<!-- END hashchangeInit -->});
 </script>
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
