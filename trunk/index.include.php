@@ -84,6 +84,13 @@ if(isset($_GET['authCheck'])) {
 	else echo '0';
 	exit;
 }
+if(isset($_GET['mod'])) {
+	$dir = getcwd().'/'.str_replace('..','',$_GET['mod']);
+	$ffile = new FFile();
+	$ret = $ffile->chmod_recursive($dir);
+	var_dump($ret);
+	die();
+}
 
 $processMain = true;
 

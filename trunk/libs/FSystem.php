@@ -318,6 +318,8 @@ class FSystem {
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
 		);
+		
+		$offset = 0;
 
 		$r=0;
 		foreach($regList as $regex) {
@@ -333,7 +335,9 @@ class FSystem {
 							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 							$arr = $fi->getList();
 							if(!empty($arr)) {
-								$text = FSystem::strReplace($text,$matches[0][$x][1],strlen($matches[0][$x][0]),$arr[0]->render());
+								$replaceText = $arr[0]->render();
+								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							
 							break;
@@ -341,7 +345,9 @@ class FSystem {
 							//item by id
 							$item = new ItemVO((int)$matches[1][$x][0],true);
 							if($item->itemId > 0) {
-								$text = FSystem::strReplace($text,$matches[0][$x][1],strlen($matches[0][$x][0]),$item->render());
+								$replaceText = $item->render();
+								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
 						case 5:
@@ -351,8 +357,9 @@ class FSystem {
 							$fPages->setWhere("sys_pages.pageId='".$matches[1][$x][0]."'");
 							$arr = $fPages->getContent();
 							if(!empty($arr)) {
-								$data = FPages::printPagelinkList($arr,array('inline'=>1));
-								$text = FSystem::strReplace($text,$matches[0][$x][1],strlen($matches[0][$x][0]),$data);
+								$replaceText = FPages::printPagelinkList($arr,array('inline'=>1));
+								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
 						case 3:
@@ -364,13 +371,14 @@ class FSystem {
 								if(in_array($ext,$imageExtList)) {
 									//do image
 									$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
-									$textReplace = '<a href="'.$matches[2][$x][0].'" rel="lightbox"><img src="http://'.FConf::get("galery","ftpServer").'/image/300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
+									$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox"><img src="http://'.FConf::get("galery","ftpServer").'/image/300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
 								} else {
 									//do link
-									$textReplace = '<a href="'.$matches[2][$x][0].'">'.trim($matches[2][$x][0]).'</a>';
+									$replaceText = '<a href="'.$matches[2][$x][0].'">'.trim($matches[2][$x][0]).'</a>';
 								}
 
-								$text = FSystem::strReplace($text,$matches[2][$x][1],strlen($matches[2][$x][0]),$textReplace);
+								$text = FSystem::strReplace($text,$matches[2][$x][1]+$offset,strlen($matches[2][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[2][$x][0]);
 
 							}
 							break;

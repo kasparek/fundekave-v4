@@ -85,6 +85,7 @@ class FGalery {
 	 * @return void
 	 */
 	function refreshImgToDb($pageId){
+		FError::write_log('FGalery::refreshImgToDb '.$pageId);
 		if(!empty($pageId)) {
 			$this->pageVO = new PageVO($pageId,true);
 		} else {
@@ -124,10 +125,12 @@ class FGalery {
 		$arrItemIdsNotOnFtp = array_keys(array_diff($arrFotoDetail,$arrFiles));
 
 		//---remove foto no longer in folder
+		$removed=0;
 		if(!empty($arrItemIdsNotOnFtp)) {
 			foreach ($arrItemIdsNotOnFtp as $itemId) {
 				FGalery::removeFoto($itemId);
 				$change = true;
+				$removed++;
 			}
 		}
 
@@ -156,7 +159,6 @@ class FGalery {
 				$this->itemVO->text = '';
 				$this->itemVO->hit = 0;
 				$this->itemVO->dateStart = $this->pageVO->dateContent;
-				
 				$this->itemVO->save();
 				$gCountFotoNew++;
 				$items['new'][] = $this->itemVO->itemId;
@@ -195,6 +197,7 @@ class FGalery {
 		FDBTool::query("update sys_pages set cnt='".$totalFoto."',dateUpdated = now() where pageId='".$pageId."'");
 
 		$items['total'] = $totalFoto;
+		FError::write_log('FGalery::refreshImgToDb COMPLETE '.$pageId.' inserted:'.(isset($items['new']) ? count($items['new']) : 0).' updated:'.( isset($items['updated']) ? count($items['updated']) : 0).' removed: '.$removed);
 		return $items;
 	}
 

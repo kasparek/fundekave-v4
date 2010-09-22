@@ -1,6 +1,8 @@
 <?php
 class rh_audit_popis {
 	static function show(){
+		return '';
+		
 		$user = FUser::getInstance();
 		$ret = '';
 			

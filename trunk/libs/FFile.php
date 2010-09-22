@@ -86,6 +86,7 @@ class FFile {
 	}
 
 	function chmod($filename,$mode=0777) {
+		FError::write_log('FFile::chmod '.$filename.' '.$mode .' ftp:'.$this->isFtpMode);
 		if(!$this->isFtpMode) return chmod($filename,$mode);
 		return ftp_chmod($this->ftpConn,$mode,$filename);
 	}
