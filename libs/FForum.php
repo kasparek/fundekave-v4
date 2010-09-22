@@ -198,11 +198,11 @@ class FForum extends FDBTool {
 			//TODO: test commands
 			//$commandList[] = itemAdded;
 			//$cache->invalidateData('lastForumPost');
-			if($callbackFunction) {
+			//if($command) {
 				//galery - lastForumPost
 				//blog - lastForumPost,lastBlogPost
-				$commandList[] = $command;
-			}
+				//$commandList[] = $command;
+			//}
 			//FCommand::run($commandList);
 			
 			FHTTP::redirect(FSystem::getUri($redirectParam));

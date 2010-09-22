@@ -332,6 +332,11 @@ class page_PageEdit implements iPage {
 			$pageVO = new PageVO();
 			$pageVO->pageId = $user->pageVO->pageId;
 			$pageVO->load();
+			
+			if($pageVO->typeId=='galery') {
+				$galery = new FGalery();
+				$galery->refreshImgToDb($pageVO->pageId);
+			}
 		}
 
 		//---SHOW TIME

@@ -33,12 +33,6 @@ class page_GaleryDetail implements iPage {
 $ret=false;
 
 		if($itemId===0) {
-
-			if(FRules::getCurrent(2)) {
-				//---run just wher owner access
-				$galery = new FGalery();
-				$galery->refreshImgToDb($pageId);
-			}
 				
 			$totalItems = (int) $user->pageVO->cnt;
 				

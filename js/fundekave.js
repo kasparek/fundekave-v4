@@ -90,6 +90,11 @@ function initMap() {
 				var markerPos = new google.maps.LatLng(wpArr[wpArr.length-1][0], wpArr[wpArr.length-1][1]);
 				data.updateMarker(markerPos);
 				bounds.extend(data.marker.getPosition()); boundNum++;
+			} else {
+				if(data.marker) {
+					data.marker.setMap(null);
+					data.marker = null;
+				}
 			}
 			//setup path
 			if (wpArr.length > 1) {
@@ -100,6 +105,11 @@ function initMap() {
 					bounds.extend(latLng); boundNum++;
 				}
 				data.updateDistance();
+			} else {
+				if(data.path) {
+					data.path.setMap(null);
+					data.path = null;
+				}
 			}
 			if(data.infoEl) { 
 				data.marker.html = data.marker.html.replace('[[DISTANCE]]',data.distance);
@@ -355,20 +365,24 @@ function fsubmit(event) {
 
 function fuupInit() { $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 
-
+function onImgLoaded() {
+	setTimeout(function(){$(".showProgress").css('height','auto');},500);
+	$(".showProgress img").show('fast');
+	$(".showProgress img").unbind('load',onImgLoaded)
+	$(".showProgress").removeClass('lbLoading');
+}
 
 function fajaxa(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fajaxaSend(event) {
 	if($(this).hasClass('hash')) document.location.hash = gup('m',this.href)+'/'+gup('d',this.href);
 	if($(this).hasClass('showBusy')) {
 		$(".showProgress").addClass('lbLoading');
-		$(".showProgress").css('width','600');
-		$(".showProgress").css('height','600');
+		$(".showProgress").css('height',$(".showProgress img").height()+'px');
 		$(".showProgress").css("marginLeft","auto");
 		$(".showProgress").css("marginRight","auto");
-		$("#detailFoto").each(function(){
-			$(this).css('display','none');
-		});
+		
+		$(".showProgress img").hide();
+		$(".showProgress img").bind('load',onImgLoaded)
 	}
 	if($(event.currentTarget).hasClass('confirm')) {
 		if(!confirm($(event.currentTarget).attr("title"))) { 

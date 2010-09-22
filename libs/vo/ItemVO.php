@@ -132,6 +132,9 @@ class ItemVO extends Fvob {
 	
 	//---changed
 	var $htmlName;
+	
+	//private
+	var $itemList;
 
 	function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
 		$this->properties = array();
@@ -215,9 +218,9 @@ class ItemVO extends Fvob {
 				FPages::cntSet( $this->pageId, 1 );
 			}
 			
-			//TODO: resolve what is this for
+			$this->itemList = null;
 			$cache = FCache::getInstance('f');
-			$cache->invalidateData($this->pageId.'-page', 'fitGrp');
+			$cache->invalidateData($this->pageId, 'fitGrp');
 			
 			$creating = true;
 		}
@@ -334,14 +337,16 @@ class ItemVO extends Fvob {
 		}
 	}
 
+	
 	function getPageItemsId() {
-		//TODO: store in memory cache / only local prop
+		if(!empty($this->itemList)) return $this->itemList;
 		$cache = FCache::getInstance('f');
-		if(($arr = $cache->getData($this->pageId.'-page', 'fitGrp')) === false) {
+		if(($arr = $cache->getData($this->pageId, 'fitGrp')) === false) {
 			$pageVO = new PageVO($this->pageId,true);
 			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
-			$arr = FDBTool::getCol($q,$this->pageId.'-page', 'fitGrp');
-			$cache->setData($arr);
+			$arr = FDBTool::getCol($q);
+			$cache->setData($arr,$this->pageId, 'fitGrp');
+			$this->itemList = $arr;
 		}
 		return $arr;
 	}
