@@ -234,7 +234,7 @@ function mapEditor(data) {
 var hashOld='';
 function hashchangeInit() {
 	$(window).hashchange( function(){
-		if(location.hash=='' && hasOld.length>0) window.location.reload();
+		if(location.hash=='' && hashOld.length>0) window.location.reload();
 		if(location.hash != hashOld) {
 			hashOld = location.hash;
 			fajaxaAction(location.hash.replace('#',''));
@@ -392,9 +392,9 @@ var markitupSettings = {
 var waitingTA = null;
 function markItUpInit(textareaId) {
 	if(textareaId) waitingTA=textareaId;
- 	if(!getScript(JS_URL+'markitup/skins/simple/style.css', markItUpInit)) return;
+ 	if(!getScript(JS_URL+'markitup/jquery.markitup.pack.js', markItUpInit)) return;
 	if(!getCSS(JS_URL+'markitup/sets/default/style.css', markItUpInit)) return;
-	if(!getCSS(JS_URL+'markitup/jquery.markitup.pack.js', markItUpInit)) return;
+	if(!getCSS(JS_URL+'markitup/skins/simple/style.css', markItUpInit)) return;
 	var textid='.markitup'; 
 	if(waitingTA) { textid = '#'+waitingTA; waitingTA = null; } 
 	$(textid).markItUp(markitupSettings); 
@@ -491,8 +491,14 @@ function gup(name, url) { name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\
 function msg(type, text) { $("#"+type+"msgJS").html( text ); $("#"+type+"msgJS").show('slow'); setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000) };
 function redirect(dir) { window.location.replace(dir); };
 //SCRIPT LOADER
-var scriptsLoaded = [];
-function getScript(filename,callback) { if(hasScript(filename)) return true; getScript(filename,callback); return false; }
+var scriptsLoaded = [], scriptsTried={};
+function getScript(filename,callback) { 
+if(hasScript(filename)) return true;
+if(!scriptsTried[filename]) scriptsTried[filename]=1; else scriptsTried[filename]++;
+if(scriptsTried[filename]>3) { throw('404 - file not found - '+filename); return true;}  
+loadScript(filename,callback); 
+return false; 
+}
 function loadScript(filename,callback) { $.getScript(filename, function(){ scriptsLoaded.push(filename); if($.isFunction(callback)) setTimeout(callback,250); }); };
 function hasScript(filename) { var i,ret = false, scripts = $("script"); for(i=0;i<scripts.length;i++) { if($(scripts[i]).attr('src') == filename) { ret = true; } }; for(i=0;i<scriptsLoaded.length;i++) { if(scriptsLoaded[i] == filename) { ret = true; } }; return ret; };
 function getCSS(filename,callback) { if(hasCSS(filename)) return true; $.getCSS(filename,callback); return false; }

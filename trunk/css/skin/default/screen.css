@@ -134,7 +134,7 @@ div.mainpanel-content div.hentry div.completelink a:hover {background: #ddd;}
 
 /* HENTRY HEADER */
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
-div.mainpanel-content div.vevent div.header {height: auto;float: right;margin-top: -1.5em;}
+div.mainpanel-content div.vevent div.header {height: auto;float: right;}
 div.mainpanel-content div.hentry h2.entry-title {padding: 0;margin: 0;}
 div.mainpanel-content div.hentry h2.entry-title a {color: black;text-decoration: underline;}
 div.mainpanel-content div.hentry h3 {margin: 0;padding: 0;color: black;background: none;}
