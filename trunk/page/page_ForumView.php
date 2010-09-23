@@ -1,4 +1,3 @@
-
 <?php
 include_once('iPage.php');
 class page_ForumView implements iPage {

@@ -393,10 +393,6 @@ class FForum extends FDBTool {
 		}
 
 		$ret = $tpl->get();
-		unset($itemRenderer);
-		unset($fItems);
-		unset($pager);
-		unset($tpl);
 		return $ret;
 
 	}

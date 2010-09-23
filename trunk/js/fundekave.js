@@ -8,6 +8,7 @@ function mapHolder(mapEl) {
 	this.mapEl=mapEl;
 	this.mapDataList=[];
 	this.map = null;
+	this.geocoder = new google.maps.Geocoder();
 }
 
 function mapData() {
@@ -44,6 +45,7 @@ function mapData() {
 				this.distance += distance(wpList.getAt(i-1).lat(),wpList.getAt(i-1).lng(),wpList.getAt(i).lat(),wpList.getAt(i).lng());
 			}
 		}
+		this.distance = Math.round(this.distance*10)/10;
 	}
 }
 
@@ -77,7 +79,7 @@ function initMap() {
 	for(var k=0;k<mapHoldersList.length;k++) {
 		var holder = mapHoldersList[k];
 		if(!holder.map) {
-			holder.map = new google.maps.Map(holder.mapEl, { mapTypeId : google.maps.MapTypeId.TERRAIN });
+			holder.map = new google.maps.Map(holder.mapEl, { mapTypeId:google.maps.MapTypeId.TERRAIN });
 			holder.map.setCenter(new google.maps.LatLng(50, 0))
 			holder.map.setZoom(5);
 		}
@@ -132,7 +134,7 @@ function distance(lat1,lon1,lat2,lon2) {
 		Math.sin(dLon/2) * Math.sin(dLon/2);
 	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 	var d = R * c;
-	return Math.round(d);
+	return d;
 }
 
 //possible format 20.5468,15.1568 or 20 10 30 N,15 23 40 W
@@ -191,10 +193,11 @@ function mapSelectorCreate() {
 }
 
 function mapEditor(data) {
-	var setListener = false;
+	var setListener = false; // style="margin:0 3px 3px 3px;padding:0;"  style="margin:0 0 3px 0;width:100%;"
+	var mapSearchHTML = '<div id="mapSearch" style="float:left;"><input id="mapaddress" value="" style="width:300px;margin-right:5px;margin-top:6px;"/><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="findAddress()">Find</button></div>';
 	if (!mapHoldersList) {
-		$("body").append('<div id="mapsel"></div>');
-		var holder = new mapHolder(document.getElementById('mapsel'));
+		$("body").append('<div id="mapEditor" style="width:100%;"></div>');
+		var holder = new mapHolder(document.getElementById('mapEditor'));
 		holder.mapDataList = [data];
 		mapHoldersList = [holder];
 		setListener = true;
@@ -202,30 +205,80 @@ function mapEditor(data) {
 	
 	initMap();
 	
-	$("#mapsel").dialog({
+	
+	$("#mapEditor").dialog({
 			modal: true,
-			width: $(window).width()*0.8, height: $(window).height()*0.8,
+			minWidth:640,
+			minHeight:200,
+			width: $(window).width()*0.8, 
+			height: $(window).height()*0.8,
+			//resizeStop: function(event,ui){ $("#map").css('height',(ui.size.height-110)+'px'); },
+			//open: function(event,ui){ $("#map").css('height',(ui.size.height-110)+'px'); },
 			buttons: {
-				Ok: function() {
+				Save: function() {
 					$(this).dialog('close');
+					data = mapHoldersList[0].mapDataList[0];
+					$(data.dataEl).val('');
+					if(data.journey===true) {
+						var list=[];
+						data.path.getPath().forEach(function(latLng){list.push(latLng.toUrlValue(4));});
+						$(data.dataEl).val( list.join("\n") );
+					} else {
+						$(data.dataEl).val( data.marker.getPosition().toUrlValue(4) );
+					}
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				},
+				Clear: function() {
+					  mapHoldersList[0].mapDataList[0].marker.setMap(null);
+					  mapHoldersList[0].mapDataList[0].marker = null;
+					  mapHoldersList[0].mapDataList[0].path.setMap(null);
+					  mapHoldersList[0].mapDataList[0].path = null;
+				},
+				'Remove Last': function() {
+					data = mapHoldersList[0].mapDataList[0];
+					data.path.getPath().pop();
+					var path = data.path.getPath();
+					data.updateMarker( path.getAt(path.getLength()-1) );
 				}
 			}
 		});
 		
+		$(".ui-dialog-buttonpane").prepend(mapSearchHTML);
+		$("#mapaddress").keydown(addressCheckForEnter);
+		
 	if(setListener) {	
 	google.maps.event.addListener(holder.map, 'click', function(event) {
 		data = mapHoldersList[0].mapDataList[0];
-		$(data.dataEl).val((data.journey === true ? ($(data.dataEl).val().length > 0 ? $(data.dataEl).val() + "\n" : '') : '')	+ event.latLng.toUrlValue(4));
 		if(data.journey) { 
 			data.addWP(event.latLng);
 			data.updateMarker(event.latLng);
 			data.updateDistance();
-			if(data.distance>0) $("#mapsel").dialog( "option", "title", data.distance+'NM' );
+			if(data.distance>0) $("#mapEditor").dialog( "option", "title", data.distance+'NM' );
 		} else {
 			data.updateMarker(event.latLng);
 		}
 	});
 	}
+}
+function addressCheckForEnter(event) {
+if (event.keyCode == 13) {
+	findAddress();
+} 
+}
+function findAddress() {
+  var address = {'address': document.getElementById('mapaddress').value};
+  holder = mapHoldersList[0]; 
+  holder.geocoder.geocode(address, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+    	holder = mapHoldersList[0];
+    	data = mapHoldersList[0].mapDataList[0];
+      holder.map.setCenter(results[0].geometry.location);
+      holder.map.setZoom(19);
+      data.updateMarker(results[0].geometry.location);
+    }
+  });
 }
 //---GOOGLE MAPS END
 

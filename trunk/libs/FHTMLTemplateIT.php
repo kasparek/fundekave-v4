@@ -597,15 +597,18 @@ class FHTMLTemplateIT
      * @access   public
      * @see      $removeEmptyBlocks
      */
-    function touchBlock($block)
+    function touchBlock($blockList)
     {
-        if (!isset($this->blocklist[$block])) {
-            $this->err[] = $err = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
-            return $err;
-        }
-
-        $this->touchedBlocks[$block] = true;
-
+    		if(!is_array($blockList)) {
+    			$blockList = array($blockList);
+				}
+				foreach ($blockList as $block) {
+	        if (!isset($this->blocklist[$block])) {
+	            $this->err[] = $err = $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'";
+	            return $err;
+	        }
+	        $this->touchedBlocks[$block] = true;
+	      }
         return true;
     } // end func touchBlock
 

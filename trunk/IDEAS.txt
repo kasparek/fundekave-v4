@@ -1,3 +1,40 @@
+PAGE LIST  ANY ITEM - USER CAN ADD ANY ITEM
+-add simple message - forum type
+-add blog item - show form
+-add event - show event form
+-add foto - event type form - add galery type item
+-only fun function to list items in page - like "zive", with forum form if type is form, 
+--buttons to add event, blog, foto, simple message if type is not forum
+--no buttons if type is galery
+-sorting - 
+$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
+if galery
+$fItems->setOrder($user->pageVO->itemsOrder());
+else
+$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
+$fItems->setOrder('dateLive desc, itemId desc');
+
+current functions to merge
+FEvent::show
+FBlog::listAll
+page_GaleryDetail::build
+FForum::show
+
+current templates to merge
+galery.thumbnails.tpl.html
+forum.view.tpl.html
+blog.list.tpl.html
+events.tpl.html
+done into page.items.list.tpl.html
+
+CACHE RESULTS
+-cache query results 
+	- how to invalidate only parts which has been changed?
+	- cache group by page? on item update - only that page is invalidated - what about live feed?
+	- on item update/change update renderedItem - situation from db loaded old data but renderedItem is new and displayd is new
+	- but what about custom renderer settings / custom user setting / to many settings - simplyfi that down? 
+-cache rendered items each so it can be reused in different feeds - invalidate renderedItem on each update to item
+
 SIMPLE VERSION
 -layout with no right bar
 -in right bar only login and categories
