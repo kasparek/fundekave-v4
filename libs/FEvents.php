@@ -56,34 +56,12 @@ class FEvents {
 		}
 	}
 
-	static function thumbName($flyerName) {
-		return str_replace(FFile::fileExt($flyerName),'jpg',$flyerName);
+	static function thumbUrl($flyerName) {
+		return 'http://'.FConf::get('galery','ftpServer') . '/' . FConf::get('galery','targetUrlBase') .FConf::get('events','thumb_width').'x0/prop/page/event/'. ($flyerName);
 	}
 
-	static function thumbUrl($flyerName, $root=URL_FLYER_THUMB) {
-		return $root . FEvents::thumbName($flyerName);
-	}
-
-	static function flyerUrl($flyerName,$root=URL_FLYER) {
-		return $root . $flyerName;
-	}
-
-	static function createThumb($imageName) {
-		//---create paths
-		$flyerFilename = FEvents::flyerUrl($imageName,ROOT_FLYER);
-		$flyerFilenameThumb = FEvents::thumbUrl($imageName,ROOT_FLYER_THUMB);
-		//---delete old
-		if(file_exists($flyerFilenameThumb)) { unlink($flyerFilenameThumb); }
-		//---generate thumb
-		if(!file_exists($flyerFilenameThumb)) {
-			//---create thumb
-			FImgProcess::process($flyerFilename,$flyerFilenameThumb
-			,array('quality'=>FConf::get('events','thumb_quality')
-			,'width'=>FConf::get('events','thumb_width'),'height'=>0));
-			return true;
-		} else {
-			return false;
-		}
+	static function flyerUrl($flyerName) {
+		return 'http://'.FConf::get('galery','ftpServer') . '/' . FConf::get('galery','sourceUrlBase') .'page/event/'. $flyerName;
 	}
 
 	static function show($archiv=false) {

@@ -1,5 +1,6 @@
 TODO:
-- galery - testovat, nahravani, pozice, ajax listovani, loading progress, back button
+-item render cacheovani based on renderer options and dateupdated?
+
 - galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky
 - osobni - opravit nahravani - novy adresar
