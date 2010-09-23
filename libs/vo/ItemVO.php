@@ -307,6 +307,7 @@ class ItemVO extends Fvob {
 	 *
 	 */
 	function render($itemRenderer=null) {
+		 
 		if(!$itemRenderer) {
 			$itemRenderer = new FItemsRenderer();
 			if(!empty($this->options)) {
@@ -315,7 +316,10 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
-		if(empty($this->typeId)) { var_dump($this); }
+		
+		$cacheGroup = 'renderedItem';
+		$cacheId = $this->itemId;
+		
 		$itemRenderer->render( $this );
 		return $itemRenderer->show();
 	}

@@ -6,7 +6,7 @@ class FAjax_blog extends FAjaxPluginBase {
 
 		if($data['__ajaxResponse']===true) {
 
-			FAjax::addResponse('editnew', '$html', $ret);
+			FAjax::addResponse('entryForm', '$html', $ret);
 
       FAjax::addResponse('function','call','datePickerInit');
 			FAjax::addResponse('function','call','markItUpSwitchInit');

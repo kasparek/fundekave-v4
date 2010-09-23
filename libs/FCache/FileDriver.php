@@ -23,6 +23,7 @@ class FileDriver
 		if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
 		$cacheOptions['cacheDir'] = $cacheDir;
 		$cacheOptions['lifeTime'] = $this->lifeTime;
+		$cacheOptions['hashedDirectoryLevel'] = 2;
 		$this->cacheLite = new Cache_Lite($cacheOptions);
 	}
 	
