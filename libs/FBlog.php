@@ -16,7 +16,9 @@ class FBlog {
 				$itemVO = new ItemVO();
 				$itemVO->addon = FSystem::textins($data['nadpis'],array('plainText'=>1));
 				$itemVO->text = FSystem::textins($data['textshort']);
+				
 				$itemVO->textLong = FSystem::textins($data['textlong']);
+				
 				$author = FSystem::textins($data['autor'],array('plainText'=>1));
 				$itemVO->name = ((empty($author))?($user->userVO->name):($author));
 
@@ -41,9 +43,9 @@ class FBlog {
 					$itemVO->userId = $user->userVO->userId;
 					$newItem=true;
 				}
-
+				
 				$returnItemId = $itemVO->save();
-
+        
 				///properties
 				//validate position list
 				$positionData = trim($data['position']);

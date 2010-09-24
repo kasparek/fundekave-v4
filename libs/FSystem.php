@@ -157,9 +157,6 @@ class FSystem {
 				}
 			}
 			$text = $safe->parse($text);
-			//TODO: move this onto fdbtool?
-			$fdb = FDBConn::getInstance();
-			$text = $fdb->escape($text);
 		}
 
 		if($endOfLine==1) {

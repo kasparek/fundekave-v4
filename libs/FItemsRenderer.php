@@ -326,7 +326,7 @@ class FItemsRenderer {
 			   $vars['STATICITEMID'] = $itemVO->itemId;
 			   $vars['STATICITEMTITLE'] = $addon;
 			   $vars['STATICMARKERPOS'] = $journey[count($journey)-1];
-			   if(count($journey)>1) $vars['STATICWPLIST'] = str_replace(';','|',$journey);
+			   if(count($journey)>1) $vars['STATICWPLIST'] = implode('|',$journey);
 			 }
 		}
 		/**/
