@@ -6,6 +6,7 @@ class FBlog {
 	}
 
 	static function process($data) {
+		
 		$action = $data['action'];
 		$user = FUser::getInstance();
 		$returnItemId = 0;
@@ -45,14 +46,21 @@ class FBlog {
 
 				///properties
 				//validate position list
-				$posList = explode("\n",FSystem::textins($data['position'],array('plainText'=>1)));
-				foreach($posList as $pos) {
-					$latLng = explode(',',$pos);
-					$latLng[0] = trim($latLng[0])*1;
-					$latLng[1] = trim($latLng[1])*1;
-					$posListNew[] = $latLng[0].','.$latLng[1];
+				$positionData = trim($data['position']);
+				if(strlen($data['position'])>0) {
+					$posList = explode("\n",$positionData);
+					
+					foreach($posList as $pos) {
+						$latLng = explode(',',$pos);
+						$latLng[0] = trim($latLng[0])*1;
+						$latLng[1] = trim($latLng[1])*1;
+						$posListNew[] = $latLng[0].','.$latLng[1];
+					}
+					
+					$itemVO->setProperty('position', implode(';',$posListNew));
+				} else {
+					$itemVO->setProperty('position', null);
 				}
-				$itemVO->setProperty('position', implode(';',$posListNew));
 				$itemVO->setProperty('forumSet',(int) $data['forumset']);
 				FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
