@@ -1,46 +1,60 @@
 <?php
+/*
+	TODO: migrate itemIdBottom into text
+	migrate pageIdBottom into text
+	TODO: remove localUserZavatar user setting - nobody using it
+*/
 class FItemsRenderer {
 
-	var $debug = false;
+	public $debug = false;
+	
+	public $hasDefaultSettings = true;
 
 	private $tpl = false;
 	private $tplType;
 	private $tplParsed = '';
 	private $customTemplateName = '';
-	//---item enablers
-	public $showPageLabel = false;
-	public $showTag = true;
-	public $showComments = false;
-	public $showCommentsNum = true;
-	public $showText = true;
-	public $openPopup = false;
-	public $showRating = true;
-	public $showHentryClass = true;
-	public $showPocketAdd = true;
-	public $showFooter = true;
-	public $showHeading = true;
-	public $currentHeader = '';
-	public $itemIdInside = 0;
-	public $showBottomItem = true;
-	public $thumbPreventCache = false;
+	
+	//---custom settings
 	public $showDetail = false;
 
 	private $initialized = false;
-	private $localVars;
+	
+	public $itemIdInside = 0; //only for comments - it it needed? 
+	
+	private $signedUserId;
+	private $signedPageId;
 
-	function init() {
+	/**
+	 *
+	 *TODO: THIS ADDS MORE PAIN FOR RENDERER CACHING
+	 *solve problem on not user depend render	 
+	 *initialize all vars on start and figureout if we can use standart renderer cached item
+	 *-not for user editable item	 	 	 
+	 *
+	 **/	 	 	
+	function init( $itemVO ) {
 		if($this->initialized===false) {
 			$this->initialized===true;
 			$user = FUser::getInstance();
-			$this->localVars['localUserId'] = $user->userVO->userId;
-			$this->localVars['localUserPageId'] = $user->pageVO->pageId;
-			$this->localVars['localUserZavatar'] = $user->userVO->zavatar;
-			$this->localVars['localUserIdkontrol'] = $user->idkontrol;
+			$this->signedUserId = $user->idkontrol ? $user->userVO->userId : false;
+			if($this->signedUserId !== false) $this->hasDefaultSettings = false;
+			$this->signedPageId = $user->pageVO->pageId;
 		}
-		return $this->localVars;
+		//check all modifiers
+		if( $itemVO->editable === true ) $this->hasDefaultSettings = false;
+		
+		return $this->hasDefaultSettings;
+	}
+
+	function setOption($key,$val) {
+	  $this->hasDefaultSettings = false;
+	  //TODO: check if key exist
+	  $this->{$key} = $val;
 	}
 
 	function setCustomTemplate($templateName) {
+		$this->hasDefaultSettings = false;
 		$this->customTemplateName = $templateName;
 	}
 
@@ -54,7 +68,7 @@ class FItemsRenderer {
 
 	function render( $itemVO ) {
 		//---get "local"
-		extract($this->init());
+		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
@@ -63,18 +77,7 @@ class FItemsRenderer {
 		$typeId = $itemVO->typeId;
 		$addon = $itemVO->addon;
 		$enclosure = $itemVO->enclosure;
-
-		//---check permissions to edit
-		$enableEdit = false;
-		if($itemUserId === $localUserId) {
-			$enableEdit=true;
-		} else {
-			if(FRules::get($localUserId,$pageId,2)) {
-				$enableEdit=true;
-			}
-		}
-		/*.........zacina vypis prispevku.........*/
-
+		
 		//---INIT TEMPLATE
 		if($this->tpl !== false && $typeId != $this->tplType) {
 			$this->tplParsed .= $this->tpl->get();
@@ -87,7 +90,7 @@ class FItemsRenderer {
 		$tpl = $this->tpl;
 
 		//---common for all items
-		if($this->showHentryClass === true) $touchedBlocks['hentry']=true;
+		$touchedBlocks['hentry']=true;
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
 		$vars['ITEMLINK'] = FSystem::getUri('i='.$itemId,'');
@@ -106,36 +109,21 @@ class FItemsRenderer {
 
 		if(isset($itemVO->name)) $vars['AUTHOR'] = $itemVO->name;
 		if($itemVO->unread === true) $touchedBlocks['unread']=true;
-		if($enableEdit === true) {
-			if($itemVO->editable === true && $localUserPageId == $pageId) {
-
-				$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
-
-				//forum
-				$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
-			}
+		if($itemVO->editable === true) {
+			$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
+			$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
 		}
 
-		if($this->showText === true && $itemVO->text) {
+		if($itemVO->text) {
 			$vars['TEXT'] = $itemVO->text;
 		}
 		/**/
-		if($this->showRating === true) {
-			$vars['HITS'] = $itemVO->hit;
-			
-		}
-
+		$vars['HITS'] = $itemVO->hit;
+		
 		switch($typeId) {
 			case 'blog':
 				$user = FUser::getInstance();
 								
-				$detailId = '';
-				if($user->itemVO) {
-					if($detailId == $itemId) {
-						$this->showDetail = true;
-					}
-				}
-				
 				if($itemVO->categoryId > 0) {
 					$categoryArr = FCategory::getCategory($itemVO->categoryId);
 					$vars['CATEGORYNAME'] = $categoryArr[2];
@@ -156,9 +144,7 @@ class FItemsRenderer {
 				if( $this->showDetail===true ) {
 					$touchedBlocks['headhidden'] = true;
 				}
-				if( $localUserZavatar == 1 ) {
-					$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
-				}
+				$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
 				break;
 			case 'event':
 				//--EVENT RENDERER
@@ -184,7 +170,7 @@ class FItemsRenderer {
 				} else {
 					$vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 				}
-				if($this->showComments === true) {
+				if($this->showDetail === true) {
 					if($itemVO->tag_weight > 0) {
 						$arrTags = FItemTags::getItemTagList($itemId);
 						foreach ($arrTags as $tag) {
@@ -193,11 +179,7 @@ class FItemsRenderer {
 						}
 					}
 				}
-				if($this->showFooter === true) {
-					if($enableEdit === true) {
-						$vars['EDITLINK'] = FSystem::getUri('i='.$itemId,'event','u');
-					}
-				}
+								
 				break;
 			case 'forum':
 				//--FORUM RENDERER
@@ -205,41 +187,24 @@ class FItemsRenderer {
 					if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
 					$vars['TEXT'] .= '<br /><br />' . "\n" . $enclosure;
 				}
-				if( $localUserZavatar == 1 ) {
-					$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
-				}
+				$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
 				break;
 			case 'galery':
 				//--- GALERY RENDERER
 				$pageVO->load();
 				$vars['IMGALT'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGTITLE'] = $pageVO->name.' '.$enclosure;
-				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl.(($this->thumbPreventCache)?('?r='.rand()):(''));
+				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 				$vars['POSITION'] = $itemVO->prop('position');
-
-				if( $this->openPopup === true ) {
-					$vars['IMGURLDETAIL'] = $itemVO->detailUrl;
-					$touchedBlocks['popupc'] = true;
-					$vars['POPUPCLIGHTBOXGROUP'] = '-'.$pageId;
-				} else {
-					$vars['IMGURLDETAIL'] = $itemVO->detailUrlToGalery;
-				}
-				unset($pageVO);
+				$vars['IMGURLDETAIL'] = $itemVO->detailUrlToGalery;
 				break;
 		}
 		/**/
 
 		//---for logged users
-		if ($localUserIdkontrol === true && $this->showFooter === true) {
+		if ($this->signedUserId !== false) {
 			//---thumb tag link
-			if($this->showTag === true) {
-				$vars['TAG'] = FItemTags::getTag($itemId,$localUserId,$typeId,$itemVO->tag_weight);
-			}
-			/*
-			 if($this->showPocketAdd === true) {
-				$vars['POCKET'] = FPocket::getLink($itemId);
-				}
-				*/
+			$vars['TAG'] = FItemTags::getTag($itemId,$this->signedUserId,$typeId,$itemVO->tag_weight);
 			//---user link and location
 			if($itemUserId > 0) {
 				if($typeId != 'galery') {
@@ -259,56 +224,32 @@ class FItemsRenderer {
 		$link = FSystem::getUri('i='.$itemId.(($addon)?('-'.FSystem::safeText($addon)):('')),$pageId);;
 		//---BLOG / EVENT
 		if( $addon ) {
-
-			if($this->showHeading == true) {
-				$vars['BLOGLINK'] = $link;
-				$vars['BLOGTITLE'] = $addon;
-			}
-
+			$vars['BLOGLINK'] = $link;
+			$vars['BLOGTITLE'] = $addon;
 		}
-
-		if($this->showComments === true) {
-			$this->showCommentsNum = false;
-
+		if($this->showDetail === true) {
 			$writeRule = $pageVO->prop('forumSet');
 			if(false !== ($itemWriteRule = $itemVO->prop('forumSet'))) $writeRule = $itemWriteRule;
 			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
-
 		}
-		if($this->showCommentsNum === true){
-			$vars['COMMENTLINK'] = $link;
-			$unReadedReactions = $itemVO->getNumUnreadComments( $localUserId );
+		$vars['COMMENTLINK'] = $link;
+		if($this->signedUserId) {
+			$unReadedReactions = $itemVO->getNumUnreadComments( $this->signedUserId );
 			if($unReadedReactions > 0) { $vars['ALLNEWCNT'] = $unReadedReactions; }
-			$vars['CNTCOMMENTS'] = $itemVO->cnt;
 		}
-
-		/**/
-
-		//---linked item
-		if($this->showBottomItem === true) {
-			if($itemVO->itemIdBottom > 0) {
-				if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
-				$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('i='.$itemVO->itemIdBottom,'','').'">'.$itemVO->itemIdBottom.'</a>';
-				unset($itemVOBottom);
-			}
-			if( $itemVO->pageIdBottom ) {
-				if( FRules::get($localUserId,$itemVO->pageIdBottom,1) ) {
-					$pageVO = new PageVO($itemVO->pageIdBottom,true);
-					if(!isset($vars['TEXT'])) $vars['TEXT'] ='';
-					$vars['TEXT'] .= '<br /><br />'."\n".'<a href="http://'.$_SERVER['SERVER_NAME'].'/'.FSystem::getUri('',$itemVO->pageIdBottom).'">'.$pageVO->name.'</a>';
-					unset($pageVO);
-				}
-			}
-		}
-		/**/
-
+		$vars['CNTCOMMENTS'] = $itemVO->cnt;
+		
 		//---PAGE NAME
+		// TODO: find a different way to list reactions?
+		// TODO: show top item if only on life page, not on same pageId or itemId page
+		/*
 		if($this->showPageLabel === true) {
 			if($itemVO->itemIdTop > 0) {
 				$itemTop = new ItemVO($itemVO->itemIdTop,true);
 				$vars['TOP'] = $itemTop->render();
 			}
 		}
+		*/
 		/**/
 		if(!empty($vars['TEXT'])) $vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
 		

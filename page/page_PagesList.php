@@ -86,19 +86,8 @@ class page_PagesList implements iPage {
 
 				//---results
 				if($typeId == 'galery') {
-				
-					$itemRenderer = new FItemsRenderer();
-					$itemRenderer->showText = false;
-					$itemRenderer->showTag = false;
-					$itemRenderer->showPageLabel = false;
-					$itemRenderer->showRating = false;
-					$itemRenderer->showHentryClass = false;
-					$itemRenderer->openPopup = false;
-					$itemRenderer->showPocketAdd = false;
-					$itemRenderer->showComments = false;
-					$itemRenderer->showCommentsNum = false;
-					
-					$fItems = new FItems('galery',$user->userVO->userId,$itemRenderer);
+					//TODO: galery listing - maybe get galery top foto different way, do not render whole item, just thumb, faster?				
+					$fItems = new FItems('galery',$user->userVO->userId);
 					$fItems->thumbInSysRes = true;
 					$fItems->setOrder('hit desc');
 

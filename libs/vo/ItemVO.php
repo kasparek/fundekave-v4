@@ -295,7 +295,9 @@ class ItemVO extends Fvob {
 				break;
 		}
 		if(($userId = FUser::logon()) > 0) {
-			if($userId == $this->userId || FRules::get($userId,$this->pageId,2)) {
+			if($userId == $this->userId) {
+				$this->editable = true;
+			} else if(FRules::get($userId,$this->pageId,2)) {
 				$this->editable = true;
 			}
 		}
@@ -312,11 +314,11 @@ class ItemVO extends Fvob {
 			$itemRenderer = new FItemsRenderer();
 			if(!empty($this->options)) {
 				foreach($this->options as $k=>$v) {
-					$itemRenderer->$k = $v;
+					$itemRenderer->setOption($k,$v);
 				}
 			}
 		}
-		
+		//TODO: do renderer caching
 		$cacheGroup = 'renderedItem';
 		$cacheId = $this->itemId;
 		

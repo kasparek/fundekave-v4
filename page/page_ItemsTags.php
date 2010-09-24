@@ -16,10 +16,7 @@ class page_ItemsTags implements iPage {
 
 		FBuildPage::addTab(array("MAINDATA"=>FItemsToolbar::getTagToolbar()));
 
-		$itemRenderer = new FItemsRenderer();
-		$itemRenderer->showPageLabel = true;
-		
-		$fItems = new FItems($user->pageVO->typeIdChild,$userId,$itemRenderer);
+		$fItems = new FItems($user->pageVO->typeIdChild,$userId);
 		$fItems->setOrder('dateCreated desc');
 		$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 		FItemsToolbar::setQueryTool(&$fItems);

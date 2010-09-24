@@ -42,10 +42,7 @@ $ret=false;
 
 			} else {
 				if($ret===false) {
-					$itemRenderer = new FItemsRenderer();
-					$itemRenderer->openPopup = false; //no more popups ($user->userVO->zgalerytype == 0)?(false):(true);
-
-					$fItems = new FItems('galery',false,$itemRenderer);
+					$fItems = new FItems('galery',false);
 					$fItems->setWhere('pageId="'.$pageId.'"');
 					$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 					$fItems->setOrder($user->pageVO->itemsOrder());

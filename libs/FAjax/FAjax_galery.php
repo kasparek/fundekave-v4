@@ -36,8 +36,6 @@ class FAjax_galery extends FAjaxPluginBase {
 			
 		$itemRenderer = new FItemsRenderer();
 		$itemRenderer->setCustomTemplate( 'item.galery.edit.tpl.html' );
-		$itemRenderer->thumbPreventCache = true;
-		$itemRenderer->openPopup = true;
 
 		$fItems = new FItems('galery',false,$itemRenderer);
 		if(isset($data['item'])) {
