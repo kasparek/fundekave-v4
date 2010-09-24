@@ -13,7 +13,6 @@ function class_autoloader($c) {
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG);
-setlocale(LC_ALL,'cs_CZ.UTF-8');
 //--------------------------------------------------------config + constant init
 FConf::getInstance(CONFIG_FILENAME);
 date_default_timezone_set(FConf::get('internationalization','timezone'));

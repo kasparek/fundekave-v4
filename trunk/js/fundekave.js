@@ -98,7 +98,7 @@ function initMap() {
 					data.marker = null;
 				}
 			}
-			if (wpArr.length > 1) {
+			if (wpArr.length > 0) {
 				data.resetWP();
 				for(var j=0;j<wpArr.length;j++) {
 					var latLng = new google.maps.LatLng(wpArr[j][0],wpArr[j][1]);
@@ -766,7 +766,7 @@ function sendAjax(action,k) {
 		type : "POST",
 		url : "index.php?m=" + action + "-x"+((k)?("&k="+k):('')),
 		dataType : 'xml',
-		dataProcess : false,
+		processData : false,
 		cache : false,
 		//data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + $.base64Encode(encodeURIComponent(data)),
 		data : data,
