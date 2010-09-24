@@ -334,8 +334,7 @@ class FForum extends FDBTool {
 		if($cached===false) {
 			$cached = array();
 		
-			$itemRenderer = new FItemsRenderer();
-			$fItems = new FItems('forum',false,$itemRenderer);
+			$fItems = new FItems('forum',false);
 			$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 			if(!empty($itemId)) $fItems->addWhere("itemIdTop='".$itemId."'");
 			if($filter!==false) {

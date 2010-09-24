@@ -7,12 +7,20 @@ class page_ForumView implements iPage {
 	 */	 	
 	static function process($data) {
 		$user = FUser::getInstance();
-
-		if(empty($user->pageParam)) {
-			
-			//TODO: process data depend on form used	
-			
+		
+		//TODO: check rules for writing items
+		//-if page is forum write anything but no reactions
+		
+		if($user->itemVO) {
+			//TODO: no reaction to forum messages? to complex?
+			if($user->itemVO->typeId!='forum') { 
+				$data['itemIdTop'] = $user->itemVO->itemId; //if reaction
+			}
 		}
+		
+		//TODO: process data depend on form used
+		//will be something like FItem::process($data);
+		//FForum::process($data);
 
 	}
 	

@@ -1,4 +1,6 @@
 TODO:
+-new blog item - something is wrong
+TODO:
 -item render cacheovani based on renderer options and dateupdated?
 
 - galery otestovat ftp nahravani

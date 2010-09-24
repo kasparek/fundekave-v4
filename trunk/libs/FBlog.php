@@ -218,8 +218,8 @@ class FBlog {
 			} else {
 	
 				if(!empty($user->pageVO->content)) $tpl->setVariable('CONTENT',FSystem::postText($user->pageVO->content));
-				$itemRenderer = new FItemsRenderer();
-				$fItems = new FItems('blog',false,$itemRenderer);
+				
+				$fItems = new FItems('blog',false);
 				$fItems->addWhere("pageId='".$user->pageVO->pageId."'");
 				$total = $user->pageVO->cnt;
 				$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
