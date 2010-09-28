@@ -43,6 +43,11 @@ class ItemVO extends Fvob {
 		$type = $this->typeId;
 
 		switch($name) {
+			case 'pageVO':
+				if(empty($this->pageId)) return null;
+				if(!$this->_pageVO) $this->_pageVO = new PageVO($this->pageId,true); 
+				return $this->_pageVO;
+				break;
 			case 'dateStartIso':
 			case 'dateEndIso':
 			case 'dateCreatedIso':
@@ -86,6 +91,7 @@ class ItemVO extends Fvob {
 	var $itemIdBottom;
 	var $typeId;
 	var $pageId;
+	var $_pageVO;
 	var $pageIdBottom;
 	var $categoryId;
 	var $userId;
@@ -286,6 +292,33 @@ class ItemVO extends Fvob {
 	}
 
 	function prepare() {
+		//galery item or any item with image enclosed
+		if(!empty($this->enclosure)) {
+			$confGalery = FConf::get('galery');
+			$thumbCut = $confGalery['thumbCut'];
+			if($this->thumbInSysRes == false) {
+				$thumbCut = $this->pageVO->getProperty('thumbCut',$thumbCut,true);
+			}
+			//thumbnail URL
+			$fGalery->itemVO->thumbUrl = $fGalery->getImageUrl(null,$thumbCut);
+			//detail image URL
+			//get optional sizes list
+			$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
+			//get closest lower
+			$user = FUser::getInstance();
+			$maxWidth = $user->userVO->clientWidth;
+			if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
+			else $maxWidth = $maxWidth - $fGalery->conf['clientSpace'];
+			//get closest valid width
+			foreach ($sideOptionList as $fib) {
+				if($maxWidth - $fib > 0) {
+					$diff[$fib] = (int) $maxWidth - $fib;
+				}
+			}
+			$fibs = array_flip($diff);
+			$fGalery->itemVO->detailUrl = $fGalery->getImageUrl(null,$fibs[min($diff)].'/prop');
+			$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
+		}
 		switch ($this->typeId) {
 			case 'galery':
 				FGalery::prepare( $this );
@@ -294,6 +327,7 @@ class ItemVO extends Fvob {
 				$this->unread = FForum::isUnreadedMess($this->itemId);
 				break;
 		}
+		//check if is editable
 		if(($userId = FUser::logon()) > 0) {
 			if($userId == $this->userId) {
 				$this->editable = true;
@@ -441,6 +475,31 @@ class ItemVO extends Fvob {
 			$ret = $numComments - $this->cntReaded;
 		}
 		return $ret;
+	}
+	
+	/**
+	 * get url of target
+	 *
+	 * @return string url
+	 */
+	function  getImageUrl($root=null,$thumbCut=null) {
+		$confGalery = FConf::get('galery');
+		if($root===null) $root = $confGalery['targetUrlBase'];
+		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];
+		return $root . $thumbCut .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
+	}
+	
+	/**
+	 * delete all cached images
+	 *
+	 */
+	function flush( $resolution=0 ) {
+		if(!is_array($resolution)) $resolution = array($resolution);
+		foreach($resolution as $side) {
+			$url = $this->getImageUrl(null,$side,'flush');
+			//request url to do action
+			file_get_contents( $url );
+		}
 	}
 
 }

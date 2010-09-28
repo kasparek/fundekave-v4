@@ -14,77 +14,13 @@ class FGalery {
 		$conf = FConf::getInstance();
 		$this->conf = $conf->a['galery'];
 	}
-
-	/**
-	 * for FItems
-	 * prepare function - creating extra options for items type galery
-	 * @param $itemVO
-	 * @return itemVO
-	 */
-	static function prepare($itemVO = null) {
-		$fGalery = new FGalery();
-		$fGalery->itemVO = $itemVO;
-		$fGalery->pageVO = new PageVO($itemVO->pageId,true);
-		//---check thumbnail
-		$thumbCut = $fGalery->conf['thumbCut'];
-		
-		if($fGalery->itemVO->thumbInSysRes == false) {
-			$thumbCut = $fGalery->pageVO->getProperty('thumbCut',$thumbCut,true);
-		}
-
-		$fGalery->itemVO->thumbUrl = $fGalery->getTargetUrl(null,$thumbCut);
-
-		//get optional sizes list
-		$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
-
-		//get closest lower
-		$user = FUser::getInstance();
-
-		$maxWidth = $user->userVO->clientWidth;
-		if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
-		else $maxWidth = $maxWidth - $fGalery->conf['clientSpace'];
-
-		//get closest valid width
-		foreach ($sideOptionList as $fib) {
-			if($maxWidth - $fib > 0) {
-				$diff[$fib] = (int) $maxWidth - $fib;
-			}
-		}
-		$fibs = array_flip($diff);
-		$sideParam = $fibs[min($diff)];
-
-		$fGalery->itemVO->detailUrl = $fGalery->getTargetUrl(null,$sideParam.'/prop');
-
-
-		$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
-
-		return $fGalery->itemVO;
-	}
-
-	/**
-	 * get url of target
-	 *
-	 * @return string url
-	 */
-	function  getTargetUrl($root=null,$thumbCut=null) {
-
-		if($root===null) {
-			$root = 'http://' . $this->conf["ftpServer"] .'/'. $this->conf['targetUrlBase'];
-		}
-
-		if($thumbCut===null) {
-			$sideSize = $this->conf['thumbCut'];
-		}
-		
-		return $root . $thumbCut .'/'. $this->pageVO->galeryDir .'/'. (($this->itemVO)?($this->itemVO->enclosure):(''));
-	}
 		
 	/**
 	 * refresh data for galery in db by files in folder
 	 * @param $pageId
 	 * @return void
 	 */
-	function refreshImgToDb($pageId){
+	function refreshImgToDb($pageId) {
 		FError::write_log('FGalery::refreshImgToDb '.$pageId);
 		if(!empty($pageId)) {
 			$this->pageVO = new PageVO($pageId,true);
@@ -177,7 +113,7 @@ class FGalery {
 					$this->itemVO = new ItemVO($fotoId,true,array('type'=>'ignore'));
 					$this->itemVO->filesize = $newFilesize;
 					$this->itemVO->save();
-					$this->flush();
+					$this->itemVO->flush();
 					$change = true;
 					$items['updated'][] = $fotoId;
 				}
@@ -212,7 +148,7 @@ class FGalery {
 			$galery->itemVO = new ItemVO($id, true);
 			$galery->pageVO = new PageVO($galery->itemVO->pageId, true);
 				
-			$galery->flush();
+			$galery->itemVO->flush();
 			
 			$file = new FFile();	
 			if($file->is_file($galery->conf['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
@@ -230,19 +166,6 @@ class FGalery {
 			//$cache->invalidateGroup('calendarlefthand');
 				
 			return true;
-		}
-	}
-
-	/**
-	 * delete all cached images
-	 *
-	 */
-	function flush( $resolution=0 ) {
-		if(!is_array($resolution)) $resolution = array($resolution);
-		foreach($resolution as $side) {
-			$url = $this->getTargetUrl(null,$side,'flush');
-			//request url to do action
-			file_get_contents( $url );
 		}
 	}
 
