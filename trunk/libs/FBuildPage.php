@@ -368,17 +368,6 @@ class FBuildPage {
 		}
 		FProfiler::profile('FBuildPage--FSystem::topMenu');
 
-		//---BANNER
-		/*
-		 if(!isset($_GET['nobanner'])) {
-			$banner = FBanner::getBanner();
-			if(!empty($banner)) {
-			$tpl->setVariable("BANNER",$banner);
-			$tpl->touchBlock('hasMainBanner');
-			}
-			}
-			FProfiler::profile('FBuildPage--FSystem::grndbanner');
-			*/
 		if($user->pageAccess === true) {
 				
 			//breadcrumbs

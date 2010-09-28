@@ -155,7 +155,6 @@ class FPages extends FDBTool {
 		FDBTool::query("delete from sys_pages where pageId='".$pageId."'");
 			
 		FDBTool::query("delete from sys_leftpanel_pages where pageId='".$pageId."'");
-		FDBTool::query("delete from sys_leftpanel_users where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_users_pocket where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_pages_properties where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_pages_items where pageId='".$pageId."'");

@@ -44,16 +44,6 @@ class FLeftPanel extends FDBTool {
 			$arr2 = $this->getContent();
 			if(!empty($arr2)) $arrTmp = array_merge($arrTmp,$arr2);
 			
-			$this->queryReset();
-			if($this->userId > 0) {
-				$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,'','',fu.userId,fu.ord,1,fu.minimized");
-				$this->addJoin("join sys_leftpanel_users as fu on fu.functionName = f.functionName and fu.pageId='".$this->pageId."' and fu.userId='".$this->userId."'");
-				if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-				$arr2 = $this->getContent();
-				if(!empty($arr2)) $arrTmp = array_merge($arrTmp,$arr2);
-				$this->queryReset();
-			}
-
 			$arrGrouped = array();
 			//---group
 			foreach($arrTmp as $row) {
@@ -97,13 +87,6 @@ class FLeftPanel extends FDBTool {
 					$newRow['ord'] = $row[10];
 					$newRow['visible'] = $row[11];
 					$newRow['origin'] = 'page';
-				}
-
-				//---biggest priority
-				if(!empty($newRow['userId'])) {
-					$newRow['ord'] = $row[10];
-					$newRow['minimized'] = $row[12];
-					$newRow['origin'] = 'user';
 				}
 
 				$arrGrouped[$row[0]] = $newRow;
@@ -157,7 +140,7 @@ class FLeftPanel extends FDBTool {
 				if($panel['visible']==1) {
 					$fnc = $panel['functionName'];
 					$letext = false;
-					if(empty($panel['minimized'])) {
+					
 
 						if(!empty($fnc)) {
 								
@@ -214,21 +197,15 @@ class FLeftPanel extends FDBTool {
 							$letext = $panel['content'];
 						}
 
-					}
-					if(!empty($letext) || !empty($panel['minimized'])) {
+					
+					if(!empty($letext)) {
 						$TOPTPL = FBuildPage::getInstance();
 						$TOPTPL->setCurrentBlock('sidebar-block');
 						//---if login block
 						if($fnc == 'rh_login') {
 							$TOPTPL->touchBlock('sidebar-block-login');
 						}
-						//---set buttons - move up, move down, minimize/maximize
-						/*
-						 * TODO: minimize/maximize script - ajax
-						 $TOPTPL->setVariable('MOVEUP',$user->getUri('b='.$fnc.'&amp;a=u'));
-						 $TOPTPL->setVariable('MOVEDOWN',$user->getUri('b='.$fnc.'&amp;a=d'));
-						 $TOPTPL->setVariable('MINIMIZE',$user->getUri('b='.$fnc.'&amp;a=m'));
-						 */
+						
 						if(!empty($panel['name']))$TOPTPL->setVariable('SIDEBARHEAD',$panel['name']);
 						$TOPTPL->setVariable('SIDEBARBLOCKID',$fnc);
 						$TOPTPL->setVariable('SIDEBARDATA',$letext);
