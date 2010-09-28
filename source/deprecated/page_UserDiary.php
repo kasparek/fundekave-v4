@@ -1,4 +1,5 @@
 <?php
+//TODO: deprecated - udalosto se daji vkladat do klubu, alerty do posty pokud jsou sledovany, nekde stranka se vsema eventama, i opakujicima se 
 include_once('iPage.php');
 class page_UserDiary implements iPage {
 
