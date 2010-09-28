@@ -1,23 +1,5 @@
 <?php
 class rh_diar_kalendar {
-
-static function rh_datum() {
-		/*
-		 global $conf,$user,$DAYS;
-		 if(!$ret = $user->cacheGet('datelefthand')) {
-		 include(ROOT.$conf['language']['path'].'calendar.php');
-		 $tpl = FSystem::tpl('sidebar.today.tpl.html');
-		 $tpl->setVariable('DAYWORD',$DAYS[Date("D")]);
-		 $tpl->setVariable('DATE',Date('d.'.'m.'.'Y'),$ret);
-		 $tpl->setVariable('TIME',date("H:i"),$ret);
-		 $tpl->setVariable('DAYINYEAR',(Date('z')+1),$ret);
-		 $tpl->setVariable('NAMEDAY',$mesic[(int)Date("m")][Date("j")],$ret);
-		 $ret = $tpl->get();
-		 $user->cacheSave($ret);
-		 }
-		 return($ret);
-		 */
-	}
 	//TODO: refactor links - fajax
 	static function show($year='',$month='') {
 		return '';

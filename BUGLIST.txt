@@ -1,3 +1,4 @@
+-remove all sys_skin
 TODO:
 -new blog item - something is wrong
 TODO:

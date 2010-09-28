@@ -3,7 +3,6 @@ class FLang {
 
 static $TPL_SIDEBAR_PAGE_CATEGORIES = 'sidebar.page.categories.tpl.html';
 static $TPL_SIDEBAR_POLL = 'sidebar.poll.tpl.html';
-static $TPL_SIDEBAR_PAGE_DESC = 'sidebar.page.description.tpl.html';
 static $TPL_SIDEBAR_USERS = 'sidebar.users.tpl.html';
 static $TPL_SIDEBAR_CALENDAR = 'sidebar.calendar.tpl.html';
 static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
