@@ -9,7 +9,6 @@ class UserVO extends Fvob {
 	var $primaryCol = 'userId';
 
 	var $columns = array('userId'=>'userId',
-	'skinId'=>'skinId',
 	'name'=>'name',
 	'password'=>'password',
 	'ipcheck'=>'ipcheck',
@@ -28,7 +27,6 @@ class UserVO extends Fvob {
 	'hit'=>'hit');
 
 	var $userId = 0;
-	var $skinId;
 	var $name;
 	var $password;
 	var $passwordNew;
@@ -52,11 +50,6 @@ class UserVO extends Fvob {
 	var $idlogin = '';
 	var $ip = '';
 
-	//---skin info
-	var $skin = 0;
-	var $skinName = '';
-	var $skinDir = '';
-
 	//---user messages
 	//---new post alerting
 	var $newPost = 0;
@@ -78,15 +71,7 @@ class UserVO extends Fvob {
 			$this->load();
 		}
 	}
-	
-	/*
-	function load() {
-		$vo = new FDBvo( $this );
-		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
-		$vo->load();
-	}
-	*/
-	
+		
 	function save(){
 		$vo = new FDBvo( $this );
 		$vo->addIgnore('dateLastVisit');
@@ -213,7 +198,6 @@ class UserVO extends Fvob {
 		
 		$vo = new FDBvo( $this );
 		$vo->VO = 'UserVO';
-		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 						
 		$vo->setWhere("sys_users.userId in (".implode(',',$arr).")");
 		$vo->setOrder('sys_users.name');
@@ -224,7 +208,6 @@ class UserVO extends Fvob {
 	function loadOnlineFriends() {
 		$vo = new FDBvo( $this );
 		$vo->VO = 'UserVO';
-		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 		
 		$vo->addJoin('join sys_users_friends as f on f.userIdFriend=sys_users.userId');
 		
@@ -242,7 +225,6 @@ class UserVO extends Fvob {
 	function loadRequests() {
 		
 		$vo = new FDBvo( $this );
-		$vo->addJoinAuto('sys_skin','skinId',array('name as skinName'));
 		
 		$vo->addSelect('i.itemId as requestId,i.userId as requestUserId,i.text as requestMessage');
 		$vo->addJoin('join sys_pages_items as i on i.userId=sys_users.userId');

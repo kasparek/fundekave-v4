@@ -14,7 +14,7 @@ class FAvatar {
 			$userId = $userVO->userId; 
 		}
 		if($userId > 0) {
-				if(!empty($userVO->avatar)) $avatar = $userVO->avatar; //'default/profile/'.$userId.'.jpg';
+			if(!empty($userVO->avatar)) $avatar = $userVO->avatar; //'default/profile/'.$userId.'.jpg';
 		}
 		return $urlBase.$avatar;
 	}
@@ -26,50 +26,41 @@ class FAvatar {
 	 * @param array $paramsArr
 	 * @return html formated avatar
 	 */
-	static function showAvatar($userId=-1,$paramsArr = array()){
-		if(isset($paramsArr['class'])) $class = $paramsArr['class'];
-		$showName = (isset($paramsArr['showName']))?(true):(false);
+	static function showAvatar($userId=-1){
 			
 		$avatarUserId = $userId;
 		if( $avatarUserId == -1) {
 			$user = FUser::getInstance();
 			$avatarUserId = $user->userVO->userId;
 		}
+		$cacheId = $avatarUserId;
+		$cacheGrp = 'avatar';
+		
+		$cache = FCache::getInstance('l',0);
+		$ret = $cache->getData($cacheId,$cacheGrp);
+		if($ret!==false) return $ret;
 
 		$cache = FCache::getInstance('f',0);
-		$cacheId = 'opt'.(($showName===true)?('-1'):('-0'));
-		$cacheGrp = 'avatar_'.$avatarUserId;
-		$ret = $cache->getData( $cacheId,$cacheGrp);
-		if(false === $ret) {
-			if(!isset($user)) $user = FUser::getInstance();
-			$tpl = FSystem::tpl(FLang::$TPL_USER_AVATAR);
+		$ret = $cache->getData($cacheId,$cacheGrp);
+		if(false !== $ret) return $ret;
 
-			if($userId == -1 ) $avatarUserName = $user->userVO->name;
-			elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
-			else $avatarUserName = '';
+		//set cache
+		if(!isset($user)) $user = FUser::getInstance();
+		$tpl = FSystem::tpl(FLang::$TPL_USER_AVATAR);
 
-			if($showName) $tpl->setVariable('USERNAME',$avatarUserName);
-			if($user->userVO->zavatar == 1) {
-				$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
-				$tpl->setVariable('AVATARUSERNAME',$avatarUserName);
-				if(isset($class)) $tpl->setVariable('AVATARCLASS',$class);
-			}
+		if($userId == -1 ) $avatarUserName = $user->userVO->name;
+		elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
+		else $avatarUserName = '';
 
-			if($user->idkontrol===true && $avatarUserId > 0) {
-				$avatarUrl = FSystem::getUri('who='.$avatarUserId,'finfo','');
-				if( $showName ) {
-					$tpl->setVariable('NAMEURL',$avatarUserName);
-					$tpl->touchBlock('linknameend');
-				}
-				if( $user->userVO->zavatar ) {
-					$tpl->setVariable('AVATARLINK',$avatarUrl);
-					$tpl->touchBlock('linkavatarend');
-				}
-			}
-			$tpl->parse('useravatar');
-			$ret = $tpl->get('useravatar');
-			$cache->setData($ret, $cacheId, $cacheGrp);
-		}
+		$tpl->setVariable('USERNAME',$avatarUserName);
+		$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
+		$tpl->setVariable('AVATARLINK',$avatarUrl);
+			
+		$ret = $tpl->get();
+		$cache->setData($ret, $cacheId, $cacheGrp);
+		
+		$cache = FCache::getInstance('l',0);
+		$cache->setData($ret, $cacheId, $cacheGrp);
 
 		return $ret;
 	}

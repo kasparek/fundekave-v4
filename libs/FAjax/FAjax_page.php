@@ -4,9 +4,7 @@ class FAjax_page extends FAjaxPluginBase {
 	static function fuup($data) {
 		$user = FUser::getInstance();
 		//---call galery refresh
-		$pageId = $user->pageId;
-		$galery = new FGalery();
-		$items = $galery->refreshImgToDb($pageId);
+		$items = $user->pageVO->refreshImages();
 		$newStr = '';
 		$updatedStr = '';
 		if(isset($items['new'])) $newStr = implode(',',$items['new']);

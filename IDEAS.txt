@@ -1,3 +1,8 @@
+PAGE STRUCTURE
+item detail
+items list (w page label)?
+pages list (w last item)?
+
 PAGE LIST  ANY ITEM - USER CAN ADD ANY ITEM
 -add simple message - forum type
 -add blog item - show form

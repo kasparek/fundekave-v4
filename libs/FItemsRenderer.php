@@ -69,6 +69,10 @@ class FItemsRenderer {
 	function render( $itemVO ) {
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
+		
+		//TODO: do renderer caching is hasDefaultSettings===true 
+		$cacheGroup = 'renderedItem';
+		$cacheId = $this->itemId;
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
@@ -174,7 +178,7 @@ class FItemsRenderer {
 					if($itemVO->tag_weight > 0) {
 						$arrTags = FItemTags::getItemTagList($itemId);
 						foreach ($arrTags as $tag) {
-							$tpl->setVariable('PARTICIPANTAVATAR',FAvatar::showAvatar($tag[0],array('showName'=>1)));
+							$tpl->setVariable('PARTICIPANTAVATAR',FAvatar::showAvatar($tag[0]));
 							$tpl->parse('participant');
 						}
 					}

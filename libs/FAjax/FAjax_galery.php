@@ -55,7 +55,10 @@ class FAjax_galery extends FAjaxPluginBase {
 	}
 
 	static function delete($data) {
-		FGalery::removeFoto($data['itemId']);
+		
+		$itemVO = new ItemVO($data['itemId'],true);
+		$itemVO->delete();
+		
 	}
 
 }

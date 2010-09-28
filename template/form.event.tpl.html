@@ -1,0 +1,65 @@
+<form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
+<!-- BEGIN edit --><input name="itemId" value="{ITEMID}" type="hidden"><!-- END edit -->
+<div id="tabs">
+<ul>
+<li><a href="#tabs-1">Nastaveni</a></li>
+<li><a href="#tabs-2">Specialni</a></li>
+</ul>
+<div id="tabs-1">
+<div class="buttonBar">
+<input type="submit" name="nav" value="Uložit" class="button submit draftdrop" /> 
+<!-- BEGIN delete --><input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button confirm" /><!-- END delete -->
+</div>
+<fieldset>
+<legend>Akce</legend>
+<label for="categoryId">Druh</label><select id="categoryId" name="categoryId"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
+<label for="addon">Název</label><input type="text" id="addon" name="addon" value="{ADDON}" /><br />
+<label for="place">Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
+<label for="datestart">Datum Cas Od</label><input type="text" name="dateStartLocal" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateStartTime" value="{TIMESTART}" class="xShort" /><br />
+<label for="dateend>Datum Cas Do</label><input type="text" name="dateEndLocal" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateEntTime" value="{TIMEEND}" class="xShort" /><br />
+<label>Upload letáku</label>
+<div id="futip" class="fuup">
+<input type="file" name="imageFile" id="flyerUpload"/></div><br />
+<label> - nebo URL</label><input type="text" name="imageUrl" /><br />
+<div id="flyerDiv" class="row">
+<!-- BEGIN flyer -->
+<label>Letak</label><a rel="lightbox" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a>
+<input type="submit" name="delFlyer" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
+<!-- END flyer -->
+</div>
+<label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup draftable">{DESCRIPTION}</textarea><br />
+</fieldset>
+</div>
+<div id="tabs-2">
+<div class="buttonBar">
+<input type="submit" name="nav" value="Uložit" class="button submit" /> 
+</div>
+<fieldset>
+<legend>Specialni</legend>
+<label for="reminder">Upozornění</label><select name="reminder" id="reminder">
+<option value="0">Nepripominat</option>
+<option value="1"<!-- BEGIN remindbefore1 --> selected="selected"<!-- END remindbefore1 -->>Den akce</option>
+<option value="2"<!-- BEGIN remindbefore2 --> selected="selected"<!-- END remindbefore2 -->>Den predem</option>
+<option value="3"<!-- BEGIN remindbefore3 --> selected="selected"<!-- END remindbefore3 -->>2 dny predem</option>
+<option value="4"<!-- BEGIN remindbefore4 --> selected="selected"<!-- END remindbefore4 -->>3 dny predem</option>
+<option value="5"<!-- BEGIN remindbefore5 --> selected="selected"<!-- END remindbefore5 -->>4 dny predem</option>
+</select>  
+<select name="reminderEveryday">
+<option value="0">Jen jednou</option>
+<option value="1"<!-- BEGIN remindrepeat1 --> selected="selected"<!-- END remindrepeat1 -->>Kazdy den</option>
+</select><br />
+<label for="repeat">Opakování</label><select name="repeat" id="repeat">
+<option value="0">Neopakovat</option>
+<option value="1"<!-- BEGIN repeat1 --> selected="selected"<!-- END repeat1 -->>Každý rok</option>
+<option value="2"<!-- BEGIN repeat2 --> selected="selected"<!-- END repeat2 -->>Každý mesíc</option>
+</select><br />
+<label for="public">Pristup:</label><select name="public" id="public">
+<option value="1"<!-- BEGIN public1 --> selected="selected"<!-- END public1 -->>Verejny - vidi vsichni</option>
+<option value="2"<!-- BEGIN public2 --> selected="selected"<!-- END public2 -->>Poloverejny - vidi pouze registrovani</option>
+<option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
+<option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Osobni - vidim jen ja</option>
+</select><br />
+</fieldset>
+</div>
+</div>
+</form>

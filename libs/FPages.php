@@ -140,14 +140,14 @@ class FPages extends FDBTool {
 			//---delete photo
 			$galery = new FGalery();
 			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
-			foreach ($arrd as $df) $galery->removeFoto($df);
+			foreach ($arrd as $df) {
+				$itemVO = new ItemVO($df,true);
+				$itemVO->delete();
+			}
 			
 		}
 
-		//TODO: ---event - delete flyer
-
 		//TODO: ---delete avatar
-
 
 		FDBTool::query("delete from sys_pages_relations where pageId='".$pageId."' or pageIdRelative='".$pageId."'");
 		FDBTool::query("delete from sys_pages_favorites where pageId='".$pageId."'");

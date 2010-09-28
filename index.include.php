@@ -130,14 +130,12 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			//--concat all files
 			switch($f) {
 				case 'uava':
-					//TODO: only upload to profile, no avatar set. check filename
 					$user = FUser::getInstance();
 					$dir = FAvatar::profileBasePath();
-					$imagePath = $dir . '/' . FFile::safeFilename($filename);
-					FFile::makeDir($dir);
 					$folderSize = FFile::folderSize($dir) / 1024;
 					if($folderSize < FConf::get('settings','personal_foto_limit')) {
-						//OK to save file
+						$imagePath = $dir . '/' . FFile::safeFilename($filename);
+						FFile::makeDir($dir);
 					} else {
 						FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
 						$imagePath = '';
@@ -153,14 +151,8 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					$pageVO->save();
 					break;
 				case 'futip':
-					$user = FUser::getInstance();
 					//---upload in tmp folder in user folder and save filename in db cache
-					$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
-					$filename = FFile::safeFilename($filename);
-					$imagePath = $dir . '/' . $filename;
-					FFile::makeDir($dir);
-					$cache = FCache::getInstance('d');
-					$cache->setData($filename,'event','user-'.$user->userVO->userId);
+					$imagePath = FFile::setTempFilename($filename);
 					break;
 				default:
 					$pageVO = new PageVO($pageId,true);

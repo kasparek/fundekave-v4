@@ -198,4 +198,123 @@ class PageVO extends Fvob {
 		return $orderBy;
 	}
 	
+	/**
+	 * refresh data for galery in db by files in folder
+	 * @param $pageId
+	 * @return void
+	 */
+	function refreshImages() {
+		$galeryConf = FConf::get('galery');
+		FError::write_log('FGalery::refreshImgToDb '.$this->pageId);
+		
+		$gCountFoto = 0;
+		$gCountFotoNew = 0;
+
+		$fItems = new FItems('galery',false);
+		$fItems->setWhere('pageId="'.$this->pageId.'"');
+		$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
+		$itemList = $fItems->getList();
+		$totalItems = count($itemList);
+
+		$arrFotoDetail = array();
+		$arrFotoSize = array();
+		$arrNames = array();
+		if(!empty($itemList)) {
+			foreach ($itemList as $itemVO) {
+				$arrFotoDetail[$itemVO->itemId] = $itemVO->enclosure;
+				$arrFotoSize[$itemVO->enclosure] = $itemVO->filesize;
+				$arrNames[$itemVO->enclosure] = $itemVO->itemId;
+			}
+		}
+
+		//---search folder
+		$gCountFoto = count($arrFotoDetail);
+		$arrFiles = array();
+		$galdir = $this->conf['sourceServerBase'] . $this->pageVO->galeryDir.'/';
+		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+		$arrFiles = $ffile->fileList($galdir,"png|jpg|jpeg|gif");
+
+		$change = false;
+
+		$arrNotInDB = array_diff($arrFiles,$arrFotoDetail);
+		$arrItemIdsNotOnFtp = array_keys(array_diff($arrFotoDetail,$arrFiles));
+
+		//---remove foto no longer in folder
+		$removed=0;
+		if(!empty($arrItemIdsNotOnFtp)) {
+			foreach ($arrItemIdsNotOnFtp as $itemId) {
+				$itemVO = new ItemVO($itemId,true);
+				$itemVO->delete();
+				$change = true;
+				$removed++;
+			}
+		}
+
+		$items = array();
+
+		//---insert new foto to db
+		if(!empty($arrNotInDB)) {
+			foreach ($arrNotInDB as $file) {
+				$this->itemVO = new ItemVO();
+				$this->itemVO->pageId = $this->pageId;
+				$this->itemVO->typeId = $this->typeId;
+				$this->itemVO->enclosure = $file;
+				/*
+				 $itemVO->dateCreated = 'now()';
+				 //---try exif
+				 $exif = @exif_read_data( $galdir.$file );
+				 if(!empty($exif)) {
+					$itemVO->dateCreated = date("Y-m-d",$exif['FileDateTime']);
+					if(!empty($exif['DateTimeOriginal'])) {
+					//TODO: find a way to fix all exif formats
+					//$itemVO->dateCreated = date("Y-m-d",$exif['DateTimeOriginal']);
+					}
+					}
+					*/
+				$this->itemVO->filesize = filesize($galdir.$file);
+				$this->itemVO->text = '';
+				$this->itemVO->hit = 0;
+				$this->itemVO->dateStart = $this->pageVO->dateContent;
+				$this->itemVO->save();
+				$gCountFotoNew++;
+				$items['new'][] = $this->itemVO->itemId;
+				$change = true;
+			}
+		}
+
+		//--- check if filesize changed so update thumb
+		foreach ($arrFotoDetail as $k=>$v) {
+			if(file_exists($galdir.$v)) {
+				$newFilesize = filesize($galdir.$v);
+				$oldFilesize = $arrFotoSize[$v];
+				if($newFilesize != $oldFilesize) {
+					//---delete thumb, update filesize
+					$fotoId = $arrNames[$v];
+					$this->itemVO = new ItemVO($fotoId,true,array('type'=>'ignore'));
+					$this->itemVO->filesize = $newFilesize;
+					$this->itemVO->save();
+					$this->itemVO->flush();
+					$change = true;
+					$items['updated'][] = $fotoId;
+				}
+			}
+		}
+
+		//---invalidate all cache places
+		if($change == true) {
+			//TODO:send notification to observer
+			//FCommand::run('itemChanged');
+			//$cache = FCache::getInstance('f');
+			//$cache->invalidateGroup('calendarlefthand');
+		}
+
+		//---update foto count on page
+		$totalFoto = $gCountFotoNew + $gCountFoto;
+		FDBTool::query("update sys_pages set cnt='".$totalFoto."',dateUpdated = now() where pageId='".$this->pageId."'");
+
+		$items['total'] = $totalFoto;
+		FError::write_log('FGalery::refreshImgToDb COMPLETE '.$this->pageId.' inserted:'.(isset($items['new']) ? count($items['new']) : 0).' updated:'.( isset($items['updated']) ? count($items['updated']) : 0).' removed: '.$removed);
+		return $items;
+	}
+	
 }

@@ -1,4 +1,9 @@
+
+swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL 
+
+
 -remove all sys_skin
+
 TODO:
 -new blog item - something is wrong
 TODO:
@@ -6,10 +11,9 @@ TODO:
 
 - galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky
-- osobni - opravit nahravani - novy adresar
+- osobni - opravit nahravani - novy adresar - test
 - osobni - otestovat ftp nahravani
-- events - nahravani letaku - novy adresat, novy url na thumnail, neni potreba generovat
-- events - otestovat ftp nahravani
+- events - nahravani letaku - novy adresat, novy url na thumnail, neni potreba generovat - test
 
 TODO:
 -2. avatars using /image/ - page and user

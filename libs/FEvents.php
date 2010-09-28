@@ -55,13 +55,13 @@ class FEvents {
 			FForum::process($data);
 		}
 	}
-
+	
 	static function thumbUrl($flyerName) {
-		return 'http://'.FConf::get('galery','ftpServer') . '/' . FConf::get('galery','targetUrlBase') .FConf::get('events','thumb_width').'x0/prop/page/event/'. ($flyerName);
+		return FConf::get('galery','targetUrlBase') .FConf::get('events','thumb_width').'x0/prop/page/event/'. ($flyerName);
 	}
 
 	static function flyerUrl($flyerName) {
-		return 'http://'.FConf::get('galery','ftpServer') . '/' . FConf::get('galery','sourceUrlBase') .'page/event/'. $flyerName;
+		return FConf::get('galery','sourceUrlBase') .'page/event/'. $flyerName;
 	}
 
 	static function show($archiv=false) {
@@ -126,21 +126,15 @@ class FEvents {
 			$itemVO->dateStart = Date("Y-m-d");
 		}
 
-		$tpl = FSystem::tpl('events.edit.tpl.html');
+		$tpl = FSystem::tpl('form.event.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=event-submit&u='.FUser::logon()));
-		$tpl->setVariable('HEADING',(($itemVO->itemId>0)?($itemVO->addon):(FLang::$LABEL_EVENT_NEW)));
 		$tpl->setVariable('ITEMID',$itemVO->itemId);
 
-		$q = 'select categoryId,name from sys_pages_category where typeId="event" order by ord,name';
-		$arrOpt = FDBTool::getAll($q,'event','categ','l');
-		$options = '';
-		if(!empty($arrOpt)) foreach ($arrOpt as $row) {
-			$options .= '<option value="'.$row[0].'"'.(($row[0] == $itemVO->categoryId)?(' selected="selected"'):('')).'>'.$row[1].'</option>';
-		}
-		$tpl->setVariable('CATOPTIONS',$options);
+		//categories
+		if($opt = FCategory::getOptions($user->pageVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
 
+		$tpl->setVariable('ADDON',$itemVO->addon);
 		$tpl->setVariable('PLACE',$itemVO->location);
-		$tpl->setVariable('NAME',$itemVO->addon);
 		$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
 		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
@@ -148,7 +142,7 @@ class FEvents {
 		
 		$tpl->setVariable('DESCRIPTION',FSystem::textToTextarea( $itemVO->text ));
 		if($itemVO->itemId > 0) {
-			$tpl->touchBlock('delakce');
+			$tpl->touchBlock('delete');
 		}
 
 		if(!empty( $itemVO->enclosure )) {
@@ -158,25 +152,12 @@ class FEvents {
 		}
 
 		//enhanced settings
-		$reminder = $itemVO->prop('reminder');
-		$reminderOptions='';
-		foreach (FLang::$DIARYREMINDER as $k=>$v) {
-			$reminderOptions.='<option value="'.$k.'"'.(($k==$reminder)?(' selected="selected"'):('')).'>'.$v.'</option>';
-		}
-		$tpl->setVariable('REMINDEROPTIONS',$reminderOptions);
-
-		$reminderEveryday = (int) $itemVO->prop('reminderEveryday');
-		if($reminderEveryday==1) $tpl->touchBlock('everydayselected');
-
-		$repeat = $itemVO->prop('repeat');
-		$repeatOptions='';
-		foreach (FLang::$DIARYREPEATER as $k=>$v) {
-			$repeatOptions.='<option value="'.$k.'"'.(($k==$repeat)?(' selected="selected"'):('')).'>'.$v.'</option>';
-		}
-		$tpl->setVariable('REPEATOPTIONS',$repeatOptions);
+		$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
+		$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
+		$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
 
 		$public = (int) $itemVO->public;
-		$tpl->touchBlock('access'.$public);
+		$tpl->touchBlock('public'.$public);
 
 		if( !empty($tplBlock) ) {
 			$tpl->parse($tplBlock);
@@ -188,10 +169,10 @@ class FEvents {
 
 	static function processForm($data, $redirect=true) {
 		$user = FUser::getInstance();
-		if(isset($data['item'])) {
-			if($data['item']>0) {
+		if(isset($data['itemId'])) {
+			if($data['itemId']>0) {
 				$itemVO = new ItemVO();
-				$itemVO->itemId = $data['item'];
+				$itemVO->itemId = $data['itemId'];
 				$itemVO->load();
 			}
 		}
@@ -222,22 +203,15 @@ class FEvents {
 		if($action=='delFlyer') {
 			if($itemVO->itemId>0) {
 				//del and update db
-				if($itemVO->enclosure!='') {
-					$rootFlyer = ROOT_FLYER.$itemVO->enclosure;
-					$rootFlyerThumb = ROOT_FLYER_THUMB.$itemVO->enclosure;
-					if(file_exists($rootFlyer)) unlink($rootFlyer);
-					if(file_exists($rootFlyerThumb)) unlink($rootFlyerThumb);
-				}
-				$itemVO->enclosure = 'null';
+				$itemVO->deleteImage();
 				$itemVO->save();
 			} else {
 				//del temporary
-				$cache = FCache::getInstance('d');
-
-				$filename = $cache->getData('event','user-'.$user->userVO->userId);
-				unlink(ROOT . 'tmp/upload/'.$user->userVO->name.'/'.$filename);
-
-				$cache->invalidateData('event','user-'.$user->userVO->userId);
+				$temp = FFile::getTemplFilename();
+				if($temp!==false) {
+					$ffile = new FFile();
+					$ffile->unlink();
+				}
 			}
 		}
 
@@ -257,77 +231,74 @@ class FEvents {
 
 		if($action=='nav') {
 			if(!empty($data['categoryNew'])) {
-				$data['category'] = FCategory::tryGet( $data['categoryNew'],'event');
+				$data['categoryId'] = FCategory::tryGet( $data['categoryNew'],'event');
 			}
 
 			//---check time
 			$timeStart = '';
 			$timeEnd = '';
-			$timeStartTmp = trim($data['timestart']);
+			$timeStartTmp = trim($data['dateStartTime']);
 			if(FSystem::isTime($timeStartTmp)) $timeStart = ' '.$timeStartTmp;
-			$timeEndTmp = trim($data['timeend']);
+			$timeEndTmp = trim($data['dateEndTime']);
 			if(FSystem::isTime($timeEndTmp)) $timeEnd = ' '.$timeEndTmp;
 			//---check time
-			$dateStart = FSystem::textins($data['datestart'],array('plainText'=>1));
+			$dateStart = FSystem::textins($data['dateStartLocal'],array('plainText'=>1));
 			$dateStart = FSystem::switchDate($dateStart);
 			if(FSystem::isDate($dateStart)) $dateStart .= $timeStart;
 			else FError::addError(FLang::$ERROR_DATE_FORMAT);
 
 			//---save array
 			$itemVO->location = FSystem::textins($data['place'],array('plainText'=>1));
-			$itemVO->addon = FSystem::textins($data['name'],array('plainText'=>1));
+			$itemVO->addon = FSystem::textins($data['addon'],array('plainText'=>1));
 			$itemVO->dateStart = $dateStart;
-			$itemVO->dateStartLocal = $data['datestart'];
-			$itemVO->text = FSystem::textins($data['description']);
+			$itemVO->dateStartLocal = $data['dateStartLocal'];
+			$itemVO->text = FSystem::textins($data['text']);
 
-			$dateEnd = FSystem::textins($data['dateend'],array('plainText'=>1));
-			$itemVO->dateEndLocal = $data['dateend'];
+			$dateEnd = FSystem::textins($data['dateEndLocal'],array('plainText'=>1));
+			$itemVO->dateEndLocal = $data['dateEndLocal'];
 			$dateEnd = FSystem::switchDate($dateEnd);
 			if(FSystem::isDate($dateEnd)) $itemVO->dateEnd = $dateEnd.$timeEnd;
 
-			if($data['category'] > 0) $itemVO->categoryId = (int) $data['category'];
+			if($data['categoryId'] > 0) $itemVO->categoryId = (int) $data['categoryId'];
 
 			if(empty($itemVO->addon)) FError::addError(FLang::$ERROR_NAME_EMPTY);
 
-			$itemVO->public = (int) $data['dpublic'];
+			$itemVO->public = (int) $data['public'];
 
 			if(!FError::isError()) {
 				$itemId = $itemVO->save();
-				if(!empty($data['akceletakurl'])) {
-					$ext = FFile::fileExt($data['akceletakurl']);
+				if(!empty($data['imageUrl'])) {
+					$ext = FFile::fileExt($data['imageUrl']);
 					if($ext=='gif' || $ext=='jpg' || $ext=='jpeg' || $ext=='png') {
-						$flyerName = FEvents::createFlyerName($itemVO->itemId, $data['akceletakurl']);
+						$flyerName = FEvents::createFlyerName($itemVO->itemId, $data['imageUrl']);
 						//---delete old files
-						if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
-						if(file_exists(ROOT_FLYER.$flyerName)) unlink(ROOT_FLYER.$flyerName);
-						//---save file
-						if($file = file_get_contents($data['akceletakurl'])) {
+						$itemVO->deleteImage();
+						//---load file from URL and save to folder
+						if($file = file_get_contents($data['imageUrl'])) {
+							//TODO: write data to file / FTP from string
+							//$galdir = $this->conf['sourceServerBase'] . $this->pageVO->galeryDir.'/';
 							file_put_contents(ROOT_FLYER.$flyerName,$file);
+							$itemVO->enclosure = $flyerName;
+							$itemVO->save();	
 						}
-						FEvents::createThumb($flyerName);
-
-						$itemVO->enclosure = $flyerName;
-						$itemVO->save();
 					}
 				} elseif(isset($data['__files'])) {
-					if($data['__files']['akceletak']['error'] == 0) {
-						$flyerName = $data['__files']['akceletak']['name'] = FEvents::createFlyerName($itemVO->itemId, $data['__files']['akceletak']['name']);
+					if($data['__files']['imageFile']['error'] == 0) {
+						$flyerName = $data['__files']['imageFile']['name'] = FEvents::createFlyerName($itemVO->itemId, $data['__files']['akceletak']['name']);
 						//---delete old files
-						if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
-						if(file_exists(ROOT_FLYER.$flyerName)) unlink(ROOT_FLYER.$flyerName);
+						$itemVO->deleteImage();
 						//---upload file
-						if(FSystem::upload($data['__files']['akceletak'],ROOT_FLYER,800000)) {
-							FEvents::createThumb($data['__files']['akceletak']['name']);
-							$itemVO->enclosure = $data['__files']['akceletak']['name'];
+						if(FSystem::upload($data['__files']['imageFile'],ROOT_FLYER,800000)) {
+							$itemVO->enclosure = $data['__files']['imageFile']['name'];
 							$itemVO->save();
 							FError::addError(FLang::$MESSAGE_SUCCESS_SAVED);
 						}
 					}
 				}
 				//enhanced settings
-				$itemVO->prop('reminder',$data['dpripomen']);
-				$itemVO->prop('reminderEveryday',$data['dopakovat']);
-				$itemVO->prop('repeat',$data['drepeat']);
+				$itemVO->prop('reminder',$data['reminder']);
+				$itemVO->prop('reminderEveryday',$data['reminderEveryday']);
+				$itemVO->prop('repeat',$data['repeat']);
 
 				$cache = FCache::getInstance('f');
 				$cache->invalidateGroup('eventtip');
@@ -347,29 +318,28 @@ class FEvents {
 
 		//---try image if is in cache
 		if(!FError::isError()) {
-			if(!isset($user)) $user = FUser::getInstance();
-			$cache = FCache::getInstance('d');
-			$filename = $cache->getData('event','user-'.$user->userVO->userId);
-			$cache->invalidateData('event','user-'.$user->userVO->userId);
-			if(!empty($filename)) {
+			
+			$filename = FFile::getTemplFilename();
+			if($filename!==false) {
 				//---set flyer
-				//TODO: fix uploading
-				$flyerName = FEvents::createFlyerName($itemVO->itemId, $filename);
-				if(!empty($itemVO->enclosure) && file_exists(ROOT_FLYER.$itemVO->enclosure)) unlink(ROOT_FLYER.$itemVO->enclosure);
-				$flyerTarget = ROOT_FLYER.$flyerName;
-				if(file_exists($flyerTarget)) unlink($flyerTarget);
-				rename(FConf::get('settings','upload_tmp').$user->userVO->name.'/'.$filename, $flyerTarget);
-				chmod($flyerTarget, 0777);
-				FFile::makeDir(FConf::get('events','root_flyer_thumb'));
-				FEvents::createThumb( $flyerName );
+			
+				//delete old flyer
+				$itemVO->deleteImage();
+				
+				$filenameArr = explode('/',$filename);
+				
+				$pageVO = new PageVO($itemVO->pageId,true);
+				$galdir = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/';
+				
+				$flyerTarget = $galdir.array_pop($filenameArr);
+				
+				$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+				$ffile->move_uploaded_file($filename,$flyerTarget);
+								
 				$itemVO->enclosure = $flyerName;
 				$itemVO->save();
 			}
 		}
 		return $itemVO;
-	}
-
-	static function createFlyerName($itemId, $origFilename) {
-		return "flyer-".$itemId.'-'.date("U").'.'.FFile::fileExt($origFilename);
 	}
 }

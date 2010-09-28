@@ -33,6 +33,7 @@ class ItemVO extends Fvob {
 	var $propertiesList = array('position','forumSet');
 	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>2);
 
+	//TODO: if set by set() override to convert data/time local
 	public function __get($name) {
 		if(!$name) return;
 		
@@ -276,6 +277,7 @@ class ItemVO extends Fvob {
 			FDBTool::query("update sys_pages_favorites set cnt=cnt-1 where pageId='".$this->pageId."'");
 			FDBTool::query("update sys_pages_favorites as pf set pf.cnt=(select p.cnt from sys_pages as p where p.pageId=pf.pageId) where pf.cnt < 0 or pf.cnt > (select p.cnt from sys_pages as p where p.pageId=pf.pageId)");
 		}
+		$this->deleteImage();
 		//---delete in other tables
 		FDBTool::query("delete from sys_users_pocket where itemId='".$itemId."'");
 		FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
@@ -342,7 +344,7 @@ class ItemVO extends Fvob {
 	 * returns parsed html
 	 *
 	 */
-	function render($itemRenderer=null) {
+	function render($itemRenderer=null,$show=true) {
 		 
 		if(!$itemRenderer) {
 			$itemRenderer = new FItemsRenderer();
@@ -352,12 +354,9 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
-		//TODO: do renderer caching
-		$cacheGroup = 'renderedItem';
-		$cacheId = $this->itemId;
 		
 		$itemRenderer->render( $this );
-		return $itemRenderer->show();
+		if($show) return $itemRenderer->show();
 	}
 
 	//---support
@@ -371,7 +370,7 @@ class ItemVO extends Fvob {
 			//FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
 
 			//---write
-			FDBTool::query("insert into sys_pages_items_hit values ('".(FUser::logon()*1)."','".$this->itemId."',now())");
+			FDBTool::query("insert into sys_pages_items_hit values ('".$this->itemId."','".(FUser::logon()*1)."',now())");
 
 			$this->hit++;
 		}
@@ -500,6 +499,20 @@ class ItemVO extends Fvob {
 			//request url to do action
 			file_get_contents( $url );
 		}
+	}
+	
+	/**
+	 * delete image - enclosure
+	 */
+	function deleteImage() {
+		if(empty($this->enclosure)) return;
+		$this->flush();
+		$confGalery = FConf::get('galery');
+		$file = new FFile();	
+		if($file->is_file($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
+			$file->unlink($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+		}
+		$this->set('enclosure',null);
 	}
 
 }
