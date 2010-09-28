@@ -220,8 +220,9 @@ class page_PageEdit implements iPage {
 
 					//---foto delete
 					if(isset($data['delfoto'])) {
-						foreach ($data['delfoto'] as $dfoto) {
-							FGalery::removeFoto($dfoto);
+						foreach ($data['delfoto'] as $deleteItemId) {
+							$itemVO = new ItemVO($deleteItemId,true);
+							$itemVO->delete();
 						}
 					}
 
@@ -334,8 +335,7 @@ class page_PageEdit implements iPage {
 			$pageVO->load();
 			
 			if($pageVO->typeId=='galery') {
-				$galery = new FGalery();
-				$galery->refreshImgToDb($pageVO->pageId);
+				$pageVO->refreshImages();
 			}
 		}
 

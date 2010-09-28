@@ -181,7 +181,7 @@ class FItems extends FDBTool {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
 		if($itemVO = array_shift($this->data)) {
-			$itemVO->render($this->fItemsRenderer);
+			$itemVO->render($this->fItemsRenderer,false);
 			FProfiler::profile('FItems::parse--ITEM PARSED');
 		}
 	}
@@ -192,16 +192,13 @@ class FItems extends FDBTool {
 
 	function render($from=0, $perPage=0) {
 		if(empty($this->data)) $this->getList($from, $perPage);
+		if(empty($this->data)) return false;
 		//---items parsing
-		if(!empty($this->data)) {
-			while ($this->data) {
-				$this->parse();
-			}
-			$ret = $this->show();
-			return $ret;
-		} else {
-			return false;
+		while ($this->data) {
+			$this->parse();
 		}
+		$ret = $this->show();
+		return $ret;
 	}
 
 	//---aktualizace oblibenych / prectenych prispevku

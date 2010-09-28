@@ -14,24 +14,24 @@ class FBlog {
 		if(FRules::get($user->userVO->userId,$pageId,2) === true) {
 			if($action === 'save') {
 				$itemVO = new ItemVO();
-				$itemVO->addon = FSystem::textins($data['nadpis'],array('plainText'=>1));
-				$itemVO->text = FSystem::textins($data['textshort']);
+				$itemVO->addon = FSystem::textins($data['addon'],array('plainText'=>1));
+				$itemVO->text = FSystem::textins($data['text']);
 				
-				$itemVO->textLong = FSystem::textins($data['textlong']);
+				$itemVO->textLong = FSystem::textins($data['textLong']);
 				
-				$author = FSystem::textins($data['autor'],array('plainText'=>1));
+				$author = FSystem::textins($data['name'],array('plainText'=>1));
 				$itemVO->name = ((empty($author))?($user->userVO->name):($author));
 
-				$data['datum'] = FSystem::textins($data['datum'],array('plainText'=>1));
+				$data['datum'] = FSystem::textins($data['dateStartLocal'],array('plainText'=>1));
 				$data['datum'] = FSystem::switchDate($data['datum']);
 				if(FSystem::isDate($data['datum'])) $itemVO->dateStart = $data['datum'];
 
-				if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
+				if(!empty($data['itemId'])) $itemVO->itemId = (int) $data['itemId'];
 
 				if(!empty($data['categoryNew'])) {
-					$data['category'] = FCategory::tryGet( $data['categoryNew'], $pageId);
+					$data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $pageId);
 				}
-				if(!empty($data['category'])) $itemVO->categoryId = (int) $data['category'];
+				if(!empty($data['categoryId'])) $itemVO->categoryId = (int) $data['categoryId'];
 
 				$itemVO->public = (int) $data['public'];
 				
@@ -101,9 +101,8 @@ class FBlog {
 		$textAreaIdShort = FBlog::textAreaId().'short';
 		$textAreaIdLong = FBlog::textAreaId().'long';
 			
-		$tpl = FSystem::tpl('blog.editform.tpl.html');
+		$tpl = FSystem::tpl('form.blog.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=blog-submit'));
-		$tpl->setVariable('PAGEID',$user->pageVO->pageId);
 
 		$textShort = '';
 		$textLong = '';
@@ -113,15 +112,15 @@ class FBlog {
 			$itemVO = new ItemVO($itemId,false,array('type'=>'blog'));
 
 			if($itemVO->load()) {
-				$tpl->setVariable('EDITADDON',$itemVO->addon);
-				$tpl->setVariable('EDITDATE',$itemVO->dateStartLocal);
+				$tpl->setVariable('TITLE',$itemVO->addon);
+				$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
 
 				$textShort = $itemVO->text;
 				$textLong = $itemVO->textLong;
 
-				$tpl->setVariable('EDITAUTOR',$itemVO->name);
+				$tpl->setVariable('USERNAME',$itemVO->name);
 				$tpl->touchBlock('newdelete');
-				$tpl->setVariable('EDITID',$itemId);
+				$tpl->setVariable('ITEMID',$itemId);
 				if($itemVO->public == 0) {
 					$tpl->touchBlock('classnotpublic');
 					$tpl->touchBlock('headernotpublic');
@@ -129,26 +128,26 @@ class FBlog {
 					$tpl->touchBlock('statpublic');
 				}
 				///properties
-				$tpl->touchBlock('fforum'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
+				$tpl->touchBlock('comments'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
 				$selectedCategory = $itemVO->categoryId;
 				
 				$tpl->setVariable('POSITION',str_replace(';',"\n",$itemVO->prop('position')));
 			}
 		} else {
 
-			$tpl->setVariable('EDITDATE',Date("d.m.Y"));
-			$tpl->setVariable('EDITAUTOR',$user->userVO->name);
+			$tpl->setVariable('DATESTART',Date("d.m.Y"));
+			$tpl->setVariable('USERNAME',$user->userVO->name);
 
 		}
 
-		///categories
-		if($opt = FCategory::getOptions($user->pageVO->pageId,$selectedCategory,true,'')) $tpl->setVariable('CATOPTIONS',$opt);
+		//categories
+		if($opt = FCategory::getOptions($user->pageVO->pageId,$selectedCategory,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
 
-		$tpl->setVariable('EDITTEXTSHORT',$textShort);
-		$tpl->setVariable('EDITTEXT',$textLong);
+		$tpl->setVariable('CONTENT',$textShort);
+		$tpl->setVariable('CONTENTLONG',$textLong);
 
-		$tpl->setVariable('TEXTIDSHORT',$textAreaIdShort);
-		$tpl->setVariable('TEXTID',$textAreaIdLong);
+		$tpl->setVariable('CONTENTID',$textAreaIdShort);
+		$tpl->setVariable('CONTENTLONGID',$textAreaIdLong);
 
 		return $tpl->get();
 	}

@@ -128,9 +128,9 @@ class FForum extends FDBTool {
 			} else $cap = true;
 
 			if(FUser::logon()) $jmeno = $user->userVO->name;
-			elseif(isset($data["jmeno"])) $jmeno = trim($data["jmeno"]);
+			elseif(isset($data["jmeno"])) $jmeno = trim($data["name"]);
 
-			if(isset($data["zprava"])) $zprava = trim($data["zprava"]);
+			if(isset($data["zprava"])) $zprava = trim($data["text"]);
 
 			if($cap) {
 				if((!empty($zprava))) {

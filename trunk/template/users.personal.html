@@ -54,7 +54,7 @@
 <div id="personalfoto">
 <!-- BEGIN personalImage -->
 <div id="personalfoto{IMGID}">
-<a href="{IMGURL}" rel="lightbox-personal"><img src="{IMGURL}" style="float:left;" /></a>
+<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" style="float:left;" /></a>
 <input type="submit" class="confirm button" name="avatar{IMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /> 
 <input type="submit" class="confirm button" name="del{IMGID}" value="Smazat" title="Opravdu chcete toto foto smazat?" />
 <div class="clearbox"></div>
@@ -80,18 +80,18 @@
 </select>
 </div>
 <!-- END banners -->
+<!-- BEGIN pageavatars -->
 <label>Ikony klubů</label>
 <select name="zaudico">
 <option value="0">Nezobrazovat</option>
 <option value="1"<!-- BEGIN zaudico --> selected="selected"<!-- END zaudico -->>Zobrazovat</option>
-</select>
-<br />
+</select><br /><!-- END pageavatars -->
+<!-- BEGIN useravatars -->
 <label>Ikony uživ.</label>
 <select name="zidico">
 <option value="0">Nezobrazovat</option>
 <option value="1"<!-- BEGIN zidico --> selected="selected"<!-- END zidico -->>Zobrazovat</option>
-</select>
-<br />
+</select><br /><!-- END useravatars -->
 <!-- BEGIN galeryStyle -->
 <label>Styl galerie</label>
 <select name="galtype">

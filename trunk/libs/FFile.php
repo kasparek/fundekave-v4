@@ -346,4 +346,39 @@ class FFile {
 		$arr = explode('.',$filename);
 		return strtolower($arr[count($arr)-1]);
 	}
+	
+	/**
+	 * store temporary filename
+	 * @param String $filename
+	 * @param String $pageId
+	 * @return String safe checked filenam
+	 */
+	static function setTempFilename($filename) {
+		$user = FUser::getInstance();
+		if($user->userVO->userId==0) return false;
+		$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
+		$filename = FFile::safeFilename($filename);
+		$imagePath = $dir . '/' . $filename;
+		FFile::makeDir($dir);
+		$cache = FCache::getInstance('d');
+		$cache->setData($imagePath,'tmpfile',$user->userVO->userId);
+		return $imagePath;	
+	}
+	
+	/**
+	 * 
+	 * @param String $pageId
+	 * @return String retrive temp filename
+	 */
+	static function getTemplFilename() {
+		$user = FUser::getInstance();
+		if($user->userVO->userId==0) return false;
+		$cache = FCache::getInstance('d');
+		$ret = $cache->getData('tmpfile',$pageId.'-'.$user->userVO->userId);
+		if($ret!==false) {
+			$cache->invalidateData('tmpfile',$pageId.'-'.$user->userVO->userId);
+		}			
+		return $ret;
+	}
+	
 }

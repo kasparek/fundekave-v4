@@ -30,7 +30,7 @@ class page_UserSettings implements iPage {
 				$user->userVO->save();
 
 				$cache = FCache::getInstance('f',0);
-				$cache->invalidateGroup('avatar_'.$user->userVO->userId);
+				$cache->invalidateData('avatar',$user->userVO->userId);
 				
 				FAjax::addResponse('avatarBox', '$html', FAvatar::showAvatar($user->userVO->userId));
 				FAjax::addResponse('function','call','msg;ok;'.FLANG::$MSG_AVATAR_SET);
@@ -149,6 +149,7 @@ class page_UserSettings implements iPage {
     $isWebcamEnabled = false;
     $isBannerEnabled = false;
     $isGaleryStyleEnabled = false;
+    $isAvatarHidingEnabled = false;
 
 
 		$user = FUser::getInstance();
@@ -188,8 +189,10 @@ class page_UserSettings implements iPage {
 			if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
 		}
 		
-		if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');
-		if($userVO->zavatar == 1) $tpl->touchBlock('zidico');
+		if($isAvatarHidingEnabled) {
+			if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');
+			if($userVO->zavatar == 1) $tpl->touchBlock('zidico');
+		}
 		
 		if($isGaleryStyleEnabled===true) {
 			$tpl->touchBlock('galeryStyle');
@@ -238,7 +241,9 @@ class page_UserSettings implements iPage {
 		$arr = array_reverse($arr);
 		$ret = '';
 		foreach($arr as $img) {
-			$tpl->setVariable("IMGURL",URL_AVATAR.$user->userVO->name.'/'.$img);
+			$tpl->setVariable("IMGURL",FAvatar::profileBaseUrl().'/'.$img);
+			$thumbUrlBase = FConf::get('galery','targetUrlBase').'0x'.AVATAR_HEIGHT_PX.'/crop/';
+			$tpl->setVariable("THUMBURL",$thumbUrlBase.$user->userVO->name.'/profile/'.$img);
 			$tpl->setVariable("IMGID",md5($img));
 			$tpl->parse('personalImage');
 		}
