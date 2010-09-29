@@ -558,9 +558,9 @@ class FHTMLTemplateIT
     function setVariable($variable, $value = '')
     {
         if (is_array($variable)) {
-            $this->variableCache = array_merge($this->variableCache, $variable);
+        	foreach($variable as $k=>$v) if($v!==null) $this->variableCache[$k] = $v;
         } else {
-            $this->variableCache[$variable] = $value;
+          if($value!==null) $this->variableCache[$variable] = $value;
         }
     } // end func setVariable
 

@@ -1,4 +1,5 @@
 <?php
+//DEPRECATED - delete after testing page_itemdetail
 include_once('iPage.php');
 class page_GaleryDetail implements iPage {
 
@@ -62,7 +63,7 @@ $ret=false;
 					$ret = $tpl->get();
 					if(isset($cacheKey)) $cache->setData($ret,$cacheKey,$cacheGrp);
 				}
-				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
+				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'itemDetail'));
 			}
 		} else {
 			//---detail foto
@@ -88,9 +89,9 @@ $ret=false;
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
 				"TAG"=>FItemTags::getTag($itemVO->itemId,$userId,'galery'),
-				"COMMENTS"=>FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),0,array('simple'=>true,'showHead'=>false))
+				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
+				"COMMENTS"=>page_PageItemList::build(array('itemId'=>$itemVO->itemId))
 				);
-				if(!empty($itemVO->text)) $arrVars["INFO"] = $itemVO->text;
 			}
 				
 			//update page name
@@ -129,7 +130,7 @@ $ret=false;
 				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash','opposite');
 				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash','opposite');
 
-				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'fotoBox'));
+				FBuildPage::addTab(array("MAINDATA"=>$ret,"MAINID"=>'itemDetail'));
 			}
 				
 		}

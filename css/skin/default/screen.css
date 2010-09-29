@@ -191,7 +191,7 @@ div.entry-content div.galeryThumb {margin: 1em 0.5em 1em 0.5em !important;}
 div.entry-content div.alignCenter div.galeryThumb {float:none;width: 170px;margin: auto;}
 div.galeryThumb div.entry-content {padding: 0 !important;}
 div.galeryThumb div.foto {text-align: center;}
-div#fotoBox div.back {margin-bottom: 1em;text-align: center;}
+div#itemDetail div.back {margin-bottom: 1em;text-align: center;}
 div.fotoDetailBox,div.fotoDetailBox p {text-align: center;}
 
 /* EVENTS */
