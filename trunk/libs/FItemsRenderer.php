@@ -199,8 +199,8 @@ class FItemsRenderer {
 				$vars['IMGALT'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGTITLE'] = $pageVO->name.' '.$enclosure;
 				$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
+				$vars['IMGURL'] = $itemVO->detailUrl;
 				$vars['POSITION'] = $itemVO->prop('position');
-				$vars['IMGURLDETAIL'] = $itemVO->detailUrlToGalery;
 				break;
 		}
 		/**/

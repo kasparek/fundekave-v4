@@ -132,10 +132,7 @@ class ItemVO extends Fvob {
 
 	var $thumbInSysRes = false;
 	var $thumbUrl;
-
 	var $detailUrl;
-	var $detailUrlToGalery;
-	var $detailUrlToPopup;
 	
 	//---changed
 	var $htmlName;
@@ -286,7 +283,11 @@ class ItemVO extends Fvob {
 			
 		//---last item
 		$this->updateItemIdLast();
-			
+
+		//TODO:---notify observer item deleted do additional action, clearing cache atd;
+		//FCommand::run('itemDeleted');
+		//$cache = FCache::getInstance('f');
+		//$cache->invalidateGroup('calendarlefthand');
 		page_PagesList::invalidate();
 		
 		$this->memFlush();
@@ -302,7 +303,7 @@ class ItemVO extends Fvob {
 				$thumbCut = $this->pageVO->getProperty('thumbCut',$thumbCut,true);
 			}
 			//thumbnail URL
-			$fGalery->itemVO->thumbUrl = $fGalery->getImageUrl(null,$thumbCut);
+			$this->thumbUrl = $this->getImageUrl(null,$thumbCut);
 			//detail image URL
 			//get optional sizes list
 			$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
@@ -310,7 +311,7 @@ class ItemVO extends Fvob {
 			$user = FUser::getInstance();
 			$maxWidth = $user->userVO->clientWidth;
 			if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
-			else $maxWidth = $maxWidth - $fGalery->conf['clientSpace'];
+			else $maxWidth = $maxWidth - $confGalery['clientSpace'];
 			//get closest valid width
 			foreach ($sideOptionList as $fib) {
 				if($maxWidth - $fib > 0) {
@@ -318,13 +319,9 @@ class ItemVO extends Fvob {
 				}
 			}
 			$fibs = array_flip($diff);
-			$fGalery->itemVO->detailUrl = $fGalery->getImageUrl(null,$fibs[min($diff)].'/prop');
-			$fGalery->itemVO->detailUrlToGalery = FSystem::getUri('i='.$fGalery->itemVO->itemId,$fGalery->itemVO->pageId);
+			$this->detailUrl = $this->getImageUrl(null,$fibs[min($diff)].'/prop');
 		}
 		switch ($this->typeId) {
-			case 'galery':
-				FGalery::prepare( $this );
-				break;
 			case 'forum':
 				$this->unread = FForum::isUnreadedMess($this->itemId);
 				break;

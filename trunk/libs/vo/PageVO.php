@@ -205,7 +205,7 @@ class PageVO extends Fvob {
 	 */
 	function refreshImages() {
 		$galeryConf = FConf::get('galery');
-		FError::write_log('FGalery::refreshImgToDb '.$this->pageId);
+		FError::write_log('PageVO::refreshImgToDb '.$this->pageId);
 		
 		$gCountFoto = 0;
 		$gCountFotoNew = 0;
@@ -313,7 +313,7 @@ class PageVO extends Fvob {
 		FDBTool::query("update sys_pages set cnt='".$totalFoto."',dateUpdated = now() where pageId='".$this->pageId."'");
 
 		$items['total'] = $totalFoto;
-		FError::write_log('FGalery::refreshImgToDb COMPLETE '.$this->pageId.' inserted:'.(isset($items['new']) ? count($items['new']) : 0).' updated:'.( isset($items['updated']) ? count($items['updated']) : 0).' removed: '.$removed);
+		FError::write_log('PageVO::refreshImgToDb COMPLETE '.$this->pageId.' inserted:'.(isset($items['new']) ? count($items['new']) : 0).' updated:'.( isset($items['updated']) ? count($items['updated']) : 0).' removed: '.$removed);
 		return $items;
 	}
 	

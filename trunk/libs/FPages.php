@@ -138,7 +138,6 @@ class FPages extends FDBTool {
 		//---galery - delete photos
 		if($pageVO->typeId=='galery') {
 			//---delete photo
-			$galery = new FGalery();
 			$arrd = FDBTool::getCol("select itemId from sys_pages_items where pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
 			foreach ($arrd as $df) {
 				$itemVO = new ItemVO($df,true);
