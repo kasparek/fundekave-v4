@@ -30,15 +30,22 @@ class page_PageItemList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
+		//vcalendar
+		//TODO: page description into page descrption 
+		//TODO: if any forum item do touch vcalendar?
+		//feedempty-x
+	
 		//var setup
 		$user = FUser::getInstance();
 		if($user->itemVO) {
-			if($user->itemVO->typeId!='forum') {
-				//show item detail
-				page_ItemDetail::show($data);
-				exit;
-			}
+			$itemVO = $user->itemVO; 
 		}
+		if($data['itemId']) {
+			$itemVO = new ItemVO($data['itemId'],true); 
+		}
+		$pageVO = $user->pageVO;
+		if(!empty($itemVO)) $pageVO = $item->pageVO;
+		
 		$output = '';
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
@@ -51,38 +58,62 @@ class page_PageItemList implements iPage {
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
 		$arrPagerExtraVars = array();
 		if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who);
-		 
-		//FORM MODE - if in edit mode show edit form - blog,event from will redirect to detail view, only forum/foto form will show here
-		if($user->pageVO->typeId=='forum') {
-			if(!$itemVO) {
-				$itemVO = new ItemVO();
-				$itemVO->typeId = 'forum';
-				$itemVO->pageId = $user->pageVO->pageId;
+		
+		/**
+		 *FORM FOR EDIT ITEM
+		 *- if in edit mode show edit form - blog,event from will redirect to detail view, only forum/foto form will show here
+		 *if in edit mode - param u or forum display form		 		 
+		 **/
+		 if($user->pageParam=='u') {
+		 //$vars['EDITFORM']
+		 }		 		
+		
+		/**
+		 *ITEM DETAIL
+		 **/		 		
+		if($itemVO)
+		if($itemVO->typeId!='forum') {
+			//show item detail
+			$vars['DETAIL'] = page_ItemDetail::build($data)) {
 			}
-			$vars['FORM'] = FItemsForm::show($itemVO,$data);
 		}
 		 
+		/**
+		 *FORUM FORM
+		 */		 		
+		if($pageVO->typeId=='forum') {
+			$writePerm = $pageVO->prop('forumSet'); //TODO: base on write perm show or not
+			if($writePerm==1 || ((writePerm==2 && $user->idkontrol)) {
+				$formItemVO = new ItemVO();
+				$formItemVO->typeId = 'forum';
+				$formItemVO->pageId = $pageVO->pageId;
+				$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data); //TODO: implement simple switch
+			}
+			if($writePerm == 2) 
+				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY); //TODO: implement message on templates
+		}
+				 
 		//HEADER
-		if(!empty($user->pageVO->content)) $vars['CONTENT'] = FSystem::postText($user->pageVO->content);
+		if(empty($itemVO) && !empty($pageVO->content)) $vars['CONTENT'] = FSystem::postText($pageVO->content);
 		//LIST ITEMS
 		$fItems = new FItems('',FUser::logon());
-		$fItems->setPage($user->pageVO->pageId);
+		$fItems->setPage($pageVO->pageId);
 		$fItems->hasReactions(false); //TODO: fix forum reactions, do not display reactions - they'll be displayd in detail - PROBLEM with forum reactions
 		if($categoryId > 0) {
 			$fItems->addWhere("categoryId='". $categoryId ."'");
 		}
-		if($user->itemVO) {
-			$itemId = $user->itemVO->itemId;
-			$fItems->addWhere("itemIdTop='".$user->itemVO->itemId."'"); //displaying reactions
+		if($itemVO) {
+			$itemId = $itemVO->itemId;
+			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 		}
 		$fItems->setOrder("if(dateStart,dateStart,dateCreated) desc, itemId desc");
 
 		if($itemId > 0) {
-			$arrPagerExtraVars['k'] = $user->pageVO->pageId;
+			$arrPagerExtraVars['k'] = $pageVO->pageId;
 			$arrPagerExtraVars['i'] = $itemId;
 			FForum::updateReadedReactions($itemId,$user->userVO->userId);//update readed reactions
 		} else {
-			FItems::aFav($user->pageVO->pageId,$user->userVO->userId);//update readed
+			FItems::aFav($pageVO->pageId,$user->userVO->userId);//update readed
 		}
 		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
@@ -105,20 +136,19 @@ class page_PageItemList implements iPage {
 		} else {
 			$touchedBlocks[]='feedempty';
 		}
-			
-		 
-		//vcalendar
-		//TODO: page description into page descrption 
-		//TODO: if any forum item do touch vcalendar?
-		//feedempty-x
-		 
-		//render to template
-		$tpl = FSystem::tpl($template);
-		if(!empty($touchedBlocks)) $tpl->touchBlock( $touchedBlocks );
-		$tpl->setVariable($vars);
-		$output .= $tpl->get();
-		 
-		//output
-		FBuildPage::addTab(array("MAINDATA"=>$output));
+		
+	 	if(!empty($data['__ajaxResponse'])) {
+			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
+			FAjax::addResponse('topPager','$html',empty($vars['TOPPAGER']) ? '' : $vars['TOPPAGER']);
+			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
+		} else {
+			//render to template
+			$tpl = FSystem::tpl($template);
+			if(!empty($touchedBlocks)) $tpl->touchBlock( $touchedBlocks );
+			$tpl->setVariable($vars);
+			$output .= $tpl->get();
+			//output
+			FBuildPage::addTab(array("MAINDATA"=>$output));
+		}
 	}
 }
