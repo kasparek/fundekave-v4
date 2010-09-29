@@ -10,7 +10,7 @@ class FEvents {
 		
 		if($user->pageParam=='u') {
 			
-			page_EventsEdit::build();
+			page_EventsEdit::build(); //TODO: deprecated
 			
 		} else {
 			

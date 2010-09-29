@@ -26,7 +26,7 @@ class FAjax_blog extends FAjaxPluginBase {
 		if(FAjax::isRedirecting()===false) {
 			FAjax_blog::edit( array('__ajaxResponse'=>true,'item'=>$itemId) );
 			//refresh item preview
-			$extraParams = array('type'=>'blog','showComments'=>false,'showDetail'=>true);
+			$extraParams = array('type'=>'blog','showDetail'=>true);
 			$itemVO = new ItemVO($itemId,true,$extraParams);
 			FAjax::addResponse('i'.$itemId, '$replaceWith', $itemVO->render());
 		}
