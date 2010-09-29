@@ -216,7 +216,8 @@ class FSystem {
 		}
 	}
 
-	static function switchDate($date) {
+	static function checkDate($date) {
+		$date = FSystem::textins($date,array('plainText'=>1));	
 		if(strpos($date,'.')) {
 			$arr = explode('.',$date);
 			if(count($arr)>1) {
@@ -391,6 +392,42 @@ class FSystem {
 
 	static function strReplace($textSource, $offset, $length, $textReplace) {
 		return substr($textSource,0,$offset) . $textReplace . substr($textSource,$offset+$length);
+	}
+	
+	static function positionProcess($dataStr) {
+		$positionData = trim($dataStr);
+		if(empty($positionData)) return null;
+		$posList = explode("\n",$positionData);
+		foreach($posList as $pos) {
+			$latLng = explode(',',$pos);
+			if(count($latLng)==2) {
+				$lat = trim($latLng[0])*1;
+				$lng = trim($latLng[1])*1;
+				if($lat!=0 && $lng!=0) $dataChecked[] = $lat.','.$lng;
+			}
+		}
+		if(empty($dataChecked)) return null;
+		return implode(';',$dataChecked);
+	}
+	
+	static function journeyLength($data) {
+		$dataList = explode(';',$data);
+		$distance = 0;
+		for($i=1;$i<count($dataList);$i++) {
+			list($lat1,$lng1) = explode(','$dataList[$i-1]);
+			list($lat2,$lng2) = explode(','$dataList[$i]);
+			$distance += FSystem::distance($lat1,$lng1,$lat2,$lng2);
+		}
+		return round($distance,2);
+	}
+	
+	static function distance($lat1,$lon1,$lat2,$lon2) {
+		$R = 3440;//NM 6371KM;
+		$dLat = ($lat2-$lat1) * pi() / 180;
+		$dLon = ($lon2-$lon1) * pi() / 180;
+		$a = sin($dLat/2) * sin($dLat/2) + cos($lat1*pi()/180) * cos($lat2*pi()/180) * sin($dLon/2) * sin($dLon/2);
+		$c = 2 * atan2(sqrt(a), sqrt(1-a));
+		return $R * $c;
 	}
 
 }

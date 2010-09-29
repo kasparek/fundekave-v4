@@ -28,6 +28,15 @@ class page_PageItemList implements iPage {
 		//TODO: refactor
 		//FEvents::process( $data ); || FEvents::processForm($data, true); for FEvents::editForm($itemId)
 
+    //---vyhledaveni
+		if(isset($data["filtr"])) {
+			$cache = FCache::getInstance('s',0);
+			$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $pageId, 'filter');
+		}
+		//---per page
+		if (isset($data["perpage"])) {
+			$user->pageVO->perPage( $data["perpage"] );
+		}
 	}
 
 	/**

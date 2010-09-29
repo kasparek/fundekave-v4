@@ -93,6 +93,7 @@ static $MESSAGE_SUCCESS_SAVED = 'Úspěšně uloženo';
 static $MESSAGE_FORUM_READONLY = 'Klub je zamčený pro zápis';
 static $MESSAGE_FORUM_REGISTEREDONLY = 'Pro zapis do diskuze musite byt registrovani';
 static $MESSAGE_FORUM_HOME_EMPTY = 'Nastenka je praznda';
+static $MESSAGE_EMPTY = 'Nezadali jste zadny text';
 static $MESSAGE_NAME_EMPTY = 'Nezadali jste jmeno';
 static $MESSAGE_NAME_USED = 'Jmeno uz nekdo pouziva';
 
