@@ -17,12 +17,16 @@ class page_PageItemList implements iPage {
 			//TODO: no reaction to forum messages? to complex?
 			if($user->itemVO->typeId!='forum') {
 				$data['itemIdTop'] = $user->itemVO->itemId; //if reaction
+		
 			}
 		}
 
 		//TODO: process data depend on form used
 		//will be something like FItem::process($data);
 		//FForum::process($data);
+		
+		//TODO: refactor
+		//FEvents::process( $data ); || FEvents::processForm($data, true); for FEvents::editForm($itemId)
 
 	}
 
@@ -34,6 +38,14 @@ class page_PageItemList implements iPage {
 		//TODO: page description into page descrption 
 		//TODO: if any forum item do touch vcalendar?
 		//feedempty-x
+		
+		//TODO: based on permission button to add event, blog
+		
+		//TODO: refactor
+		//FMenu::secondaryMenuAddItem(FSystem::getUri('','eveac'),FLang::$LABEL_EVENTS_ARCHIV); - if empty pageparam and only events view
+		//FEvents::view();
+		//FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
+		//FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
 	
 		//var setup
 		$user = FUser::getInstance();
@@ -141,6 +153,9 @@ class page_PageItemList implements iPage {
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
 			FAjax::addResponse('topPager','$html',empty($vars['TOPPAGER']) ? '' : $vars['TOPPAGER']);
 			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
+			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
+			FAjax::addResponse('document','title',FBuildPage::getTitle());
+			FAjax::addResponse('function','call','fajaxaInit');
 		} else {
 			//render to template
 			$tpl = FSystem::tpl($template);

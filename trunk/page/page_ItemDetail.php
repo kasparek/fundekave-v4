@@ -24,7 +24,27 @@ class page_ItemsLive implements iPage {
 		if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$pageId);
 		
 		//generic vars for all item details
-		$arrVars = array(
+		
+		/**
+		 *BLOG ITEM and EVENT ITEM
+		 **/
+		if($itemVO->typeId=='blog' || $itemVO->typeId=='event') {
+			$itemVO->options['showDetail'] = true;
+			$user->pageVO->htmlTitle = $user->pageVO->name;
+			$user->pageVO->htmlName = $itemVO->addon;
+			$itemRender = $itemVO->render();
+			if(!empty($data['__ajaxResponse'])) {
+			  FAjax::addResponse('itemDetail','$html',$itemRender);
+			} else {
+				$output = $itemRender;
+			}
+		} 		 		
+		
+		/**
+		 *GALERY ITEM
+		 **/		 		
+		if($itemVO->typeId=='galery') {
+			$arrVars = array(
 				"IMGALT"=>$pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
@@ -33,11 +53,6 @@ class page_ItemsLive implements iPage {
 				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
 				//comment via pageitemlist "COMMENTS"=>page_PageItemList::build(array('itemId'=>$itemVO->itemId)) //TODO: build comments only if there are any or write perm
 				);
-		
-		/**
-		 *GALERY ITEM
-		 **/		 		
-		if($itemVO->typeId=='galery') {
 			//no sidebar	
 			$user->pageVO->showSidebar = false;
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
@@ -52,9 +67,6 @@ class page_ItemsLive implements iPage {
 				FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['INFO'])?$arrVars['INFO']:'');
-				FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
-				FAjax::addResponse('document','title',FBuildPage::getTitle());
-				FAjax::addResponse('function','call','fajaxaInit');
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
@@ -62,8 +74,7 @@ class page_ItemsLive implements iPage {
 			}
 		}
 		//---GALERY END
-		
-		
+				
 		if(!empty($output)) {
 			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK_ALBUM,0,'backButt');
 			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash','opposite');

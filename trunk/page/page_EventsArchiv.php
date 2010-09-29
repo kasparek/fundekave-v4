@@ -1,4 +1,7 @@
 <?php
+/**
+ *DEPRECATED: use different view on PageItemList
+ */ 
 include_once('iPage.php');
 class page_EventsArchiv implements iPage {
 
