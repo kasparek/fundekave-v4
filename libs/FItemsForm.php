@@ -1,13 +1,137 @@
 <?php
 class FItemsForm {
 
-	function process($data) {
-
+	static function process($itemVO,$data) {
+		$redirectParam = '';
+		$newItem=false;
+		if(empty($itemVO->itemId)) $newItem=true;
+		$redirect = false;
+		$user = FUser::getInstance();
+		$captchaCheck = true;
+		if($user->idkontrol !== true) {
+				$captcha = new FCaptcha();
+				if(!$captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = false;
+		}
+		if($user->itemVO) {
+			$data['itemIdTop'] = $user->itemVO->itemId;
+		}
+		if(!isset($data['itemIdTop'])) $data['itemIdTop']=0;
+		if($captchaCheck===false) {
+			FError::addError(FLang::$ERROR_CAPTCHA);
+		}
+		
+		//check permissions
+		if(FRules::getCurrent(2) === true 
+			|| ($user->pageVO->typeId=='forum' && FRules::getCurrent(1) !== true)
+			|| ($user->pageVO->typeId!='forum' && $itemVO->typeId=='forum' && ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2))) {
+			//access granted
+		} else {
+			FError::addError(FLang::$ERROR_RULES_CREATE)
+		}
+		
+		if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
+		if($itemVO->load()) $newItem=false;
+		
+		switch($data['action']) {
+			case 'delete':
+			  $itemVO = new ItemVO();
+				$itemVO->itemId = (int) $data['item'];
+				$itemVO->pageId = $user->pageVO->pageId;
+				$itemVO->delete();
+				FError::addError(FLang::$LABEL_DELETED_OK,1);
+				FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
+				break;
+			case 'save':
+			default:
+				
+				/**
+				 *process data
+				 **/		 		
+				if(!FError::isError()) {
+						if(isset($data['addon'])) $data['addon'] = FSystem::textins($data['addon'],array('plainText'=>1)); //title for blog,event
+				    $data['name'] = isset($data['name']) ? $user->userVO->name : FSystem::textins($data['name'],array('plainText'=>1));
+				    if(empty($data['name'])) $data['name'] = $user->userVO->name; 
+				    $data['text'] = FSystem::textins($data['text'],$user->idkontrol ? array() : array('plainText'=>1)));
+				    $data['textLong'] = FSystem::textins($data['textLong']));
+				    if(empty($data['text']) && $itemVO->typeId=='forum') FError::addError(FLang::$MESSAGE_EMPTY);
+						if(empty($data['name'])) FError::addError(FLang::$MESSAGE_NAME_EMPTY);
+				    elseif($user->idkontrol==false) {
+				    	if (FUser::isUsernameRegistered($data['name'])) FError::addError(FLang::$MESSAGE_NAME_USED);
+						}
+						
+						if($itemVO->typeId=='blog') {
+						    if(!empty($data['categoryNew'])) $data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $user->pageVO->typeId);
+								if(!empty($data['categoryId'])) $data['categoryId'] = (int) $data['categoryId'];
+								$data['dateStart'] = FSystem::checkDate($data['dateStartLocal']);
+								if(!FSystem::isDate($data['datum'])) $data['dateStart']=null;
+						}
+				}
+				/**
+				 *save item
+				 */		 		
+				if(!FError::isError()) {
+					$itemVO->pageId = $user->pageVO->pageId;
+					$itemVO->userId = (int) $user->userVO->userId;
+					$itemVO->name = $data['name'];
+					if(!empty($data['text']) $itemVO->set('text', $data['text']);
+					if(!empty($data['textLong']) $itemVO->set('textLong', $data['textLong']);
+					$itemVO->typeId = $user->pageVO->typeId;
+					$itemVO->itemIdTop = $data['itemIdTop']>0 ? (int) $data['itemIdTop'] : null;
+					if(!empty($data['categoryId']) $itemVO->set('categoryId', $data['categoryId']);  
+					if(!empty($data['dateStart']) $itemVO->set('dateStart', $data['dateStart']);
+					if(isset($data['public']) $itemVO->set('public', (int) $data['public']);
+					$itemVO->save();
+					
+					//properties
+					///properties
+					//validate position list
+					if(isset($data['position'])) {
+						$posData = FSystem::positionProcess($data['position']);
+						$itemVO->setProperty('position', $posData);
+						if(strpos($posData,';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($posData); 
+					}
+					if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
+					
+					if($itemVO->typeId!='forum') {
+						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+						if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
+					}
+					
+					//clean up stored data
+					$cache = FCache::getInstance('s',0);
+					$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
+					//---on success
+					$redirectParam = '#dd';
+					$redirect = true;
+				}
+		}
+		//if any error safe data to display in form
+		if(FError::isError()) {
+			$cache = FCache::getInstance('s',0);
+			$cache->setData($data, $itemVO->pageId.$itemVO->typeId, 'form');
+		}
+		
+		//redirect
+		if($redirect==true) {
+		//TODO: test commands
+	//	$cache = FCache::getInstance('f');
+		//	$cache->invalidateGroup('lastBlogPost');
+			//$commandList[] = itemAdded;
+			//$cache->invalidateData('lastForumPost');
+			//if($command) {
+				//galery - lastForumPost
+				//blog - lastForumPost,lastBlogPost
+				//$commandList[] = $command;
+			//}
+			//FCommand::run($commandList);
+			FHTTP::redirect(FSystem::getUri($redirectParam));
+		}
 	}
 
 	//TODO: pass filter in data / content
 	//TODO: pass perpage in data
 	static function show($itemVO,$data) {
+		$user = FUser::getInstance();
 		if(!isset($data['simple'])) $data['simple']=false;
 		$cache = FCache::getInstance('s',0);
 		$tempData = $cache->getData( $itemVO->pageId.$itemVO->typeId, 'form');
@@ -15,7 +139,7 @@ class FItemsForm {
 			foreach($tempData as $k=>$v) {
 				$data[$k] = $v;
 			}
-			$cache->invalidateData( $this->pageId.$this->typeId, 'form');
+			$cache->invalidateData( $itemVO->pageId.$itemVO->typeId, 'form');
 		}
 		foreach($data as $k=>$v) {
 			$itemVO->set($k,$v);
@@ -51,7 +175,6 @@ class FItemsForm {
 		}
 
 		//TYPE DEPEND
-		$user = FUser::getInstance();
 		switch($itemVO->typeId) {
 			case 'forum':
 				if ($user->idkontrol) {
