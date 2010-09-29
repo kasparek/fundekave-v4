@@ -10,6 +10,8 @@ class page_PageItemList implements iPage {
 
 		//TODO: check rules for writing items
 		//-if page is forum write anything but no reactions
+		//TODO: process form data base on _GET['t'] typeid parameter from anywhere
+		//if not empty user->itemVO it is reaction - no on forum item?
 
 		if($user->itemVO) {
 			//TODO: no reaction to forum messages? to complex?
@@ -30,6 +32,13 @@ class page_PageItemList implements iPage {
 	static function build($data=array()) {
 		//var setup
 		$user = FUser::getInstance();
+		if($user->itemVO) {
+			if($user->itemVO->typeId!='forum') {
+				//show item detail
+				page_ItemDetail::show($data);
+				exit;
+			}
+		}
 		$output = '';
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
@@ -50,7 +59,7 @@ class page_PageItemList implements iPage {
 				$itemVO->typeId = 'forum';
 				$itemVO->pageId = $user->pageVO->pageId;
 			}
-			FItemsForm::show($itemVO,$data);
+			$vars['FORM'] = FItemsForm::show($itemVO,$data);
 		}
 		 
 		//HEADER
@@ -98,11 +107,6 @@ class page_PageItemList implements iPage {
 		}
 			
 		 
-		//HEADER
-		//FORM
-		//TOPPAGER
-		//ITEMS
-		//BOTTOMPAGER
 		//vcalendar
 		//TODO: page description into page descrption 
 		//TODO: if any forum item do touch vcalendar?

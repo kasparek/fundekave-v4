@@ -87,12 +87,10 @@ $ret=false;
 				"IMGALT"=>$pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
+				"TAG"=>FItemTags::getTag($itemVO->itemId,$userId,'galery'),
 				"COMMENTS"=>FForum::show($itemVO->itemId,$pageVO->prop('forumSet'),0,array('simple'=>true,'showHead'=>false))
 				);
 				if(!empty($itemVO->text)) $arrVars["INFO"] = $itemVO->text;
-				if($user->idkontrol === true) {
-					$arrVars['TAG'] = FItemTags::getTag($itemVO->itemId,$userId,'galery');
-				}
 			}
 				
 			//update page name

@@ -10,7 +10,7 @@ class FItemsForm {
 	static function show($itemVO,$data) {
 		if(!isset($data['simple'])) $data['simple']=false;
 		$cache = FCache::getInstance('s',0);
-		$tempData = $cache->getData( $this->pageId.$this->typeId, 'form');
+		$tempData = $cache->getData( $itemVO->pageId.$itemVO->typeId, 'form');
 		if($tempData !== false) {
 			foreach($tempData as $k=>$v) {
 				$data[$k] = $v;
@@ -21,7 +21,7 @@ class FItemsForm {
 			$itemVO->set($k,$v);
 		}
 
-		$tpl = FSystem::tpl('form.'.$this->typeId.'.tpl.html');
+		$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
 		//GENERIC
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=item-submit&t='.$itemVO->typeId));
 		if(!empty($itemVO->itemId)) $tpl->setVariable('ITEMID',$itemVO->itemId);
@@ -52,7 +52,7 @@ class FItemsForm {
 
 		//TYPE DEPEND
 		$user = FUser::getInstance();
-		switch($this->typeId) {
+		switch($itemVO->typeId) {
 			case 'forum':
 				if ($user->idkontrol) {
 					if($data['simple']===false) {
@@ -60,6 +60,7 @@ class FItemsForm {
 					}
 				} else {
 					$tpl->setVariable('USERNAME','');
+					$captcha = new FCaptcha();
 					$tpl->setVariable('CAPTCHASRC',$captcha->get_b2evo_captcha());
 				}
 				break;
