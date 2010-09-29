@@ -33,11 +33,18 @@ class FItemsForm {
 		if($itemVO->load()) $newItem=false;
 		
 		switch($data['action']) {
+			case 'deleteImage':
+				$itemVO = new ItemVO((int) $data['item']);
+				if($itemVO->load()) {
+					$itemVO->deleteImage();
+					$itemVO->save();
+				}
+				break;
 			case 'delete':
-			  $itemVO = new ItemVO();
-				$itemVO->itemId = (int) $data['item'];
-				$itemVO->pageId = $user->pageVO->pageId;
-				$itemVO->delete();
+			  $itemVO = new ItemVO((int) $data['item']);
+				if($itemVO->load()) {
+					$itemVO->delete();
+				}
 				FError::addError(FLang::$LABEL_DELETED_OK,1);
 				FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
 				break;
@@ -49,6 +56,7 @@ class FItemsForm {
 				 **/		 		
 				if(!FError::isError()) {
 						if(isset($data['addon'])) $data['addon'] = FSystem::textins($data['addon'],array('plainText'=>1)); //title for blog,event
+						if(empty($data['addon']) && $itemVO->typeId!='forum') FError::addError(FLang::$ERROR_NAME_EMPTY);
 				    $data['name'] = isset($data['name']) ? $user->userVO->name : FSystem::textins($data['name'],array('plainText'=>1));
 				    if(empty($data['name'])) $data['name'] = $user->userVO->name; 
 				    $data['text'] = FSystem::textins($data['text'],$user->idkontrol ? array() : array('plainText'=>1)));
@@ -58,13 +66,12 @@ class FItemsForm {
 				    elseif($user->idkontrol==false) {
 				    	if (FUser::isUsernameRegistered($data['name'])) FError::addError(FLang::$MESSAGE_NAME_USED);
 						}
-						
-						if($itemVO->typeId=='blog') {
-						    if(!empty($data['categoryNew'])) $data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $user->pageVO->typeId);
-								if(!empty($data['categoryId'])) $data['categoryId'] = (int) $data['categoryId'];
-								$data['dateStart'] = FSystem::checkDate($data['dateStartLocal']);
-								if(!FSystem::isDate($data['datum'])) $data['dateStart']=null;
-						}
+						if(!empty($data['categoryNew'])) $data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $user->pageVO->typeId);
+						if(!empty($data['categoryId'])) $data['categoryId'] = (int) $data['categoryId'];
+						if(isset($data['dateStartLocal'])) $data['dateStart'] = FSystem::checkDate($data['dateStartLocal'].(isset($data['dateStartTime']?' '.$data['dateStartTime']:''));
+						if(isset($data['dateEndLocal'])) $data['dateEnd'] = FSystem::checkDate($data['dateEndLocal'].(isset($data['dateEndTime']?' '.$data['dateEndTime']:''));
+						if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::addError(FLang::$ERROR_DATE_FORMAT);
+						if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1)); 
 				}
 				/**
 				 *save item
@@ -79,30 +86,66 @@ class FItemsForm {
 					$itemVO->itemIdTop = $data['itemIdTop']>0 ? (int) $data['itemIdTop'] : null;
 					if(!empty($data['categoryId']) $itemVO->set('categoryId', $data['categoryId']);  
 					if(!empty($data['dateStart']) $itemVO->set('dateStart', $data['dateStart']);
+					if(!empty($data['dateEnd']) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public']) $itemVO->set('public', (int) $data['public']);
-					$itemVO->save();
-					
-					//properties
-					///properties
-					//validate position list
-					if(isset($data['position'])) {
-						$posData = FSystem::positionProcess($data['position']);
-						$itemVO->setProperty('position', $posData);
-						if(strpos($posData,';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($posData); 
+					if($itemVO->save()>0){
+					  if(!empty($data['imageUrl'])) {
+					  	$itemVO->deleteImage();
+					  	$filename = FSystem::safeFilename($data['imageUrl']);
+					  	if($file = file_get_contents($data['imageUrl'])) {
+					  		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+								$ffile->file_put_contents(ROOT_FLYER.$flyerName,$file);
+								$itemVO->enclosure = $filename;
+								$itemVO->save();	
+							}
+					  } elseif(isset($data['__files'])) {
+					  	if($data['__files']['imageFile']['error'] == 0) {
+					  		$data['__files']['imageFile']['name'] = FSystem::safeFilename($data['__files']['imageFile']['name']);
+					  		$itemVO->deleteImage();
+					  		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+					  		if($ffile->upload($data['__files']['imageFile'],FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir,800000)) {
+									$itemVO->enclosure = $data['__files']['imageFile']['name'];
+									$itemVO->save();
+								}
+					  	}
+					  }
+						//properties
+						if(isset($data['position'])) {
+							$posData = FSystem::positionProcess($data['position']);
+							$itemVO->setProperty('position', $posData);
+							if(strpos($posData,';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($posData); 
+						}
+						if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
+						if(isset($data['reminder'])) $itemVO->prop('reminder',$data['reminder']*1);
+						if(isset($data['reminderEveryday'])) $itemVO->prop('reminderEveryday',$data['reminderEveryday']*1);
+						if(isset($data['repeat'])) $itemVO->prop('repeat',$data['repeat']*1);
+						
+						if($itemVO->typeId!='forum') {
+							FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+							if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
+						}
+						
+						$filename = FFile::getTemplFilename();
+						if($filename!==false) {
+							//delete old image
+							$itemVO->deleteImage();
+							$filenameArr = explode('/',$filename);
+							$pageVO = $itemVO->pageVO;
+							$galdir = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/';
+							$flyerTarget = $galdir.array_pop($filenameArr);
+							$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+							$ffile->move_uploaded_file($filename,$flyerTarget);
+							$itemVO->enclosure = $flyerName;
+							$itemVO->save();
+						}
+						
+						//clean up stored data
+						$cache = FCache::getInstance('s',0);
+						$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
+						//---on success
+						$redirectParam = '#dd';
+						$redirect = true;
 					}
-					if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
-					
-					if($itemVO->typeId!='forum') {
-						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
-						if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
-					}
-					
-					//clean up stored data
-					$cache = FCache::getInstance('s',0);
-					$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
-					//---on success
-					$redirectParam = '#dd';
-					$redirect = true;
 				}
 		}
 		//if any error safe data to display in form
@@ -115,6 +158,8 @@ class FItemsForm {
 		if($redirect==true) {
 		//TODO: test commands
 	//	$cache = FCache::getInstance('f');
+	//$cache->invalidateGroup('eventtip');
+				//$cache->invalidateGroup('calendarlefthand');
 		//	$cache->invalidateGroup('lastBlogPost');
 			//$commandList[] = itemAdded;
 			//$cache->invalidateData('lastForumPost');

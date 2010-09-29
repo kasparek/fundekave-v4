@@ -166,6 +166,14 @@ class FFile {
 			fclose($handleW);
 		}
 	}
+	
+	function file_put_contents($filename,$content) {
+	    if(!$this->isFtpMode) return file_put_contents($filename,$content);
+	    $handleW = tmpfile();
+	    fwrite($handleW, $content);
+	    ftp_fput($this->ftpConn,$filename,$handleW,FTP_BINARY);
+	    fclose($handleW);
+	}
 
 	/**
 	 * print config file for uploader

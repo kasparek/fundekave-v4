@@ -206,42 +206,32 @@ class FSystem {
 		return htmlspecialchars(FSystem::textinsBr2nl($text));
 	}
 
-	//---kontrola vkladaneho datumu
-	static function den($date) {
-		list($day,$month,$year)=Explode(".",$date);
-		if(isset($year)) {
-			if(checkdate($month,$day,$year)) {
-				return $year.'-'.$month.'-'.$day;
-			}
-		}
-	}
-
 	static function checkDate($date) {
-		$date = FSystem::textins($date,array('plainText'=>1));	
+		$date = FSystem::textins($date,array('plainText'=>1));
+		$arr = explode(' ',$date);//get time part
+		$date = $arr[0];
+		$time = FSystem::isTime($arr[1]) ? ' '.$arr[1] : '';
+			
 		if(strpos($date,'.')) {
 			$arr = explode('.',$date);
-			if(count($arr)>1) {
-				$date = $arr[2].'-'.$arr[1].'-'.$arr[0];
-			}
+			if(count($arr)!=3) return null;
+			$date = $arr[2].'-'.$arr[1].'-'.$arr[0];
 		}
+		$date .= $time;
+		if(strtotime($date)===false) return null;
 		return $date;
-	}
-
-	static function isDate($datein) {
-		$ret=false;
-		$arr = explode(" ",$datein);
-		$da = explode("-",$arr[0]);
-		if(count($da)==3){
-			if(checkdate(($da[1]*1),($da[2]*1),($da[0]*1))) $ret=true;
-		}
-		return $ret;
 	}
 
 	static function isTime($time) {
 		$arrTime = explode(':',$time);
-		if (count($arrTime) >= 2) {
-			if($arrTime[0] < 24 && $arrTime[1] < 60 && $arrTime[0] >= 0 && $arrTime[1] >= 0) return true;
+		if (count($arrTime) == 2 || count($arrTime) == 3) {
+			if($arrTime[0] > 23 && $arrTime[0]<0) return false;
+			if($arrTime[1] > 60 && $arrTime[1]<0) return false;
+			if(isset($arrTime[2]) {
+				if($arrTime[2] > 60 && $arrTime[2]<0) return false;
+			}
 		}
+		return false;
 	}
 
 	function ip2num($ip) {
@@ -276,6 +266,13 @@ class FSystem {
 		$url = strtolower($url);
 		$url = preg_replace('~[^-a-z0-9_]+~', '', $url);
 		return $url;
+	}
+	
+	static function safeFilename($text) {
+		$text = strtolower($text);
+		$arr = explode('.',$text);
+		$extension = FSystem::safeText(array_pop($arr));
+		return FSystem::safeText(implode('.',$arr)).'.'.$extension;
 	}
 
 	static function array_neighbor($key, $arr, $consecutively = false) {

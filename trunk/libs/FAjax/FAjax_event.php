@@ -1,4 +1,5 @@
 <?php
+//TODO: refactor to use FAjax_item
 class FAjax_event extends FAjaxPluginBase {
 
 	static function delFlyer($data) {
