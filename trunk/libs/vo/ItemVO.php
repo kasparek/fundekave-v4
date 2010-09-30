@@ -76,6 +76,31 @@ class ItemVO extends Fvob {
 				}
 				$key = str_replace('Local','',$name);
 				break;
+			case 'unreaded':
+				//number of unreaded reactions
+				$user = FUser::getInstance();
+				if($user->idkontrol==false) {
+					$this->unreaded=0;
+					return 0;
+				}
+				$numReaded = (int) FDBTool::getOne('select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$user->userVO->userId.'"');
+				if($numReaded < 1) $numReaded = $this->cnt;
+				$this->unreaded = $this->cnt - $numReaded;
+				//$this->unreaded = (int) FDBTool::getOne('select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$this->itemId.'"');
+				if($this->unreaded < 0) $this->unreaded=0;
+			  return $this->unreaded;
+				break;
+			case 'isUnreaded':
+				$this->isUnreaded = false;
+				$cache = FCache::getInstance( 's' );
+				$unreadedList = &$cache->getPointer('unreadedItems');
+				if(empty($unreadedList)) $unreadedList = array();
+				if(in_array($itemId,$unreadedList)) {
+					$this->isUnreaded = true;
+					if( $unset ) array_splice($unreadedList,array_search($itemId, $unreadedList),1);
+				}
+				return $this->isUnreaded;
+				break
 		}
 		
 		
@@ -109,7 +134,7 @@ class ItemVO extends Fvob {
 
 	//---comments on blog/forum
 	var $cnt;
-	var $cntReaded;
+	//$unreaded - get by getter
 
 	var $tag_weight;
 	var $location;
@@ -127,7 +152,6 @@ class ItemVO extends Fvob {
 	private $dateCreatedLocal;
 
 	var $editable = false;
-	var $unread = false;
 	var $prepared = false;
 
 	var $thumbInSysRes = false;
@@ -321,11 +345,7 @@ class ItemVO extends Fvob {
 			$fibs = array_flip($diff);
 			$this->detailUrl = $this->getImageUrl(null,$fibs[min($diff)].'/prop');
 		}
-		switch ($this->typeId) {
-			case 'forum':
-				$this->unread = FForum::isUnreadedMess($this->itemId);
-				break;
-		}
+		
 		//check if is editable
 		if(($userId = FUser::logon()) > 0) {
 			if($userId == $this->userId) {
@@ -461,17 +481,6 @@ class ItemVO extends Fvob {
 		}
 	}
 
-	function getNumUnreadComments( $userId ) {
-		$ret = 0;
-		if($userId > 0) {
-			$q =' select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$userId.'"';
-			$this->cntReaded = (int) FDBTool::getOne($q,$this->itemId.'-'.$userId.'-readed','fitems','l');
-			$numComments = (int) $this->cnt;
-			if($this->cntReaded < 1) $this->cntReaded = $numComments;
-			$ret = $numComments - $this->cntReaded;
-		}
-		return $ret;
-	}
 	
 	/**
 	 * get url of target
@@ -510,6 +519,14 @@ class ItemVO extends Fvob {
 			$file->unlink($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 		}
 		$this->set('enclosure',null);
+	}
+	
+	/**
+	 * update readed reactions
+	 * */	 	
+	function updateReadedReactions($userId) {
+		if(empty($userId)) return;
+		return FDBTool::query("insert delayed into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$this->itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$this->itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$this->itemId."')");
 	}
 
 }

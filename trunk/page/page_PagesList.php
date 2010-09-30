@@ -37,7 +37,6 @@ class page_PagesList implements iPage {
 			$typeId = $user->pageVO->typeIdChild;
 
 			if ( $userId > 0 ) {
-				FForum::clearUnreadedMess();
 				FItems::afavAll( $userId );
 			}
 

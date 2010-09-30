@@ -47,12 +47,29 @@ class page_PageItemList implements iPage {
 			if($user->itemVO->itemId>0) $itemVO = $user->itemVO; 
 		}
 		if($data['itemId']) {
-			$itemVO = new ItemVO($data['itemId'],true); 
+			$itemVO = new ItemVO($data['itemId']);
+			if(!$itemVO->load()) $itemVO = null; 
 		}
+		
 		$pageVO = $user->pageVO;
-		if(!empty($itemVO)) $pageVO = $itemVO->pageVO;
+		if(!empty($itemVO)) {
+			$pageVO = $itemVO->pageVO;
+		}
 		
+		//perpage based on unreaded items
+		if( $user->idkontrol ) {
+			$unreadedCnt = FItems::cacheUnreadedList($user->pageVO->pageId,$itemId);
+			if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) $pageVO->perPage($unreadedCnt + 3);
+		}
 		
+		//---DEEPLINKING for forum pages
+		$manualCurrentPage = 0;
+		if(!empty($itemVO)) {
+			if($itemVO->typeId=='forum') { 
+				$manualCurrentPage = $itemVO->onPageNum();
+			}
+		}
+				
 		$output = '';
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
@@ -125,9 +142,9 @@ class page_PageItemList implements iPage {
 		if($itemId > 0) {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;
 			$arrPagerExtraVars['i'] = $itemId;
-			FForum::updateReadedReactions($itemId,$user->userVO->userId);//update readed reactions
+			if($pageVO->cnt>0) $itemVO->updateReadedReactions( $user->userVO->userId );//update readed reactions
 		} else {
-			FItems::aFav($pageVO->pageId,$user->userVO->userId);//update readed
+			if($pageVO->cnt>0) FItems::aFav($pageVO->pageId,$user->userVO->userId);//update readed
 		}
 		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;

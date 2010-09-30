@@ -166,10 +166,10 @@ class PageVO extends Fvob {
 		$cache = FCache::getInstance('s');
 		$SperPage = &$cache->getPointer($this->pageId,'pp');
 		if($perPage > 0) {
-			if($perPage > FConf::get('perpage','min')) {
-				//set perpage
-				$SperPage = (int) $perPage;
-			}
+			if($perPage < FConf::get('perpage','min')) $perPage = FConf::get('perpage','min');
+			if($perPage > FConf::get('perpage','max')) $perPage = FConf::get('perpage','max'); 
+			//set perpage
+			$SperPage = (int) $perPage;
 		}
 		//get from cache if is custom
 		if(!empty($SperPage)) $perPage = $SperPage;
