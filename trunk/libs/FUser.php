@@ -92,7 +92,6 @@ class FUser {
 				$cache = FCache::getInstance( 'f' );
 				//TODO:invalidate user dependent groups
 
-				FItems::afavAll($gid); //----srovnani-seznamu-klubu-----
 				FMessages::diaryNotifications(); //---remind from diary
 			} else {
 				FError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);

@@ -524,9 +524,11 @@ class ItemVO extends Fvob {
 	/**
 	 * update readed reactions
 	 * */	 	
-	function updateReadedReactions($userId) {
+	function updateReaded($userId) {
 		if(empty($userId)) return;
-		return FDBTool::query("insert delayed into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$this->itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$this->itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$this->itemId."')");
+		if($this->cnt==0) return;
+		$this->unreaded = 0;
+		FDBTool::query("insert delayed into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$this->itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$this->itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$this->itemId."')");
 	}
 
 }

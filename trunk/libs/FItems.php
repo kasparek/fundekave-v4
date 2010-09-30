@@ -200,45 +200,6 @@ class FItems extends FDBTool {
 		$ret = $this->show();
 		return $ret;
 	}
-
-	//---aktualizace oblibenych / prectenych prispevku
-	/*.......aktualizace FAV KLUBU............*/
-	static function aFavAll($usrId,$typeArr='forum') {
-		//flush unreaded items
-		$cache = FCache::getInstance( 's' );
-		$unreadedList = &$cache->getPointer('unreadedItems');
-		$unreadedList = array();
-	
-		if(!is_array($typeArr)) $typeArr = array($typeArr);
-
-		if(!empty($usrId)){
-			foreach($typeArr as $typeId) {
-				//file cache until somebody create new page
-				$q = "SELECT f.pageId FROM sys_pages_favorites as f join sys_pages as p on p.pageId=f.pageId WHERE p.typeId='".$typeId."' and f.userId = '".$usrId."'";
-				$klo=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-1','aFavAll','f',0);
-				$q = "SELECT pageId FROM sys_pages where typeId = '".$typeId."'";
-				$kls=FDBTool::getCol($q,'user-'.$usrId.'-type-'.$typeId.'-2','aFavAll','f',0);
-				if(!isset($klo[0])) $res=$kls;
-				else $res = array_diff($kls,$klo);
-				if(!empty($res)) {
-					$cache = FCache::getInstance('f');
-					$cache->invalidateGroup('aFavAll');
-					foreach($res as $r) {
-						FDBTool::query('insert into sys_pages_favorites (userId,pageId,cnt) values ("'.$usrId.'","'.$r.'","0")');
-					}
-				}
-			}
-		}
-	}
-
-	static function aFav($pageId,$userId) {
-		if($userId > 0){
-			$dot = "insert delayed into sys_pages_favorites
-			values ('".$userId."','".$pageId."',(select cnt from sys_pages where pageId='".$pageId."'),'0')
-			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$pageId."')";
-			FDBTool::query($dot);
-		}
-	}
 	
 	/**
 	 * set unreded items to cache

@@ -142,9 +142,9 @@ class page_PageItemList implements iPage {
 		if($itemId > 0) {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;
 			$arrPagerExtraVars['i'] = $itemId;
-			if($pageVO->cnt>0) $itemVO->updateReadedReactions( $user->userVO->userId );//update readed reactions
+			$itemVO->updateReaded( $user->userVO->userId );
 		} else {
-			if($pageVO->cnt>0) FItems::aFav($pageVO->pageId,$user->userVO->userId);//update readed
+			$pageVO->updateReaded($user->userVO->userId);
 		}
 		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
