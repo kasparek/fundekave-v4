@@ -162,6 +162,7 @@ class PageVO extends Fvob {
 	 * @return number
 	 */
 	function perPage($perPage=0) {
+		if($this->typeId=='galery') return $this->cnt;
 		$cache = FCache::getInstance('s');
 		$SperPage = &$cache->getPointer($this->pageId,'pp');
 		if($perPage > 0) {

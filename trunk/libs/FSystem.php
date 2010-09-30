@@ -227,7 +227,7 @@ class FSystem {
 		if (count($arrTime) == 2 || count($arrTime) == 3) {
 			if($arrTime[0] > 23 && $arrTime[0]<0) return false;
 			if($arrTime[1] > 60 && $arrTime[1]<0) return false;
-			if(isset($arrTime[2]) {
+			if(isset($arrTime[2])) {
 				if($arrTime[2] > 60 && $arrTime[2]<0) return false;
 			}
 		}
@@ -411,8 +411,8 @@ class FSystem {
 		$dataList = explode(';',$data);
 		$distance = 0;
 		for($i=1;$i<count($dataList);$i++) {
-			list($lat1,$lng1) = explode(','$dataList[$i-1]);
-			list($lat2,$lng2) = explode(','$dataList[$i]);
+			list($lat1,$lng1) = explode(',', $dataList[$i-1]);
+			list($lat2,$lng2) = explode(',', $dataList[$i]);
 			$distance += FSystem::distance($lat1,$lng1,$lat2,$lng2);
 		}
 		return round($distance,2);

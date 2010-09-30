@@ -391,7 +391,8 @@ function fajaxaAction(action) {
 	if(confirm && id) {
 		if(!confirm($("#"+id).attr("title"))) { 
 			preventAjax = true; 
-			event.preventDefault(); 
+			event.preventDefault();
+			return;
 		}
 	} 
 	if (preventAjax == true) { preventAjax = false; return; }
@@ -533,7 +534,10 @@ function fajaxformInit(event) { if($(".fajaxform").length>0) { setListeners('but
 //ajax link init
 function fajaxaInit(event) { setListeners('fajaxa', 'click', fajaxaSend); };
 function fconfirmInit(event) { $('.confirm').each(function(){ if(!$(this).hasClass('fajaxa')) { $(this).bind('click',onConfirm); } }); };
-function onConfirm(e) { if(!confirm($(e.currentTarget).attr("title"))) { preventAjax = true; e.preventDefault(); } };
+function onConfirm(e) { 
+	if(!confirm($(e.currentTarget).attr("title"))) { 
+		preventAjax = true; e.preventDefault(); 
+	} };
 //simple functions
 function enable(id) { $('#'+id).removeAttr('disabled'); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };

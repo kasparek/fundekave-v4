@@ -1,7 +1,9 @@
-<!-- BEGIN form --><form action="{FORMACTION}" method="post" name="audit">
+<form action="{FORMACTION}" method="post" name="audit">
+<input type="hidden" name="m" value="{M}"/>
+<input type="hidden" name="t" value="{T}"/>
 <fieldset>
 <!-- BEGIN usernotlogged --><label>Jméno</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="0" /><br /><!-- END usernotlogged -->
-<label for="{CONTENTID}">Text</label> <textarea id="{CONTENTID}" class="markitup draftable expand" name="text" tabindex="1">{CONTENT}</textarea><br />
+<label for="{CONTENTID}">Text</label> <textarea id="{CONTENTID}" class="markitup draftable expand" name="text" tabindex="1">{TEXT}</textarea><br />
 <!-- BEGIN usernotlogged2 --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
 <input type="text" name="pcaptcha" value="" class="xShort" /><br />
@@ -10,4 +12,4 @@
 <!-- BEGIN userlogged2 --><input type="submit" name="filtr" value="Hledat" class="button">
 Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" /><!-- END userlogged2 -->
 </fieldset>
-</form><!-- END form -->
+</form>

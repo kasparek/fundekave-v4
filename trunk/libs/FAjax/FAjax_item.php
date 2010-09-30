@@ -1,5 +1,29 @@
 <?php
 class FAjax_item extends FAjaxPluginBase {
+	
+	static function show($data) {
+		$itemId = $data['item'];
+		if($data['__ajaxResponse']===true) {
+			$user = FUser::getInstance();
+			$user->itemVO = new ItemVO($itemId,true);
+			page_ItemDetail::build($data);
+				
+			$breadcrumbs = FBuildPage::getBreadcrumbs();
+			$tpl = FSystem::tpl(TPL_MAIN);
+			foreach($breadcrumbs as $crumb) {
+				$tpl->setVariable('BREADNAME',$crumb['name']);
+				if(isset($crumb['url'])) {
+					$tpl->setVariable('BREADURL',$crumb['url']);
+					$tpl->touchBlock('breadlinkend');
+				}
+				$tpl->parse('bread');
+			}
+			$tpl->parse('breadcrumbslist');
+			FAjax::addResponse('breadcrumbs','$html',$tpl->get('breadcrumbslist'));
+		} else {
+			FHTTP::redirect(FSystem::getUri('i='.$itemId,'',''));
+		}
+	}
 
 	static function edit($data,$itemVO=null) {
     if(empty($itemVO)) $itemVO = new ItemVO($data['item'],true);
@@ -19,17 +43,22 @@ class FAjax_item extends FAjaxPluginBase {
 	
 	static function submit($data) {
 		$itemVO = new ItemVO();
-		//TODO: check if t is coming
-		$itemVO->typeId = $data['t'];
+		$typeList = array('forum','event','galery','blog');
+		$itemVO->typeId = $data['t']; 
+		if(!in_array($itemVO->typeId,$typeList)) return; //TODO: validate type - give feedback?
+
 		FItemsForm::process($itemVO, $data );
+		
 		//TODO: check that itemVO gets repopulated
 		if(FAjax::isRedirecting()===false) {
-			FAjax_item::edit( array('__ajaxResponse'=>true),$itemVO);
 			//refresh item preview
-			//TODO: refactor get item detail
+			//TODO: refactor get item detail - this version os only for blog
 			$user = FUser::getInstance();
-			$user->itemVO = $itemVO;
-			FAjax::addResponse('i'.$itemId, '$replaceWith', page_ItemDetail::build($data));
+			if($itemVO->itemId>0) { 
+				FAjax_item::edit( array('__ajaxResponse'=>true),$itemVO);
+				$user->itemVO = $itemVO;
+				FAjax::addResponse('i'.$itemId, '$replaceWith', page_ItemDetail::build($data));
+			}
 			/*
 			$extraParams = array('type'=>'blog','showDetail'=>true);
 			$itemVO = new ItemVO($itemId,true,$extraParams);
