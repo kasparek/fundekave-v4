@@ -7,19 +7,12 @@ class page_PageItemList implements iPage {
 	 */
 	static function process($data) {
 		$user = FUser::getInstance();
+		//form is processed in FAjax_item::submit
 
 		//TODO: check rules for writing items
 		//-if page is forum write anything but no reactions
 		//TODO: process form data base on _GET['t'] typeid parameter from anywhere
 		//if not empty user->itemVO it is reaction - no on forum item?
-
-		if($user->itemVO) {
-			//TODO: no reaction to forum messages? to complex?
-			if($user->itemVO->typeId!='forum') {
-				$data['itemIdTop'] = $user->itemVO->itemId; //if reaction
-		
-			}
-		}
 
 		//TODO: process data depend on form used
 		//will be something like FItem::process($data);
@@ -28,15 +21,7 @@ class page_PageItemList implements iPage {
 		//TODO: refactor
 		//FEvents::process( $data ); || FEvents::processForm($data, true); for FEvents::editForm($itemId)
 
-    //---vyhledaveni
-		if(isset($data["filtr"])) {
-			$cache = FCache::getInstance('s',0);
-			$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $pageId, 'filter');
-		}
-		//---per page
-		if (isset($data["perpage"])) {
-			$user->pageVO->perPage( $data["perpage"] );
-		}
+    
 	}
 
 	/**
@@ -59,13 +44,14 @@ class page_PageItemList implements iPage {
 		//var setup
 		$user = FUser::getInstance();
 		if($user->itemVO) {
-			$itemVO = $user->itemVO; 
+			if($user->itemVO->itemId>0) $itemVO = $user->itemVO; 
 		}
 		if($data['itemId']) {
 			$itemVO = new ItemVO($data['itemId'],true); 
 		}
 		$pageVO = $user->pageVO;
-		if(!empty($itemVO)) $pageVO = $item->pageVO;
+		if(!empty($itemVO)) $pageVO = $itemVO->pageVO;
+		
 		
 		$output = '';
 		$template = 'page.items.list.tpl.html';
@@ -73,7 +59,7 @@ class page_PageItemList implements iPage {
 		$vars = array();
 		$itemId = 0;
 		 
-		$perPage = BLOG_PERPAGE; //TODO: get some global/local perpage
+		$perPage = $pageVO->perPage(); //TODO: get some global/local perpage
 		$pageNumUrlVar = FConf::get('pager','urlVar');
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
@@ -95,23 +81,27 @@ class page_PageItemList implements iPage {
 		if($itemVO)
 		if($itemVO->typeId!='forum') {
 			//show item detail
-			$vars['DETAIL'] = page_ItemDetail::build($data)) {
-			}
+			$vars['DETAIL'] = page_ItemDetail::build($data);
 		}
-		 
+
+		//filter-search
+		$cache = FCache::getInstance('s',0);
+		$searchStr = $cache->getData( $pageVO->pageId, 'filter');
 		/**
 		 *FORUM FORM
 		 */		 		
 		if($pageVO->typeId=='forum') {
 			$writePerm = $pageVO->prop('forumSet'); //TODO: base on write perm show or not
-			if($writePerm==1 || ((writePerm==2 && $user->idkontrol)) {
+			if($writePerm==1 || (writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
 				$formItemVO->typeId = 'forum';
 				$formItemVO->pageId = $pageVO->pageId;
+				$data['perpage'] = $perPage;
+				if($searchStr!==false) $data['text'] = $searchStr;
 				$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data); //TODO: implement simple switch
 			}
 			if($writePerm == 2) 
-				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY); //TODO: implement message on templates
+				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY; //TODO: implement message on templates
 		}
 				 
 		//HEADER
@@ -122,6 +112,9 @@ class page_PageItemList implements iPage {
 		$fItems->hasReactions(false); //TODO: fix forum reactions, do not display reactions - they'll be displayd in detail - PROBLEM with forum reactions
 		if($categoryId > 0) {
 			$fItems->addWhere("categoryId='". $categoryId ."'");
+		}
+		if(!empty($searchStr)) {
+				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$searchStr,'or');
 		}
 		if($itemVO) {
 			$itemId = $itemVO->itemId;

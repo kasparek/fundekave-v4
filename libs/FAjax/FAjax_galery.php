@@ -6,29 +6,7 @@ class FAjax_galery extends FAjaxPluginBase {
 		return parent::validate($data);
 	}
 
-	static function show($data) {
-		$itemId = $data['item'];
-		if($data['__ajaxResponse']===true) {
-			$user = FUser::getInstance();
-			$user->itemVO = new ItemVO($itemId,true);
-			page_GaleryDetail::build($data);
-				
-			$breadcrumbs = FBuildPage::getBreadcrumbs();
-			$tpl = FSystem::tpl(TPL_MAIN);
-			foreach($breadcrumbs as $crumb) {
-				$tpl->setVariable('BREADNAME',$crumb['name']);
-				if(isset($crumb['url'])) {
-					$tpl->setVariable('BREADURL',$crumb['url']);
-					$tpl->touchBlock('breadlinkend');
-				}
-				$tpl->parse('bread');
-			}
-			$tpl->parse('breadcrumbslist');
-			FAjax::addResponse('breadcrumbs','$html',$tpl->get('breadcrumbslist'));
-		} else {
-			FHTTP::redirect(FSystem::getUri('i='.$itemId,'',''));
-		}
-	}
+	
 
 	static function editThumb($data) {
 		$user = FUser::getInstance();

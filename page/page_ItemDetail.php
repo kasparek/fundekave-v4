@@ -1,6 +1,6 @@
 <?php
 include_once('iPage.php');
-class page_ItemsLive implements iPage {
+class page_ItemDetail implements iPage {
 
 	static function process($data) {
 
@@ -45,7 +45,7 @@ class page_ItemsLive implements iPage {
 		 **/		 		
 		if($itemVO->typeId=='galery') {
 			$arrVars = array(
-				"IMGALT"=>$pageVO->name.' '.$itemVO->enclosure,
+				"IMGALT"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
 				"TAG"=>FItemTags::getTag($itemVO->itemId,$userId,'galery'),
@@ -56,14 +56,14 @@ class page_ItemsLive implements iPage {
 			//no sidebar	
 			$user->pageVO->showSidebar = false;
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
-			$user->pageVO->htmlName = $user->itemVO->htmlName . ' - ' . $user->pageVO->name;
+			$user->pageVO->showHeading=false;
 			if(!empty($data['__ajaxResponse'])) {
 				FAjax::addResponse('backButt','href',$backUri);
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('detailFoto','src',$itemVO->detailUrl);
-				FAjax::addResponse('detailFoto','alt',$pageVO->name.' '.$itemVO->enclosure);
+				FAjax::addResponse('detailFoto','alt',$itemVO->pageVO->name.' '.$itemVO->enclosure);
 				FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['INFO'])?$arrVars['INFO']:'');
