@@ -1,4 +1,3 @@
-//TODO:handle back button in galery
 /**
  * GOOGLE MAPS
  */ 
@@ -282,8 +281,9 @@ function findAddress() {
 }
 //---GOOGLE MAPS END
 
-//TODO: when hit back to original and hash is "" load first image
-//TODO: use base function with progress somehow - fajaxaSend
+/**
+ * HASH HANDLING
+ */ 
 var hashOld='';
 function hashchangeInit() {
 	$(window).hashchange( function(){
@@ -327,19 +327,24 @@ function fuupUploadEventComplete() {
 /**
  *AJAX FORM SUBMIT HANDLING
  */ 
-var buttonClicked = '', preventAjax = false, draftdrop = false, formSent=null;
-function onButtonClick(event) { buttonClicked = event.target.name; if($(event.target).hasClass('draftdrop')) draftdrop=true; };
-function fsubmit(event) {
+var preventAjax = false, draftdrop = false, formSent=null;
+function onFajaxformButton(event) {
 	event.preventDefault();
+	
+	if (preventAjax == true) { preventAjax = false;	return;	}
+	
+	if($(event.currentTarget).hasClass('confirm')) {
+		if(!confirm($(event.currentTarget).attr("title"))) { return; }
+	} 
+	 
+	if($(event.currentTarget).hasClass('draftdrop')) draftdrop=true;
+		
 	$('.errormsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
 	$('.okmsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
-	$('.button',this).attr('disabled','disabled');
-	formSent = this;
-	if (preventAjax == true) { 
-	preventAjax = false; 
-	return; 
-	}
-	var arr = $(this).formToArray(false);
+	
+	formSent = event.currentTarget.form;
+	$('.button',formSent).attr('disabled','disabled');
+	var arr = $(formSent).formToArray(false);
 	var result = false;
 	var resultProperty = false;
 	while (arr.length > 0) {
@@ -348,11 +353,11 @@ function fsubmit(event) {
 		if (obj.name == 'result') result = true;
 		if (obj.name == 'resultProperty') resultProperty = true;
 	}
-	if (result == false) addXMLRequest('result', $(this).attr("id"));
+	if (result == false) addXMLRequest('result', $(formSent).attr("id"));
 	if (resultProperty == false) addXMLRequest('resultProperty', '$html');
-	if (buttonClicked.length > 0) addXMLRequest('action', buttonClicked);
-	addXMLRequest('k', gup('k', this.action));
-	sendAjax(gup('m', this.action),gup('k', this.action));
+	addXMLRequest('action', event.currentTarget.name);
+	addXMLRequest('k', gup('k', formSent.action));
+	sendAjax(gup('m', formSent.action),gup('k', formSent.action));
 };
 //---AJAX FORM END
 
@@ -361,22 +366,19 @@ function fsubmit(event) {
  */
 function fajaxaSend(event) {
 	event.preventDefault();
+	if($(event.currentTarget).hasClass('confirm')) {
+		if(!confirm($(event.currentTarget).attr("title"))) return;
+	}
 	var k = gup('k', this.href),id = $(this).attr("id");
 	if(!k) k = 0;
 	var action = gup('m',this.href)+'/'+gup('d',this.href)+'/'+k;
 	if(id) { action += '/'+id; } 
-	if($(event.currentTarget).hasClass('confirm')) { action += '/confirm='; }
-	if($(this).hasClass('hash')) {
-		document.location.hash = action;
-		return;
-	}
+	if($(this).hasClass('hash')) { document.location.hash = action;	return;	}
 	fajaxaAction(action);
-}
-//action = m/d/k|0/linkElId/confirm
-function fajaxaAction(action) {
+};
+function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	actionList = action.split('/');
-	if(!actionList[4]) actionList[4] = 'void';
-	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],confirm=actionList[4]=='confirm'?true:false,result = false, resultProperty = false;
+	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],result = false, resultProperty = false;
 	if(k==0) k=null;
 	
 	if($(".showProgress").length>0) {
@@ -388,14 +390,6 @@ function fajaxaAction(action) {
 		$(".showProgress img").bind('load',onImgLoaded)
 	}
 	
-	if(confirm && id) {
-		if(!confirm($("#"+id).attr("title"))) { 
-			preventAjax = true; 
-			event.preventDefault();
-			return;
-		}
-	} 
-	if (preventAjax == true) { preventAjax = false; return; }
 	if(d) { 
 		var arr = d.split(';');
 		while (arr.length > 0) {
@@ -530,14 +524,11 @@ function tabsInit() { $("#tabs").tabs(); };
 //request init
 function friendRequestInit() { $('#friendrequest').show('slow'); fajaxformInit(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); };
 //ajax form init
-function fajaxformInit(event) { if($(".fajaxform").length>0) { setListeners('button', 'click', onButtonClick); setListeners('fajaxform', 'submit', fsubmit ); } };
+function fajaxformInit(event) { if($(".fajaxform").length>0) { setListeners('button', 'click', onFajaxformButton); } };
 //ajax link init
 function fajaxaInit(event) { setListeners('fajaxa', 'click', fajaxaSend); };
-function fconfirmInit(event) { $('.confirm').each(function(){ if(!$(this).hasClass('fajaxa')) { $(this).bind('click',onConfirm); } }); };
-function onConfirm(e) { 
-	if(!confirm($(e.currentTarget).attr("title"))) { 
-		preventAjax = true; e.preventDefault(); 
-	} };
+function fconfirmInit(event) { $('.confirm').each(function(){ var fajaxaformParent=false; if(this.form) fajaxaformParent = $(this.form).hasClass('fajaxform'); if(!$(this).hasClass('fajaxa') && !fajaxaformParent) { $(this).bind('click',onConfirm); } }); };
+function onConfirm(e) {	if(!confirm($(e.currentTarget).attr("title"))) { preventAjax = true; e.preventDefault();	} };
 //simple functions
 function enable(id) { $('#'+id).removeAttr('disabled'); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
