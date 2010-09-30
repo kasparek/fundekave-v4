@@ -56,11 +56,14 @@ class FItemsForm {
 				$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
 				break;
 			case 'deleteImage':
+				//TODO: currently it is done via item_delete
 				$itemVO = new ItemVO((int) $data['item']);
 				if($itemVO->load()) {
 					$itemVO->deleteImage();
 					$itemVO->save();
 				}
+				//TODO: refactor - this is remove item for forum only
+				//FAjax::addResponse('function','call','remove;i'.$data['item']);
 				break;
 			case 'delete':
 				$itemVO = new ItemVO((int) $data['item']);

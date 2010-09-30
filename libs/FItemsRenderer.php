@@ -112,10 +112,10 @@ class FItemsRenderer {
 		}
 
 		if(isset($itemVO->name)) $vars['AUTHOR'] = $itemVO->name;
-		if($itemVO->unread === true) $touchedBlocks['unread']=true;
+		if($itemVO->isUnreaded === true) $touchedBlocks['unread']=true;
 		if($itemVO->editable === true) {
 			$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
-			$vars['DELETEURL']=FSystem::getUri('m=items-delete&d=item:'.$itemId,'','');
+			$vars['DELETEURL']=FSystem::getUri('m=item-delete&d=item:'.$itemId,'','');
 		}
 
 		if($itemVO->text) {
@@ -237,10 +237,7 @@ class FItemsRenderer {
 			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
 		}
 		$vars['COMMENTLINK'] = $link;
-		if($this->signedUserId) {
-			$unReadedReactions = $itemVO->getNumUnreadComments( $this->signedUserId );
-			if($unReadedReactions > 0) { $vars['ALLNEWCNT'] = $unReadedReactions; }
-		}
+		if($itemVO->unreaded > 0) { $vars['ALLNEWCNT'] = $itemVO->unreaded; }
 		$vars['CNTCOMMENTS'] = $itemVO->cnt;
 		
 		//---PAGE NAME

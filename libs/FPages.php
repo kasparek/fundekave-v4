@@ -321,7 +321,6 @@ class FPages extends FDBTool {
 		$tpl = FSystem::tpl('forums.booked.tpl.html');
 
 		//---srovnani klubu
-		FForum::clearUnreadedMess();
 		FItems::afavAll($user->userVO->userId,$this->type);
 
 		$userId=$user->userVO->userId;
