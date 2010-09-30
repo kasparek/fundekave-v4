@@ -487,7 +487,7 @@ class ItemVO extends Fvob {
 	 *
 	 * @return string url
 	 */
-	function  getImageUrl($root=null,$thumbCut=null) {
+	function getImageUrl($root=null,$thumbCut=null) {
 		$confGalery = FConf::get('galery');
 		if($root===null) $root = $confGalery['targetUrlBase'];
 		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];

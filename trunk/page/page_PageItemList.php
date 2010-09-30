@@ -40,6 +40,16 @@ class page_PageItemList implements iPage {
 		//FEvents::view();
 		//FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
 		//FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
+		
+		//BLOG - new item buttton
+		/*
+		if(FRules::getCurrent(2)) {
+			if(empty($user->pageParam) && !$itemId) {
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD);
+			}
+			if($user->pageParam=='a') return;
+		}
+		*/
 	
 		//var setup
 		$user = FUser::getInstance();
@@ -126,18 +136,33 @@ class page_PageItemList implements iPage {
 		//LIST ITEMS
 		$fItems = new FItems('',FUser::logon());
 		$fItems->setPage($pageVO->pageId);
-		$fItems->hasReactions(false); //TODO: fix forum reactions, do not display reactions - they'll be displayd in detail - PROBLEM with forum reactions
+		$fItems->hasReactions($pageVO->typeId!='forum' || empty($itemVO) ? false : true);
 		if($categoryId > 0) {
 			$fItems->addWhere("categoryId='". $categoryId ."'");
 		}
 		if(!empty($searchStr)) {
-				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated'),$searchStr,'or');
+				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
 		}
+				
 		if($itemVO) {
 			$itemId = $itemVO->itemId;
 			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 		}
-		$fItems->setOrder("if(dateStart,dateStart,dateCreated) desc, itemId desc");
+		
+		//ORDER
+		if($pageVO->pageId=='event') {
+			if($archiv===false) { //TODO:archive base on pageparam
+				//---future
+				$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
+				$fItems->setOrder('dateStart');
+			} else {
+				//---archiv
+				$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+				$fItems->setOrder('dateStart desc');
+			}
+		} else {
+			$fItems->setOrder("if(dateStart,dateStart,dateCreated) desc, itemId desc");
+		}
 
 		if($itemId > 0) {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;

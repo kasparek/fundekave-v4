@@ -165,10 +165,9 @@ class FItemsRenderer {
 				}
 
 				if(!empty($enclosure)) {
-					$flyerFilename = FEvents::flyerUrl($enclosure);
-					$flyerFilenameThumb = FEvents::thumbUrl($enclosure);
-					$vars['BIGFLYERLINK'] = $flyerFilename;
-					$vars['FLYERTHUMBURL'] = $flyerFilenameThumb;
+					//TODO: move to generic as anything can have image
+					$vars['BIGFLYERLINK'] = $itemVO->detailUrl;
+					$vars['FLYERTHUMBURL'] = $itemVO->getImageUrl(null,FConf::get('events','thumb_width').'x0/prop');
 					$vars['IMGEVENTTITLE'] = $addon;
 					$vars['IMGEVENTALT'] = $addon;
 				} else {
