@@ -204,6 +204,15 @@ class FItemsForm {
 		$cache = FCache::getInstance('s',0);
 		$tempData = $cache->getData( $itemVO->pageId.$itemVO->typeId, 'form');
 		
+		//set defaults
+		if(empty($itemVO->itemId)) {
+			$itemVO->categoryId = 0;
+			$itemVO->public = 1;
+			if($itemVO->typeId!='forum') {
+				$itemVO->dateStart = Date("Y-m-d");
+			}
+		}
+		
 		if($tempData !== false) {
 			foreach($tempData as $k=>$v) {
 				$data[$k] = $v;
@@ -229,7 +238,6 @@ class FItemsForm {
 		$tpl->setVariable('CONTENTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
 		
 		if(!empty($itemVO->text)) {
-			
 			$tpl->setVariable('TEXT',$itemVO->text);
 		}
 		
@@ -267,7 +275,7 @@ class FItemsForm {
 			case 'blog':
 			case 'event':
 				if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
-
+        $tpl->setVariable('LOCATION',$itemVO->location);
 				break;
 			case 'galery':
 				$position = $itemVO->prop('position');

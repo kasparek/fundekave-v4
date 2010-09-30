@@ -1,4 +1,6 @@
 <form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
+<input type="hidden" name="m" value="{M}"/>
+<input type="hidden" name="t" value="{T}"/>
 <!-- BEGIN edit --><input name="itemId" value="{ITEMID}" type="hidden"><!-- END edit -->
 <div id="tabs">
 <ul>
@@ -14,7 +16,7 @@
 <legend>Akce</legend>
 <label for="categoryId">Druh</label><select id="categoryId" name="categoryId"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
 <label for="addon">Název</label><input type="text" id="addon" name="addon" value="{ADDON}" /><br />
-<label for="place">Místo</label> <input type="text" name="place" value="{PLACE}" /><br />
+<label for="place">Místo</label> <input type="text" name="location" value="{LOCATION}" /><br />
 <label for="datestart">Datum Cas Od</label><input type="text" name="dateStartLocal" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateStartTime" value="{TIMESTART}" class="xShort" /><br />
 <label for="dateend>Datum Cas Do</label><input type="text" name="dateEndLocal" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateEntTime" value="{TIMEEND}" class="xShort" /><br />
 <label>Upload letáku</label>
