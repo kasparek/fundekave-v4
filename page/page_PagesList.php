@@ -36,10 +36,6 @@ class page_PagesList implements iPage {
 			$userId = $user->userVO->userId;
 			$typeId = $user->pageVO->typeIdChild;
 
-			if ( $userId > 0 ) {
-				FItems::afavAll( $userId );
-			}
-
 			//---QUERY RESULTS
 			$fPages = new FPages($typeId, $userId);
 								

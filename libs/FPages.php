@@ -320,9 +320,6 @@ class FPages extends FDBTool {
 		//---template init
 		$tpl = FSystem::tpl('forums.booked.tpl.html');
 
-		//---srovnani klubu
-		FItems::afavAll($user->userVO->userId,$this->type);
-
 		$userId=$user->userVO->userId;
 
 		$this->setWhere('sys_pages.userIdOwner="'.$userId.'" and sys_pages.locked<3');

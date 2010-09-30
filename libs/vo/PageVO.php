@@ -81,6 +81,7 @@ class PageVO extends Fvob {
 	function __get($name) {
 		switch($name) {
 			case 'unreaded':
+				if($this->favoriteCnt < 1) $this->favoriteCnt = $this->cnt;
 				$unreaded = $this->cnt - $this->favoriteCnt;
 				if($unreaded > 0) return $unreaded; else return 0;
 			break;
@@ -198,6 +199,19 @@ class PageVO extends Fvob {
 		}
 		return $orderBy;
 	}
+	
+	/**
+	 *update readed
+	 **/
+	static function updateReaded($userId) {
+		if(empty($userId)) return;
+		if($this->cnt==0) return;
+		$q = "insert delayed into sys_pages_favorites
+			values ('".$userId."','".$this->pageId."',(select cnt from sys_pages where pageId='".$this->pageId."'),'0')
+			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$this->pageId."')";
+		FDBTool::query($q);
+		$this->unreaded = 0;
+	}	 	
 	
 	/**
 	 * refresh data for galery in db by files in folder
