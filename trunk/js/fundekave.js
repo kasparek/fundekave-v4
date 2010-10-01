@@ -300,12 +300,12 @@ function fuupUploadPageAvatarComplete() {
 function fuupUploadEventComplete() {
 	var item = $('#item').attr('value');
 	if(item>0) addXMLRequest('item', item);
-	addXMLRequest('result', "flyerDiv");
+	addXMLRequest('result', "imageHolder");
 	addXMLRequest('resultProperty', '$html');
 	addXMLRequest('call', 'slimboxInit');
 	addXMLRequest('call', 'fconfirmInit');
 	addXMLRequest('call', 'fajaxformInit');
-	sendAjax('event-flyer',gup('k',$(".fajaxform").attr('action')));	
+	sendAjax('item-image',gup('k',$(".fajaxform").attr('action')));	
 }
 //---IMAGE UPLOADING END
 
@@ -604,16 +604,14 @@ function bindDeleteFoto() { setListeners('deletefoto', 'click', deleteFoto); }
 function deleteFoto(event) {
 	if (confirm($(this).attr("title"))) {
 		//---send ajax
-		var id = $(this).attr("id");
-		idArr = id.split("-");
-		addXMLRequest('itemId', idArr[1]);
-		sendAjax('galery-delete');
+		var idArr = $(this).attr("id").id.split("-");
+		addXMLRequest('item', idArr[1]);
+		sendAjax('item-delete');
 		//---remove element
 		$('#foto-'+idArr[1]).hide('slow',function(){$('#foto-'+idArr[1]).remove()});
-		fotoTotal--;
-		$("#fotoTotal").text(fotoTotal);
+		fotoTotal--;$("#fotoTotal").text(fotoTotal);
 	}
-	event.preventDefault();preventAjax = true;
+	event.preventDefault();preventAjax = true;return false;
 };
 //---AJAX GALLERY EDITING END
 

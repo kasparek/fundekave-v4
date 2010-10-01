@@ -1,6 +1,29 @@
 <?php
 class FItemsForm {
 
+	static function moveImage($data,$itemVO=null) {
+		if($itemVO==null) {
+			if(empty($data['item'])) return;
+			$itemVO = new $itemVO($data['item']);
+			if(!$itemVO->load()) return;
+		}
+		$filename = FFile::getTemplFilename();
+		if($filename!==false) {
+			//delete old image
+			$itemVO->deleteImage();
+			$pageVO = $itemVO->pageVO;
+			$filenameArr = explode('/',$filename);
+			$enclosure = array_pop($filenameArr);
+			$target = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/'.$enclosure;
+			$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
+			$itemVO->enclosure = $enclosure;
+			$itemVO->save();
+			FFile::flushTemplFile();
+			return $itemVO;
+		}
+	}
+
 	static function process($itemVO,$data) {
 
 		$redirectParam = '';
@@ -17,14 +40,14 @@ class FItemsForm {
 			$data['itemIdTop'] = $user->itemVO->itemId;
 		}
 		if(!isset($data['itemIdTop'])) $data['itemIdTop']=0;
-		
+
 		//no reactions to forum items
 		if($data['itemIdTop']>0) {
 			$itemVOTop = new ItemVO($data['itemIdTop'],true);
 			if($itemVOTop->typeId=='forum') $data['itemIdTop']=0;
 		}
-		
-		
+
+
 		if($captchaCheck===false) {
 			FError::add(FLang::$ERROR_CAPTCHA);
 		}
@@ -41,13 +64,13 @@ class FItemsForm {
 
 		if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
 		if($itemVO->load()) $newItem=false;
-		
+
 		$itemVO->pageId = $user->pageVO->pageId;
-		
+
 		if(empty($data['action'])) {
 			if(isset($data['filtr'])) $data['action']='search';
 		}
-		
+
 		if (isset($data["perpage"])) $user->pageVO->perPage( $data["perpage"] );
 
 		switch($data['action']) {
@@ -116,6 +139,7 @@ class FItemsForm {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
+								//TODO: refactor this
 								$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
 								$ffile->file_put_contents(ROOT_FLYER.$flyerName,$file);
 								$itemVO->enclosure = $filename;
@@ -143,19 +167,7 @@ class FItemsForm {
 						if(isset($data['reminderEveryday'])) $itemVO->prop('reminderEveryday',$data['reminderEveryday']*1);
 						if(isset($data['repeat'])) $itemVO->prop('repeat',$data['repeat']*1);
 
-						$filename = FFile::getTemplFilename();
-						if($filename!==false) {
-							//delete old image
-							$itemVO->deleteImage();
-							$filenameArr = explode('/',$filename);
-							$pageVO = $itemVO->pageVO;
-							$galdir = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/';
-							$flyerTarget = $galdir.array_pop($filenameArr);
-							$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
-							$ffile->move_uploaded_file($filename,$flyerTarget);
-							$itemVO->enclosure = $flyerName;
-							$itemVO->save();
-						}
+						FItemsForm::moveImage($data,$itemVO);
 
 						//clean up stored data
 						$cache = FCache::getInstance('s',0);
@@ -163,7 +175,7 @@ class FItemsForm {
 						//---on success
 						$redirectParam = '#dd';
 						$redirect=true;
-						
+
 					}
 				}
 		}
@@ -190,7 +202,7 @@ class FItemsForm {
 			//FCommand::run($commandList);
 			if($itemVO->typeId!='forum') $redirectParam = 'i='.$itemVO->itemId.$redirectParam;
 			else FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
-			if($data['__ajaxResponse']==true) {	
+			if($data['__ajaxResponse']==true) {
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId.$redirectParam,$pageId,'u'));
 				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
 			} else {
@@ -206,7 +218,7 @@ class FItemsForm {
 		if(!isset($data['simple'])) $data['simple']=false;
 		$cache = FCache::getInstance('s',0);
 		$tempData = $cache->getData( $itemVO->pageId.$itemVO->typeId, 'form');
-		
+
 		//set defaults
 		if(empty($itemVO->itemId)) {
 			$itemVO->categoryId = 0;
@@ -215,14 +227,14 @@ class FItemsForm {
 				$itemVO->dateStart = Date("Y-m-d");
 			}
 		}
-		
+
 		if($tempData !== false) {
 			foreach($tempData as $k=>$v) {
 				$data[$k] = $v;
 			}
 			$cache->invalidateData( $itemVO->pageId.$itemVO->typeId, 'form');
 		}
-		
+
 		foreach($data as $k=>$v) {
 			$itemVO->set($k,$v);
 		}
@@ -239,11 +251,11 @@ class FItemsForm {
 		}
 		$tpl->setVariable('CONTENTID',$itemVO->typeId.$itemVO->pageId.'text');
 		$tpl->setVariable('CONTENTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
-		
+
 		if(!empty($itemVO->text)) {
 			$tpl->setVariable('TEXT',$itemVO->text);
 		}
-		
+
 		if(!empty($itemVO->textLong)) {
 			$tpl->setVariable('CONTENTLONG',$itemVO->textLong);
 		}
@@ -278,7 +290,7 @@ class FItemsForm {
 			case 'blog':
 			case 'event':
 				if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
-        $tpl->setVariable('LOCATION',$itemVO->location);
+				$tpl->setVariable('LOCATION',$itemVO->location);
 				break;
 			case 'galery':
 				$position = $itemVO->prop('position');
@@ -311,7 +323,7 @@ class FItemsForm {
 					$tpl->setVariable('IMAGETHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
 				}
 		}
-		
+
 		return $tpl->get();
 	}
 }

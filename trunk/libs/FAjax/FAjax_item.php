@@ -84,5 +84,27 @@ class FAjax_item extends FAjaxPluginBase {
 		}
 
 	}
+	
+	static function image($data) {
+		$user = FUser::getInstance();
+		if(!isset($data['item'])) {
+			//only temporary thumbnail
+			$filename = FFile::getTemplFilename();
+			if($filename===false) return;
+			$tpl = FSystem::tpl('events.edit.tpl.html');
+			$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$filename);
+			$tpl->setVariable('IMAGETHUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
+			$tpl->parse('image');
+			FAjax::addResponse($data['result'], $data['resultProperty'], $tpl->get('image'));
+		} else {
+			if($itemVO = FItemsForm::moveImage( $data )) {
+				$tpl = FSystem::tpl('events.edit.tpl.html');
+				$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->galeryDir.'/'.$itemVO->enclosure);
+				$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
+				$tpl->parse('image');
+				FAjax::addResponse($data['result'], $data['resultProperty'], $tpl->get('image'));
+			}
+		}
+	}
 
 }

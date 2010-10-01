@@ -2,7 +2,7 @@
 //TODO: refactor to use FAjax_item
 class FAjax_event extends FAjaxPluginBase {
 
-	static function delFlyer($data) {
+	static function deleteImage($data) {
 		if($data['item']>0) {
 			$itemVO = new ItemVO($data['item'],true);
 			if($itemVO->enclosure!='') {
@@ -17,7 +17,7 @@ class FAjax_event extends FAjaxPluginBase {
 			//delete temporary probably
 
 		}
-		FAjax::addResponse('flyerDiv', '$html', '');
+		FAjax::addResponse('imageHolder', '$html', '');
 	}
 
 	static function edit($data) {
@@ -46,7 +46,7 @@ class FAjax_event extends FAjaxPluginBase {
 		$itemVO = FEvents::processForm( $data, false );
 
 		if($action=='delFlyer') {
-			FAjax::addResponse('flyerDiv', '$html', '');
+			FAjax::addResponse('imageHolder', '$html', '');
 			return;
 		}
 
@@ -80,39 +80,6 @@ class FAjax_event extends FAjaxPluginBase {
 
 	}
 
-	static function flyer($data) {
-		$user = FUser::getInstance();
-		$thumb = '';
-
-		if(!isset($data['item'])) {
-				
-			//only temporary thumbnail
-			$cache = FCache::getInstance('d');
-			$filename = $cache->getData('event','user-'.$user->userVO->userId);
-
-			$tpl = FSystem::tpl('events.edit.tpl.html');
-			$tpl->setVariable('FLYERURL','pic.php?f=tmp/upload/'.$user->userVO->name.'/'.$filename);
-			$tpl->setVariable('FLYERTHUMBURL','pic.php?r=tmp/upload/'.$user->userVO->name.'/'.$filename);
-			$tpl->setVariable('DELFLY',FSystem::getUri('m=event-delFlyer&d=item:0'));
-			$tpl->parse('flyer');
-			$thumb = $tpl->get('flyer');
-
-		} else {
-
-			$itemVO = FEvents::processForm( $data );
-			if(!empty($itemVO->enclosure)) {
-				$tpl = FSystem::tpl('events.edit.tpl.html');
-				$tpl->setVariable('FLYERURL',FEvents::flyerUrl($itemVO->enclosure));
-				$tpl->setVariable('FLYERTHUMBURL',FEvents::thumbUrl($itemVO->enclosure));
-				$tpl->setVariable('DELFLY',FSystem::getUri('m=event-delFlyer&d=item:'.$data['item']));
-				$tpl->parse('flyer');
-				$thumb = $tpl->get('flyer');
-			}
-				
-				
-		}
-
-		FAjax::addResponse($data['result'], $data['resultProperty'], $thumb);
-	}
+	
 
 }

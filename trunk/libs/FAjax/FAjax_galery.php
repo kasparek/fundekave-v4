@@ -1,13 +1,5 @@
 <?php
 class FAjax_galery extends FAjaxPluginBase {
-
-	static function validate($data) {
-		if($data['function']=='show') return true;
-		return parent::validate($data);
-	}
-
-	
-
 	static function editThumb($data) {
 		$user = FUser::getInstance();
 		$pageId = $user->pageId;
@@ -31,12 +23,4 @@ class FAjax_galery extends FAjaxPluginBase {
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 		FAjax::addResponse('call', 'draftInit', 'fotodesc'.$itemId);
 	}
-
-	static function delete($data) {
-		
-		$itemVO = new ItemVO($data['itemId'],true);
-		$itemVO->delete();
-		
-	}
-
 }
