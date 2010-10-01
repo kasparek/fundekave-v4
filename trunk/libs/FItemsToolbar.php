@@ -187,7 +187,7 @@ class FItemsToolbar {
 						if($userId = FUser::getUserIdByName($userName)) {
 							$validatedUserId[] = $userId;
 						}
-						else FError::addError(MESSAGE_USERNAME_NOTEXISTS.': '.$userName);
+						else FError::add(MESSAGE_USERNAME_NOTEXISTS.': '.$userName);
 					}
 					if(!empty($validatedUserId)) {
 						if(count($validatedUserId)>1) {

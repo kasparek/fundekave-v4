@@ -26,7 +26,7 @@ class FItemsForm {
 		
 		
 		if($captchaCheck===false) {
-			FError::addError(FLang::$ERROR_CAPTCHA);
+			FError::add(FLang::$ERROR_CAPTCHA);
 		}
 
 		//check permissions
@@ -36,7 +36,7 @@ class FItemsForm {
 		&& ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2)))) {
 			//access granted
 		} else {
-			FError::addError(FLang::$ERROR_RULES_CREATE);
+			FError::add(FLang::$ERROR_RULES_CREATE);
 		}
 
 		if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
@@ -71,36 +71,36 @@ class FItemsForm {
 					$itemVO->delete();
 				}
 				$itemVO=null;
-				FError::addError(FLang::$LABEL_DELETED_OK,1);
+				FError::add(FLang::$LABEL_DELETED_OK,1);
 				break;
 			case 'save':
 			default:
 				/**
 				 *process data
 				 **/
-				if(!FError::isError()) {
+				if(!FError::is()) {
 					if(isset($data['addon'])) $data['addon'] = FSystem::textins($data['addon'],array('plainText'=>1)); //title for blog,event
-					if(empty($data['addon']) && $itemVO->typeId!='forum') FError::addError(FLang::$ERROR_NAME_EMPTY);
+					if(empty($data['addon']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_NAME_EMPTY);
 					if(isset($data['name'])) $data['name'] =  FSystem::textins($data['name'],array('plainText'=>1));
 					if(empty($data['name'])) $data['name'] = $user->userVO->name;
 					$data['text'] = FSystem::textins($data['text'],$user->idkontrol ? array() : array('plainText'=>1));
 					$data['textLong'] = FSystem::textins($data['textLong']);
-					if(empty($data['text']) && $itemVO->typeId=='forum') FError::addError(FLang::$MESSAGE_EMPTY);
-					if(empty($data['name'])) FError::addError(FLang::$MESSAGE_NAME_EMPTY);
+					if(empty($data['text']) && $itemVO->typeId=='forum') FError::add(FLang::$MESSAGE_EMPTY);
+					if(empty($data['name'])) FError::add(FLang::$MESSAGE_NAME_EMPTY);
 					elseif($user->idkontrol==false) {
-						if (FUser::isUsernameRegistered($data['name'])) FError::addError(FLang::$MESSAGE_NAME_USED);
+						if (FUser::isUsernameRegistered($data['name'])) FError::add(FLang::$MESSAGE_NAME_USED);
 					}
 					if(!empty($data['categoryNew'])) $data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $user->pageVO->typeId);
 					if(!empty($data['categoryId'])) $data['categoryId'] = (int) $data['categoryId'];
 					if(isset($data['dateStartLocal'])) $data['dateStart'] = FSystem::checkDate($data['dateStartLocal'].(isset($data['dateStartTime'])?' '.$data['dateStartTime']:''));
 					if(isset($data['dateEndLocal'])) $data['dateEnd'] = FSystem::checkDate($data['dateEndLocal'].(isset($data['dateEndTime'])?' '.$data['dateEndTime']:''));
-					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::addError(FLang::$ERROR_DATE_FORMAT);
+					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
 					if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1));
 				}
 				/**
 				 *save item
 				 */
-				if(!FError::isError()) {
+				if(!FError::is()) {
 					$itemVO->userId = (int) $user->userVO->userId;
 					$itemVO->name = $data['name'];
 					if(!empty($data['text'])) $itemVO->set('text', $data['text']);
@@ -168,7 +168,7 @@ class FItemsForm {
 				}
 		}
 		//if any error safe data to display in form
-		if(FError::isError()) {
+		if(FError::is()) {
 			$cache = FCache::getInstance('s',0);
 			$cache->setData($data, $itemVO->pageId.$itemVO->typeId, 'form');
 		}
@@ -189,7 +189,7 @@ class FItemsForm {
 			//}
 			//FCommand::run($commandList);
 			if($itemVO->typeId!='forum') $redirectParam = 'i='.$itemVO->itemId.$redirectParam;
-			else FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+			else FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 			if($data['__ajaxResponse']==true) {	
 				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId.$redirectParam,$pageId,'u'));
 				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));

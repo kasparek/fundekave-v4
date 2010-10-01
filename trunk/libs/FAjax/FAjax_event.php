@@ -58,7 +58,7 @@ class FAjax_event extends FAjaxPluginBase {
 		} else {
 		
 			//if updating just message
-			if(!FError::isError()) {
+			if(!FError::is()) {
 				FAjax::addResponse('function','call','msg;ok;'.FLang::$MESSAGE_SUCCESS_SAVED);
 			}
 			

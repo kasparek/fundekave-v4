@@ -6,22 +6,22 @@ class FError {
 	 * @param $type - 0-error,1-info
 	 * @return void
 	 */
-	static function addError($langkey,$type=0){
+	static function add($langkey,$type=0){
 		$pointer = &$_SESSION['errormsg'][$type];
 		if(!isset($pointer[$langkey])) $pointer[$langkey]=0;
 		$pointer[$langkey]++;
 	}
 
-	static function resetError($type=0){
+	static function reset($type=0){
 		$_SESSION["errormsg"][$type] = array();
 	}
 
-	static function getError($type=0){
+	static function get($type=0){
 		if(!isset($_SESSION["errormsg"][$type])) $_SESSION["errormsg"][$type] = array();
 		return $_SESSION["errormsg"][$type];
 	}
 
-	static function isError($type=0){
+	static function is($type=0){
 		if(!empty($_SESSION["errormsg"][$type])) return true; else return false;
 	}
 	
@@ -55,9 +55,7 @@ class FError {
 	
 	static function shutDownFunction() { 
 	    $e = error_get_last();
-	    if($e['message']) {
-	    	FError::write_log($e['type'].'='.$e['message'].';line='.$e['line'].';file='.$e['file']);
-	    }
+	    if($e['message']) FError::write_log($e['type'].':'.$e['message'].' in '.$e['file'].' on line='.$e['line']);
 	}
 	
 	static function handle_error ($errno, $errstr, $errfile, $errline) {

@@ -15,16 +15,16 @@ class page_UserDiary implements iPage {
 			$arrd['text'] = FSystem::textins($data['dtext']);
 
 			list($nden,$nmesic,$nrok)=explode(".",$data['addfdate']);
-			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else FError::addError(ERROR_DATA_FORMAT);
+			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else FError::add(ERROR_DATA_FORMAT);
 			$arrd['userId'] = $user->userVO->userId;
 			$arrd['reminder'] = $data['dpripomen'] * 1;
 			$arrd['dateCreated'] = 'NOW()';
 			if(isset($data['did'])) $arrd['diaryId'] = $data['did'] * 1;
-			if($arrd['name']=='') FError::addError(FLang::$ERROR_DIARY_NAME);
-			if($arrd['text']=='') FError::addError(FLang::$ERROR_DIARY_TEXT);
+			if($arrd['name']=='') FError::add(FLang::$ERROR_DIARY_NAME);
+			if($arrd['text']=='') FError::add(FLang::$ERROR_DIARY_TEXT);
 			$arrd['everyday'] = $data['dopakovat'] * 1;
 			$arrd['eventForAll'] = $data['dpublic'] * 1;
-			if(!FError::isError()){
+			if(!FError::is()){
 				$fdbtool = new FDBTool('sys_users_diary','diaryId');
 				$fdbtool->save($arrd,array('dateCreated'));
 				$cache = FCache::getInstance('f');
@@ -41,7 +41,7 @@ class page_UserDiary implements iPage {
 		if(!empty($_REQUEST['del']) && FUser::logon()) {
 			$dot = 'delete from sys_users_diary where diaryId="'.($_REQUEST['del']*1).'"';
 			if(FDBTool::query($dot)) {
-				FError::addError(FLang::$LABEL_DELETED_OK);
+				FError::add(FLang::$LABEL_DELETED_OK);
 				$cache = FCache::getInstance('f');
 				$user->invalidateGroup('calendarlefthand');
 			}

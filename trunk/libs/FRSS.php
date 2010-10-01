@@ -22,10 +22,10 @@ class FRSS {
 					$params['name'] = $paramsArr[0];
 					$params['text'] = trim($paramsArr[1]);
 
-					if(empty($params['name'])) FError::addError('E:nameEmpty');
-					if(empty($params['text'])) FError::addError('E:textEmpty');
+					if(empty($params['name'])) FError::add('E:nameEmpty');
+					if(empty($params['text'])) FError::add('E:textEmpty');
 					
-					if(!FError::isError()) {
+					if(!FError::is()) {
 						if($params['text']!='' && $params['name']!='') {
 							$itemVO = new ItemVO();
 							$itemVO->pageId = $pageId;
@@ -33,7 +33,7 @@ class FRSS {
 							$itemVO->text = FSystem::textins($params['text']);
 							$itemVO->name = FSystem::textins($params['name'],array('plainText'=>1));
 							$itemVO->save();
-							FError::addError('I:insertOK');
+							FError::add('I:insertOK');
 							//invalidate global cache
 							$cache = FCache::getInstance('f',0);
 							$cache->invalidateGroup('pagelist');
@@ -94,8 +94,8 @@ class FRSS {
 
 			$hostSpecArr = array();
 			//process errors and messages
-			$errArr = FError::getError();
-			FError::resetError();
+			$errArr = FError::get();
+			FError::reset();
 			
 			if(!empty($errArr)) {
 				foreach($errArr as $err=>$v) {

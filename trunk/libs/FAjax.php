@@ -1,6 +1,16 @@
 <?php
 class FAjax {
-
+	
+	public $template = 'fajax.xml';
+	public $data;
+	public $responseData;
+	public $errorsLater = false;
+	public $redirecting = false;
+	
+	/**
+	 * SINGLETON
+	 * all functions are static
+	 */
 	private static $instance;
 	static function &getInstance() {
 		if (!isset(self::$instance)) {
@@ -72,23 +82,23 @@ class FAjax {
 
 				if( $ajax === true )
 				if( $fajax->errorsLater===false ) {
-					$arrMsg = FError::getError();
+					$arrMsg = FError::get();
 					if(!empty($arrMsg)){
 						$arr = array();
 						foreach ($arrMsg as $k=>$v) {
 							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						}
 						FAjax::addResponse('function','call','msg;error;'.implode('<br />',$arr));
-						FError::resetError();
+						FError::reset();
 					}
-					$arrMsg = FError::getError(1);
+					$arrMsg = FError::get(1);
 					if(!empty($arrMsg)){
 						$arr = array();
 						foreach ($arrMsg as $k=>$v) {
 							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						}
 						FAjax::addResponse('function','call','msg;ok;'.implode('<br />',$arr));
-						FError::resetError(1);
+						FError::reset(1);
 					}
 				}
 			} else {
@@ -116,11 +126,6 @@ class FAjax {
 		}
 	}
 
-	public $data;
-	public $responseData;
-	public $errorsLater = false;
-	public $redirecting = false;
-
 	static public function errorsLater() {
 		$fajax = FAjax::getInstance();
 		$fajax->errorsLater = true;
@@ -144,7 +149,6 @@ class FAjax {
 
 	static public function addResponse($target, $property, $value) {
 		$fajax = FAjax::getInstance();
-		//if(strpos($value,'<![CDATA[')===false) $value = '<![CDATA['.$value.']]>';
 		$fajax->responseData[] = array('TARGET'=>$target,'PROP'=>$property,'DATA'=>$value);
 	}
 
@@ -157,9 +161,7 @@ class FAjax {
 		$fajax = FAjax::getInstance();
 		$data = $fajax->responseData;
 		$originalData = $fajax->data;
-
-		$tpl = FSystem::tpl('fajax.xml');
-
+		$tpl = FSystem::tpl($this->template);
 		//---create new data
 		if(!empty($data)) {
 			foreach($data as $k=>$v) {
@@ -167,7 +169,6 @@ class FAjax {
 				$tpl->parse('data');
 			}
 		}
-
 		//---process original data
 		foreach($originalData as $k=>$v) {
 			switch($k) {
@@ -186,5 +187,4 @@ class FAjax {
 		FAjax::resetResponse();
 		return $tpl->get();
 	}
-
 }
