@@ -5,17 +5,17 @@ class FItems extends FDBTool {
 
 	//---current type
 	private $typeId;
-	
+
 	//---list of ItemVOs
 	public $data;
-		
+
 	//---renderer
 	public $fItemsRenderer;
 
 	//---using user permissions
 	private $byPermissions = false;
 	private $access = true;
-	
+
 	//---items removed because no access
 	public $itemsRemoved = 0;
 
@@ -54,16 +54,16 @@ class FItems extends FDBTool {
 				$this->access = false;
 				return false;
 			} else {
-			  $this->byPermissions = false;
+				$this->byPermissions = false;
 			}
 		}
 		return true;
 	}
-	
+
 	function hasReactions($value=false) {
 		if($value===false) {
-	   $this->addWhere("(itemIdTop is null or itemIdTop=0)");
-	  }
+			$this->addWhere("(itemIdTop is null or itemIdTop=0)");
+		}
 	}
 
 	function initList($typeId='', $byPermissions = false) {
@@ -79,12 +79,12 @@ class FItems extends FDBTool {
 
 		//---check permissions for given user
 		if($byPermissions===-1) {
-		   $this->addWhere('sys_pages_items.public = 1');
+			$this->addWhere('sys_pages_items.public = 1');
 		} else if($byPermissions!==false) {
 			$this->byPermissions = $byPermissions;
 		}
-		
-    if($byPermissions !== -1 && !FRules::getCurrent( 2 )) { //---check for public
+
+		if($byPermissions !== -1 && !FRules::getCurrent( 2 )) { //---check for public
 			$this->addWhere('sys_pages_items.public > 0');
 		}
 			
@@ -103,9 +103,9 @@ class FItems extends FDBTool {
 
 	function getList($from=0, $count=0) {
 		$this->data = array();
-		
+
 		if($this->access===false) $this->data;
-		
+
 		if($this->byPermissions === false) {
 			$arr = $this->getContent($from, $count);
 		} else {
@@ -137,7 +137,7 @@ class FItems extends FDBTool {
 		}
 
 		if(!empty($arr)) {
-				
+
 			$this->data = $arr;
 
 			foreach($this->data as $itemVO) {
@@ -145,7 +145,7 @@ class FItems extends FDBTool {
 				$itemVO->prepare();
 				$itemIdList[] = $itemVO->itemId;
 			}
-				
+
 			$q = "select itemId,name,value from sys_pages_items_properties where itemId in (".implode(',',$itemIdList).")";
 			$props = FDBTool::getAll($q);
 			if(!empty($props))
@@ -176,7 +176,7 @@ class FItems extends FDBTool {
 		if($this->debug==1) print_r($this->data);
 		return $this->data;
 	}
-	
+
 	function parse() {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
@@ -200,10 +200,10 @@ class FItems extends FDBTool {
 		$ret = $this->show();
 		return $ret;
 	}
-	
+
 	/**
 	 * set unreded items to cache
-	 * */	 	
+	 * */
 	static function cacheUnreadedList() {
 		$user = FUser::getInstance();
 		if($user->idkontrol==false) return 0;
@@ -217,9 +217,8 @@ class FItems extends FDBTool {
 			$cache = FCache::getInstance( 's' );
 			$unreadedList = &$cache->getPointer('unreadedItems');
 			if(empty($unreadedList)) $unreadedList = array();
-				//add to unreaded list
-				foreach($arr as $row) if($row[1]==1) if(!in_array($row[0],$unreadedList)) $arrTmp[] = $row[0];
-			}
+			//add to unreaded list
+			foreach($arr as $row) if($row[1]==1) if(!in_array($row[0],$unreadedList)) $arrTmp[] = $row[0];
 		}
 		return $unreadedCnt;
 	}

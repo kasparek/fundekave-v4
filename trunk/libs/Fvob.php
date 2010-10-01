@@ -35,10 +35,12 @@ class Fvob {
 		if(isset($params['type'])) {
 			switch($params['type']) {
 				case 'date':
-					$value = FSystem::switchDate($value);
-					if(true !== FSystem::isDate($value)) return false;
+					$value = FSystem::checkDate($value);
 					break;
 			}
+		}
+		if($key=='typeId') {
+			if(!in_array($value,array('forum','galery','event','blog'))) return false;
 		}
 		$changed = false;
 		//---check if changed

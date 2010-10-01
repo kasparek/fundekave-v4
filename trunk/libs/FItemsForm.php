@@ -70,8 +70,8 @@ class FItemsForm {
 				if($itemVO->load()) {
 					$itemVO->delete();
 				}
+				$itemVO=null;
 				FError::addError(FLang::$LABEL_DELETED_OK,1);
-				FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
 				break;
 			case 'save':
 			default:
@@ -143,11 +143,6 @@ class FItemsForm {
 						if(isset($data['reminderEveryday'])) $itemVO->prop('reminderEveryday',$data['reminderEveryday']*1);
 						if(isset($data['repeat'])) $itemVO->prop('repeat',$data['repeat']*1);
 
-						if($itemVO->typeId!='forum') {
-							FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
-							if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId,$pageId,'u'));
-						}
-
 						$filename = FFile::getTemplFilename();
 						if($filename!==false) {
 							//delete old image
@@ -168,6 +163,7 @@ class FItemsForm {
 						//---on success
 						$redirectParam = '#dd';
 						$redirect=true;
+						
 					}
 				}
 		}
@@ -192,7 +188,14 @@ class FItemsForm {
 			//$commandList[] = $command;
 			//}
 			//FCommand::run($commandList);
-			FHTTP::redirect(FSystem::getUri($redirectParam));
+			if($itemVO->typeId!='forum') $redirectParam = 'i='.$itemVO->itemId.$redirectParam;
+			else FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+			if($data['__ajaxResponse']==true) {	
+				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId.$redirectParam,$pageId,'u'));
+				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
+			} else {
+				FHTTP::redirect(FSystem::getUri($redirectParam));
+			}
 		}
 	}
 

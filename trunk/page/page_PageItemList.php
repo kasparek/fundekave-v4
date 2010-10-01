@@ -42,14 +42,14 @@ class page_PageItemList implements iPage {
 		//FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
 		
 		//BLOG - new item buttton
-		/*
+		
 		if(FRules::getCurrent(2)) {
-			if(empty($user->pageParam) && !$itemId) {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=blog-edit&d=item:0',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD);
+			if(empty($user->pageParam) && !$user->itemVO) {
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
 			}
-			if($user->pageParam=='a') return;
+			
 		}
-		*/
+		
 	
 		//var setup
 		$user = FUser::getInstance();
