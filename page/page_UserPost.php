@@ -45,11 +45,11 @@ class page_UserPost implements iPage {
 					if($pro = FUser::getUserIdByName(Trim($usrname))) $arrto[] = $pro;
 					else $errjm[] = Trim($usrname);
 				}
-				if(!empty($errjm)) FError::addError(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
+				if(!empty($errjm)) FError::add(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
 			}
 
 			if (empty($arrto)) {
-				FError::addError('postnoto');
+				FError::add('postnoto');
 				FUserDraft::save('postText',$data["zprava"]);
 			} else {
 				$zprava = FSystem::textins($data["zprava"]);

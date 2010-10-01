@@ -46,7 +46,7 @@ class page_PageEdit implements iPage {
 				$pageVO->pageId = $data['pageId'];
 				$pageVO->load();
 			}
-			FError::resetError();
+			FError::reset();
 
 			//---categories
 			if($pageVO->typeId=='blog' && $user->pageParam!='a') {
@@ -64,11 +64,11 @@ class page_PageEdit implements iPage {
 
 			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
 			if(empty($pageVO->name)) {
-				FError::addError(FLang::$ERROR_PAGE_ADD_NONAME);
+				FError::add(FLang::$ERROR_PAGE_ADD_NONAME);
 			}
 			if($nameChanged) {
 				if(FPages::page_exist('name',$pageVO->name)) {
-					FError::addError(FLang::$ERROR_PAGE_NAMEEXISTS);
+					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
 			$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
@@ -98,7 +98,7 @@ class page_PageEdit implements iPage {
 				$pageVO->prop('home', FSystem::textins($data['forumhome']));
 			}
 
-			if(!FError::isError()) {
+			if(!FError::is()) {
 
 				if($user->pageParam == 'a') {
 					$pageVO->userIdOwner = $user->userVO->userId;
@@ -242,7 +242,7 @@ class page_PageEdit implements iPage {
 							if(!empty($position)) $itemVO->prop('position',$position);
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
-									FError::addError(FLang::$ERROR_DATE_FORMAT);
+									FError::add(FLang::$ERROR_DATE_FORMAT);
 								}
 							}
 							$itemVO->save();
@@ -257,11 +257,11 @@ class page_PageEdit implements iPage {
 					if($pageCreated === true) {
 						//if new page redirect
 						FAjax::errorsLater();
-						FError::addError(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
+						FError::add(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
 						FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
-						FError::addError(FLang::$MESSAGE_SUCCESS_SAVED,1);
+						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 						if(!empty($redirectAjax)) {
 							
 							FAjax::redirect(FSystem::getUri('dd=1','','e'));
@@ -304,7 +304,7 @@ class page_PageEdit implements iPage {
 				FPages::deletePage($pageId);
 			}
 			page_PagesList::invalidate();
-			FError::addError(FLang::$LABEL_DELETED_OK,1);
+			FError::add(FLang::$LABEL_DELETED_OK,1);
 			FAjax::redirect(FSystem::getUri('',HOME_PAGE,''));
 		}
 

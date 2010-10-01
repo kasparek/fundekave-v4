@@ -26,7 +26,7 @@ class page_UserInfo implements iPage {
 							//button send frien request
 							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, 0, 'friendButt','fajaxa');
 						} else {
-							FError::addError(FLang::$MSG_REQUEST_WAITING,1);
+							FError::add(FLang::$MSG_REQUEST_WAITING,1);
 						}
 					}
 					//button send message
@@ -39,7 +39,7 @@ class page_UserInfo implements iPage {
 				$userVO = $user->userVO;
 			} else {
 				$user->pageAccess = false;
-				FError::addError(FLang::$ERROR_ACCESS_DENIED);
+				FError::add(FLang::$ERROR_ACCESS_DENIED);
 				return;
 			}
 

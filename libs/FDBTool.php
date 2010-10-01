@@ -48,6 +48,8 @@ class FDBTool {
 	 * @var Boolean
 	 */
 	const profilerEnabled = true;
+	private static $profilerHandle=-1;
+	private static $profilerHandleSlow=-1;
 
 	var $queryTemplate = 'select {SELECT} from {TABLE} {JOIN} where {WHERE} {GROUP} {ORDER} {LIMIT}';
 	var $table = '';
@@ -597,61 +599,23 @@ class FDBTool {
 
 	private static function getData($function, $query, $fetchmode=0) {
 		$db = FDBConn::getInstance();
-
 		//---stats
-		if(FDBTool::profilerEnabled === true) {
-			$start = FProfiler::getmicrotime();
-		}
+		if(FDBTool::profilerEnabled === true) $start = FError::getmicrotime();
+		
 		if($fetchmode===1) $db->assoc = true; else $db->assoc = false; 
 		$ret = $db->$function($query);
-		$db = false;
 
 		//---stats
 		if(FDBTool::profilerEnabled === true) {
-			$qTime = FProfiler::getmicrotime() - $start;
-			$cache = FCache::getInstance('l');
-			$statArr = $cache->getdata('stat','FDBTool');
-			if($statArr===false) $statArr = array();
-			$statArr['page'][] = array('time'=>$qTime, 'q'=>$query);
-			if($qTime>0.5) $statArr['slow'][] = array('time'=>$qTime, 'q'=>$query);
-			$cache->setdata($statArr);
+			$text = str_replace(array("\r\n","\n","\r"),' ',$query);
+			if(self::$profilerHandle==-1) self::$profilerHandle = FProfiler::init(FConf::get('settings','logs_path').'FDBTool-query-times.log');
+			FProfiler::write($text,self::$profilerHandle,$start);
+			if((FError::getmicrotime() - $start) > 1.5) { //SLOW LOG
+				if(self::$profilerHandleSlow==-1) self::$profilerHandleSlow = FProfiler::init(FConf::get('settings','logs_path').'FDBTool-query-slow.log',false);
+				FProfiler::write($text,self::$profilerHandleSlow,$start);
+			}
 		}
 		return $ret;
-	}
-
-	static function profileLog() {
-		if(FDBTool::profilerEnabled === true) {
-			//---db stats
-			$cache = FCache::getInstance('l');
-			$statArr = $cache->getdata('stat','FDBTool');
-			$text = '';
-			$total = 0;
-			$queries = 0;
-			if(!empty($statArr['page'])) {;
-				foreach($statArr['page'] as $query) {
-					$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
-					$total += $query['time'];
-					$queries++;
-				}
-				file_put_contents(FConf::get('settings','logs_path').'FDBTool-query-times.log','Total time:'.$total."\n".'Total queries:'.$queries."\n".$text);
-			}
-			$text = '';
-			$queries = 0;
-			$total = 0;
-			if(!empty($statArr['slow'])) {
-				foreach($statArr['slow'] as $query) {
-					$text .= $query['time'] . ' :: '. str_replace(array("\r\n","\n","\r"),' ',$query['q'])."\n";
-					$total += $query['time'];
-					$queries++;
-				}
-				$filename = FConf::get('settings','logs_path').'FDBTool-query-slow.log';
-				$data = $text."\n";
-				$h = fopen($filename, 'a');
-				fwrite($h, $data);
-				fclose($h);
-			}
-			$cache->invalidatedata('stat','FDBTool');
-		}
 	}
 }
 

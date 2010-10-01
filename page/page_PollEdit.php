@@ -15,7 +15,7 @@ class page_PollEdit implements iPage {
 				if(FPages::page_exist('pageId',$tmpSelectedPageId)) {
 					$cache->setData($tmpSelectedPageId, 'page','poll');
 				}
-				else FError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
+				else FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
 			if(false !== ($pageId = $cache->getData('page','poll'))) {
 				$selectedPageId = $pageId;
@@ -41,7 +41,7 @@ class page_PollEdit implements iPage {
 				$cache = FCache::getInstance('s');
 				$cach->invalidateGroup('poll');
 			}
-			else FError::addError(FLang::$ERROR_POLL_QUESTION);
+			else FError::add(FLang::$ERROR_POLL_QUESTION);
 			FHTTP::redirect(FSystem::getUri());
 		}
 		

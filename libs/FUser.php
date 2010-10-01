@@ -94,7 +94,7 @@ class FUser {
 
 				FMessages::diaryNotifications(); //---remind from diary
 			} else {
-				FError::addError(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
+				FError::add(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
 			}
 			if($pageId!='') FHTTP::redirect(FSystem::getUri('',$pageId,''));
 		}
@@ -163,7 +163,7 @@ class FUser {
 				//---user was logged but is lost - do logout acction
 				if( $userVO->userId>0 ) {
 					FUser::logout( $userVO->userId );
-					FError::addError(FLang::$ERROR_USER_KICKED);
+					FError::add(FLang::$ERROR_USER_KICKED);
 				}
 				if( $this->pageVO ) {
 					//---do redirect
@@ -197,27 +197,27 @@ class FUser {
 		$pageAccess = $this->pageAccess = true;
 		$pageId = $this->pageId;
 
-		FProfiler::profile('FUser::kde::1');
+		FProfiler::write('FUser::kde::1');
 		if($pageId) {
 			//---logout action
 			if( $pageId == 'elogo') {
 				if($userId > 0) {
 					FUser::logout($userId);
-					FError::addError(FLang::$MESSAGE_LOGOUT_OK,1);
+					FError::add(FLang::$MESSAGE_LOGOUT_OK,1);
 					FHTTP::redirect('index.php');
 				}
 			}
 			//---try load current page
 			$this->pageVO = new PageVO($pageId,true);
 			
-			FProfiler::profile('FUser::kde::2');
+			FProfiler::write('FUser::kde::2');
 			if( $this->pageVO->loaded !== true ) {
 				$pageAccess = $this->pageAccess = false;
 				$pageId = $this->pageId = null;
 				$this->pageVO = null;
-				FError::addError(FLang::$ERROR_PAGE_NOTEXISTS);
+				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
-			FProfiler::profile('FUser::kde::3');
+			FProfiler::write('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
 
@@ -226,7 +226,7 @@ class FUser {
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
 			if($userId>0 || !empty($this->userVO->idlogin)) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
-			FProfiler::profile('FUser::kde::4');
+			FProfiler::write('FUser::kde::4');
 				
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
@@ -235,7 +235,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-			FProfiler::profile('FUser::kde::5');
+			FProfiler::write('FUser::kde::5');
 			if($pageAccess === true) {
 				$permPage = $pageId;
 				if($permissionNeeded === 3) {
@@ -251,17 +251,17 @@ class FUser {
 						}
 					}
 				}
-				FProfiler::profile('FUser::kde::6');
+				FProfiler::write('FUser::kde::6');
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($userId,$permPage,$permissionNeeded)) {
 					$pageAccess = $this->pageAccess = false;
-					FError::addError(FLang::$ERROR_ACCESS_DENIED);
+					FError::add(FLang::$ERROR_ACCESS_DENIED);
 				} else {
 					$pageAccess = $this->pageAccess = true;
 				}
 			}
 				
-			FProfiler::profile('FUser::kde::7');
+			FProfiler::write('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
@@ -273,7 +273,7 @@ class FUser {
 			params = '".$this->pageParam."'    
 			where loginId='".$this->userVO->idlogin."'");
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
-				FProfiler::profile('FUser::kde::8');
+				FProfiler::write('FUser::kde::8');
 			}
 		}
 
@@ -332,21 +332,21 @@ class FUser {
 		$jmenoreg = trim($data["jmenoreg"]);
 		$pwdreg1 = trim($data["pwdreg1"]);
 		$pwdreg2 = trim($data["pwdreg2"]);
-		if(strlen($jmenoreg)<2) FError::addError(FLang::$ERROR_REGISTER_TOSHORTNAME);
-		elseif (strlen($jmenoreg)>10) FError::addError(FLang::$ERROR_REGISTER_TOLONGNAME);
-		elseif (!FUser::checkUsername($jmenoreg)) FError::addError(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
-		elseif (FUser::isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::addError(FLang::$ERROR_REGISTER_NAMEEXISTS);
-		if($jmenoreg==$pwdreg1) FError::addError(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
-		if(strlen($pwdreg1)<2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
-		if($pwdreg1!=$pwdreg2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
+		if(strlen($jmenoreg)<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
+		elseif (strlen($jmenoreg)>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
+		elseif (!FUser::checkUsername($jmenoreg)) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+		elseif (FUser::isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
+		if($jmenoreg==$pwdreg1) FError::add(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
+		if(strlen($pwdreg1)<2) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
+		if($pwdreg1!=$pwdreg2) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
 
 		//validate email
 		$data['email'] = trim($data['email']);
 		require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
-		if(true!==$validator->isValid($data['email']))  FError::addError(FLang::$ERROR_INVALID_EMAIL);
+		if(true!==$validator->isValid($data['email']))  FError::add(FLang::$ERROR_INVALID_EMAIL);
 
-		if(FError::isError()===false){
+		if(FError::is()===false){
 			$userVO = new UserVO();
 			$userVO->name = $jmenoreg;
 			$userVO->email = $data['email'];
@@ -355,7 +355,7 @@ class FUser {
 			FUser::login($data['jmenoreg'],md5($pwdreg1),false);
 			//---oznameni o registraci
 			FMessages::sendSAMessage(array('NEWUSERID'=>$userVO->userId,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
-			FError::addError(FLang::$REGISTER_WELCOME,1);
+			FError::add(FLang::$REGISTER_WELCOME,1);
 			FHTTP::redirect(FSystem::getUri('',POSTREGISTRATION_PAGE));
 		} else {
 			//cache data

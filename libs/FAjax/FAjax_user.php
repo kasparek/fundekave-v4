@@ -33,7 +33,7 @@ class FAjax_user extends FAjaxPluginBase {
 	static function friendremove($data) {
 		$user = FUser::getInstance();
 		$user->userVO->removeFriend( (int) $data['u']);
-		FError::addError(FLang::$MSG_FRIEND_REMOVED,1);
+		FError::add(FLang::$MSG_FRIEND_REMOVED,1);
 		FAjax::redirect(FSystem::getUri('','frien',''));
 	}
 	
@@ -76,7 +76,7 @@ class FAjax_user extends FAjaxPluginBase {
 				
 				$user = FUser::getInstance();
 				$user->userVO->addFriend( (int) $itemVO->userId );
-				FError::addError(FLang::$MSG_FRIEND_ADDED,1);
+				FError::add(FLang::$MSG_FRIEND_ADDED,1);
 				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
 				
 				$itemVO->delete();
@@ -89,7 +89,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$itemVO->itemId = $data['request'];
 				$itemVO->load();
 				
-				FError::addError(FLang::$MSG_FRIEND_CANCEL,1);
+				FError::add(FLang::$MSG_FRIEND_CANCEL,1);
 				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
 
 				$itemVO->delete();

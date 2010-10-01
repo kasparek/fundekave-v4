@@ -17,7 +17,7 @@ FError::init(PHPLOG);
 FConf::getInstance(CONFIG_FILENAME);
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 //-------------------------------------------------------------time for debuging
-FProfiler::profile('START');
+FProfiler::write('START');
 
 //---session settings - stored in db
 //require_once("fSession.php");
@@ -106,4 +106,4 @@ $user->pageId = $pageId;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 $user->kde(); //---check user / load info / load page content / chechk page exist
 $pageVO = $user->pageVO; 
-FProfiler::profile('USER/PAGE CHECK DONE');
+FProfiler::write('USER/PAGE CHECK DONE');

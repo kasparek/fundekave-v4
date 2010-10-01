@@ -296,6 +296,8 @@ class FSystem {
 	}
 
 	static function postText($text) {
+		$text = trim($text);
+		if(empty($text)) return $text;
 		//mozna pridat pred i a k ze ma byt [&?|]
 		//TODO: fix first,2,3 link rewrite to item
 		//TODO: remove fitemsrenderer::proccessItemEnclosure and process here

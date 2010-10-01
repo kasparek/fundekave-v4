@@ -206,12 +206,12 @@ class FFile {
 	 **/
 	static function upload($file,$kam='',$size=20000,$rewrite=true,$types=array("image/pjpeg","image/jpeg","image/png","image/gif")) {
 		$ret = false;
-		if (!is_uploaded_file($file["tmp_name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTLOADED);
-		else if($file['size'] > $size) FError::addError(FLang::$ERROR_UPLOAD_TOBIG);
-		else if (!in_array($file['type'],$types)) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDTYPE);
-		else if($this->file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::addError(FLang::$ERROR_UPLOAD_FILEEXISTS);
-		else if(!FSystem::checkFilename($file['name'])) FError::addError(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
-		else if (!$res = $this->move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::addError(FLang::$ERROR_UPLOAD_NOTSAVED);
+		if (!is_uploaded_file($file["tmp_name"])) FError::add(FLang::$ERROR_UPLOAD_NOTLOADED);
+		else if($file['size'] > $size) FError::add(FLang::$ERROR_UPLOAD_TOBIG);
+		else if (!in_array($file['type'],$types)) FError::add(FLang::$ERROR_UPLOAD_NOTALLOWEDTYPE);
+		else if($this->file_exists($kam.'/'.$file["name"]) && $rewrite==false) FError::add(FLang::$ERROR_UPLOAD_FILEEXISTS);
+		else if(!FSystem::checkFilename($file['name'])) FError::add(FLang::$ERROR_UPLOAD_NOTALLOWEDFILENAME);
+		else if (!$res = $this->move_uploaded_file($file["tmp_name"], $kam.'/'.$file["name"])) FError::add(FLang::$ERROR_UPLOAD_NOTSAVED);
 		else {
 			$this->chmod($kam.'/'.$file["name"],0777); //---upsesne ulozeno
 			$ret["kam"] = $kam;

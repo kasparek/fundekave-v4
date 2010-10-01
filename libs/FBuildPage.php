@@ -33,7 +33,7 @@ class FBuildPage {
 
 	static function getBreadcrumbs() {
 		$user = FUser::getInstance();
-		
+
 		$breadcrumbs = array();
 		//breadcrumbs
 		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
@@ -53,7 +53,7 @@ class FBuildPage {
 				if(!empty($arr)) {
 					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
 				}
-				
+
 				if($user->pageVO->categoryId > 0) {
 					$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
 					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
@@ -95,9 +95,8 @@ class FBuildPage {
 
 	static function addTab($arrVars) {
 		self::$tabsArr[] = $arrVars;
-		//$tpl = FBuildPage::getInstance();
-		//$tpl->addTab($arrVars);
 	}
+
 	static function getTabs() {
 	 return self::$tabsArr;
 	}
@@ -161,44 +160,30 @@ class FBuildPage {
 	}
 
 	static function baseContent() {
-		FProfiler::profile('FBuildPage::baseContent--START');
+		FProfiler::write('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
-
 		if($user->pageAccess == true) {
-
 			$staticTemplate = false;
-
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
 					$template = 'page_PageEdit';
 					break;
-					
-					/* calendar for events linked to page - forum/blog */
-				case 'k':
-					$template = 'page_ForumView';
-					break;
-
-					/* poll */
+				/* poll */
 				case 'p':
 					$template = 'page_PagePoll';
 					break;
-
-					/* stats */
+				/* stats */
 				case 's':
 					$template = 'page_PageStat';
 					break;
-
-					/* home */
+				/* home */
 				case 'h':
-					$homePage = $user->pageVO->prop('home');
-					if(empty($homePage)) $homePage = FLang::$MESSAGE_FORUM_HOME_EMPTY;
-					else $homePage = FSystem::postText($homePage);
 					$template='';
-					$user->pageVO->content = FSystem::postText($homePage);
+					$user->pageVO->content = FSystem::postText($user->pageVO->prop('home'));
+					if(empty($user->pageVO->content)) $user->pageVO->content = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					break;
-
 				default:
 					$template = $user->pageVO->template;
 					if($template != '') {
@@ -208,16 +193,16 @@ class FBuildPage {
 					}
 					break;
 			}
-			FProfiler::profile('FBuildPage::baseContent--TPL READY');
+			FProfiler::write('FBuildPage::baseContent--TPL READY');
 			if($template != '') {
 				if ($staticTemplate === false) {
 					//DYNAMIC TEMPLATE
 					$template = FBuildPage::getTemplate($template);
-					FProfiler::profile('FBuildPage::baseContent--TPL LOADED');
+					FProfiler::write('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
 						call_user_func(array($template, 'build'));
 					}
-					FProfiler::profile('FBuildPage::baseContent--TPL PROCESSED');
+					FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
 					//STATIC TEMPLATE
 					$tpl = FSystem::tpl($template);
@@ -229,9 +214,7 @@ class FBuildPage {
 				//NOT TEMPLATE AT ALL
 				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content));
 			}
-
-			FProfiler::profile('FBuildPage::baseContent--CONTENT DONE');
-
+			FProfiler::write('FBuildPage::baseContent--CONTENT DONE');
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 
@@ -266,8 +249,8 @@ class FBuildPage {
 			if(FRules::get($user->userVO->userId,'sadmi',2)) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
 			}
-						
-			FProfiler::profile('FBuildPage::baseContent--BUTTONS ADDED');
+
+			FProfiler::write('FBuildPage::baseContent--BUTTONS ADDED');
 			/**/
 		}
 	}
@@ -275,7 +258,7 @@ class FBuildPage {
 	static function show() {
 
 		FBuildPage::baseContent();
-		FProfiler::profile('FBuildPage--FBuildPage::baseContent');
+		FProfiler::write('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
 
@@ -295,56 +278,32 @@ class FBuildPage {
 
 		$user = FUser::getInstance();
 		//---ERROR MESSAGES
-		$arrMsg = FError::getError();
+		$arrMsg = FError::get();
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) {
 				$tpl->setVariable("ERRORMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
 				$tpl->parse("errormsg");
 			}
-			FError::resetError();
+			FError::reset();
 		}
-		$arrMsg = FError::getError(1);
+		$arrMsg = FError::get(1);
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) {
 				$tpl->setVariable("OKMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
 				$tpl->parse("okmsg");
 			}
-			FError::resetError(1);
+			FError::reset(1);
 		}
 		//---HEADER
 		$tpl->setVariable("CHARSET", CHARSET);
 		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
-		
+
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth);
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight);
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
-
-		//if(is_object($xajax)) $arrXajax = explode("\n",$xajax->getJavascript());
-
-		//TODO: use wrapper when all js done
-		/*
-		 $JSWrapper = new FJSWrapper(ROOT.ROOT_WEB.'data/cache/js/','/data/cache/js/',$user->pageVO->typeId.'.'.(($user->idkontrol===true)?('1'):('0')).'.js');
-		 if(!$JSWrapper->isCached()) {
-		 if(!empty($arrXajax)) {
-		 foreach ($arrXajax as $row) {
-		 $row = trim($row);
-		 if(!empty($row)) {
-		 if(preg_match("/(.js)$/",$row)) $JSWrapper->addFile($row);
-		 else $JSWrapper->addCode($row);
-		 }
-		 }
-		 }
-		 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/dLiteCompressed-1.0.js');
-		 
-		 $JSWrapper->addFile(ROOT.ROOT_WEB.'js/fdk-ondom.js');
-		 }
-		 if($wrap = $JSWrapper->get()) {
-		 $tpl->setVariable("WRAPPEDJS", $wrap);
-		 }
-		 */
 
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
 		if($user->pageVO) {
@@ -366,10 +325,10 @@ class FBuildPage {
 			//if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
 			$tpl->parseCurrentBlock();
 		}
-		FProfiler::profile('FBuildPage--FSystem::topMenu');
+		FProfiler::write('FBuildPage--FSystem::topMenu');
 
 		if($user->pageAccess === true) {
-				
+
 			//breadcrumbs
 			$breadcrumbs = FBuildPage::getBreadcrumbs();
 			foreach($breadcrumbs as $crumb) {
@@ -395,7 +354,7 @@ class FBuildPage {
 				}
 			}
 		}
-		FProfiler::profile('FBuildPage--FSystem::secondaryMenu');
+		FProfiler::write('FBuildPage--FSystem::secondaryMenu');
 
 		//---LEFT PANEL POPULATING
 		$showSidebar = true;
@@ -404,7 +363,7 @@ class FBuildPage {
 			$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fLeftpanel->load();
 			$fLeftpanel->show();
-			FProfiler::profile('FBuildPage--FLeftPanel');
+			FProfiler::write('FBuildPage--FLeftPanel');
 		}
 
 
@@ -415,15 +374,15 @@ class FBuildPage {
 
 		//$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0); $pagesSum.'::'.
 		$tpl->setVariable("COUNTER", round((FProfiler::getmicrotime()-$start),3));
-		FProfiler::profile('FBuildPage--footer');
-		
+		FProfiler::write('FBuildPage--footer');
+
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
 		$useTabs = false;
 		$useSwfobject = false;
 		$useFuup = false;
-		
+
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
@@ -433,7 +392,7 @@ class FBuildPage {
 		if($useDatePicker === true) {
 			$tpl->touchBlock("juiCSS"); //---js in the header
 			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
-			
+				
 			$tpl->touchBlock("datepickerLoad"); //---javascript on the end of the page
 			$tpl->touchBlock("datepickerInit");
 		}
@@ -452,15 +411,15 @@ class FBuildPage {
 			$tpl->touchBlock("signedInit");
 		}
 
-		FProfiler::profile('FBuildPage--custom js sections');
+		FProfiler::write('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".CHARSET);
-		
+
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
 		//$data = preg_replace('/\s\s+/', ' ', $data);
-				
+
 		echo $data;
 	}
 }

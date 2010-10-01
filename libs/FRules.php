@@ -154,7 +154,7 @@ class FRules {
 						$usrid = FUser::getUserIdByName($usrname);
 						if($usrid != $this->owner) { // if not owner of page
 							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
-							else FError::addError(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
+							else FError::add(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
 						}
 					}
 				}

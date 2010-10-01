@@ -1,64 +1,47 @@
 <?php
 class FProfiler {
-
-	static function getmicrotime(){
-		list($usec, $sec) = explode(" ",microtime());
-		return ((float)$usec + (float)$sec);
-	}
-
-	static function profile($comment='',$group=false) {
-		$arr = array('group'=>$group,'comment'=>$comment,'time'=>FProfiler::getmicrotime(),'memUsage'=>round(memory_get_usage()/1024),'memPeak'=>round(memory_get_peak_usage()/1024));
-		$cache = FCache::getInstance('l');
-		$cachedArr = $cache->getData('profile','FSystem');
-		if($cachedArr===false) $cachedArr = array();
-		$cachedArr[] = $arr;
-		$cache->setData($cachedArr);
-	}
+	private static $logList;
+	private static $starttimeList;
+	private static $lasttimeList;
 	
-	static function profileLog() {
-		$cache = FCache::getInstance('l');
-		$statArr = $cache->getdata('profile','FSystem');
-		$text = '';
-		$total = 0;
-		$startTime = $statArr[0]['time'];
-		$lastTime = $startTime;
-		$lastMemUsage = 0;
-		
-		if(empty($statArr)) return;
-		
-		foreach($statArr as $profil) {
-			if($profil['group']===true) {
-				if(!isset($groupLastTime)) $groupLastTime = $lastTime;
-				$profil['timeDif'] = round($profil['time']-$groupLastTime,4);
-				$arrGroup[$profil['comment']][] = $profil;
-				$groupLastTime = $profil['time'];
+	private static $handleIfEmpty;
+
+	static function init($filename,$flush=true) {
+		if(!is_array(self::$logList)) self::$logList = array();
+		$handle = count(self::$logList);
+		self::$logList[] = $filename;
+		if(file_exists(self::$logList[$handle])) unlink(self::$logList[$handle]);
+		FProfiler::write('INITIALIZED',$handle);
+		return $handle;
+	}
+
+	static function write($comment='',$handle=-1,$timeStart=-1) {
+		list($usec, $sec) = explode(" ",microtime());
+		$now = ((float)$usec + (float)$sec);
+		if($timeStart>-1) self::$starttimeList[$handle] = $timeStart;
+		//initialize
+		if($handle==-1) {
+			if(!empty(self::$handleIfEmpty)) {
+				$handle = self::$handleIfEmpty;
 			} else {
-				$text .= round($profil['time']-$lastTime,4) . ' :: ' . round($profil['time']-$startTime,4)
-				. ' :: ' . ($profil['memUsage']-$lastMemUsage)
-				. ' :: ' . $profil['comment'] 
-				. ' :: ' . $profil['memUsage']. ' :: ' .$profil['memPeak']. "\n";
-				$lastTime = $profil['time'];
-				$lastMemUsage = $profil['memUsage'];
+				//DEFAULT PROFILE LOG
+				if(!is_array(self::$logList)) self::$logList = array();
+				self::$handleIfEmpty = count(self::$logList);
+				//delete profile file
+				self::$logList[] = FConf::get('settings','logs_path').'System-profile-times.log';
+				if(file_exists(self::$logList[self::$handleIfEmpty])) unlink(self::$logList[self::$handleIfEmpty]);
+				self::$starttimeList[self::$handleIfEmpty] = self::$lasttimeList[self::$handleIfEmpty] = $now;
 			}
 		}
-		$text .= "\n---GROUPED----\n\n";
-		
-		if(isset($arrGroup)) {
-			foreach($arrGroup as $k=>$v) {
-				$times = 0;
-				$timeTotal = 0;
-				foreach($v as $profil) {
-					$timeTotal = $timeTotal + $profil['timeDif'];
-					$times++;
-				}
-				$time = round($timeTotal/$times,4);
-				$text .= $time
-				. ' :: ' . $k 
-				. "\n";
-			}
-		}
-		$total = $lastTime-$startTime;
-		file_put_contents(FConf::get('settings','logs_path').'System-profile-times.log','Total time:'.$total."\n".$text);
-		$cache->invalidatedata('profile','FSystem');
+		//write log entry
+		$fh = fopen(self::$logList[$handle], "a");
+		fwrite($fh,'date='.date(DATE_ATOM)
+		.';runtime='.( round($now-self::$starttimeList[$handle],4) )
+		.';timelast='.( round($now-self::$lasttimeList[$handle],4) )
+		.';memory='.round(memory_get_usage()/1024)
+		.';peak='.round(memory_get_peak_usage()/1024)
+		."\n".$errText."\n\n");
+		fclose($fh);
+		self::$lasttimeList[$handle] = $now;
 	}
 }

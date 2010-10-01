@@ -272,7 +272,7 @@ class FImgProcess {
 	}
 
 	function save() {
-		if(!empty($this->errorArr)) while($this->errorArr) FError::addError(array_shift($this->errorArr));
+		if(!empty($this->errorArr)) while($this->errorArr) FError::add(array_shift($this->errorArr));
 
 		if($this->imagick) {
 			switch($this->targetMimeType) {

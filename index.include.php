@@ -137,7 +137,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 						$imagePath = $dir . '/' . FFile::safeFilename($filename);
 						FFile::makeDir($dir);
 					} else {
-						FError::addError(FLang::$PERSONAL_FOTO_FOLDER_FULL);
+						FError::add(FLang::$PERSONAL_FOTO_FOLDER_FULL);
 						$imagePath = '';
 					}
 					break;
@@ -205,7 +205,7 @@ if($processMain===true) {
 		FAjax::process( $_REQUEST['m'], $data );
 	}
 
-	FProfiler::profile('FAJAX PROCESSED DONE');
+	FProfiler::write('FAJAX PROCESSED DONE');
 
 	//---process post/get for page
 	$data = $_POST;
@@ -213,7 +213,7 @@ if($processMain===true) {
 	if(!empty($_GET))  $data['__get'] = $_GET;
 	FBuildPage::process( $data );
 
-	FProfiler::profile('PAGE PROCESSED DONE');
+	FProfiler::write('PAGE PROCESSED DONE');
 
 	if($user->pageAccess == true) {
 		//---tag toolbar set up
@@ -222,16 +222,16 @@ if($processMain===true) {
 		}
 	}
 
-	FProfiler::profile('PAGE STAT/TOOLBAR');
+	FProfiler::write('PAGE STAT/TOOLBAR');
 
 	//---shows message that page is locked
 	if($user->pageVO)
 	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
-		FError::addError(FLang::$MESSAGE_PAGE_LOCKED);
+		FError::add(FLang::$MESSAGE_PAGE_LOCKED);
 		if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 	}
 
-	FProfiler::profile('PAGE BEFORE SHOW');
+	FProfiler::write('PAGE BEFORE SHOW');
 
 	//TODO: create headers
 	//header("Cache-control: max-age=290304000, public");
@@ -243,9 +243,7 @@ if($processMain===true) {
 
 }
 //---profiling
-FProfiler::profile('PAGE COMPLETE');
-FProfiler::profileLog();
-FDBTool::profileLog();
+FProfiler::write('PAGE COMPLETE');
 
 //---close resources
 session_write_close();

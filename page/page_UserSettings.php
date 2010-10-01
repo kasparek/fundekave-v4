@@ -116,11 +116,11 @@ class page_UserSettings implements iPage {
 			$pass1 = FSystem::textins($data["pwdreg1"],array('plainText'=>1));
 			$pass2 = FSystem::textins($data["pwdreg2"],array('plainText'=>1));
 			if(!empty($pass1) && !empty($pass2)){
-				if(strlen($pass1)<3) FError::addError(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
-				if($pass1!=$pass2) FError::addError(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-				if (!FError::isError()){
+				if(strlen($pass1)<3) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
+				if($pass1!=$pass2) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
+				if (!FError::is()){
 					$userVO->passwordNew = md5(trim($data["pwdreg1"]));
-					FError::addError(FLang::$MESSAGE_PASSWORD_SET);
+					FError::add(FLang::$MESSAGE_PASSWORD_SET);
 				}
 			}
 
@@ -137,7 +137,7 @@ class page_UserSettings implements iPage {
 			$userVO->save();
 
 			if($data['__ajaxResponse']) {
-				if(!FError::isError()) FAjax::addResponse('function','call','msg;ok;Data saved');
+				if(!FError::is()) FAjax::addResponse('function','call','msg;ok;Data saved');
 			} else {
 				FHTTP::redirect(FSystem::getUri());
 			}

@@ -182,7 +182,7 @@ class FItems extends FDBTool {
 		//---render item
 		if($itemVO = array_shift($this->data)) {
 			$itemVO->render($this->fItemsRenderer,false);
-			FProfiler::profile('FItems::parse--ITEM PARSED');
+			FProfiler::write('FItems::parse--ITEM PARSED');
 		}
 	}
 
