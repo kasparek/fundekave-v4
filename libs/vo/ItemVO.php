@@ -100,7 +100,7 @@ class ItemVO extends Fvob {
 					if( $unset ) array_splice($unreadedList,array_search($itemId, $unreadedList),1);
 				}
 				return $this->isUnreaded;
-				break
+				break;
 		}
 		
 		

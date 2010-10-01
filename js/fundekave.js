@@ -344,12 +344,11 @@ function onFajaxformButton(event) {
 	
 	formSent = event.currentTarget.form;
 	$('.button',formSent).attr('disabled','disabled');
-	var arr = $(formSent).formToArray(false);
-	var result = false;
-	var resultProperty = false;
+	var arr = $(formSent).formToArray(false), action, result = false, resultProperty = false;
 	while (arr.length > 0) {
 		var obj = arr.shift();
-		addXMLRequest(obj.name, obj.value);
+		if(obj.name=='m') action = obj.value;
+		else addXMLRequest(obj.name, obj.value);
 		if (obj.name == 'result') result = true;
 		if (obj.name == 'resultProperty') resultProperty = true;
 	}
@@ -357,7 +356,7 @@ function onFajaxformButton(event) {
 	if (resultProperty == false) addXMLRequest('resultProperty', '$html');
 	addXMLRequest('action', event.currentTarget.name);
 	addXMLRequest('k', gup('k', formSent.action));
-	sendAjax(gup('m', formSent.action),gup('k', formSent.action));
+	sendAjax(!action ? gup('m', formSent.action) : action,gup('k', formSent.action));
 };
 //---AJAX FORM END
 
@@ -508,19 +507,22 @@ $(document).ready( function() {
 	}
 	slimboxInit();
 });
+//LOAD UI
+function loadUI(callback){
+	if(!getScript('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js',callback)) return;
+	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js',callback)) return;
+	if(!getCSS('css/themes/ui-lightness/jquery-ui-1.7.2.custom.css',callback)) return;
+	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js', callback)) return;
+	return true;
+}
 //datepicker init
-function datePickerInit() {
-if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js', datePickerInit)) return;
-if(!getCSS(CSS_URL+'themes/ui-lightness/jquery-ui-1.7.2.custom.css',datePickerInit)) return;
-$.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional[''])); 
-$(".datepicker").datepicker($.datepicker.regional['cs']); 
-};
+function datePickerInit() { if(!loadUI(datePickerInit)) return; $.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional[''])); $(".datepicker").datepicker($.datepicker.regional['cs']); };
 //slimbox init
 function slimboxInit() { if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) { $("a[rel^='lightbox']").slimbox({overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100}, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); }); } }
 //fuup init
 function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 //tabs init
-function tabsInit() { $("#tabs").tabs(); };
+function tabsInit() { if(!loadUI(tabsInit)) return; $("#tabs").tabs(); };
 //request init
 function friendRequestInit() { $('#friendrequest').show('slow'); fajaxformInit(); $('#cancel-request').bind('click',function(event){remove('friendrequest');event.preventDefault()}); };
 //ajax form init
@@ -754,7 +756,6 @@ function sendAjax(action,k) {
 	if(!k) k = gup('k',document.location);
 	$.ajaxSetup({ 
         scriptCharset: "utf-8" , 
-        //contentType: "application/x-www-form-urlencoded; charset=utf-8"
         contentType: "text/xml; charset=utf-8"
 	});
 	$.ajax( {
@@ -763,7 +764,6 @@ function sendAjax(action,k) {
 		dataType : 'xml',
 		processData : false,
 		cache : false,
-		//data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + $.base64Encode(encodeURIComponent(data)),
 		data : data,
 		error: function(ajaxRequest, textStatus, error) { },
 		success: function(data, textStatus, ajaxRequest) {  },

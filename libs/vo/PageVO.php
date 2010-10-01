@@ -203,7 +203,7 @@ class PageVO extends Fvob {
 	/**
 	 *update readed
 	 **/
-	static function updateReaded($userId) {
+	function updateReaded($userId) {
 		if(empty($userId)) return;
 		if($this->cnt==0) return;
 		$q = "insert delayed into sys_pages_favorites

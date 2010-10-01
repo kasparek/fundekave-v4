@@ -233,7 +233,8 @@ class FItemsRenderer {
 		if($this->showDetail === true) {
 			$writeRule = $pageVO->prop('forumSet');
 			if(false !== ($itemWriteRule = $itemVO->prop('forumSet'))) $writeRule = $itemWriteRule;
-			$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
+			//TODO: comments shown vie list items - check
+			//$vars['COMMENTS'] = FForum::show($itemId, $writeRule, $this->itemIdInside,array('showHead'=>false,'simple'=>1) );
 		}
 		$vars['COMMENTLINK'] = $link;
 		if($itemVO->unreaded > 0) { $vars['ALLNEWCNT'] = $itemVO->unreaded; }
