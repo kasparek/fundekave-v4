@@ -150,7 +150,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					$pageVO->set('pageIco',$imageName);
 					$pageVO->save();
 					break;
-				case 'futip':
+				case 'tempStore':
 					//---upload in tmp folder in user folder and save filename in db cache
 					$imagePath = FFile::setTempFilename($filename);
 					break;

@@ -91,6 +91,11 @@ class FFile {
 		return ftp_chmod($this->ftpConn,$mode,$filename);
 	}
 
+	function rename($source, $target) {
+		if(!$this->isFtpMode) return rename($source, $target);
+		return ftp_rename($this->ftpConn, $source, $target);
+	}
+	
 	function move_uploaded_file($source, $target) {
 		if(!$this->isFtpMode) return move_uploaded_file($source, $target);
 		return ftp_put($this->ftpConn, $source, $target, FTP_BINARY);
@@ -187,8 +192,8 @@ class FFile {
 			case 'pava':
 				$tpl = FSystem::tpl('fuup.pageAvatar.config.xml');
 				break;
-			case 'futip':
-				$tpl = FSystem::tpl('fuup.event.config.xml');
+			case 'tempStore':
+				$tpl = FSystem::tpl('fuup.tempStore.config.xml');
 				break;
 			default:
 				$tpl = FSystem::tpl('fuup.galery.config.xml');
@@ -364,12 +369,12 @@ class FFile {
 	static function setTempFilename($filename) {
 		$user = FUser::getInstance();
 		if($user->userVO->userId==0) return false;
-		$dir = FConf::get("settings","upload_tmp") . $user->userVO->name;
+		$dir = FConf::get("galery","tempStore") . $user->userVO->name;
 		$filename = FFile::safeFilename($filename);
 		$imagePath = $dir . '/' . $filename;
 		FFile::makeDir($dir);
 		$cache = FCache::getInstance('d');
-		$cache->setData($imagePath,'tmpfile',$user->userVO->userId);
+		$cache->setData($imagePath,'tempStore',$user->userVO->userId);
 		return $imagePath;	
 	}
 	
@@ -382,11 +387,19 @@ class FFile {
 		$user = FUser::getInstance();
 		if($user->userVO->userId==0) return false;
 		$cache = FCache::getInstance('d');
-		$ret = $cache->getData('tmpfile',$pageId.'-'.$user->userVO->userId);
-		if($ret!==false) {
-			$cache->invalidateData('tmpfile',$pageId.'-'.$user->userVO->userId);
-		}			
+		$ret = $cache->getData('tempStore',$pageId.'-'.$user->userVO->userId);
 		return $ret;
+	}
+	
+	static function flushTemplFile() {
+		$cache = FCache::getInstance('d');
+		$filename = $cache->getData('tempStore',$pageId.'-'.$user->userVO->userId);
+		if($filename!==false) {
+			if(file_exists($filename)) {
+				unlink($filename);
+			}
+			$cache->invalidateData('tempStore',$pageId.'-'.$user->userVO->userId);
+		}
 	}
 	
 }

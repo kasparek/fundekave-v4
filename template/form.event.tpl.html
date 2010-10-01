@@ -20,14 +20,14 @@
 <label for="datestart">Datum Cas Od</label><input type="text" name="dateStartLocal" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateStartTime" value="{TIMESTART}" class="xShort" /><br />
 <label for="dateend>Datum Cas Do</label><input type="text" name="dateEndLocal" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateEntTime" value="{TIMEEND}" class="xShort" /><br />
 <label>Upload letáku</label>
-<div id="futip" class="fuup">
+<div id="tempStore" class="fuup">
 <input type="file" name="imageFile" id="flyerUpload"/></div><br />
 <label> - nebo URL</label><input type="text" name="imageUrl" /><br />
-<div id="flyerDiv" class="row">
-<!-- BEGIN flyer -->
-<label>Letak</label><a rel="lightbox" href="{FLYERURL}"><img src="{FLYERTHUMBURL}" /></a>
-<input type="submit" name="delFlyer" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
-<!-- END flyer -->
+<div id="imageHolder" class="row">
+<!-- BEGIN image -->
+<label>Letak</label><a rel="lightbox" href="{IMAGEURL}"><img src="{IMAGETHUMBURL}" /></a>
+<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
+<!-- END image -->
 </div>
 <label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup draftable">{DESCRIPTION}</textarea><br />
 </fieldset>
