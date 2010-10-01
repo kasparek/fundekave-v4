@@ -36,13 +36,7 @@ class FAjax_item extends FAjaxPluginBase {
 		$ret = FItemsForm::show($itemVO);
 		if($data['__ajaxResponse']===true) {
 			FAjax::addResponse('editForm', '$html', $ret);
-			FAjax::addResponse('function','call','tabsInit');
-			FAjax::addResponse('function','call','datePickerInit');
-			FAjax::addResponse('function','call','markItUpSwitchInit');
-			FAjax::addResponse('function','call','fajaxformInit');
-			FAjax::addResponse('function','call','draftInit');
-			FAjax::addResponse('function','call','initJourneySelector');
-			FAjax::addResponse('function','call','initPositionSelector');
+			FAjax::addResponse('call','jUIInit','');
 		} else {
 			FBuildPage::addTab(array("TABID"=>'editForm',"MAINDATA"=>$ret));
 		}
@@ -83,7 +77,7 @@ class FAjax_item extends FAjaxPluginBase {
 		|| (FRules::getCurrent(1)===true && $itemVO->typeId=='forum' && $itemVO->userId==$user->userVO->userId)) {
 			$itemVO->delete();
 			if($itemVO->typeId=='forum') {
-				FAjax::addResponse('function','call','remove;i'.$data['item']);
+				FAjax::addResponse('call','remove','i'.$data['item']);
 			} else {
 				//TODO:redirect
 			}

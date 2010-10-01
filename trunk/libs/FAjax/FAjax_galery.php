@@ -29,7 +29,7 @@ class FAjax_galery extends FAjaxPluginBase {
 			$ret = $fItems->render();
 		}
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
-		FAjax::addResponse('function', 'call', 'draftInit;fotodesc'.$itemId);
+		FAjax::addResponse('call', 'draftInit', 'fotodesc'.$itemId);
 	}
 
 	static function delete($data) {

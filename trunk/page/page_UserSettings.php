@@ -33,7 +33,7 @@ class page_UserSettings implements iPage {
 				$cache->invalidateData('avatar',$user->userVO->userId);
 				
 				FAjax::addResponse('avatarBox', '$html', FAvatar::showAvatar($user->userVO->userId));
-				FAjax::addResponse('function','call','msg;ok;'.FLANG::$MSG_AVATAR_SET);
+				FAjax::addResponse('call','msg','ok,'.FLANG::$MSG_AVATAR_SET);
 			}
 
 			if(strpos($action,'del')!==false) {
@@ -50,8 +50,8 @@ class page_UserSettings implements iPage {
 					}
 				}
 					
-				FAjax::addResponse('function','call','remove;personalfoto'.$md5);
-				FAjax::addResponse('function','call','msg;ok;File deleted');
+				FAjax::addResponse('call','remove','personalfoto'.$md5);
+				FAjax::addResponse('call','msg','ok,File deleted');
 
 				FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
 			}
@@ -137,7 +137,7 @@ class page_UserSettings implements iPage {
 			$userVO->save();
 
 			if($data['__ajaxResponse']) {
-				if(!FError::is()) FAjax::addResponse('function','call','msg;ok;Data saved');
+				if(!FError::is()) FAjax::addResponse('call','msg','ok,Data saved');
 			} else {
 				FHTTP::redirect(FSystem::getUri());
 			}
