@@ -9,7 +9,7 @@ class FAjax_page extends FAjaxPluginBase {
 		$updatedStr = '';
 		if(isset($items['new'])) $newStr = implode(',',$items['new']);
 		if(isset($items['updated'])) $updatedStr = implode(',',$items['updated']);
-		FAjax::addResponse('function','call','galeryRefresh;'.$newStr.';'.$updatedStr.';'.$items['total']);
+		FAjax::addResponse('call','galeryRefresh',$newStr.','.$updatedStr.','.$items['total']);
 	}
 
 	static function avatar($data) {

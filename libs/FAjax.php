@@ -1,7 +1,9 @@
 <?php
 class FAjax {
 	
-	public $template = 'fajax.xml';
+	public $template = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<FAjax><Response>\n{CONTENT}\n</Response></FAjax>";
+	public $itemTemplate = '<Item target="{TARGET}" property="{PROP}"><![CDATA[{DATA}]]></Item>';
+	
 	public $data;
 	public $responseData;
 	public $errorsLater = false;
@@ -88,7 +90,7 @@ class FAjax {
 						foreach ($arrMsg as $k=>$v) {
 							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						}
-						FAjax::addResponse('function','call','msg;error;'.implode('<br />',$arr));
+						FAjax::addResponse('call','msg','error,'.implode('<br />',$arr));
 						FError::reset();
 					}
 					$arrMsg = FError::get(1);
@@ -97,14 +99,14 @@ class FAjax {
 						foreach ($arrMsg as $k=>$v) {
 							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						}
-						FAjax::addResponse('function','call','msg;ok;'.implode('<br />',$arr));
+						FAjax::addResponse('call','msg','ok,'.implode('<br />',$arr));
 						FError::reset(1);
 					}
 				}
 			} else {
 				if($ajax === true) {
 					//redirect to same page because of user does not have permission to access this page
-					FAjax::addResponse('function','call','redirect;'.FSystem::getUri());
+					FAjax::addResponse('call','redirect',FSystem::getUri());
 				}
 			}
 
@@ -147,7 +149,7 @@ class FAjax {
 		return $fajax->redirecting;
 	}
 
-	static public function addResponse($target, $property, $value) {
+	static public function addResponse($target, $property, $value='') {
 		$fajax = FAjax::getInstance();
 		$fajax->responseData[] = array('TARGET'=>$target,'PROP'=>$property,'DATA'=>$value);
 	}
@@ -159,32 +161,25 @@ class FAjax {
 
 	static function buildResponse() {
 		$fajax = FAjax::getInstance();
-		$data = $fajax->responseData;
-		$originalData = $fajax->data;
-		$tpl = FSystem::tpl($this->template);
+		$rows = array();
 		//---create new data
-		if(!empty($data)) {
-			foreach($data as $k=>$v) {
-				$tpl->setVariable($v);
-				$tpl->parse('data');
+		if(!empty($fajax->responseData)) {
+			foreach($fajax->responseData as $responseData) {
+				$row = $fajax->itemTemplate;
+				foreach($responseData as $k=>$v) $row=str_replace('{'.$k.'}',$v,$row);
+				$rows[] = $row;
 			}
 		}
 		//---process original data
-		foreach($originalData as $k=>$v) {
-			switch($k) {
-				case 'call':
-				case 'callback':
-					if(!is_array($v)) $v = array($v);
-					foreach($v as $funcName) {
-						$tpl->setVariable(array('TARGET'=>'function','PROP'=>(($k=='call')?('call'):('callback')),'DATA'=>$funcName));
-						$tpl->parse('data');
-					}
-					break;
+		foreach($fajax->data as $k=>$v) {
+			if($k=='call') {
+				if(!is_array($v)) $v = array($v);
+				foreach($v as $funcName) {
+					$rows[] = str_replace(array('{TARGET}','{PROP}','{DATA}'),array('function',$k,$funcName),$fajax->itemTemplate);
+				}
 			}
 		}
-		$tpl->touchBlock('__global__');
-		$tpl->parse();
 		FAjax::resetResponse();
-		return $tpl->get();
+		return str_replace('{CONTENT}',implode("\n",$rows),$fajax->template);
 	}
 }

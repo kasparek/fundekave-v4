@@ -42,9 +42,9 @@ class FAjax_user extends FAjaxPluginBase {
 		$tpl->setVariable('ACTION',FSystem::getUri('m=user-friendrequestsend'));
 		$tpl->setVariable('USER',$data['u']);
 		$ret = $tpl->get();
-		FAjax::addResponse('function','call','remove;friendrequest,1');
+		FAjax::addResponse('call','remove','friendrequest,1');
 		FAjax::addResponse('okmsgJS','$after',$ret);
-		FAjax::addResponse('function','call','friendRequestInit');
+		FAjax::addResponse('call','friendRequestInit');
 	}
 	
 	static function friendrequestsend($data) {
@@ -61,8 +61,8 @@ class FAjax_user extends FAjaxPluginBase {
 		$itemVO->save();
 		
 		sleep(2);
-		FAjax::addResponse('function','call','remove;friendButt');
-		FAjax::addResponse('function','call','remove;friendrequest');
+		FAjax::addResponse('call','remove','friendButt');
+		FAjax::addResponse('call','remove','friendrequest');
 		FAjax::addResponse('okmsgJS','$html','Request sent');
 	}
 	
@@ -77,7 +77,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$user = FUser::getInstance();
 				$user->userVO->addFriend( (int) $itemVO->userId );
 				FError::add(FLang::$MSG_FRIEND_ADDED,1);
-				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
+				FAjax::addResponse('call','remove','request'.$itemVO->userId);
 				
 				$itemVO->delete();
 				
@@ -90,7 +90,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$itemVO->load();
 				
 				FError::add(FLang::$MSG_FRIEND_CANCEL,1);
-				FAjax::addResponse('function','call','remove;request'.$itemVO->userId);
+				FAjax::addResponse('call','remove','request'.$itemVO->userId);
 
 				$itemVO->delete();
 				break;
@@ -121,9 +121,9 @@ class FAjax_user extends FAjaxPluginBase {
 		$ret .= $tpl->get('personalImage');
 		FAjax::addResponse('personalfoto', '$html', $ret);
 		FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
-		FAjax::addResponse('function','call','fconfirmInit');
-		FAjax::addResponse('function','call','fajaxformInit');
-		FAjax::addResponse('function','call','slimboxInit');
+		FAjax::addResponse('call','fconfirmInit');
+		FAjax::addResponse('call','fajaxformInit');
+		FAjax::addResponse('call','slimboxInit');
 	}
 	
 	static function book($data) {
@@ -165,14 +165,14 @@ class FAjax_user extends FAjaxPluginBase {
 			//---create response
 			if($data['__ajaxResponse']==true) { 
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
-				FAjax::addResponse('function','call','fajaxaInit');
+				FAjax::addResponse('call','fajaxaInit');
 			}
 		}
 	}
 
 	static function poll($data) {
 		FAjax::addResponse('rh_anketa','$html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an']));
-		FAjax::addResponse('function','call','setPollListeners');
+		FAjax::addResponse('call','setPollListeners');
 	}
 
 	static function pocketIn($data) {

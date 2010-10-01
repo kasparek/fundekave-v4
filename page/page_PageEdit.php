@@ -258,7 +258,7 @@ class page_PageEdit implements iPage {
 						//if new page redirect
 						FAjax::errorsLater();
 						FError::add(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
-						FAjax::addResponse('function','call','redirect;'.FSystem::getUri('',$pageVO->pageId,$redirectAdd));
+						FAjax::addResponse('call','redirect',FSystem::getUri('',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
 						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);

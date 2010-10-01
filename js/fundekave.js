@@ -172,21 +172,17 @@ function mapSelectorProcessInput(val) {
 	return result;
 }
 
-function initJourneySelector() { setListeners('journeySelector','click',journeySelectorCreate); }
-function initPositionSelector() { setListeners('positionSelector','click',mapSelectorCreate); }
-
 function journeySelectorCreate() {
 	var data;
-	if(mapHoldersList) data = mapHoldersList[0].mapDataList[0];  
-	else data = new mapData();
+	if(mapHoldersList) data = mapHoldersList[0].mapDataList[0];	else data = new mapData();
 	data.journey = true;
 	data.dataEl = this;
 	mapEditor(data);
 }
 function mapSelectorCreate() {
 	var data;
-	if(mapHoldersList) data = mapHoldersList[0].mapDataList[0];  
-	else data = new mapData();
+	if(mapHoldersList) data = mapHoldersList[0].mapDataList[0];	else data = new mapData();
+	data.journey = false;
 	data.dataEl = this;
 	mapEditor(data);
 }
@@ -201,18 +197,13 @@ function mapEditor(data) {
 		mapHoldersList = [holder];
 		setListener = true;
 	}
-	
 	initMap();
-	
-	
 	$("#mapEditor").dialog({
 			modal: true,
 			minWidth:640,
 			minHeight:200,
 			width: $(window).width()*0.8, 
 			height: $(window).height()*0.8,
-			//resizeStop: function(event,ui){ $("#map").css('height',(ui.size.height-110)+'px'); },
-			//open: function(event,ui){ $("#map").css('height',(ui.size.height-110)+'px'); },
 			buttons: {
 				Save: function() {
 					$(this).dialog('close');
@@ -243,10 +234,8 @@ function mapEditor(data) {
 				}
 			}
 		});
-		
-		$(".ui-dialog-buttonpane").prepend(mapSearchHTML);
-		$("#mapaddress").keydown(addressCheckForEnter);
-		
+	$(".ui-dialog-buttonpane").prepend(mapSearchHTML);
+	$("#mapaddress").keydown(addressCheckForEnter);
 	if(setListener) {	
 	google.maps.event.addListener(holder.map, 'click', function(event) {
 		data = mapHoldersList[0].mapDataList[0];
@@ -261,11 +250,7 @@ function mapEditor(data) {
 	});
 	}
 }
-function addressCheckForEnter(event) {
-if (event.keyCode == 13) {
-	findAddress();
-} 
-}
+function addressCheckForEnter(event) {if (event.keyCode == 13) {findAddress();} }
 function findAddress() {
   var address = {'address': document.getElementById('mapaddress').value};
   holder = mapHoldersList[0]; 
@@ -315,7 +300,7 @@ function fuupUploadPageAvatarComplete() {
 function fuupUploadEventComplete() {
 	var item = $('#item').attr('value');
 	if(item>0) addXMLRequest('item', item);
-  addXMLRequest('result', "flyerDiv");
+	addXMLRequest('result', "flyerDiv");
 	addXMLRequest('resultProperty', '$html');
 	addXMLRequest('call', 'slimboxInit');
 	addXMLRequest('call', 'fconfirmInit');
@@ -374,21 +359,16 @@ function fajaxaSend(event) {
 	if(id) { action += '/'+id; } 
 	if($(this).hasClass('hash')) { document.location.hash = action;	return;	}
 	fajaxaAction(action);
+	return false;
 };
 function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	actionList = action.split('/');
 	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],result = false, resultProperty = false;
 	if(k==0) k=null;
-	
 	if($(".showProgress").length>0) {
-		$(".showProgress").addClass('lbLoading');
-		$(".showProgress").css('height',$(".showProgress img").height()+'px');
-		$(".showProgress").css("marginLeft","auto");
-		$(".showProgress").css("marginRight","auto");
-		$(".showProgress img").hide();
-		$(".showProgress img").bind('load',onImgLoaded)
+		$(".showProgress").addClass('lbLoading').css('height',$(".showProgress img").height()+'px').css("marginLeft","auto").css("marginRight","auto");
+		$(".showProgress img").hide().bind('load',onImgLoaded);
 	}
-	
 	if(d) { 
 		var arr = d.split(';');
 		while (arr.length > 0) {
@@ -406,10 +386,8 @@ function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	sendAjax(m,k);
 };
 function onImgLoaded() {
-	setTimeout(function(){$(".showProgress").css('height','auto');},500);
-	$(".showProgress img").show('fast');
-	$(".showProgress img").unbind('load',onImgLoaded)
-	$(".showProgress").removeClass('lbLoading');
+	$(".showProgress img").show('fast').unbind('load',onImgLoaded);
+	$(".showProgress").removeClass('lbLoading').delay(500).css('height','auto');
 };
 //---AJAX LINK END
 
@@ -464,9 +442,7 @@ function markItUpSwitchInit() {
 //signed in users initialization
 function userInit() {
 	fajaxformInit();
-	initJourneySelector();
-	initPositionSelector();
-  // ---ajax textarea / tools
+	// ---ajax textarea / tools
 	markItUpSwitchInit();
 	draftInit();
 	// ---message page
@@ -483,31 +459,27 @@ function userInit() {
 	fotoTotal = $("#fotoTotal").text(); if(fotoTotal > 0 && $('#fotoList').length>0) galeryLoadThumb();
 }
 //all users initialization 
-$(document).ready( function() {
+$(function (){
 	var w = $(window).width();
 	if(w>800) $("#loginInput").focus();
 	if ($("#sidebar").length == 0) { $('body').addClass('bodySidebarOff'); }
-	$("textarea[class*=expand]").autogrow();
-	$("textarea[class*=expand]").keydown();
-	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); });
-	$(".opacity").bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+	$("textarea[class*=expand]").autogrow().keydown()
+	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); }).bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
 	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 	fajaxaInit();
 	fconfirmInit();
-	$("#errormsgJS").css('display','block');
-	$("#errormsgJS").hide();
+	$("#errormsgJS").css('display','block').hide();
 	switchOpen();
 	setListeners('popupLink', 'click', function(evt) { openPopup(this.href); evt.preventDefault(); });
 	$(window).resize(onResize);
 	onResize();
 	initMapData(); 
 	initMap();
-	if($(".hash").length>0) {
-		hashchangeInit();
-	}
+	initMapSelector();
+	if($(".hash").length>0) {hashchangeInit();}
 	slimboxInit();
 });
-//LOAD UI
+//LOAD UI scripts
 function loadUI(callback){
 	if(!getScript('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js',callback)) return;
 	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js',callback)) return;
@@ -515,6 +487,22 @@ function loadUI(callback){
 	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js', callback)) return;
 	return true;
 }
+//INIT jQuery UI and everything possibly needed for ajax forms and items
+function jUIInit() {
+	if(!loadUI(jUIInit)) return;
+	tabsInit();
+	datePickerInit();
+	markItUpSwitchInit();
+	fajaxaInit();
+	fconfirmInit();
+	fajaxformInit();
+	draftInit();
+	initMapSelector();
+	fuupInit();
+	slimboxInit();
+}
+//init google map picker
+function initMapSelector() { setListeners('journeySelector','click',journeySelectorCreate); setListeners('positionSelector','click',mapSelectorCreate); }
 //datepicker init
 function datePickerInit() { if(!loadUI(datePickerInit)) return; $.datepicker.setDefaults($.extend( { showMonthAfterYear : false }, $.datepicker.regional[''])); $(".datepicker").datepicker($.datepicker.regional['cs']); };
 //slimbox init
@@ -536,9 +524,9 @@ function enable(id) { $('#'+id).removeAttr('disabled'); };
 function remove(id,notween) { if(notween==1) { $('#'+id).remove(); }else{ $('#'+id).hide('slow',function(){$('#'+id).remove()}); } };
 function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'+this.rel).toggleClass('hidden'); } ); };
 function openPopup(href) { window.open(href, 'fpopup', 'scrollbars=' + gup("scrollbars", href) + ',toolbar=' + gup("toolbar", href) + ',menubar=' + gup("menubar", href) + ',status=' + gup("status", href) + ',resizable=' + gup("resizable", href) + ',width=' + gup("width", href) + ',height=' + gup("height", href) + ''); };
-function setListeners(className, eventName, functionDefinition) { $("." + className).unbind(eventName, functionDefinition); $("." + className).bind(eventName, functionDefinition); };
+function setListeners(className, eventName, functionDefinition) { $("." + className).unbind(eventName, functionDefinition).bind(eventName, functionDefinition); };
 function gup(name, url) { name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]"); var regex = new RegExp("[\\?&|]" + name + "=([^&#|]*)"), results = regex.exec(url); return (results === null) ? (0) : (results[1]); };
-function msg(type, text) { $("#"+type+"msgJS").html( text ); $("#"+type+"msgJS").show('slow'); setTimeout(function(){ $("#"+type+"msgJS").hide('slow'); },5000) };
+function msg(type, text) { $("#"+type+"msgJS").html( text ).show('slow').delay(5000).hide('slow'); };
 function redirect(dir) { window.location.replace(dir); };
 //SCRIPT LOADER
 var scriptsLoaded = [], scriptsTried={};
@@ -601,12 +589,8 @@ function galeryLoadThumb(item,type) {
 		addXMLRequest('result', 'fotoList');
 		addXMLRequest('resultProperty', '$append');
 	}
-	addXMLRequest('call', 'slimboxInit');
-	addXMLRequest('call', 'fajaxformInit');
-	addXMLRequest('call', 'datePickerInit');
+	addXMLRequest('call', 'jUIInit');
 	addXMLRequest('call', 'bindDeleteFoto');
-	addXMLRequest('call', 'initPositionSelector');
-	addXMLRequest('call', 'initJourneySelector');
 	fotoLoaded++;
 	if(fotoLoaded < fotoTotal) {
 		addXMLRequest('call', 'galeryCheck');
@@ -724,7 +708,7 @@ function draftSave() {
 //check ta length
 function TAlength(TAid) { return $.trim($('#'+TAid).attr('value')).length; };
 // set class - is saved - green - callback function from xajax
-function draftSaved(textareaId) { $("#" + textareaId).removeClass('draftNotSave'); $("#" + textareaId).addClass('draftSave'); };
+function draftSaved(textareaId) { $("#" + textareaId).removeClass('draftNotSave').addClass('draftSave'); };
 // register ib keyup
 function draftEventHandler() { 
 	var TAid = $(this).attr('id'); 
@@ -738,8 +722,7 @@ function draftEventHandler() {
 		TAindex = arrDraftLength;
 	}
   if (arrDraft[TAindex][1] != TAlength(TAid)) {
-		$("#" + TAid).removeClass('draftSave');
-		$("#" + TAid).addClass('draftNotSave');
+		$("#" + TAid).removeClass('draftSave').addClass('draftNotSave');
 	}
 	if(arrDraft[TAindex][2]) clearTimeout(arrDraft[TAindex][2]); 
 	arrDraft[TAindex][2]=setTimeout(draftSave,draftTimer); 
@@ -751,71 +734,38 @@ function draftEventHandler() {
  */  
 // ---send and process ajax request - if problems with %26 use encodeURIComponent
 function sendAjax(action,k) {
-	var data = getXMLRequest();
-	if(k==0) k=null;
-	if(!k) k = gup('k',document.location);
-	$.ajaxSetup({ 
-        scriptCharset: "utf-8" , 
-        contentType: "text/xml; charset=utf-8"
-	});
-	$.ajax( {
-		type : "POST",
+	var data = getXMLRequest(); if(k==0) k=null; if(!k) k = gup('k',document.location);
+	$.ajaxSetup({scriptCharset: "utf-8", contentType: "text/xml; charset=utf-8"});
+	$.ajax( {type : "POST",
 		url : "index.php?m=" + action + "-x"+((k)?("&k="+k):('')),
-		dataType : 'xml',
-		processData : false,
-		cache : false,
-		data : data,
+		dataType : 'xml', processData : false, cache : false, data : data,
 		error: function(ajaxRequest, textStatus, error) { },
 		success: function(data, textStatus, ajaxRequest) {  },
 		complete : function(ajaxRequest, textStatus) {
 			$(ajaxRequest.responseXML).find("Item").each(
 					function() {
-						var item = $(this);
-						var command = '';
-						switch (item.attr('target')) {
-						case 'document':
-						command =  item.attr('target') + '.' + item.attr('property') + ' = "'+item.text()+'"';
-						break;
+						var item = $(this),command = '',target=item.attr('target'),property = item.attr('property');
+						switch (target) {
+						case 'document': command =  target + '.' + property + ' = "'+item.text()+'"'; break;
+						case 'function': command = property + "('" + item.text().str.replace(',', "','") + "');"; break
 						default:
-							var part0, callback = null;
-							var arr = item.text().split(';');
-							part0 = arr[0];
-							if(arr[1]) callback = arr[1];
-						switch (item.attr('property')) {
-							case 'css':
-								$.getCSS(part0, callback);
-                break;
-							case 'getScript':
-								getScript(part0,callback);
-								break;
-							case 'callback':
-								command = part0 + "( data.responseText );";
-								break;
-							case 'call':
-								var par = '';if (arr.length > 1) {arr.splice(0,1);par = arr.join("','");}
-								command = part0 + "('" + par + "');";
-								break;
-							case 'void':
-									//just debug message
-								break;
-							case 'body':
-								$("body").append( part0 );
-								break;
-							default:
-								var property = item.attr('property');
-								if(property[0]=='$') {
-									property = property.replace('$','');
-									command = '$("#' + item.attr('target') + '").' + property + '( item.text() );'
-								} else { 
-									command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
-								}
-						};
+							var part0, callback = null, arr = item.text().split(';');
+							part0 = arr[0]; if(arr[1]) callback = arr[1];
+							switch (property) {
+								case 'void': console.log(item.text()); break;//just debug message
+								case 'css': $.getCSS(part0, callback); break;
+								case 'getScript': getScript(part0,callback); break;
+								case 'body': $("body").append( part0 ); break;
+								default:
+									if(property[0]=='$') {
+										command = '$("#' + target + '").' + property.replace('$','') + '( item.text() );'
+									} else { 
+										command = '$("#' + target + '").attr("' + property + '", item.text());';
+									}
+							};
 						};
 						if(command.length>0) eval(command);
-						if(formSent) { 
-							$('.button',formSent).removeAttr('disabled'); formSent=null;
-							if(draftdrop===true) draftDropAll(); 
-						}
+						if(formSent) { $('.button',formSent).removeAttr('disabled'); formSent=null; if(draftdrop===true) draftDropAll(); }
 					});
 		}
 	});
@@ -828,9 +778,7 @@ function getXMLRequest() { var str = '<FXajax><Request>' + xmlArray.join('') + '
 //--- CUSTOM AJAX REQUEST BUILDER/HANDLER END
 
 /* jQuery.getCSS plugin http://github.com/furf/jquery-getCSS Copyright 2010, Dave Furfero Dual licensed under the MIT or GPL Version 2 licenses. 
-$.getCSS('http://sexyjs.com/css/sexy.css', function () {
-  $('#description').show();
-});
+$.getCSS('http://sexyjs.com/css/sexy.css', function () { $('#description').show(); });
 */
 (function(e){var c=document.getElementsByTagName("head")[0],a=/loaded|complete/,d={},b=0,f;e.getCSS=function(h,g,j){if(e.isFunction(g)){j=g;g={};}var i=document.createElement("link");i.rel="stylesheet";i.type="text/css";i.media=g.media||"screen";i.href=h;if(g.charset){i.charset=g.charset;}if(g.title){j=(function(k){return function(){i.title=g.title;k();};})(j);}if(i.readyState){i.onreadystatechange=function(){if(a.test(i.readyState)){i.onreadystatechange=null;j();}};}else{if(i.onload===null&&i.all){i.onload=function(){i.onload=null;j();};}else{d[i.href]=function(){j();};if(!b++){f=setInterval(function(){var p,m,o=document.styleSheets,k,l=o.length;while(l--){m=o[l];if((k=m.href)&&(p=d[k])){try{p.r=m.cssRules;throw"SECURITY";}catch(n){if(/SECURITY/.test(n)){p();delete d[k];if(!--b){f=clearInterval(f);}}}}}},13);}}}c.appendChild(i);};})(jQuery);
 /* formToArray */ 
