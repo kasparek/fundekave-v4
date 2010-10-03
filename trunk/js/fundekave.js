@@ -487,7 +487,7 @@ $(function (){
 function loadUI(callback){
 	if(!getScript('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js',callback)) return;
 	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js',callback)) return;
-	if(!getCSS('css/themes/ui-lightness/jquery-ui.custom.css',callback)) return;
+	if(!getCSS('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css',callback)) return;
 	return true;
 }
 //INIT jQuery UI and everything possibly needed for ajax forms and items
