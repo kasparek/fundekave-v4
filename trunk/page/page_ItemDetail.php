@@ -14,12 +14,12 @@ class page_ItemDetail implements iPage {
 			if($itemVO->userId != $user->userVO->userId) {
 				$itemVO->hit();
 			}
-			if($user->idkontrol) {
-				FItems::aFav($user->pageVO->pageId,$user->userVO->userId);  //TODO: per item or put it in PageItemList???
-			}
+		}
+		if($itemVO->public!=1) {
+			if(!FRules::getCurrent(2)) return;
 		}
 		//generic links
-		$backUri = FSystem::getUri('', $itemVO->pageId);
+		$backUri = FSystem::getUri('', $itemVO->pageId,'');
 		if(($itemNext = $itemVO->getNext(true))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$pageId);
 		if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$pageId);
 		
@@ -30,8 +30,9 @@ class page_ItemDetail implements iPage {
 		 **/
 		if($itemVO->typeId=='blog' || $itemVO->typeId=='event') {
 			$itemVO->options['showDetail'] = true;
-			$user->pageVO->htmlTitle = $user->pageVO->name;
-			$user->pageVO->htmlName = $itemVO->addon;
+			$user->pageVO->htmlTitle = $itemVO->addon.' - '.$user->pageVO->name;
+			//$user->pageVO->htmlName = $itemVO->addon;
+			$user->pageVO->showHeading=false;
 			$itemRender = $itemVO->render();
 			if(!empty($data['__ajaxResponse'])) {
 			  FAjax::addResponse('itemDetail','$html',$itemRender);
@@ -76,7 +77,7 @@ class page_ItemDetail implements iPage {
 		//---GALERY END
 				
 		if(!empty($output)) {
-			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK_ALBUM,0,'backButt');
+			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,'backButt');
 			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash','opposite');
 			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash','opposite');
 			return $output;

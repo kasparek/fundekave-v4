@@ -14,7 +14,7 @@
 			<Item name="chunkSize">32768</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">80</Item>
-			<Item name="imageQuality">90</Item>
+			<Item name="imageQuality">80</Item>
 			<Item name="imageWidthMax">1600</Item>
 			<Item name="imageHeightMax">1600</Item>
 			<Item name="embedWidth">-1</Item>

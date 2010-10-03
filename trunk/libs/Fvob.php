@@ -1,6 +1,8 @@
 <?php
 class Fvob {
 
+	var $debug=0;
+	
 	var $table;
 	var $primaryCol;
 

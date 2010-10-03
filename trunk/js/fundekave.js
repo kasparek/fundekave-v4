@@ -189,9 +189,10 @@ function mapSelectorCreate() {
 
 function mapEditor(data) {
 	var setListener = false; // style="margin:0 3px 3px 3px;padding:0;"  style="margin:0 0 3px 0;width:100%;"
-	var mapSearchHTML = '<div id="mapSearch" style="float:left;"><input id="mapaddress" value="" style="width:300px;margin-right:5px;margin-top:6px;"/><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="findAddress()">Find</button></div>';
+	var mapSearchHTML = '<div id="mapSearch" style="float:left;"><input id="mapaddress" value="" style="width:300px;margin-right:5px;margin-top:6px;"/><button id="mapSearchButt">Find</button></div>';
+	
 	if (!mapHoldersList) {
-		$("body").append('<div id="mapEditor" style="width:100%;"></div>');
+		$("body").append('<div id="mapEditor" style="width:100%;height:100%;">map editor</div>');
 		var holder = new mapHolder(document.getElementById('mapEditor'));
 		holder.mapDataList = [data];
 		mapHoldersList = [holder];
@@ -205,6 +206,21 @@ function mapEditor(data) {
 			width: $(window).width()*0.8, 
 			height: $(window).height()*0.8,
 			buttons: {
+				'Remove Last': function() {
+					data = mapHoldersList[0].mapDataList[0];
+					data.path.getPath().pop();
+					var path = data.path.getPath();
+					data.updateMarker( path.getAt(path.getLength()-1) );
+				},
+				Clear: function() {
+					  mapHoldersList[0].mapDataList[0].marker.setMap(null);
+					  mapHoldersList[0].mapDataList[0].marker = null;
+					  mapHoldersList[0].mapDataList[0].path.setMap(null);
+					  mapHoldersList[0].mapDataList[0].path = null;
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				},
 				Save: function() {
 					$(this).dialog('close');
 					data = mapHoldersList[0].mapDataList[0];
@@ -216,25 +232,11 @@ function mapEditor(data) {
 					} else {
 						$(data.dataEl).val( data.marker.getPosition().toUrlValue(4) );
 					}
-				},
-				Cancel: function() {
-					$(this).dialog('close');
-				},
-				Clear: function() {
-					  mapHoldersList[0].mapDataList[0].marker.setMap(null);
-					  mapHoldersList[0].mapDataList[0].marker = null;
-					  mapHoldersList[0].mapDataList[0].path.setMap(null);
-					  mapHoldersList[0].mapDataList[0].path = null;
-				},
-				'Remove Last': function() {
-					data = mapHoldersList[0].mapDataList[0];
-					data.path.getPath().pop();
-					var path = data.path.getPath();
-					data.updateMarker( path.getAt(path.getLength()-1) );
 				}
 			}
 		});
 	$(".ui-dialog-buttonpane").prepend(mapSearchHTML);
+	$("#mapSearchButt").button().click(findAddress);
 	$("#mapaddress").keydown(addressCheckForEnter);
 	if(setListener) {	
 	google.maps.event.addListener(holder.map, 'click', function(event) {
@@ -249,6 +251,8 @@ function mapEditor(data) {
 		}
 	});
 	}
+	data.updateDistance();
+	if(data.distance>0) $("#mapEditor").dialog( "option", "title", data.distance+'NM' );
 }
 function addressCheckForEnter(event) {if (event.keyCode == 13) {findAddress();} }
 function findAddress() {
@@ -328,7 +332,7 @@ function onFajaxformButton(event) {
 	$('.okmsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
 	
 	formSent = event.currentTarget.form;
-	$('.button',formSent).attr('disabled','disabled');
+	$('.button',formSent).attr('disabled',true);
 	var arr = $(formSent).formToArray(false), action, result = false, resultProperty = false;
 	while (arr.length > 0) {
 		var obj = arr.shift();
@@ -481,10 +485,9 @@ $(function (){
 });
 //LOAD UI scripts
 function loadUI(callback){
-	if(!getScript('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js',callback)) return;
+	if(!getScript('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js',callback)) return;
 	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js',callback)) return;
-	if(!getCSS('css/themes/ui-lightness/jquery-ui-1.7.2.custom.css',callback)) return;
-	if(!getScript(JS_URL+'i18n/ui.datepicker-cs.js', callback)) return;
+	if(!getCSS('css/themes/ui-lightness/jquery-ui.custom.css',callback)) return;
 	return true;
 }
 //INIT jQuery UI and everything possibly needed for ajax forms and items
@@ -500,6 +503,7 @@ function jUIInit() {
 	initMapSelector();
 	fuupInit();
 	slimboxInit();
+	$("textarea[class*=expand]").autogrow().keydown()
 }
 //init google map picker
 function initMapSelector() { setListeners('journeySelector','click',journeySelectorCreate); setListeners('positionSelector','click',mapSelectorCreate); }
@@ -684,8 +688,6 @@ function draftInit(TAid) {
 function draftCheck(TAid) {
 	$(TAid).attr('disabled','disabled');
  	addXMLRequest('result', TAid);
-	addXMLRequest('resultProperty', '$html');
-	addXMLRequest('call','enable;'+TAid);
 	sendAjax('draft-check');
 }; 
 //ajax save function is called
@@ -742,28 +744,32 @@ function sendAjax(action,k) {
 		complete : function(ajaxRequest, textStatus) {
 			$(ajaxRequest.responseXML).find("Item").each(
 					function() {
-						var item = $(this),command = '',target=item.attr('target'),property = item.attr('property');
+						var item = $(this),command = '',target=item.attr('target'),property = item.attr('property'),text=item.text();
 						switch (target) {
-						case 'document': command =  target + '.' + property + ' = "'+item.text()+'"'; break;
-						case 'function': command = property + "('" + item.text().str.replace(',', "','") + "');"; break
+						case 'document': command =  target + '.' + property + ' = "'+text+'"'; break;
+						case 'call': command = property + "("+(text.length>0 ? "'" + text.replace(',', "','") + "'" : "")+");"; break
 						default:
-							var part0, callback = null, arr = item.text().split(';');
+							var part0, callback = null, arr = text.split(';');
 							part0 = arr[0]; if(arr[1]) callback = arr[1];
 							switch (property) {
-								case 'void': console.log(item.text()); break;//just debug message
+								case 'void': break;//just debug message
 								case 'css': $.getCSS(part0, callback); break;
 								case 'getScript': getScript(part0,callback); break;
 								case 'body': $("body").append( part0 ); break;
 								default:
 									if(property[0]=='$') {
-										command = '$("#' + target + '").' + property.replace('$','') + '( item.text() );'
+										command = '$("#' + target + '").' + property.replace('$','') + '( text );'
 									} else { 
-										command = '$("#' + target + '").attr("' + property + '", item.text());';
+										command = '$("#' + target + '").attr("' + property + '", text);';
 									}
 							};
 						};
 						if(command.length>0) eval(command);
-						if(formSent) { $('.button',formSent).removeAttr('disabled'); formSent=null; if(draftdrop===true) draftDropAll(); }
+						if(formSent) { 
+							$('.button',formSent).removeAttr('disabled'); 
+							formSent=null; 
+							if(draftdrop===true) draftDropAll(); 
+						}
 					});
 		}
 	});

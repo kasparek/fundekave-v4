@@ -1,7 +1,7 @@
 <form action="{FORMACTION}" method="post" name="itemForm" id="itemForm" class="fajaxform<!-- BEGIN classnotpublic --> notpublished<!-- END classnotpublic -->">
 <input type="hidden" name="m" value="{M}"/>
 <input type="hidden" name="t" value="{T}"/>
-<!-- BEGIN edit --><input name="itemId" value="{ITEMID}" type="hidden"><!-- END edit -->
+<!-- BEGIN edit --><input name="item" value="{ITEMID}" type="hidden"><!-- END edit -->
 <div id="tabs">
 <ul>
 <li><a href="#tabs-1">Nastaveni</a></li>
@@ -23,8 +23,8 @@
 <label for="categoryId">Druh</label><select id="categoryId" name="category"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
 <label for="formHeader">Nadpis</label><input id="formHeader" name="addon" value="{TITLE}" type="text"><br />  
 <label for="formDate">Datum</label><input id="formDate" name="dateStartLocal" value="{DATESTART}" type="text" class="short datepicker"><br />
-<label for="formText">Uvod</label><textarea name="text" id="{CONTENTID}" class="markitup draftable expand">{CONTENT}</textarea><br />
-<label for="formText">Text</label><textarea name="textLong" id="{CONTENTLONGID}" class="markitup draftable expand">{CONTENTLONG}</textarea><br />
+<label for="formText">Uvod</label><textarea name="text" id="{TEXTID}" class="markitup draftable expand">{TEXT}</textarea><br />
+<label for="formText">Text</label><textarea name="textLong" id="{TEXTLONGID}" class="markitup draftable expand">{TEXTLONG}</textarea><br />
 </fieldset>
 </div>
 <div id="tabs-2">

@@ -1,7 +1,7 @@
 <form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
 <input type="hidden" name="m" value="{M}"/>
 <input type="hidden" name="t" value="{T}"/>
-<!-- BEGIN edit --><input name="itemId" value="{ITEMID}" type="hidden"><!-- END edit -->
+<!-- BEGIN edit --><input name="item" value="{ITEMID}" type="hidden"><!-- END edit -->
 <div id="tabs">
 <ul>
 <li><a href="#tabs-1">Nastaveni</a></li>
@@ -29,7 +29,7 @@
 <input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
 <!-- END image -->
 </div>
-<label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup draftable">{DESCRIPTION}</textarea><br />
+<label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup draftable">{TEXT}</textarea><br />
 </fieldset>
 </div>
 <div id="tabs-2">

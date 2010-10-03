@@ -53,12 +53,11 @@ class FBuildPage {
 				if(!empty($arr)) {
 					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
 				}
-
 				if($user->pageVO->categoryId > 0) {
 					$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
-					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
+					if(!empty($categoryArr))
+						$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
 				}
-
 			}
 
 			//stranka
@@ -218,11 +217,6 @@ class FBuildPage {
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 
-			if(!empty($user->pageParam) || $user->itemVO) {
-				if($user->itemVO) $typeId = $user->itemVO->typeId; else $typeId = '';
-				if($typeId!='galery' && $typeId!='forum' && $user->pageParam!='a') FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,''),FLang::$BUTTON_PAGE_BACK);
-			}
-
 			if($user->pageVO->typeId == 'forum' && $user->pageParam!='h') {
 				$homePage = $user->pageVO->prop('home');
 				if(!empty($homePage)) {
@@ -368,13 +362,9 @@ class FBuildPage {
 
 
 		//---FOOTER INFO
-		$cache = FCache::getInstance('l');
-		$cachedArr = $cache->getData('profile','FSystem');
-		$start = $cachedArr[0]['time'];
-
-		//$pagesSum = FDBTool::getOne("select sum(hit) from sys_users", 'tCounter', 'default', 's', 0); $pagesSum.'::'.
-		$tpl->setVariable("COUNTER", round((FProfiler::getmicrotime()-$start),3));
-		FProfiler::write('FBuildPage--footer');
+		//TODO:start currently not defined
+		//$tpl->setVariable("FOOTER", round((FError::getmicrotime()-$start),3));
+		
 
 		//--- last check
 		//--- js and css included just when needed

@@ -124,6 +124,7 @@ div.mainpanel-content div.hentry {clear: left;margin-top: 2.3em;padding-top: 0;p
 div.mainpanel-content div.entry-content div.hentry {margin: 0 0 0 2em;}
 div.mainpanel-content div.hentry span.postsNew {display: inline;float: none;text-align: left;margin: 0;}
 div.mainpanel-content div.hentry div.avatar {float: left;margin: 0 0.5em 1em 0;}
+div.mainpanel-content div.blog div.avatar {float: right;margin: 0 0 1em 0;}
 
 div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padding: 0 1em;margin-top: 0;}
 div.mainpanel-content div.opacity div.vevent {margin-bottom: 0;}
@@ -136,6 +137,7 @@ div.mainpanel-content div.hentry div.completelink a:hover {background: #ddd;}
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
 div.mainpanel-content div.vevent div.header {height: auto;float: right;}
 div.mainpanel-content div.hentry h2.entry-title {padding: 0;margin: 0;}
+div.mainpanel-content div.blog h2.entry-title {margin-top: -1.5em;}
 div.mainpanel-content div.hentry h2.entry-title a {color: black;text-decoration: underline;}
 div.mainpanel-content div.hentry h3 {margin: 0;padding: 0;color: black;background: none;}
 div.mainpanel-content div.hentry h3 a {color: black;}
@@ -147,6 +149,8 @@ div.mainpanel-content div.hentry span.author {float: left;background-color: #ddd
 div.mainpanel-content div.unread span.author {border-left: 0.4em solid red;padding-left: 0.4em;}
 div.mainpanel-content div.hentry span.author a.currentLocation {font-weight: normal;text-decoration: underline;}
 div.mainpanel-content div.hentry span.author a {text-decoration: none;}
+
+div.mainpanel-content div.blog span.author { float:right; margin-left:1em;}
 
 div.mainpanel-content div.hentry span.delete {float: right;background-color: #ddd;height: 1.9em;padding: 0 0.5em;}
 div.mainpanel-content div.hentry span.delete img {margin-top: 2px;}

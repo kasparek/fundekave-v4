@@ -82,15 +82,12 @@ if(!empty($_REQUEST["i"])) {
 
 if ($itemId > 0) {
 	$itemVO = new ItemVO($itemId);
-	$itemVO->checkItem();
-	if($itemVO->itemId > 0) {
+	if($itemVO->load()) {
 		if(empty($pageId)) {
 			$pageId = $itemVO->pageId;
 		}
-		//load item
-		$itemVO->load();
 		if($itemVO->itemIdTop > 0) {
-			$itemVO = new ItemVO( $itemVO->itemIdTop );
+			$itemVO = new ItemVO( $itemVO->itemIdTop,true );
 		}
 	} else {
 		$itemVO = null;
@@ -105,5 +102,6 @@ if( $itemVO ) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 $user->kde(); //---check user / load info / load page content / chechk page exist
+if( $itemVO ) $user->itemVO->prepare();
 $pageVO = $user->pageVO; 
 FProfiler::write('USER/PAGE CHECK DONE');

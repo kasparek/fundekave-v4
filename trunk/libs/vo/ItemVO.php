@@ -29,24 +29,23 @@ class ItemVO extends Fvob {
 	'location' => 'location',
 	'public' => 'public'
 	);
-	
+
 	var $propertiesList = array('position','forumSet');
 	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>2);
 
 	//TODO: if set by set() override to convert data/time local
 	public function __get($name) {
 		if(!$name) return;
-		
-		if(isset($this->{$name})) {
-			return $this->{$name};
-		}
+
+		if(isset($this->{$name})) return $this->{$name};
+		if(isset($this->{'_'.$name})) return $this->{'_'.$name};
 
 		$type = $this->typeId;
 
 		switch($name) {
 			case 'pageVO':
 				if(empty($this->pageId)) return null;
-				if(!$this->_pageVO) $this->_pageVO = new PageVO($this->pageId,true); 
+				if(!$this->_pageVO) $this->_pageVO = new PageVO($this->pageId,true);
 				return $this->_pageVO;
 				break;
 			case 'dateStartIso':
@@ -54,19 +53,23 @@ class ItemVO extends Fvob {
 			case 'dateCreatedIso':
 				$format = DATE_ATOM;
 				$key = str_replace('Iso','',$name);
+				$name = '_'.$name;
 				break;
 			case 'dateStartLocal':
 				$format = 'date';
 				$key = str_replace('Local','',$name);
+				$name = '_'.$name;
 				break;
 			case 'dateStartTime':
 			case 'dateEndTime':
 				$key = str_replace('Time','',$name);
 				$format = 'timeshort';
+				$name = '_'.$name;
 				break;
 			case 'dateEndLocal':
 				$format = 'date';
 				$key = str_replace('Local','',$name);
+				$name = '_'.$name;
 				break;
 			case 'dateCreatedLocal':
 				if($type=='forum') {
@@ -75,6 +78,7 @@ class ItemVO extends Fvob {
 					$format = 'date';
 				}
 				$key = str_replace('Local','',$name);
+				$name = '_'.$name;
 				break;
 			case 'unreaded':
 				//number of unreaded reactions
@@ -88,7 +92,7 @@ class ItemVO extends Fvob {
 				$this->unreaded = $this->cnt - $numReaded;
 				//$this->unreaded = (int) FDBTool::getOne('select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$this->itemId.'"');
 				if($this->unreaded < 0) $this->unreaded=0;
-			  return $this->unreaded;
+				$name = 'unreaded';
 				break;
 			case 'isUnreaded':
 				$this->isUnreaded = false;
@@ -99,13 +103,18 @@ class ItemVO extends Fvob {
 					$this->isUnreaded = true;
 					if( $unset ) array_splice($unreadedList,array_search($itemId, $unreadedList),1);
 				}
-				return $this->isUnreaded;
+				$name = 'isUnreaded';
 				break;
 		}
-		
-		
+
+
 		if(!empty($format)) {
-			$this->$name = $this->date($this->$key,$format);
+			$this->{$name} = $this->date($this->$key,$format);
+			
+		}
+
+		if(!empty($name)) {
+			$this->memStore();
 			return $this->{$name};
 		}
 		
@@ -140,13 +149,13 @@ class ItemVO extends Fvob {
 	var $location;
 	var $public;
 
-	private $dateStartIso;
-	private $dateStartLocal;
-	private $dateStartTime;
+	private $_dateStartIso;
+	private $_dateStartLocal;
+	private $_dateStartTime;
 
-	private $dateEndIso;
-	private $dateEndLocal;
-	private $dateEndTime;
+	private $_dateEndIso;
+	private $_dateEndLocal;
+	private $_dateEndTime;
 
 	private $dateCreatedIso;
 	private $dateCreatedLocal;
@@ -157,10 +166,10 @@ class ItemVO extends Fvob {
 	var $thumbInSysRes = false;
 	var $thumbUrl;
 	var $detailUrl;
-	
+
 	//---changed
 	var $htmlName;
-	
+
 	//private
 	var $itemList;
 
@@ -171,18 +180,6 @@ class ItemVO extends Fvob {
 		$this->itemId = $itemId;
 		if($autoLoad == true) {
 			$this->load();
-		}
-	}
-
-	function checkItem() {
-		if($this->itemId > 0) {
-			$itemArr = FDBTool::getRow("select typeId,pageId from sys_pages_items where itemId='".$this->itemId."'");
-			if(!empty($itemArr)) {
-				$this->typeId = $itemArr[0];
-				$this->pageId = $itemArr[1];
-			} else {
-				$this->itemId = 0;
-			}
 		}
 	}
 
@@ -203,6 +200,7 @@ class ItemVO extends Fvob {
 
 	function reload($itemVO) {
 		foreach ($itemVO as $key => $val) {
+			if($this->debug) echo $key.'='.$val."<br>\n";
 			$this->{$key} = $val;
 		}
 	}
@@ -217,7 +215,7 @@ class ItemVO extends Fvob {
 		//---save in cache
 		$this->memStore();
 	}
-	
+
 	function save() {
 		$vo = new FDBvo( $this );
 		$vo->resetIgnore();
@@ -245,16 +243,16 @@ class ItemVO extends Fvob {
 			} else {
 				FPages::cntSet( $this->pageId, 1 );
 			}
-			
+				
 			$this->itemList = null;
 			$cache = FCache::getInstance('f');
 			$cache->invalidateData($this->pageId, 'fitGrp');
-			
+				
 			$creating = true;
 		}
 
 		$itemId = $vo->save();
-		
+
 		//---update in cache
 		$this->memFlush();
 			
@@ -313,9 +311,9 @@ class ItemVO extends Fvob {
 		//$cache = FCache::getInstance('f');
 		//$cache->invalidateGroup('calendarlefthand');
 		page_PagesList::invalidate();
-		
+
 		$this->memFlush();
-		
+
 	}
 
 	function prepare() {
@@ -345,7 +343,7 @@ class ItemVO extends Fvob {
 			$fibs = array_flip($diff);
 			$this->detailUrl = $this->getImageUrl(null,$fibs[min($diff)].'/prop');
 		}
-		
+
 		//check if is editable
 		if(($userId = FUser::logon()) > 0) {
 			if($userId == $this->userId) {
@@ -362,7 +360,7 @@ class ItemVO extends Fvob {
 	 *
 	 */
 	function render($itemRenderer=null,$show=true) {
-		 
+			
 		if(!$itemRenderer) {
 			$itemRenderer = new FItemsRenderer();
 			if(!empty($this->options)) {
@@ -371,7 +369,7 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
-		
+
 		$itemRenderer->render( $this );
 		if($show) return $itemRenderer->show();
 	}
@@ -383,7 +381,7 @@ class ItemVO extends Fvob {
 	 */
 	function hit() {
 		if(!empty($this->itemId)){
-		  //due to locking update hit sometimes from _hit table
+			//due to locking update hit sometimes from _hit table
 			//FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
 
 			//---write
@@ -393,13 +391,14 @@ class ItemVO extends Fvob {
 		}
 	}
 
-	
+
 	function getPageItemsId() {
 		if(!empty($this->itemList)) return $this->itemList;
 		$cache = FCache::getInstance('f');
 		if(($arr = $cache->getData($this->pageId, 'fitGrp')) === false) {
 			$pageVO = new PageVO($this->pageId,true);
-			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder();
+			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) 
+			and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder().",itemId desc";
 			$arr = FDBTool::getCol($q);
 			$cache->setData($arr,$this->pageId, 'fitGrp');
 			$this->itemList = $arr;
@@ -460,7 +459,7 @@ class ItemVO extends Fvob {
 	}
 
 	function getSideItemId($side=-1, $consecutively = false) {
-		$keys = $this->getPageItemsId();; //--- when key is value
+		$keys = $this->getPageItemsId(); //--- when key is value
 		$keyIndexes = array_flip($keys);
 		if(!isset($keyIndexes[$this->itemId])) return false;
 		$return = array();
@@ -481,7 +480,7 @@ class ItemVO extends Fvob {
 		}
 	}
 
-	
+
 	/**
 	 * get url of target
 	 *
@@ -493,7 +492,7 @@ class ItemVO extends Fvob {
 		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];
 		return $root . $thumbCut .'/'. $this->pageVO->galeryDir .'/'. $this->enclosure;
 	}
-	
+
 	/**
 	 * delete all cached images
 	 *
@@ -506,7 +505,7 @@ class ItemVO extends Fvob {
 			file_get_contents( $url );
 		}
 	}
-	
+
 	/**
 	 * delete image - enclosure
 	 */
@@ -514,16 +513,16 @@ class ItemVO extends Fvob {
 		if(empty($this->enclosure)) return;
 		$this->flush();
 		$confGalery = FConf::get('galery');
-		$file = new FFile();	
-		if($file->is_file($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) { 
+		$file = new FFile();
+		if($file->is_file($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) {
 			$file->unlink($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
 		}
 		$this->set('enclosure',null);
 	}
-	
+
 	/**
 	 * update readed reactions
-	 * */	 	
+	 * */
 	function updateReaded($userId) {
 		if(empty($userId)) return;
 		if($this->cnt==0) return;

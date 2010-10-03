@@ -35,12 +35,12 @@ class FProfiler {
 		}
 		//write log entry
 		$fh = fopen(self::$logList[$handle], "a");
-		fwrite($fh,'date='.date(DATE_ATOM)
+		fwrite($fh,date(DATE_ATOM)
 		.';runtime='.( round($now-self::$starttimeList[$handle],4) )
 		.';timelast='.( round($now-self::$lasttimeList[$handle],4) )
-		.';memory='.round(memory_get_usage()/1024)
-		.';peak='.round(memory_get_peak_usage()/1024)
-		."\n".$errText."\n\n");
+		.';mem='.round(memory_get_usage()/1024)
+		.'/'.round(memory_get_peak_usage()/1024)
+		."\n".$comment."\n\n");
 		fclose($fh);
 		self::$lasttimeList[$handle] = $now;
 	}

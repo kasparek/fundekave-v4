@@ -138,7 +138,7 @@ class FAjax {
 		if($fajax->data['__ajaxResponse']===true) {
 			$fajax->errorsLater = true;
 			$fajax->redirecting = true;
-			$fajax->responseData[] = array('TARGET'=>'function','PROP'=>'call','DATA'=>'redirect;'.$url);
+			$fajax->responseData[] = array('TARGET'=>'call','PROP'=>'redirect','DATA'=>$url);
 		} else {
 			FHTTP::redirect($url);
 		}
@@ -175,7 +175,8 @@ class FAjax {
 			if($k=='call') {
 				if(!is_array($v)) $v = array($v);
 				foreach($v as $funcName) {
-					$rows[] = str_replace(array('{TARGET}','{PROP}','{DATA}'),array('function',$k,$funcName),$fajax->itemTemplate);
+					$fArr = explode(';',$funcName);
+					$rows[] = str_replace(array('{TARGET}','{PROP}','{DATA}'),array($k,$fArr[0],isset($fArr[1])?$fArr[1]:''),$fajax->itemTemplate);
 				}
 			}
 		}

@@ -54,7 +54,7 @@ class FAvatar {
 
 		$tpl->setVariable('USERNAME',$avatarUserName);
 		$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
-		$tpl->setVariable('AVATARLINK',$avatarUrl);
+		$tpl->setVariable('AVATARLINK',FSystem::getUri('who='.$userId,'finfo'));
 			
 		$ret = $tpl->get();
 		$cache->setData($ret, $cacheId, $cacheGrp);
