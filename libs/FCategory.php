@@ -265,7 +265,7 @@ class FCategory extends FDBTool {
 		return $tpl->get();
 	}
 
-	static function tryGet( $newCat, $typeId ) {
+	static function tryGet( $newCat, $typeId, &$newCategory ) {
 		$newCat = trim($newCat);
 		if(!empty($newCat)) {
 			//check first if it does not exist
@@ -284,15 +284,16 @@ class FCategory extends FDBTool {
 				return $catIdHighest;
 			} else {
 				
-				FMessages::send(1,'NEW CATEGORY CREATED ::' .$newCat. ' :: '.$typeId.' :: <a href="'.FSystem::getUri('who='.FUser::logon(),'finfo').'">user</a>');
-				
 				$catVO = new CategoryVO();
 				$catVO->name = $newCat;
 				$catVO->typeId = $typeId;
 				$homePageId = HOME_PAGE;
 				if(!empty($homePageId)) $catVO->pageIdTop = $homePageId;
-				$catVO->save();
-				return $catVO->categoryId;
+				if($catVO->save()) {
+					$newCategory = true;
+					FMessages::send(1,'NEW CATEGORY CREATED ::' .$newCat. ' :: '.$typeId.' :: <a href="'.FSystem::getUri('who='.FUser::logon(),'finfo').'">user</a>');
+					return $catVO->categoryId;
+				}
 			}
 		}
 	}

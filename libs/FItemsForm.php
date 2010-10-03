@@ -94,7 +94,9 @@ class FItemsForm {
 					$itemVO->delete();
 				}
 				$itemVO=null;
+				$user->itemVO=null;
 				FError::add(FLang::$LABEL_DELETED_OK,1);
+				$redirect = true;
 				break;
 			case 'save':
 			default:
@@ -113,8 +115,10 @@ class FItemsForm {
 					elseif($user->idkontrol==false) {
 						if (FUser::isUsernameRegistered($data['name'])) FError::add(FLang::$MESSAGE_NAME_USED);
 					}
-					if(!empty($data['categoryNew'])) $data['categoryId'] = FCategory::tryGet( $data['categoryNew'], $user->pageVO->typeId);
-					if(!empty($data['categoryId'])) $data['categoryId'] = (int) $data['categoryId'];
+					if(!empty($data['categoryNew'])) {
+						$data['category'] = FCategory::tryGet( $data['categoryNew'], $itemVO->pageId, $newCategory);
+					 	//if($newCategory===true) $redirect = true; 	
+					}
 					if(isset($data['dateStartLocal'])) $data['dateStart'] = FSystem::checkDate($data['dateStartLocal'].(isset($data['dateStartTime'])?' '.$data['dateStartTime']:''));
 					if(isset($data['dateEndLocal'])) $data['dateEnd'] = FSystem::checkDate($data['dateEndLocal'].(isset($data['dateEndTime'])?' '.$data['dateEndTime']:''));
 					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
@@ -126,11 +130,13 @@ class FItemsForm {
 				if(!FError::is()) {
 					$itemVO->userId = (int) $user->userVO->userId;
 					$itemVO->name = $data['name'];
+					if(!empty($data['addon'])) $itemVO->set('addon', $data['addon']);
 					if(!empty($data['text'])) $itemVO->set('text', $data['text']);
 					if(!empty($data['textLong'])) $itemVO->set('textLong', $data['textLong']);
+					if(!empty($data['location'])) $itemVO->set('location', $data['location']);
 					$itemVO->typeId = $user->pageVO->typeId;
 					$itemVO->itemIdTop = $data['itemIdTop']>0 ? (int) $data['itemIdTop'] : null;
-					if(!empty($data['categoryId'])) $itemVO->set('categoryId', $data['categoryId']);
+					if(!empty($data['category'])) $itemVO->set('categoryId', (int) $data['category']);
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
@@ -160,7 +166,10 @@ class FItemsForm {
 						if(isset($data['position'])) {
 							$posData = FSystem::positionProcess($data['position']);
 							$itemVO->setProperty('position', $posData);
-							if(strpos($posData,';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($posData));
+							if(strpos($posData,';')!==false) {
+								$distance = FSystem::journeyLength($posData);
+								$itemVO->setProperty('distance', $distance);
+							}
 						}
 						if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
 						if(isset($data['reminder'])) $itemVO->prop('reminder',$data['reminder']*1);
@@ -173,9 +182,10 @@ class FItemsForm {
 						$cache = FCache::getInstance('s',0);
 						$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
 						//---on success
-						$redirectParam = '#dd';
-						$redirect=true;
-
+						if($data['__ajaxResponse']!=true) {
+							$redirectParam = '#dd';
+							$redirect=true;
+						}
 					}
 				}
 		}
@@ -186,6 +196,10 @@ class FItemsForm {
 		}
 
 		//redirect
+		if($itemVO->typeId!='forum') {
+			$redirectParam = 'i='.$itemVO->itemId.$redirectParam;
+			FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
+		}
 		if($redirect==true) {
 			//TODO: test commands
 			//	$cache = FCache::getInstance('f');
@@ -200,20 +214,18 @@ class FItemsForm {
 			//$commandList[] = $command;
 			//}
 			//FCommand::run($commandList);
-			if($itemVO->typeId!='forum') $redirectParam = 'i='.$itemVO->itemId.$redirectParam;
-			else FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
+			
 			if($data['__ajaxResponse']==true) {
-				if($newItem===true) FAjax::redirect(FSystem::getUri('i='.$itemVO->itemId.$redirectParam,$pageId,'u'));
-				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->typeId,''));
+				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u')); //new item
+				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 			} else {
-				FHTTP::redirect(FSystem::getUri($redirectParam));
+				FHTTP::redirect(FSystem::getUri($redirectParam)); //non ajax processing
 			}
 		}
 	}
 
-	//TODO: pass filter in data / content
-	//TODO: pass perpage in data
-	static function show($itemVO,$data) {
+
+	static function show($itemVO,$data=null) {
 		$user = FUser::getInstance();
 		if(!isset($data['simple'])) $data['simple']=false;
 		$cache = FCache::getInstance('s',0);
@@ -235,6 +247,7 @@ class FItemsForm {
 			$cache->invalidateData( $itemVO->pageId.$itemVO->typeId, 'form');
 		}
 
+		if(!empty($data))
 		foreach($data as $k=>$v) {
 			$itemVO->set($k,$v);
 		}
@@ -246,27 +259,19 @@ class FItemsForm {
 		$tpl->setVariable('T',$itemVO->typeId);
 		if(!empty($itemVO->itemId)) $tpl->setVariable('ITEMID',$itemVO->itemId);
 
-		if(!empty($itemVO->addon)) {
-			$tpl->setVariable('TITLE',$itemVO->addon);
-		}
-		$tpl->setVariable('CONTENTID',$itemVO->typeId.$itemVO->pageId.'text');
-		$tpl->setVariable('CONTENTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
+		$tpl->setVariable('TITLE',$itemVO->addon);
 
-		if(!empty($itemVO->text)) {
-			$tpl->setVariable('TEXT',$itemVO->text);
-		}
+		$tpl->setVariable('TEXTID',$itemVO->typeId.$itemVO->pageId.'text');
+		$tpl->setVariable('TEXTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
 
-		if(!empty($itemVO->textLong)) {
-			$tpl->setVariable('CONTENTLONG',$itemVO->textLong);
-		}
-		if(!empty($itemVO->dateStartLocal)) {
-			$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
-			$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
-		}
-		if(!empty($itemVO->dateEndLocal)) {
-			$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
-			$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-		}
+		$tpl->setVariable('TEXT',$itemVO->text);
+		$tpl->setVariable('TEXTLONG',$itemVO->textLong);
+
+		$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
+		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
+
+		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
+		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
 
 		if(!empty($itemVO->name)) {
 			if($itemVO->typeId!='forum' || $user->idkontrol===false) {
@@ -275,55 +280,55 @@ class FItemsForm {
 		}
 
 		//TYPE DEPEND
-		switch($itemVO->typeId) {
-			case 'forum':
-				if ($user->idkontrol) {
-					if($data['simple']===false) {
-						$tpl->setVariable('PERPAGE',$data['perpage']);
-					}
-				} else {
-					$tpl->setVariable('USERNAME','');
-					$captcha = new FCaptcha();
-					$tpl->setVariable('CAPTCHASRC',$captcha->get_b2evo_captcha());
+		if($itemVO->typeId==='forum') {
+				
+			if ($user->idkontrol) {
+				if($data['simple']===false) {
+					$tpl->setVariable('PERPAGE',$data['perpage']);
 				}
-				break;
-			case 'blog':
-			case 'event':
-				if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
-				$tpl->setVariable('LOCATION',$itemVO->location);
-				break;
-			case 'galery':
-				$position = $itemVO->prop('position');
-				if(!empty($data['position'])) $position = $data['position'];
-				if(!empty($position)) {
-					$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
-				}
-				//TODO: comments not loaded from cache
-				//comments settings
-				$tpl->touchBlock('comments'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
-				//public settings
-				if($itemVO->public == 0) {
-					$tpl->touchBlock('classnotpublic');
-					$tpl->touchBlock('headernotpublic');
-				} else {
-					$tpl->touchBlock('public'.$itemVO->public);
-				}
-				//delete block
-				if($itemVO->itemId>0)
+			} else {
+				$tpl->setVariable('USERNAME','');
+				$captcha = new FCaptcha();
+				$tpl->setVariable('CAPTCHASRC',$captcha->get_b2evo_captcha());
+			}
+		}else{
+			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
+			$tpl->setVariable('LOCATION',$itemVO->location);
+
+				
+
+
+			$position = $itemVO->prop('position');
+			if(!empty($data['position'])) $position = $data['position'];
+			if(!empty($position)) {
+				$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
+			}
+			//TODO: comments not loaded from cache
+			//comments settings
+			$tpl->touchBlock('comments'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
+			//public settings
+			if($itemVO->public == 0) {
+				$tpl->touchBlock('classnotpublic');
+				$tpl->touchBlock('headernotpublic');
+			} else {
+				$tpl->touchBlock('public'.$itemVO->public);
+			}
+			//delete block
+			if($itemVO->itemId>0) {
 				$tpl->touchBlock('delete');
+			}
 
-				//event specials
-				$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
-				$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
-				$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
+			//event specials
+			$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
+			$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
+			$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
 
-				if(!empty($itemVO->enclosure)) {
-					//TODO: change to item image rather than fevent::flyer
-					$tpl->setVariable('IMAGEURL',FEvents::flyerUrl( $itemVO->enclosure ));
-					$tpl->setVariable('IMAGETHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
-				}
+			if(!empty($itemVO->enclosure)) {
+				//TODO: change to item image rather than fevent::flyer
+				$tpl->setVariable('IMAGEURL',FEvents::flyerUrl( $itemVO->enclosure ));
+				$tpl->setVariable('IMAGETHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
+			}
 		}
-
 		return $tpl->get();
 	}
 }

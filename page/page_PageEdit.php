@@ -478,6 +478,7 @@ class page_PageEdit implements iPage {
 		if(!empty($data['__ajaxResponse'])) {
 			return $tpl->get();
 		} else {
+			FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
 		}
 	}

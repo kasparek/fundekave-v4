@@ -1,6 +1,6 @@
 <?php
 class FSystem {
-	
+
 	static function superVars($data) {
 		//TODO: do supervariable some coolway
 		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
@@ -8,7 +8,7 @@ class FSystem {
 		'URL_JS'=>URL_JS);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
-			 
+
 		}
 		return $data;
 	}
@@ -140,7 +140,7 @@ class FSystem {
 		if($paramsArr['formatOption']==0 || $user->idkontrol==false) {
 			$text = strip_tags($text);
 		}
-		 
+			
 		if($paramsArr['formatOption'] < 2) {
 			require_once(ROOT.'pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
@@ -165,7 +165,7 @@ class FSystem {
 			$text = nl2br($text);
 		}
 		elseif($endOfLine==2) $text = FSystem::textinsBr2nl($text);
-		 
+			
 		if($breakLong==1) $text = FSystem::wordWrap($text);
 
 		if(isset($paramsArr['lengthLimit'])) {
@@ -267,7 +267,7 @@ class FSystem {
 		$url = preg_replace('~[^-a-z0-9_]+~', '', $url);
 		return $url;
 	}
-	
+
 	static function safeFilename($text) {
 		$text = strtolower($text);
 		$arr = explode('.',$text);
@@ -302,9 +302,9 @@ class FSystem {
 		//TODO: fix first,2,3 link rewrite to item
 		//TODO: remove fitemsrenderer::proccessItemEnclosure and process here
 		//TODO: keep data/cache and rewrite to new structure
-		
+
 		$text = ' '.$text;
-		
+
 		$regList = array(
 		"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
 		,"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
@@ -315,7 +315,7 @@ class FSystem {
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
 		);
-		
+
 		$offset = 0;
 
 		$r=0;
@@ -327,7 +327,7 @@ class FSystem {
 						case 0:
 						case 1:
 						case 2:
-						  
+
 							$fi = new FItems();
 							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 							$arr = $fi->getList();
@@ -336,7 +336,7 @@ class FSystem {
 								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
-							
+
 							break;
 						case 4:
 							//item by id
@@ -385,14 +385,14 @@ class FSystem {
 			}
 			$r++;
 		}
-		
+
 		return trim($text);
 	}
 
 	static function strReplace($textSource, $offset, $length, $textReplace) {
 		return substr($textSource,0,$offset) . $textReplace . substr($textSource,$offset+$length);
 	}
-	
+
 	static function positionProcess($dataStr) {
 		$positionData = trim($dataStr);
 		if(empty($positionData)) return null;
@@ -408,7 +408,7 @@ class FSystem {
 		if(empty($dataChecked)) return null;
 		return implode(';',$dataChecked);
 	}
-	
+
 	static function journeyLength($data) {
 		$dataList = explode(';',$data);
 		$distance = 0;
@@ -419,14 +419,47 @@ class FSystem {
 		}
 		return round($distance,2);
 	}
-	
-	static function distance($lat1,$lon1,$lat2,$lon2) {
-		$R = 3440;//NM 6371KM;
-		$dLat = ($lat2-$lat1) * pi() / 180;
-		$dLon = ($lon2-$lon1) * pi() / 180;
-		$a = sin($dLat/2) * sin($dLat/2) + cos($lat1*pi()/180) * cos($lat2*pi()/180) * sin($dLon/2) * sin($dLon/2);
-		$c = 2 * atan2(sqrt(a), sqrt(1-a));
-		return $R * $c;
+
+
+	function distance($lat1, $lon1, $lat2, $lon2) {
+		$earth_radius = 3440;
+		$delta_lat = $lat2 - $lat1 ;
+		$delta_lon = $lon2 - $lon1 ;
+		/*
+		//Spherical Law of Cosines
+		$distance  = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($delta_lon)) ;
+		$distance  = acos($distance);
+		$distance  = rad2deg($distance);
+		$distance  = $distance * 60 * 1.1515;
+		*/
+		//Haversine Formula
+		$alpha    = $delta_lat/2;
+  		$beta     = $delta_lon/2;
+  		$a        = sin(deg2rad($alpha)) * sin(deg2rad($alpha)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin(deg2rad($beta)) * sin(deg2rad($beta)) ;
+  		$c        = asin(min(1, sqrt($a)));
+  		$distance = 2*$earth_radius * $c;
+		return $distance;
 	}
 
+	/*
+	 static function distance($lat1,$lon1,$lat2,$lon2) {
+		$R = 3440;//NM 6371KM;
+		$lat1 = deg2rad($lat1);
+		$lon1 = deg2rad($lon1);
+		$lat2 = deg2rad($lat2);
+		$lon2 = deg2rad($lon2);
+		$dLat = ($lat2-$lat1);
+		//FError::add($lat2.'-'.$lat1.'='.$dLat);
+		$dLon = ($lon2-$lon1);
+		//FError::add($lon2.'-'.$lon1.'='.$dLon);
+
+
+		$a = sin($dLat/2) * sin($dLat/2) + cos($lat1) * cos($lat2) * sin($dLon/2) * sin($dLon/2);
+		FError::add($a,1);
+		$c = 2 * atan2(sqrt(a), sqrt(1-a));
+		$d = $R * $c;
+		FError::add($d,1);
+		return $d;
+		}
+		*/
 }

@@ -230,7 +230,7 @@ class PageVO extends Fvob {
 		$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 		$itemList = $fItems->getList();
 		$totalItems = count($itemList);
-
+		
 		$arrFotoDetail = array();
 		$arrFotoSize = array();
 		$arrNames = array();
@@ -245,10 +245,9 @@ class PageVO extends Fvob {
 		//---search folder
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
-		$galdir = $this->conf['sourceServerBase'] . $this->pageVO->galeryDir.'/';
+		$galdir = FConf::get('galery','sourceServerBase') . $this->galeryDir;
 		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
 		$arrFiles = $ffile->fileList($galdir,"png|jpg|jpeg|gif");
-
 		$change = false;
 
 		$arrNotInDB = array_diff($arrFiles,$arrFotoDetail);

@@ -21,7 +21,7 @@ class FUser {
 
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
-	'u'=>1, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
+	'u'=>2, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
 	'h'=>1, //home - u klubu - home z XML
 	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
 	'p'=>1, //anketa nastaveni
@@ -252,12 +252,20 @@ class FUser {
 					}
 				}
 				FProfiler::write('FUser::kde::6');
+				
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($userId,$permPage,$permissionNeeded)) {
 					$pageAccess = $this->pageAccess = false;
 					FError::add(FLang::$ERROR_ACCESS_DENIED);
 				} else {
 					$pageAccess = $this->pageAccess = true;
+					//check item if accessing item detail
+					if($this->itemVO) {
+						if($this->itemVO->public!=1 && !FRules::getCurrent(2)) {
+							$pageAccess = $this->pageAccess = false;
+							FError::add(FLang::$ERROR_ACCESS_DENIED);
+						}
+					}
 				}
 			}
 				

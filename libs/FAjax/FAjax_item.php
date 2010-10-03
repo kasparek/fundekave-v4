@@ -44,29 +44,18 @@ class FAjax_item extends FAjaxPluginBase {
 
 	static function submit($data) {
 		$itemVO = new ItemVO();
-		$typeList = array('forum','event','galery','blog');
-		$itemVO->typeId = $data['t'];
-		if(!in_array($itemVO->typeId,$typeList)) return; //TODO: validate type - give feedback?
+		if(false===$itemVO->set('typeId',$data['t'])) return; //TODO: give feedback that typeId not valid?
 
-		FItemsForm::process($itemVO, $data );
-
-		//TODO: check that itemVO gets repopulated
-		/*
+		FItemsForm::process($itemVO, $data);
+		
 		if(FAjax::isRedirecting()===false) {
-			//refresh item preview
-			//TODO: refactor get item detail - this version os only for blog
+			Fajax_item::edit(array('__ajaxResponse'=>true,'item'=>$data['item']));
 			$user = FUser::getInstance();
 			if($itemVO->itemId>0) {
-				FAjax_item::edit( array('__ajaxResponse'=>true),$itemVO);
 				$user->itemVO = $itemVO;
 				FAjax::addResponse('i'.$itemId, '$replaceWith', page_ItemDetail::build($data));
 			}
-			/*
-			 $extraParams = array('type'=>'blog','showDetail'=>true);
-			 $itemVO = new ItemVO($itemId,true,$extraParams);
-			 FAjax::addResponse('i'.$itemId, '$replaceWith', $itemVO->render());
-			 */
-		//}
+		}
 	}
 
 	static function delete($data) {
@@ -79,7 +68,7 @@ class FAjax_item extends FAjaxPluginBase {
 			if($itemVO->typeId=='forum') {
 				FAjax::addResponse('call','remove','i'.$data['item']);
 			} else {
-				//TODO:redirect
+				FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 			}
 		}
 

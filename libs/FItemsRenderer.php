@@ -145,9 +145,9 @@ class FItemsRenderer {
 						$vars['LONGURL'] = $vars['ITEMLINK'];
 					}
 				}
-				if( $this->showDetail===true ) {
+				/*if( $this->showDetail===true ) {
 					$touchedBlocks['headhidden'] = true;
-				}
+				}*/
 				$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
 				break;
 			case 'event':
@@ -267,6 +267,7 @@ class FItemsRenderer {
 				$journey = explode(';',$position);
 			   $vars['STATICITEMID'] = $itemVO->itemId;
 			   $vars['STATICITEMTITLE'] = $addon;
+//			   print_r($journey);die();
 			   $vars['STATICMARKERPOS'] = $journey[count($journey)-1];
 			   if(count($journey)>1) $vars['STATICWPLIST'] = implode('|',$journey);
 			 }
