@@ -68,7 +68,7 @@ class page_PageItemList implements iPage {
 
 		//perpage based on unreaded items
 		if( $user->idkontrol ) {
-			$unreadedCnt = FItems::cacheUnreadedList($user->pageVO->pageId,$itemId);
+			$unreadedCnt = FItems::cacheUnreadedList();
 			if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) $pageVO->perPage($unreadedCnt + 3);
 		}
 

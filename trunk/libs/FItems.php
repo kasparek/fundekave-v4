@@ -209,21 +209,28 @@ class FItems extends FDBTool {
 	 * set unreded items to cache
 	 * */
 	static function cacheUnreadedList() {
+		$unreadedCnt = 0;
 		$user = FUser::getInstance();
 		if($user->idkontrol==false) return 0;
 		if(empty($user->itemVO)) $unreadedNum = $user->pageVO->unreaded;
 		else $unreadedNum = $user->itemVO->unreaded;
 		if(empty($unreadedNum)) return 0;
 		//TODO: optimize this for blog (not published items)
+		$itemId = 0;
+		if($user->itemVO) $itemId = $user->itemVO->itemId;
 		$arr = FDBTool::getAll("select itemId,public from sys_pages_items
-		where and pageId='".$user->pageVO->pageId."'".(($user->itemVO->itemId>0)?(" and itemIdTop='".$user->itemVO->itemId."'"):(" and (itemIdTop is null or itemIdTop==0)"))." order by itemId desc limit 0,".$unreadedNum);
-		if(!empty($arr)) {
-			$cache = FCache::getInstance( 's' );
-			$unreadedList = &$cache->getPointer('unreadedItems');
-			if(empty($unreadedList)) $unreadedList = array();
-			//add to unreaded list
-			foreach($arr as $row) if($row[1]==1) if(!in_array($row[0],$unreadedList)) $arrTmp[] = $row[0];
+		where and pageId='".$user->pageVO->pageId."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(" and (itemIdTop is null or itemIdTop==0)"))." order by itemId desc limit 0,".$unreadedNum);
+		if(empty($arr)) return 0;
+		
+		$cache = FCache::getInstance( 's' );
+		$unreadedList = &$cache->getPointer('unreadedItems');
+		if(empty($unreadedList)) $unreadedList = array();
+		//add to unreaded list
+		foreach($arr as $row) if($row[1]==1) {
+			$unreadedCnt++;
+			if(!in_array($row[0],$unreadedList)) $unreadedList[] = $row[0];
 		}
+		
 		return $unreadedCnt;
 	}
 

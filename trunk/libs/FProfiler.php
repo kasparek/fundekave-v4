@@ -41,12 +41,17 @@ class FProfiler {
 			FError::write_log('FProfiler::write - CANNOT OPEN LOG TO WRITE - '.self::$logList[$handle]);
 			return;
 		}
+		if(!flock($fh, LOCK_EX)) {
+			FError::write_log('FProfiler::write - CANNOT LOCK FILE - '.self::$logList[$handle]);
+			return;
+		}
 		fwrite($fh,date(DATE_ATOM)
 		.';runtime='.( round($now-self::$starttimeList[$handle],4) )
 		.';timelast='.( round($now-self::$lasttimeList[$handle],4) )
 		.';mem='.round(memory_get_usage()/1024)
 		.'/'.round(memory_get_peak_usage()/1024)
 		."\n".$comment."\n\n");
+		flock($fh, LOCK_UN);
 		fclose($fh);
 		self::$lasttimeList[$handle] = $now;
 	}
