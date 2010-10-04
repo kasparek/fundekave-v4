@@ -94,7 +94,7 @@ class page_UserPost implements iPage {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
 
-		$perPage = POST_PERPAGE;
+		$perPage = $user->pageVO->perPage();
 		if(($pp = $cache->getData($user->pageVO->pageId,'pp')) !== false) $perPage = $pp;
 		if($perPage < 2) $perPage = POST_PERPAGE;
 

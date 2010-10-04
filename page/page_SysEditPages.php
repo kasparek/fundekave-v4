@@ -65,7 +65,7 @@ class page_SysEditPages implements iPage {
 		$fPages->setOrder(($arrParams['orde']==1)?('name'):('dateCreated desc'));
 		$fPages->setSelect('p.pageId,p.categoryId,p.locked,p.name');
 		$totalItems = $fPages->getCount();
-		$perPage = ADMIN_PERPAGE;
+		$perPage = $user->pageVO->perPage();
 		$from = 0;
 		if($totalItems>$perPage) {
 			$pager = new FPager($totalItems,$perPage);

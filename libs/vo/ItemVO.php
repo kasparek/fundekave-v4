@@ -315,8 +315,8 @@ class ItemVO extends Fvob {
 		if(!empty($this->enclosure)) {
 			$confGalery = FConf::get('galery');
 			$thumbCut = $confGalery['thumbCut'];
-			if($this->typeId=='event') {
-			  $thumbCut = FConf::get('events','thumb_width').'x0/prop';
+			if(isset($confGalery[$this->typeId.'_thumbCut'])) {
+			  $thumbCut = $confGalery[$this->typeId.'_thumbCut'];
 			}
 			elseif($this->thumbInSysRes == false) {
 				$thumbCut = $this->pageVO->getProperty('thumbCut',$thumbCut,true);
