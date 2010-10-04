@@ -36,7 +36,7 @@ class FProfiler {
 			}
 		}
 		//write log entry
-		$fh = fopen(self::$logList[$handle], "a");
+		$fh = fopen(self::$logList[$handle], "x");
 		if(!$fh) {
 			FError::write_log('FProfiler::write - CANNOT OPEN LOG TO WRITE - '.self::$logList[$handle]);
 			return;
