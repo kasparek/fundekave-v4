@@ -49,7 +49,7 @@ class page_PageItemList implements iPage {
 		if($user->itemVO) {
 			if($user->itemVO->itemId>0) $itemVO = $user->itemVO;
 		}
-		if($data['itemId']) {
+		if(!empty($data['itemId'])) {
 			$itemVO = new ItemVO($data['itemId']);
 			if(!$itemVO->load()) $itemVO = null;
 		}
@@ -107,10 +107,11 @@ class page_PageItemList implements iPage {
 		/**
 		 *ITEM DETAIL
 		 **/
-		if($itemVO)
-		if($itemVO->typeId!='forum') {
-			//show item detail
-			$vars['DETAIL'] = page_ItemDetail::build($data);
+		if(!empty($itemVO)) {
+			if($itemVO->typeId!='forum') {
+				//show item detail
+				$vars['DETAIL'] = page_ItemDetail::build($data);
+			}
 		}
 
 		//continue only if empty $user->pageParam
@@ -149,7 +150,7 @@ class page_PageItemList implements iPage {
 				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
 			}
 
-			if($itemVO) {
+			if(!empty($itemVO)) {
 				$itemId = $itemVO->itemId;
 				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 			}
@@ -193,7 +194,7 @@ class page_PageItemList implements iPage {
 					$vars['TOPPAGER'] = $pager->links;
 					$vars['BOTTOMPAGER'] = $pager->links;
 				}
-				$vars['ITEMS'] = $fItems->render($pageNum * $perPage, $perPage);
+				$vars['ITEMS'] = $fItems->render();
 			} else {
 				$touchedBlocks[]='feedempty';
 			}

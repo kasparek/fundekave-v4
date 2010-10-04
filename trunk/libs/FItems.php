@@ -148,17 +148,19 @@ class FItems extends FDBTool {
 
 			$q = "select itemId,name,value from sys_pages_items_properties where itemId in (".implode(',',$itemIdList).")";
 			$props = FDBTool::getAll($q);
-			if(!empty($props))
-			foreach($this->data as $itemVO) {
-				$i = count($props)-1;
+			
+			foreach($this->data as $k=>$itemVO) {
 				$invalidate = false;
-				while(count($props)>0 && $i>=0) {
-					if($props[$i][0]==$itemVO->itemId) {
-						$prop = array_pop($props);
-						$itemVO->properties[$prop[1]] = $prop[2];
-						$invalidate = true;
+				if(!empty($props)) {
+					$i = count($props)-1;
+					while(count($props)>0 && $i>=0) {
+						if($props[$i][0]==$itemVO->itemId) {
+							$prop = array_pop($props);
+							$itemVO->properties[$prop[1]] = $prop[2];
+							$invalidate = true;
+						}
+						$i--;
 					}
-					$i--;
 				}
 				$propList = $itemVO->getPropertiesList();
 				foreach($propList as $prop) {
@@ -170,10 +172,12 @@ class FItems extends FDBTool {
 				if($invalidate===true) {
 					$itemVO->memStore();
 				}
+				$this->data[$k] = $itemVO;
 			}
 		}
 
 		if($this->debug==1) print_r($this->data);
+		FProfiler::write('FItems::getList--DATA LOADED');
 		return $this->data;
 	}
 

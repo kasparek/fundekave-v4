@@ -11,6 +11,8 @@ class FProfiler {
 		$handle = count(self::$logList);
 		self::$logList[] = $filename;
 		if(file_exists(self::$logList[$handle])) unlink(self::$logList[$handle]);
+		list($usec, $sec) = explode(" ",microtime());
+		self::$starttimeList[$handle] = self::$lasttimeList[$handle] = ((float)$usec + (float)$sec);
 		FProfiler::write('INITIALIZED',$handle);
 		return $handle;
 	}
@@ -26,7 +28,7 @@ class FProfiler {
 			} else {
 				//DEFAULT PROFILE LOG
 				if(!is_array(self::$logList)) self::$logList = array();
-				self::$handleIfEmpty = count(self::$logList);
+				$handle = self::$handleIfEmpty = count(self::$logList);
 				//delete profile file
 				self::$logList[] = FConf::get('settings','logs_path').'System-profile-times.log';
 				if(file_exists(self::$logList[self::$handleIfEmpty])) unlink(self::$logList[self::$handleIfEmpty]);
@@ -35,6 +37,10 @@ class FProfiler {
 		}
 		//write log entry
 		$fh = fopen(self::$logList[$handle], "a");
+		if(!$fh) {
+			FError::write_log('FProfiler::write - CANNOT OPEN LOG TO WRITE - '.self::$logList[$handle]);
+			return;
+		}
 		fwrite($fh,date(DATE_ATOM)
 		.';runtime='.( round($now-self::$starttimeList[$handle],4) )
 		.';timelast='.( round($now-self::$lasttimeList[$handle],4) )
