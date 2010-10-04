@@ -105,3 +105,7 @@ $user->kde(); //---check user / load info / load page content / chechk page exis
 if( $itemVO ) $user->itemVO->prepare();
 $pageVO = $user->pageVO; 
 FProfiler::write('USER/PAGE CHECK DONE');
+//map commands
+FCommand::getInstance(); //to load up class and get static constants
+FCommand::register(ITEM_UPDATED,'itemUpdate');
+FCommand::register(ITEM_UPDATED,'flushCache');

@@ -15,10 +15,7 @@
 		
 		date_format(dateContent,'{#date_local#}') as datumcz,
 		date_format(dateContent,'{#date_iso#}') as diso
-		
-		
-		
-		   
+		  
  *
  */   
 class FPages extends FDBTool {
@@ -284,12 +281,6 @@ class FPages extends FDBTool {
 					}
 				}
 
-				//---show last item
-				$itemId = $page->getProperty('itemIdLast',false,false);
-				if($itemId) {
-					$itemVO = new ItemVO($itemId,true);
-					$tpl->setVariable("ITEM", $itemVO->render());
-				}
 				if(isset($options['inline'])) {
 				$tpl->parse('itemlink');
 				} else {

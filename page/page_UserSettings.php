@@ -159,13 +159,7 @@ class page_UserSettings implements iPage {
 
 		$tpl->setVariable("FORMACTION",FSystem::getUri('m=user-settings&u='.$userVO->userId));
 		$tpl->setVariable("USERNAME",$userVO->name);
-		$options='';
-		$arrOpt = FDBTool::getAll('select skinId,name from sys_skin order by name','skin','categ','s');
-		if(!empty($arrOpt)) foreach ($arrOpt as $row) {
-			$options.='<option value="'.$row[0].'"'.(($row[0]==$userVO->skin)?(' selected="selected"'):('')).'>'.$row[1].'</option>';
-		}
-		$tpl->setVariable("SKINOPTIONS",$options);
-
+		
 		/*
 		 $options='';
 		 $arrOpt = $db->getAll('select pageId,name from sys_pages where userIdOwner="'.$user->gid.'"');

@@ -1,4 +1,7 @@
 <?php
+
+define("ITEM_UPDATED","actionItemUpdated");
+
 class FCommand {
 
 	private static $instance;
@@ -23,11 +26,11 @@ class FCommand {
 	
 	public $commandMap;
 	
-	public static function run($action) {
+	public static function run($action,$data=null) {
 		$inst = FCommand::getInstance();
 		if(empty($inst->commandMap[$action])) return;
 		foreach($inst->commandMap[$action] as $function) {
-			call_user_func('FCommand::'.$function);
+			call_user_func('FCommand::'.$function,$data);
 		}
 	}
 
@@ -38,9 +41,18 @@ class FCommand {
 	   $inst->commandMap[$action][] = $function;
 	}
 
+	//COMMANDS
+	public static function itemUpdated($data) {
+		$cache = FCache::getInstance('f');
+		$cache->invalidateData($data->itemId,'renderedItem');
+		$cache->invalidateData($data->itemId.'detail','renderedItem');
+	}
+	
 	public static function flushCache() {
-	   $cache = FCache::getInstance('f');
-			$cache->invalidateGroup('calendarlefthand');
+		$cache = FCache::getInstance('f');
+		$cache->invalidateGroup('calendarlefthand');
+		$cache = FCache::getInstance('f');
+		$cache->invalidateGroup('pagelist');
 	}
 	
 	

@@ -86,7 +86,7 @@ class page_PageItemList implements iPage {
 		$vars = array();
 		$itemId = 0;
 			
-		$perPage = $pageVO->perPage(); //TODO: get some global/local perpage
+		$perPage = $pageVO->perPage();
 		$pageNumUrlVar = FConf::get('pager','urlVar');
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
@@ -98,7 +98,7 @@ class page_PageItemList implements iPage {
 		 *- if in edit mode show edit form - blog,event from will redirect to detail view, only forum/foto form will show here
 		 *if in edit mode - param u or forum display form
 		 **/
-		if($user->pageParam=='u' && $itemVO) {
+		if($user->pageParam=='u' && !empty($itemVO)) {
 			if(FRules::getCurrent(2)) {
 				$vars['EDITFORM'] = FItemsForm::show($itemVO);
 			}
@@ -111,34 +111,43 @@ class page_PageItemList implements iPage {
 			if($itemVO->typeId!='forum') {
 				//show item detail
 				$vars['DETAIL'] = page_ItemDetail::build($data);
+			} else {
+				$itemVO = null;
 			}
 		}
 
 		//continue only if empty $user->pageParam
 		if(empty($user->pageParam)) {
-
 			//filter-search
 			$cache = FCache::getInstance('s',0);
 			$searchStr = $cache->getData( $pageVO->pageId, 'filter');
 			/**
 			 *FORUM FORM
 			 */
-			if($pageVO->typeId=='forum') {
-				$writePerm = $pageVO->prop('forumSet'); //TODO: base on write perm show or not
-				if($writePerm==1 || (writePerm==2 && $user->idkontrol)) {
+			if($pageVO->typeId!='top') { //no show for live, main etc.
+				$writePerm=1;
+				if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0; 
+				if ($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery') $writePerm = $pageVO->prop('forumSet');
+				if(!empty($itemVO)) {
+					$writePerm = $itemVO->prop('forumSet');
+					$data['simple'] = true;
+				}
+				if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 					$formItemVO = new ItemVO();
 					$formItemVO->typeId = 'forum';
 					$formItemVO->pageId = $pageVO->pageId;
 					$data['perpage'] = $perPage;
 					if($searchStr!==false) $data['text'] = $searchStr;
-					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data); //TODO: implement simple switch
+					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 				}
-				if($writePerm == 2)
-				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY; //TODO: implement message on templates
+				if($writePerm == 2) {
+					$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
+				}
 			}
 				
 			//HEADER
 			if(empty($itemVO) && !empty($pageVO->content)) $vars['CONTENT'] = FSystem::postText($pageVO->content);
+			
 			//LIST ITEMS
 			$fItems = new FItems('',FUser::logon());
 			$fItems->setPage($pageVO->pageId);
@@ -149,7 +158,6 @@ class page_PageItemList implements iPage {
 			if(!empty($searchStr)) {
 				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
 			}
-
 			if(!empty($itemVO)) {
 				$itemId = $itemVO->itemId;
 				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
@@ -167,10 +175,11 @@ class page_PageItemList implements iPage {
 					$fItems->setOrder('dateStart desc');
 				}
 			} else {
-				$fItems->setOrder("if(dateStart,dateStart,dateCreated) desc, itemId desc");
+				//TODO: user order from page
+				$fItems->setOrder($pageVO->itemsOrder());
 			}
 
-			if($itemId > 0) {
+			if(!empty($itemVO)) {
 				$arrPagerExtraVars['k'] = $pageVO->pageId;
 				$arrPagerExtraVars['i'] = $itemId;
 				$itemVO->updateReaded( $user->userVO->userId );
@@ -196,7 +205,7 @@ class page_PageItemList implements iPage {
 				}
 				$vars['ITEMS'] = $fItems->render();
 			} else {
-				$touchedBlocks[]='feedempty';
+				if($writePerm>0) $touchedBlocks[]='feedempty';
 			}
 		}
 		if(!empty($data['__ajaxResponse'])) {
