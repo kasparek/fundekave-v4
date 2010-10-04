@@ -3,7 +3,7 @@ ob_start("ob_gzhandler");
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) {
-		$c = ROOT . ROOT_CODE . $c ;
+		$c = ROOT . ROOT_VIEW . $c ;
 	} else {
 		if(strpos($c,'VO')!==false) { $c = 'vo/'.$c; }
 		$c = ROOT . LIBSDIR . $c ;
