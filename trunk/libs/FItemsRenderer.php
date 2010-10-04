@@ -122,7 +122,7 @@ class FItemsRenderer {
 		//---thumb tag link
 		$vars['TAG'] = FItemTags::getTag($itemId,$this->signedUserId,$typeId,$itemVO->tag_weight);
 		
-		if($typeId!='forum') {
+		if($typeId=='forum') {
 			$vars['DATELOCAL'] = $itemVO->dateCreatedLocal;
 			$vars['DATEISO'] = $itemVO->dateCreatedIso;
 		} else {
