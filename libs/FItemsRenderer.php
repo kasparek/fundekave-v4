@@ -57,14 +57,14 @@ class FItemsRenderer {
 		if($page===false) {
 			$tpl = FSystem::tpl($this->getTemplateName($typeId));
 			$tpl->parse('item');
-			$vars['URL'] = '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
+			$vars['URL'] = '?k='.$page->pageId.'-'.FSystem::safetext($page->name);
 			if(!empty($itemVO->pageVO->pageIco)) {
 				$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$itemVO->pageVO->pageIco);
 			} else {
 				$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
 			}
-			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId]);
-			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId]).': '.$itemVO->pageVO->name; 
+			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId];
+			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId].': '.$itemVO->pageVO->name; 
 			$vars['PAGENAME'] = $itemVO->pageVO->name;
 			$vars['ITEM'] = '[[ITEM]]';
 			$tpl->setVariable($vars);

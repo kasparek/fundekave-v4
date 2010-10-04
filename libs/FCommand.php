@@ -16,9 +16,9 @@ class FCommand {
 	}
 	
 	static function &getInstance() {
-		if (!isset(self::$instance)) {
+		if (empty(self::$instance)) {
 			self::$allowInstantiation = true; 
-			self::$instance = &new FCommand();
+			self::$instance = new FCommand();
 			self::$allowInstantiation = false;
 		}
 		return self::$instance;
