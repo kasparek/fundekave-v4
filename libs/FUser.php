@@ -197,7 +197,6 @@ class FUser {
 		$pageAccess = $this->pageAccess = true;
 		$pageId = $this->pageId;
 
-		FProfiler::write('FUser::kde::1');
 		if($pageId) {
 			//---logout action
 			if( $pageId == 'elogo') {
@@ -210,14 +209,12 @@ class FUser {
 			//---try load current page
 			$this->pageVO = new PageVO($pageId,true);
 			
-			FProfiler::write('FUser::kde::2');
 			if( $this->pageVO->loaded !== true ) {
 				$pageAccess = $this->pageAccess = false;
 				$pageId = $this->pageId = null;
 				$this->pageVO = null;
 				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
-			FProfiler::write('FUser::kde::3');
 		}
 		//---if page not exists redirect to error
 
@@ -226,7 +223,6 @@ class FUser {
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
 			if($userId>0 || !empty($this->userVO->idlogin)) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
-			FProfiler::write('FUser::kde::4');
 				
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
@@ -235,7 +231,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-			FProfiler::write('FUser::kde::5');
+
 			if($pageAccess === true) {
 				$permPage = $pageId;
 				if($permissionNeeded === 3) {
@@ -251,7 +247,6 @@ class FUser {
 						}
 					}
 				}
-				FProfiler::write('FUser::kde::6');
 				
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($userId,$permPage,$permissionNeeded)) {
@@ -269,7 +264,6 @@ class FUser {
 				}
 			}
 				
-			FProfiler::write('FUser::kde::7');
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
@@ -281,7 +275,6 @@ class FUser {
 			params = '".$this->pageParam."'    
 			where loginId='".$this->userVO->idlogin."'");
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
-				FProfiler::write('FUser::kde::8');
 			}
 		}
 

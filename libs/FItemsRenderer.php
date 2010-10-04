@@ -72,7 +72,7 @@ class FItemsRenderer {
 		
 		//TODO: do renderer caching is hasDefaultSettings===true 
 		$cacheGroup = 'renderedItem';
-		$cacheId = $this->itemId;
+		$cacheId = $itemVO->itemId;
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;

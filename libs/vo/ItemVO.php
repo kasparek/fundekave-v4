@@ -99,9 +99,9 @@ class ItemVO extends Fvob {
 				$cache = FCache::getInstance( 's' );
 				$unreadedList = &$cache->getPointer('unreadedItems');
 				if(empty($unreadedList)) $unreadedList = array();
-				if(in_array($itemId,$unreadedList)) {
+				if(in_array($this->itemId,$unreadedList)) {
 					$this->isUnreaded = true;
-					if( $unset ) array_splice($unreadedList,array_search($itemId, $unreadedList),1);
+					if( $unset ) array_splice($unreadedList,array_search($this->itemId, $unreadedList),1);
 				}
 				$name = 'isUnreaded';
 				break;
