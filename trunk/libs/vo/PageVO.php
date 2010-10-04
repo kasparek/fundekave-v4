@@ -194,7 +194,7 @@ class PageVO extends Fvob {
 					$orderBy = 'enclosure';
 					break;
 				default:
-					$orderBy = 'dateCreated desc';
+					$orderBy = 'if(dateStart,dateStart,dateCreated) desc, itemId desc';
 			}
 		}
 		return $orderBy;

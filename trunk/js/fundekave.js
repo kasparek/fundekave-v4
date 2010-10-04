@@ -49,7 +49,7 @@ function mapData() {
 }
 
 function initMapData() {
-	$('.mapLarge').each(function(){
+	$('.mapDisplay').each(function(){
 		var holder = new mapHolder(this);
 		$(this).find ('.mapsData').each(function(){
 			var data = new mapData();

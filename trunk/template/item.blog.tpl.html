@@ -2,7 +2,7 @@
 	<!-- BEGIN notpublishedheader --><div class="notpublishedMsg">Nepublikovano</div><!-- END notpublishedheader -->
 	<div class="header">
 		<span class="author vcard">
-	    <!-- BEGIN authorlink --><a href="{AUTHORLINK}" class="author url"><!-- END authorlink --><span class="fn">{AUTHOR}</span><!-- BEGIN authorlinkclose --></a><!-- END authorlinkclose --> 
+	    <a href="{AUTHORLINK}" class="author url"><span class="fn">{AUTHOR}</span></a> 
 	    <!-- BEGIN useronlinelocation --><a href="{USERLOCATIONLINK}" title="Prave sleduje" class="currentLocation">{USERLOCATION}</a><!-- END useronlinelocation -->
 	  </span>
 	  
@@ -19,17 +19,15 @@
 	</div>
 
   <!-- BEGIN useravatar --><div class="avatar">{AVATAR}</div><!-- END useravatar -->
-  <!-- BEGIN heading --><h2 class="entry-title summary"><a href="{BLOGLINK}" class="bookmark">{BLOGTITLE}</a></h2><!-- END heading -->
-  <!-- BEGIN category --><span class="category<!-- BEGIN categoryhidden --> hidden<!-- END categoryhidden -->"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
+  <!-- BEGIN heading --><h2 class="entry-title summary"><a href="{ITEMLINK}" class="bookmark">{ITEMTITLE}</a></h2><!-- END heading -->
+  <!-- BEGIN category --><span class="category"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
 	<div class="entry-content">{TEXT}</div>
-	<!-- BEGIN map --><div class="mapLarge">
-	<!-- BEGIN mapdata --><div class="mapsData hidden">
-		<input type="hidden" name="mapLargeData" class="mapData" value="{MAPPOSITION}" />
-		<input type="hidden" name="mapTitle" class="mapTitle" value="{MAPTITLE}" />
-		<div class="mapInfo"><div style="width:300px"><h3>{MAPTITLE}</h3><div>{MAPINFO}</div><div><strong>Vzdalenost: [[DISTANCE]]NM</strong></div></div></div>
+	<!-- BEGIN map --><div class="mapDisplay"><a name="map"></a>
+	<!-- BEGIN mapdata --><div class="mapsData hidden"><input type="hidden" class="mapData" value="{MAPPOSITION}" /><input type="hidden" class="mapTitle" value="{MAPTITLE}" />
+	<div class="mapInfo"><div style="width:300px"><h3>{MAPTITLE}</h3><div>{MAPINFO}</div><div><strong>Vzdalenost: [[DISTANCE]]NM</strong></div></div></div>
 	</div><!-- END mapdata -->
 	</div><!-- END map -->
-	<!-- BEGIN staticmap --><div class="mapSmall"><a href="?i={STATICITEMID}&map=detail" title="Map detail: {STATICITEMTITLE}">
+	<!-- BEGIN staticmap --><div class="mapSmall"><a href="{STATICURL}#map" title="Map detail: {STATICITEMTITLE}">
 	<img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers={STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path={STATICWPLIST}<!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END staticmap -->
 	<!-- BEGIN detailLink --><div class="completelink"><a href="{LONGURL}">Cely clanek</a></div><!-- END detailLink -->
 </div>

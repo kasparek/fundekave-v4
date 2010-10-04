@@ -628,7 +628,7 @@ class FHTMLTemplateIT
         $this->free();
         $this->findBlocks($this->template);
         // we don't need it any more
-        $this->template = '';
+        //$this->template = '';
         $this->buildBlockvariablelist();
     } // end func init
 

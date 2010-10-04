@@ -1,13 +1,22 @@
+MIGRATION:
+udpate sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null
+udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0)
+udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0)
+
 
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL 
 
-
--remove all sys_skin
-
 TODO:
--new blog item - something is wrong
-TODO:
--item render cacheovani based on renderer options and dateupdated?
+-use page_PageItemList to list any list of items???
+-places to sort printPagelinkList
+page_ItemsLive
+page_Main
+page_Search
+page_PagesList
+
+
+-if not signed user "palec" give error only registered can
+-if signed user "palec" give error if already tagged
 
 - galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky

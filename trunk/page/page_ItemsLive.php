@@ -29,26 +29,33 @@ class page_ItemsLive implements iPage {
 			$pages->addJoin('right join sys_pages_items as sys_pages_items on sys_pages_items.pageId=sys_pages.pageId');
 			//TODO: do not use pplastitem
 			$pages->addSelect('itemId as itemIdLast_prop');
-			
 			if(SITE_STRICT == 1) {
 				$pages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");
 			}
-				
 			if(!empty($date)) {
 			  //used for sorting
 				$pages->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
-				
 				$pages->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y%m%d'))
 					or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y%m%d')) 
 					or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y%m%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y%m%d'))");
-				
 				$pages->setOrder('dateLive desc');
-				
 			} else {
-			
 				$pages->setOrder('sys_pages_items.itemId desc');
-				
 			}
+			
+			//TODO:group items with itemIdTop>0 and show what is it reaction for
+			// TODO: find a different way to list reactions???
+		// TODO: show top item if only on life page, not on same pageId or itemId page???
+		/*
+		if($this->showPageLabel === true) {
+			if($itemVO->itemIdTop > 0) {
+				$itemTop = new ItemVO($itemVO->itemIdTop,true);
+				$vars['TOP'] = $itemTop->render();
+			}
+		}
+		*/
+		/**/
+  //<!-- BEGIN top --><div class="opacity">{TOP}</div><!-- END top -->
 				
 			$pager = new FPager(0,$localPerPage,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $localPerPage;

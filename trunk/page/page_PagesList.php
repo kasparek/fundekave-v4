@@ -90,10 +90,14 @@ class page_PagesList implements iPage {
 					foreach ($arr as $gal) {
 						
 						$fItems->setWhere('pageId="'.$gal->pageId.'" and (itemIdTop is null or itemIdTop=0)');
-						$fotoThumb = $fItems->render(0,1);
+						$itemList = $fItems->getList(0,1);
+						if(!empty($itemList)) $fotoItemVO = $itemList[0];
 
 						$tplGal->setCurrentBlock('item');
-						$tplGal->setVariable("THUMB",$fotoThumb);
+						if(isset($fotoItemVO)) {
+							$tplGal->setVariable("IMGURL",$fotoItemVO->detailUrl);
+							$tplGal->setVariable("IMGURLTHUMB",$fotoItemVO->thumbUrl);
+						}
 						$tplGal->setVariable("PAGEID",$gal->pageId);
 						$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId));
 						$tplGal->setVariable("PAGENAME",$gal->name);

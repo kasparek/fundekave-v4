@@ -49,8 +49,7 @@ class FItemTags {
 		//---templates
 		$templateNameActive = 'item.tag.{TYPE}.active.tpl.html';
 		$templateNameUsed = 'item.tag.{TYPE}.used.tpl.html';
-
-		$isTagged = FItemTags::isTagged($itemId,$userId);
+		if($userId>0) $isTagged = FItemTags::isTagged($itemId,$userId);
 		if($isTagged === true) {
 			$template = $templateNameUsed;
 		} else {

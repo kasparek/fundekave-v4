@@ -33,7 +33,6 @@ class ItemVO extends Fvob {
 	var $propertiesList = array('position','forumSet');
 	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>2);
 
-	//TODO: if set by set() override to convert data/time local
 	public function __get($name) {
 		if(!$name) return;
 
@@ -305,15 +304,10 @@ class ItemVO extends Fvob {
 			
 		//---last item
 		$this->updateItemIdLast();
-
-		//TODO:---notify observer item deleted do additional action, clearing cache atd;
-		//FCommand::run('itemDeleted');
-		//$cache = FCache::getInstance('f');
-		//$cache->invalidateGroup('calendarlefthand');
-		page_PagesList::invalidate();
-
+		
 		$this->memFlush();
-
+		
+		FCommand::run(ITEM_UPDATED,$this);
 	}
 
 	function prepare() {
@@ -321,7 +315,10 @@ class ItemVO extends Fvob {
 		if(!empty($this->enclosure)) {
 			$confGalery = FConf::get('galery');
 			$thumbCut = $confGalery['thumbCut'];
-			if($this->thumbInSysRes == false) {
+			if($this->typeId=='event') {
+			  $thumbCut = FConf::get('events','thumb_width').'x0/prop';
+			}
+			elseif($this->thumbInSysRes == false) {
 				$thumbCut = $this->pageVO->getProperty('thumbCut',$thumbCut,true);
 			}
 			//thumbnail URL
