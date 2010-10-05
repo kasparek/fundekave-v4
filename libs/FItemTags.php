@@ -28,16 +28,15 @@ class FItemTags {
 		}
 	}
 	static function isTagged($itemId,$userId) {
-		if($itemId > 0 && $userId > 0) {
-			$q = "select count(1) from sys_pages_items_tag where userId='".$userId."' and itemId='".$itemId."'";
-			$tagged = FDBTool::getOne($q,$userId.'-'.$itemId,'myTags','s',120);
-			return (($tagged>0)?(true):(false));
-		}
+		if(empty($itemId) || empty($userId)) return false;
+		$q = "select count(1) from sys_pages_items_tag where userId='".$userId."' and itemId='".$itemId."'";
+		$tagged = FDBTool::getOne($q,$userId.'-'.$itemId,'myTags','s',0);
+		return (($tagged>0)?(true):(false));
 	}
 	static function totalTags($itemId) {
 		if($itemId > 0) {
 			$q = "select sum(weight) from sys_pages_items_tag where itemId='".$itemId."'";
-			$ret = FDBTool::getOne($q,$itemId, 'iTags','s',120);
+			$ret = FDBTool::getOne($q);
 			return (int) $ret;
 		}
 	}
@@ -49,6 +48,7 @@ class FItemTags {
 		//---templates
 		$templateNameActive = 'item.tag.{TYPE}.active.tpl.html';
 		$templateNameUsed = 'item.tag.{TYPE}.used.tpl.html';
+		$isTagged=false;
 		if($userId>0) $isTagged = FItemTags::isTagged($itemId,$userId);
 		if($isTagged === true) {
 			$template = $templateNameUsed;
@@ -84,7 +84,6 @@ class FItemTags {
 	 */
 	static function invalidateCache() {
 		$cache = FCache::getInstance('s');
-		$cache->invalidateGroup('iTags');
 		$cache->invalidateGroup('myTags');
 	}
 	

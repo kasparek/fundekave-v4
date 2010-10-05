@@ -63,7 +63,7 @@ class FItemsForm {
 		}
 
 		if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
-		if($itemVO->load()) $newItem=false;
+		if($itemVO->itemId>0) if($itemVO->load()) $newItem=false;
 
 		$itemVO->pageId = $user->pageVO->pageId;
 
@@ -134,7 +134,7 @@ class FItemsForm {
 					if(!empty($data['text'])) $itemVO->set('text', $data['text']);
 					if(!empty($data['textLong'])) $itemVO->set('textLong', $data['textLong']);
 					if(!empty($data['location'])) $itemVO->set('location', $data['location']);
-					$itemVO->typeId = $user->pageVO->typeId;
+					if(empty($itemVO->typeId)) $itemVO->typeId = $user->pageVO->typeId;
 					$itemVO->itemIdTop = $data['itemIdTop']>0 ? (int) $data['itemIdTop'] : null;
 					if(!empty($data['category'])) $itemVO->set('categoryId', (int) $data['category']);
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);

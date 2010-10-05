@@ -372,9 +372,8 @@ class FFile {
 		$dir = FConf::get("galery","tempStore") . $user->userVO->name;
 		$filename = FFile::safeFilename($filename);
 		$imagePath = $dir . '/' . $filename;
-		FFile::makeDir($dir);
 		$cache = FCache::getInstance('d');
-		$cache->setData($imagePath,'tempStore',$user->userVO->userId);
+		$cache->setData($imagePath,$user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		return $imagePath;	
 	}
 	
@@ -387,18 +386,19 @@ class FFile {
 		$user = FUser::getInstance();
 		if($user->userVO->userId==0) return false;
 		$cache = FCache::getInstance('d');
-		$ret = $cache->getData('tempStore',$pageId.'-'.$user->userVO->userId);
+		$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		return $ret;
 	}
 	
 	static function flushTemplFile() {
+		$user = FUser::getInstance();
 		$cache = FCache::getInstance('d');
-		$filename = $cache->getData('tempStore',$pageId.'-'.$user->userVO->userId);
+		$filename = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		if($filename!==false) {
 			if(file_exists($filename)) {
 				unlink($filename);
 			}
-			$cache->invalidateData('tempStore',$pageId.'-'.$user->userVO->userId);
+			$cache->invalidateData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		}
 	}
 	

@@ -153,15 +153,16 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 				case 'tempStore':
 					//---upload in tmp folder in user folder and save filename in db cache
 					$imagePath = FFile::setTempFilename($filename);
+					$imagePath = FConf::get("galery","sourceServerBase") . $imagePath;
+					$dir = FConf::get("galery","sourceServerBase") . FConf::get("galery","tempStore");
 					break;
 				default:
 					$pageVO = new PageVO($pageId,true);
 					$galeryUrl = $pageVO->galeryDir;
 					$dir = FConf::get("galery","sourceServerBase").$galeryUrl;
-					$ffile->makeDir($dir);
 					$imagePath = $dir.'/'.FFile::safeFilename($filename);
 			}
-			
+			if(!empty($dir)) $ffile->makeDir($dir);
 			$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
 
 		}
