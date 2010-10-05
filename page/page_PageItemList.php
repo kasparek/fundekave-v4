@@ -61,9 +61,9 @@ class page_PageItemList implements iPage {
 		
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$user->itemVO) {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
 			}
 				
 		}

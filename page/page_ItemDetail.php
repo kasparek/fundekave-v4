@@ -77,9 +77,9 @@ class page_ItemDetail implements iPage {
 		//---GALERY END
 				
 		if(!empty($output)) {
-			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,'backButt');
-			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,0,'nextButt','fajaxa hash','opposite');
-			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,0,'prevButt','fajaxa hash','opposite');
+			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,array('id'=>'backButt'));
+			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>'fajaxa hash','classParent'=>'opposite'));
+			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'fajaxa hash','classParent'=>'opposite'));
 			return $output;
 		} 	
 	}

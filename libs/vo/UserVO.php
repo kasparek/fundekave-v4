@@ -19,10 +19,6 @@ class UserVO extends Fvob {
 	'icq'=>'icq',
 	'info'=>'info',
 	'avatar'=>'avatar',
-	'zbanner'=>'zbanner',
-	'zavatar'=>'zavatar',
-	'zforumico'=>'zforumico',
-	'zgalerytype'=>'zgalerytype',
 	'deleted'=>'deleted',
 	'hit'=>'hit');
 
@@ -39,10 +35,6 @@ class UserVO extends Fvob {
 	//---additional user information XML structure
 	var $info = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
 	var $avatar = AVATAR_DEFAULT;
-	var $zbanner = 1;
-	var $zavatar = 1;
-	var $zforumico = 1;
-	var $zgalerytype = 0;
 	var $deleted = 0;
 	var $hit;
 

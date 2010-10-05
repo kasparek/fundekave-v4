@@ -155,7 +155,6 @@ class FPages extends FDBTool {
 		FDBTool::query("delete from sys_pages_properties where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_pages_items where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_menu where pageId='".$pageId."'");
-		FDBTool::query("delete from sys_menu_secondary where pageId='".$pageId."'");
 			
 		$arrPoll = FDBTool::getCol("select pollId from sys_poll where pageId='".$pageId."'");
 		while($arrPoll) {
@@ -262,7 +261,7 @@ class FPages extends FDBTool {
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			foreach ($arrLinks as $page) {
-				if($user->userVO->zforumico) {
+				
 						if(isset(FLang::$TYPEID[$page->typeId])) {
 							if(!empty($page->pageIco)) {
 								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco);
@@ -272,7 +271,7 @@ class FPages extends FDBTool {
 							$tpl->setVariable("AVATARNAME", $page->name);
 							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);
 					  }
-				}
+				
 				$tpl->setVariable("PAGENAME", $page->name);
 				$tpl->setVariable("URL", '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
 				if($user->idkontrol===true) {

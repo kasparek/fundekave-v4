@@ -21,7 +21,6 @@ class PageVO extends Fvob {
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
 	'categoryId' => 'categoryId',
-	'menuSecondaryGroup' => 'menuSecondaryGroup',
 	'template' => 'template',
 	'name' => 'name',
 	'nameshort' => 'nameshort',
@@ -55,7 +54,6 @@ class PageVO extends Fvob {
 	var $typeIdChild;
 	var $categoryId;
 	var $categoryVO;
-	var $menuSecondaryGroup;
 	var $template;
 	var $name;
 	var $nameshort;

@@ -116,8 +116,7 @@ class FItemsForm {
 						if (FUser::isUsernameRegistered($data['name'])) FError::add(FLang::$MESSAGE_NAME_USED);
 					}
 					if(!empty($data['categoryNew'])) {
-						$data['category'] = FCategory::tryGet( $data['categoryNew'], $itemVO->pageId, $newCategory);
-					 	//if($newCategory===true) $redirect = true; 	
+						$data['category'] = FCategory::tryGet( $data['categoryNew'], $itemVO->pageId, $itemVO->pageVO->pageIdTop);
 					}
 					if(isset($data['dateStartLocal'])) $data['dateStart'] = FSystem::checkDate($data['dateStartLocal'].(isset($data['dateStartTime'])?' '.$data['dateStartTime']:''));
 					if(isset($data['dateEndLocal'])) $data['dateEnd'] = FSystem::checkDate($data['dateEndLocal'].(isset($data['dateEndTime'])?' '.$data['dateEndTime']:''));

@@ -107,11 +107,6 @@ class page_UserSettings implements iPage {
 
 			$userVO->setXMLVal('webcam','motion',(int) $data['cammotion']);
 
-			$userVO->zbanner = (($data["zbanner"]=='1')?(1):(0));
-			$userVO->zforumico = (($data["zaudico"]=='1')?(1):(0));
-			$userVO->zavatar = (($data["zidico"]=='1')?(1):(0));
-			$userVO->zgalerytype = (($data["galtype"]=='1')?(1):(0));
-
 			//password
 			$pass1 = FSystem::textins($data["pwdreg1"],array('plainText'=>1));
 			$pass2 = FSystem::textins($data["pwdreg2"],array('plainText'=>1));
@@ -147,10 +142,6 @@ class page_UserSettings implements iPage {
 
 	static function build($data=array()) {
     $isWebcamEnabled = false;
-    $isBannerEnabled = false;
-    $isGaleryStyleEnabled = false;
-    $isAvatarHidingEnabled = false;
-
 
 		$user = FUser::getInstance();
 		$userVO = $user->userVO;
@@ -177,22 +168,7 @@ class page_UserSettings implements iPage {
 		$tpl->setVariable("USERJIDLO",$userVO->getXMLVal('personal','food'));
 		$tpl->setVariable("USERHOBBY",$userVO->getXMLVal('personal','hobby'));
 		$tpl->setVariable("USERABOUT",FSystem::textToTextarea($userVO->getXMLVal('personal','about')));
-		
-		if($isBannerEnabled===true) {
-			$tpl->touchBlock('banners');
-			if($userVO->zbanner == 1) $tpl->touchBlock('zbanner');
-		}
-		
-		if($isAvatarHidingEnabled) {
-			if($userVO->zforumico == 1) $tpl->touchBlock('zaudico');
-			if($userVO->zavatar == 1) $tpl->touchBlock('zidico');
-		}
-		
-		if($isGaleryStyleEnabled===true) {
-			$tpl->touchBlock('galeryStyle');
-			if($userVO->zgalerytype == 1) $tpl->touchBlock('galtype');
-		}
-		
+				
 		if($userVO->getXMLVal('settings','bookedorder') == 1) $tpl->touchBlock('bookedorder');
 
     if($isWebcamEnabled===true) {

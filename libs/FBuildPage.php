@@ -227,21 +227,20 @@ class FBuildPage {
 			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
-						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), 0, 'bookButt','fajaxa');
+						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
 					}
-					//if(FCong::get('pocket','enabled')==1) FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-pocketIn&d=page:'.$pageId), FLang::$LABEL_POCKET_PUSH, 0, '', 'fajaxa');
+					
 					if(FRules::getCurrent(2)) {
-
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
-
 					}
 				}
+				//TODO:refactor and use again
 				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
 				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 			if(FRules::get($user->userVO->userId,'sadmi',2)) {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,1);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,array('parentClass'=>'opposite'));
 			}
 
 			FProfiler::write('FBuildPage::baseContent--BUTTONS ADDED');
@@ -309,15 +308,22 @@ class FBuildPage {
 		}
 		if(false!==($pageHeading=FBuildPage::getHeading())) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		//---BODY PARAMETERS
-		//---MAIN MENU
-		$arrMenuItems = FMenu::topMenu();
-		while($arrMenuItems) {
-			$menuItem = array_shift($arrMenuItems);
-			$tpl->setCurrentBlock("topmenuitem");
-			$tpl->setVariable('LINK',$menuItem['LINK']);
-			$tpl->setVariable('TEXT',$menuItem['TEXT']);
-			//if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
-			$tpl->parseCurrentBlock();
+		//---MAIN MENU - cached rendered
+		$cache = FCache::getInstance($user->idkontrol?'s':'f',0); 
+		$menu = $cache->getData('menu'.HOME_PAGE,'main');
+		if($menu===false) {
+			$arrMenuItems = FMenu::topMenu();
+			while($arrMenuItems) {
+				$menuItem = array_shift($arrMenuItems);
+				$tpl->setVariable('LINK',$menuItem['LINK']);
+				$tpl->setVariable('TEXT',$menuItem['TEXT']);
+				//if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
+				$tpl->parse("topmenuitem");
+			}
+			$menu = $tpl->get('menu');
+			$cache->setData($menu,'menu','main');
+		} else {
+			$tpl->setVariable("CACHEDMENU", $menu);
 		}
 		FProfiler::write('FBuildPage--FSystem::topMenu');
 
@@ -335,15 +341,16 @@ class FBuildPage {
 			}
 
 			//---SECONDARY MENU
-			$lomenuItems = FMenu::secondaryMenu($user->pageVO->pageId);
+			$lomenuItems = FMenu::secondaryMenu();
 			if(!empty($lomenuItems)) {
 				foreach($lomenuItems as $menuItem) {
 					$tpl->setVariable('LOLINK',$menuItem['LINK']);
 					$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
-					if(!empty($menuItem['ID'])) $tpl->setVariable('LOID',$menuItem['ID']);
-					if(!empty($menuItem['CLASS'])) $tpl->setVariable('CLASS',$menuItem['CLASS']);
-					if(isset($menuItem['LISTCLASS']))  $tpl->setVariable('LISTCLASS',$menuItem['LISTCLASS']);
-					if(isset($menuItem['TITLE']))  $tpl->setVariable('LOTITLE',$menuItem['TITLE']);
+					$options = $menuItem['options'];
+					if(isset($options['id'])) $tpl->setVariable('LOID',$options['id']);
+					if(isset($options['class'])) $tpl->setVariable('CLASS',$options['class']);
+					if(isset($options['title'])) $tpl->setVariable('LOTITLE',$options['title']);
+					if(isset($options['parentClass'])) $tpl->setVariable('LISTCLASS',$options['parentClass']);
 					$tpl->parse('secondary-menu-item');
 				}
 			}

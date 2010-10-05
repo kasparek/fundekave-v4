@@ -2,11 +2,20 @@ MIGRATION:
 udpate sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null
 udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0)
 udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0)
-
+drop sys_users - skinId,zbanner,zavatar,zforumico,zgalerytype
+drop sys_users_friends - comment
+drop sys_menu_secondary
+drop sys_pages - menuSecondaryGroup
 
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL 
 
 TODO:
+-refactor secondary buttons to options
+-move DB secondary buttons to code
+
+-merge logged users with login - show on click
+
+-update install db and defaults
 -use page_PageItemList to list any list of items???
 -places to sort printPagelinkList
 page_ItemsLive
