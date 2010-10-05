@@ -30,7 +30,7 @@
 	thead, tbody, tfoot, tr, th, td {margin: 0;padding: 0.1em 0.3em;border: 0;empty-cells: show;vertical-align: top;}
 	th {text-align: left;}
 /* PUBLIC DECLARATIONS */
-	.hidden {display: none;}
+	.hidden {display: none !important;}
 	.clearbox {display: table; width: 100%;}
 	.lefttext {text-align: left;}
 	.centertext {text-align: center;}

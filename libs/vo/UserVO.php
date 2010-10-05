@@ -106,14 +106,14 @@ class UserVO extends Fvob {
 	function hasNewMessages(){
 		$dot = "select userIdFrom from sys_users_post where readed=0 AND userIdFrom!='".$this->userId."' AND userId='".$this->userId."' order by dateCreated desc";
 		$npost = FDBTool::getCol($dot);
-		if(count($npost)>0) {
+		if(!empty($npost)) {
 			$this->newPost = count($npost);
 			$this->newPostFrom = FUser::getgidname($npost[0]);
-			return(true);
+			return true;
 		} else {
 			$this->newPost = 0;
 			$this->newPostFrom = '';
-			return(false);
+			return false;
 		}
 	}
 

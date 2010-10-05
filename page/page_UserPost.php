@@ -180,10 +180,8 @@ class page_UserPost implements iPage {
 
 		$displayedPostsArr=array();
 		//---data printing
-
 		if(!empty($arrpost)) {
 			foreach ($arrpost as $post) {
-				$tpl->setCurrentBlock("message");
 				if($post['userIdFrom'] != $user->userVO->userId) $tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
@@ -205,7 +203,7 @@ class page_UserPost implements iPage {
 				$tpl->setVariable("MULINK", $mulink);
 				$tpl->setVariable("MUNAME", $muname);
 				$tpl->setVariable("TEXT", FSystem::postText($post["text"]));
-				$tpl->parseCurrentBlock();
+				$tpl->parse("message");
 
 				/*prectena*/
 				if ($post["userIdFrom"]!=$user->userVO->userId && $post["readed"]==0) {
@@ -218,9 +216,12 @@ class page_UserPost implements iPage {
 			$cache->setData($displayedPostsArr,'displayed','post');
 		}
 
-		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
-
-		$tpl = FBuildPage::getInstance();
-		$tpl->touchBlock('userPostInit');
+		if($data['__ajaxResponse']==true) {
+			FAjax::addResponse('messages','$html',$tpl->get('message'));
+		} else {
+			FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+			$tpl = FBuildPage::getInstance();
+			$tpl->touchBlock('userPostInit');
+		}
 	}
 }
