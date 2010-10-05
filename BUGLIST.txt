@@ -15,6 +15,10 @@ TODO:
 
 -merge logged users with login - show on click
 
+-zpravy predelat na jako chat
+	na titulni pravidelne kontrolovat na novy zpravy
+	v poste pravidelne kontrolovat a stahovat novy zpravy
+
 -update install db and defaults
 -use page_PageItemList to list any list of items???
 -places to sort printPagelinkList
