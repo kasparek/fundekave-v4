@@ -22,13 +22,12 @@ class rh_login {
 			$q = "select count(1) from sys_pages_items where typeId='request' and addon='".$user->userVO->userId."'";
 			$reqNum = FDBTool::getOne($q,'friendrequest','default','s',120);
 			if($reqNum>0)$tpl->setVariable('REQUESTSNUM',$reqNum);
-			/*
-			$recentEvent = $user->userVO->getDiaryCnt();
-			if( $recentEvent > 0 ) $tpl->setVariable('DIARY',$recentEvent);
-			*/
+			
 			if($user->userVO->hasNewMessages()) {
 				$tpl->setVariable('NEWPOST',$user->userVO->newPost);
 				$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
+			} else {
+				$tpl->touchBlock('msgHidden');
 			}
 			
 			$q = "SELECT l.userId, SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik, l.location, p.name, p.nameshort 

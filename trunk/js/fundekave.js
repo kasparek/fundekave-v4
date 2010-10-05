@@ -1,4 +1,21 @@
 /**
+ *MSG CHAT FUNCTIONS
+ */
+function messageCheck() {
+sendAjax('user-hasNewMessage');
+}
+function messageCheckHandler(numMsgs,lastSender) {
+var div = $("#messageNew");
+if(numMsgs>0) {
+if(div.hasClass('hidden')) div.removeClass('hidden');
+$("#numMsg").text(numMsgs);
+$("#recentSender").text(lastSender);
+} else {
+if(!div.hasClass('hidden')) div.addClass('hidden');
+}
+setTimeout(messageCheck,2000);
+} 
+/**
  * FULLSCREEN
  */
 var fullscreenState = {};
@@ -517,6 +534,7 @@ function userInit() {
 	});
 	//galery edit	
 	fotoTotal = $("#fotoTotal").text(); if(fotoTotal > 0 && $('#fotoList').length>0) galeryLoadThumb();
+	messageCheck();
 }
 //all users initialization 
 $(function (){
