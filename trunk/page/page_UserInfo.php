@@ -19,12 +19,12 @@ class page_UserInfo implements iPage {
 				if($user->userVO->userId != $userVO->userId) {
 					if($userVO->isFriend($user->userVO->userId)) {
 						//button remove friend
-						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_REMOVE, 0, 'removeFriendButt','fajaxa confirm','',FLang::$LABEL_FRIEND_REMOVE_CONFIRM);
+						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_REMOVE, array('id'=>'removeFriendButt','class'=>'fajaxa confirm','title'=>FLang::$LABEL_FRIEND_REMOVE_CONFIRM));
 						$isFriend = true;
 					} else {
 						if(!$userVO->isRequest($user->userVO->userId)) {
 							//button send frien request
-							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, 0, 'friendButt','fajaxa');
+							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, array('id'=>'friendButt','class'=>'fajaxa'));
 						} else {
 							FError::add(FLang::$MSG_REQUEST_WAITING,1);
 						}

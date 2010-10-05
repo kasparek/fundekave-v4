@@ -22,11 +22,11 @@ var CLIENT_HEIGHT = {CLIENT_HEIGHT};
 </head>
 <body>
   <div id="pageholder"<!-- BEGIN hasMainBanner --> class="hasMainBanner"<!-- END hasMainBanner -->>
-    <div id="header">
-      <!-- BEGIN menu --><ul id="menu">
-        <!-- BEGIN topmenuitem --><li<!-- BEGIN topmenuactivelink --> class="active"<!-- END topmenuactivelink -->><a href="{LINK}">{TEXT}</a></li>
-				<!-- END topmenuitem -->
-      </ul><!-- END menu -->
+    <div id="header">{CACHEDMENU}
+		<!-- BEGIN menu --><ul id="menu">
+    <!-- BEGIN topmenuitem --><li<!-- BEGIN topmenuactivelink --> class="active"<!-- END topmenuactivelink -->><a href="{LINK}">{TEXT}</a></li>
+		<!-- END topmenuitem -->
+    </ul><!-- END menu -->
     </div>
     <div id="pagebar">
       <div id="mainbar">

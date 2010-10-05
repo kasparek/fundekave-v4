@@ -85,9 +85,6 @@ class page_PageEdit implements iPage {
 				if(isset($data['locked'])) {
 					$pageVO->locked = (int) $data['locked'];
 				}
-				if(!empty($data['menusec'])) {
-					$pageVO->menuSecondaryGroup = (int) $data['menusec'];
-				}
 			}
 			
 			if(!empty($data['category'])) {
@@ -111,7 +108,7 @@ class page_PageEdit implements iPage {
 					$pageVO->save();
 				}
 				if(!empty($data['categoryNew'])) {
-					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId);
+					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId,HOME_PAGE);
 					$redirectAjax = true;
 				}
 
@@ -444,11 +441,8 @@ class page_PageEdit implements iPage {
 		if(!empty($arrTmp)) $tpl->setVariable('CATOPTIONS',FCategory::getOptions($arrTmp,$categoryId));
 
 		//---if pageParam = sa - more options to edit on page
-		//--- nameShort,template,menuSecondaryGroup,categoryId,dateContent,locked,authorContent
+		//--- nameShort,template,categoryId,dateContent,locked,authorContent
 		if($user->pageParam=='sa') {
-			$arrTmp = FDBTool::getAll('select menuSecondaryGroup,menuSecondaryGroup from sys_menu_secondary group by menuSecondaryGroup order by menuSecondaryGroup');
-			$tpl->setVariable('MENUSECOPTIONS',FCategory::getOptions($arrTmp,$pageVO->menuSecondaryGroup));
-
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGEAUTHOR',$pageVO->authorContent);
 

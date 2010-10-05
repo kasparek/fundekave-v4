@@ -8,4 +8,13 @@
 		<li class="recentMails"><a href="?k=fpost">Posta</a> <!-- BEGIN newpost --><span class="messageNew"><a href="?k=fpost">Nove zpravy:</a><br />{NEWPOST} <a href="?k=fpost" class="recentSender">{NEWPOSTFROMNAME}</a><!-- END newpost --></span></li>
 		<li><a href="?k=elogo">Odhlaseni</a></li>
 	</ul>
+<!-- BEGIN friendsonline -->	
+<div><a href="?k=frien">Pratel online: {NUMFRIENDSONLINE}</a>	
+<ul class="sidebarUsersList hidden">
+<!-- BEGIN user --><li>{FRIENDAVATAR} <span class="vcard fn"><a href="{USERLINK}" title="Posledni aktivita {USERACTIVE}">{USERNAME}</a></span><br />
+<!-- BEGIN location --><a href="{USERLOCATIONLINK}" title="Prave sleduje: {USERLOCATIONLONG}">{USERLOCATIONSHORT}</a><br /><!-- END location -->
+</li><!-- END user -->
+</ul>
+</div>
+<!-- END friendsonline -->	
 </div>
