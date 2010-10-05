@@ -8,6 +8,13 @@ function mapHolder(mapEl) {
 	this.mapDataList=[];
 	this.map = null;
 	this.geocoder = new google.maps.Geocoder();
+	this.init = function () {
+		if(!this.map) {
+			this.map = new google.maps.Map(this.mapEl, { mapTypeId:google.maps.MapTypeId.TERRAIN });
+			this.map.setCenter(new google.maps.LatLng(50, 0))
+			this.map.setZoom(5);
+		}
+	}
 }
 
 function mapData() {
@@ -49,7 +56,7 @@ function mapData() {
 }
 
 function initMapData() {
-	$('.mapDisplay').each(function(){
+	$('.mapLarge').each(function(){
 		var holder = new mapHolder(this);
 		$(this).find ('.mapsData').each(function(){
 			var data = new mapData();
@@ -72,16 +79,23 @@ function initMapData() {
 		mapHoldersList.push(holder);
 	});
 }
-
 function initMap() {
+	setListeners('mapThumbLink','click',function(event){
+		event.preventDefault();
+		var id = $(this).attr('id').replace('mapThumb','');
+		$(this).addClass('hidden');
+		$('#map'+id).removeClass('hidden');
+		showMap(id);
+		
+		return false;
+	});
+}
+function showMap(itemId) {
 	if(!mapHoldersList) return;
 	for(var k=0;k<mapHoldersList.length;k++) {
 		var holder = mapHoldersList[k];
-		if(!holder.map) {
-			holder.map = new google.maps.Map(holder.mapEl, { mapTypeId:google.maps.MapTypeId.TERRAIN });
-			holder.map.setCenter(new google.maps.LatLng(50, 0))
-			holder.map.setZoom(5);
-		}
+		if(itemId>0 && $(holder.mapEl).attr('id')!='map'+itemId) continue;
+		holder.init();
 		var bounds = new google.maps.LatLngBounds(),boundNum=0;
 		for(var i=0;i<holder.mapDataList.length;i++) {
 			var data = holder.mapDataList[i];
@@ -118,7 +132,7 @@ function initMap() {
 		}
 		if(boundNum>0) {
 			holder.map.setZoom(24); 
-			setTimeout(function() { holder.map.fitBounds(bounds); })
+			setTimeout( function(){ holder.map.fitBounds(bounds) },250);
 		}
 	}
 };
@@ -186,19 +200,21 @@ function mapSelectorCreate() {
 	data.dataEl = this;
 	mapEditor(data);
 }
-
+var mapEditorView=false;
 function mapEditor(data) {
 	var setListener = false; // style="margin:0 3px 3px 3px;padding:0;"  style="margin:0 0 3px 0;width:100%;"
 	var mapSearchHTML = '<div id="mapSearch" style="float:left;"><input id="mapaddress" value="" style="width:300px;margin-right:5px;margin-top:6px;"/><button id="mapSearchButt">Find</button></div>';
 	
-	if (!mapHoldersList) {
+	if (!mapEditorView) {
 		$("body").append('<div id="mapEditor" style="width:100%;height:100%;">map editor</div>');
 		var holder = new mapHolder(document.getElementById('mapEditor'));
+		holder.init();
 		holder.mapDataList = [data];
 		mapHoldersList = [holder];
+		mapEditorView = true;
 		setListener = true;
 	}
-	initMap();
+	showMap();
 	$("#mapEditor").dialog({
 			modal: true,
 			minWidth:640,
@@ -512,7 +528,7 @@ function datePickerInit() { if(!loadUI(datePickerInit)) return; $.datepicker.set
 //slimbox init
 function slimboxInit() { if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) { $("a[rel^='lightbox']").slimbox({overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100}, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); }); } }
 //fuup init
-function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id').replace(/D/g,".").replace(/S/g,'/'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
+function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 //tabs init
 function tabsInit() { if(!loadUI(tabsInit)) return; $("#tabs").tabs(); };
 //request init

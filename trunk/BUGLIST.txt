@@ -15,9 +15,6 @@ page_Search
 page_PagesList
 
 
--if not signed user "palec" give error only registered can
--if signed user "palec" give error if already tagged
-
 - galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky
 - osobni - opravit nahravani - novy adresar - test

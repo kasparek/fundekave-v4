@@ -62,6 +62,8 @@ class page_PageItemList implements iPage {
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$user->itemVO) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,0,'','fajaxa');
 			}
 				
 		}
@@ -126,11 +128,16 @@ class page_PageItemList implements iPage {
 			 */
 			if($pageVO->typeId!='top') { //no show for live, main etc.
 				$writePerm=1;
-				if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0; 
-				if ($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery') $writePerm = $pageVO->prop('forumSet');
-				if(!empty($itemVO)) {
-					$writePerm = $itemVO->prop('forumSet');
-					$data['simple'] = true;
+				if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
+				if ($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
+					$writePerm = $pageVO->prop('forumSet');	
+					if(!empty($itemVO)) {
+						$writePerm = $itemVO->prop('forumSet');
+						$data['simple'] = true;
+					
+					} else {
+						$writePerm=0;
+					}
 				}
 				if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 					$formItemVO = new ItemVO();
@@ -151,7 +158,7 @@ class page_PageItemList implements iPage {
 			//LIST ITEMS
 			$fItems = new FItems('',FUser::logon());
 			$fItems->setPage($pageVO->pageId);
-			$fItems->hasReactions($pageVO->typeId!='forum' || empty($itemVO) ? false : true);
+			$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
 			if($categoryId > 0) {
 				$fItems->addWhere("categoryId='". $categoryId ."'");
 			}

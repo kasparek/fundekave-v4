@@ -144,15 +144,16 @@ class FAjax_user extends FAjaxPluginBase {
 	}
 
 	static function tag($data) {
-		//$itemId = substr($itemId,1);
 		$itemId = $data['item'];
 
 		if($userId = FUser::logon()) {
+			if(FItemTags::isTagged()) {
+				FError::add(FLang::$MESSAGE_TAG_ONLYONE);
+				return;
+			}
 			//clean cache
-			$cache = FCache::getInstance('s');
-			$cache->invalidateGroup('mytags');
-			$cache = FCache::getInstance('f');
-			$cache->invalidateGroup('items'); //TODO: check all places where items are cache so using this group
+			FItemTags::invalidateCache();
+			FCommand::run(ITEM_UPDATED,new ItemVO($itemId,true));
 			
 			if(!isset($data['a'])) $data['a'] = 'a';
 			
@@ -167,6 +168,8 @@ class FAjax_user extends FAjaxPluginBase {
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
 				FAjax::addResponse('call','fajaxaInit');
 			}
+		} else {
+			FError::add(FLang::$MESSAGE_TAG_REGISTEREDONLY);
 		}
 	}
 

@@ -76,11 +76,11 @@ class FAjax_item extends FAjaxPluginBase {
 	
 	static function image($data) {
 		$user = FUser::getInstance();
-		if(!isset($data['item'])) {
+		if(empty($data['item'])) {
 			//only temporary thumbnail
 			$filename = FFile::getTemplFilename();
 			if($filename===false) return;
-			$tpl = FSystem::tpl('events.edit.tpl.html');
+			$tpl = FSystem::tpl('form.event.tpl.html');
 			$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$filename);
 			$tpl->setVariable('IMAGETHUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
 			$tpl->parse('image');

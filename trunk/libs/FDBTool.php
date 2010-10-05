@@ -607,11 +607,11 @@ class FDBTool {
 
 		//---stats
 		if(FDBTool::profilerEnabled === true) {
-			$text = str_replace(array("\r\n","\n","\r"),' ',$query);
-			if(self::$profilerHandle==-1) self::$profilerHandle = FProfiler::init(FConf::get('settings','logs_path').'FDBTool-query-times.log');
+			$text = preg_replace('/\s\s+/', ' ', $query);
+			if(self::$profilerHandle==-1) self::$profilerHandle = FProfiler::init(FConf::get('settings','logs_path').'FDB.log');
 			FProfiler::write($text,self::$profilerHandle,$start);
 			if((FError::getmicrotime() - $start) > 1.5) { //SLOW LOG
-				if(self::$profilerHandleSlow==-1) self::$profilerHandleSlow = FProfiler::init(FConf::get('settings','logs_path').'FDBTool-query-slow.log',false);
+				if(self::$profilerHandleSlow==-1) self::$profilerHandleSlow = FProfiler::init(FConf::get('settings','logs_path').'FDB-slow.log',false);
 				FProfiler::write($text,self::$profilerHandleSlow,$start);
 			}
 		}
