@@ -1,4 +1,44 @@
 /**
+ * FULLSCREEN
+ */
+var fullscreenState = {};
+function fullscreen(div,next,prev) {
+if(!div && !fullscreenState.element) return;
+if(!div) div = fullscreenState.element;
+if (!div.hasClass('fullscreen')) { // Going fullscreen:
+fullscreenState = {element:div,parentElement: div.parent(),index: div.parent().children().index(div),x: $(window).scrollLeft(), y: $(window).scrollTop()};
+div.addClass('fullscreen');
+$('body').append(div).css('overflow', 'hidden');
+window.scroll(0,0);
+$(document.documentElement).bind('keyup',fullscreenKeypress);
+} else { // Going back to normal:Restore saved values.
+div.removeClass('fullscreen');
+if (fullscreenState.index >= fullscreenState.parentElement.children().length) fullscreenState.parentElement.append(div);
+else div.insertBefore(fullscreenState.parentElement.children().get(fullscreenState.index));
+$('body').css('overflow', 'auto');
+window.scroll(fullscreenState.x, fullscreenState.y);
+$(document.documentElement).unbind('keyup',fullscreenKeypress);
+}
+//TODO:add icon to leave fullscreen
+//TODO:add link to next, prev
+if(next) {}
+if(prev) {}  
+}
+function fullscreenInit() {
+setListeners('galeryFullSwitch','click',fullClick);
+}
+function fullClick() {
+var div = $('#fullscreenBox');
+$(div).append('<a href="#" id="fullscreenLeave">Leave fullscreen</a>');
+$('#detailFoto',div).css('width','90%').css('height','90%').css('max-width','90%').css('max-height','90%');
+$("#fullscreenLeave",div).click(function(){ $('#fullscreenLeave').remove(); fullscreen(); return false;});
+fullscreen(div);
+return false;
+}
+function fullscreenKeypress(event) {
+if(event.keyCode==27) fullscreen();
+} 
+/**
  * GOOGLE MAPS
  */ 
 var mapHoldersList=null,infoWindow=null;
@@ -498,6 +538,7 @@ $(function (){
 	initMapSelector();
 	if($(".hash").length>0) {hashchangeInit();}
 	slimboxInit();
+	fullscreenInit();
 });
 //LOAD UI scripts
 function loadUI(callback){

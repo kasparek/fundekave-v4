@@ -129,12 +129,11 @@ class page_PageItemList implements iPage {
 			if($pageVO->typeId!='top') { //no show for live, main etc.
 				$writePerm=1;
 				if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
-				if ($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
-					$writePerm = $pageVO->prop('forumSet');	
+				if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
+					$writePerm = $pageVO->prop('forumSet');
 					if(!empty($itemVO)) {
-						$writePerm = $itemVO->prop('forumSet');
+						if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
 						$data['simple'] = true;
-					
 					} else {
 						$writePerm=0;
 					}
@@ -147,7 +146,7 @@ class page_PageItemList implements iPage {
 					if($searchStr!==false) $data['text'] = $searchStr;
 					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 				}
-				if($writePerm == 2) {
+				if($writePerm == 2 && !$user->idkontrol) {
 					$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
 				}
 			}

@@ -72,6 +72,19 @@
 /* GOOGLE MAPS styles */
 .mapSmall {float: right;clear: right;}
 .mapLarge {width: 100%;height: 600px;}
+.fullscreen {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000000;
+}
 
 /* PAGER */
 div.pagination {clear: left;margin: 0.3em 0;padding: 1em 0;}
