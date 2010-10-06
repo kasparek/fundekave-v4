@@ -115,6 +115,7 @@ static $ERROR_REGISTER_TOLONGNAME = 'Jméno je příliš dlouhé';
 static $ERROR_REGISTER_NOTALLOWEDNAME = 'Jméno muze obsahovat pouze pismena, cisla a znaky bez diakritiky';
 static $ERROR_REGISTER_NAMEEXISTS = 'Uživatelské jméno již exituje';
 static $MESSAGE_USERNAME_NOTEXISTS = 'Uživatelské jméno neexistuje';
+static $MESSAGE_RECIPIENT_EMPTY = 'Zadejte alespon jedno jmeno';
 static $ERROR_REGISTER_PASSWORDNOTSAFE = 'Heslo se shoduje se jménem a to není příliš bezpečné';
 static $ERROR_REGISTER_PASSWORDTOSHORT = 'Heslo je příliš krátké';
 static $ERROR_REGISTER_PASSWORDDONTMATCH = 'Hesla se neshodují';
