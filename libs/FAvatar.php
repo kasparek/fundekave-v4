@@ -67,12 +67,12 @@ class FAvatar {
 
 	static function profileBasePath() {
 		$user = FUser::getInstance();
-		return FConf::get('galery','sourceServerBase') . $user->userVO->name . '/profile';
+		return FConf::get('galery','sourceServerBase') . strtolower($user->userVO->name) . '/profile';
 	}
 
 	static function profileBaseUrl($dir=null) {
 		$user = FUser::getInstance();
-		return FConf::get('galery','sourceUrlBase') . $user->userVO->name . '/profile';
+		return FConf::get('galery','sourceUrlBase') . strtolower($user->userVO->name) . '/profile';
 	}
 
 }

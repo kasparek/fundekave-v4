@@ -73,7 +73,7 @@ class FUser {
 		$pass = trim($pass);
 		if (!empty($name) && !empty($pass)) {
 			//---login query
-			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and u.name='".$name."' and (u.password='".$pass."' or u.password='".md5($pass)."')";
+			$dot = "SELECT u.userId FROM sys_users as u WHERE (deleted is null or deleted=0) and (u.email='".$name."' or u.name='".$name."') and (u.password='".$pass."' or u.password='".md5($pass)."')";
 			$gid = FDBTool::getOne($dot);
 			if( $gid > 0 ) {
 				$userVO = new UserVO($gid, true);
@@ -329,18 +329,23 @@ class FUser {
 		$pwdreg1 = trim($data["pwdreg1"]);
 		$pwdreg2 = trim($data["pwdreg2"]);
 		if(strlen($jmenoreg)<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
-		elseif (strlen($jmenoreg)>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
-		elseif (!FUser::checkUsername($jmenoreg)) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
-		elseif (FUser::isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
+		elseif(strlen($jmenoreg)>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
+		elseif(!FUser::checkUsername($jmenoreg)) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+		elseif(FUser::isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
 		if($jmenoreg==$pwdreg1) FError::add(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 		if(strlen($pwdreg1)<2) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 		if($pwdreg1!=$pwdreg2) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
+		$safeJmenoreg = FSystem::safeText($jmenoreg);
+		if($jmenoreg!=$safeJmenoreg) FError::add(FLang::$ERROR_REGISTER_BADUSERNAME.$safeJmenoreg);
 
 		//validate email
 		$data['email'] = trim($data['email']);
 		require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
 		if(true!==$validator->isValid($data['email']))  FError::add(FLang::$ERROR_INVALID_EMAIL);
+		//TODO: check if email is already registered
+		$db = FDBConn::getInstance();
+		if(FDBTool::getOne("select count(1) from sys_users where email='".$db->escape($data['email'])."'")) FError::add(FLang::$ERROR_USED_EMAIL);
 
 		if(FError::is()===false){
 			$userVO = new UserVO();

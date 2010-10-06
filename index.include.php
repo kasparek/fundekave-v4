@@ -141,15 +141,6 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 						$imagePath = '';
 					}
 					break;
-				case 'pava':
-					$imageName = 'pageAvatar-'.$pageId.'.jpg';
-					$imagePath = ROOT_PAGE_AVATAR.$imageName;
-					//update db
-					$pageVO = new PageVO($pageId,true);
-					$pageVO->saveOnlyChanged = true;
-					$pageVO->set('pageIco',$imageName);
-					$pageVO->save();
-					break;
 				case 'tempStore':
 					//---upload in tmp folder in user folder and save filename in db cache
 					$imagePath = FFile::setTempFilename($filename);

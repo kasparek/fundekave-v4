@@ -115,7 +115,7 @@ class page_UserPost implements iPage {
 		
 		if($totalItems > $perPage) {
 			$pagerExtraVars['m']='post-page';
-			$options = array('extraVars'=>$pagerExtraVars,'class'=>'fajaxa hash','urlVar'=>'d=p:'); //ajax settings
+			$options = array('extraVars'=>$pagerExtraVars,'class'=>'fajaxa hash','urlVar'=>'d=p','urlSep'=>':'); //ajax settings
 			if(!empty($data['p'])) $options['manualCurrentPage'] = $data['p'];
 			$pager = new FPager($totalItems,$perPage,$options);
 			$from=($pager->getCurrentPageID()-1) * $perPage;

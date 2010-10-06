@@ -261,17 +261,17 @@ class FPages extends FDBTool {
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			foreach ($arrLinks as $page) {
-				
+				 if(FConf::get('settings','pageAvatars')==1) {
 						if(isset(FLang::$TYPEID[$page->typeId])) {
 							if(!empty($page->pageIco)) {
-								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco);
+								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco); //TODO: url_page_avatar does not exist anymore
 							} else if(!empty($page->typeId)) {
 								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId));
 							}
 							$tpl->setVariable("AVATARNAME", $page->name);
 							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);
 					  }
-				
+				}
 				$tpl->setVariable("PAGENAME", $page->name);
 				$tpl->setVariable("URL", '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
 				if($user->idkontrol===true) {

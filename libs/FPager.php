@@ -5,7 +5,8 @@ class FPager {
     var $currentPage = 1;
     var $manualCurrentPage = 0;
     var $perPage = 20;
-    var $urlVar = 'p=';
+    var $urlVar = 'p';
+    var $urlSep = '=';
     var $itemData = array();
     var $extraVars = array();
     var $bannvars = array();
@@ -83,7 +84,7 @@ class FPager {
         	$hash = '#'.$this->hash;
         }
         
-        $pagestring = '?' . $extraVarsStr . $this->urlVar;
+        $pagestring = '?' . $extraVarsStr . $this->urlVar . $this->urlSep;
 
         //other vars
         $prev = $page - 1;									//previous page is page - 1

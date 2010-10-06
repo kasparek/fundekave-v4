@@ -15,6 +15,10 @@ TODO:
 
 -merge logged users with login - show on click
 
+-testovat - galery fullscreen
+-fullscreen - current item(will be useful for random slidshow)/next/prev/exit button/play/pause(simulate click on item every 5sec)
+
+-testovat - posta/chat
 -zpravy predelat na jako chat
 	na titulni pravidelne kontrolovat na novy zpravy
 	v poste pravidelne kontrolovat a stahovat novy zpravy

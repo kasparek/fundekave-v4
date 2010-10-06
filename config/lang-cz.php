@@ -110,10 +110,12 @@ static $ERROR_BLOG_NAMEEXISTS = 'Takove jmeno blogu jiz existuje';
 
 static $REGISTER_WELCOME = '<strong>REGISTRACE PROBĚHLA ÚSPĚŠNĚ</strong><br />Vitejte na Fundekave. Zde si muzete nastavit svuj profil.';
 static $ERROR_INVALID_EMAIL = 'Neplatny email';
+static $ERROR_USED_EMAIL = 'Tento email je jiz u nas registrovany';
 static $ERROR_REGISTER_TOSHORTNAME = 'Jméno je příliš krátké';
 static $ERROR_REGISTER_TOLONGNAME = 'Jméno je příliš dlouhé';
 static $ERROR_REGISTER_NOTALLOWEDNAME = 'Jméno muze obsahovat pouze pismena, cisla a znaky bez diakritiky';
 static $ERROR_REGISTER_NAMEEXISTS = 'Uživatelské jméno již exituje';
+static $ERROR_REGISTER_BADUSERNAME = 'Uživatelské jméno obsahuje nepovolene znaky. Zkuste tohle:';
 static $MESSAGE_USERNAME_NOTEXISTS = 'Uživatelské jméno neexistuje';
 static $MESSAGE_RECIPIENT_EMPTY = 'Zadejte alespon jedno jmeno';
 static $ERROR_REGISTER_PASSWORDNOTSAFE = 'Heslo se shoduje se jménem a to není příliš bezpečné';
