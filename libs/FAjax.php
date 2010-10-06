@@ -33,24 +33,25 @@ class FAjax {
 		//---process
 		$dataProcessed = array();
 		if($ajax == true) {
-			$dataXML = stripslashes( $data );
-
-			$xml = new SimpleXMLElement($dataXML);
+			if(is_array($data)) $dataProcessed = $data;
+			else {
+				$dataXML = stripslashes( $data );
+				$xml = new SimpleXMLElement($dataXML);
 				
-			foreach($xml->Request->Item as $item) {
-				$k = (String)$item['name'];
-				$v = (String)$item;
-				if(isset($dataProcessed[ $k ])) {
-					if(is_array($dataProcessed[ $k ])) {
-						$dataProcessed[ $k ][] = $v;
+				foreach($xml->Request->Item as $item) {
+					$k = (String)$item['name'];
+					$v = (String)$item;
+					if(isset($dataProcessed[ $k ])) {
+						if(is_array($dataProcessed[ $k ])) {
+							$dataProcessed[ $k ][] = $v;
+						} else {
+							$dataProcessed[ $k ] = array( $dataProcessed[ $k ], $v);
+						}
 					} else {
-						$dataProcessed[ $k ] = array( $dataProcessed[ $k ], $v);
+						$dataProcessed[ $k ] = $v;
 					}
-				} else {
-					$dataProcessed[ $k ] = $v;
 				}
 			}
-				
 			$dataProcessed['__ajaxResponse'] = true;
 		} else {
 			if(is_array($data)) {

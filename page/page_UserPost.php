@@ -1,24 +1,38 @@
 <?php
+/**
+ *  TODO:
+ *  fajax_class
+ *  -js/ajax - on send clean textarea, refresh only msgs  
+ *           - on delete,perpage refresh only msgs
+ *           - on search refresf whole page - add data['refreshPage']
+ *           - if any checkbox is checked (user is going to delete) do not update msgs list - do not generate list so it is not marked readed
+ *  - checked if any sent msgs are readed by recipient and update list also   
+ *  - if updating message because of unread
+ *    reset pager if on more than 1st page
+ *  	reset search 
+ **/   
 include_once('iPage.php');
 class page_UserPost implements iPage {
 
 	static function process($data) {
+		$redirect = false;
 		$redirParam = '';
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('s');
-		//---action part - cache -pp,filtr
+		
 		$redir = false;
 		if(isset($data['__get']['filtr'])) {
 			if($data['__get']['filtr'] == 'cancel') {
 				$cache->invalidateData($user->pageVO->pageId, 'filter');
 			}
 		}
-
+		if(!isset($data['action'])) $data['action'] = false;
+		if(isset($data["send"])) $data['action']='send';
 		//---SEND MESSAGE
-		if(isset($data["send"])) {
-			$data["zprava"] = FSystem::textins($data["zprava"],array('plainText'=>1)));
-			$data["recipient"] = FSystem::textins($data["recipient"]));
-			if(empty($data["zprava"])) FError::add(FLang::$MESSAGE_EMPTY);
+		if($data['action']=='send') {
+			$data["text"] = FSystem::textins($data["text"],array('plainText'=>1));
+			$data["recipient"] = FSystem::textins($data["recipient"]);
+			if(empty($data["text"])) FError::add(FLang::$MESSAGE_EMPTY);
 			if(!empty($data["recipient"])) {
 				$recipientList=explode(",",$data["recipient"]);
 				foreach ($recipientList as $usrname) {
@@ -30,14 +44,15 @@ class page_UserPost implements iPage {
 			}
 			if(empty($arrto)) {
 				FError::add(FLang::$MESSAGE_RECIPIENT_EMPTY);
-				FUserDraft::save('postText',$data["zprava"]);
+				FUserDraft::save('postText',$data["text"]);
 			}
 			
 			if(!Ferror::is()) {
 					foreach ($arrto as $userId){
-						FMessages::send($userId,$data["zprava"],$user->userVO->userId);
+						FMessages::send($userId,$data["text"],$user->userVO->userId);
 					}
 					$redirParam = '#dd';
+					$redirect = true;
 					$cache->invalidateData($user->pageVO->pageId, 'filter');
 			}
 		}
@@ -48,13 +63,14 @@ class page_UserPost implements iPage {
 					$user->pageVO->perPage($data["perpage"]);
 					break;
 				case 'search':
-					$cache->setData(array(FSystem::textins($data["recipient"],array('plainText'=>1)),FSystem::textins($data["zprava"],array('plainText'=>1))), $user->pageVO->pageId, 'filter');
+					$cache->setData(array(FSystem::textins($data["recipient"],array('plainText'=>1)),FSystem::textins($data["text"],array('plainText'=>1))), $user->pageVO->pageId, 'filter');
+					$data['refreshPage'] = true;
 				break;
 				case 'delete':
 				case 'deletebetween':
 				if(empty($data["del"])) break;  
 				if($saction=='deletebetween' && count($data["del"]) > 1) {
-					$displayedMsgs = &$cache->getPointer('user');
+					$displayedMsgs = &$cache->getPointer('displayedMsgs');
 					if(empty($displayedMsgs)) break;
 					$firstIndex = array_search($first,$data["del"][0]);
 					$len = array_search($last,$data["del"][(count($data["del"])-1)]) - $firstIndex;
@@ -62,23 +78,24 @@ class page_UserPost implements iPage {
 					$displayedMsgs = null;
 				}
 				FMessages::delete($data["del"]);
+				$redirect = true;
 			 break;
 			}
 		}
 		//---redirect
 		if(empty($data['__ajaxResponse'])) {
-			FHTTP::redirect(FSystem::getUri($redirParam));
+			if($redirect) FHTTP::redirect(FSystem::getUri($redirParam));
+		} else {
+			return $data;
 		}
 
 	}
 
 	static function build($data=array()) {
-		$user->pageVO->showHeading = false;                                         
 		$user = FUser::getInstance();
+		$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('s');
-		
-		
-
+													
 		$msgs = new FMessages($user->userVO->userId);
 		//load from filter
 		if(($filter = $cache->getData('text','filtrPost')) !== false) {
@@ -95,8 +112,12 @@ class page_UserPost implements iPage {
 
 		$perPage = $user->pageVO->perPage();
 		$from = 0;
+		
 		if($totalItems > $perPage) {
-			$pager = new FPager($totalItems,$perPage,array('extraVars'=>$pagerExtraVars));
+			$pagerExtraVars['m']='post-page';
+			$options = array('extraVars'=>$pagerExtraVars,'class'=>'fajaxa hash','urlVar'=>'d=p:'); //ajax settings
+			if(!empty($data['p'])) $options['manualCurrentPage'] = $data['p'];
+			$pager = new FPager($totalItems,$perPage,$options);
 			$from=($pager->getCurrentPageID()-1) * $perPage;
 		}
 
@@ -124,6 +145,7 @@ class page_UserPost implements iPage {
 		$tpl = FSystem::tpl('users.post.tpl.html');
 
 		$tpl->setVariable('FORMACTION',FSystem::getUri());
+		$tpl->setVariable('M','post-submit');
 		$tpl->touchBlock('selectedfriend');
 		$tpl->touchBlock('friendscombo');
 
@@ -142,8 +164,6 @@ class page_UserPost implements iPage {
 		}
 
 		if($totalItems > $perPage) {
-			$tpl->setVariable('TOPPAGER',$pager->links);
-			$tpl->setVariable('TOTAL',$totalItems);
 			$tpl->setVariable('BOTTOMPAGER',$pager->links);
 		}
 
@@ -158,7 +178,7 @@ class page_UserPost implements iPage {
 		//---data printing
 		if(!empty($arrpost)) {
 			$cache = FCache::getInstance('s');
-			$displayedMsgs = &$cache->getPointer('user');
+			$displayedMsgs = &$cache->getPointer('displayedMsgs');
 			$displayedMsgs = array();
 			foreach ($arrpost as $post) {
 				$displayedMsgs[] = $post['postId'];
@@ -193,10 +213,13 @@ class page_UserPost implements iPage {
 		}
 
 		if(!empty($data['__ajaxResponse'])) {
-			if(isset($data['refreshPage')) {
+			if(isset($data['refreshPage'])) {
 			  FAjax::addResponse('messagesBox','$html',$tpl->get());
 			} else {
 				FAjax::addResponse('messages','$html',$tpl->get('message'));
+				if(!empty($data['refreshPager'])) {
+					FAjax::addResponse('pager','$html',$pager->links);
+				}
 			}
 		} else {
 			FBuildPage::addTab(array("MAINDATA"=>$tpl->get(),"MAINID"=>'messagesBox'));

@@ -1,9 +1,26 @@
 /**
  *MSG CHAT FUNCTIONS
  */
+var unreadSentList;
 function messageCheck() {
-sendAjax('user-hasNewMessage');
+if(!unreadSentList) $(".hentry.unread").each(function(){if(!unreadSentList) unreadList=[]; unreadSentList.push($(this).attr('id')); });
+if(unreadSentList) addXMLRequest('unreadedSent', unreadSentList.join(','));
+var data = hashData();
+if(data['p']) addXMLRequest('p', data['p']); 
+sendAjax('post-hasNewMessage');
 }
+function messageSentReaded(p) {
+    unreadSentList=null;
+    postList = p.split(',');
+    for(i=0;i<postList.length;i++) {
+    	var div = $("#".postList[i]);
+    	if(div.length>0) {
+    	div.removeClass('unread');
+    	$('stats',div).hide();
+    	}
+    }
+}
+var messageCheckTimeout;
 function messageCheckHandler(numMsgs,lastSender) {
 var div = $("#messageNew");
 if(numMsgs>0) {
@@ -13,7 +30,8 @@ $("#recentSender").text(lastSender);
 } else {
 if(!div.hasClass('hidden')) div.addClass('hidden');
 }
-setTimeout(messageCheck,2000);
+if(messageCheckTimeout) clearTimeout(messageCheckTimeout);
+messageCheckTimeout = setTimeout(messageCheck,5000);
 } 
 /**
  * FULLSCREEN
@@ -349,13 +367,21 @@ function findAddress() {
 var hashOld='';
 function hashchangeInit() {
 	$(window).hashchange( function(){
-		if(location.hash=='' && hashOld.length>0) window.location.reload();
 		if(location.hash != hashOld) {
+			if(location.hash=='' && hashOld.length>0) window.location.reload();
 			hashOld = location.hash;
 			fajaxaAction(location.hash.replace('#',''));
 		} 
   });
 };
+function hashReset(hash) {
+document.location.hash = hashOld = hash;
+}
+function hashData(d) {
+if(!d) { var h = document.location.hash.replace('#','').split('/'); d=h[1]; }
+var arr = d.split(';'),data={};
+while (arr.length > 0) { var o = arr.shift(), kv = o.split(':'); data[kv[0]] = kv[1]; }
+}
 
 /**
  * IMAGE UPLOADING TOOL HANDLERS - FUUP
@@ -430,9 +456,9 @@ function fajaxaSend(event) {
 	if($(event.currentTarget).hasClass('confirm')) {
 		if(!confirm($(event.currentTarget).attr("title"))) return;
 	}
-	var k = gup('k', this.href),id = $(this).attr("id");
+	var k = gup('k', this.href),id = $(this).attr("id"),m=gup('m',this.href);
 	if(!k) k = 0;
-	var action = gup('m',this.href)+'/'+gup('d',this.href)+'/'+k;
+	var action = m+'/'+gup('d',this.href)+'/'+k;
 	if(id) { action += '/'+id; } 
 	if($(this).hasClass('hash')) { document.location.hash = action;	return;	}
 	fajaxaAction(action);

@@ -192,7 +192,11 @@ if($processMain===true) {
 		}
 		if(strpos($_REQUEST['m'],'-x')!==false) {
 			if(empty($data)) {
-				$data = $HTTP_RAW_POST_DATA;
+				if(!empty($HTTP_RAW_POST_DATA)) {
+					$data = $HTTP_RAW_POST_DATA;
+				} else {
+					FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
+				}
 			} else {
 				if(strpos($data,'<')===false) {
 					$data = base64_decode($data);
