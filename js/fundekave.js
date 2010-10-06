@@ -523,14 +523,16 @@ function userInit() {
 	markItUpSwitchInit();
 	draftInit();
 	// ---message page
-	$("#prokoho").change(avatarfrominput);
-	//TODO:check what saction is for
+	$("#recipient").change( avatarfrominput );
+	$('#ppinput').hide();
 	$("#saction").change( function(evt) { if($("#saction option:selected").attr('value') == 'setpp') $('#ppinput').show(); else $('#ppinput').hide(); });
-	$("#recipientcombo").change( function(evt) {
+	$("#recipientList").change( function(evt) {
 		var str = "";
-		$("#recipientcombo option:selected").each( function() { str += $(this).text() + " "; });
-		$("#prokoho").attr("value", str);
-		$("#recipientcombo").attr("selectedIndex", 0);
+		var combo = $("#recipientList");
+		if(combo.attr("selectedIndex")>0) $("#recipientList option:selected").each( function() { str += $(this).text() + " "; });
+		$("#recipient").attr("value", str);
+		combo.attr("selectedIndex", 0);
+		avatarfrominput();
 	});
 	//galery edit	
 	fotoTotal = $("#fotoTotal").text(); if(fotoTotal > 0 && $('#fotoList').length>0) galeryLoadThumb();
@@ -621,7 +623,7 @@ function hasScript(filename) { var i,ret = false, scripts = $("script"); for(i=0
 function getCSS(filename,callback) { if(hasCSS(filename)) return true; $.getCSS(filename,callback); return false; }
 function hasCSS(filename) { var ret = false, sheets = $("link"); for(var i=0;i<sheets.length;i++) { if($(sheets[i]).attr('href') == filename) { ret = true; } }; return ret; };
 //ajax simple functions
-function avatarfrominput(evt) {addXMLRequest('username', $("#prokoho").attr("value"));addXMLRequest('result', "recipientavatar");addXMLRequest('resultProperty', '$html');addXMLRequest('call', 'fajaxaInit');sendAjax('post-avatarfrominput');}
+function avatarfrominput(evt) {addXMLRequest('username', $("#recipient").attr("value"));addXMLRequest('call', 'fajaxaInit');sendAjax('post-avatarfrominput');}
 /* RESIZE HANDLER - CLIENT INFO TO SERVER */ 
 var resizeTimeout;
 function onResize() { if(resizeTimeout) { clearTimeout( resizeTimeout ); }; resizeTimeout = setTimeout(sendClientInfo,500); };

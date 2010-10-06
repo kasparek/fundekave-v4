@@ -16,6 +16,8 @@ FError::init(PHPLOG);
 //--------------------------------------------------------config + constant init
 FConf::getInstance(CONFIG_FILENAME);
 date_default_timezone_set(FConf::get('internationalization','timezone'));
+setlocale(LC_CTYPE, 'cs_CZ.utf8');
+setlocale(LC_COLLATE, 'cs_CZ.utf8');
 //-------------------------------------------------------------time for debuging
 FProfiler::write('START');
 

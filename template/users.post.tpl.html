@@ -1,26 +1,19 @@
-<form action="{FORMACTION}" method="post" >
+<form action="{FORMACTION}" method="post" class="fajaxform">
 <fieldset>
-
-  <div id="recipientcombo">
+<div id="recipientcombo">
 <!-- BEGIN friendscombo -->
-  <select id="prokoho_book" name="prokoho_book">
-  	<option value="">-- Adresát --</option>
-    <!-- BEGIN friendscombovalue -->	
-  	<option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option>
-    <!-- END friendscombovalue -->
-  </select> 
+<select id="recipientList" name="recipientList">
+<option value="">-- Adresát --</option>
+<!-- BEGIN friendscombovalue --><option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option><!-- END friendscombovalue -->
+</select> 
 <!-- END friendscombo -->
-  </div>
-<input type="text" id="prokoho" name="prokoho" value="{RECIPIENTS}" class="long"><br />
-
+</div>
+<input type="text" id="recipient" name="recipient" value="{RECIPIENTS}" class="long"><br />
 <!-- BEGIN selectedfriend -->
-  <div id="recipientavatar">
-  	{SELECTEDFRIENDAVATAR}<br />
-    {SELECTEDFRIENDNAME}
-  </div>
+<div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div>
 <!-- END selectedfriend -->
 
-<textarea name="zprava" id="postText" class="draftable markitup">{MESSAGE}</textarea>{MESSAGETOOLBOX}<br />
+<textarea name="zprava" id="postText" class="draftable markitup expand">{MESSAGE}</textarea><br />
 <!-- BEGIN hiddenwho -->
 <input type="hidden" NAME="who" VALUE="{HIDDENWHO}" />
 <!-- END hiddenwho -->
@@ -31,7 +24,7 @@
 <option value="search">Hledat</option>
 <option value="setpp">Pocet zprav na stranku</option>
 </select> 
-<input id="ppinput" type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort hidden" />
+<input id="ppinput" type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
 <input type="submit" name="special" value="Proved" class="button">
 </fieldset>
 
