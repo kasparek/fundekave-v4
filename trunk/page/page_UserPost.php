@@ -216,7 +216,7 @@ class page_UserPost implements iPage {
 			$cache->setData($displayedPostsArr,'displayed','post');
 		}
 
-		if($data['__ajaxResponse']==true) {
+		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('messages','$html',$tpl->get('message'));
 		} else {
 			FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
