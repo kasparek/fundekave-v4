@@ -378,9 +378,6 @@ class page_PageEdit implements iPage {
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
 
-		if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco);
-
-
 		if($user->pageParam!='a') {
 			$tpl->touchBlock('permissionstab');
 			$rules = new FRules($pageVO->pageId, $pageVO->userIdOwner);
@@ -392,7 +389,10 @@ class page_PageEdit implements iPage {
 			 $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
 			 */
 
-			$tpl->touchBlock('pageavatarupload');
+			if(FConf::get('settings','pageAvatars')==1) {
+				if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco);
+				$tpl->touchBlock('pageavatarupload');
+			}
 		}
 
 		if($pageVO->typeId == 'forum') {
