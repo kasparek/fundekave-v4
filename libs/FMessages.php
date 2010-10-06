@@ -1,22 +1,33 @@
 <?php
 class FMessages {
 
+	private $userId;
+	
+	public $searchText;
+	public $searchUser;
+
+	function __contruct($userId,$searchText=null,$searchUser=null) {
+	    $this->userId = $userId;
+	    $this->searchText = $searchText;
+	    $this->searchUser = $searchUser;
+	}
+	
+	function total() {
+		return $this->load(0,0,true);
+	}
+	
 	//---get post
-	static function load($userId, $from, $perpage, $count=false) {
-		$base = ' FROM sys_users_post WHERE userId='.$userId;
-		$cache = FCache::getInstance('s');
-
-		if($filterText = $cache->getData('text','filtrPost')) $base.=" AND lower(text) LIKE '%".strtolower($filterText)."%'";
-		if($filterUsername = $cache->getData('name','filtrPost')) {
-			$filterUserId = FUser::getUserIdByName($filterUsername);
-			if($filterUserId > 0) $base.=" AND (userIdTo='".$filterUserId."' OR userIdFrom='".$filterUserId."')";
+	function load($from, $perpage, $count=false) {
+		$base = ' FROM sys_users_post WHERE userId='.$this->userId;
+		if(!empty($this->searchText)) $base.=" AND lower(text) LIKE '%".strtolower($this->searchText)."%'";
+		if(!empty($this->searchUser)) {}
+			$searchUserId = FUser::getUserIdByName($this->searchUser);
+			if($searchUserId > 0) $base.=" AND (userIdTo='".$searchUserId."' OR userIdFrom='".$searchUserId."')";
 		}
-
-		$d_post = "SELECT postId,userId,userIdTo,userIdFrom,
-    date_format(dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(dateCreated,'%Y-%m-%dT%T')".$base." ORDER BY dateCreated DESC";
 	 if($count==true) return FDBTool::getOne('select count(1) '.$base);
 	 else {
-	 	$arr = FDBTool::getAll($d_post.' limit '.$from.','.$perpage);
+	 	$q = "SELECT postId,userId,userIdTo,userIdFrom,date_format(dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(dateCreated,'%Y-%m-%dT%T')".$base." ORDER BY dateCreated DESC";
+	 	$arr = FDBTool::getAll($q.' limit '.$from.','.$perpage);
 	 	if(!empty($arr)) {
 	 		foreach ($arr as $row) {
 	 			$arrRet[] = array('postId'=>$row[0],'userId'=>$row[1],'userIdTo'=>$row[2],
@@ -36,8 +47,6 @@ class FMessages {
 	static function parseMessage($arrVars,$template) {
 		$message = $template;
 		if(!empty($arrVars)) foreach ($arrVars as $k=>$v) $message = str_replace('{'.$k.'}',$v,$message);
-		$message = str_replace('\"','"',$message);
-		$message = str_replace('"','\"',$message);
 		return $message;
 	}
 	/**
@@ -63,18 +72,11 @@ class FMessages {
 	 */
 	static function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
-		$zprava = str_replace("'","\'",$zprava);
-		
-		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom)
-		values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)";
-		FDBTool::query($dot);
+		$db = FDBConn::getInstance();
+		$komu = $kom*1;$odkoho=$odkoho*1; $zprava = $db->escape($zprava); 
+		FDBTool::query("insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)");
 		$maxid = FDBTool::getOne("SELECT LAST_INSERT_ID()");
-		$dot = "insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed)
-		values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)";
-		FDBTool::query($dot);
-		//---invalidate cache
-		$cache = FCache::getInstance('s');
-		$cache->invalidateData('postwho');
+		FDBTool::query("insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed) values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)");
 	}
 
 	/**
@@ -85,32 +87,5 @@ class FMessages {
 	static function delete($messageId) { //--might be array or not
 		if(!is_array($messageId)) $messageId[] = $messageId;
 		FDBTool::query("delete from sys_users_post where postId in (" . implode(',',$messageId).")");
-		//---invalidate cache
-		$cache = FCache::getInstance('s');
-		$cache->invalidateData('postwho');
-	}
-
-	/**
-	 * sends diary notifications to all users needed
-	 * @return number - sum how many notifications sent
-	 */
-	static function diaryNotifications(){
-		$sentCount = 0;
-		$fQuery = new FDBTool('sys_users_diary');
-		$fQuery->setSelect("diaryId, name, date_format(dateEvent,'{#date_local#}'), everyday, reminder, userId, date_format(dateEvent,'{#date_iso#}')");
-		$fQuery->setWhere("DATE_SUB(dateEvent,INTERVAL (reminder-1) DAY)<=NOW() AND reminder != 0");
-		$arr = $fQuery->getContent();
-		if(!empty($arr)){
-			foreach($arr as $row){
-				if($row[3]==1) $newprip=$row[4]-1; else $newprip=0;
-				$dot = "UPDATE sys_users_diary SET reminder=$newprip WHERE diaryId=".$row[0];
-				FDBTool::query($dot);
-				$arrVars = array('LINK'=>BASESCRIPTNAME.'?k=fdiar&ddate='.$row[6],'NAME'=>$row[1],'DATE'=>$row[2]);
-				$message = FMessages::parseMessage($arrVars,MESSAGE_DIARY_REMINDER);
-				FMessages::send($row[5],$message);
-				$sentCount++;
-			}
-		}
-		return $sentCount;
 	}
 }
