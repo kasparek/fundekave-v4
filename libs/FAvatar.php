@@ -14,7 +14,8 @@ class FAvatar {
 			$userId = $userVO->userId; 
 		}
 		if($userId > 0) {
-			if(!empty($userVO->avatar)) $avatar = $userVO->avatar; //'default/profile/'.$userId.'.jpg';
+			if(!isset($userVO)) $userVO = new UserVO($userId,true);
+			if(!empty($userVO->avatar)) $avatar = strtolower($userVO->name).'/profile/'.$userVO->avatar; //'default/profile/'.$userId.'.jpg';
 		}
 		return $urlBase.$avatar;
 	}
