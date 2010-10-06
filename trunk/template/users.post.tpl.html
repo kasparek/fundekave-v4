@@ -1,4 +1,5 @@
 <form action="{FORMACTION}" method="post" class="fajaxform">
+<input type="hidden" name="m" value="{M}"/>
 <fieldset>
 <div id="recipientcombo">
 <!-- BEGIN friendscombo -->
@@ -13,7 +14,7 @@
 <div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div>
 <!-- END selectedfriend -->
 
-<textarea name="zprava" id="postText" class="draftable markitup expand">{MESSAGE}</textarea><br />
+<textarea name="text" id="postText" class="draftable markitup expand">{MESSAGE}</textarea><br />
 <input type="submit" name="send" value="Odeslat" class="button submit">
 <select name="saction" id="saction">
 <option value="delete">Smazat oznacene</option>
@@ -32,11 +33,6 @@
 <a href="{FILTRCANCELLINK}">Zrušit filtr</a></div>
 <!-- END searchfilters -->
 
-<!-- BEGIN toppager -->
-<div class="pager clearbox">{TOPPAGER}</div>
-<p class="pagernums">Celkem: <strong>{TOTAL}</strong></p>
-<!-- END toppager -->
-
 <div id="messages">
 <!-- BEGIN message --><div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
   <div class="header">
@@ -52,7 +48,5 @@
 <div class="clearbox"></div><!-- END message -->
 </div>
 
-<!-- BEGIN bottompager -->
-<div class="pager cleaner">{BOTTOMPAGER}</div>
-<!-- END bottompager -->
+<div id="pager" class="pager cleaner">{BOTTOMPAGER}</div>
 </form>

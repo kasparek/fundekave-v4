@@ -1,25 +1,6 @@
 <?php
 class FAjax_user extends FAjaxPluginBase {
-	
-	static function hasNewMessage($data) {
-	  $user = FUser::getInstance();
-	  $check = $user->userVO->hasNewMessages();
-	  if($check==false) {
-			sleep(2); //wait a bit and try again so client does not poll that often
-	  	$check = $user->userVO->hasNewMessages();
-	  }
-	  if($check) {
-		  FAjax::addResponse('call','messageCheckHandler',$user->userVO->newPost.','.$user->userVO->newPostFrom);
-		  if($user->pageVO) {
-		  if($user->pageVO->pageId=='fpost') {
-		  	page_UserPost::build($data);
-			}
-			}
-	  } else {
-	  	FAjax::addResponse('call','messageCheckHandler','0');
-		}
-	}
-	
+		
 	static function clientInfo($data) {
 		$user = FUser::getInstance();
 		$user->userVO->clientWidth = $data['view-width'];

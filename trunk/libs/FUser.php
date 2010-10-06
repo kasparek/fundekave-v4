@@ -88,11 +88,6 @@ class FUser {
 				$cache->invalidate();
 				$pUserVO = &$cache->getPointer('user');
 				$pUserVO = $userVO;
-				//---file cache
-				$cache = FCache::getInstance( 'f' );
-				//TODO:invalidate user dependent groups
-
-				FMessages::diaryNotifications(); //---remind from diary
 			} else {
 				FError::add(FLang::$ERROR_LOGIN_WRONGUSERORPASS);
 			}

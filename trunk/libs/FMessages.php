@@ -6,7 +6,7 @@ class FMessages {
 	public $searchText;
 	public $searchUser;
 
-	function __contruct($userId,$searchText=null,$searchUser=null) {
+	function __construct($userId,$searchText=null,$searchUser=null) {
 	    $this->userId = $userId;
 	    $this->searchText = $searchText;
 	    $this->searchUser = $searchUser;
@@ -20,7 +20,7 @@ class FMessages {
 	function load($from, $perpage, $count=false) {
 		$base = ' FROM sys_users_post WHERE userId='.$this->userId;
 		if(!empty($this->searchText)) $base.=" AND lower(text) LIKE '%".strtolower($this->searchText)."%'";
-		if(!empty($this->searchUser)) {}
+		if(!empty($this->searchUser)) {
 			$searchUserId = FUser::getUserIdByName($this->searchUser);
 			if($searchUserId > 0) $base.=" AND (userIdTo='".$searchUserId."' OR userIdFrom='".$searchUserId."')";
 		}
@@ -87,5 +87,23 @@ class FMessages {
 	static function delete($messageId) { //--might be array or not
 		if(!is_array($messageId)) $messageId[] = $messageId;
 		FDBTool::query("delete from sys_users_post where postId in (" . implode(',',$messageId).")");
+	}
+	
+	/**
+	 * check if any of input messId are already readed if so it return them in return
+	 * @param $sentUnreaded - comma separeated postId 
+	 * @return String - comma separeted postId	 	 
+	 */	 	
+	static function sentReaded($sentUnreaded) {
+		$sentUnreadedList = explode(',',$sentUnreaded);
+		if(empty($sentUnreadedList)) return;
+		while($postId = array_shift($sentUnreadedList)) {
+			$postId = trim($postId) * 1;
+			if($postId>0) $validatedList[] = $postId;  
+		}
+		if(empty($validatedList)) return;
+		$q = "select postId from sys_users_post where readed=1 and postId in (".implode(',',$validatedList).")";
+		$res = FDBTool::getCol($q);
+		if(!empty($res)) return implode(',',$res);			
 	}
 }

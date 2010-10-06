@@ -5,7 +5,7 @@ class FPager {
     var $currentPage = 1;
     var $manualCurrentPage = 0;
     var $perPage = 20;
-    var $urlVar = 'p';
+    var $urlVar = 'p=';
     var $itemData = array();
     var $extraVars = array();
     var $bannvars = array();
@@ -13,6 +13,7 @@ class FPager {
     var $previousText = "&lt;&lt;";
     var $adjacents = 1;
     var $hash = '';
+    var $class;
     //result
     var $links;
     function __construct($totalItems=0,$perPage=20,$conf=array()) {
@@ -82,7 +83,7 @@ class FPager {
         	$hash = '#'.$this->hash;
         }
         
-        $pagestring = '?' . $extraVarsStr . $this->urlVar."=";
+        $pagestring = '?' . $extraVarsStr . $this->urlVar;
 
         //other vars
         $prev = $page - 1;									//previous page is page - 1
@@ -96,13 +97,14 @@ class FPager {
         We're actually saving the code to a variable in case we want to draw it more than once.
         */
         $pagination = "";
+        $linkStart = '<a'.((!empty($this->class))?(' class="'.$this->class.'"'):('')).' href="';
         if($lastpage > 1)
         {
             $pagination .= '<div class="pagination">';
 
             //previous button
             if ($page > 1)
-                $pagination .= '<a href="'.$targetpage.$pagestring.$prev.$hash.'">'.$this->previousText.'</a>';
+                $pagination .= $linkStart.$targetpage.$pagestring.$prev.$hash.'">'.$this->previousText.'</a>';
             else
                 $pagination .= '<span class="disabled">'.$this->previousText.'</span>';
 
@@ -112,7 +114,7 @@ class FPager {
                 for ($counter = 1; $counter <= $lastpage; $counter++)
                 {
                     if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                    else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a>';
+                    else $pagination .= $linkStart . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a>';
                 }
             }
             elseif($lastpage >= 7 + ($adjacents * 2))	//enough pages to hide some
@@ -123,44 +125,44 @@ class FPager {
                     for ($counter = 1; $counter < 4 + ($adjacents * 2); $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter . $hash . '">'.$counter.'</a>';
+                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter . $hash . '">'.$counter.'</a>';
                     }
                     $pagination .= '...'
-                    . '<a href="' . $targetpage . $pagestring . $lpm1 . $hash . '">'.$lpm1.'</a>'
-                    . '<a href="' . $targetpage . $pagestring . $lastpage . $hash . '">'.$lastpage.'</a>';
+                    . $linkStart . $targetpage . $pagestring . $lpm1 . $hash . '">'.$lpm1.'</a>'
+                    . $linkStart . $targetpage . $pagestring . $lastpage . $hash . '">'.$lastpage.'</a>';
                 }
                 //in middle; hide some front and some back
                 elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2))
                 {
-                    $pagination .= '<a href="' . $targetpage . $pagestring . '1'.$hash.'">1</a>'
-                    . '<a href="' . $targetpage . $pagestring . '2'.$hash.'">2</a>'
+                    $pagination .= $linkStart . $targetpage . $pagestring . '1'.$hash.'">1</a>'
+                    . $linkStart . $targetpage . $pagestring . '2'.$hash.'">2</a>'
                     . "...";
                     for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
+                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
                     }
                     $pagination .= "..."
-                    . '<a href="' . $targetpage . $pagestring . $lpm1 .$hash. '">'.$lpm1.'</a>'
-                    . '<a href="' . $targetpage . $pagestring . $lastpage .$hash. '">'.$lastpage.'</a>';
+                    . $linkStart . $targetpage . $pagestring . $lpm1 .$hash. '">'.$lpm1.'</a>'
+                    . $linkStart . $targetpage . $pagestring . $lastpage .$hash. '">'.$lastpage.'</a>';
                 }
                 //close to end; only hide early pages
                 else
                 {
-                    $pagination .= '<a href="' . $targetpage . $pagestring . '1'.$hash.'">1</a>'
-                    . '<a href="' . $targetpage . $pagestring . '2'.$hash.'">2</a>'
+                    $pagination .= $linkStart . $targetpage . $pagestring . '1'.$hash.'">1</a>'
+                    . $linkStart . $targetpage . $pagestring . '2'.$hash.'">2</a>'
                     . "...";
                     for ($counter = $lastpage - (1 + ($adjacents * 2)); $counter <= $lastpage; $counter++)
                     {
                         if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= '<a href="' . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
+                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
                     }
                 }
             }
 
             //next button
             if($this->maybeMore==true) $pagination .= ' ... ';
-            if ($page < $counter - 1) $pagination .= '<a href="' . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
+            if ($page < $counter - 1) $pagination .= $linkStart . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
             else $pagination .= '<span class="disabled">'.$this->nextText.'</span>';
             $pagination .= "</div>\n";
         }
