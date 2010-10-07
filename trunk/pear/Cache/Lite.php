@@ -150,7 +150,7 @@ class Cache_Lite
     *
     * @var boolean $_memoryCaching
     */
-    var $_memoryCaching = false;
+    var $_memoryCaching = true;
 
     /**
     * Enable / Disable "Only Memory Caching"

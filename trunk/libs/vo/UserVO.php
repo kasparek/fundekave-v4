@@ -56,35 +56,15 @@ class UserVO extends Fvob {
 	//client
 	var $clientWidth=0;
 	var $clientHeight=0;
-
-	function UserVO($userId=0, $autoLoad = false) {
-		$this->userId = $userId;
-		if($autoLoad == true) {
-			$this->load();
-		}
-	}
 		
 	function save(){
-		$vo = new FDBvo( $this );
-		$vo->addIgnore('dateLastVisit');
-		if($this->userId>0) {
-			$vo->addIgnore('dateCreated');
-			$vo->notQuote('dateUpdated');
-			$this->dateUpdated = 'now()';
-			$vo->addIgnore('name');
-		} else {
-			$vo->addIgnore('dateUpdated');
-			$vo->notQuote('dateCreated');
-			$this->dateCreated = 'now()';
-		}
+		$this->saveIgnore = array('dateLastVisit');
 		if(!empty($this->passwordNew)) {
 			$this->password = $this->passwordNew;
 		} else {
-			$vo->addIgnore('password');
+			$this->saveIgnore[] = 'password';
 		}
-		$this->userId = $vo->save();
-		$vo->vo = false;
-		$vo = false;
+		parent::save();
 	}
 
 	function getXMLVal($branch,$node,$default='') {

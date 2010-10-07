@@ -107,33 +107,6 @@ class PageVO extends Fvob {
 		return $pageVO;
 	}
 
-	function PageVO($pageId=0, $autoLoad = false) {
-		$this->pageId = $pageId;
-		if($autoLoad == true) {
-			$this->load();
-		}
-	}
-
-	function save() {
-	 $vo = new FDBvo( $this );
-		if(!empty($this->pageId)) {
-			$this->dateUpdated = 'now()';
-			$vo->notQuote('dateUpdated');
-			$vo->addIgnore('dateCreated');
-			$vo->forceInsert = false;
-		} else {
-			$this->pageId = FPages::newPageId();
-			$vo->forceInsert = true;
-			$this->dateCreated = 'now()';
-			$vo->notQuote('dateCreated');
-			$vo->addIgnore('dateUpdated');
-		}
-		$this->pageId = $vo->save();
-		$vo->vo = false;
-		$vo = false;
-		return $this->pageId;
-	}
-
 	function setDefaults() {
 		if(isset($this->defaults[$this->typeId])) {
 			foreach($this->defaults[$this->typeId] as $k=>$v) {
@@ -288,7 +261,7 @@ class PageVO extends Fvob {
 				if($newFilesize != $oldFilesize) {
 					//---delete thumb, update filesize
 					$fotoId = $arrNames[$v];
-					$this->itemVO = new ItemVO($fotoId,true,array('type'=>'ignore'));
+					$this->itemVO = new ItemVO($fotoId,true);
 					$this->itemVO->filesize = $newFilesize;
 					$this->itemVO->save();
 					$this->itemVO->flush();

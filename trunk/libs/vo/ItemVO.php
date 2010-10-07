@@ -172,19 +172,8 @@ class ItemVO extends Fvob {
 	//private
 	var $itemList;
 
-	function ItemVO($itemId = null, $autoLoad = false, $options=array()) {
-		$this->properties = array();
-		if(isset($options['type'])) $this->typeId = $options['type'];
-		$this->options = $options;
-		$this->itemId = $itemId;
-		if($autoLoad == true) {
-			$this->load();
-		}
-	}
-
 	function load() {
-		parent::load();
-		if($this->loaded) {
+		if(parent::load()) {
 			if(!$this->loadedCached) $this->prepare();
 		}
 		return $this->loaded;

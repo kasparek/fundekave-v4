@@ -232,7 +232,7 @@ class page_PageEdit implements iPage {
 					}
 					if(isset($fotoArr)) {
 						foreach ($fotoArr as $k=>$v) {
-							$itemVO = new ItemVO($k,true,array('type'=>'ignore'));
+							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
 							$position = FSystem::textins($v['position'],array('plainText'=>1));
