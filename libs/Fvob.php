@@ -11,13 +11,21 @@ class Fvob {
 	public $propDefaults;
 
 	//extra array of key/value array properties
-	var $properties;
+	var $properties = array();
 
 	//---watcher
+	public $saveIgnore = array();
 	public $saveOnlyChanged = false;
 	public $changed = false;
 	public $loaded = false;
 	public $loadedCached = false;
+	
+	function __construct($primaryId=0, $autoLoad = false) {
+		$this->{$this->primaryCol} = $primaryId;
+		if($autoLoad == true) {
+			$this->load();
+		}
+	}
 
 	public function date($value,$format) {
 		if(!$value) return null;
@@ -83,7 +91,7 @@ class Fvob {
 
 	function save(){
 		$vo = new FDBvo( $this );
-		$vo->feed();
+		if(!empty($this->saveIgnore)) foreach($this->saveIgnore as $col) $vo->addIgnore($col);
 		if($vo->hasKey()) {
 			$this->dateUpdated = 'now()';
 			$vo->notQuote('dateUpdated');
@@ -96,7 +104,11 @@ class Fvob {
 			$vo->addIgnore('dateUpdated');
 		}
 		if( $vo->save() ) {
-			return true;
+			//---update in cache
+			$this->memFlush();
+			//---update primary value
+			$this->{$this->primaryCol} = $vo->vo->{$this->primaryCol};
+			return $this->{$this->primaryCol};
 		}
 	}
 

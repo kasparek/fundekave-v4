@@ -6,8 +6,8 @@ class FAvatar {
 	 * @return string - avatar pic url
 	 */
 	static function getAvatarUrl($userId=-1) {
-		$urlBase = FConf::get('galery','targetUrlBase').AVATAR_WIDTH_PX.'x'.AVATAR_HEIGHT_PX.'/crop/';
-		$avatar = 'default/'.AVATAR_DEFAULT;
+		$urlBase = FConf::get('galery','targetUrlBase').FConf::get('galery','avatar_thumbCut').'/';
+		$avatar = AVATAR_DEFAULT;
 		if($userId==-1) {
 			$user = FUser::getInstance();
 			$userVO = $user->userVO;

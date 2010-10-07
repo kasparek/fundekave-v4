@@ -323,47 +323,53 @@ class FUser {
 	 * @return void
 	 */
 	static function register( $data ) {
-		$reservedUsernames = array('admin','administrator','test','aaa','fuvatar','config');
+		$reservedUsernames = array('default','admin','administrator','test','aaa','fuvatar','config','profile','page','event','forum','blog','galery');
 
-		$jmenoreg = trim($data["jmenoreg"]);
-		$pwdreg1 = trim($data["pwdreg1"]);
-		$pwdreg2 = trim($data["pwdreg2"]);
-		if(strlen($jmenoreg)<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
-		elseif(strlen($jmenoreg)>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
-		elseif(!FUser::checkUsername($jmenoreg)) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
-		elseif(FUser::isUsernameRegistered($jmenoreg) || in_array($jmenoreg,$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
-		if($jmenoreg==$pwdreg1) FError::add(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
-		if(strlen($pwdreg1)<2) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
-		if($pwdreg1!=$pwdreg2) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-		$safeJmenoreg = FSystem::safeText($jmenoreg);
-		if($jmenoreg!=$safeJmenoreg) FError::add(FLang::$ERROR_REGISTER_BADUSERNAME.$safeJmenoreg);
+		$data["jmenoreg"] = FSystem::textins($data["jmenoreg"],array("plaintext"=>'1'));
+		$data["pwdreg1"] = FSystem::textins($data["pwdreg1"],array("plaintext"=>'1'));
+		$data["pwdreg2"] = FSystem::textins($data["pwdreg2"],array("plaintext"=>'1'));
+		$data["email"] = FSystem::textins($data["email"],array("plaintext"=>'1'));
+		
+		$cache = FCache::getInstance('s');
+		$cache->setData($data,'reg','form');
+		
+		$safeJmenoreg = FSystem::safeText($data["jmenoreg"]);
+		if(strlen($data["jmenoreg"])<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
+		elseif(strlen($data["jmenoreg"])>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
+		elseif(!FUser::checkUsername($data["jmenoreg"])) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
+		elseif(FUser::isUsernameRegistered($data["jmenoreg"]) || in_array(strtolower($data["jmenoreg"]),$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
+		elseif($data["jmenoreg"]!=$safeJmenoreg) FError::add(FLang::$ERROR_REGISTER_BADUSERNAME.$safeJmenoreg);
+		
+		if(strlen($data["pwdreg1"])<2) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
+		elseif($data["jmenoreg"]==$data["pwdreg1"]) FError::add(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
+		elseif($data["pwdreg1"]!=$data["pwdreg2"]) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
 
+    if(FError::is()) return;
+    
 		//validate email
 		$data['email'] = trim($data['email']);
 		require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
 		if(true!==$validator->isValid($data['email']))  FError::add(FLang::$ERROR_INVALID_EMAIL);
-		//TODO: check if email is already registered
+		
+		if(FError::is()) return;
+		//check if email is already registered
 		$db = FDBConn::getInstance();
 		if(FDBTool::getOne("select count(1) from sys_users where email='".$db->escape($data['email'])."'")) FError::add(FLang::$ERROR_USED_EMAIL);
 
-		if(FError::is()===false){
-			$userVO = new UserVO();
-			$userVO->name = $jmenoreg;
-			$userVO->email = $data['email'];
-			$userVO->passwordNew = md5($pwdreg1);
-			$userVO->save();
-			FUser::login($data['jmenoreg'],md5($pwdreg1),false);
-			//---oznameni o registraci
-			FMessages::sendSAMessage(array('NEWUSERID'=>$userVO->userId,'NEWUSERNAME'=>$jmenoreg),FLang::$MESSAGE_USER_NEWREGISTERED);
-			FError::add(FLang::$REGISTER_WELCOME,1);
-			FHTTP::redirect(FSystem::getUri('',POSTREGISTRATION_PAGE));
-		} else {
-			//cache data
-			$cache = FCache::getInstance('s');
-			$cache->setData($data,'reg','form');
-		}
-
+		if(FError::is()) return;
+		
+		$userVO = new UserVO();
+		$userVO->name = $data["jmenoreg"];
+		$userVO->email = $data['email'];
+		$userVO->passwordNew = md5($data["pwdreg1"]);
+		$userVO->save();
+		FUser::login($data['jmenoreg'],md5($data["pwdreg1"]),false);
+		//---oznameni o registraci
+		$cache->invalidateData('reg','form');
+		FMessages::sendSAMessage(array('NEWUSERID'=>$userVO->userId,'NEWUSERNAME'=>$data["jmenoreg"]),FLang::$MESSAGE_USER_NEWREGISTERED);
+		FError::add(FLang::$REGISTER_WELCOME,1);
+		FHTTP::redirect(FSystem::getUri('',POSTREGISTRATION_PAGE));
 	}
 
 	static function checkUsername($name) {

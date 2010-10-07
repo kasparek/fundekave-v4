@@ -454,7 +454,6 @@ class FDBTool {
 			$multiKey = $this->multiKeyExists();
 			if($multiKey == 0) $ret = false;
 		}
-
 		return $ret;
 	}
 

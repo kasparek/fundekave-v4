@@ -39,7 +39,6 @@ class FDBvo extends FDBTool {
 
 	function feed() {
 		$fdb = FDBConn::getInstance();
-		
 		$this->queryReset();
 		foreach($this->columns as $col=>$select) {
 			if($col==$select) //save only real columns
