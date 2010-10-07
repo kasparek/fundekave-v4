@@ -183,25 +183,11 @@ class ItemVO extends Fvob {
 	}
 
 	function load() {
-		//---try load from cache cache
-		$itemVO = $this->memGet();
-		if($itemVO === false) {
-			$vo = new FDBvo( $this );
-			$vo->load();
-			if($this->itemId > 0) {
-				$this->prepare();
-			}
-		} else {
-			$this->reload($itemVO);
+		parent::load();
+		if($this->loaded) {
+			if(!$this->loadedCached) $this->prepare();
 		}
-		if($this->itemId > 0) return true;
-	}
-
-	function reload($itemVO) {
-		foreach ($itemVO as $key => $val) {
-			if($this->debug) echo $key.'='.$val."<br>\n";
-			$this->{$key} = $val;
-		}
+		return $this->loaded;
 	}
 
 	function map($arr) {
@@ -265,10 +251,9 @@ class ItemVO extends Fvob {
 
 	function updateItemIdLast() {
 		//---update last item id on page
-		$pageVO = new PageVO($this->pageId);
 		$q = "select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc";
 		$itemIdLast = FDBTool::getOne($q);
-		$pageVO->prop( 'itemIdLast', $itemIdLast);
+		$this->pageVO->prop( 'itemIdLast', $itemIdLast);
 	}
 
 	function delete() {
@@ -393,9 +378,8 @@ class ItemVO extends Fvob {
 		if(!empty($this->itemList)) return $this->itemList;
 		$cache = FCache::getInstance('f');
 		if(($arr = $cache->getData($this->pageId, 'fitGrp')) === false) {
-			$pageVO = new PageVO($this->pageId,true);
 			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) 
-			and pageId='".$this->pageId."' order by ".$pageVO->itemsOrder().",itemId desc";
+			and pageId='".$this->pageId."' order by ".$this->pageVO->itemsOrder().",itemId desc";
 			$arr = FDBTool::getCol($q);
 			$cache->setData($arr,$this->pageId, 'fitGrp');
 			$this->itemList = $arr;
@@ -405,8 +389,7 @@ class ItemVO extends Fvob {
 
 	function onPageNum() {
 		$arrItemId = $this->getPageItemsId();
-		$pageVO = new PageVO($this->pageId,true);
-		$arr = array_chunk($arrItemId, $pageVO->perPage());
+		$arr = array_chunk($arrItemId, $this->pageVO->perPage());
 		$pid = 0;
 		foreach ($arr as $k=>$arrpage) {
 			if(in_array($this->itemId,$arrpage)) {
@@ -511,8 +494,8 @@ class ItemVO extends Fvob {
 		$this->flush();
 		$confGalery = FConf::get('galery');
 		$file = new FFile();
-		if($file->is_file($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure)) {
-			$file->unlink($confGalery['sourceServerBase'] . $galery->pageVO->galeryDir . '/' . $galery->itemVO->enclosure);
+		if($file->is_file($confGalery['sourceServerBase'] . $this->pageVO->galeryDir . '/' . $this->enclosure)) {
+			$file->unlink($confGalery['sourceServerBase'] . $this->pageVO->galeryDir . '/' . $this->enclosure);
 		}
 		$this->set('enclosure',null);
 	}

@@ -340,6 +340,8 @@ class FDBTool {
 								}
 							}
 						}
+						$vo->loaded = true;
+						$vo->memStore();
 						$arr[$i] = $vo;
 						$i++;
 					}

@@ -16,6 +16,8 @@ class Fvob {
 	//---watcher
 	public $saveOnlyChanged = false;
 	public $changed = false;
+	public $loaded = false;
+	public $loadedCached = false;
 
 	public function date($value,$format) {
 		if(!$value) return null;
@@ -56,8 +58,27 @@ class Fvob {
 	}
 
 	function load() {
-		$vo = new FDBvo( $this );
-		$vo->load();
+		if(!empty($this->{$this->primaryCol})) {
+			$dataVO = $this->memGet();
+			if($dataVO === false) {
+				$vo = new FDBvo( $this );
+				$this->loaded = $vo->load();
+				if(!$this->loaded) $this->{$this->primaryCol} = null;
+				else $this->memStore();
+				return $this->loaded;
+			} else {
+				$this->reload($dataVO);
+				$this->loadedCached = true;
+				return $this->loaded;
+			}
+		}
+	}
+	
+	function reload($VO) {
+		foreach ($VO as $key => $val) {
+			if($this->debug) echo $key.'='.$val."<br>\n";
+			$this->{$key} = $val;
+		}
 	}
 
 	function save(){
@@ -128,18 +149,18 @@ class Fvob {
 		//---update cache
 		$this->memStore();
 	}
-
+	
 	function memStore() {
 		$cache = FCache::getInstance('l');
-		$cache->setData( $this, $this->itemId, 'cached'.$this->getTable());
+		$cache->setData( $this, $this->{$this->primaryCol}, 'cached'.$this->getTable());
 	}
 	function memGet() {
 		$cache = FCache::getInstance('l');
-		return $cache->getData($this->itemId, 'cached'.$this->getTable());
+		return $cache->getData($this->{$this->primaryCol}, 'cached'.$this->getTable());
 	}
 	function memFlush() {
 		$cache = FCache::getInstance('l');
-		$cache->invalidateData($this->itemId, 'cached'.$this->getTable());
+		$cache->invalidateData($this->{$this->primaryCol}, 'cached'.$this->getTable());
 	}
 
 	public function getTable() {

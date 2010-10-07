@@ -37,7 +37,7 @@ function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRa
 		$maxSize = $sideOriginal * $maxScaleUpRatio;
 		//get closest valid width
 		foreach ($sideOptionList as $fib) {
-			if($maxSize - $fib > 0) {
+			if($maxSize - $fib >= 0) {
 				$diff[$fib] = (int) $maxSize - $fib;
 			}
 		}
@@ -215,6 +215,7 @@ if(isset($imageProps)) {
 	
 	$widthParamTmp = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
 	$heightParamTmp = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
+	
 	if($widthParam==$heightParam) {
 		if($widthParamTmp > $heightParamTmp) {
 			$widthParam = $widthParamTmp;
