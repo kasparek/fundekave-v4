@@ -170,7 +170,7 @@ class FImgProcess {
 	 *
 	 * @param int $width - target
 	 * @param int $height - target
-	 * @param array $mode - additional params - proportional,crop,frame(frameWidth,frameHeight,bgColorHex or bgColorRGB - array(R=>0-255,G=>0-255,B=>0-255))
+	 * @param array $mode - additional params - proportional,crop)
 	 */
 	function resize($width,$height,$mode=array()) {
 
@@ -197,17 +197,9 @@ class FImgProcess {
 			//---DEFAULT is stretch
 			$p_width = $width;
 			$p_height = $height;
-			//---DEFAULT target image size is same as p_width and p_height so we set 0 and is set to that values just before creation if image but for frame will be the settings different
+			//---DEFAULT target image size is same as p_width and p_height so we set 0 and is set to that values just before creation if image
 			$targetWidth = 0;
 			$targetHeight = 0;
-
-			if(isset($mode['frame'])) {
-				if(isset($mode['frameWidth'])) $targetWidth = $mode['frameWidth'];
-				else $targetWidth = $width;
-				if(isset($mode['frameHeight'])) $targetHeight = $mode['frameHeight'];
-				else $targetHeight = $height;
-				if(empty($mode['crop'])) $mode['proportional'] = 1;
-			}
 
 			if($crop) {
 				if(($this->sourceHeight * $width / $this->sourceWidth) < $height) {

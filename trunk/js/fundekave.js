@@ -54,53 +54,29 @@ $('body').css('overflow', 'auto');
 window.scroll(fullscreenState.x, fullscreenState.y);
 $(document.documentElement).unbind('keyup',fullscreenKeypress);
 }
-//TODO:add icon to leave fullscreen
-//TODO:add link to next, prev
-if(next) {}
-if(prev) {}  
 }
 function fullscreenInit() {
 setListeners('galeryFullSwitch','click',fullClick);
 }
 function fullClick() {
-var div = $('#fullscreenBox');
-$(div).append('<a href="#" id="fullscreenLeave">Leave fullscreen</a>');
-
-var img = $('#detailFoto',div);
-img.css('width','auto').css('height','auto');
-
-
-img.bind('load',onGaleryImageLoaded);
-img.load();
-
-$("#fullscreenLeave",div).click(function(event){ 
-	event.preventDefault(); leaveFullscreen(); return false;
-});
-fullscreen(div);
+//TODO: position fullscreenToolbar absolutely on bottom, append to body, show on mouseover 
+$('body').append('<div id="fullscreenToolbar" style="width:100%;text-align:center;position: absolute;z-index:10000;bottom:0px;background:#eee;">'
++'<a href="#" id="fullscreenPrevious">Previous</a>'
++'<a href="#" id="fullscreenLeave">Leave fullscreen</a>'
++'<a href="#" id="fullscreenSlideshow">Slideshow</a>'
++'<a href="#" id="fullscreenNext">Next</a>'
++'</div>');
+$('#detailFoto').bind('load',onGaleryFullscreenImageLoaded).load();
+$("#fullscreenLeave").click(function(event){	event.preventDefault(); leaveFullscreen(); return false; });
+$("#fullscreenPrevious").click(function(event){	$("#prevButt").click(); return false; });
+$("#fullscreenNext").click(function(event){	$("#nextButt").click(); return false; });
+fullscreen($('#fullscreenBox'));
+$("#fullscreenToolbar").fadeTo("slow", 0.3).hover(function(){ $(this).fadeTo("slow", 1.0); },function(){ $(this).fadeTo("slow", 0.2); });
 return false;
 }
-function fullscreenKeypress(event) {
-if(event.keyCode==27) {
-	leaveFullscreen();
-}
-}
-function onGaleryImageLoaded() {
-	var img = $(this);
-	img.css('width','auto').css('height','auto');
-	var wh = $(window).height();
-	if(img.width() > img.height()) {
-		img.css('width',$(window).width()*0.9).css('height','auto').css('margin-top',((wh-img.height())/2)+'px');
-	} else {
-		img.css('width','auto').css('height',$(window).height()*0.9).css('margin-top',((wh-img.height())/2)+'px');
-	}
-}
-function leaveFullscreen() {
-	var img = $('#detailFoto');
-	img.css('width','auto').css('height','auto').css('margin-top','auto').unbind('load',onGaleryImageLoaded);
-	$('#fullscreenLeave').remove();
-	fullscreen();
-	return false;
-}
+function fullscreenKeypress(event) { if(event.keyCode==27) { leaveFullscreen(); } if(event.keyCode==32) { $("#nextButt").click(); } }
+function onGaleryFullscreenImageLoaded() { var img = $(this),ww=$(window).width()*0.9,wh = $(window).height()*0.9; img.css('width','auto').css('height','auto'); var iw = img.width(),ih=img.height(), tw = ww, th = ih * ww / iw; if (th - wh > 1) { iw = 'auto'; ih = wh; } else { iw = tw; ih = 'auto'; } img.css('width',iw).css('height',ih).css('margin-top',(($(window).height()-img.height())/2)+'px'); }
+function leaveFullscreen() { $('#detailFoto').css('width','auto').css('height','auto').css('margin-top','auto').unbind('load',onGaleryFullscreenImageLoaded); $('#fullscreenToolbar').remove(); fullscreen(); return false; }
 /**
  * GOOGLE MAPS
  */ 
@@ -479,6 +455,7 @@ function onFajaxformButton(event) {
 /**
  * AJAX LINK HANDLING
  */
+var scrollTop;
 function fajaxaSend(event) {
 	event.preventDefault();
 	if($(event.currentTarget).hasClass('confirm')) {
@@ -497,7 +474,9 @@ function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],result = false, resultProperty = false;
 	if(k==0) k=null;
 	var img=$("#detailFoto"),prgrsBar=$(".showProgress");
+	scrollTop=null;
 	if(prgrsBar.length>0) {
+		scrollTop = $(window).scrollTop();
 		prgrsBar.addClass('lbLoading').css('height',img.height()+'px').css("marginLeft","auto").css("marginRight","auto");
 		img.hide().bind('load',onImgLoaded);
 	}
@@ -518,8 +497,9 @@ function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	sendAjax(m,k);
 };
 function onImgLoaded() {
-	$(".showProgress").removeClass('lbLoading').delay(500).css('height','auto');
+	$(".showProgress").removeClass('lbLoading').css('height','auto');
 	$("#detailFoto").fadeIn().unbind('load',onImgLoaded);
+	if(scrollTop>0) $(window).scrollTop(scrollTop);
 };
 //---AJAX LINK END
 
@@ -527,9 +507,9 @@ function onImgLoaded() {
  * MARKITUP SETUP - rich textarea
  */ 
 var markitupSettings = {	
-	onShiftEnter:  	{keepDefault:false, replaceWith:'<br />\n'},
-	onCtrlEnter:  	{keepDefault:false, openWith:'\n<p>', closeWith:'</p>'},
-	onTab:    		{keepDefault:false, replaceWith:'    '},
+	onShiftEnter:{keepDefault:false, replaceWith:'<br />\n'},
+	onCtrlEnter:{keepDefault:false, openWith:'\n<p>', closeWith:'</p>'},
+	onTab:{keepDefault:false, replaceWith:'    '},
 	markupSet:  [
 		{name:'Heading', key:'H', openWith:'(!(<h3>|!|<h2>)!)', closeWith:'(!(</h3>|!|</h2>)!)' }, 	
 		{name:'Bold', key:'B', openWith:'(!(<strong>|!|<b>)!)', closeWith:'(!(</strong>|!|</b>)!)' },
@@ -545,7 +525,6 @@ var markitupSettings = {
 		{name:'Clean', className:'clean', replaceWith:function(markitup) { return markitup.selection.replace(/<(.*?)>/g, "") } }
 	]
 }
-
 var waitingTA = null;
 function markItUpInit(textareaId) {
 	if(textareaId) waitingTA=textareaId;

@@ -1,3 +1,6 @@
+animated progress loader - http://ajaxload.info/
+handling time php/mysql - http://jokke.dk/blog/2007/07/timezones_in_mysql_and_php
+
 PAGE STRUCTURE
 item detail
 items list (w page label)?
