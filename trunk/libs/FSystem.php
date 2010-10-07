@@ -51,7 +51,6 @@ class FSystem {
 		$otherParams = $arrAcnchor[0];
 		$anchor = '';
 		if(isset($arrAcnchor[1])) $anchor = '#' . $arrAcnchor[1];
-		$otherParams = str_replace('&',SEPARATOR,$otherParams);
 		$user = FUser::getInstance();
 		$pageParam = ($pageParam===false)?($user->pageParam):($pageParam);
 
@@ -79,7 +78,7 @@ class FSystem {
 		if(!empty($otherParams)) $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) {
-			$parStr = '?'.implode(SEPARATOR,$params);
+			$parStr = '?'.implode(&,$params);
 		}
 		$url = $scriptName . $parStr . $anchor;
 		return $url;

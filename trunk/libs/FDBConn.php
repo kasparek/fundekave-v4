@@ -14,10 +14,10 @@ class FDBConn extends mysqli
 			if (mysqli_connect_error()) {
 				die('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
 			}
-			$this->query("set character_set_client = utf8");
-			$this->query("set character_set_connection= utf8");
-			$this->query("set character_set_results = utf8");
-			$this->query("set character_name = utf8");
+			$this->query("set character_set_client = ".$dbConf['charset']);
+			$this->query("set character_set_connection= ".$dbConf['charset']);
+			$this->query("set character_set_results = ".$dbConf['charset']);
+			$this->query("set character_name = ".$dbConf['charset']);
 		}
 	}
 	

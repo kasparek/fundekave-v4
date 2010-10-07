@@ -50,16 +50,10 @@ class FConf
 				set_include_path( $includePath );
 			}
 			$configParsed["include_path"] = array();
-				
-			//---load language
-			if(!empty($configParsed['language']['path'])) {
-				require(ROOT.$configParsed['language']['path'].$configParsed['language']['filename']);
-			}
-				
+							
 			foreach($configParsed as $k=>$v) {
 				$this->a[$k] = $v;
 			}
-				
 		} else {
 			die('Error: unable to locate config file');
 		}

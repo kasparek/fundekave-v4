@@ -73,7 +73,7 @@ class FMessages {
 	static function send($komu,$zprava,$odkoho=LAMA_USER) {
 		//odkoho=75 id lama
 		$db = FDBConn::getInstance();
-		$komu = $kom*1;$odkoho=$odkoho*1; $zprava = $db->escape($zprava); 
+		$komu = $komu*1; $odkoho=$odkoho*1; $zprava = $db->escape($zprava); 
 		FDBTool::query("insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,text,readed,postIdFrom) values (".$komu.",".$komu.",".$odkoho.",NOW(),'".$zprava."',0,null)");
 		$maxid = FDBTool::getOne("SELECT LAST_INSERT_ID()");
 		FDBTool::query("insert into sys_users_post (userId,userIdTo,userIdFrom,dateCreated,postIdFrom,text,readed) values (".$odkoho.",".$komu.",".$odkoho.",NOW(),".$maxid.",'".$zprava."',0)");

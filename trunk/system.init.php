@@ -2,22 +2,21 @@
 ob_start("ob_gzhandler");
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
-	if(strpos($c,'page_')!==false) {
-		$c = ROOT . ROOT_VIEW . $c ;
-	} else {
-		if(strpos($c,'VO')!==false) { $c = 'vo/'.$c; }
-		$c = ROOT . LIBSDIR . $c ;
-	}
+	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
+	elseif(strpos($c,'FAjax_')!==false) $c = ROOT . 'libs/FAjax/' . $c;
+	elseif(strpos($c,'VO')!==false) $c = ROOT . 'libs/vo/'.$c;
+	else $c = ROOT . 'libs/' . $c ;
 	require( $c . '.php' );
 }
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
-FError::init(PHPLOG);
+FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
 FConf::getInstance(CONFIG_FILENAME);
 date_default_timezone_set(FConf::get('internationalization','timezone'));
-setlocale(LC_CTYPE, 'cs_CZ.utf8');
-setlocale(LC_COLLATE, 'cs_CZ.utf8');
+setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
+setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
+if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
 //-------------------------------------------------------------time for debuging
 FProfiler::write('START');
 
@@ -34,18 +33,6 @@ $user = FUser::getInstance();
 $user->init();
 if(isset($_GET['auth'])) {
 	$user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
-}
-
-if(!empty($_REQUEST["k"])) {
-	$kArr = explode(SEPARATOR,$_REQUEST["k"]);
-	$pageId = array_shift($kArr);
-	while($kArr) {
-		$kvArr = explode('=',array_shift($kArr));
-		if(isset($kvArr[1])) {
-			$_REQUEST[$kvArr[0]] = $kvArr[1];
-			$_GET[$kvArr[0]] = $kvArr[1];
-		}
-	}
 }
 
 //---backward compatibility
