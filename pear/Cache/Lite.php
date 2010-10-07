@@ -55,7 +55,7 @@ class Cache_Lite
     *
     * @var int $_lifeTime
     */
-    var $_lifeTime = 3600;
+    var $_lifeTime = null;
 
     /**
     * Enable / disable fileLocking
@@ -95,7 +95,7 @@ class Cache_Lite
     *
     * @var boolean $_writeControl
     */
-    var $_writeControl = true;
+    var $_writeControl = false;
 
     /**
     * Enable / disable read control
@@ -105,7 +105,7 @@ class Cache_Lite
     *
     * @var boolean $_writeControl
     */
-    var $_readControl = true;
+    var $_readControl = false;
 
     /**
     * Type of read control (only if read control is enabled)
@@ -191,7 +191,7 @@ class Cache_Lite
     *
     * @var boolean $fileNameProtection
     */
-    var $_fileNameProtection = true;
+    var $_fileNameProtection = false;
     
     /**
     * Enable / disable automatic serialization
@@ -234,7 +234,7 @@ class Cache_Lite
     *
     * @var int $_hashedDirectoryUmask
     */
-    var $_hashedDirectoryUmask = 0700;
+    var $_hashedDirectoryUmask = 0777;
     
     /**
      * API break for error handling in CACHE_LITE_ERROR_RETURN mode

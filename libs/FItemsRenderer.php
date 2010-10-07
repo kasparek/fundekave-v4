@@ -52,7 +52,7 @@ class FItemsRenderer {
 	function addPageName($rendered,$itemVO) {
 		$cacheGroup = 'renderedPagelink';
 		$cacheId = $itemVO->pageId;
-		$cache = FCache::getInstance('f',86400);
+		$cache = FCache::getInstance('f');
 		$page = $cache->getData($cacheId,$cacheGroup);
 		if($page===false) {
 			$tpl = FSystem::tpl($this->getTemplateName($typeId));
@@ -85,7 +85,7 @@ class FItemsRenderer {
 		$cacheId = $itemVO->itemId;
 		if($isDefault) {
 			//try cache
-			$cache = FCache::getInstance('f',86400);
+			$cache = FCache::getInstance('f');
 			$cached = $cache->getData($cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 			if($cached!==false) {
 				if($this->showPage) $cached = $this->addPageName($cached,$itemVO);

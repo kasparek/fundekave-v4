@@ -15,15 +15,15 @@ class FileDriver
 	var $cacheLite;
 
 	//---could be null to live forever
-	var $lifeTimeDefault = 60;
-	var $lifeTime = 60;
+	var $lifeTimeDefault = 0;
+	var $lifeTime = 0;
 
 	function __construct() {
 		$cacheDir = FConf::get('settings','cache_path'); 
 		if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
 		$cacheOptions['cacheDir'] = $cacheDir;
-		$cacheOptions['lifeTime'] = $this->lifeTime;
-		$cacheOptions['hashedDirectoryLevel'] = 2;
+		$cacheOptions['lifeTime'] = $this->lifeTime==0 ? null : $this->lifeTime;
+		//$cacheOptions['hashedDirectoryLevel'] = 2;
 		$this->cacheLite = new Cache_Lite($cacheOptions);
 	}
 	
@@ -36,8 +36,7 @@ class FileDriver
 	}
 
 	function setConf( $lifeTime ) {
-		$this->lifeTime = $lifeTime;
-		$this->cacheLite->setLifeTime = $lifeTime;
+		$this->cacheLite->setLifeTime = $this->lifeTime = empty($lifeTime) ? null : $lifeTime;
 	}
 
 	function setData($key, $data, $grp) {

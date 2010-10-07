@@ -5,14 +5,14 @@
  * migrate xml pageparams to properties
  * build properties list
  * put ItemVO prop handling to Fvob
- * check columns in project 
- * project - newMess -> this->unreaded 
+ * check columns in project
+ * project - newMess -> this->unreaded
  * //TODO: migrate pageParams home from forum, blog
-	//TODO: migrate pageParams orderitems from galery    
+ //TODO: migrate pageParams orderitems from galery
  *
- */   
+ */
 class PageVO extends Fvob {
-	
+
 	var $table = 'sys_pages';
 	var $primaryCol = 'pageId';
 
@@ -37,10 +37,10 @@ class PageVO extends Fvob {
 	'authorContent' => 'authorContent',
 	'galeryDir' => 'galeryDir'
 	);
-	
+
 	var $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
 	public $propDefaults = array('forumSet'=>1,'home'=>'');
-	
+
 	var $defaults = array(
     'forum'=>array('template'=>'forum.view.php'),
     'blog'=>array('categoryId'=>'318','template'=>'forum.view.php'),
@@ -75,16 +75,16 @@ class PageVO extends Fvob {
 	//---based on logged user
 	var $favorite; //is booked
 	var $favoriteCnt; //readed items
-		
+
 	function __get($name) {
 		switch($name) {
 			case 'unreaded':
 				if($this->favoriteCnt < 1) $this->favoriteCnt = $this->cnt;
 				$unreaded = $this->cnt - $this->favoriteCnt;
 				if($unreaded > 0) return $unreaded; else return 0;
-			break;
+				break;
 		}
-	}          
+	}
 
 	//---changed
 	var $showHeading=true;
@@ -94,19 +94,13 @@ class PageVO extends Fvob {
 	var $htmlKeywords;
 	var $showSidebar = true;
 
-	//---watcher
-	var $saveOnlyChanged = false;
-	var $changed = false;
-	var $loaded = false;
-	var $xmlChanged = false;
-	
 	static function get( $pageId, $autoLoad = false ) {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
 			if($user->pageVO->pageId == $pageId) {
-				
+
 				$pageVO = $user->pageVO;
-				 
+					
 			}
 		}
 		$pageVO = new PageVO($pageId, $autoLoad);
@@ -117,13 +111,6 @@ class PageVO extends Fvob {
 		$this->pageId = $pageId;
 		if($autoLoad == true) {
 			$this->load();
-		}
-	}
-
-	function load() {
-		if(!empty($this->pageId)) {
-			$vo = new FDBvo( $this );
-			return $this->loaded = $vo->load();
 		}
 	}
 
@@ -142,7 +129,6 @@ class PageVO extends Fvob {
 			$vo->addIgnore('dateUpdated');
 		}
 		$this->pageId = $vo->save();
-		$this->xmlChanged = false;
 		$vo->vo = false;
 		$vo = false;
 		return $this->pageId;
@@ -166,7 +152,7 @@ class PageVO extends Fvob {
 		$SperPage = &$cache->getPointer($this->pageId,'pp');
 		if($perPage > 0) {
 			if($perPage < FConf::get('perpage','min')) $perPage = FConf::get('perpage','min');
-			if($perPage > FConf::get('perpage','max')) $perPage = FConf::get('perpage','max'); 
+			if($perPage > FConf::get('perpage','max')) $perPage = FConf::get('perpage','max');
 			//set perpage
 			$SperPage = (int) $perPage;
 		}
@@ -197,7 +183,7 @@ class PageVO extends Fvob {
 		}
 		return $orderBy;
 	}
-	
+
 	/**
 	 *update readed
 	 **/
@@ -209,8 +195,8 @@ class PageVO extends Fvob {
 			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$this->pageId."')";
 		FDBTool::query($q);
 		$this->unreaded = 0;
-	}	 	
-	
+	}
+
 	/**
 	 * refresh data for galery in db by files in folder
 	 * @param $pageId
@@ -219,7 +205,7 @@ class PageVO extends Fvob {
 	function refreshImages() {
 		$galeryConf = FConf::get('galery');
 		FError::write_log('PageVO::refreshImgToDb '.$this->pageId);
-		
+
 		$gCountFoto = 0;
 		$gCountFotoNew = 0;
 
@@ -228,7 +214,7 @@ class PageVO extends Fvob {
 		$fItems->addWhere('(itemIdTop is null or itemIdTop=0)');
 		$itemList = $fItems->getList();
 		$totalItems = count($itemList);
-		
+
 		$arrFotoDetail = array();
 		$arrFotoSize = array();
 		$arrNames = array();
@@ -328,5 +314,5 @@ class PageVO extends Fvob {
 		FError::write_log('PageVO::refreshImgToDb COMPLETE '.$this->pageId.' inserted:'.(isset($items['new']) ? count($items['new']) : 0).' updated:'.( isset($items['updated']) ? count($items['updated']) : 0).' removed: '.$removed);
 		return $items;
 	}
-	
+
 }
