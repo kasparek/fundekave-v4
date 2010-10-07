@@ -32,19 +32,7 @@ class FPager {
 	        	$this->$k = $v;
 	        }
         }
-        foreach($_GET as $k=>$v) {
-        	$vArr = explode(SEPARATOR,$v);
-        	if(count($vArr)>1) {
-        		$getAdd[$k]=$vArr[0];
-        		while(count($vArr)>1) {
-        			list($kl,$vl) = explode('=',array_pop($vArr));
-        			$getAdd[$kl]=$vl;
-        		}
-        		unset($_GET[$k]);
-        	} 
-        }
         $localGet = $_GET;
-        if(!empty($getAdd)) $localGet = array_merge($localGet,$getAdd);
         foreach ($localGet as $k=>$v) {
         	if($k!=$this->urlVar && !in_array($k,$this->bannvars)) $this->extraVars[$k]=$v;
         }

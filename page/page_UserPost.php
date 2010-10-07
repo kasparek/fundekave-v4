@@ -114,13 +114,12 @@ class page_UserPost implements iPage {
 		$from = 0;
 		
 		if($totalItems > $perPage) {
-			$pagerExtraVars['m']='post-page';
-			$options = array('extraVars'=>$pagerExtraVars,'class'=>'fajaxa hash','urlVar'=>'d=p','urlSep'=>':'); //ajax settings
+			$options = array('extraVars'=>$pagerExtraVars,'bannvars'=>array('m','d'),'class'=>'fajaxpager hash');
 			if(!empty($data['p'])) $options['manualCurrentPage'] = $data['p'];
 			$pager = new FPager($totalItems,$perPage,$options);
 			$from=($pager->getCurrentPageID()-1) * $perPage;
 		}
-
+	
 		$arrpost = $msgs->load($from, $perPage);
 
 		//---set default recipient
@@ -216,7 +215,7 @@ class page_UserPost implements iPage {
 			if(isset($data['refreshPage'])) {
 			  FAjax::addResponse('messagesBox','$html',$tpl->get());
 			} else {
-				FAjax::addResponse('messages','$html',$tpl->get('message'));
+				FAjax::addResponse('itemlist','$html',$tpl->get('message'));
 				if(!empty($data['refreshPager'])) {
 					FAjax::addResponse('pager','$html',$pager->links);
 				}

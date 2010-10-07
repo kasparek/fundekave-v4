@@ -90,7 +90,7 @@ class FDBTool {
 	var $quoteType = "'";
 
 	function __construct($tableName='',$primaryCol='') {
-		$this->debug = FConf::get('dboptions','debug');
+		$this->debug = FConf::get('db','debug');
 		$this->table = $tableName;
 		$this->variablesRegExp = '@' . $this->openingDelimiter . '(' . $this->variablenameRegExp . ')' . $this->closingDelimiter . '@sm';
 		$this->replaceKeys = array_keys($this->replaceVars);

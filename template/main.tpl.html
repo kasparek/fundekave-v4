@@ -3,12 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-if(window.location.hash) { var str=window.location.hash; if(str.split('/').length>1) { str = str.replace('#','?m='); str = str.replace('/','&d='); window.location.replace(str); } };
-var ASSETS_URL = '{ASSETS_URL}';
-var JS_URL = '[[URL_JS]]';
-var CSS_URL = 'css/';
-var CLIENT_WIDTH = {CLIENT_WIDTH};
-var CLIENT_HEIGHT = {CLIENT_HEIGHT};
+if(window.location.hash) { var h=window.location.hash.replace('#','').split('/'), m=h[0], i=m.indexOf('-'); if(i>-1) window.location.replace('?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'')); };
+var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT_WIDTH = {CLIENT_WIDTH}, CLIENT_HEIGHT = {CLIENT_HEIGHT};
 </script>
   <title>{TITLE}</title>
   <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />

@@ -288,8 +288,8 @@ class FBuildPage {
 			FError::reset(1);
 		}
 		//---HEADER
-		$tpl->setVariable("CHARSET", CHARSET);
-		$tpl->setVariable("ASSETS_URL", ASSETS_URL);
+		$tpl->setVariable("CHARSET", FConf::get('internationalization','charset'));
+		$tpl->setVariable("ASSETS_URL", URL_ASSETS);
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
 
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
@@ -410,7 +410,7 @@ class FBuildPage {
 
 		FProfiler::write('FBuildPage--custom js sections');
 		//---PRINT PAGE
-		header("Content-Type: text/html; charset=".CHARSET);
+		header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));
 
 		$data = $tpl->get();
 		//replace super variables

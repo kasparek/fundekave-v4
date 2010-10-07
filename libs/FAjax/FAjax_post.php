@@ -1,15 +1,22 @@
 <?php
 class FAjax_post extends FAjaxPluginBase {
 	static function page($data) {
-		if(isset($data['p'])) $data['p'] = $data['p']*1;
-		$data['refreshPager']=true;
-		page_UserPost::build($data);
-		FAjax::addResponse('call','fajaxaInit','');
+		if(isset($data['p'])) $data['p'] = $data['p']*1; else $data['p']=1;
+		if($data['__ajaxResponse']===true) {
+			$data['refreshPager']=true;
+			page_UserPost::build($data);
+			FAjax::addResponse('call','shiftTo','0');
+			FAjax::addResponse('call','initPager','');
+			FAjax::addResponse('call','fajaxaInit','');
+		} else {
+		   FHTTP::redirect(FSystem::getUri($data['p']>1?'p='.$data['p']:'','',''));
+		}
 	}
 
 	static function submit($data) {
 		$data = page_UserPost::process($data);
 		page_UserPost::build($data);
+		FAjax::addResponse('postText','value','');
 		FAjax::addResponse('call','fajaxaInit','');
 		FAjax::addResponse('call','fajaxformInit','');
 	}
@@ -19,7 +26,7 @@ class FAjax_post extends FAjaxPluginBase {
 		FAjax::addResponse('recipientavatar','$html',FAvatar::showAvatar($recipientId).'<br/>'.FUser::getgidname($recipientId));
 	}
 	
-	static function hasNewMessage($data,$wait=true) {
+	static function hasNewMessage($data,$wait=false) {
 	  $user = FUser::getInstance();
 	  
 	  if(isset($data['unreadSentList'])) {

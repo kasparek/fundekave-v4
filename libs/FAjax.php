@@ -75,14 +75,10 @@ class FAjax {
 		}
 
 		//---dealing with ajax requests
-		$filename = ROOT.LIBSDIR.'FAjax/FAjax_'.$mod.'.php';
-		require_once($filename);
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
-
 				call_user_func(array($className,$action), $dataProcessed);
-
 				if( $ajax === true )
 				if( $fajax->errorsLater===false ) {
 					$arrMsg = FError::get();
