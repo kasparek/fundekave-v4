@@ -56,7 +56,39 @@ class FPages extends FDBTool {
 			$this->addSelect("f.book as favorite,f.cnt as favoriteCnt");
 		}
 		
-		$this->getListPages();
+		if($this->permission == 1) {
+			if($this->sa === true) {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." {JOIN} where 1 ";
+			} else if($this->userId == 0) {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." {JOIN} where ".$this->table.".public=1 and ".$this->table.".locked<2";
+			} else {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." left join ".$this->pagesPermissionTableName." as up on "
+				.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
+				." and up.userId='".$this->userId."' {JOIN} "
+				."where (((".$this->table.".public in (0,3) and up.rules >= 1) " 
+				."or ".$this->table.".userIdOwner='".$this->userId."' " 
+				."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+			}
+		} else {
+			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+			." left join ".$this->pagesPermissionTableName." as up on "
+			.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
+			." and up.userId='".$this->userId."' {JOIN} " 
+			."where ( ".$this->table.".userIdOwner='".$this->userId."' " 
+			."or (up.userId is not null and up.rules=".$this->permission.") )";
+		}
+		if(!empty($this->type)) {
+			if(!is_array($this->type)) {
+				$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
+			} else {
+				$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
+			}
+		}
+		$queryBase .= ' and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+		$this->setTemplate($queryBase);
 	}
 	
 	function queryReset() {
@@ -92,45 +124,7 @@ class FPages extends FDBTool {
 		return FDBTool::getOne($q,$pageId,'pageOwn','s');
 	}
 
-	function getListPages() {
-		if($this->permission == 1) {
-			if($this->sa === true) {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
-				{JOIN} 
-				where 1";
-			} else if($this->userId == 0) {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
-				{JOIN} 
-				where ".$this->table.".public=1 and ".$this->table.".locked<2";
-			} else {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
-				left join ".$this->pagesPermissionTableName." as up on ".$this->table.".".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
-				{JOIN} 
-				where (((".$this->table.".public in (0,3) and up.rules >= 1) 
-				or ".$this->table.".userIdOwner='".$this->userId."' 
-				or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
-			}
-		} else {
-			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table."
-				left join ".$this->pagesPermissionTableName." as up on ".$this->table.".".$this->primaryCol."=up.".$this->primaryCol." and up.userId='".$this->userId."' 
-				{JOIN} 
-				where ( ".$this->table.".userIdOwner='".$this->userId."' 
-				or (up.userId is not null and up.rules=".$this->permission.") )";
-		}
-		if(!empty($this->type)) {
-			if(!is_array($this->type)) {
-				$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
-			} else {
-				$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
-			}
-		}
-		$queryBase .= '  and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
-
-		$this->setTemplate($queryBase);
-	}
-
 	static function deletePage($pageId) {
-
 		$pageVO = new PageVO($pageId,true);
 		//---galery - delete photos
 		if($pageVO->typeId=='galery') {
@@ -140,7 +134,6 @@ class FPages extends FDBTool {
 				$itemVO = new ItemVO($df,true);
 				$itemVO->delete();
 			}
-			
 		}
 
 		//TODO: ---delete avatar

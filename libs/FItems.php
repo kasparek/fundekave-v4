@@ -13,7 +13,7 @@ class FItems extends FDBTool {
 	public $fItemsRenderer;
 
 	//---using user permissions
-	private $byPermissions = false;
+	private $userIdForPageAccess = false;
 	private $access = true;
 
 	//---items removed because no access
@@ -22,19 +22,83 @@ class FItems extends FDBTool {
 	//---options
 	public $thumbInSysRes = false;
 
-
-	function __construct($typeId='',$byPermissions=false,$itemRenderer=null) {
+	/**
+	 *  userId=false - no restrictions applied, userId=0 - only public
+	 **/	 	
+	function __construct($typeId='',$userId=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
 		$this->VO = 'ItemVO';
 		$this->fetchmode = 1;
-		if($typeId!='') $this->typeId = $typeId;
 
 		$itemVO = new ItemVO();
 		$this->columns = $itemVO->getColumns();
+		//---set select
+		foreach($this->columns as $k=>$v) {
+			if(strpos($v,' as ')===false) $v .= ' as '.$k;
+			$columnsAsed[]=$v;
+		}
+		$this->setSelect( $columnsAsed );
+		
+		if($typeId!='') {
+			//TODO: handle array
+			if(FItems::isTypeValid($typeId)) {
+				$this->typeId = $typeId;
+				$this->addWhere("typeId='".$typeId."'");
+			}
+		}
 
-		$this->initList($this->typeId,$byPermissions);
+		//---check permissions for given user
+		if($userId==0) {
+			$this->addWhere('sys_pages_items.public = 1');
+		} else($userId > 0) {
+			if(!FRules::getCurrent( 2 )) {
+				//TODO:solve performance issues
+				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList) 
+				$this->addWhere('(sys_pages_items.public = 1 or sys_pages_items.public = 2)'); //---only public item for non-admins
+			}
+			$this->userIdForPageAccess = $userId;
+		}
 
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
+		
+		//EXPERIMENTAL
+		$byPagePerm=false;
+		if($byPagePerm) {
+		if($this->permission == 1) {
+			if($this->sa === true) {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." {JOIN} where 1 ";
+			} else if($this->userId == 0) {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." {JOIN} where ".$this->table.".public=1 and ".$this->table.".locked<2";
+			} else {
+				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+				." left join ".$this->pagesPermissionTableName." as up on "
+				.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
+				." and up.userId='".$this->userId."' {JOIN} "
+				."where (((".$this->table.".public in (0,3) and up.rules >= 1) " 
+				."or ".$this->table.".userIdOwner='".$this->userId."' " 
+				."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+			}
+		} else {
+			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+			." left join ".$this->pagesPermissionTableName." as up on "
+			.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
+			." and up.userId='".$this->userId."' {JOIN} " 
+			."where ( ".$this->table.".userIdOwner='".$this->userId."' " 
+			."or (up.userId is not null and up.rules=".$this->permission.") )";
+		}
+				
+		if(!empty($this->type)) {
+			if(!is_array($this->type)) {
+				$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
+			} else {
+				$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
+			}
+		}
+		$queryBase .= ' and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+		$this->setTemplate($queryBase);
+		}
 	}
 
 	function __destruct() {
@@ -48,13 +112,13 @@ class FItems extends FDBTool {
 
 	function setPage($pageId) {
 		$this->addWhere("sys_pages_items.pageId='".$pageId."'");
-		if($this->byPermissions !== false) {
-			if(FRules::get($this->byPermissions,$pageId)===false) {
+		if($this->userIdForPageAccess !== false) {
+			if(FRules::get($this->userIdForPageAccess,$pageId)===false) {
 				//have no access for this page so no items
 				$this->access = false;
 				return false;
 			} else {
-				$this->byPermissions = false;
+				$this->userIdForPageAccess = false;
 			}
 		}
 		return true;
@@ -66,37 +130,6 @@ class FItems extends FDBTool {
 		}
 	}
 
-	function initList($typeId='', $byPermissions = false) {
-
-		$this->queryReset();
-		if($typeId!='') {
-			if(FItems::isTypeValid($typeId)) {
-				$this->typeId = $typeId;
-				$this->addWhere("typeId='".$typeId."'");
-			}
-		}
-		$doPagesJoin = true;
-
-		//---check permissions for given user
-		if($byPermissions===-1) {
-			$this->addWhere('sys_pages_items.public = 1');
-		} else if($byPermissions!==false) {
-			$this->byPermissions = $byPermissions;
-		}
-
-		if($byPermissions !== -1 && !FRules::getCurrent( 2 )) { //---check for public
-			$this->addWhere('sys_pages_items.public > 0');
-		}
-			
-		//---set select
-		foreach($this->columns as $k=>$v) {
-			if(strpos($v,' as ')===false) $v .= ' as '.$k;
-			$columnsAsed[]=$v;
-		}
-		$this->setSelect( $columnsAsed );
-
-	}
-
 	function total() {
 		return count($this->data);
 	}
@@ -106,7 +139,7 @@ class FItems extends FDBTool {
 
 		if($this->access===false) $this->data;
 
-		if($this->byPermissions === false) {
+		if($this->userIdForPageAccess === false) {
 			$arr = $this->getContent($from, $count);
 		} else {
 			$itemsCount = 0;
@@ -121,7 +154,7 @@ class FItems extends FDBTool {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
 						//---check premissions
-						if(FRules::get($this->byPermissions,$row->pageId,1)) {
+						if(FRules::get($this->userIdForPageAccess,$row->pageId,1)) {
 							$arr[] = $row;
 							$itemsCount++;
 							if($itemsCount == $count && $count!=0) break;
