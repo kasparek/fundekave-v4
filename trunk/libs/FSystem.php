@@ -78,7 +78,7 @@ class FSystem {
 		if(!empty($otherParams)) $params[] = $otherParams;
 		$parStr = '';
 		if(isset($params)) {
-			$parStr = '?'.implode(&,$params);
+			$parStr = '?'.implode('&',$params);
 		}
 		$url = $scriptName . $parStr . $anchor;
 		return $url;
@@ -305,28 +305,31 @@ class FSystem {
 		$text = ' '.$text;
 
 		$regList = array(
-		"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
+		"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
+		,"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
+		
+		,"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
 		,"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		,"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		
-		,"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
+		,"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
 		);
 
-		$offset = 0;
+		
 
 		$r=0;
 		foreach($regList as $regex) {
 			if(preg_match_all($regex , $text, $matches, PREG_OFFSET_CAPTURE)) {
-				$x=0;
-				foreach($matches[0] as $replace) {
+				$offset = 0;
+				$matchNum = count($matches[0]);
+				for($x=0;$x<$matchNum;$x++) {
 					switch($r) {
-						case 0:
-						case 1:
 						case 2:
-
+						case 3:
+						case 4:
 							$fi = new FItems();
 							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 							$arr = $fi->getList();
@@ -337,8 +340,7 @@ class FSystem {
 							}
 
 							break;
-						case 4:
-							//item by id
+						case 6:
 							$item = new ItemVO((int)$matches[1][$x][0],true);
 							if($item->itemId > 0) {
 								$replaceText = $item->render();
@@ -346,7 +348,7 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
-						case 5:
+						case 7:
 							//page link
 							$userId = FUser::logon();
 							$fPages = new FPages('', $userId);
@@ -358,7 +360,7 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
-						case 3:
+						case 5:
 							$pos = strpos($text,$matches[1][$x]);
 							if($matches[1][$x][0]!='"' && $matches[1][$x][0]!="'") {
 								//check extension
@@ -367,24 +369,30 @@ class FSystem {
 								if(in_array($ext,$imageExtList)) {
 									//do image
 									$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
-									$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox"><img src="http://'.FConf::get("galery","ftpServer").'/image/300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
+									$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox-page"><img src="'.FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
 								} else {
 									//do link
 									$replaceText = '<a href="'.$matches[2][$x][0].'">'.trim($matches[2][$x][0]).'</a>';
 								}
-
 								$text = FSystem::strReplace($text,$matches[2][$x][1]+$offset,strlen($matches[2][$x][0]),$replaceText);
 								$offset += strlen($replaceText) - strlen($matches[2][$x][0]);
-
+							}
+							break;
+						case 0:
+						case 1:
+							if($r==7 || strpos($matches[2][$x][0],$matches[3][$x][0])!==false) { //only if text of link is link itself
+								$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
+								$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox-page"><img src="'.FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
+								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
 					}
-					$x++;
 				}
 			}
 			$r++;
 		}
-
+		
 		return trim($text);
 	}
 
@@ -439,26 +447,4 @@ class FSystem {
   		$distance = 2*$earth_radius * $c;
 		return $distance;
 	}
-
-	/*
-	 static function distance($lat1,$lon1,$lat2,$lon2) {
-		$R = 3440;//NM 6371KM;
-		$lat1 = deg2rad($lat1);
-		$lon1 = deg2rad($lon1);
-		$lat2 = deg2rad($lat2);
-		$lon2 = deg2rad($lon2);
-		$dLat = ($lat2-$lat1);
-		//FError::add($lat2.'-'.$lat1.'='.$dLat);
-		$dLon = ($lon2-$lon1);
-		//FError::add($lon2.'-'.$lon1.'='.$dLon);
-
-
-		$a = sin($dLat/2) * sin($dLat/2) + cos($lat1) * cos($lat2) * sin($dLon/2) * sin($dLon/2);
-		FError::add($a,1);
-		$c = 2 * atan2(sqrt(a), sqrt(1-a));
-		$d = $R * $c;
-		FError::add($d,1);
-		return $d;
-		}
-		*/
 }

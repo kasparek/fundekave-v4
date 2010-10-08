@@ -17,7 +17,7 @@ class FMenu {
 	 *  before ,$opposite='0',$buttonId='',$buttonClass='',$listItemClass='',$title='') {
 	 *  options [ id, class, parentClass, title ]	 
 	 **/	 	
-	static function secondaryMenuAddItem($link,$text,$options) {
+	static function secondaryMenuAddItem($link,$text,$options=array()) {
 		$button = array('LINK'=>$link,'TEXT'=>$text,'options'=>$options);
 		$cache = FCache::getInstance('l');
 		$secMenuCustom = $cache->getData('secondarymenu');

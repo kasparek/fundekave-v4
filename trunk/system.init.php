@@ -19,79 +19,44 @@ setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
 if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
 //-------------------------------------------------------------time for debuging
 FProfiler::write('START');
-
 //---session settings - stored in db
-//require_once("fSession.php");
-//session_set_save_handler("sess_open", "sess_close", "sess_read", "sess_write", "sess_destroy", "sess_gc");
 ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
 ini_set('session.gc_probability',1);
 ini_set('session.save_path', ROOT_SESSION);
-
 session_start();
-
+//startup user
 $user = FUser::getInstance();
 $user->init();
-if(isset($_GET['auth'])) {
-	$user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
-}
-
+if(isset($_GET['auth'])) $user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
+//initial pageid retrieve
+if(isset($_REQUEST['k'])) $pageId = $_REQUEST['k'];
 //---backward compatibility
 if(isset($_GET['kam'])) {
-	$add = '';
-	if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
+	$add = ''; if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
 	elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
-	$els='';
-	for($x=0;$x<(4-strlen($kam));$x++) $els.='l';
-	$pageId = $add . $els . $kam;
+	$els=''; for($x=0;$x<(4-strlen($kam));$x++) $els.='l'; $pageId = $add . $els . $kam;
 }
-
-//---u=username
-//TODO:refactor
-/*
- if(isset($_GET['u'])) {
- $userId = FUser::getUserIdByName($_GET['u']);
- if($userId > 0) {
- $userVO = new UserVO();
- $userVO->userId = $userId;
- $userVO->load();
- $usersPageId = $userVO->getXMLVal('personal','HomePageId');
- if(!empty($usersPageId)) {
- $pageId = (string) $usersPageId;
- }
- }
- }*/
+//check for item
 $itemId = 0;
-$itemVO = false;
-if(!empty($_REQUEST["i"])) {
-	$itemId = (int) $_REQUEST['i'];
-} elseif(isset($_REQUEST['nid'])) {
-	//---backwards compatibility
-	$itemId = (int) $_REQUEST['nid'];
-}
-
+$itemVO = null;
+if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
+elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
 if ($itemId > 0) {
 	$itemVO = new ItemVO($itemId);
 	if($itemVO->load()) {
-		if(empty($pageId)) {
-			$pageId = $itemVO->pageId;
-		}
-		if($itemVO->itemIdTop > 0) {
-			$itemVO = new ItemVO( $itemVO->itemIdTop,true );
-		}
-	} else {
-		$itemVO = null;
-	}
+		if(empty($pageId)) $pageId = $itemVO->pageId;
+		if($itemVO->itemIdTop > 0) $itemVO = new ItemVO( $itemVO->itemIdTop,true );
+	} else $itemVO = null;
 }
-
+//recheck pageId
 if(empty($pageId)) $pageId = HOME_PAGE;
 $pageId = FSystem::processK($pageId);
-
 //setup userVO
-if( $itemVO ) $user->itemVO = $itemVO;
+if($itemVO) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 $user->kde(); //---check user / load info / load page content / chechk page exist
-if( $itemVO ) $user->itemVO->prepare();
+if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
 $pageVO = $user->pageVO; 
 FProfiler::write('USER/PAGE CHECK DONE');
 //map commands

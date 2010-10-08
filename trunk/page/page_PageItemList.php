@@ -93,7 +93,8 @@ class page_PageItemList implements iPage {
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
 		$arrPagerExtraVars = array();
-		if(!empty($user->whoIs)) $arrPagerExtraVars = array('who'=>$who);
+		if(!isset($_REQUEST['k']))  $arrPagerExtraVars['k'] = $user->pageVO->pageId;
+		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
 
 		/**
 		 *FORM FOR EDIT ITEM
@@ -186,24 +187,25 @@ class page_PageItemList implements iPage {
 			}
 
 			if(!empty($itemVO)) {
-				$arrPagerExtraVars['k'] = $pageVO->pageId;
-				$arrPagerExtraVars['i'] = $itemId;
 				$itemVO->updateReaded( $user->userVO->userId );
 			} else {
 				$pageVO->updateReaded($user->userVO->userId);
 			}
+			
+			if(!empty($itemVO)) {
+				$arrPagerExtraVars['k'] = $pageVO->pageId;
+				$arrPagerExtraVars['i'] = $itemId;
+			}
 			$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
 			$from = ($pager->getCurrentPageID()-1) * $perPage;
-			$fItems->getList($from,$perPage+1);
+			$fItems->getList($from, $perPage+1);
 			$pager->totalItems = count($fItems->data);
-
 			if($pager->totalItems > $perPage) {
 				$pager->maybeMore = true;
 				array_pop($fItems->data);
 			}
 			if($from > 0) $pager->totalItems += $from;
-
-			if($pager->totalItems>0) {
+			if($pager->totalItems > 0) {
 				$pager->getPager();
 				if ($pager->totalItems > $perPage) {
 					$vars['TOPPAGER'] = $pager->links;

@@ -37,13 +37,17 @@ class FBuildPage {
 		$breadcrumbs = array();
 		//breadcrumbs
 		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-		$pageTop = new PageVO($pageIdTop,true);
+		if($pageIdTop!=$user->pageVO->pageId) {
+			$pageTop = new PageVO($pageIdTop,true);
+		} else {
+			$pageTop = $user->pageVO;
+		}
 		if($pageTop->pageId) {
 			$homesite = $pageTop->prop('homesite');
 			if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
 			$breadcrumbs[] = array('name'=>$pageTop->name,'url'=>$homesite);
 		}
-
+		
 		if($pageTop->pageId!=$user->pageVO->pageId) {
 			//typ
 			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
@@ -367,23 +371,19 @@ class FBuildPage {
 			FProfiler::write('FBuildPage--FLeftPanel');
 		}
 
-
-		//---FOOTER INFO
-		//TODO:start currently not defined
-		//$tpl->setVariable("FOOTER", round((FError::getmicrotime()-$start),3));
-		
-
 		//--- last check
 		//--- js and css included just when needed
 		$useDatePicker = false;
 		$useTabs = false;
 		$useSwfobject = false;
 		$useFuup = false;
+		$useMaps = false;
 
 		foreach ($tpl->blockdata as $item) {
 			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
 			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
 			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
+			if(strpos($item, 'mapSmall') !== false) { $useMaps = true; }
 		}
 
 		if($useDatePicker === true) {
@@ -406,6 +406,9 @@ class FBuildPage {
 		}
 		if($user->idkontrol===true) {
 			$tpl->touchBlock("signedInit");
+		}
+		if($useMaps===true) {
+			$tpl->touchBlock("mapsLoad");
 		}
 
 		FProfiler::write('FBuildPage--custom js sections');
