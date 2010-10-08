@@ -7,8 +7,7 @@
 @media all {
 	html, body {margin: 0; padding: 0;}
 	html {height: 100%;}
-	body {color: black;line-height: 1.4em;background-color: white;font-size: 62.5%;}
-	p {margin: 0;padding: 0.2em 0 0.5em 0;line-height: 1.4em;}
+	p {margin: 0;padding: 0.2em 0 0.5em 0;line-height: 1.8em;}
 	samp, code, kbd {color: #666;background-color: whitesmoke;} 
 	h1, h2, h3, h4, h5, h6 {font-size: 1em;margin: 0.2em 0;}
 	h1 {font-size: 2.4em;line-height: 2em;}
@@ -61,7 +60,6 @@
 	input.button, button {display: none;}
 }
 @media screen,projection {
-	body, textarea {font-family: Verdana,"Geneva CE",lucida,sans-serif;}
 	abbr, acronym {text-decoration: none;cursor: help;}
 	/* FORM BOXES */
 	input.button, button {width: auto;margin: 0 1em;padding: 0 0.5em;font-weight: bold;}

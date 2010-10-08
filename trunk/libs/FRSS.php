@@ -71,7 +71,7 @@ class FRSS {
 			$perPage = 20;
 
 			//load items
-			$fi = new FItems('',-1);
+			$fi = new FItems('',0);
 			//TODO: decide ordering
 			//$fi->addSelect('if(sys_pages_items.dateStart is not null, sys_pages_items.dateStart, sys_pages_items.dateCreated) as dateorder');
 			

@@ -101,8 +101,8 @@ class page_PagesList implements iPage {
 						$tplGal->setVariable("PAGEID",$gal->pageId);
 						$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId));
 						$tplGal->setVariable("PAGENAME",$gal->name);
-						$tplGal->setVariable("DATELOCAL",$gal->date('dateContent','date'));
-						$tplGal->setVariable("DATEISO",$gal->date('dateContent','iso'));
+						$tplGal->setVariable("DATELOCAL",$gal->date($gal->dateContent,'date'));
+						$tplGal->setVariable("DATEISO",$gal->date($gal->dateContent,'iso'));
 						$tplGal->setVariable("GALERYTEXT",$gal->description);
 						if($gal->unreaded>0)$tplGal->setVariable("FOTONEW",$gal->unreaded);
 						$tplGal->setVariable("FOTONUM",$gal->cnt);
