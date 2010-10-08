@@ -20,8 +20,8 @@ class page_ItemDetail implements iPage {
 		}
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
-		if(($itemNext = $itemVO->getNext(true))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$pageId);
-		if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$pageId);
+		if(($itemNext = $itemVO->getNext(true))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$itemVO->pageId);
+		if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$itemVO->pageId);
 		
 		//generic vars for all item details
 		
@@ -49,7 +49,7 @@ class page_ItemDetail implements iPage {
 				"IMGALT"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
-				"TAG"=>FItemTags::getTag($itemVO->itemId,$userId,'galery'),
+				"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
 				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
 				//comment via pageitemlist "COMMENTS"=>page_PageItemList::build(array('itemId'=>$itemVO->itemId)) //TODO: build comments only if there are any or write perm

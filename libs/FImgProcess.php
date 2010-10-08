@@ -322,7 +322,6 @@ class FImgProcess {
 	}
 
 	static function getimagesize($image_url) {
-
 		//check if file exists localy
 		if(file_exists($image_url)) {
 			//check file is not dir
