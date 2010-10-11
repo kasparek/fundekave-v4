@@ -17,7 +17,6 @@ div#pageholder {position: relative;left: 0px;font-size:0.88em;}
 input {font-size: 1em; }
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
-div#logo {float:right;position:relative;top:0;margin-left:220px;}
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;}
 div#header, div#footer{clear:both;margin-left: 0px;min-width: 750px;}
 div#footer{padding: 5px 0;text-align: right;}
@@ -25,7 +24,9 @@ div#footer span {float: left;}
 div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
 
 /* HEADER CONTENT */
-div#logo {width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
+div#logo {float:right;position:relative;top:0;
+width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
+.bodySidebarOff div#logo {margin-right:0px;}
 
 /* PRIMARY MENU */
 ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
@@ -114,8 +115,18 @@ div.mainpanel-content div#categories ul {margin-left: 30px;}
 div#mainbar ul.linkList {list-style: none;}
 div#mainbar ul.linkList li a.linkItem img {padding: 0;margin: 0;float: left;margin-right: 0.5em;margin-left: -1em;}
 div#mainbar ul.linkList li {margin-top: 0.1em;clear: left;padding-left: 0;background: none;}
-div#mainbar a.linkItem {clear: both;line-height: 25px;display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;padding: 0 1em; font-weight: bold;}
-div#mainbar a.linkItem:hover {background: #bbbbbb;}
+div#mainbar a.linkItem {
+font: 1.3em Georgia,Times,serif;
+clear: both;
+line-height: 25px;
+min-height: 25px;
+display: block;
+background: #FFF3E7;
+text-decoration: none;
+margin-top: 2px;
+padding: 0 1em; 
+}
+div#mainbar a.linkItem:hover {background: #E2E595;text-decoration:underline;}
 /* LINK LIST customs for inline displaying */
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
 div#mainbar div.entry-content a.linkItem img {margin: 0 0 -8px 0 !important;float: none !important;}
@@ -229,12 +240,15 @@ div.friends ul li div {margin-right: 10px;}
 
 /* NEW MESSAGES WARNING */
 span#messageNew {color:#fff;
-position: absolute;
+position: fixed;
+z-index:10001;
 display: block;
 background: #C64226;
 font: 1em Georgia,Times,serif;
-right:30px;top: 10px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
+right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
 span#messageNew a { color:#fff; }
+span#messageNew .flash {border: 2px #00ffff solid;}
+
 
 /*POST PAGE*/
 div#recipientavatar {float: left;clear: left;min-width: 10em;text-align: center;}
