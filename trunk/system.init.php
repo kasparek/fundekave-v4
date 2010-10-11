@@ -63,3 +63,5 @@ FProfiler::write('USER/PAGE CHECK DONE');
 FCommand::getInstance(); //to load up class and get static constants
 FCommand::register(ITEM_UPDATED,'itemUpdate');
 FCommand::register(ITEM_UPDATED,'flushCache');
+FCommand::register(PAGE_UPDATED,'pageCache');
+FCommand::register(ITEM_READED,'itemReaded');

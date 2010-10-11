@@ -23,7 +23,6 @@ class PageVO extends Fvob {
 	'categoryId' => 'categoryId',
 	'template' => 'template',
 	'name' => 'name',
-	'nameshort' => 'nameshort',
 	'description' => 'description',
 	'content' => 'content',
 	'public' => 'public',
@@ -34,7 +33,6 @@ class PageVO extends Fvob {
 	'pageIco' => 'pageIco',
 	'cnt' => 'cnt',
 	'locked' => 'locked',
-	'authorContent' => 'authorContent',
 	'galeryDir' => 'galeryDir'
 	);
 
@@ -56,7 +54,6 @@ class PageVO extends Fvob {
 	var $categoryVO;
 	var $template;
 	var $name;
-	var $nameshort;
 	var $description;
 	var $content;
 	var $public = 1;
@@ -64,7 +61,6 @@ class PageVO extends Fvob {
 	var $ownerUserVO;
 	var $pageIco;
 	var $locked = 0;
-	var $authorContent;
 	var $galeryDir;
 	var $cnt;
 	var $dateContent;

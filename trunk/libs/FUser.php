@@ -291,9 +291,11 @@ class FUser {
 				if(!empty($userVO->dateLastVisit)) $tpl->setVariable('ACTIVITY',$userVO->dateLastVisit);
 				if(!empty($userVO->activityPageId)) {
 					$pageVO = new PageVO($userVO->activityPageId,true);
+					if($pageVO->typeId!='top') {
 					$tpl->setVariable('ACTIVITYURL',FSystem::getUri('',$userVO->activityPageId,''));
 					$tpl->setVariable('ACTIVITYPAGENAME',$pageVO->name);
-					$tpl->setVariable('ACTIVITYPAGENAMESHORT',$pageVO->nameshort);
+					$tpl->setVariable('ACTIVITYPAGENAMESHORT',FLang::$TYPEID[$pageVO->typeId]);
+					}
 				}
 				if(!empty($userVO->requestId)) {
 					$tpl->setVariable('REQUESTID',$userVO->requestId);
@@ -396,19 +398,6 @@ class FUser {
 		$q = "select userId from sys_users_logged where subdate(NOW(),interval ".USERVIEWONLINE." minute)<dateUpdated";
 		$arr = FDBTool::getCol($q, 'isOn', 'user', 'l');
 		return in_array($userId,$arr);
-	}
-
-	/**
-	 * return location of specified user
-	 * @param $userId
-	 * @return array[pageId,param,nameshort,name]
-	 */
-	static function getLocation($userId) {
-		$query = "SELECT s.location,s.params,ss.nameshort,ss.name FROM sys_users_logged as s join sys_pages as ss on s.location=ss.pageId and s.userId='".$userId."'";
-		$rid = FDBTool::getRow($query,'Uloc', 'user','l');
-		if (!empty($rid)) {
-			return array('pageId'=>$rid[0],'param'=>$rid[1],'nameshort'=>$rid[2],'name'=>$rid[3]);
-		}
 	}
 
 	/**

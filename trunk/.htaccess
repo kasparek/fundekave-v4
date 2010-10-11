@@ -4,10 +4,10 @@ RewriteCond %{HTTP_HOST} ^www.awake33.com$
 RewriteRule (.*) http://awake33.com/$1 [R=301,QSA,L]
 
 RewriteBase /fdk5/
+#RewriteRule ^([a-zA-Z]{5}) index.php?k=$1 [QSA]
 RewriteRule ^image/([0-9x]*)/([a-z]*)/(.*) image.php?side=$1&cut=$2&img=$3 [QSA,L]
 
 RewriteRule (.*\.css)$ index.php?header_handler=css&c=$1 [L]
-#RewriteRule (.*\.js)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.gif)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.jpg)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.png)$ index.php?header_handler=1&c=$1 [L]

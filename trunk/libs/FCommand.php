@@ -1,6 +1,8 @@
 <?php
 
 define("ITEM_UPDATED","actionItemUpdated");
+define("ITEM_READED","actionItemReaded");
+define("PAGE_UPDATED","actionPageUpdated");
 
 class FCommand {
 
@@ -46,6 +48,20 @@ class FCommand {
 		$cache = FCache::getInstance('f');
 		$cache->invalidateData($data->itemId,'renderedItem');
 		$cache->invalidateData($data->itemId.'detail','renderedItem');
+	}
+	
+	public static function itemReaded($data) {
+		$cache = FCache::getInstance( 's' );
+		$unreadedList = &$cache->getPointer('unreadedItems');
+		if(in_array($data->itemId,$unreadedList)) {
+			array_splice($unreadedList,array_search($data->itemId, $unreadedList),1);
+		}
+	}
+	
+	public static function pageUpdated($data) {
+		$cacheGrp = 'pagelist';
+		$mainCache = FCache::getInstance('f',0);
+		$mainCache->invalidateGroup($cacheGrp);
 	}
 	
 	public static function flushCache() {
