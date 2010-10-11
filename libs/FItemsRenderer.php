@@ -91,6 +91,8 @@ class FItemsRenderer {
 				return;
 			}
 		}
+		
+		if($itemVO->loaded!==true) $itemVO->load();
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;

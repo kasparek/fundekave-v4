@@ -68,7 +68,9 @@ class Fvob {
 	function load() {
 		if(!empty($this->{$this->primaryCol})) {
 			$dataVO = $this->memGet();
-			if($dataVO === false) {
+			$loaded = false;
+			if($dataVO !== false) if($dataVO->loaded===true) $loaded=true; 
+			if($loaded===false) {
 				$vo = new FDBvo( $this );
 				$this->loaded = $vo->load();
 				if(!$this->loaded) $this->{$this->primaryCol} = null;
