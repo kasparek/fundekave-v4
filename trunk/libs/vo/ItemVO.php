@@ -168,10 +168,10 @@ class ItemVO extends Fvob {
 	var $itemList;
 
 	function load() {
-		if(parent::load()) {
+		if($ret = parent::load()) {
 			if(!$this->loadedCached) $this->prepare();
 		}
-		return $this->loaded;
+		return $ret;
 	}
 
 	function map($arr) {
@@ -243,8 +243,9 @@ class ItemVO extends Fvob {
 	 */
 	function updateItemIdLast() {
 		//---update last item id on page
-		$itemIdLast = FDBTool::getOne("select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc");
+		$itemIdLast = FDBTool::getOne("select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc limit 1");
 		$this->pageVO->prop( 'itemIdLast', $itemIdLast);
+		return $itemIdLast;
 	}
 
 	function delete() {

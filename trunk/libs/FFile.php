@@ -6,6 +6,8 @@ class FFile {
 	var $ftpUser;
 	var $ftpPass;
 	var $ftpDir='.';
+	
+	var $numModified=0;
 
 	function __construct($ftpServer='',$ftpUser='',$ftpPass='') {
 		if(!empty($ftpServer) && !empty($ftpUser)) {
@@ -86,7 +88,7 @@ class FFile {
 	}
 
 	function chmod($filename,$mode=0777) {
-		FError::write_log('FFile::chmod '.$filename.' '.$mode .' ftp:'.$this->isFtpMode);
+		if(empty($filename)) return;
 		if(!$this->isFtpMode) return chmod($filename,$mode);
 		return ftp_chmod($this->ftpConn,$mode,$filename);
 	}
@@ -277,14 +279,33 @@ class FFile {
 	 **/
 	function makeDir($dir,$mode=0777,$recursive=true) {
 		if(!$this->file_exists($dir)) {
+			$dirArr = explode('/',$dir);
+			if($dir{0}=='/') {
+			array_shift($dirArr);
+			$dirArr[0] = '/'.$dirArr[0];
+			}
+			$dirTmp='';
+			while(count($dirArr)>0) {
+				$chmodFrom = array_pop($dirArr);
+				if(file_exists(implode('/',$dirArr))) break;
+			}
+			
 			if(!$ret = $this->mkdir($dir, $mode, $recursive)) {
 				FError::write_log('FFile::makeDir - Make dir failed '.$dir);
 			}
+			
 			$dirArr = explode('/',$dir);
-			$dir = '';
+			if($dir{0}=='/') {
+			array_shift($dirArr);
+			$dirArr[0] = '/'.$dirArr[0];
+			}
+			$dirTmp = '';
+			$chmod=false;
 			while(count($dirArr)>0) {
-				$dir .= (($dir=='')?(''):('/')).array_shift($dirArr);
-				$this->chmod($dir, $mode);
+				$dirPart = array_shift($dirArr);
+				$dirTmp .= (empty($dirTmp) ? '' : '/') . $dirPart;
+				if(!$chmod) { if($dirPart==$chmodFrom) $chmod=true; }
+				if($chmod) $this->chmod($dirTmp, $mode);
 			}
 			return $ret;
 		}
@@ -306,9 +327,13 @@ class FFile {
 					}
 				}
 			}
-			return rmdir($filepath);
+			if($ret = rmdir($filepath)) $this->numModified++;
+			return $ret;
 		}
-		if(file_exists($filepath)) return unlink($filepath);
+		if(file_exists($filepath)) {
+			if($ret = unlink($filepath)) $this->numModified++;
+			return $ret;
+		}
 	}
 
 	/**
@@ -327,9 +352,11 @@ class FFile {
 					}
 				}
 			}
-			return $this->chmod($filepath, $mode);
 		}
-		if($this->file_exists($filepath)) return $this->chmod($filepath, $mode);
+		if($this->file_exists($filepath)) {
+			if($ret = $this->chmod($filepath, $mode)) $this->numModified++;
+			return $ret;
+		}
 	}
 
 	/**

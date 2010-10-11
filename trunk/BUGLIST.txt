@@ -14,7 +14,7 @@ update sys_pages_items set text=concat(text,'<br/> ',enclosure),enclosure=null w
 drop sys_users - skinId,zbanner,zavatar,zforumico,zgalerytype
 drop sys_users_friends - comment
 drop sys_menu_secondary
-drop sys_pages - menuSecondaryGroup
+drop sys_pages - menuSecondaryGroup,authorContent,nameshort
 
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL 
 
