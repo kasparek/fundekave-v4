@@ -53,8 +53,9 @@ class FFile {
 
 	function is_dir($filename) {
 		if(!$this->isFtpMode) return is_dir($filename);
-		if (ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, '..');
+		$currentDir = ftp_pwd($this->ftpConn);
+		if(ftp_chdir($this->ftpConn, $filename)) {
+			ftp_chdir($this->ftpConn, $current);
 			return true;
 		} else {
 			return false;
@@ -310,12 +311,47 @@ class FFile {
 			return $ret;
 		}
 	}
+	
+	/**
+	 *recursive copy
+	 */
+	public $sourceFolder;
+	public $targetFolder;
+	private $currentTargetFolder='';
+	public $recursive = true;
+	function replicateToFtp( $dir='' ) {
+		if(!file_exists($this->sourceFolder)) return;
+		$localCurrentTargetFolder = $this->targetFolder.($this->targetFolder{strlen($this->targetFolder)-1}=='/'?'':'/').$dir; 
+		$filaArr = scandir($this->sourceFolder.$dir);
+		foreach($filaArr as $file) {
+			if($file!='.' && $file!='..') {
+				$ds = $this->sourceFolder.($this->sourceFolder{strlen($this->sourceFolder)-1}=='/'?'':'/').$dir;
+				$fs = $ds . ($ds{strlen($ds)-1}=='/'?'':'/') . $file;
+				$dt = $this->targetFolder.($this->targetFolder{strlen($this->targetFolder)-1}=='/'?'':'/').$dir;
+				$ft = $dt . ($dt{strlen($dt)-1}=='/'?'':'/') . $file;
+				if(!is_dir($fs)) {
+					// upload the file
+					if(ftp_size($this->ftpConn, $ft)>0) { 
+						echo 'File Exists :: '.$dir.'::'.$file.'<br>';
+					} else {
+						$upload = ftp_put($this->ftpConn, $ft, $fs, FTP_BINARY);
+						ftp_chmod($this->ftpConn, 0777, $ft);
+						if (!$upload) echo "FTP upload has failed! :: $fs -> $ft<br />\n";
+						else echo "Uploaded :: $fs -> $ft<br>\n";
+					}
+				} elseif($this->recursive===true) {
+					$this->makeDir( $ft );
+					$this->replicateToFtp( $dir.($dir{strlen($dir)-1}=='/'?'':'/').$file );
+				}
+			}
+		}
+	}	 	
 
 	/**
 	 * recursive folder delete
 	 **/
 	function rm_recursive($filepath) {
-		if (is_dir($filepath) && !is_link($filepath)) {
+		if ($this->is_dir($filepath) && !$this->is_link($filepath)) {
 			$list = $this->fileList($filepath);
 			if(!empty($list)) {
 				while (count($list)>0) {
@@ -327,11 +363,11 @@ class FFile {
 					}
 				}
 			}
-			if($ret = rmdir($filepath)) $this->numModified++;
+			if($ret = $this->rmdir($filepath)) $this->numModified++;
 			return $ret;
 		}
-		if(file_exists($filepath)) {
-			if($ret = unlink($filepath)) $this->numModified++;
+		if($this->file_exists($filepath)) {
+			if($ret = $this->unlink($filepath)) $this->numModified++;
 			return $ret;
 		}
 	}

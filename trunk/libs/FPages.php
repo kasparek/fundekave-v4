@@ -272,8 +272,10 @@ class FPages extends FDBTool {
 						$tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
 					}
 				}
-				$itemVO = new ItemVO($page->prop('itemIdLast'));
-				$tpl->setVariable('ITEM',$itemVO->render());
+				if(!isset($options['noitem'])) {
+					$itemVO = new ItemVO($page->prop('itemIdLast'));
+					$tpl->setVariable('ITEM',$itemVO->render());
+				}
 				$tpl->parse();
 			}
 		}
@@ -310,7 +312,7 @@ class FPages extends FDBTool {
 
 		if(count($arraudit)>0){
 
-			$tpl->setVariable('PAGELINKSOWN',$this->printPagelinkList($arraudit));
+			$tpl->setVariable('PAGELINKSOWN',$this->printPagelinkList($arraudit,array('noitem'=>true)));
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
@@ -335,7 +337,7 @@ class FPages extends FDBTool {
 
 		if(count($arraudit)>0){
 
-			$tpl->setVariable('PAGELINKSBOOKED',$this->printPagelinkList($arraudit));
+			$tpl->setVariable('PAGELINKSBOOKED',$this->printPagelinkList($arraudit,array('noitem'=>true)));
 
 			$newSum=0;
 			foreach($arraudit as $forum) {
@@ -358,7 +360,7 @@ class FPages extends FDBTool {
 
 			if(count($arraudit)>0) {
 
-				$tpl->setVariable('PAGELINKSNEW',$this->printPagelinkList($arraudit));
+				$tpl->setVariable('PAGELINKSNEW',$this->printPagelinkList($arraudit,array('noitem'=>true)));
 
 			}
 		
