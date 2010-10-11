@@ -1,7 +1,7 @@
 /**
  *PROMPT
  */
- $(document).ready(function(){
+/* $(document).ready(function(){
   $('input[type=text][title],input[type=password][title],textarea[title]').each(function(i){
     $(this).addClass('input-prompt-' + i);
     var promptSpan = $('<span class="input-prompt"/>');
@@ -24,7 +24,7 @@
       }
     });
   });
-}); 
+});*/ 
 /**
  *MSG CHAT FUNCTIONS
  */

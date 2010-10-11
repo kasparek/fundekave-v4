@@ -268,24 +268,16 @@ class FPages extends FDBTool {
 				$tpl->setVariable("PAGENAME", $page->name);
 				$tpl->setVariable("URL", '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
 				if($user->idkontrol===true) {
-					if(isset($page->unreaded)) {
-						if($page->unreaded>0 && $page->unreaded<100000) $tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
+					if($page->unreaded>0) {
+						$tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
 					}
 				}
-
-				if(isset($options['inline'])) {
-				$tpl->parse('itemlink');
-				} else {
-				$tpl->parse('item');
-				}
+				$itemVO = new ItemVO($page->prop('itemIdLast'));
+				$tpl->setVariable('ITEM',$itemVO->render());
+				$tpl->parse();
 			}
 		}
-		if(isset($options['inline'])) {
-			$ret = $tpl->get('itemlink');
-		} else {
-			$ret = $tpl->get();
-		}
-		return $ret;
+		return $tpl->get();
 	}
 
 	/**

@@ -89,7 +89,7 @@ class page_Search implements iPage {
 				//---QUERY RESULTS
 				$fPages = new FPages(array('galery','forum','blog'), $userId);
 				if(!empty($pageSearchCache['filtrPages'])){
-					$fPages->addWhereSearch(array('p.name','p.description','p.authorContent','p.dateContent'),$pageSearchCache['filtrPages'],'OR');
+					$fPages->addWhereSearch(array('p.name','p.description','p.dateContent'),$pageSearchCache['filtrPages'],'OR');
 				}
 				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',p.typeId');
 				if($user->idkontrol!==true) {

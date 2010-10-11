@@ -83,7 +83,8 @@ class UserVO extends Fvob {
 		$this->info = $xml->asXML();
 	}
 
-	function hasNewMessages(){
+	function hasNewMessages() {
+		if($this->userId==0) return false;
 		$dot = "select userIdFrom from sys_users_post where readed=0 AND userIdFrom!='".$this->userId."' AND userId='".$this->userId."' order by dateCreated desc";
 		$npost = FDBTool::getCol($dot);
 		if(!empty($npost)) {

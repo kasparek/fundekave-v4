@@ -41,7 +41,6 @@ class page_PageEdit implements iPage {
 				$pageVO->typeId = $user->pageVO->typeIdChild;
 				$pageVO->pageIdTop = HOME_PAGE;
 				$pageVO->setDefaults();
-				$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
 			} else {
 				$pageVO->pageId = $data['pageId'];
 				$pageVO->load();
@@ -79,8 +78,6 @@ class page_PageEdit implements iPage {
 			}
 
 			if($user->pageParam=='sa') {
-				$pageVO->nameShort = FSystem::textins($data['nameshort'],array('plainText'=>1));
-				$pageVO->authorContent = FSystem::textins($data['authorcontent'],array('plainText'=>1));
 				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
 					$pageVO->locked = (int) $data['locked'];
@@ -99,8 +96,6 @@ class page_PageEdit implements iPage {
 
 				if($user->pageParam == 'a') {
 					$pageVO->userIdOwner = $user->userVO->userId;
-					$cache = FCache::getInstance('f');
-					$cache->invalidateGroup('calendarlefthand');
 				}
 
 				//---first save - if new page to get pageId
@@ -159,7 +154,8 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
-				page_PagesList::invalidate();
+				
+				FCommand::run(PAGE_UPDATED);
 
 				//---page editing
 				if($user->pageParam != 'a') {
@@ -325,7 +321,6 @@ class page_PageEdit implements iPage {
 			$pageVO = new PageVO();
 			$pageVO->typeId = $user->pageVO->typeIdChild;
 			$pageVO->setDefaults();
-			$pageVO->nameshort = (isset(FLang::${$pageVO->typeId}))?(FLang::${$pageVO->typeId}):('');
 		} else {
 			$pageVO = new PageVO();
 			$pageVO->pageId = $user->pageVO->pageId;
@@ -441,12 +436,9 @@ class page_PageEdit implements iPage {
 		if(!empty($arrTmp)) $tpl->setVariable('CATOPTIONS',FCategory::getOptions($arrTmp,$categoryId));
 
 		//---if pageParam = sa - more options to edit on page
-		//--- nameShort,template,categoryId,dateContent,locked,authorContent
+		//--- template,categoryId,dateContent,locked
 		if($user->pageParam=='sa') {
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
-			$tpl->setVariable('PAGEAUTHOR',$pageVO->authorContent);
-
-			$tpl->setVariable('PAGENAMESHORT',$pageVO->nameshort);
 			$tpl->setVariable('PAGETEMPLATE',$pageVO->template);
 		}
 		$date = new DateTime((!empty($pageVO->dateContent))?($pageVO->dateContent):(''));

@@ -139,6 +139,7 @@ class FItemsForm {
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
+					//save items
 					if($itemVO->save()>0){
 						if(!empty($data['imageUrl'])) {
 							$itemVO->deleteImage();

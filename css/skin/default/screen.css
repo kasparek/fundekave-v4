@@ -1,47 +1,52 @@
 /* css fundekave, http://www.fundekave.net/ */
 /* BASIC ELEMENTS */
 /*@media screen,projection {*/
-body {text-align: center;color: black;background-color: white;font:0.8125em/1 Verdana,sans-serif; }
 a {color: #320;}
 h1 {font: 1.66em Georgia,Times,serif; padding: 0 10px 0 10px;}
-h2 {font: 1.5em Georgia,Times,serif;}
-div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;}
+h2 {font: 2em Georgia,Times,serif;}
+div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
 /* BASE FRAMEWORK */
-body {margin:0;margin-left:20px;padding-right:240px;margin-right:0;background: #eae6da url(img/page-bg.gif) repeat-x right top;}
+body {text-align: center;color: black;font:0.8125em/1 Verdana,sans-serif;
+margin:0;margin-left:20px;padding-right:240px;margin-right:0;
+background: #eae6da url(img/page-bg.png) repeat-x right top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;font-size:0.88em;}
-div#header {position: relative;z-index: 1;min-height: 41px;}
-div#pagebar {float:left;width:100%;min-width: 600px;display:inline; background-color: white;padding: 0;}
-div#sidebar {position:relative;top: -41px;float:right;width:200px;margin-right:-220px;background: url(img/logo-bg.jpg) no-repeat right top;text-align: left;font-size: 80%;}
-div#header, div#footer{clear:both;margin-left: 0px;min-width: 700px;}
+input {font-size: 1em; }
+div#header {position: relative;z-index: 1;}
+div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
+div#logo {float:right;position:relative;top:0;margin-left:220px;}
+div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;}
+div#header, div#footer{clear:both;margin-left: 0px;min-width: 750px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
-div#mainbar {float:left;width:100%;min-width: 400px;margin-right:-100%;text-align: left;padding-bottom:1em;}
+div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
 
 /* HEADER CONTENT */
-div#logo {width: 134px;height: 107px;margin: 15px auto 0;}
+div#logo {width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
 
 /* PRIMARY MENU */
-ul#menu {margin-left: 0;text-transform:uppercase;}
-ul#menu li {display: block;float: left;padding-top: 11px;margin-right: 5px;list-style: none;background: url(img/primary-nav-bg.gif) repeat-x left top;}
-ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em Georgia,Times,serif;text-decoration: none;font-weight: bold;color: black;line-height: 2.3em;}
-ul#menu li.active a {background-color: white;}
+ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
+ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
+background: #fff3e7;
+}
+ul#menu li a {padding: 0 0.8em;display: block;font: 1.1em Georgia,Times,serif;text-decoration: none;
+font-weight: bold;color: #425d21;line-height: 2.3em;}
+ul#menu li a:hover,a.active {background: #fff;}
 
 /* SECONDARY MENU */
 div#menu-secondary-holder {padding: 0 10px 10px 10px;}
 div#mainbar ul#menu-secondary {margin: 0;padding: 0;width: 100%;display: table;border-bottom: 1px solid #999;}
 div#mainbar ul#menu-secondary li {position: relative;padding-left: 0;list-style: none;display: block;margin-right: 5px;float: left;line-height: 2em;border: 1px solid #999;border-bottom: none;background: whitesmoke;}
 div#mainbar ul#menu-secondary li.opposite {float:right;}
-div#mainbar ul#menu-secondary li a {font-size: 1.1em;font-weight: bold;text-decoration: none;padding: 0 1em;}
+div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;padding: 0 1em;}
 
 /* BREADCRUMBS */
 div#breadcrumbs {margin:0;padding:1.2em 0 1em 10px;}
 div#breadcrumbs ul {margin: 0; padding: 0;}
 div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow-brown-bg.gif) no-repeat left center;
-/*font-weight: bold;*/
 font:0.9em Verdana,sans-serif;
 color: #9D400D;
 }
@@ -57,13 +62,13 @@ div.sidebarBlock {margin: 0 0 1em 0;padding: 0.3em;background: #fff;}
 span.postsNew {color: red;font-weight: bold;float:right;}
 
 /* LOGIN / LOGGED modul */
-div.sidebarBlock.loginBlock {padding: 10px 0;background: none;}
-form#loginForm, div#loggedUserContainer {color: white;margin-top: 10px;padding: 0 16px;padding-right: 26px;min-height: 90px;}
-form#loginForm label {float: left;width:4em;line-height: 1.5em;}
-form#loginForm input {width: 8em;margin-bottom: 10px;}
-form#loginForm input#loginButton {float: right;width: auto;font-weight: bold;background: #d0cbb5;border: 1px;}
+div.sidebarBlock.loginBlock {padding: 10px 0;background: #f8f7ef;min-height:60px;}
+form#loginForm, div#loggedUserContainer {color: #444;margin-top: 0px;padding: 0 15px;}
+form#loginForm label {float: left;display:block;width:6.5em;padding:3px;}
+form#loginForm input {width: 6.5em;margin-bottom: 5px;margin-right: 5px;}
+form#loginForm input#loginButton {float: right;width: auto;}
 form#loginForm p {margin: 0; padding: 0;}
-form#loginForm a, div#loggedUserContainer a {color: #f9efc9;font-weight: normal;}
+form#loginForm a, div#loggedUserContainer a {color: #333;font-weight: normal;}
 form#loginForm ul, div#loggedUserContainer ul {clear: left;margin: 0; padding: 0;}
 form#loginForm ul li, div#loggedUserContainer ul li {padding-left: 10px;list-style: none;background: url(img/arrow-brown-bg.gif) no-repeat left center;font-weight: bold;}
 div#loggedUserContainer ul li a.requests {font-weight: bold;color: #ff0000;}
@@ -88,7 +93,7 @@ div#mainbar fieldset input.submit {margin-left: 10em;}
 textarea {border: 1px solid #aaa;width:400px;height:6em;font-size: 1.2em;margin-bottom: 0.3em;margin-left: 0;margin-right: 0;padding: 0 5px;}
 div#mainbar fieldset textarea.draftNotSave {border-right: 2px solid #dd0000;}
 div#mainbar fieldset textarea.draftSave {border-right: 2px solid #00dd00;}
-div#mainbar fieldset textarea.largeTextarea {width: 95%;height:14em;}
+div#mainbar fieldset textarea.largeTextarea {width: 570px;height:14em;}
 span.textAreaResize {float: left;}
 span.textAreaResize a {text-decoration: none;background: url(img/windows.png) no-repeat left top;display: block;width: 16px;height: 16px;margin-top: 2px;margin-right: 4px;margin-left: -20px;}
 
@@ -124,7 +129,7 @@ div#sidebar ul.linkList li a {display: block;background: #eeeeee;text-decoration
 div#sidebar ul.linkList li a:hover {background: #bbbbbb}
 
 /* HENTRY */
-div.mainpanel-content div.hentry {clear: left;margin-top: 2.3em;padding-top: 0;padding-bottom: 0.5em;position: relative;border-top: 1px solid #ddd;overflow: hidden;}
+div.mainpanel-content div.hentry {clear: left;margin-bottom: 1em;padding-top: 0;position: relative;border-top: 1px solid #ddd;overflow: hidden;}
 div.mainpanel-content div.entry-content div.hentry {margin: 0 0 0 2em;}
 div.mainpanel-content div.hentry span.postsNew {display: inline;float: none;text-align: left;margin: 0;}
 div.mainpanel-content div.hentry div.avatar {float: left;margin: 0 0.5em 1em 0;}
@@ -132,6 +137,7 @@ div.mainpanel-content div.blog div.avatar {float: right;margin: 0 0 1em 0;}
 
 div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padding: 0 1em;margin-top: 0;}
 div.mainpanel-content div.opacity div.vevent {margin-bottom: 0;}
+div.mainpanel-content div.reaction {margin-left: 3em;}
 
 div.mainpanel-content div.hentry div.completelink {line-height: 2em;margin-left: 50px;text-align: center;width: 10em;clear: both;}
 div.mainpanel-content div.hentry div.completelink a {display: block;background: #f8f7ef;font-weight: bold;}
@@ -141,7 +147,7 @@ div.mainpanel-content div.hentry div.completelink a:hover {background: #ddd;}
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
 div.mainpanel-content div.vevent div.header {height: auto;float: right;}
 div.mainpanel-content div.hentry h2.entry-title {padding: 0;margin: 0;}
-div.mainpanel-content div.blog h2.entry-title {margin-top: -1.5em;}
+div.mainpanel-content div.blog h2.entry-title {margin-top: -1em;}
 div.mainpanel-content div.hentry h2.entry-title a {color: black;text-decoration: none;}
 div.mainpanel-content div.hentry h2.entry-title a:hover {color: black;text-decoration: underline;}
 div.mainpanel-content div.hentry h3 {margin: 0;padding: 0;color: black;background: none;}
@@ -163,7 +169,7 @@ div.mainpanel-content div.hentry span.delete img {margin-top: 2px;}
 div.mainpanel-content span.stats {float: right;background-color: #f8f7ef;padding: 0 1em;margin: 0 1em;}
 div.mainpanel-content div.stats{margin: 0 auto;padding: 0 0 0.3em 0; text-align: center;}
 
-div.mainpanel-content div.hentry span.edit {float: right;padding: 0 1em;line-height: 1.9em;background-color: #ddd;border: none;font-weight: bold;}
+div.mainpanel-content div.hentry span.edit {float: right;padding: 0 1em;line-height: 1.9em;background-color: #f8f7ef;border: none;font-weight: bold;}
 
 div.mainpanel-content div.vevent span.vcard {float: right;background-color: #f8f7ef;font-weight: bold;padding: 0 1em;margin-right: 1em;}
 
@@ -200,7 +206,7 @@ div.entry-content div.galeryThumb {margin: 1em 0.5em 1em 0.5em !important;}
 div.entry-content div.alignCenter div.galeryThumb {float:none;width: 170px;margin: auto;}
 div.galeryThumb div.entry-content {padding: 0 !important;}
 div.galeryThumb div.foto {text-align: center;}
-div#itemDetail div.back {margin-bottom: 1em;text-align: center;}
+div#itemDetail {margin-bottom: 2em;}
 div.fotoDetailBox,div.fotoDetailBox p {text-align: center;}
 
 /* EVENTS */
@@ -222,7 +228,13 @@ div.friends ul li div,div.friends ul li ul {float: left;}
 div.friends ul li div {margin-right: 10px;}
 
 /* NEW MESSAGES WARNING */
-span#messageNew {position: absolute;display: block;font-weight: bold;background: #C64226;top: 20px;padding: 1em;width: 130px;border: 2px #ffffff solid;text-align: center;}
+span#messageNew {color:#fff;
+position: absolute;
+display: block;
+background: #C64226;
+font: 1em Georgia,Times,serif;
+right:30px;top: 10px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
+span#messageNew a { color:#fff; }
 
 /*POST PAGE*/
 div#recipientavatar {float: left;clear: left;min-width: 10em;text-align: center;}
@@ -260,9 +272,3 @@ div#sidebar ul.sidebarUsersList span.fn a {text-decoration: none;}
 div#sidebar ul.sidebarUsersList img.userAvatar {float: left;margin: 0 0.5em 0 0;}
 div#sidebar ul.sidebarUsersList li {clear: left;overflow: hidden;background: none;list-style: none;}
 /*} /* END MEDIA SCREEN */
-.input-prompt {
-  position: absolute;
-  font-style: italic;
-  color: #aaa;
-  margin: 0.2em 0 0 0.5em;
-}

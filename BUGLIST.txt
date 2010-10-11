@@ -32,7 +32,7 @@ TODO:
 -fullscreen - current item(will be useful for random slidshow)/next/prev/exit button/play/pause(simulate click on item every 5sec)
 
 -testovat - posta/chat
--upozorneni nejsou videt v galerii - hodit ten alert div extra do body
+
 -zpravy predelat na jako chat
 	na titulni pravidelne kontrolovat na novy zpravy
 	v poste pravidelne kontrolovat a stahovat novy zpravy
@@ -41,7 +41,6 @@ TODO:
 -update install db and defaults
 -use page_PageItemList to list any list of items???
 -places to sort printPagelinkList
-page_ItemsLive
 page_Main
 page_Search
 page_PagesList

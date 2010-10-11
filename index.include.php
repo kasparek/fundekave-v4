@@ -235,7 +235,7 @@ if($processMain===true) {
 	//header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
 
 	//---generate page
-	FBuildPage::show();
+	FBuildPage::show( $data );
 
 }
 //---profiling

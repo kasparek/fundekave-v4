@@ -50,7 +50,7 @@ class FItems extends FDBTool {
 		//---check permissions for given user
 		if($userId==0) {
 			$this->addWhere('sys_pages_items.public = 1');
-		} else($userId > 0) {
+		} elseif($userId > 0) {
 			if(!FRules::getCurrent( 2 )) {
 				//TODO:solve performance issues
 				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList) 
@@ -208,19 +208,15 @@ class FItems extends FDBTool {
 				$this->data[$k] = $itemVO;
 			}
 		}
-
-		if($this->debug==1) print_r($this->data);
 		FProfiler::write('FItems::getList--DATA LOADED');
 		return $this->data;
 	}
 
-	function parse() {
+	function parse($itemVO) {
 		if(!$this->fItemsRenderer) $this->fItemsRenderer = new FItemsRenderer();
 		//---render item
-		if($itemVO = array_shift($this->data)) {
-			$itemVO->render($this->fItemsRenderer,false);
-			FProfiler::write('FItems::parse--ITEM PARSED');
-		}
+		$itemVO->render($this->fItemsRenderer,false);
+		FProfiler::write('FItems::parse--ITEM PARSED');
 	}
 
 	function show() {
@@ -231,8 +227,8 @@ class FItems extends FDBTool {
 		if(empty($this->data)) $this->getList($from, $perPage);
 		if(empty($this->data)) return false;
 		//---items parsing
-		while ($this->data) {
-			$this->parse();
+		while ($itemVO = array_shift($this->data)) {
+			$this->parse($itemVO);
 		}
 		$ret = $this->show();
 		return $ret;
@@ -251,10 +247,9 @@ class FItems extends FDBTool {
 		//TODO: optimize this for blog (not published items)
 		$itemId = 0;
 		if($user->itemVO) $itemId = $user->itemVO->itemId;
-		$arr = FDBTool::getAll("select itemId,public from sys_pages_items
-		where and pageId='".$user->pageVO->pageId."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(" and (itemIdTop is null or itemIdTop==0)"))." order by itemId desc limit 0,".$unreadedNum);
+		$q = "select itemId,public from sys_pages_items where pageId='".$user->pageVO->pageId."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(" and (itemIdTop is null or itemIdTop=0)"))." order by itemId desc limit 0,".$unreadedNum;
+		$arr = FDBTool::getAll($q);
 		if(empty($arr)) return 0;
-		
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
 		if(empty($unreadedList)) $unreadedList = array();
@@ -263,7 +258,6 @@ class FItems extends FDBTool {
 			$unreadedCnt++;
 			if(!in_array($row[0],$unreadedList)) $unreadedList[] = $row[0];
 		}
-		
 		return $unreadedCnt;
 	}
 

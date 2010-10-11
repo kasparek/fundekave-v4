@@ -45,36 +45,32 @@ class FBuildPage {
 		if($pageTop->pageId) {
 			$homesite = $pageTop->prop('homesite');
 			if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
-			$breadcrumbs[] = array('name'=>$pageTop->name,'url'=>$homesite);
+			$breadcrumbs[] = array('name'=>str_replace('http://','',$homesite),'url'=>$homesite);
 		}
-		
-		if($pageTop->pageId!=$user->pageVO->pageId) {
-			//typ
-			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
-				$pages = new FPages('top',$user->userVO->userId,1);
-				$pages->addWhere("sys_pages.typeIdChild='".$user->pageVO->typeId."' and sys_pages.public=1");
-				$arr = $pages->getContent();
-				if(!empty($arr)) {
-					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
-				}
-				if($user->pageVO->categoryId > 0) {
-					$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
-					if(!empty($categoryArr))
-						$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
-				}
+
+		//typ
+		if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
+			$pages = new FPages('top',$user->userVO->userId,1);
+			$pages->addWhere("sys_pages.typeIdChild='".$user->pageVO->typeId."' and sys_pages.public=1");
+			$arr = $pages->getContent();
+			if(!empty($arr)) {
+				$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
 			}
-
-			//stranka
-			$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+			if($user->pageVO->categoryId > 0) {
+				$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
+				if(!empty($categoryArr))
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
+			}
 		}
 
-		if($user->itemVO) {
-			$categoryId = $user->itemVO->categoryId;
-		}
-		if(!empty($_REQUEST['c'])) {
-			$categoryId = (int) $_REQUEST['c'];
-		}
+		if(!empty($_REQUEST['date'])) $date = FSystem::checkDate($_REQUEST['date']);
+		if(!empty($date)) $breadcrumbs[] = array('name'=>date(FConf::get('internationalization','date'),strtotime($date)),'url'=>FSystem::getUri('date='.$date));
 
+		//stranka
+		$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+
+		if($user->itemVO) $categoryId = $user->itemVO->categoryId;
+		if(!empty($_REQUEST['c'])) $categoryId = (int) $_REQUEST['c'];
 		if(!empty($categoryId)) {
 			$categoryArr = FCategory::getCategory($categoryId);
 			$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$categoryId,$user->pageVO->pageId,''));
@@ -162,7 +158,7 @@ class FBuildPage {
 		}
 	}
 
-	static function baseContent() {
+	static function baseContent( $data ) {
 		FProfiler::write('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
@@ -173,15 +169,15 @@ class FBuildPage {
 				case 'e':
 					$template = 'page_PageEdit';
 					break;
-				/* poll */
+					/* poll */
 				case 'p':
 					$template = 'page_PagePoll';
 					break;
-				/* stats */
+					/* stats */
 				case 's':
 					$template = 'page_PageStat';
 					break;
-				/* home */
+					/* home */
 				case 'h':
 					$template='';
 					$user->pageVO->content = FSystem::postText($user->pageVO->prop('home'));
@@ -203,7 +199,7 @@ class FBuildPage {
 					$template = FBuildPage::getTemplate($template);
 					FProfiler::write('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
-						call_user_func(array($template, 'build'));
+						call_user_func(array($template, 'build'),$data);
 					}
 					FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
@@ -233,7 +229,7 @@ class FBuildPage {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
 					}
-					
+
 					if(FRules::getCurrent(2)) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 					}
@@ -252,9 +248,9 @@ class FBuildPage {
 		}
 	}
 
-	static function show() {
+	static function show( $data ) {
 
-		FBuildPage::baseContent();
+		FBuildPage::baseContent( $data );
 		FProfiler::write('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
@@ -310,10 +306,10 @@ class FBuildPage {
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 		}
-		if(false!==($pageHeading=FBuildPage::getHeading())) $tpl->setVariable('PAGEHEAD',$pageHeading);
+		if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		//---BODY PARAMETERS
 		//---MAIN MENU - cached rendered
-		$cache = FCache::getInstance($user->idkontrol?'s':'f',0); 
+		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
 		$menu = $cache->getData('menu'.HOME_PAGE,'main');
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
@@ -389,7 +385,7 @@ class FBuildPage {
 		if($useDatePicker === true) {
 			$tpl->touchBlock("juiCSS"); //---js in the header
 			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
-				
+
 			$tpl->touchBlock("datepickerLoad"); //---javascript on the end of the page
 			$tpl->touchBlock("datepickerInit");
 		}
@@ -409,6 +405,14 @@ class FBuildPage {
 		}
 		if($useMaps===true) {
 			$tpl->touchBlock("mapsLoad");
+		}
+
+		//post messages
+		if($user->userVO->hasNewMessages()) {
+			$tpl->setVariable('NEWPOST',$user->userVO->newPost);
+			$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
+		} else {
+			$tpl->touchBlock('msgHidden');
 		}
 
 		FProfiler::write('FBuildPage--custom js sections');

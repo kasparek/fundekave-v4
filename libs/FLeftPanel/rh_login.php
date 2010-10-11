@@ -22,15 +22,8 @@ class rh_login {
 			$q = "select count(1) from sys_pages_items where typeId='request' and addon='".$user->userVO->userId."'";
 			$reqNum = FDBTool::getOne($q,'friendrequest','default','s',120);
 			if($reqNum>0)$tpl->setVariable('REQUESTSNUM',$reqNum);
-			
-			if($user->userVO->hasNewMessages()) {
-				$tpl->setVariable('NEWPOST',$user->userVO->newPost);
-				$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
-			} else {
-				$tpl->touchBlock('msgHidden');
-			}
-			
-			$q = "SELECT l.userId, SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik, l.location, p.name, p.nameshort 
+						
+			$q = "SELECT l.userId, SEC_TO_TIME(TIME_TO_SEC(now())-TIME_TO_SEC(l.dateUpdated)) as casklik, l.location, p.name, p.typeId  
 			FROM sys_users_logged as l 
 			join sys_users_friends as f ON ((f.userIdFriend=l.userId AND f.userIdFriend!='".$user->userVO->userId."' and f.userId='".$user->userVO->userId."') or (f.userId=l.userId AND f.userId!='".$user->userVO->userId."' and f.userIdFriend='".$user->userVO->userId."'))
 			join sys_pages as p on p.pageId=l.location  
@@ -44,9 +37,11 @@ class rh_login {
 					$tpl->setVariable('FRIENDAVATAR',FAvatar::showAvatar($pra[0]));
 					$tpl->setVariable('USERLINK',FSystem::getUri('who='.$pra[0],'finfo'));
 					$tpl->setVariable('USERNAME',FUser::getgidname($pra[0]));
-					$tpl->setVariable('USERLOCATIONLINK',FSystem::getUri('',$pra[2]));
-					$tpl->setVariable('USERLOCATIONLONG',$pra[3]);
-					$tpl->setVariable('USERLOCATIONSHORT',$pra[4]);
+					if($pra[4]!='top') {
+						$tpl->setVariable('USERLOCATIONLINK',FSystem::getUri('',$pra[2]));
+						$tpl->setVariable('USERLOCATIONLONG',$pra[3]);
+						$tpl->setVariable('USERLOCATIONSHORT',FLang::$TYPEID[$pra[4]]);
+					}
 					$tpl->setVariable('USERACTIVE',substr($pra[1],3,5));
 					$tpl->parse('user');
 				}

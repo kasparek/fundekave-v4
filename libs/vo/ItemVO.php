@@ -8,10 +8,9 @@ class ItemVO extends Fvob {
 
 	var $columns = array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
-	'itemIdBottom' => 'itemIdBottom',
 	'typeId' => 'typeId',
 	'pageId' => 'pageId',
-	'pageIdBottom' => 'pageIdBottom',
+	'pageIdTop' => 'pageIdTop',
 	'categoryId' => 'categoryId',
 	'userId' => 'userId',
 	'name' => 'name',
@@ -98,10 +97,7 @@ class ItemVO extends Fvob {
 				$cache = FCache::getInstance( 's' );
 				$unreadedList = &$cache->getPointer('unreadedItems');
 				if(empty($unreadedList)) $unreadedList = array();
-				if(in_array($this->itemId,$unreadedList)) {
-					$this->isUnreaded = true;
-					if( $unset ) array_splice($unreadedList,array_search($this->itemId, $unreadedList),1);
-				}
+				if(in_array($this->itemId,$unreadedList)) $this->isUnreaded = true;
 				$name = 'isUnreaded';
 				break;
 		}
@@ -122,11 +118,10 @@ class ItemVO extends Fvob {
 
 	var $itemId;
 	var $itemIdTop;
-	var $itemIdBottom;
 	var $typeId;
 	var $pageId;
 	var $_pageVO;
-	var $pageIdBottom;
+	var $pageIdTop;
 	var $categoryId;
 	var $userId;
 	var $name;
@@ -200,12 +195,15 @@ class ItemVO extends Fvob {
 			if($this->saveOnlyChanged===false) {
 				$vo->addIgnore('dateCreated');
 			}
+			
 		} else {
 			//---insert
+			
 			if(empty($this->dateCreated)) {
 				$this->dateCreated = 'now()';
 				$vo->notQuote('dateCreated');
 			}
+			
 			if($this->itemIdTop > 0) {
 					
 				$itemTop = new ItemVO( $this->itemIdTop );
@@ -224,13 +222,13 @@ class ItemVO extends Fvob {
 				
 			$creating = true;
 		}
-
+		
 		$itemId = $vo->save();
 
 		//---update in cache
 		$this->memFlush();
 			
-		if( empty($this->itemIdTop) ) {
+		if( empty($this->itemIdTop) && !empty($this->pageId) ) {
 			$this->updateItemIdLast();
 		}
 
@@ -238,10 +236,14 @@ class ItemVO extends Fvob {
 		return $itemId;
 	}
 
+	/**
+	 * update last public item for page
+	 * 
+	 * @return void
+	 */
 	function updateItemIdLast() {
 		//---update last item id on page
-		$q = "select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc";
-		$itemIdLast = FDBTool::getOne($q);
+		$itemIdLast = FDBTool::getOne("select itemId from sys_pages_items where public=1 and (itemIdTop is null or itemIdTop=0) and pageId='".$this->pageId."' order by dateCreated desc");
 		$this->pageVO->prop( 'itemIdLast', $itemIdLast);
 	}
 
@@ -331,7 +333,6 @@ class ItemVO extends Fvob {
 	 *
 	 */
 	function render($itemRenderer=null,$show=true) {
-			
 		if(!$itemRenderer) {
 			$itemRenderer = new FItemsRenderer();
 			if(!empty($this->options)) {
@@ -340,7 +341,6 @@ class ItemVO extends Fvob {
 				}
 			}
 		}
-
 		$itemRenderer->render( $this );
 		if($show) return $itemRenderer->show();
 	}

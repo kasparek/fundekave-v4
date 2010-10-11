@@ -7,7 +7,7 @@ class FItemsRenderer {
 
 	private $tpl = false;
 	private $tplType;
-	private $tplParsed = '';
+	private $tplParsed = array();
 	private $customTemplateName = '';
 
 	//---custom settings
@@ -54,22 +54,19 @@ class FItemsRenderer {
 		$cacheId = $itemVO->pageId;
 		$cache = FCache::getInstance('f');
 		$page = $cache->getData($cacheId,$cacheGroup);
+		$page=false;
 		if($page===false) {
-			$tpl = FSystem::tpl($this->getTemplateName($typeId));
-			$tpl->parse('item');
-			/*if(!empty($itemVO->pageVO->pageIco)) {
-				$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$itemVO->pageVO->pageIco);
-			} else {
-				$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
-			} 
+			$tpl = FSystem::tpl('item.pagelink.tpl.html');
+			/*if(!empty($itemVO->pageVO->pageIco)) $tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$itemVO->pageVO->pageIco);
+			else $tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
 			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId];
 			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId].': '.$itemVO->pageVO->name;*/
-			$vars['URL'] = '?k='.$page->pageId.'-'.FSystem::safetext($page->name);
+			$vars['URL'] = '?k='.$itemVO->pageId.'-'.FSystem::safetext($itemVO->pageVO->name);
 			$vars['PAGENAME'] = $itemVO->pageVO->name;
 			$vars['ITEM'] = '[[ITEM]]';
 			$tpl->setVariable($vars);
-			$page = $tpl->get('item');
-			$page = $cache->setData($page,$cacheId,$cacheGroup);
+			$page = $tpl->get();
+			$cache->setData($page,$cacheId,$cacheGroup);
 		} else {
 			FProfiler::write('FItemsRenderer::addPageName--RENDER PAGENAME FROM CACHE-'.$cacheId);
 		}
@@ -89,7 +86,7 @@ class FItemsRenderer {
 			$cached = $cache->getData($cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 			if($cached!==false) {
 				if($this->showPage) $cached = $this->addPageName($cached,$itemVO);
-				$this->tplParsed .= $cached;
+				$this->tplParsed[] = $cached;
 				FProfiler::write('FItemsRenderer::render--RENDER LOADED FROM CACHE-'.$cacheId);
 				return;
 			}
@@ -131,7 +128,10 @@ class FItemsRenderer {
 		}
 
 		$vars['AUTHOR'] = $itemVO->name;
-		$vars['AUTHORLINK'] = FSystem::getUri('who='.$itemUserId,'finfo');
+		if($itemUserId>0) {
+			$vars['AUTHORLINK'] = FSystem::getUri('who='.$itemUserId,'finfo');
+			$touchedBlocks['aaclose']=true;	
+		}
 		$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
 		$vars['TEXT'] = FSystem::postText( $itemVO->text );
 		$vars['HITS'] = $itemVO->hit;
@@ -212,14 +212,21 @@ class FItemsRenderer {
 		$tpl->setVariable($vars);
 		$ret = $cached = $tpl->get();
 		if($this->showPage) $ret = $this->addPageName($ret,$itemVO);
-		$this->tplParsed .= $ret;
+		$this->tplParsed []= $ret;
 		$tpl->init();
 		if($isDefault) {
 			$cache->setData($cached,$cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 		}
 	}
-
+	
+	function getLast() {
+		return $this->tplParsed[count($this->tplParsed)-1];
+	}
+	function setLast($rendered) {
+		$this->tplParsed[count($this->tplParsed)-1] = $rendered;
+	}
+	
 	function show() {
-		return $this->tplParsed;
+		return implode($this->tplParsed);
 	}
 }

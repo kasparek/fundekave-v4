@@ -92,7 +92,7 @@ class Fvob {
 	function save(){
 		$vo = new FDBvo( $this );
 		if(!empty($this->saveIgnore)) foreach($this->saveIgnore as $col) $vo->addIgnore($col);
-		if($vo->hasKey()) {
+		if(!empty($this->{$this->primaryCol})) {
 			$this->dateUpdated = 'now()';
 			$vo->notQuote('dateUpdated');
 			$vo->addIgnore('dateCreated');
