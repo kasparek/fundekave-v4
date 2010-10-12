@@ -6,22 +6,7 @@ class page_PageItemList implements iPage {
 	 *  PROCESS FUNCTION
 	 */
 	static function process($data) {
-		$user = FUser::getInstance();
 		//form is processed in FAjax_item::submit
-
-		//TODO: check rules for writing items
-		//-if page is forum write anything but no reactions
-		//TODO: process form data base on _GET['t'] typeid parameter from anywhere
-		//if not empty user->itemVO it is reaction - no on forum item?
-
-		//TODO: process data depend on form used
-		//will be something like FItem::process($data);
-		//FForum::process($data);
-
-		//TODO: refactor
-		//FEvents::process( $data ); || FEvents::processForm($data, true); for FEvents::editForm($itemId)
-
-
 	}
 
 	/**
@@ -31,22 +16,6 @@ class page_PageItemList implements iPage {
 		if(isset($data['__get']['date'])) {
 			$date = FSystem::checkDate($data['__get']['date']);
 		}
-		//vcalendar
-		//TODO: page description into page descrption
-		//TODO: if any forum item do touch vcalendar?
-		//feedempty-x
-
-		//TODO: based on permission button to add event, blog
-
-		//TODO: refactor
-		//FMenu::secondaryMenuAddItem(FSystem::getUri('','eveac'),FLang::$LABEL_EVENTS_ARCHIV); - if empty pageparam and only events view
-		//FEvents::view();
-		//FBuildPage::addTab(array("MAINDATA"=>FBlog::listAll($itemId,(($user->pageParam == 'u')?(true):(false))),"MAINID"=>'bloged'));
-		//FBuildPage::addTab(array("MAINDATA"=>FForum::show()));
-
-		//BLOG - new item buttton
-
-
 		//var setup
 		$user = FUser::getInstance();
 		if($user->itemVO) {
@@ -65,8 +34,8 @@ class page_PageItemList implements iPage {
 		if(FRules::getCurrent(2)) {
 			if(empty($user->pageParam) && !$user->itemVO && $pageVO->typeId!='top' && $pageVO->typeId!='galery') {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId,'a'), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId,'a'), FLang::$LABEL_FORUM_NEW,array('class'=>'fajaxa'));
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId,'a'), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 			}
 
 		}
@@ -91,13 +60,23 @@ class page_PageItemList implements iPage {
 		$vars = array();
 		$itemId = 0;
 			
-		$perPage = $pageVO->perPage();
-		$pageNumUrlVar = FConf::get('pager','urlVar');
+		
+		
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
 		$arrPagerExtraVars = array();
-		if(!isset($_REQUEST['k']))  $arrPagerExtraVars['k'] = $user->pageVO->pageId;
+		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId; 
+		if(!isset($_REQUEST['k'])) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
 		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
+		$pagerOptions = array('manualCurrentPage'=>$manualCurrentPage);
+		if(!empty($itemVO)) {
+			$arrPagerExtraVars['k'] = $pageVO->pageId;
+			$arrPagerExtraVars['i'] = $itemId;
+		} else {
+		  $pagerOptions['bannvars']=array('i');
+		}
+		$pagerOptions['extraVars']=$arrPagerExtraVars;
+		
 
 		/**
 		 *FORM FOR EDIT ITEM
@@ -148,7 +127,7 @@ class page_PageItemList implements iPage {
 				$formItemVO = new ItemVO();
 				$formItemVO->typeId = 'forum';
 				$formItemVO->pageId = $pageVO->pageId;
-				$data['perpage'] = $perPage;
+				$data['perpage'] = $pageVO->perPage();
 				if($searchStr!==false) $data['text'] = $searchStr;
 				$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 			}
@@ -192,7 +171,7 @@ class page_PageItemList implements iPage {
 			//ORDER
 			if($pageVO->pageId=='event') {
 				$fItems->addWhere("typeId='event'");
-				if($user->pageParam=='o') { //TODO:archive base on pageparam
+				if($user->pageParam=='o') {
 				//---archiv
 				FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 				$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
@@ -208,7 +187,6 @@ class page_PageItemList implements iPage {
 					//reactions
 					$fItems->setOrder('dateCreated desc');
 				} else {
-					//TODO: user order from page
 					$fItems->setOrder($pageVO->itemsOrder());
 				}
 			}
@@ -220,10 +198,9 @@ class page_PageItemList implements iPage {
 			$pageVO->updateReaded($user->userVO->userId);
 		}
 
-		$listArr = page_PageItemList::buildList($fItems,$pageVO,$itemVO);
-		
+		$listArr = page_PageItemList::buildList($fItems,$pageVO,$pagerOptions);
 		$vars = array_merge($vars,$listArr['vars']);
-		$touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
+		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 		
 		}
 		
@@ -246,14 +223,12 @@ class page_PageItemList implements iPage {
 		}
 	}
 
-	static function buildList($fItems,$pageVO,$itemVO=null) {
-		if(!empty($itemVO)) {
-			$arrPagerExtraVars['k'] = $pageVO->pageId;
-			$arrPagerExtraVars['i'] = $itemId;
-		}
-		
+	static function buildList($fItems,$pageVO,$pagerOptions=array()) {
+		$touchedBlocks = array();
+		$vars = array();
+		$pagerOptions['noAutoparse']=1;
 		$perPage = $pageVO->perPage();
-		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+		$pager = new FPager(0,$perPage,$pagerOptions);
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 		$fItems->getList($from, $perPage+1);
 		$pager->totalItems = count($fItems->data);
@@ -304,6 +279,7 @@ class page_PageItemList implements iPage {
 				$itemIdTopPrev = $itemVO->itemIdTop;
 				$pageIdPrev = $itemVO->pageId;
 				FCommand::run(ITEM_READED,$itemVO);
+				if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 			}
 			$vars['ITEMS'] = $fItems->show();
 		} else {

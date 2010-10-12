@@ -24,8 +24,15 @@ class FItemsForm {
 		}
 	}
 
-	static function process($itemVO,$data) {
-
+	static function process($data) {
+	
+    $itemVO = new ItemVO();
+		if(false===$itemVO->set('typeId',$data['t'])) {
+			FError::add(FLang::$ERROR_FORM_TYPE);
+			FProfiler::write_log('FItemsForm::process - unset type - item:'.$data['item']);
+			return;
+		}
+		
 		$redirectParam = '';
 		$newItem=false;
 		if(empty($itemVO->itemId)) $newItem=true;
@@ -36,17 +43,16 @@ class FItemsForm {
 			$captcha = new FCaptcha();
 			if(!$captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
 		}
+		$itemVO->itemIdTop=null;
 		if($user->itemVO) {
-			$data['itemIdTop'] = $user->itemVO->itemId;
+			$itemVO->itemIdTop = $user->itemVO->itemId;
 		}
-		if(!isset($data['itemIdTop'])) $data['itemIdTop']=0;
-
 		//no reactions to forum items
-		if($data['itemIdTop']>0) {
+		if($itemVO->itemIdTop > 0) {
 			$itemVOTop = new ItemVO($data['itemIdTop'],true);
-			if($itemVOTop->typeId=='forum') $data['itemIdTop']=0;
+			if($itemVOTop->typeId=='forum') $itemVO->itemIdTop=null;
+			else $itemVO->pageIdTop = $itemVOTop->pageVO->pageIdTop; 
 		}
-
 
 		if($captchaCheck===false) {
 			FError::add(FLang::$ERROR_CAPTCHA);
@@ -134,7 +140,6 @@ class FItemsForm {
 					if(!empty($data['textLong'])) $itemVO->set('textLong', $data['textLong']);
 					if(!empty($data['location'])) $itemVO->set('location', $data['location']);
 					if(empty($itemVO->typeId)) $itemVO->typeId = $user->pageVO->typeId;
-					$itemVO->itemIdTop = $data['itemIdTop']>0 ? (int) $data['itemIdTop'] : null;
 					if(!empty($data['category'])) $itemVO->set('categoryId', (int) $data['category']);
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
@@ -145,9 +150,10 @@ class FItemsForm {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
-								//TODO: refactor this
+								$itemVO->deleteImage();
+								$filename = FSystem::safeFilename( $data['imageUrl'] );
 								$ffile = new FFile(FConf::get("galery","ftpServer"));
-								$ffile->file_put_contents(ROOT_FLYER.$flyerName,$file);
+								$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
 								$itemVO->enclosure = $filename;
 								$itemVO->save();
 							}
