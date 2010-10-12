@@ -104,23 +104,6 @@ CREATE TABLE IF NOT EXISTS `sys_menu` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sys_menu_secondary`
---
-
-DROP TABLE IF EXISTS `sys_menu_secondary`;
-CREATE TABLE IF NOT EXISTS `sys_menu_secondary` (
-  `menuSecondaryGroup` varchar(10) NOT NULL default '',
-  `pageId` varchar(5) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `public` tinyint(3) unsigned NOT NULL default '0',
-  `ord` smallint(5) unsigned default '0',
-  PRIMARY KEY  (`menuSecondaryGroup`,`pageId`),
-  KEY `menusec_page` (`pageId`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `sys_pages`
 --
 
@@ -131,10 +114,8 @@ CREATE TABLE IF NOT EXISTS `sys_pages` (
   `typeId` varchar(10) default NULL,
   `typeIdChild` varchar(10) default NULL,
   `categoryId` smallint(5) unsigned default NULL,
-  `menuSecondaryGroup` varchar(10) default NULL,
   `template` varchar(50) default NULL,
   `name` varchar(100) NOT NULL,
-  `nameshort` varchar(20) NOT NULL,
   `description` text,
   `content` text,
   `public` tinyint(3) unsigned NOT NULL default '1',
@@ -145,9 +126,7 @@ CREATE TABLE IF NOT EXISTS `sys_pages` (
   `pageIco` varchar(30) default NULL,
   `cnt` mediumint(9) default '0',
   `locked` tinyint(4) default '0',
-  `authorContent` varchar(100) default NULL,
   `galeryDir` varchar(100) default NULL,
-  `pageParams` text,
   PRIMARY KEY  (`pageId`),
   KEY `pages-category` (`categoryId`),
   KEY `pages-top` (`pageIdTop`),
@@ -201,10 +180,9 @@ DROP TABLE IF EXISTS `sys_pages_items`;
 CREATE TABLE IF NOT EXISTS `sys_pages_items` (
   `itemId` mediumint(8) unsigned NOT NULL auto_increment,
   `itemIdTop` mediumint(8) unsigned default NULL,
-  `itemIdBottom` mediumint(8) unsigned default NULL,
   `typeId` varchar(10) default NULL,
   `pageId` varchar(5) NOT NULL,
-  `pageIdBottom` varchar(5) default NULL,
+  `pageIdTop` varchar(5) default NULL,
   `categoryId` smallint(5) unsigned default NULL,
   `userId` mediumint(8) unsigned default NULL,
   `name` varchar(15) NOT NULL,

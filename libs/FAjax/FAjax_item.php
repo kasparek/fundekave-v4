@@ -43,10 +43,8 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
-		$itemVO = new ItemVO();
-		if(false===$itemVO->set('typeId',$data['t'])) return; //TODO: give feedback that typeId not valid?
-
-		FItemsForm::process($itemVO, $data);
+		
+		FItemsForm::process($data);
 		
 		if(FAjax::isRedirecting()===false) {
 			Fajax_item::edit(array('__ajaxResponse'=>true,'item'=>$data['item']));

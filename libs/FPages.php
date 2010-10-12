@@ -197,50 +197,7 @@ class FPages extends FDBTool {
 		$this->category($categoryId);
 		return $this->getContent();
 	}
-	/**
-	 * print list of pages by category
-	 *
-	 * @param int $categoryId
-	 * @param Boolean $xajax - if true no top div
-	 * @return html string
-	 */
-	function printCategoryList($categoryId=0,$xajax=false) {
-		$user = FUser::getInstance();
-		$this->type = $user->pageVO->typeIdChild;
-		if(!empty($user->pageParam) || $categoryId>0) {
-			if($categoryId==0) $categoryId = $user->pageParam * 1;
-			if($categoryId>0) {
-				$this->category($categoryId);
-				if($arr = $this->getContent()) {
-					$arrForums[$categoryId] = $arr;
-				}
-			}
-		}
-
-		//---template init
-		$tpl = FSystem::tpl('forums.all.tpl.html');
-		$arrCategory = FDBTool::getAll("select categoryId,name from sys_pages_category where typeId='".$this->type."' order by ord,name");
-		if(count($arrCategory)>0) {
-			foreach ($arrCategory as $category) {
-				//vypis jednotlivych klubu
-				if(!empty($arrForums[$category[0]])) {
-					//---add category name to title
-					$user->pageVO->htmlName =  $category[1] . ' - ' . $user->pageVO->name;
-					$tpl->setVariable("CATEGORYPAGELINKLIST",FPages::printPagelinkList($arrForums[$category[0]]));
-				}
-				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATEGORYLINK',FSystem::getUri('','',$category[0]));
-				$tpl->setVariable('CATEGORYID',$category[0]);
-				$tpl->setVariable('CATEGORYNAME',$category[1]);
-				$tpl->parseCurrentBlock();
-			}
-		}
-		if($xajax==true) {
-			return $tpl->get('category');
-		}
-		else return $tpl->get();
-	}
-
+	
 	/**
 	 * leftpanel page links
 	 *

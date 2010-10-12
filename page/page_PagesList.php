@@ -20,11 +20,16 @@ class page_PagesList implements iPage {
 		$category = 0;
 		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
 
-
-
-
 		$userId = $user->userVO->userId;
 		$typeId = $user->pageVO->typeIdChild;
+		
+		//TODO: login check after click
+		//TODO: implment 'a' to create page
+		if($typeId!='galery') {
+    	FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
+			FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);
+		}
+		FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 
 		//---QUERY RESULTS
 		$fPages = new FPages($typeId, $userId);

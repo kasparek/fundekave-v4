@@ -1,12 +1,5 @@
-CSS:
-gradient
-background: #999; /* for non-css3 browsers */
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
-background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
-background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
-
-
 MIGRATION:
+update sys_pages set galeryDir='page/event' where pageId='event'
 udpate sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null
 udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0)
 udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0)
@@ -15,15 +8,16 @@ drop sys_users - skinId,zbanner,zavatar,zforumico,zgalerytype
 drop sys_users_friends - comment
 drop sys_menu_secondary
 drop sys_pages - menuSecondaryGroup,authorContent,nameshort
+sys_pages_items - drop itemIdBottom, change pageIdBottom -> pageIdTop
 
-swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL 
-
+optimize:
 user ALTER TABLE...ORDER BY?
 
-TODO:
--refactor secondary buttons to options
--move DB secondary buttons to code
+FIX:
+sidebar category list
+mainbar category filtering - category to header
 
+TODO:
 -merge logged users with login - show on click
 
 -testovat - galery fullscreen
@@ -36,74 +30,24 @@ TODO:
 	v poste pravidelne kontrolovat a stahovat novy zpravy
 	kdyz se chatuje a najednou je vic zprav nez na stranku, updatovat pager
 
--update install db and defaults
--use page_PageItemList to list any list of items???
--places to sort printPagelinkList
-page_Main
-page_Search
-page_PagesList
-
-
 - galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky
 - osobni - opravit nahravani - novy adresar - test
 - osobni - otestovat ftp nahravani
 - events - nahravani letaku - novy adresat, novy url na thumnail, neni potreba generovat - test
 
-TODO:
--2. avatars using /image/ - page and user
-0. events images / thumb location
-1. object maping by default everywhere
-2. page properties in one
-3. image/ for personal,flyers,avatar,local images
-
-missing default avatar
-
--sidebar kalendar
-	odkaz na zive s omezenim na urcity den - omezeni na den funguje
+-sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
 -tagy
  - stranka s nahodnyma fotkama
  - u kazdy fotky ikonka na tagovani
  - v pratelich zebricek tagovani	
--nej stranka
-	podle palcu za obdobi
-	podle zobrazeni za odbobi
--udalosti
-	vlastni
-	opakujici se
-	upozorneni
--info o tom kdyz mi nekdo zmeni prava???			
-
-
-//UPDATES
-cache d - invalidateData($userId, 'avatar_url') - on avatar update
-cache f - invalidateGroup('avatar_'.$userId) - on avatar update 
-
-- last item -
-//done
-delete FROM `sys_pages_properties` WHERE name="itemIdLast"; 
-insert into sys_pages_properties select pageId,'itemIdLast',max(itemId) from sys_pages_items where public='1' and itemIdTop is null group by pageId;
-
-delete FROM `sys_pages_items_properties` WHERE name="itemLiveforum"; 
-insert into sys_pages_items_properties select itemId,'itemLiveforum',pageId from sys_pages_items where typeId='forum' and public='1' and itemIdTop is null order by dateCreated desc limit 0,100;
-
-TAGS - PALCE
--thumb,hits history - porad to nejak blbe pocita
--stranka nej
--aktualizace palcu kliknuti historie - overit ze to dela dobre
+TAGS-PALCE -nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
+-udalosti - vlastni,opakujici se,upozorneni
 
 FUVATAR
 fuvatar - pridat u ikonky ze je online, odkaz na stranku se vsema kamerama, pripojena diskuze
 
 SIDEBAR
 2. customizace levyho sloupce pro stranky
-4. customizace levyho sloupce pro uzivatele
 STRANKY
 3. vytvareni novych stranek
-
-REMOTE GB:
-!-po captcha erroru nezachova pole
-
-SEO
-<meta name="keywords" content="Nový ZTland, Novy Zeland, New Zealand, Austrálie, zájezdy, studium, letenky, ubytovánf, hotely, incentiva, turistika, cestovánf, osobnf auta, obytná auta, autopujcovny, pujcovny aut" />
-<meta name="description" content="Nový ZTland | Aotearoa - informace o NovTm ZTlandu, historie, letenky, pujcovny aut, obytnT vozy, poznávacf zájezdy, ubytovánf, hotely, studium, incentiva, prfprava itineráre" />

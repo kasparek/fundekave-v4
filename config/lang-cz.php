@@ -64,11 +64,16 @@ static $ERROR_DATA_FORMAT = 'Zadali jste špatné datum';
 static $ERROR_DIARY_NAME = 'Nezadali jste název poznámky';
 static $ERROR_DIARY_TEXT = 'Nezadali jste text poznámky';
 
-static $ERROR_SURF_URL = 'Nezadali jste odkaz';
+static $ERROR_FORM_TYPE = 'Neznamy typ formulare - kontaktujte administratora';
 
 static $LABEL_USER = 'Uživatel';
 static $LABEL_NOTEXISTS = 'neexistuje';
-static $LABEL_ADD = 'Pridat';
+static $LABEL_PAGE_FORUM_NEW = 'Založit diskuzi';
+static $LABEL_PAGE_BLOG_NEW = 'Založit blog';
+static $LABEL_PAGE_GALERY_NEW = 'Založit galerii';
+static $LABEL_ADD = 'Novy clanek';
+static $LABEL_EVENT_NEW = 'Nova udalost';
+static $LABEL_FORUM_NEW = 'Novy kratky komentar';
 static $LABEL_SETTINGS = 'Nastaveni';
 
 static $LABEL_POLL = 'Anketa';
@@ -85,7 +90,6 @@ static $LABEL_RULES_HELP_TEXT = 'Pokud je pristup nasteveny na Soukromy - pristu
 
 static $LABEL_DELETED_OK = 'Uspesne smazano';
 static $LABEL_EVENTS_ARCHIV = 'Archiv';
-static $LABEL_EVENT_NEW = 'Novy tip';
 static $LABEL_LOGOUT = 'Odhlaseni';
 static $ERROR_DATE_FORMAT = 'Spatny format data';
 static $MESSAGE_SUCCESS_CREATE = 'Úspěšně založeno';
