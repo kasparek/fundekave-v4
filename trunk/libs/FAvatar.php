@@ -57,15 +57,15 @@ class FAvatar {
 		$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
 		if($userId>0) {
 			$tpl->setVariable('AVATARLINK',FSystem::getUri('who='.$userId,'finfo'));
-			$tpl->touchBlock('aclose');	
+			$ret = $tpl->get();
+		} else {
+			$tpl->parse('img');
+		  $ret = $tpl->get('img');
 		}
-			
-		$ret = $tpl->get();
 		$cache->setData($ret, $cacheId, $cacheGrp);
 		
 		$cache = FCache::getInstance('l',0);
 		$cache->setData($ret, $cacheId, $cacheGrp);
-
 		return $ret;
 	}
 

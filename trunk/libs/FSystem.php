@@ -44,9 +44,10 @@ class FSystem {
 	 * @param $otherParams
 	 * @param $pageId
 	 * @param $pageParam
+	 * @param array $options - scriptname, short	 
 	 * @return string - URL
 	 */
-	static function getUri($otherParams='', $pageId='', $pageParam=false, $scriptName=BASESCRIPTNAME) {
+	static function getUri($otherParams='', $pageId='', $pageParam=false, $options=array()) {
 		$arrAcnchor = explode('#',$otherParams);
 		$otherParams = $arrAcnchor[0];
 		$anchor = '';
@@ -68,7 +69,7 @@ class FSystem {
 			}
 		}
 		if(!empty($newPageId)) {
-			if(empty($pageParam)) {
+			if(!isset($options['short']) && empty($pageParam)) {
 				$pageVO  = new PageVO($newPageId,true);
 				$safeName = FSystem::safetext($pageVO->name);
 			}
@@ -80,7 +81,7 @@ class FSystem {
 		if(isset($params)) {
 			$parStr = '?'.implode('&',$params);
 		}
-		$url = $scriptName . $parStr . $anchor;
+		$url = BASESCRIPTNAME . $parStr . $anchor;
 		return $url;
 	}
 

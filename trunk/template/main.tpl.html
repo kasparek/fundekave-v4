@@ -10,21 +10,17 @@ var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT
   <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
 	<meta http-equiv="Content-language" content="cs" />
   <!-- BEGIN description --><meta name="description" content="{DESCRIPTION}" /><!-- END description -->
-  <!-- BEGIN keywords --><meta name="keywords" content="{DESCRIPTION}" /><!-- END keywords -->
   <link rel="shortcut icon" href="[[SKINURL]]/img/favicon.ico" type="image/x-icon" />
   <link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
   <link rel="stylesheet" type="text/css" href="default.css" media="all" title="fundekave" />
   <!-- BEGIN juiCSS --><link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/ui-lightness/jquery-ui.css" rel="stylesheet" /><!-- END juiCSS -->
 </head>
 <body>
-  <div id="pageholder"<!-- BEGIN hasMainBanner --> class="hasMainBanner"<!-- END hasMainBanner -->>
+  <div id="pageholder">
 		<div id="header">
 		<div id="logo"><a href="http://fundekave.net/"><img src="css/skin/default/img/fundekave-logo.png" title="fundekave.net" alt="FUNDEKAVE" /></a></div>
 		{CACHEDMENU}
-		<!-- BEGIN menu --><ul id="menu">
-    <!-- BEGIN topmenuitem --><li<!-- BEGIN topmenuactivelink --> class="active"<!-- END topmenuactivelink -->><a href="{LINK}">{TEXT}</a></li>
-		<!-- END topmenuitem -->
-    </ul><!-- END menu -->
+		<!-- BEGIN menu --><ul id="menu"><!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem --></ul><!-- END menu -->
     </div>
     <div id="pagebar">
       <div id="mainbar">

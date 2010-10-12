@@ -29,7 +29,6 @@ class page_PageEdit implements iPage {
 			$pageVO->saveOnlyChanged=true;
 			$pageVO->set('pageIco','');
 			$pageVO->save();
-			page_PagesList::invalidate();
 			FAjax::addResponse('pageavatarBox','$html','');
 			return;
 		}
@@ -147,7 +146,7 @@ class page_PageEdit implements iPage {
 					//---if setting changed on edited galery delete thumbs
 					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
 						$galery = new FGalery();
-						$galery->pageVO = PageVO::get($pageVO->pageId, true);
+						$galery->pageVO = PageVO::factory($pageVO->pageId, true);
 						$galery->flush();
 					}
 				}
@@ -155,7 +154,7 @@ class page_PageEdit implements iPage {
 				//---second save to save pageId related stuff
 				$pageVO->save();
 				
-				FCommand::run(PAGE_UPDATED);
+				FCommand::run(PAGE_UPDATED,$pageVO);
 
 				//---page editing
 				if($user->pageParam != 'a') {
@@ -296,7 +295,7 @@ class page_PageEdit implements iPage {
 				//---complete delete
 				FPages::deletePage($pageId);
 			}
-			page_PagesList::invalidate();
+			FCommand::run(PAGE_UPDATED,$pageVO);
 			FError::add(FLang::$LABEL_DELETED_OK,1);
 			FAjax::redirect(FSystem::getUri('',HOME_PAGE,''));
 		}

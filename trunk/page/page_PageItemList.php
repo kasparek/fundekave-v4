@@ -230,6 +230,13 @@ class page_PageItemList implements iPage {
 		$perPage = $pageVO->perPage();
 		$pager = new FPager(0,$perPage,$pagerOptions);
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
+		
+		$uid = $fItems->getUID($from, $perPage+1);
+		$grpid = 'itemlist'.($pageVO->typeId!='top'?$pageVO->typeId:'');
+		$cache = FCache::getInstance('f');
+		$data = $cache->getData($uid,'itemlist');
+		
+		if($data===false) {
 		$fItems->getList($from, $perPage+1);
 		$pager->totalItems = count($fItems->data);
 		if($pager->totalItems > $perPage) {
@@ -255,8 +262,9 @@ class page_PageItemList implements iPage {
 						//setup renderer if needed
 						if($itemVO->itemIdTop > 0) {
 							//show top item
-							$itemTop = new ItemVO($itemVO->itemIdTop,true);
-							if($itemTop->typeId=='galery') $fItems->fItemsRenderer->showPage=true;
+							$itemTop = new ItemVO($itemVO->itemIdTop);
+							//figure out how to display showPage for galery items
+							if($itemTop->get('typeId')=='galery') $fItems->fItemsRenderer->showPage=true;
 							$itemTop->render($fItems->fItemsRenderer);
 							$last = $fItems->fItemsRenderer->getLast();
 							$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
@@ -275,16 +283,22 @@ class page_PageItemList implements iPage {
 					$last = str_replace('class="hentry','class="hentry reaction',$last);
 					$fItems->fItemsRenderer->setLast($last);
 				}
+				
 				$itemPrev = $itemVO;
 				$itemIdTopPrev = $itemVO->itemIdTop;
 				$pageIdPrev = $itemVO->pageId;
-				FCommand::run(ITEM_READED,$itemVO);
+				$readed[] = $itemVO->itemId;
+				
 				if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 			}
+			FCommand::run(ITEM_READED,$readed);
 			$vars['ITEMS'] = $fItems->show();
 		} else {
 			if(!empty($writePerm)) $touchedBlocks[]='feedempty';
 		}
-		return array('vars'=>$vars,'blocks'=>$touchedBlocks);
+		$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
+		$cache->setData($data,$uid,'itemlist');
+		}
+		return $data;
 	}
 }

@@ -54,15 +54,14 @@ class FItemsRenderer {
 		$cacheId = $itemVO->pageId;
 		$cache = FCache::getInstance('f');
 		$page = $cache->getData($cacheId,$cacheGroup);
-		$page=false;
 		if($page===false) {
 			$tpl = FSystem::tpl('item.pagelink.tpl.html');
 			/*if(!empty($itemVO->pageVO->pageIco)) $tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$itemVO->pageVO->pageIco);
 			else $tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
 			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId];
 			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId].': '.$itemVO->pageVO->name;*/
-			$vars['URL'] = '?k='.$itemVO->pageId.'-'.FSystem::safetext($itemVO->pageVO->name);
-			$vars['PAGENAME'] = $itemVO->pageVO->name;
+			$vars['URL'] = '?k='.$itemVO->pageId.'-'.FSystem::safetext($itemVO->pageVO->get('name'));
+			$vars['PAGENAME'] = $itemVO->pageVO->get('name');
 			$vars['ITEM'] = '[[ITEM]]';
 			$tpl->setVariable($vars);
 			$page = $tpl->get();
@@ -75,6 +74,7 @@ class FItemsRenderer {
 	}
 
 	function render( $itemVO ) {
+		
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
@@ -97,8 +97,9 @@ class FItemsRenderer {
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
 		$pageId = $itemVO->pageId;
-		$pageVO  = new PageVO($pageId);
 		$typeId = $itemVO->typeId;
+
+    
 
 		//---INIT TEMPLATE
 		if($this->tpl !== false && $typeId != $this->tplType) {
@@ -152,7 +153,7 @@ class FItemsRenderer {
 
 		if(!empty($itemVO->enclosure)) {
 			$vars['IMGALT'] = $itemVO->enclosure;
-			$vars['IMGTITLE'] = $itemVO->addon.' '.$itemVO->pageVO->name.' '.$itemVO->enclosure;
+			$vars['IMGTITLE'] = $itemVO->addon.' '.$itemVO->pageVO->get('name').' '.$itemVO->enclosure;
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
 		} else {
@@ -216,6 +217,7 @@ class FItemsRenderer {
 		if($this->showPage) $ret = $this->addPageName($ret,$itemVO);
 		$this->tplParsed []= $ret;
 		$tpl->init();
+		
 		if($isDefault) {
 			$cache->setData($cached,$cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 		}

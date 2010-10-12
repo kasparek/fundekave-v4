@@ -6,13 +6,6 @@ class page_PagesList implements iPage {
 
 	}
 
-	static function invalidate() {
-		$user = FUser::getInstance();
-		$cacheGrp = 'pagelist';
-		$mainCache = FCache::getInstance('f',0);
-		$mainCache->invalidateGroup($cacheGrp);
-	}
-
 	static function build($data=array()) {
 
 		$user = FUser::getInstance();

@@ -292,6 +292,9 @@ class FDBTool {
 		}
 		return $query;
 	}
+	function getUID($from=0,$perPage=0) {
+		return md5($this->buildQuery($from,$perPage));
+	}
 	function buildQuery($from=0,$perPage=0) {
 		if($perPage>0) $this->setLimit($from,$perPage);
 		$query = $this->buildBase();

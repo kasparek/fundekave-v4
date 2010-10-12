@@ -44,7 +44,7 @@ class pageCategories {
 					$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$user->pageId,''));
 					$tpl->setVariable('PAGENAME', $category[1]);
 					$tpl->setVariable('SUM', $category[2]);
-					$tpl->parse('item');
+					$tpl->parse();
 				}
 			}
 			return $tpl->get();

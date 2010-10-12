@@ -43,7 +43,7 @@ class ItemVO extends Fvob {
 		switch($name) {
 			case 'pageVO':
 				if(empty($this->pageId)) return null;
-				if(!$this->_pageVO) $this->_pageVO = new PageVO($this->pageId,true);
+				if(!$this->_pageVO) $this->_pageVO = new PageVO($this->pageId);
 				return $this->_pageVO;
 				break;
 			case 'dateStartIso':
@@ -79,6 +79,7 @@ class ItemVO extends Fvob {
 				$name = '_'.$name;
 				break;
 			case 'unreaded':
+				if($this->typeId=='forum') return 0;
 				//number of unreaded reactions
 				$user = FUser::getInstance();
 				if($user->idkontrol==false) {
@@ -232,7 +233,7 @@ class ItemVO extends Fvob {
 			$this->updateItemIdLast();
 		}
 
-		page_PagesList::invalidate();
+		FCommand::run(ITEM_UPDATED,$this);
 		return $itemId;
 	}
 
@@ -460,7 +461,7 @@ class ItemVO extends Fvob {
 		$confGalery = FConf::get('galery');
 		if($root===null) $root = $confGalery['targetUrlBase'];
 		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];
-		return $root . $thumbCut .'/'. $this->pageVO->galeryDir .'/'. $this->enclosure;
+		return $root . $thumbCut .'/'. $this->pageVO->get('galeryDir') .'/'. $this->enclosure;
 	}
 
 	/**
@@ -484,8 +485,8 @@ class ItemVO extends Fvob {
 		$this->flush();
 		$confGalery = FConf::get('galery');
 		$file = new FFile();
-		if($file->is_file($confGalery['sourceServerBase'] . $this->pageVO->galeryDir . '/' . $this->enclosure)) {
-			$file->unlink($confGalery['sourceServerBase'] . $this->pageVO->galeryDir . '/' . $this->enclosure);
+		if($file->is_file($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure)) {
+			$file->unlink($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure);
 		}
 		$this->set('enclosure',null);
 	}

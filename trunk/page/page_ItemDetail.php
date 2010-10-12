@@ -60,6 +60,9 @@ class page_ItemDetail implements iPage {
 			$user->pageVO->htmlTitle = $user->itemVO->htmlName . ' ' . $user->pageVO->htmlTitle; 
 			$user->pageVO->showHeading=false;
 			if(!empty($data['__ajaxResponse'])) {
+				//next image
+				$nextVO = new ItemVO($itemNext,true);
+				FAjax::addResponse('call','galeryNextUrl',$itemVO->detailUrl);
 				FAjax::addResponse('backButt','href',$backUri);
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);

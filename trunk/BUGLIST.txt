@@ -1,21 +1,25 @@
 MIGRATION:
-update sys_pages set galeryDir='page/event' where pageId='event'
-udpate sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null
-udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0)
-udpate sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0)
-update sys_pages_items set text=concat(text,'<br/> ',enclosure),enclosure=null where typeId='forum' and enclosure is not null and enclosure != ''
-drop sys_users - skinId,zbanner,zavatar,zforumico,zgalerytype
-drop sys_users_friends - comment
-drop sys_menu_secondary
-drop sys_pages - menuSecondaryGroup,authorContent,nameshort
-sys_pages_items - drop itemIdBottom, change pageIdBottom -> pageIdTop
+update sys_pages set galeryDir='page/event' where pageId='event';
+update sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null;
+update sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0);
+update sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0);
+update sys_pages_items set text=concat(text,'<br/> ',enclosure),enclosure=null where typeId='forum' and enclosure is not null and enclosure != '';
+ALTER TABLE `sys_pages_items` DROP `itemIdBottom`,CHANGE `pageIdBottom` `pageIdTop` varchar(5) NULL AFTER `pageId`;
+ALTER TABLE `sys_users` DROP `skinId`,DROP `zbanner`,DROP `zavatar`,DROP `zforumico`,DROP `zgalerytype`;
+ALTER TABLE `sys_users_friends` DROP `comment`;
+DROP sys_menu_secondary;
+ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorContent`,DROP `pageParams`;
+update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
 optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
+Trying to get property of non-object in /data/www/vhosts/awake33.com/httpdocs/fdk_v5/libs/FBuildPage.php on line 62
+strpos() [<a href='function.strpos'>function.strpos</a>]: Empty delimiter in /data/www/vhosts/awake33.com/httpdocs/fdk_v5/libs/FSystem.php on line 384
 sidebar category list
 mainbar category filtering - category to header
+handle itemVo->pageVo - lazy loading
 
 TODO:
 -merge logged users with login - show on click

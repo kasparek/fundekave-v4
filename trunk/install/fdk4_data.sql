@@ -1,5 +1,5 @@
 #truncate sys_pages;
-delete from sys_pages where typeId='top';
+delete from sys_pages where typeId not in ('forum','blog','galery','culture')
 INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, 'page_PageItemList', '', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('frien', null, 'top', 'friend', null, 'page_UserFriends', 'Přátelé - Informace o uživatelích', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, 'page_PagesBooked', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
@@ -14,7 +14,7 @@ INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', 'post', null, 'page_UserPo
 INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', 'friend', null, 'page_UserInfo', 'Profil', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', 'friend', null, 'page_UserSettings', 'Nastavení osobního profilu', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 
-INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, 'page_PageItemList', 'Tipy na kulturní a jiné akce', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, 'page/event') ;
+INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 'page_PageItemList', 'Tipy na kulturní a jiné akce', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, 'page/event') ;
 
 /*INSERT INTO `sys_pages` VALUES ('taggi', null, 'top', 'galery', null, 'page_ItemsRaggingRandoms', 'Popisky k fotkam', 'Popisky', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fsurf', null, 'top', 'friend', null, 'page_UserSurf', 'Oblíbené odkazy', 'Odkazy', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;

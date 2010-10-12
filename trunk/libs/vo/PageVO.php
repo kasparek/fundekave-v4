@@ -90,7 +90,7 @@ class PageVO extends Fvob {
 	var $htmlKeywords;
 	var $showSidebar = true;
 
-	static function get( $pageId, $autoLoad = false ) {
+	static function factory( $pageId, $autoLoad = false ) {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
 			if($user->pageVO->pageId == $pageId) {
@@ -116,7 +116,8 @@ class PageVO extends Fvob {
 	 * @return number
 	 */
 	function perPage($perPage=0) {
-		if($this->typeId=='galery') return $this->cnt;
+		$typeId = $this->get('typeId');
+		if($typeId=='galery') return $this->get('cnt');
 		$cache = FCache::getInstance('s');
 		$SperPage = &$cache->getPointer($this->pageId,'pp');
 		if($perPage > 0) {
@@ -128,21 +129,23 @@ class PageVO extends Fvob {
 		//get from cache if is custom
 		if(!empty($SperPage)) $perPage = $SperPage;
 		if(empty($perPage)) $perPage = FConf::get('perpage',$this->pageId);
-		if(empty($perPage) && !empty($this->typeIdChild)) $perPage = FConf::get('perpage',$this->typeIdChild);
-		if(empty($perPage) && !empty($this->typeId)) $perPage = FConf::get('perpage',$this->typeId);
+		$typeIdChild = $this->get('typeIdChild');
+		if(empty($perPage) && !empty($typeIdChild)) $perPage = FConf::get('perpage',$typeIdChild);
+		if(empty($perPage) && !empty($typeId)) $perPage = FConf::get('perpage',$typeId);
 		if(empty($perPage)) $perPage = FConf::get('perpage','default');
 		return $perPage;
 	}
 
 	function itemsOrder() {
 		$orderBy = $this->prop('order');
+		$typeId = $this->get('typeId');
 		//---legacy
-		if($orderBy==1 && $this->typeId=='galery') {
+		if($orderBy==1 && $typeId=='galery') {
 			$orderBy = 'dateStart desc';
 		}
 		if(empty($orderBy)) {
 			//---get default
-			switch($this->typeId) {
+			switch($typeId) {
 				case 'galery':
 					$orderBy = 'enclosure';
 					break;
