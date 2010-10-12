@@ -121,7 +121,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		$filename = $file['name'];
 
-		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+		$ffile = new FFile(FConf::get("galery","ftpServer"));
 		
 		$ffile->storeChunk($file,$seq);
 

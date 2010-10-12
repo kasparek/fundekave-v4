@@ -146,7 +146,7 @@ div.mainpanel-content div.hentry span.postsNew {display: inline;float: none;text
 div.mainpanel-content div.hentry div.avatar {float: left;margin: 0 0.5em 1em 0;}
 div.mainpanel-content div.blog div.avatar {float: right;margin: 0 0 1em 0;}
 
-div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padding: 0 1em;margin-top: 0;height:100px;}
+div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padding: 0 1em;margin-top: 0;}
 div.mainpanel-content div.opacity div.vevent {margin-bottom: 0;}
 div.mainpanel-content div.reaction {margin-left: 3em;}
 
@@ -285,16 +285,4 @@ div#sidebar ul.sidebarUsersList span.fn {padding: 0 2px;font-weight: bold;}
 div#sidebar ul.sidebarUsersList span.fn a {text-decoration: none;}
 div#sidebar ul.sidebarUsersList img.userAvatar {float: left;margin: 0 0.5em 0 0;}
 div#sidebar ul.sidebarUsersList li {clear: left;overflow: hidden;background: none;list-style: none;}
-
-div#fullscreenToolbar {
-position:fixed;
-bottom:0px;
-right:50px;
-height:25px;
-text-align:center;
-z-index:10000;
-background:#eee;
-}
-div#fullscreenToolbar a { line-height:25px;
-padding:0 5px;}
 /*} /* END MEDIA SCREEN */

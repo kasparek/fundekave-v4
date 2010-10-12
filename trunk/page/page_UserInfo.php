@@ -3,11 +3,25 @@ include_once('iPage.php');
 class page_UserInfo implements iPage {
 
 	static function process($data) {
-
+		$user = FUser::getInstance();
+		if($user->pageParam=='u') {
+			page_UserSettings::process($data);
+		}
 	}
 
 	static function build($data=array()) {
+		
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo',''), FLang::$LABEL_INFO);
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo','u'), FLang::$LABEL_PERSONALSETTINGS);
+		
 		$user = FUser::getInstance();
+		
+		if($user->pageParam=='u') {
+			page_UserSettings::build($data);
+			return;
+		}
+		
 		$isFriend = false;
 		if($who = $user->whoIs) {
 
@@ -74,7 +88,8 @@ class page_UserInfo implements iPage {
 
 
 			$dir = FAvatar::profileBasePath();
-			$arr = FFile::fileList($dir,'jpg|png|gif');
+			$ffile = new FFile(FConf::get('ftpServer'));
+			$arr = $ffile->fileList($dir,'jpg|png|gif');
 			if(!empty($arr)) {
 				$tpl->touchBlock('tabfoto');
 				sort($arr);

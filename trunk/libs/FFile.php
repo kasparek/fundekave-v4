@@ -9,12 +9,19 @@ class FFile {
 	
 	var $numModified=0;
 
-	function __construct($ftpServer='',$ftpUser='',$ftpPass='') {
-		if(!empty($ftpServer) && !empty($ftpUser)) {
+	/**
+	 * 
+	 * @param String $ftpServer - user:password@ftpserverUrl
+	 * @return void
+	 */
+	function __construct($ftpServer='') {
+		if(!empty($ftpServer)) {
 			$this->isFtpMode = true;
-			$this->ftpServer = $ftpServer;
-			$this->ftpUser = $ftpUser;
-			$this->ftpPass = $ftpPass;
+			$arr = explode('@',$ftpServer);
+			$user = explode(":",$arr[0]);
+			$this->ftpServer = $arr[1];
+			$this->ftpUser = $user[0];
+			$this->ftpPass = $user[1];
 			$this->ftpConn = ftp_connect($this->ftpServer);
 			ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
 		}

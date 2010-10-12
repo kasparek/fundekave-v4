@@ -126,7 +126,7 @@ class page_PageEdit implements iPage {
 					if(empty($pageVO->galeryDir)) {
 						$pageVO->galeryDir = FSystem::safeText(FUser::getgidname($pageVO->userIdOwner)) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
-						$file = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+						$file = new FFile(FConf::get("galery","ftpServer"));
 						$file->makeDir(FConf::get("galery","sourceServerBase") .$pageVO->galeryDir);
 					}
 
