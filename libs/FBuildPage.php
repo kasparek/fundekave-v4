@@ -38,7 +38,7 @@ class FBuildPage {
 		//breadcrumbs
 		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 		if($pageIdTop!=$user->pageVO->pageId) {
-			$pageTop = new PageVO($pageIdTop,true);
+			$pageTop = new PageVO($pageIdTop);
 		} else {
 			$pageTop = $user->pageVO;
 		}
@@ -100,48 +100,6 @@ class FBuildPage {
 	 return self::$tabsArr;
 	}
 
-	static function getTemplate($template) {
-		$old = array(
-     'events.view.php'=>'page_EventsView',
-		'events.edit.php'=>'page_EventsEdit',
-
-     'forum.view.php'=>'page_ForumView',
-     'bloged.main.php'=>'page_Main',
-
-		'pages.booked.php'=>'page_PagesBooked',
-     'pages.list.php'=>'page_PagesList',
-		'pages.search.php'=>'page_PagesSearch',
-		'pages.stat.php'=>'page_PagesStat',
-		'pages.poll.php'=>'page_PagePoll',
-		'page.new.simple.php'=>'page_PageNewSimple',
-		'page.edit.php'=>'page_PageEdit',
-
-		'galery.list.php'=>'page_PagesList',
-	   'galery.detail.php'=>'page_GaleryDetail',
-
-	   'items.live.php'=>'page_ItemsLive',
-		'items.search.php'=>'page_ItemsSearch',
-		'items.tags.php'=>'page_ItemsTags',
-		'items.tagging.randoms.php'=>'page_ItemsTaggingRandom',
-
-	   'user.post.php'=>'page_UserPost',
-		'user.friends.php'=>'page_UserFriends',
-		'user.friends.all.php'=>'page_FriendsAll',
-		'user.surf.php'=>'page_UserSurf',
-		'user.settings.php'=>'page_UserSettings',
-		'user.info.php'=>'page_UserInfo',
-		'user.diary.php'=>'page_UserDiary',
-
-		'registration.php'=>'page_Registration'
-		
-		);
-		//---temporary till database change
-		if(isset($old[$template])) {
-			$template = $old[$template];
-		}
-		return $template;
-	}
-
 	static function process( $data ) {
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
@@ -149,7 +107,6 @@ class FBuildPage {
 			else $template = $user->pageVO->template;
 			if($template != '') {
 				if (!preg_match("/(.html)$/",$template)) {
-					$template = FBuildPage::getTemplate($template);
 					if( class_exists($template) ) {
 						call_user_func(array($template, 'process'),$data);
 					}
@@ -196,7 +153,6 @@ class FBuildPage {
 			if($template != '') {
 				if ($staticTemplate === false) {
 					//DYNAMIC TEMPLATE
-					$template = FBuildPage::getTemplate($template);
 					FProfiler::write('FBuildPage::baseContent--TPL LOADED');
 					if( class_exists($template) ) {
 						call_user_func(array($template, 'build'),$data);
@@ -296,7 +252,7 @@ class FBuildPage {
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
 
 		//searchform
-		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc',''));
+		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
 
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
 		if($user->pageVO) {
@@ -311,6 +267,7 @@ class FBuildPage {
 		//---MAIN MENU - cached rendered
 		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
 		$menu = $cache->getData('menu'.HOME_PAGE,'main');
+		
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
 			while($arrMenuItems) {
@@ -320,11 +277,13 @@ class FBuildPage {
 				//if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
 				$tpl->parse("topmenuitem");
 			}
+			$tpl->parse('menu');
 			$menu = $tpl->get('menu');
-			$cache->setData($menu,'menu','main');
+			$cache->setData($menu);
 		} else {
 			$tpl->setVariable("CACHEDMENU", $menu);
 		}
+		
 		FProfiler::write('FBuildPage--FSystem::topMenu');
 
 		if($user->pageAccess === true) {
@@ -422,8 +381,10 @@ class FBuildPage {
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
+		
 		//$data = preg_replace('/\s\s+/', ' ', $data);
-
+		$data = str_replace("\t", '', $data);
+				
 		echo $data;
 	}
 }

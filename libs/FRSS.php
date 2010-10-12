@@ -35,14 +35,11 @@ class FRSS {
 							$itemVO->save();
 							FError::add('I:insertOK');
 							//invalidate global cache
-							$cache = FCache::getInstance('f',0);
-							$cache->invalidateGroup('pagelist');
+							FCommand::run(ITEM_UPDATED,$itemVO);
 						}
 					} else {
 						//invalidate only this rss
-						$cache = FCache::getInstance('f',0);
-						$cacheKey = 'rss-'.$user->pageVO->pageId;
-						$cache->invalidateData($cacheKey, 'pagelist');
+						FCommand::run(RSS_UPDATED,$user->pageVO);
 					}
 				}
 			}
@@ -61,10 +58,11 @@ class FRSS {
 		if(isset($_GET['p'])) {
 			$pageNumber = (int) $data['p'];
 		}
+		$pageNumber = $pageNumber<1 ? 1 : $pageNumber;
 
-		$cache = FCache::getInstance('v',0);
-		$cacheKey = 'rss-'.$user->pageVO->pageId.(($pageNumber>1)?('-'.$pageNumber):(''));
-		$ret = $cache->getData($cacheKey,'pagelist');
+		$cache = FCache::getInstance('f',0);
+		$cacheGrp = 'rsslist'.$user->pageVO->pageId;
+		$ret = $cache->getData($pageNumber,'pagelist');
 					
 		if($ret === false) {
 
@@ -155,7 +153,7 @@ class FRSS {
 				}
 			}
 			$ret = $tpl->get();
-			$cache->setData($ret,$cacheKey,'pagelist');
+			$cache->setData($ret,$pageNumber,$cacheGrp);
 		}
 
 		header('Content-Type: text/xml');

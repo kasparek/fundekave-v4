@@ -40,7 +40,12 @@ class Fvob {
 		if(!$format) return null;
 		return date($format, strtotime($value));
 	}
-
+	
+	function get($key,$load=true) {
+		if(!$this->loaded) $this->load();
+		return $this->{$key};
+	}
+	
 	function set($key, $value, $params=array()) {
 		if(!property_exists($this,$key)) return false;
 		//---verify
@@ -128,6 +133,13 @@ class Fvob {
 
 	//---special properties
 	function getProperty($propertyName,$default=false,$load=false) {
+		if(empty($propertyName)) {
+			FError::write_log("Fvob::getProperty - missing propertyName -  default:".$default);
+			return;
+		}
+			$dataVO = $this->memGet();
+			if($dataVO!==false) $this->properties = $dataVO->properties;
+
 		$value = null;
 		if(isset($this->properties[$propertyName])) {
 			$value = $this->properties[$propertyName];
@@ -137,6 +149,7 @@ class Fvob {
 				$value = FDBTool::getOne($q);
 				//---set in list
 				if(empty($value)) $value = false;
+				if($value === false || $value === null) $value = $default;
 				$this->properties[$propertyName] = $value;
 				//---save in cache
 				$this->memStore();

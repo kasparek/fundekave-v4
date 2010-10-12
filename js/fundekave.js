@@ -1,31 +1,4 @@
 /**
- *PROMPT
- */
-/* $(document).ready(function(){
-  $('input[type=text][title],input[type=password][title],textarea[title]').each(function(i){
-    $(this).addClass('input-prompt-' + i);
-    var promptSpan = $('<span class="input-prompt"/>');
-    $(promptSpan).attr('id', 'input-prompt-' + i);
-    $(promptSpan).append($(this).attr('title'));
-    $(promptSpan).click(function(){
-      $(this).hide();
-      $('.' + $(this).attr('id')).focus();
-    });
-    if($(this).val() != ''){
-      $(promptSpan).hide();
-    }
-    $(this).before(promptSpan);
-    $(this).focus(function(){
-      $('#input-prompt-' + i).hide();
-    });
-    $(this).blur(function(){
-      if($(this).val() == ''){
-        $('#input-prompt-' + i).show();
-      }
-    });
-  });
-});*/ 
-/**
  *MSG CHAT FUNCTIONS
  */
 var unreadSentList;
@@ -62,6 +35,40 @@ messageCheckTimeout = setTimeout(messageCheck,5000);
 /**
  * FULLSCREEN
  */
+function galeryNextUrl(url) {
+if(!url) {
+return;
+}
+
+$.get(url, function(data) {
+  
+ // alert('Load was performed.');
+ //TODO: ready for fade
+ 
+ 
+ var img = new Image();
+  
+  
+  $(img).hide().load(function () {
+      // set the image hidden by default    
+      $(this).hide();
+    
+      // with the holding div #loader, apply:
+      $('#loader')
+        // remove the loading class (so no background spinner), 
+        .removeClass('loading')
+        // then insert our image
+        .append(this);
+    
+      // fade our image in to create a nice effect
+      $(this).fadeIn();
+    }).error(function () {}).attr('src', url);
+  
+});
+
+}
+
+
 var fullscreenState = {};
 function fullscreen(div,next,prev) {
 if(!div && !fullscreenState.element) return;

@@ -288,7 +288,7 @@ div#sidebar ul.sidebarUsersList li {clear: left;overflow: hidden;background: non
 
 div#fullscreenToolbar {
 position:fixed;
-bottom:0px;
+top:0px;
 right:50px;
 height:25px;
 text-align:center;

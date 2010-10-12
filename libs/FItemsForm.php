@@ -29,7 +29,7 @@ class FItemsForm {
     $itemVO = new ItemVO();
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
-			FProfiler::write_log('FItemsForm::process - unset type - item:'.$data['item']);
+			FError::write_log('FItemsForm::process - unset type - item:'.$data['item']);
 			return;
 		}
 		

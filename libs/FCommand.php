@@ -1,8 +1,18 @@
 <?php
 
+//define constants
 define("ITEM_UPDATED","actionItemUpdated");
 define("ITEM_READED","actionItemReaded");
 define("PAGE_UPDATED","actionPageUpdated");
+define("RSS_UPDATED","actionRSSUpdated");
+
+//map commands
+FCommand::register(ITEM_UPDATED,'itemUpdate');
+FCommand::register(ITEM_UPDATED,'flushCache');
+FCommand::register(PAGE_UPDATED,'pageUpdated');
+FCommand::register(PAGE_UPDATED,'flushCache');
+FCommand::register(ITEM_READED,'itemReaded');
+FCommand::register(RSS_UPDATED,'rssUpdated');
 
 class FCommand {
 
@@ -51,24 +61,41 @@ class FCommand {
 	}
 	
 	public static function itemReaded($data) {
+		if(empty($data)) return;
+		if(!is_array($data)) $data = array($data); 
+	
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
-		if(in_array($data->itemId,$unreadedList)) {
-			array_splice($unreadedList,array_search($data->itemId, $unreadedList),1);
+		
+	  if(!empty($unreadedList)) {
+			  $newList = array();
+				foreach($unreadedList as $itemIdUnreaded) {
+					if(!in_array($itemIdUnreaded,$data)) {
+						$newList[] = $itemIdUnreaded; 
+					}
+				}
+ 				$unreadedList = $newList;
 		}
+		
+		$cache = FCache::getInstance('f',0);
+		$cache->invalidateGroup('itemlist'.$data->pageId);
 	}
 	
 	public static function pageUpdated($data) {
-		$cacheGrp = 'pagelist';
-		$mainCache = FCache::getInstance('f',0);
-		$mainCache->invalidateGroup($cacheGrp);
+		
 	}
 	
-	public static function flushCache() {
+	public static function rssUpdated($data) {
+	  $cache = FCache::getInstance('f');
+	  $cache->invalidateGroup('rsslist'.$data->pageId);
+	}
+	
+	public static function flushCache($data) {
 		$cache = FCache::getInstance('f');
 		$cache->invalidateGroup('calendarlefthand');
-		$cache = FCache::getInstance('f');
-		$cache->invalidateGroup('pagelist');
+		$cache->invalidateGroup('rsslist');
+		$cache->invalidateGroup('itemlist');
+		$cache->invalidateGroup('itemlist'.$data->pageId);
 	}
 	
 	
