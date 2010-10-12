@@ -7,6 +7,11 @@ class page_UserFriends implements iPage {
 	}
 
 	static function build($data=array()) {
+		
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo',''), FLang::$LABEL_INFO);
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo','u'), FLang::$LABEL_PERSONALSETTINGS);
+		
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
 		

@@ -1,5 +1,9 @@
 <?php
 ob_start("ob_gzhandler");
+//---host name
+$host = $_SERVER['HTTP_HOST'];
+$host = str_replace(array('www','.'),'',$host);
+if($host=='localhost') $host='fundekavenet';
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
@@ -12,7 +16,7 @@ spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
-FConf::getInstance(CONFIG_FILENAME);
+FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
 setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));

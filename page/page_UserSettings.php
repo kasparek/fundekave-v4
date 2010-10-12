@@ -53,7 +53,8 @@ class page_UserSettings implements iPage {
 				FAjax::addResponse('call','remove','personalfoto'.$md5);
 				FAjax::addResponse('call','msg','ok,File deleted');
 
-				FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
+				$ffile = new FFile(FConf::get('galery','ftpServer'));
+				FAjax::addResponse('folderSize', '$html', round($ffile->folderSize($dir)/1024).'kB');
 			}
 		}
 
@@ -203,10 +204,11 @@ class page_UserSettings implements iPage {
 
 		$dir = FAvatar::profileBasePath();
 
-		$tpl->setVariable('FOLDERSIZE',round(FFile::folderSize($dir)/1024).'kB');
+		$ffile = new FFile(FConf::get('galery','ftpServer'));
+		$tpl->setVariable('FOLDERSIZE',round($ffile->folderSize($dir)/1024).'kB');
 		$tpl->setVariable('FOLDERLIMIT', FConf::get('settings','personal_foto_limit').'kB');
 
-		$arr = FFile::fileList($dir,'jpg');
+		$arr = $ffile->fileList($dir,'jpg|png|gif');
 		sort($arr);
 		$arr = array_reverse($arr);
 		$ret = '';

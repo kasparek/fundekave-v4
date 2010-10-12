@@ -86,7 +86,7 @@ setListeners('galeryFullSwitch','click',fullClick);
 }
 function fullClick() {
 //TODO: position fullscreenToolbar absolutely on bottom, append to body, show on mouseover 
-$('body').append('<div id="fullscreenToolbar" style="width:100%;text-align:center;position: absolute;z-index:10000;bottom:0px;background:#eee;">'
+$('body').append('<div id="fullscreenToolbar">'
 +'<a href="#" id="fullscreenPrevious">Previous</a>'
 +'<a href="#" id="fullscreenLeave">Leave fullscreen</a>'
 +'<a href="#" id="fullscreenSlideshow">Slideshow</a>'

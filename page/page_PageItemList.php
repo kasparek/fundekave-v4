@@ -124,159 +124,111 @@ class page_PageItemList implements iPage {
 
 		//continue only if empty $user->pageParam
 		if(empty($user->pageParam) || $user->pageParam=='o') { //TODO: not great implementation
-			//filter-search
-			$cache = FCache::getInstance('s',0);
-			$searchStr = $cache->getData( $pageVO->pageId, 'filter');
-			/**
-			 *FORUM FORM
-			 */
-			if($pageVO->typeId!='top') { //no show for live, main etc.
-				$writePerm=1;
-				if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
-				if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
-					$writePerm = $pageVO->prop('forumSet');
-					if(!empty($itemVO)) {
-						if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
-						$data['simple'] = true;
-					} else {
-						$writePerm=0;
-					}
-				}
-				if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
-					$formItemVO = new ItemVO();
-					$formItemVO->typeId = 'forum';
-					$formItemVO->pageId = $pageVO->pageId;
-					$data['perpage'] = $perPage;
-					if($searchStr!==false) $data['text'] = $searchStr;
-					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
-				}
-				if($writePerm == 2 && !$user->idkontrol) {
-					$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
-				}
-			}
-
-			//HEADER
-			if(empty($itemVO) && !empty($pageVO->content)) $vars['CONTENT'] = FSystem::postText($pageVO->content);
-
-			//LIST ITEMS
-			$fItems = new FItems('',FUser::logon());
-			if($pageVO->typeId!='top') {
-				$fItems->setPage($pageVO->pageId);
-				$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
-			}
-			if($categoryId > 0) {
-				$fItems->addWhere("categoryId='". $categoryId ."'");
-			}
-			if(!empty($searchStr)) {
-				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
-			}
-			if(!empty($itemVO)) {
-				$itemId = $itemVO->itemId;
-				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
-			}
-			if(SITE_STRICT == 1) {
-				$fItems->addWhere("pageIdTop = '".HOME_PAGE."'");
-			}
-
-			if(!empty($date)) {
-				//used for sorting
-				$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
-				$fItems->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
-				."or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y-%m-%d')) "
-				."or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
-				);
-				$fItems->setOrder('dateLive desc');
-			} else {
-				//ORDER
-				if($pageVO->pageId=='event') {
-					$fItems->addWhere("typeId='event'");
-					if($user->pageParam=='o') { //TODO:archive base on pageparam
-						//---archiv
-						FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
-						$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
-						$fItems->setOrder('dateStart desc');
-					} else {
-						//---future
-						FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
-						$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
-						$fItems->setOrder('dateStart');
-					}
+		//filter-search
+		$cache = FCache::getInstance('s',0);
+		$searchStr = $cache->getData( $pageVO->pageId, 'filter');
+		/**
+		 *FORUM FORM
+		 */
+		if($pageVO->typeId!='top') { //no show for live, main etc.
+			$writePerm=1;
+			if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
+			if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
+				$writePerm = $pageVO->prop('forumSet');
+				
+				if(!empty($itemVO)) {
+					if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
+					$data['simple'] = true;
 				} else {
-					if(!empty($itemVO)) {
-						//reactions
-						$fItems->setOrder('dateCreated desc');
-					} else {
-						//TODO: user order from page
-						$fItems->setOrder($pageVO->itemsOrder());
-					}
+					$writePerm=0;
 				}
+				
 			}
-
-			if(!empty($itemVO)) {
-				$itemVO->updateReaded($user->userVO->userId);
-			} else {
-				$pageVO->updateReaded($user->userVO->userId);
+			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
+				$formItemVO = new ItemVO();
+				$formItemVO->typeId = 'forum';
+				$formItemVO->pageId = $pageVO->pageId;
+				$data['perpage'] = $perPage;
+				if($searchStr!==false) $data['text'] = $searchStr;
+				$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 			}
-
-			if(!empty($itemVO)) {
-				$arrPagerExtraVars['k'] = $pageVO->pageId;
-				$arrPagerExtraVars['i'] = $itemId;
-			}
-			$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
-			$from = ($pager->getCurrentPageID()-1) * $perPage;
-			$fItems->getList($from, $perPage+1);
-			$pager->totalItems = count($fItems->data);
-			if($pager->totalItems > $perPage) {
-				$pager->maybeMore = true;
-				array_pop($fItems->data);
-			}
-			if($from > 0) $pager->totalItems += $from;
-			if($pager->totalItems > 0) {
-				$pager->getPager();
-				if ($pager->totalItems > $perPage) {
-					$vars['TOPPAGER'] = $pager->links;
-					$vars['BOTTOMPAGER'] = $pager->links;
-				}
-				if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();
-				$itemPrev=null;
-				$pageIdPrev=null;
-				while ($itemVO = array_shift($fItems->data)) {
-					if($user->pageVO->pageId != $itemVO->pageId) {
-						$fItems->fItemsRenderer->showPage=false;
-						if(!$itemPrev || $pageIdPrev != $itemVO->pageId) {
-							//setup renderer if needed
-							if($itemVO->itemIdTop > 0) {
-								//show top item
-								$itemTop = new ItemVO($itemVO->itemIdTop,true);
-								if($itemTop->typeId=='galery') $fItems->fItemsRenderer->showPage=true;
-								$itemTop->render($fItems->fItemsRenderer);
-								$last = $fItems->fItemsRenderer->getLast();
-								$last = str_replace('class="hentry','class="hentry opacity',$last);
-								$fItems->fItemsRenderer->setLast($last);
-								$fItems->fItemsRenderer->showPage=false;
-							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')
-							&& (!$itemPrev || $pageIdPrev != $itemVO->pageId)
-							) {
-								$fItems->fItemsRenderer->showPage=true;
-							}
-						}
-					}
-					$fItems->parse($itemVO);
-					if($itemVO->itemIdTop > 0 && $user->pageVO->pageId != $itemVO->pageId) {
-						$last = $fItems->fItemsRenderer->getLast();
-						$last = str_replace('class="hentry','class="hentry reaction',$last);
-						$fItems->fItemsRenderer->setLast($last);
-					}
-					$itemPrev = $itemVO;
-					$pageIdPrev = $itemVO->pageId;
-					FCommand::run(ITEM_READED,$itemVO);
-				}
-				$vars['ITEMS'] = $fItems->show();
-			} else {
-				if(!empty($writePerm)) $touchedBlocks[]='feedempty';
+			if($writePerm == 2 && !$user->idkontrol) {
+				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
 			}
 		}
+
+		//HEADER
+		if(empty($itemVO) && !empty($pageVO->content)) $vars['CONTENT'] = FSystem::postText($pageVO->content);
+
+		//LIST ITEMS
+		$fItems = new FItems('',FUser::logon());
+		if($pageVO->typeId!='top') {
+			$fItems->setPage($pageVO->pageId);
+			$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
+		}
+		if($categoryId > 0) {
+			$fItems->addWhere("categoryId='". $categoryId ."'");
+		}
+		if(!empty($searchStr)) {
+			$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
+		}
+		if(!empty($itemVO)) {
+			$itemId = $itemVO->itemId;
+			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
+		}
+		if(SITE_STRICT == 1) {
+			$fItems->addWhere("pageIdTop = '".HOME_PAGE."'");
+		}
+
+		if(!empty($date)) {
+			//used for sorting
+			$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
+			$fItems->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
+			."or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y-%m-%d')) "
+			."or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
+			);
+			$fItems->setOrder('dateLive desc');
+		} else {
+			//ORDER
+			if($pageVO->pageId=='event') {
+				$fItems->addWhere("typeId='event'");
+				if($user->pageParam=='o') { //TODO:archive base on pageparam
+				//---archiv
+				FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
+				$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+				$fItems->setOrder('dateStart desc');
+				} else {
+					//---future
+					FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
+					$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
+					$fItems->setOrder('dateStart');
+				}
+			} else {
+				if(!empty($itemVO)) {
+					//reactions
+					$fItems->setOrder('dateCreated desc');
+				} else {
+					//TODO: user order from page
+					$fItems->setOrder($pageVO->itemsOrder());
+				}
+			}
+		}
+
+		if(!empty($itemVO)) {
+			$itemVO->updateReaded($user->userVO->userId);
+		} else {
+			$pageVO->updateReaded($user->userVO->userId);
+		}
+
+		$listArr = page_PageItemList::buildList($fItems,$pageVO,$itemVO);
+		
+		$vars = array_merge($vars,$listArr['vars']);
+		$touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
+		
+		}
+		
 		if(!empty($data['__ajaxResponse'])) {
+			FAjax::addResponse('commentForm','action',FSystem::getUri('i='.$itemVO->itemId));
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
 			FAjax::addResponse('topPager','$html',empty($vars['TOPPAGER']) ? '' : $vars['TOPPAGER']);
 			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
@@ -292,5 +244,71 @@ class page_PageItemList implements iPage {
 			//output
 			FBuildPage::addTab(array("MAINDATA"=>$output));
 		}
+	}
+
+	static function buildList($fItems,$pageVO,$itemVO=null) {
+		if(!empty($itemVO)) {
+			$arrPagerExtraVars['k'] = $pageVO->pageId;
+			$arrPagerExtraVars['i'] = $itemId;
+		}
+		
+		$perPage = $pageVO->perPage();
+		$pager = new FPager(0,$perPage,array('extraVars'=>$arrPagerExtraVars,'noAutoparse'=>1,'bannvars'=>array('i'),'manualCurrentPage'=>$manualCurrentPage));
+		$from = ($pager->getCurrentPageID()-1) * $perPage;
+		$fItems->getList($from, $perPage+1);
+		$pager->totalItems = count($fItems->data);
+		if($pager->totalItems > $perPage) {
+			$pager->maybeMore = true;
+			array_pop($fItems->data);
+		}
+		$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data); 
+		if($from > 0) $pager->totalItems += $from;
+		if($pager->totalItems > 0) {
+			$pager->getPager();
+			if ($pager->totalItems > $perPage) {
+				$vars['TOPPAGER'] = $pager->links;
+				$vars['BOTTOMPAGER'] = $pager->links;
+			}
+			if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();
+			$itemPrev=null;
+			$itemIdTopPrev=null;
+			$pageIdPrev=null;
+			while ($itemVO = array_shift($fItems->data)) {
+				if($pageVO->pageId != $itemVO->pageId) {
+					$fItems->fItemsRenderer->showPage=false;
+					if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
+						//setup renderer if needed
+						if($itemVO->itemIdTop > 0) {
+							//show top item
+							$itemTop = new ItemVO($itemVO->itemIdTop,true);
+							if($itemTop->typeId=='galery') $fItems->fItemsRenderer->showPage=true;
+							$itemTop->render($fItems->fItemsRenderer);
+							$last = $fItems->fItemsRenderer->getLast();
+							$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
+							$fItems->fItemsRenderer->setLast($last);
+							$fItems->fItemsRenderer->showPage=false;
+						} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')
+						&& (!$itemPrev || $pageIdPrev != $itemVO->pageId)
+						) {
+							$fItems->fItemsRenderer->showPage=true;
+						}
+					}
+				}
+				$fItems->parse($itemVO);
+				if($itemVO->itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
+					$last = $fItems->fItemsRenderer->getLast();
+					$last = str_replace('class="hentry','class="hentry reaction',$last);
+					$fItems->fItemsRenderer->setLast($last);
+				}
+				$itemPrev = $itemVO;
+				$itemIdTopPrev = $itemVO->itemIdTop;
+				$pageIdPrev = $itemVO->pageId;
+				FCommand::run(ITEM_READED,$itemVO);
+			}
+			$vars['ITEMS'] = $fItems->show();
+		} else {
+			if(!empty($writePerm)) $touchedBlocks[]='feedempty';
+		}
+		return array('vars'=>$vars,'blocks'=>$touchedBlocks);
 	}
 }

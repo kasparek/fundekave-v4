@@ -20,8 +20,6 @@ swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
 
 user ALTER TABLE...ORDER BY?
 
-galery - pri listovani ajax breadcrumbs nefenge
-
 TODO:
 -refactor secondary buttons to options
 -move DB secondary buttons to code

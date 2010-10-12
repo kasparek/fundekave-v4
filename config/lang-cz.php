@@ -21,7 +21,8 @@ static $LABEL_CALENDAR = 'Kalendar';
 static $LABEL_POCKET_PUSH = 'Do kapsy';
 
 static $LABEL_POST = 'Posta';
-static $LABEL_INFO = 'Info';
+static $LABEL_INFO = 'Osobni info';
+static $LABEL_PERSONALSETTINGS = 'Osobni nastaveni';
 static $LABEL_FILE = 'Soubor';
 
 static $LABEL_OWNER = 'Majitel';

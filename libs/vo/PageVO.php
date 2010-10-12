@@ -199,7 +199,7 @@ class PageVO extends Fvob {
 		$gCountFoto = count($arrFotoDetail);
 		$arrFiles = array();
 		$galdir = FConf::get('galery','sourceServerBase') . $this->galeryDir;
-		$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+		$ffile = new FFile(FConf::get("galery","ftpServer"));
 		$arrFiles = $ffile->fileList($galdir,"png|jpg|jpeg|gif");
 		$change = false;
 

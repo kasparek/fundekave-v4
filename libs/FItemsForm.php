@@ -15,7 +15,7 @@ class FItemsForm {
 			$filenameArr = explode('/',$filename);
 			$enclosure = array_pop($filenameArr);
 			$target = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/'.$enclosure;
-			$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+			$ffile = new FFile(FConf::get("galery","ftpServer"));
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
 			$itemVO->enclosure = $enclosure;
 			$itemVO->save();
@@ -34,7 +34,7 @@ class FItemsForm {
 		$captchaCheck = true;
 		if($user->idkontrol !== true) {
 			$captcha = new FCaptcha();
-			if(!$captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $cap = false;
+			if(!$captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
 		}
 		if($user->itemVO) {
 			$data['itemIdTop'] = $user->itemVO->itemId;
@@ -146,7 +146,7 @@ class FItemsForm {
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
 								//TODO: refactor this
-								$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+								$ffile = new FFile(FConf::get("galery","ftpServer"));
 								$ffile->file_put_contents(ROOT_FLYER.$flyerName,$file);
 								$itemVO->enclosure = $filename;
 								$itemVO->save();
@@ -155,7 +155,7 @@ class FItemsForm {
 							if($data['__files']['imageFile']['error'] == 0) {
 								$data['__files']['imageFile']['name'] = FSystem::safeFilename($data['__files']['imageFile']['name']);
 								$itemVO->deleteImage();
-								$ffile = new FFile(FConf::get("galery","ftpServer"),FConf::get("galery","ftpUser"),FConf::get("galery","ftpPass"));
+								$ffile = new FFile(FConf::get("galery","ftpServer"));
 								if($ffile->upload($data['__files']['imageFile'],FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir,800000)) {
 									$itemVO->enclosure = $data['__files']['imageFile']['name'];
 									$itemVO->save();
@@ -273,12 +273,6 @@ class FItemsForm {
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
 
-		if(!empty($itemVO->name)) {
-			if($itemVO->typeId!='forum' || $user->idkontrol===false) {
-				$tpl->setVariable('USERNAME',$itemVO->name);
-			}
-		}
-
 		//TYPE DEPEND
 		if($itemVO->typeId==='forum') {
 				
@@ -288,6 +282,11 @@ class FItemsForm {
 				}
 			} else {
 				$tpl->setVariable('USERNAME','');
+				if(!empty($itemVO->name)) {
+					if($itemVO->typeId!='forum' || !$user->idkontrol) {
+						$tpl->setVariable('USERNAME',$itemVO->name);
+					}
+				}
 				$captcha = new FCaptcha();
 				$tpl->setVariable('CAPTCHASRC',$captcha->get_b2evo_captcha());
 			}

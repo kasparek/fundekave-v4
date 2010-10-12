@@ -89,15 +89,12 @@ class page_Search implements iPage {
 				//---QUERY RESULTS
 				$fPages = new FPages(array('galery','forum','blog'), $userId);
 				if(!empty($pageSearchCache['filtrPages'])){
-					$fPages->addWhereSearch(array('p.name','p.description','p.dateContent'),$pageSearchCache['filtrPages'],'OR');
+					$fPages->addWhereSearch(array('sys_pages.name','sys_pages.description','sys_pages.dateContent'),$pageSearchCache['filtrPages'],'OR');
 				}
-				$fPages->setSelect('p.pageId,p.categoryId,p.name,p.pageIco'.(($userId > 0)?(',(p.cnt-f.cnt) as newMess'):(',0')).',p.typeId');
 				if($user->idkontrol!==true) {
-					$fPages->addWhere('p.locked < 2');
-				} else {
-					$fPages->addJoin('left join sys_pages_favorites as f on p.pageId=f.pageId and f.userId= "'.$userId.'"');
+					$fPages->addWhere('sys_pages.locked < 2');
 				}
-				$fPages->setOrder("p.name");
+				$fPages->setOrder("sys_pages.name");
 				$pager = new FPager(0,$perPage ,array('noAutoparse'=>1,'urlVar'=>'pp','hash'=>'pages'));
 				$pager->extraVars['k'] = $user->pageVO->pageId;
 				$from = ($pager->getCurrentPageID()-1) * $perPage;
@@ -153,47 +150,16 @@ class page_Search implements iPage {
 			$ITEMS = $mainCache->getData($cacheKey,$cacheGrp);
 
 			if(false === $ITEMS) {
-				$vars = array();
-				$touchedBlocks = array();
 					
 				$fItems = new FItems('',$user->userVO->userId);
-				$fItems->addJoin('join sys_pages as p on p.pageId=sys_pages_items.pageId');
 				$fItems->addWhere('sys_pages_items.public > 0');
-				$fItems->setSelect('p.pageId,p.categoryId,p.name,p.pageIco,p.typeId,sys_pages_items.itemId,sys_pages_items.typeId');
-					
 				$fItems->addFulltextSearch('text,enclosure,addon,textLong',$pageSearchCache['filtrItems']);
 					
-				$pager = new FPager(0,$perPage,array('noAutoparse'=>1,'hash'=>'items','urlVar'=>'pi'));
-				$from = ($pager->getCurrentPageID()-1) * $perPage;
-				//$fItems->map = false;
-				$fItems->getList($from,$perPage+1);
-				$totalItems = 0;
-				if(!empty($fItems->data)) {
-					$totalItems = count($fItems->data);
-				}
-
-				$maybeMore = false;
-				if($totalItems > ($perPage-$fItems->itemsRemoved)) {
-					$maybeMore = true;
-					array_pop($fItems->data);
-				}
-
-				if($from > 0) $totalItems += $from;
-				$ret = '';
-				if($totalItems > 0) {
-					$pager->totalItems = $totalItems;
-					$pager->maybeMore = $maybeMore;
-					$pager->getPager();
-					$vars['ITEMS'] = FPages::printPagelinkList($fItems->data);
-					if ($totalItems > $perPage) $vars['ITEMSPAGER'] = $pager->links;
-				} else {
-					$touchedBlocks['noitems'] = true;
-				}
-				$vars['FILTRITEMS'] = $pageSearchCache['filtrItems'];
-				$vars['TOTALITEMS'] = ($maybeMore===true)?($perPage.'+'):($totalItems);
+				$listArr = page_PageItemList::buildList($fItems,$user->pageVO);
 					
-				$ITEMS['vars'] = $vars;
-				$ITEMS['touchedblocks'] = $touchedBlocks;
+				$ITEMS['vars'] = $listArr['vars'];
+				$ITEMS['vars']['FILTRITEMS'] = $pageSearchCache['filtrItems'];
+				$ITEMS['touchedblocks'] = $listArr['blocks'];
 				$mainCache->setData($ITEMS,$cacheKey,$cacheGrp);
 			}
 
