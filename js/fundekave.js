@@ -59,7 +59,7 @@ function galeryNextUrl(currentUrl,nextUrl) {
 if(!currentUrl) return;
 if(!galeryNextFading) { //currentUrl != $(galeryNextReady).attr('src')) {
 //start loading first image
-$("#detailFoto").load(function(){
+$("#detailFoto").css('margin','0 auto').load(function(){
 	$(".showProgress").removeClass('lbLoading').css('height','auto');
 	$("#detailFoto").css('display','inline').fadeIn();
 	if(scrollTop>0) $(window).scrollTop(scrollTop);
@@ -71,7 +71,7 @@ if(!nextUrl) return;
 //load next image
 $.get(nextUrl, function(data) {
 var img = new Image();
-$(img).hide().load(function () {galeryNextReady = this;}).attr('src', nextUrl);});
+$(img).css('margin','0 auto').hide().load(function () {galeryNextReady = this;}).attr('src', nextUrl);});
 }
 
 

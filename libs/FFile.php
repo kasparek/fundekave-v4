@@ -202,7 +202,7 @@ class FFile {
 		if(empty($user->pageVO)) return;
 		$pageVO = $user->pageVO;
 		$imgConf = FConf::get('image_conf');
-		$sizeOptList = explode(','$imgConf['sideOptions']);
+		$sizeOptList = explode(',',$imgConf['sideOptions']);
 		$maxSize = array_pop($sizeOptList);
 		//defaults
 		$vars = array(
@@ -231,7 +231,7 @@ class FFile {
 			case 'tempStore':
 			  $vars['AUTOPROCESS']=1;
 				$vars['AUTOUPLOAD']=1;
-				$vars['DISPLAYCONTENT']=1
+				$vars['DISPLAYCONTENT']=1;
 				$vars['MULTI']=0;
 				$vars['APPWIDTH']=400;
 				$vars['ONONEUPLOADED']='';

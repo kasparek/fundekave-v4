@@ -90,7 +90,7 @@ $processMain = true;
  * FILES UPLOAD PROCESSING
  *
  **/
-if($_GET['fuupconfig']) {
+if(!empty($_GET['fuupconfig'])) {
   FFile::printConfigFile( $_GET['fuupconfig'] );
 	exit;
 }
@@ -201,16 +201,7 @@ if($processMain===true) {
 	if(!empty($_GET))  $data['__get'] = $_GET;
 	FBuildPage::process( $data );
 
-	FProfiler::write('PAGE PROCESSED DONE');
-
-	if($user->pageAccess == true) {
-		//---tag toolbar set up
-		if($user->idkontrol === true) {
-			FItemsToolbar::setTagToolbar();
-		}
-	}
-
-	FProfiler::write('PAGE STAT/TOOLBAR');
+	FProfiler::write('PAGE PROCESS DONE');
 
 	//---shows message that page is locked
 	if($user->pageVO)
@@ -218,8 +209,6 @@ if($processMain===true) {
 		FError::add(FLang::$MESSAGE_PAGE_LOCKED);
 		if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
 	}
-
-	FProfiler::write('PAGE BEFORE SHOW');
 
 	//TODO: create headers
 	//header("Cache-control: max-age=290304000, public");
