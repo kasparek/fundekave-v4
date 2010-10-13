@@ -106,6 +106,9 @@ class FItemsRenderer {
 			$this->tpl = false;
 		}
 		if( $this->tpl === false ) {
+			if(empty($typeId)) {
+				FError::write_log('FItemsRenderer::render - missing typeId for template itemId:'.$itemId.' pageId:'.$pageId);
+			}
 			$this->tpl = FSystem::tpl($this->getTemplateName($typeId));
 			$this->tplType = $typeId;
 		}
@@ -157,7 +160,7 @@ class FItemsRenderer {
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
 		} else {
-			$vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
+			if($itemVO->typeId=='forum') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 		}
 
 		//modifiers to standart

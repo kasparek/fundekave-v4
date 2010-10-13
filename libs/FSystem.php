@@ -316,10 +316,8 @@ class FSystem {
 		,"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
-		
 		);
 
-		
 
 		$r=0;
 		foreach($regList as $regex) {
@@ -381,7 +379,9 @@ class FSystem {
 							break;
 						case 0:
 						case 1:
-							if($r==7 || strpos($matches[2][$x][0],$matches[3][$x][0])!==false) { //only if text of link is link itself
+							$pos = false;
+							if(!empty($matches[3][$x][0])) $pos = strpos($matches[2][$x][0],$matches[3][$x][0]);
+							if($r==7 || $pos!==false) { //only if text of link is link itself
 								$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
 								$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox-page"><img src="'.FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
 								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);

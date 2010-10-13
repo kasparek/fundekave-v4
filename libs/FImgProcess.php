@@ -147,7 +147,7 @@ class FImgProcess {
 		else {
 			if($this->userImagick===true) {
 				if(class_exists('Imagick')) {
-					FError::write_log('FImgProcess::open trying IMAGICK');
+					//FError::write_log('FImgProcess::open trying IMAGICK');
 					$this->imagick = new Imagick( $this->sourceUrl );
 					$this->imagick->stripImage();
 					return true;
@@ -156,7 +156,7 @@ class FImgProcess {
 				}
 			}
 			if($this->userImagick===false) {
-				FError::write_log('FImgProcess::using GD');
+				//FError::write_log('FImgProcess::using GD');
 				//imagemagick not available
 				if($this->sourceMimeType == 1) $this->image = imagecreatefromgif($this->sourceUrl);
 				elseif($this->sourceMimeType == 3) $this->image = imagecreatefrompng($this->sourceUrl);
@@ -317,7 +317,7 @@ class FImgProcess {
 			}
 		}
 
-		FError::write_log('FImgProcess:: TRANSFORMATION COMPLETE - '.$this->targetUrl);
+		//FError::write_log('FImgProcess:: TRANSFORMATION COMPLETE - '.$this->targetUrl);
 		return $data;
 	}
 

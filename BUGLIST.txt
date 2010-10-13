@@ -1,5 +1,7 @@
 MIGRATION:
+delete FROM `sys_pages_items` where typeId='' or typeId is null
 update sys_pages set galeryDir='page/event' where pageId='event';
+update sys_pages set galeryDir=concat('page/',pageId) where typeId='blog' or typeId='forum';
 update sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null;
 update sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?i=",itemIdBottom,"\">Odkaz</a>") where (itemIdBottom is not null && itemIdBottom != 0);
 update sys_pages_items set text = concat(text,"<br /><br />\n<a href=\"http://fundekave.net/?k=",pageIdBottom,"\">Odkaz</a>") where (pageIdBottom is not null && pageIdBottom != 0);
@@ -17,8 +19,6 @@ user ALTER TABLE...ORDER BY?
 FIX:
 nastaveni - category edit - remove pager
 posta messages - deleting - del[] nefunguje v ajaxu
-Trying to get property of non-object in /data/www/vhosts/awake33.com/httpdocs/fdk_v5/libs/FBuildPage.php on line 62
-strpos() [<a href='function.strpos'>function.strpos</a>]: Empty delimiter in /data/www/vhosts/awake33.com/httpdocs/fdk_v5/libs/FSystem.php on line 384
 sidebar category list
 mainbar category filtering - category to header
 handle itemVo->pageVo - lazy loading

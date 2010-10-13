@@ -50,16 +50,16 @@ class FBuildPage {
 
 		//typ
 		if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
-			$pages = new FPages('top',$user->userVO->userId,1);
-			$pages->addWhere("sys_pages.typeIdChild='".$user->pageVO->typeId."' and sys_pages.public=1");
-			$arr = $pages->getContent();
-			if(!empty($arr)) {
-				$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$arr[0]->pageId,''));
-			}
+			//TODO:refactor
+			//prehled
+			$breadcrumbs[] = array('name'=>FDBTool::getOne("select text from sys_menu where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
+			//typ
+			$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('','foall',$user->pageVO->typeId));
+			//category
 			if($user->pageVO->categoryId > 0) {
 				$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
 				if(!empty($categoryArr))
-				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,$arr[0]->pageId,''));
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,'foall',''));
 			}
 		}
 
