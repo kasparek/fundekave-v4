@@ -33,6 +33,10 @@ class FPages extends FDBTool {
 
 		$this->type = $type;
 		$this->userId = (int) $userId * 1;
+		if($permission=='sa') {
+			$this->sa = true;
+			$permission=1;
+		}
 		$this->permission = $permission;
 
 		parent::__construct('sys_pages','pageId');
@@ -216,7 +220,7 @@ class FPages extends FDBTool {
 							if(!empty($page->pageIco)) {
 								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco); //TODO: url_page_avatar does not exist anymore
 							} else if(!empty($page->typeId)) {
-								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId));
+								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId,''));
 							}
 							$tpl->setVariable("AVATARNAME", $page->name);
 							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);

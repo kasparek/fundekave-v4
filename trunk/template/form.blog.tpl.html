@@ -30,6 +30,16 @@
 <div id="tabs-2">
 <fieldset>
 <legend>Specialni</legend>
+<label>Upload obrazku</label>
+<div id="tempStore" class="fuup">
+<input type="file" name="imageFile"/></div><br />
+<label> - nebo URL</label><input type="text" name="imageUrl" /><br />
+<div id="imageHolder" class="row">
+<!-- BEGIN image -->
+<label>Obrazek</label><a rel="lightbox" href="{IMAGEURL}"><img src="{IMAGETHUMBURL}" /></a>
+<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrazek?" class="button confirm" /><br />
+<!-- END image -->
+</div>
 <label for="forumSet">Diskuze</label><select id="forumSet" name="forumset">
 <option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
 <option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>

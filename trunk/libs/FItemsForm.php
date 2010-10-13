@@ -145,7 +145,7 @@ class FItemsForm {
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
 					//save items
-					if($itemVO->save()>0){
+					if($itemVO->save() > 0){
 						if(!empty($data['imageUrl'])) {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
@@ -207,19 +207,8 @@ class FItemsForm {
 			FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 		}
 		if($redirect==true) {
-			//TODO: test commands
-			//	$cache = FCache::getInstance('f');
-			//$cache->invalidateGroup('eventtip');
-			//$cache->invalidateGroup('calendarlefthand');
-			//	$cache->invalidateGroup('lastBlogPost');
-			//$commandList[] = itemAdded;
-			//$cache->invalidateData('lastForumPost');
-			//if($command) {
-			//galery - lastForumPost
-			//blog - lastForumPost,lastBlogPost
-			//$commandList[] = $command;
-			//}
-			//FCommand::run($commandList);
+			
+			FCommand::run(ITEM_UPDATED,$itemVO);
 			
 			if($data['__ajaxResponse']==true) {
 				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u')); //new item
@@ -329,9 +318,8 @@ class FItemsForm {
 			$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
 
 			if(!empty($itemVO->enclosure)) {
-				//TODO: change to item image rather than fevent::flyer
-				$tpl->setVariable('IMAGEURL',FEvents::flyerUrl( $itemVO->enclosure ));
-				$tpl->setVariable('IMAGETHUMBURL',FEvents::thumbUrl( $itemVO->enclosure ));
+				$tpl->setVariable('IMAGEURL', $itemVO->detailUrl );
+				$tpl->setVariable('IMAGETHUMBURL', $itemVO->thumbUrl ));
 			}
 		}
 		return $tpl->get();

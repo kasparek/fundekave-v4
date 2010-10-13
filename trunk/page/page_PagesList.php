@@ -14,7 +14,9 @@ class page_PagesList implements iPage {
 		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
 
 		$userId = $user->userVO->userId;
-		$typeId = $user->pageVO->typeIdChild;
+		$typeId = $user->pageParam;
+		if(!empty($user->pageVO->typeIdChild)) $typeId=$user->pageVO->typeIdChild;
+		if(!isset(FLang::$TYPEID[$typeId])) $typeId='';
 		
 		//TODO: login check after click
 		//TODO: implment 'a' to create page
@@ -87,7 +89,7 @@ class page_PagesList implements iPage {
 						$tplGal->setVariable("IMGURLTHUMB",$fotoItemVO->thumbUrl);
 					}
 					$tplGal->setVariable("PAGEID",$gal->pageId);
-					$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId));
+					$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId,''));
 					$tplGal->setVariable("PAGENAME",$gal->name);
 					$tplGal->setVariable("DATELOCAL",$gal->date($gal->dateContent,'date'));
 					$tplGal->setVariable("DATEISO",$gal->date($gal->dateContent,'iso'));
