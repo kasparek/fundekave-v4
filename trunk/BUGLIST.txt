@@ -17,6 +17,11 @@ optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
+profil upload - zalozit galerii, prdet na limit, schovat si funkce, treba budu chtit limit jindy
+-tlacitko pouzit na avatar
+nefungje pridat galerii, klub, blog
+tlacitka se zobrazuji neprihlasenym - profil, pridat atd
+fuup - mezera kdyz neni checkbox, vetsi fontsize
 upload - image/profil
 vkladani kratkyho commentu do blogu zustava neprecteny
 nastaveni - category edit - remove pager
