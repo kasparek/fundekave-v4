@@ -46,7 +46,8 @@ class page_ItemDetail implements iPage {
 		 **/		 		
 		if($itemVO->typeId=='galery') {
 			$arrVars = array(
-				"IMGALT"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
+				"IMGALT"=>$itemVO->enclosure,
+				"IMGTITLE"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
 				"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
@@ -62,13 +63,11 @@ class page_ItemDetail implements iPage {
 			if(!empty($data['__ajaxResponse'])) {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
-				FAjax::addResponse('call','galeryNextUrl',$itemVO->detailUrl);
+				FAjax::addResponse('call','galeryNextUrl',$itemVO->detailUrl.','.$nextVO->detailUrl);
 				FAjax::addResponse('backButt','href',$backUri);
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
-				FAjax::addResponse('detailFoto','src',$itemVO->detailUrl);
-				FAjax::addResponse('detailFoto','alt',$itemVO->pageVO->name.' '.$itemVO->enclosure);
 				FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['INFO'])?$arrVars['INFO']:'');
@@ -82,8 +81,8 @@ class page_ItemDetail implements iPage {
 				
 		if(!empty($output)) {
 			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,array('id'=>'backButt'));
-			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>'fajaxa hash','parentClass'=>'opposite'));
-			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'fajaxa hash','parentClass'=>'opposite'));
+			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>'fajaxa hash keepscroll galerynext','parentClass'=>'opposite'));
+			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'fajaxa hash keepscroll progress','parentClass'=>'opposite'));
 			return $output;
 		} 	
 	}
