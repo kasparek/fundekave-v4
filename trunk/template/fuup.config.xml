@@ -2,26 +2,26 @@
 <Fuup>
 	<Config>
 		<Settings>
-			<Item name="settingsEnabled">1</Item>
-			<Item name="settingsOn">0</Item>
-			<Item name="autoProcess">0</Item>
-			<Item name="autoUpload">0</Item>
-			<Item name="displayContent">1</Item>
-			<Item name="crop">0</Item>
-			<Item name="multi">1</Item>
+			<Item name="settingsEnabled">{SETTINGSENABLED}</Item>
+			<Item name="settingsOn">{SETTINGSON}</Item>
+			<Item name="autoProcess">{AUTOPROCESS}</Item>
+			<Item name="autoUpload">{AUTOUPLOAD}</Item>
+			<Item name="displayContent">{DISPLAYCONTENT}</Item>
+			<Item name="crop">{CROP}</Item>
+			<Item name="multi">{MULTI}</Item>
 			<Item name="permissions">0</Item>
 			<Item name="maxSize">512000</Item>
 			<Item name="chunkSize">32768</Item>
 			<Item name="chunkLimit">4</Item>
 			<Item name="fileLimit">80</Item>
-			<Item name="imageQuality">80</Item>
-			<Item name="imageWidthMax">1600</Item>
-			<Item name="imageHeightMax">1600</Item>
-			<Item name="embedWidth">-1</Item>
-			<Item name="embedHeight">150</Item>
-			<Item name="onLoaded">fuupLoaded</Item>
-			<Item name="onUploadOneComplete">fuupUploadOneComplete</Item>
-			<Item name="onUploadComplete"></Item>
+			<Item name="imageQuality">{QUALITY}</Item>
+			<Item name="imageWidthMax">{WIDTHMAX}</Item>
+			<Item name="imageHeightMax">{HEIGHTMAX}</Item>
+			<Item name="embedWidth">{APPWIDTH}</Item>
+			<Item name="embedHeight">{APPHEIGHT}</Item>
+			<Item name="onLoaded">{ONLOADED}</Item>
+			<Item name="onUploadOneComplete">{ONONEUPLOADED}</Item>
+			<Item name="onUploadComplete">{ONUPLOADED}</Item>
 		</Settings>
 		<Services>
 			<Service name="files">{URL}</Service>

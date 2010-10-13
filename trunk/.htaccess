@@ -3,11 +3,13 @@ RewriteEngine on
 RewriteCond %{HTTP_HOST} ^www.awake33.com$
 RewriteRule (.*) http://awake33.com/$1 [R=301,QSA,L]
 
-RewriteBase /fdk5/
-#RewriteRule ^([a-zA-Z]{5}) index.php?k=$1 [QSA]
+RewriteBase /
 RewriteRule ^image/([0-9x]*)/([a-z]*)/(.*) image.php?side=$1&cut=$2&img=$3 [QSA,L]
+RewriteRule ^page-([a-zA-Z0-9]{5,6})$ index.php?k=$1 [QSA,L]
+RewriteRule ^item-([0-9]{1,8})$ index.php?i=$1 [QSA,L]
 
 RewriteRule (.*\.css)$ index.php?header_handler=css&c=$1 [L]
+RewriteRule (.*\.js)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.gif)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.jpg)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule (.*\.png)$ index.php?header_handler=1&c=$1 [L]
@@ -16,5 +18,5 @@ RewriteRule (.*\.ico)$ index.php?header_handler=1&c=$1 [L]
 RewriteRule ^pic/|pic.php.* index.php [QSA,L]
 RewriteRule ^files/|files.php.* index.php [QSA,L]
 RewriteRule ^rss/|frss.php.* index.php [QSA,L]
-RewriteRule ^crossdomain.xml index.php?cross=1 [L]
+RewriteRule ^fuup.(.*).xml index.php?fuupconfig=$1 [L]
 RewriteRule ^ca.php.* index.php [QSA,L]

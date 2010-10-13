@@ -2,18 +2,13 @@
 <input type="hidden" name="m" value="{M}"/>
 <fieldset>
 <div id="recipientcombo">
-<!-- BEGIN friendscombo -->
-<select id="recipientList" name="recipientList">
+<!-- BEGIN friendscombo --><select id="recipientList" name="recipientList">
 <option value="">-- Adresát --</option>
 <!-- BEGIN friendscombovalue --><option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option><!-- END friendscombovalue -->
-</select> 
-<!-- END friendscombo -->
+</select><!-- END friendscombo -->
 </div>
 <input type="text" id="recipient" name="recipient" value="{RECIPIENTS}" class="long"><br />
-<!-- BEGIN selectedfriend -->
-<div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div>
-<!-- END selectedfriend -->
-
+<!-- BEGIN selectedfriend --><div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div><!-- END selectedfriend -->
 <textarea name="text" id="postText" class="draftable markitup expand">{MESSAGE}</textarea><br />
 <input type="submit" name="send" value="Odeslat" class="button submit">
 <select name="saction" id="saction">
@@ -25,28 +20,22 @@
 <input id="ppinput" type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
 <input type="submit" name="special" value="Proved" class="button">
 </fieldset>
-
-<!-- BEGIN searchfilters -->
-<label>Výsledky hledání:</label><div>
+<!-- BEGIN searchfilters --><label>Výsledky hledání:</label><div>
 <!-- BEGIN searchusername --><strong>Jméno:</strong> {FILTERUSERNAME} <!-- END searchusername -->
 <!-- BEGIN searchtext --><strong>Text:</strong> {FILTERTEXT}<!-- END searchtext --> 
-<a href="{FILTRCANCELLINK}">Zrušit filtr</a></div>
-<!-- END searchfilters -->
-
+<a href="{FILTRCANCELLINK}">Zrušit filtr</a></div><!-- END searchfilters -->
 <div id="itemlist">
 <!-- BEGIN message --><div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
-  <div class="header">
-		<span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
-	  <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-	  <span class="stats">Oznacit: <input type="checkbox" name="del[]" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
-	  <!-- BEGIN unreadmess --><span class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
-	  <span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[SKINURL]]/img/comment_delete.png" title="Smazat prispevek" /></a></span>
-	</div>
-  <div class="avatar">{AVATAR}</div>
-  <div class="entry-content">{TEXT}</div>
+<div class="header">
+<span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
+<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+<span class="stats">Oznacit: <input type="checkbox" name="del[]" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
+<!-- BEGIN unreadmess --><span class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
+<span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[SKINURL]]/img/comment_delete.png" title="Smazat prispevek" /></a></span>
 </div>
-<div class="clearbox"></div><!-- END message -->
+<div class="avatar">{AVATAR}</div>
+<div class="entry-content">{TEXT}</div>
+</div><div class="clearbox"></div><!-- END message -->
 </div>
-
 <div id="pager" class="pager cleaner">{BOTTOMPAGER}</div>
 </form>

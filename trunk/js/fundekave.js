@@ -443,9 +443,15 @@ while (arr.length > 0) { var o = arr.shift(), kv = o.split(':'); data[kv[0]] = k
 /**
  * IMAGE UPLOADING TOOL HANDLERS - FUUP
  */ 
-function fuupUploadOneComplete() {
+function galeryCheck() {
 	sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));
 };
+//TODO:handle temp upload for anything - profile, flyer currently - later blog image
+function fuupUploadComplete() {
+
+}
+//TODO:refactor and discard
+/*
 function fuupUploadAvatarComplete() {
 	addXMLRequest('result', "avatarBox");
 	addXMLRequest('resultProperty', '$html');
@@ -467,6 +473,7 @@ function fuupUploadEventComplete() {
 	addXMLRequest('call', 'fajaxformInit');
 	sendAjax('item-image',gup('k',$(".fajaxform").attr('action')));	
 }
+*/
 //---IMAGE UPLOADING END
 
 /**
@@ -674,7 +681,7 @@ function datePickerInit() { if(!loadUI(datePickerInit)) return; $.datepicker.set
 //slimbox init
 function slimboxInit() { if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) { $("a[rel^='lightbox']").slimbox({overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100}, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); }); } }
 //fuup init
-function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"&f=cnf&c="+$(this).attr('id'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
+function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"fuup."+$(this).attr('id')+".xml",containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 //tabs init
 function tabsInit() { if(!loadUI(tabsInit)) return; $("#tabs").tabs(); };
 //request init

@@ -194,23 +194,50 @@ class FFile {
 	 * print config file for uploader
 	 *
 	 **/
-	static function printConfigFile($c,$pageVO) {
-		switch($c) {
-			case 'uava':
-				$tpl = FSystem::tpl('fuup.avatar.config.xml');
-				break;
-			case 'pava':
-				$tpl = FSystem::tpl('fuup.pageAvatar.config.xml');
-				break;
-			case 'tempStore':
-				$tpl = FSystem::tpl('fuup.tempStore.config.xml');
-				break;
-			default:
-				$tpl = FSystem::tpl('fuup.galery.config.xml');
-		}
-		$tpl->setVariable('URL','files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):('')));
+	static function printConfigFile($c) {
+		if(empty($c)) return;
+		$c = FSystem::safeText($c);
 		$user = FUser::getInstance();
-		$tpl->setVariable('AUTH',$user->getRemoteAuthToken());
+		if(!$user->idkontrol) return;
+		if(empty($user->pageVO)) return;
+		$pageVO = $user->pageVO;
+		$imgConf = FConf::get('image_conf');
+		$sizeOptList = explode(','$imgConf['sideOptions']);
+		$maxSize = array_pop($sizeOptList);
+		//defaults
+		$vars = array(
+		'SETTINGSENABLED'=>1
+		,'SETTINGSON'=>0
+		,'AUTOPROCESS'=>0
+		,'AUTOUPLOAD'=>0
+		,'DISPLAYCONTENT'=>1
+		,'CROP'=>0
+		,'MULTI'=>1
+		,'QUALITY'=>85
+		,'WIDTHMAX'=>$maxSize
+		,'HEIGHTMAX'=>$maxSize
+		,'APPWIDTH'=>-1
+		,'APPHEIGHT'=>25
+		,'ONLOADED'=>''
+		,'ONONEUPLOADED'=>'galeryCheck'
+		,'ONUPLOADED'=>''
+		,'URL'=>'files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):(''))
+		,'AUTH'=>$user->getRemoteAuthToken()
+		);
+		$tpl = FSystem::tpl('fuup.config.xml');
+		$tpl->setVariable($vars);
+		
+		switch($c) {
+			case 'tempStore':
+			  $vars['AUTOPROCESS']=1;
+				$vars['AUTOUPLOAD']=1;
+				$vars['DISPLAYCONTENT']=1
+				$vars['MULTI']=0;
+				$vars['APPWIDTH']=400;
+				$vars['ONONEUPLOADED']='';
+				$vars['ONUPLOADED']='fuupUploadComplete';
+				break;
+		}
 		$tpl->show();
 	}
 

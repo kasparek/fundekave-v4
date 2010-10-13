@@ -242,11 +242,10 @@ class FPages extends FDBTool {
 	/**
 	 * list of own, booked and new pages
 	 *
-	 * @param Boolean $xajax - if true return html without top div
 	 * @return hmtl String
 	 */
 	//TODO: refactor - not setselect
-	function printBookedList($xajax=false) {
+	function printBookedList() {
 		
 		$user = FUser::getInstance();
 		$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;
@@ -321,12 +320,7 @@ class FPages extends FDBTool {
 
 			}
 		
-
-		if($xajax==true) {
-			$tpl->parse('bookedcontent');
-			return $tpl->get('bookedcontent');
-		} else return $tpl->get();
-			
+		return $tpl->get();
 	}
 
 	/* AVATAR FOR PAGE */
