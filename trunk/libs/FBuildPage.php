@@ -67,7 +67,7 @@ class FBuildPage {
 		if(!empty($date)) $breadcrumbs[] = array('name'=>date(FConf::get('internationalization','date'),strtotime($date)),'url'=>FSystem::getUri('date='.$date));
 
 		//stranka
-		$breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+		if(!empty($user->pageVO->name)) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 
 		if($user->itemVO) $categoryId = $user->itemVO->categoryId;
 		if(!empty($_REQUEST['c'])) $categoryId = (int) $_REQUEST['c'];

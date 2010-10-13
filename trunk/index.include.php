@@ -97,7 +97,7 @@ if(!empty($_GET['fuupconfig'])) {
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
 
 	if( $user->idkontrol ) {
-		if(isset($_GET['f'])) $f = $_GET['f']; else $f='';
+		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
 		
 		//PARAMS
 		$isMultipart = false;
@@ -113,14 +113,13 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		$filename = $file['name'];
 
 		$ffile = new FFile(FConf::get("galery","ftpServer"));
-		
 		$ffile->storeChunk($file,$seq);
 
 		//---file complete
 		if($ffile->hasAllChunks($filename,$total) === true) {
 			//--concat all files
 			switch($f) {
-				case 'uava':
+				/*case 'uava':
 					//TODO: refactor to use tempstore
 					$user = FUser::getInstance();
 					$dir = FAvatar::profileBasePath();
@@ -132,8 +131,8 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 						FError::add(FLang::$PERSONAL_FOTO_FOLDER_FULL);
 						$imagePath = '';
 					}
-					break;
-				case 'tempStore':
+					break;   */
+				case 'tempstore':
 					//---upload in tmp folder in user folder and save filename in db cache
 					$imagePath = FFile::setTempFilename($filename);
 					$imagePath = FConf::get("galery","sourceServerBase") . $imagePath;

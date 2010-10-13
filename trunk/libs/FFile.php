@@ -206,7 +206,7 @@ class FFile {
 		$maxSize = array_pop($sizeOptList);
 		//defaults
 		$vars = array(
-		'SETTINGSENABLED'=>1
+		'SETTINGSENABLED'=>0
 		,'SETTINGSON'=>0
 		,'AUTOPROCESS'=>0
 		,'AUTOUPLOAD'=>0
@@ -224,20 +224,19 @@ class FFile {
 		,'URL'=>'files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):(''))
 		,'AUTH'=>$user->getRemoteAuthToken()
 		);
-		$tpl = FSystem::tpl('fuup.config.xml');
-		$tpl->setVariable($vars);
-		
 		switch($c) {
-			case 'tempStore':
+			case 'tempstore':
 			  $vars['AUTOPROCESS']=1;
 				$vars['AUTOUPLOAD']=1;
-				$vars['DISPLAYCONTENT']=1;
+				$vars['DISPLAYCONTENT']=0;
 				$vars['MULTI']=0;
 				$vars['APPWIDTH']=400;
 				$vars['ONONEUPLOADED']='';
 				$vars['ONUPLOADED']='fuupUploadComplete';
 				break;
 		}
+		$tpl = FSystem::tpl('fuup.config.xml');
+		$tpl->setVariable($vars);
 		$tpl->show();
 	}
 

@@ -64,7 +64,7 @@ class FSystem {
 			if(empty($pageParam)) $newPageId = '';
 		} else {
 			if( empty($pageId) && $user->itemVO ) {
-				$params[] = 'i='.$user->itemVO->itemId;
+				$params['i'] = $user->itemVO->itemId;
 				if(empty($pageParam)) $newPageId = '';
 			}
 		}
@@ -73,15 +73,43 @@ class FSystem {
 				$pageVO  = new PageVO($newPageId,true);
 				$safeName = FSystem::safetext($pageVO->name);
 			}
-			$params[] = 'k=' . $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
+			if(isset($options['name'])) $safeName = FSystem::safetext($options['name']);
+			$params['k'] = $newPageId . $pageParam . ((!empty($safeName))?('-'.$safeName):(''));
 			$params = array_reverse($params);
 		}
-		if(!empty($otherParams)) $params[] = $otherParams;
-		$parStr = '';
-		if(isset($params)) {
-			$parStr = '?'.implode('&',$params);
+		if(!empty($otherParams)) {
+			$op = explode('&',$otherParams);
+			while($p = array_shift($op)) {
+				$parr = explode('=',$p);
+				$params[$parr[0]] =$parr[1];
+			}
 		}
-		$url = BASESCRIPTNAME . $parStr . $anchor;
+		$parStr = '';
+		$script = BASESCRIPTNAME;
+		$rewrite = false;
+		if(!empty($params)) {
+			while($k = key($params)) {
+				$v = array_shift($params);
+				if($rewrite) {
+				if($k=='i') {
+					$script = 'item-'.$v.'.html';
+				} elseif($k=='k') {
+					$c='';
+					if(isset($params['c'])) {
+						$c='-category-'.$params['c'];
+						unset($params['c']);
+					}
+					$script = 'page-'.$v.$c.'.html';
+				} else {
+ 					$parStr.= $k.'='.$v.($params?'&':'');
+ 				}
+ 				} else {
+				$parStr.= $k.'='.$v.($params?'&':''); 
+				}
+			}
+			$parStr = ($parStr!=''?'?'.$parStr:'');
+		}
+		$url = $script . $parStr . $anchor;
 		return $url;
 	}
 

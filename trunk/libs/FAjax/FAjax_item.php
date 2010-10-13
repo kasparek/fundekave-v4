@@ -72,6 +72,9 @@ class FAjax_item extends FAjaxPluginBase {
 
 	}
 	
+	//TODO: default image template
+	//TODO: if for finfo then do prepend
+	//TODO: a bit different action for finfo not based on item and check for folder size
 	static function image($data) {
 		$user = FUser::getInstance();
 		if(empty($data['item'])) {
@@ -82,14 +85,14 @@ class FAjax_item extends FAjaxPluginBase {
 			$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$filename);
 			$tpl->setVariable('IMAGETHUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
 			$tpl->parse('image');
-			FAjax::addResponse($data['result'], $data['resultProperty'], $tpl->get('image'));
+			FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 		} else {
 			if($itemVO = FItemsForm::moveImage( $data )) {
 				$tpl = FSystem::tpl('events.edit.tpl.html');
 				$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->galeryDir.'/'.$itemVO->enclosure);
 				$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
 				$tpl->parse('image');
-				FAjax::addResponse($data['result'], $data['resultProperty'], $tpl->get('image'));
+				FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 			}
 		}
 	}

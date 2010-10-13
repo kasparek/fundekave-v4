@@ -49,11 +49,15 @@ class FItemsForm {
 		}
 		//no reactions to forum items
 		if($itemVO->itemIdTop > 0) {
-			$itemVOTop = new ItemVO($data['itemIdTop'],true);
-			if($itemVOTop->typeId=='forum') $itemVO->itemIdTop=null;
-			else $itemVO->pageIdTop = $itemVOTop->pageVO->pageIdTop; 
+			$itemVOTop = new ItemVO($itemVO->itemIdTop);
+			if($itemVOTop->load()) {
+				if($itemVOTop->typeId=='forum') $itemVO->itemIdTop=null;
+				else $itemVO->pageIdTop = $itemVOTop->pageVO->pageIdTop;
+			} 
 		}
-
+		
+		if(empty($itemVO->pageIdTop)) $itemVO->pageIdTop = $user->pageVO->pageIdTop;
+		
 		if($captchaCheck===false) {
 			FError::add(FLang::$ERROR_CAPTCHA);
 		}
@@ -74,6 +78,7 @@ class FItemsForm {
 		$itemVO->pageId = $user->pageVO->pageId;
 
 		if(empty($data['action'])) {
+			$data['action']='';
 			if(isset($data['filtr'])) $data['action']='search';
 		}
 
@@ -115,7 +120,7 @@ class FItemsForm {
 					if(isset($data['name'])) $data['name'] =  FSystem::textins($data['name'],array('plainText'=>1));
 					if(empty($data['name'])) $data['name'] = $user->userVO->name;
 					$data['text'] = FSystem::textins($data['text'],$user->idkontrol ? array() : array('plainText'=>1));
-					$data['textLong'] = FSystem::textins($data['textLong']);
+					if(isset($data['textLong'])) $data['textLong'] = FSystem::textins($data['textLong']);
 					if(empty($data['text']) && $itemVO->typeId=='forum') FError::add(FLang::$MESSAGE_EMPTY);
 					if(empty($data['name'])) FError::add(FLang::$MESSAGE_NAME_EMPTY);
 					elseif($user->idkontrol==false) {
@@ -211,8 +216,8 @@ class FItemsForm {
 			FCommand::run(ITEM_UPDATED,$itemVO);
 			
 			if($data['__ajaxResponse']==true) {
-				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u')); //new item
-				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
+				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u',array('short'=>1))); //new item
+				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'',array('short'=>1))); //deleted item
 			} else {
 				FHTTP::redirect(FSystem::getUri($redirectParam)); //non ajax processing
 			}
@@ -249,7 +254,7 @@ class FItemsForm {
 
 		$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
 		//GENERIC
-		$tpl->setVariable('FORMACTION',FSystem::getUri());
+		$tpl->setVariable('FORMACTION',FSystem::getUri('','',false,array('short'=>1)));
 		$tpl->setVariable('M','item-submit');
 		$tpl->setVariable('T',$itemVO->typeId);
 		if(!empty($itemVO->itemId)) $tpl->setVariable('ITEMID',$itemVO->itemId);
@@ -319,7 +324,7 @@ class FItemsForm {
 
 			if(!empty($itemVO->enclosure)) {
 				$tpl->setVariable('IMAGEURL', $itemVO->detailUrl );
-				$tpl->setVariable('IMAGETHUMBURL', $itemVO->thumbUrl ));
+				$tpl->setVariable('IMAGETHUMBURL', $itemVO->thumbUrl );
 			}
 		}
 		return $tpl->get();

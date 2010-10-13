@@ -17,6 +17,8 @@ optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
+upload - image/profil
+vkladani kratkyho commentu do blogu zustava neprecteny
 nastaveni - category edit - remove pager
 posta messages - deleting - del[] nefunguje v ajaxu
 sidebar category list

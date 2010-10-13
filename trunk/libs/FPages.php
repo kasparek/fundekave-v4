@@ -227,7 +227,7 @@ class FPages extends FDBTool {
 					  }
 				}
 				$tpl->setVariable("PAGENAME", $page->name);
-				$tpl->setVariable("URL", '?k='.$page->pageId.'-'.FSystem::safetext($page->name));
+				$tpl->setVariable("URL", FSystem::getUri('',$page->pageId,'',array('name'=>$page->name)));
 				if($user->idkontrol===true) {
 					if($page->unreaded>0) {
 						$tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
