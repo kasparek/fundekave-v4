@@ -76,9 +76,6 @@ class FCommand {
 				}
  				$unreadedList = $newList;
 		}
-		
-		$cache = FCache::getInstance('f',0);
-		$cache->invalidateGroup('itemlist'.$data->pageId);
 	}
 	
 	public static function pageUpdated($data) {
