@@ -64,15 +64,6 @@ if(isset($_GET['header_handler'])) {
 }
 
 /**
- * CROSSDOMAIN.XML
- * */
-if(isset($_GET['cross'])) {
-	header('Content-Type: text/xml');
-	echo file_get_contents(ROOT.'template/crossdomain.xml');
-	exit;
-}
-
-/**
  *
  * MAIN PAGE PROCESSING
  *
@@ -99,15 +90,15 @@ $processMain = true;
  * FILES UPLOAD PROCESSING
  *
  **/
+if($_GET['fuupconfig']) {
+  FFile::printConfigFile( $_GET['fuupconfig'] );
+	exit;
+}
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
 
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = $_GET['f']; else $f='';
-		if($f=='cnf') {
-			FFile::printConfigFile( $_GET['c'], $pageVO );
-			exit;
-		}
-
+		
 		//PARAMS
 		$isMultipart = false;
 		$seq = (int)  $_POST['seq'];
@@ -130,6 +121,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			//--concat all files
 			switch($f) {
 				case 'uava':
+					//TODO: refactor to use tempstore
 					$user = FUser::getInstance();
 					$dir = FAvatar::profileBasePath();
 					$folderSize = FFile::folderSize($dir) / 1024;

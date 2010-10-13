@@ -1,4 +1,3 @@
-<!-- BEGIN pagelist -->
 <form action="{LISTFORMACTION}" method="post">
 <fieldset>
 <select name="type"><option value="0"> -- typ -- </option>{TYPEOPTIONS}</select> 
@@ -11,19 +10,8 @@
 <label for="search">Vyhledavani</label><input type="text" name="sear" value="{SEARCH}" id="search" />   
 <input type="submit" name="nav" value="Nastavit / Uložit" />
 </fieldset>
-
 <table>
-  <!-- BEGIN result -->
-  <tr>
-  <td>{LNAME}</td>
-  <td><a href="?k={LPAGEID}">Na stranku</a></td>
-  <td><a href="?k={LEDITLINK}">Nastaveni</a></td>
-  <td><input type="hidden" name="pcato[{LPAGEID}]" value="{LCATEGORYID}" />
-  		<select name="pcatn[{LPAGEID}].']"><option value="0"></option>{LCATOPTIONS}</select></td>
-  <td>{LLOCKED}</td>
-  </tr>
-<!-- END result -->	
+<!-- BEGIN result --><tr><td>{LNAME}</td><td><a href="?k={LPAGEID}">Na stranku</a></td><td><a href="?k={LEDITLINK}">Nastaveni</a></td><td><input type="hidden" name="pcato[{LPAGEID}]" value="{LCATEGORYID}" /><select name="pcatn[{LPAGEID}]"><option value="0"></option>{LCATOPTIONS}</select></td><td>{LLOCKED}</td></tr><!-- END result -->	
 </table>
 </form>
-<!-- BEGIN pager -->{PAGER}<!-- END pager -->
-<!-- END pagelist -->
+{PAGER}

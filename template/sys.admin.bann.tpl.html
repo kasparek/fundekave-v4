@@ -1,6 +1,4 @@
-<p>
-Celkem uživatelu: <strong>{TOTALITEMS}</strong>
-</p>
+<p>Celkem uživatelu: <strong>{TOTALITEMS}</strong></p>
 <form action="" method="post">
 <fieldset>
 <legend>Filtrovat</legend>
@@ -14,32 +12,11 @@ Celkem uživatelu: <strong>{TOTALITEMS}</strong>
 </select> 
 <input type="submit" name="nav" value="Nastavit" class="button" />
 </fieldset>
-
-<table>
-<tr>
-<th>ID</th>
-<th>Username</th>
-<th>Registrace</th>
-<th>Posledni</th>
-<th>Gen.str.</th>
-<th>Zablokovat</th>
-<th>Online</th>
-</tr>
-  <!-- BEGIN user -->
-  <tr>
-	<td>{ID}</td>
-	<td><a href="{URL}">{NAME}</td>
-	<td>{CREATED}</td>
-	<td>{UPDATED}</td>
-	<td>{HIT}</td>
-	<td><select name="usersstat[{ID}]">
-	<option value="0"<!-- BEGIN userlocked0 --> selected="selected"<!-- END userlocked0 -->>Aktivní</option>
-	<option value="1"<!-- BEGIN userlocked1 --> selected="selected"<!-- END userlocked1 -->>Vypnutý</option>
-	</select>
-	</td>
-	<td><!-- BEGIN online --><a href="{DISCONNECTURL}">Odstrelit</a> - {IP}<!-- END online --></td>
-	</tr>
-  <!-- END user -->
+<table><tr><th>ID</th><th>Username</th><th>Registrace</th><th>Posledni</th><th>Gen.str.</th><th>Zablokovat</th><th>Online</th></tr>
+<!-- BEGIN user --><tr><td>{ID}</td><td><a href="{URL}">{NAME}</td><td>{CREATED}</td><td>{UPDATED}</td><td>{HIT}</td>
+<td><select name="usersstat[{ID}]"><option value="0"<!-- BEGIN userlocked0 --> selected="selected"<!-- END userlocked0 -->>Aktivní</option><option value="1"<!-- BEGIN userlocked1 --> selected="selected"<!-- END userlocked1 -->>Vypnutý</option></select></td>
+<td><!-- BEGIN online --><a href="{DISCONNECTURL}">Odstrelit</a> - {IP}<!-- END online --></td>
+</tr><!-- END user -->
 </table>
 </form>
-<!-- BEGIN pager -->{PAGER}<!-- END pager -->
+{PAGER}

@@ -1,18 +1,5 @@
 <fieldset><legend>{HEADERLABEL}</legend>
-<label>{SELECTLABEL}</label><select id="accessSel" name="{SELECTNAME}" onChange="setRules();">{SELECTOPTIONS}</select><br />
-<!-- BEGIN rules -->
-<div id="rule{RULESNUM}"><label for="permArea{RULESNUM}">{RULESNAME}</label><textarea id="permArea{RULESNUM}" name="{INPUTNAME}">{RULESCONTENT}</textarea></div>
-<!-- END rules -->
+<label>{SELECTLABEL}</label><select id="accessSel" name="{SELECTNAME}">{SELECTOPTIONS}</select><br />
+<!-- BEGIN rules --><div id="rule{RULESNUM}"><label for="permArea{RULESNUM}">{RULESNAME}</label><textarea id="permArea{RULESNUM}" name="{INPUTNAME}">{RULESCONTENT}</textarea></div><!-- END rules -->
 <label>{HELPLABEL}</label>{HELPTEXT}<br />
 </fieldset>
-<script type="text/javascript">
-
-	function setRules() {
-	   var display = 'none';
-	   var accessSel = document.getElementById('accessSel');
-	   if(accessSel.options[accessSel.selectedIndex].value==0) { display = 'block'; }
-	   document.getElementById('rule1').style.display = display;
-	}
-	setRules();
-
-</script>

@@ -198,7 +198,6 @@ class FCategory extends FDBTool {
 		$total = $this->getCount();
 
 		$tpl = FSystem::tpl($this->template);
-		$tpl->setCurrentBlock("kateg");
 
 		$addToUrl = $rediraddon;
 		if($total > $this->perpage) {

@@ -12,13 +12,4 @@ class FAjax_pages extends FAjaxPluginBase {
 		
 		FAjax::addResponse('bookButt','$html',$data);
 	}
-
-	static function booked($data) {
-		$user = FUser::getInstance();
-		if($user->$userVO->isFriend($data['user'])) $user->whoIs = $data['user'];
-		$fPages = new FPages($typeId,$user->$userVO->userId);
-		
-		FAjax::addResponse('bookedContent','$html',$fPages->printBookedList(true));
-	}
-
 }
