@@ -17,7 +17,7 @@ div#pageholder {position: relative;left: 0px;font-size:0.88em;}
 input {font-size: 1em; }
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
-div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;}
+div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.2em;}
 div#header, div#footer{clear:both;margin-left: 0px;min-width: 750px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
