@@ -35,42 +35,48 @@ messageCheckTimeout = setTimeout(messageCheck,5000);
 /**
  * FULLSCREEN
  */
-function galeryNextUrl(url) {
-if(!url) {
-return;
+var galeryNextReady;
+var galeryNextFading;
+function galeryNext() {
+	if(galeryNextReady) {
+		galeryNextFading=galeryNextReady;
+		galeryNextReady=null;
+		$(".showProgress").css('height',$(".showProgress").height());
+		$('#detailFoto').fadeOut('fast',function(){
+			$(this).replaceWith(galeryNextFading);
+			$(galeryNextFading).attr('id','detailFoto').fadeIn('fast',function(){$(".showProgress").css('height','auto');}).css('display','inline');
+			if(fullscreenState) onGaleryFullscreenImageLoaded();
+			galeryNextFading = null;
+			nextSlide();
+		});
+	} else {
+		//show progress bar
+		var prgrsBar=$(".showProgress");
+		prgrsBar.addClass('lbLoading').css('height',prgrsBar.height()+'px').css("marginLeft","auto").css("marginRight","auto").children().fadeOut('fast');
+	}
+}
+function galeryNextUrl(currentUrl,nextUrl) {
+if(!currentUrl) return;
+if(!galeryNextFading) { //currentUrl != $(galeryNextReady).attr('src')) {
+//start loading first image
+$("#detailFoto").load(function(){
+	$(".showProgress").removeClass('lbLoading').css('height','auto');
+	$("#detailFoto").css('display','inline').fadeIn();
+	if(scrollTop>0) $(window).scrollTop(scrollTop);
+	if(fullscreenState) onGaleryFullscreenImageLoaded();
+	nextSlide();
+}).attr('src',currentUrl);
+}
+if(!nextUrl) return;
+//load next image
+$.get(nextUrl, function(data) {
+var img = new Image();
+$(img).hide().load(function () {galeryNextReady = this;}).attr('src', nextUrl);});
 }
 
-$.get(url, function(data) {
-  
- // alert('Load was performed.');
- //TODO: ready for fade
- 
- 
- var img = new Image();
-  
-  
-  $(img).hide().load(function () {
-      // set the image hidden by default    
-      $(this).hide();
-    
-      // with the holding div #loader, apply:
-      $('#loader')
-        // remove the loading class (so no background spinner), 
-        .removeClass('loading')
-        // then insert our image
-        .append(this);
-    
-      // fade our image in to create a nice effect
-      $(this).fadeIn();
-    }).error(function () {}).attr('src', url);
-  
-});
 
-}
-
-
-var fullscreenState = {};
-function fullscreen(div,next,prev) {
+var fullscreenState;
+function fullscreen(div) {
 if(!div && !fullscreenState.element) return;
 if(!div) div = fullscreenState.element;
 if (!div.hasClass('fullscreen')) { // Going fullscreen:
@@ -86,6 +92,7 @@ else div.insertBefore(fullscreenState.parentElement.children().get(fullscreenSta
 $('body').css('overflow', 'auto');
 window.scroll(fullscreenState.x, fullscreenState.y);
 $(document.documentElement).unbind('keyup',fullscreenKeypress);
+fullscreenState=null;
 }
 }
 function fullscreenInit() {
@@ -99,7 +106,7 @@ $('body').append('<div id="fullscreenToolbar">'
 +'<a href="#" id="fullscreenSlideshow">Slideshow</a>'
 +'<a href="#" id="fullscreenNext">Next</a>'
 +'</div>');
-$('#detailFoto').bind('load',onGaleryFullscreenImageLoaded).load();
+//$('#detailFoto').bind('load',onGaleryFullscreenImageLoaded).load();
 $("#fullscreenLeave").click(function(event){	event.preventDefault(); leaveFullscreen(); return false; });
 $("#fullscreenPrevious").click(function(event){	$("#prevButt").click(); return false; });
 $("#fullscreenNext").click(function(event){	$("#nextButt").click(); return false; });
@@ -107,18 +114,19 @@ $("#fullscreenSlideshow").click(function(event){ $(this).toggleClass('fullscreen
 fullscreen($('#fullscreenBox'));
 $("#fullscreenToolbar").fadeTo("slow", 0.3).hover(function(){ $(this).fadeTo("slow", 1.0); },function(){ $(this).fadeTo("slow", 0.2); });
 $(window).bind('resize',onFullscreenResize);
+if(fullscreenState) onGaleryFullscreenImageLoaded();
 return false;
 }
 var isSlideShow=false;
 var slideShowTimeout;
 var slideShowTimer=5;
 function nextSlide() {
-if(!isSlideShow) { if(slideShowTimeout) clearTimeout(slideShowTimeout); return; }
-setTimeout(function(){$("#nextButt").click();},5*1000);
+if(slideShowTimeout) clearTimeout(slideShowTimeout);
+if(isSlideShow) slideShowTimeout=setTimeout(function(){$("#nextButt").click();},5*1000);
 }
-function onFullscreenResize() { $('#detailFoto').load(); }
+function onFullscreenResize() { if(fullscreenState) onGaleryFullscreenImageLoaded(); }
 function fullscreenKeypress(event) { if(event.keyCode==27) { leaveFullscreen(); } if(event.keyCode==32) { $("#nextButt").click(); } }
-function onGaleryFullscreenImageLoaded() { var img = $(this),ww=$(window).width()*0.9,wh = $(window).height()*0.9; img.css('width','auto').css('height','auto'); var iw = img.width(),ih=img.height(), tw = ww, th = ih * ww / iw; if (th - wh > 1) { iw = 'auto'; ih = wh; } else { iw = tw; ih = 'auto'; } img.css('width',iw).css('height',ih).css('margin-top',(($(window).height()-img.height())/2)+'px'); nextSlide(); }
+function onGaleryFullscreenImageLoaded() { var img = $("#detailFoto"),ww=$(window).width()*0.9,wh = $(window).height()*0.9; img.css('width','auto').css('height','auto'); var iw = img.width(),ih=img.height(), tw = ww, th = ih * ww / iw; if (th - wh > 1) { iw = 'auto'; ih = wh; } else { iw = tw; ih = 'auto'; } img.css('width',iw).css('height',ih).css('margin-top',(($(window).height()-img.height())/2)+'px'); }
 function leaveFullscreen() { isSlideShow=false;$(window).unbind('resize',onFullscreenResize); $('#detailFoto').css('width','auto').css('height','auto').css('margin-top','auto').unbind('load',onGaleryFullscreenImageLoaded); $('#fullscreenToolbar').remove(); fullscreen(); return false; }
 /**
  * GOOGLE MAPS
@@ -503,6 +511,7 @@ return false;
 }
 var scrollTop;
 function fajaxaSend(event) {
+	scrollTop=null
 	event.preventDefault();
 	if($(event.currentTarget).hasClass('confirm')) {
 		if(!confirm($(event.currentTarget).attr("title"))) return;
@@ -511,6 +520,11 @@ function fajaxaSend(event) {
 	if(!k) k = 0;
 	var action = m+'/'+gup('d',this.href)+'/'+k;
 	if(id) { action += '/'+id; } 
+	if($(this).hasClass('keepScroll')) scrollTop = $(window).scrollTop();
+	if($(this).hasClass('progress')) {
+		var prgrsBar=$(".showProgress");
+		prgrsBar.addClass('lbLoading').css('height',prgrsBar.height()+'px').css("marginLeft","auto").css("marginRight","auto").children().fadeOut('fast');
+	}
 	if($(this).hasClass('hash')) { document.location.hash = action;	return;	}
 	fajaxaAction(action);
 	return false;
@@ -519,13 +533,6 @@ function fajaxaAction(action) {//action = m/d/k|0/linkElId
 	actionList = action.split('/');
 	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],result = false, resultProperty = false;
 	if(k==0) k=null;
-	var img=$("#detailFoto"),prgrsBar=$(".showProgress");
-	scrollTop=null;
-	if(prgrsBar.length>0) {
-		scrollTop = $(window).scrollTop();
-		prgrsBar.addClass('lbLoading').css('height',img.height()+'px').css("marginLeft","auto").css("marginRight","auto");
-		img.hide().bind('load',onImgLoaded);
-	}
 	if(d) { 
 		var arr = d.split(';');
 		while (arr.length > 0) {
@@ -541,11 +548,6 @@ function fajaxaAction(action) {//action = m/d/k|0/linkElId
 		if (resultProperty == false) addXMLRequest('resultProperty', '$html');
 	}
 	sendAjax(m,k);
-};
-function onImgLoaded() {
-	$(".showProgress").removeClass('lbLoading').css('height','auto');
-	$("#detailFoto").fadeIn().unbind('load',onImgLoaded);
-	if(scrollTop>0) $(window).scrollTop(scrollTop);
 };
 //---AJAX LINK END
 
@@ -672,7 +674,7 @@ function datePickerInit() { if(!loadUI(datePickerInit)) return; $.datepicker.set
 //slimbox init
 function slimboxInit() { if (!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)) { $("a[rel^='lightbox']").slimbox({overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100}, null, function(el) { return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); }); } }
 //fuup init
-function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"|f=cnf|c="+$(this).attr('id'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
+function fuupInit() { if(!getScript('http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js', fuupInit)) return; $(".fuup").each(function(i){ swfobject.embedSWF(ASSETS_URL+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", ASSETS_URL+"expressInstall.swf", {file:ASSETS_URL+"Fuup.swf",config:"files.php?k="+gup('k',$(".fajaxform").attr('action'))+"&f=cnf&c="+$(this).attr('id'),containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }
 //tabs init
 function tabsInit() { if(!loadUI(tabsInit)) return; $("#tabs").tabs(); };
 //request init
@@ -680,7 +682,7 @@ function friendRequestInit() { $('#friendrequest').show('slow'); fajaxformInit()
 //ajax form init
 function fajaxformInit(event) { if($(".fajaxform").length>0) { setListeners('button', 'click', onFajaxformButton); } };
 //ajax link init
-function fajaxaInit(event) { setListeners('fajaxa', 'click', fajaxaSend); };
+function fajaxaInit(event) { setListeners('fajaxa', 'click', fajaxaSend); setListeners('galerynext','click',galeryNext); };
 function fconfirmInit(event) { $('.confirm').each(function(){ var fajaxaformParent=false; if(this.form) fajaxaformParent = $(this.form).hasClass('fajaxform'); if(!$(this).hasClass('fajaxa') && !fajaxaformParent) { $(this).bind('click',onConfirm); } }); };
 function onConfirm(e) {	if(!confirm($(e.currentTarget).attr("title"))) { preventAjax = true; e.preventDefault();	} };
 //simple functions

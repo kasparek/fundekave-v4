@@ -7,7 +7,7 @@ define("PAGE_UPDATED","actionPageUpdated");
 define("RSS_UPDATED","actionRSSUpdated");
 
 //map commands
-FCommand::register(ITEM_UPDATED,'itemUpdate');
+FCommand::register(ITEM_UPDATED,'itemUpdated');
 FCommand::register(ITEM_UPDATED,'flushCache');
 FCommand::register(PAGE_UPDATED,'pageUpdated');
 FCommand::register(PAGE_UPDATED,'flushCache');
