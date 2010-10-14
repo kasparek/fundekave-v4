@@ -185,6 +185,7 @@ div.mainpanel-content div.hentry div.entry-content {padding-top: 0.5em;line-heig
 div.mainpanel-content div.hentry div.withCommented {margin-right: 250px;}
 div.mainpanel-content div.hentry div.textLong {margin-top: 20px;}
 div.mainpanel-content div.hentry div.entry-content img {max-width: 680px;}
+div#messageBox div.entry-content { padding: 0 50px; }
 
 /* GALERY */
 div.galleryList div.thumbnail {float: left;margin-right: 15px;padding-top: 0;margin-top: -5px;}

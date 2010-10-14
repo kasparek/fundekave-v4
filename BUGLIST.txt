@@ -17,6 +17,18 @@ optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
+posta - perpage input nemizi
+posta - kdyz se zmeni perpage zdvoji to vsechno - vyzkouset co dela mazani a hledani
+-osobni profil galerie - bude se hodit
+	-nahravani po jedny
+	-renderer - geo zemekoule na detail, smazat ikona, pouzit jako avatar - custom renderer
+
+- add gmaps location to 
+-foto - icon + map in detail
+-event - like blog
+-forum - location like blog
+-page - v zahlavi
+                       $('input[name="list[]"]:checked').pluck('value')
 drop draft manualy
 profil upload - zalozit galerii, prdet na limit, schovat si funkce, treba budu chtit limit jindy
 -tlacitko pouzit na avatar

@@ -179,40 +179,29 @@ if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_UR
 }
 
 if($processMain===true) {
-
 	//---process ajax requests - or alternative POST requests
 	if(isset($_REQUEST['m'])) {
-		if(isset($_REQUEST['d'])) {
-			$data = $_REQUEST['d'];
-		}
+		if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
 		if(strpos($_REQUEST['m'],'-x')!==false) {
 			if(empty($data)) {
-				if(!empty($HTTP_RAW_POST_DATA)) {
-					$data = $HTTP_RAW_POST_DATA;
-				} else {
-					FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
-				}
-			} else {
-				if(strpos($data,'<')===false) {
-					$data = base64_decode($data);
-					$data = urldecode($data);
-				}
-			}
+				if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
+				else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
+			} elseif(strpos($data,'<')===false) $data = urldecode(base64_decode($data));
 		}
-		if(empty($data)) {
-			$data = $_POST;
-		}
-		FAjax::process( $_REQUEST['m'], $data );
+		if(empty($data)) $data = $_POST; //handling post if not ajax
+		$options = array();
+		if(!empty($_FILES)) $options['data']['__files'] = $_FILES;
+		if(!empty($_GET)) $options['data']['__get'] = $_GET;
+		FAjax::process( $_REQUEST['m'], $data, $options );
+		FProfiler::write('FAJAX PROCESSED DONE');
 	}
-
-	FProfiler::write('FAJAX PROCESSED DONE');
 
 	//---process post/get for page
 	$data = $_POST;
-	if(!empty($_FILES))  $data['__files'] = $_FILES;
-	if(!empty($_GET))  $data['__get'] = $_GET;
+	if(!empty($_FILES)) $data['__files'] = $_FILES;
+	if(!empty($_GET)) $data['__get'] = $_GET;
+	foreach($data as $k=>$v)if(($pos = strpos($k,'-'))!==false) $data[substr($k,0,$pos)][]=$v;
 	FBuildPage::process( $data );
-
 	FProfiler::write('PAGE PROCESS DONE');
 
 	//---shows message that page is locked

@@ -21,7 +21,7 @@ class FAjax {
 		return self::$instance;
 	}
 
-	static function process($actionStr,$data) {
+	static function process($actionStr,$data, $options=array()) {
 		$arr = explode('-',$actionStr);
 		$mod = $arr[0];
 		$action = $arr[1];
@@ -65,7 +65,10 @@ class FAjax {
 			}
 			$dataProcessed['__ajaxResponse'] = false;
 		}
-
+		
+    foreach($dataProcessed as $k=>$v)if(($pos = strpos($k,'-'))!==false) $dataProcessed[substr($k,0,$pos)][]=$v;
+    if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
+    
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
 

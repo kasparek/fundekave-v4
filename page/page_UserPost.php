@@ -15,6 +15,7 @@ include_once('iPage.php');
 class page_UserPost implements iPage {
 
 	static function process($data) {
+	
 		$redirect = false;
 		$redirParam = '';
 		$user = FUser::getInstance();
@@ -68,13 +69,13 @@ class page_UserPost implements iPage {
 				break;
 				case 'delete':
 				case 'deletebetween':
-				if(empty($data["del"])) break;  
-				if($saction=='deletebetween' && count($data["del"]) > 1) {
+				if(empty($data["del"])) break;
+				if($data['saction']=='deletebetween' && count($data["del"]) > 1) {
 					$displayedMsgs = &$cache->getPointer('displayedMsgs');
 					if(empty($displayedMsgs)) break;
-					$firstIndex = array_search($first,$data["del"][0]);
-					$len = array_search($last,$data["del"][(count($data["del"])-1)]) - $firstIndex;
-					$data["del"] = array_slice($displayedMsgs, $firstIndex, $len); 
+					$firstIndex = array_search($data["del"][0],$displayedMsgs);
+					$len = array_search($data["del"][(count($data["del"])-1)],$displayedMsgs) - $firstIndex;
+					$data["del"] = array_slice($displayedMsgs, $firstIndex, $len);
 					$displayedMsgs = null;
 				}
 				FMessages::delete($data["del"]);

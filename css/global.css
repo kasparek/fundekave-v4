@@ -70,6 +70,8 @@
 /* GOOGLE MAPS styles */
 .mapSmall {float: right;clear: right;}
 .mapLarge {width: 100%;height: 600px;}
+.geoInfo {width:300px;}
+.mapsData {display:none;}
 .fullscreen {
   display: block;
   position: absolute;
