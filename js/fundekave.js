@@ -602,7 +602,7 @@ function userInit() {
 	});
 	//galery edit	
 	fotoTotal = $("#fotoTotal").text(); if(fotoTotal > 0 && $('#fotoList').length>0) galeryLoadThumb();
-	messageCheck();
+	if(MESSCHECKING) messageCheck();
 }
 //all users initialization 
 $(function (){

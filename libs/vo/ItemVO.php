@@ -189,29 +189,27 @@ class ItemVO extends Fvob {
 	function save() {
 		$vo = new FDBvo( $this );
 		$vo->resetIgnore();
-		$creating = false;
+		
 			
 		if($this->itemId > 0) {
 			//---update
 			if($this->saveOnlyChanged===false) {
 				$vo->addIgnore('dateCreated');
 			}
-			
+			$vo->save();
 		} else {
 			//---insert
-			
 			if(empty($this->dateCreated)) {
 				$this->dateCreated = 'now()';
 				$vo->notQuote('dateCreated');
 			}
+			$vo->save();
 			
 			if($this->itemIdTop > 0) {
-					
 				$itemTop = new ItemVO( $this->itemIdTop );
 				$itemTop->saveOnlyChanged = true;
 				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'")+1);
 				$itemTop->save();
-					
 				FPages::cntSet( $this->pageId, 0 );
 			} else {
 				FPages::cntSet( $this->pageId, 1 );
@@ -220,21 +218,12 @@ class ItemVO extends Fvob {
 			$this->itemList = null;
 			$cache = FCache::getInstance('f');
 			$cache->invalidateData($this->pageId, 'fitGrp');
-				
-			$creating = true;
 		}
-		
-		$itemId = $vo->save();
-
 		//---update in cache
 		$this->memFlush();
-			
-		if( empty($this->itemIdTop) && !empty($this->pageId) ) {
-			$this->updateItemIdLast();
-		}
-
+		if( empty($this->itemIdTop) && !empty($this->pageId) ) $this->updateItemIdLast();
 		FCommand::run(ITEM_UPDATED,$this);
-		return $itemId;
+		return $this->itemId;
 	}
 
 	/**

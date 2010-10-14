@@ -161,10 +161,11 @@ class PageVO extends Fvob {
 	 **/
 	function updateReaded($userId) {
 		if(empty($userId)) return;
+		$this->cnt = FDBTool::getOne("select cnt from sys_pages where pageId='".$this->pageId."'");
 		if($this->cnt==0) return;
-		$q = "insert delayed into sys_pages_favorites
-			values ('".$userId."','".$this->pageId."',(select cnt from sys_pages where pageId='".$this->pageId."'),'0')
-			on duplicate key update cnt=(select cnt from sys_pages where pageId='".$this->pageId."')";
+		$q = "insert into sys_pages_favorites
+			values ('".$userId."','".$this->pageId."','".$this->cnt."','0')
+			on duplicate key update cnt='".$this->cnt."'";
 		FDBTool::query($q);
 		$this->unreaded = 0;
 	}
