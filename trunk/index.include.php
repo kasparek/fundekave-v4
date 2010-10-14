@@ -41,7 +41,8 @@ if(isset($_GET['header_handler'])) {
 		$data .= str_replace('url(','url(css/skin/'.str_replace('.css','',$c).'/',fread($fp,filesize($filename)));
 		fclose($fp);
 		//remove comments	                                
-		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data); 
+		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
+		$data = preg_replace('/\s\s+/', ' ', $data); 
 	}
 	
 	if(empty($data) && !file_exists($c)) {

@@ -382,8 +382,7 @@ class FBuildPage {
 		$data = FSystem::superVars($data);
 		
 		//$data = preg_replace('/\s\s+/', ' ', $data);
-		$data = str_replace("\t", '', $data);
-				
+						
 		echo $data;
 	}
 }
