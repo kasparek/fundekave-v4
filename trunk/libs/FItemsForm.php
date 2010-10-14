@@ -218,9 +218,7 @@ class FItemsForm {
 			FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 		}
 		if($redirect==true) {
-
 			FCommand::run(ITEM_UPDATED,$itemVO);
-
 			if($data['__ajaxResponse']==true) {
 				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u',array('short'=>1))); //new item
 				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'',array('short'=>1))); //deleted item

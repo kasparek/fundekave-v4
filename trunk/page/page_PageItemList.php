@@ -45,7 +45,7 @@ class page_PageItemList implements iPage {
 			$unreadedCnt = FItems::cacheUnreadedList();
 			if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) $pageVO->perPage($unreadedCnt + 3);
 		}
-
+		
 		//---DEEPLINKING for forum pages
 		$manualCurrentPage = 0;
 		if(!empty($itemVO)) {
@@ -59,8 +59,6 @@ class page_PageItemList implements iPage {
 		$touchedBlocks = array();
 		$vars = array();
 		$itemId = 0;
-			
-
 
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
@@ -76,7 +74,6 @@ class page_PageItemList implements iPage {
 			$pagerOptions['bannvars']=array('i');
 		}
 		$pagerOptions['extraVars']=$arrPagerExtraVars;
-
 
 		/**
 		 *FORM FOR EDIT ITEM
@@ -233,9 +230,9 @@ class page_PageItemList implements iPage {
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 
 		$uid = $fItems->getUID($from, $perPage+1);
-		$grpid = 'itemlist'.($pageVO->typeId!='top'?$pageVO->typeId:'');
+		$grpid = 'itemlist'.($pageVO->typeId!='top'?$pageVO->pageId:'');
 		$cache = FCache::getInstance('f');
-		$data = $cache->getData($uid,'itemlist');
+		$data = $cache->getData($uid,$grpid);
 
 		if($data===false) {
 			$fItems->getList($from, $perPage+1);
@@ -288,17 +285,22 @@ class page_PageItemList implements iPage {
 					$itemPrev = $itemVO;
 					$itemIdTopPrev = $itemVO->itemIdTop;
 					$pageIdPrev = $itemVO->pageId;
-					$readed[] = $itemVO->itemId;
+					if($itemVO->isUnreaded) {
+						$readed[] = $itemVO->itemId;
+					}
 
 					if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 				}
-				FCommand::run(ITEM_READED,$readed);
 				$vars['ITEMS'] = $fItems->show();
 			} else {
 				if(!empty($writePerm)) $touchedBlocks[]='feedempty';
 			}
 			$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
-			$cache->setData($data,$uid,'itemlist');
+			if(!empty($readed)) {
+				FCommand::run(ITEM_READED,$readed);
+			} else {
+				$cache->setData($data,$uid,$grpid);
+			}
 		}
 		return $data;
 	}

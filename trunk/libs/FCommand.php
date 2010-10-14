@@ -55,6 +55,9 @@ class FCommand {
 
 	//COMMANDS
 	public static function itemUpdated($data) {
+		$cache = FCache::getInstance( 's' );
+		$unreadedList = &$cache->getPointer('unreadedItems');
+		$unreadedList=array();
 		$cache = FCache::getInstance('f');
 		$cache->invalidateData($data->itemId,'renderedItem');
 		$cache->invalidateData($data->itemId.'detail','renderedItem');
@@ -76,6 +79,10 @@ class FCommand {
 				}
  				$unreadedList = $newList;
 		}
+		
+		$user= FUser::getInstance();
+		$cache = FCache::getInstance('f');
+		$cache->invalidateGroup('itemlist'.$user->pageVO->pageId);
 	}
 	
 	public static function pageUpdated($data) {

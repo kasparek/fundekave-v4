@@ -241,8 +241,9 @@ class FItems extends FDBTool {
 		$unreadedCnt = 0;
 		$user = FUser::getInstance();
 		if($user->idkontrol==false) return 0;
-		if(empty($user->itemVO)) $unreadedNum = $user->pageVO->unreaded;
-		else $unreadedNum = $user->itemVO->unreaded;
+		if(empty($user->itemVO)) {
+			$unreadedNum = $user->pageVO->unreaded;
+		} else $unreadedNum = $user->itemVO->unreaded;
 		if(empty($unreadedNum)) return 0;
 		//TODO: optimize this for blog (not published items)
 		$itemId = 0;
