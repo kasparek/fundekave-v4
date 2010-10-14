@@ -17,14 +17,22 @@ class page_PagesList implements iPage {
 		$typeId = $user->pageParam;
 		if(!empty($user->pageVO->typeIdChild)) $typeId=$user->pageVO->typeIdChild;
 		if(!isset(FLang::$TYPEID[$typeId])) $typeId='';
-		
+
 		//TODO: login check after click
 		//TODO: implment 'a' to create page
-		if($typeId!='galery') {
-    	FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
-			FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);
+		if($user->idkontrol) {
+			
+			if($user->pageParam=='a') {
+				page_PageEdit::build($data);
+				return;
+			}
+			
+			if($typeId!='galery') {
+				FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
+				FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);
+			}
+			FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 		}
-		FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 
 		//---QUERY RESULTS
 		$fPages = new FPages($typeId, $userId);

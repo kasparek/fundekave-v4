@@ -14,6 +14,7 @@ class Fvob {
 	var $properties = array();
 
 	//---watcher
+	public $forceInsert = false;
 	public $saveIgnore = array();
 	public $saveOnlyChanged = false;
 	public $changed = false;
@@ -99,12 +100,13 @@ class Fvob {
 	function save(){
 		$vo = new FDBvo( $this );
 		if(!empty($this->saveIgnore)) foreach($this->saveIgnore as $col) $vo->addIgnore($col);
-		if(!empty($this->{$this->primaryCol})) {
+		if($this->forceInsert===false && !empty($this->{$this->primaryCol})) {
 			$this->dateUpdated = 'now()';
 			$vo->notQuote('dateUpdated');
 			$vo->addIgnore('dateCreated');
 			$vo->forceInsert = false;
 		} else {
+			$this->forceInsert=false;
 			$vo->forceInsert = true;
 			$this->dateCreated = 'now()';
 			$vo->notQuote('dateCreated');

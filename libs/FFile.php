@@ -6,11 +6,11 @@ class FFile {
 	var $ftpUser;
 	var $ftpPass;
 	var $ftpDir='.';
-	
+
 	var $numModified=0;
 
 	/**
-	 * 
+	 *
 	 * @param String $ftpServer - user:password@ftpserverUrl
 	 * @return void
 	 */
@@ -24,6 +24,7 @@ class FFile {
 			$this->ftpPass = $user[1];
 			$this->ftpConn = ftp_connect($this->ftpServer);
 			ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
+			ftp_pasv($this->ftpConn, true);
 		}
 	}
 
@@ -35,18 +36,17 @@ class FFile {
 
 	function file_exists($filename) {
 		if(!$this->isFtpMode) return file_exists($filename);
-		if(strpos($filename,'/')!==false) {
-			$f = explode('/',$filename);
-			$filename = array_pop($f);
+		if(ftp_chdir($this->ftpConn, $filename)) {
+			ftp_chdir($this->ftpConn, '/');
+			return true;
 		}
-		$list = $this->fileList(implode('/',$f));
-		return in_array($filename,$list);
+		return false;
 	}
 
 	function is_file($filename) {
 		if(!$this->isFtpMode) return is_file($filename);
-		if (ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, '..');
+		if(ftp_chdir($this->ftpConn, $filename)) {
+			ftp_chdir($this->ftpConn, '/');
 			return false;
 		} else {
 			return true;
@@ -64,9 +64,8 @@ class FFile {
 		if(ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, $current);
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	function is_link($filename) {
@@ -85,9 +84,25 @@ class FFile {
 	}
 
 	function mkdir($filename, $mode=0777, $recursive=true) {
-		if(!$this->isFtpMode) return mkdir($filename, $mode, $recursive);	
-		//TODO:do recursive create
-		return ftp_mkdir($this->ftpConn, $filename);
+		if(!$this->isFtpMode) return mkdir($filename, $mode, $recursive);
+		
+		$dir=explode("/", $filename);
+		if(empty($dir[0])) array_shift($dir);
+		$path = "";
+		$ret = true;
+		for ($i=0;$i<count($dir);$i++) {
+			$path.="/".$dir[$i];
+			if(!$this->file_exists($path)) {
+				if(!ftp_mkdir($this->ftpConn,$path)) {
+					$ret=false;
+					break;
+				} else {
+					FError::write_log('FFile::mkdir - '.$filename);
+					ftp_chmod($this->ftpConn, $mode, $path);
+				}
+			}
+		}
+		return $ret;
 	}
 
 	function rmdir($filename) {
@@ -105,7 +120,7 @@ class FFile {
 		if(!$this->isFtpMode) return rename($source, $target);
 		return ftp_rename($this->ftpConn, $source, $target);
 	}
-	
+
 	function move_uploaded_file($source, $target) {
 		if(!$this->isFtpMode) return move_uploaded_file($source, $target);
 		return ftp_put($this->ftpConn, $source, $target, FTP_BINARY);
@@ -154,7 +169,8 @@ class FFile {
 		if(!empty($imagePath)) {
 			if(file_exists($imagePath)) unlink($imagePath);
 			if($this->isFtpMode) {
-				$handleW = tmpfile();
+				$tmpFilename = tempnam(WEBROOT.'tmp','fuup');
+				$handleW = fopen($tmpFilename, "w");
 			} else {
 				$handleW = fopen($imagePath, "w");
 			}
@@ -163,7 +179,7 @@ class FFile {
 				$handle = fopen($fileChunk, "rb");
 				fwrite($handleW, fread($handle, filesize($fileChunk)-($isMultipart===true?2:0)));
 				fclose($handle);
-				unlink($fileChunk);
+				//unlink($fileChunk);
 			}
 			//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART
 			if($isMultipart===false) {
@@ -176,18 +192,19 @@ class FFile {
 				fwrite($handleW, base64_decode( $data ));
 			}
 			if($this->isFtpMode) {
-				ftp_fput($this->ftpConn,$imagePath,$handleW,FTP_BINARY);
+				ftp_put($this->ftpConn,$imagePath,$tmpFilename,FTP_BINARY);
+				unlink($tmpFilename);
 			}
 			fclose($handleW);
 		}
 	}
-	
+
 	function file_put_contents($filename,$content) {
-	    if(!$this->isFtpMode) return file_put_contents($filename,$content);
-	    $handleW = tmpfile();
-	    fwrite($handleW, $content);
-	    ftp_fput($this->ftpConn,$filename,$handleW,FTP_BINARY);
-	    fclose($handleW);
+		if(!$this->isFtpMode) return file_put_contents($filename,$content);
+		$handleW = tmpfile();
+		fwrite($handleW, $content);
+		ftp_fput($this->ftpConn,$filename,$handleW,FTP_BINARY);
+		fclose($handleW);
 	}
 
 	/**
@@ -226,7 +243,7 @@ class FFile {
 		);
 		switch($c) {
 			case 'tempstore':
-			  $vars['AUTOPROCESS']=1;
+				$vars['AUTOPROCESS']=1;
 				$vars['AUTOUPLOAD']=1;
 				$vars['DISPLAYCONTENT']=0;
 				$vars['MULTI']=0;
@@ -315,23 +332,22 @@ class FFile {
 		if(!$this->file_exists($dir)) {
 			$dirArr = explode('/',$dir);
 			if($dir{0}=='/') {
-			array_shift($dirArr);
-			$dirArr[0] = '/'.$dirArr[0];
+				array_shift($dirArr);
+				$dirArr[0] = '/'.$dirArr[0];
 			}
 			$dirTmp='';
 			while(count($dirArr)>0) {
 				$chmodFrom = array_pop($dirArr);
 				if(file_exists(implode('/',$dirArr))) break;
 			}
-			
 			if(!$ret = $this->mkdir($dir, $mode, $recursive)) {
 				FError::write_log('FFile::makeDir - Make dir failed '.$dir);
 			}
 			
 			$dirArr = explode('/',$dir);
 			if($dir{0}=='/') {
-			array_shift($dirArr);
-			$dirArr[0] = '/'.$dirArr[0];
+				array_shift($dirArr);
+				$dirArr[0] = '/'.$dirArr[0];
 			}
 			$dirTmp = '';
 			$chmod=false;
@@ -344,7 +360,7 @@ class FFile {
 			return $ret;
 		}
 	}
-	
+
 	/**
 	 *recursive copy
 	 */
@@ -354,7 +370,7 @@ class FFile {
 	public $recursive = true;
 	function replicateToFtp( $dir='' ) {
 		if(!file_exists($this->sourceFolder)) return;
-		$localCurrentTargetFolder = $this->targetFolder.($this->targetFolder{strlen($this->targetFolder)-1}=='/'?'':'/').$dir; 
+		$localCurrentTargetFolder = $this->targetFolder.($this->targetFolder{strlen($this->targetFolder)-1}=='/'?'':'/').$dir;
 		$filaArr = scandir($this->sourceFolder.$dir);
 		foreach($filaArr as $file) {
 			if($file!='.' && $file!='..') {
@@ -364,7 +380,7 @@ class FFile {
 				$ft = $dt . ($dt{strlen($dt)-1}=='/'?'':'/') . $file;
 				if(!is_dir($fs)) {
 					// upload the file
-					if(ftp_size($this->ftpConn, $ft)>0) { 
+					if(ftp_size($this->ftpConn, $ft)>0) {
 						echo 'File Exists :: '.$dir.'::'.$file.'<br>';
 					} else {
 						$upload = ftp_put($this->ftpConn, $ft, $fs, FTP_BINARY);
@@ -378,7 +394,7 @@ class FFile {
 				}
 			}
 		}
-	}	 	
+	}
 
 	/**
 	 * recursive folder delete
@@ -455,7 +471,7 @@ class FFile {
 		$arr = explode('.',$filename);
 		return strtolower($arr[count($arr)-1]);
 	}
-	
+
 	/**
 	 * store temporary filename
 	 * @param String $filename
@@ -470,11 +486,11 @@ class FFile {
 		$imagePath = $dir . '/' . $filename;
 		$cache = FCache::getInstance('d');
 		$cache->setData($imagePath,$user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
-		return $imagePath;	
+		return $imagePath;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param String $pageId
 	 * @return String retrive temp filename
 	 */
@@ -485,7 +501,7 @@ class FFile {
 		$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		return $ret;
 	}
-	
+
 	static function flushTemplFile() {
 		$user = FUser::getInstance();
 		$cache = FCache::getInstance('d');
@@ -497,5 +513,5 @@ class FFile {
 			$cache->invalidateData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		}
 	}
-	
+
 }

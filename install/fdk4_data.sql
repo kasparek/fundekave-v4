@@ -1,6 +1,6 @@
 #truncate sys_pages;
-delete from sys_pages where typeId not in ('forum','blog','galery','culture')
-INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, 'page_PageItemList', '', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
+delete from sys_pages where typeId not in ('forum','blog','galery','culture');
+INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, 'page_PageItemList', '', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL);
 INSERT INTO `sys_pages` VALUES ('frien', null, 'top', 'friend', null, 'page_UserFriends', 'Přátelé - Informace o uživatelích', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, 'page_PagesBooked', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 

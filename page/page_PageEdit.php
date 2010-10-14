@@ -14,12 +14,11 @@ class page_PageEdit implements iPage {
 		$user = FUser::getInstance();
 
 		$redirectAdd = '';
-		$pageCreating = array('galed','paged','blone','forne');
-		if(in_array($user->pageVO->pageId,$pageCreating) && $user->pageParam!='sa') {
-			$user->pageParam = 'a' ;
+		
+		if($user->pageParam == 'a') {
 			$redirectAdd = 'e';
 		}
-
+		
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
@@ -34,17 +33,26 @@ class page_PageEdit implements iPage {
 		}
 
 		if($action == "save") {
+			FError::reset();
+			
 			$pageVO = new PageVO();
 			if($user->pageParam == 'a') {
 				//---new page
-				$pageVO->typeId = $user->pageVO->typeIdChild;
+				if(isset(FLang::$TYPEID[$data['t']])) {
+					$pageVO->typeId = FSystem::safeText($data['t']);
+				} else {
+					$pageVO->typeId = $user->pageVO->typeIdChild;
+				}
+				if(empty($pageVO->typeId)) {
+					FError::add('missing page type');
+				}
 				$pageVO->pageIdTop = HOME_PAGE;
 				$pageVO->setDefaults();
 			} else {
 				$pageVO->pageId = $data['pageId'];
 				$pageVO->load();
 			}
-			FError::reset();
+			
 
 			//---categories
 			if($pageVO->typeId=='blog' && $user->pageParam!='a') {
@@ -99,6 +107,8 @@ class page_PageEdit implements iPage {
 
 				//---first save - if new page to get pageId
 				if(empty($pageVO->pageId)) {
+					$pageVO->pageId = FPages::newPageId();
+					$pageVO->forceInsert=true;
 					$pageVO->save();
 				}
 				if(!empty($data['categoryNew'])) {
@@ -318,7 +328,16 @@ class page_PageEdit implements iPage {
 		} elseif($user->pageParam == 'a') {
 			//---new page
 			$pageVO = new PageVO();
-			$pageVO->typeId = $user->pageVO->typeIdChild;
+			if(empty($user->pageVO->typeIdChild)) {
+				//try data 't'
+				if(isset(FLang::$TYPEID[$data['__get']['t']])) $pageVO->typeId=$data['__get']['t'];
+				else {
+					FError::add('missing page type');
+					return;
+				} 
+			} else {
+				$pageVO->typeId = $user->pageVO->typeIdChild;
+			}
 			$pageVO->setDefaults();
 		} else {
 			$pageVO = new PageVO();
@@ -346,12 +365,13 @@ class page_PageEdit implements iPage {
 		if($user->pageParam!='a') {
 			$tpl->setVariable('PAGEID',$pageVO->pageId);
 			$tpl->touchBlock('extendedtab');
-			
 			if(empty($pageVO->pageIdTop) || $pageVO->pageIdTop==$pageVO->pageId) {
 				$tpl->touchBlock('site');
 				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));	
 			}
 			$tpl->setVariable('POSITION',$pageVO->prop('position')); 
+		} else {
+			$tpl->setVariable('T',$pageVO->typeId);
 		}
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));
@@ -440,8 +460,11 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGETEMPLATE',$pageVO->template);
 		}
-		$date = new DateTime((!empty($pageVO->dateContent))?($pageVO->dateContent):(''));
-		$tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
+		
+		if($user->pageParam=='sa' || $pageVO->typeId=='galery') {
+			$date = new DateTime((!empty($pageVO->dateContent))?($pageVO->dateContent):(''));
+			$tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));
+		}
 
 		if($pageVO->typeId=='blog' && $user->pageParam!='a') {
 			$tpl->touchBlock('categorytab');

@@ -139,9 +139,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					$dir = FConf::get("galery","sourceServerBase") . FConf::get("galery","tempStore");
 					break;
 				default:
-					$pageVO = new PageVO($pageId,true);
-					$galeryUrl = $pageVO->galeryDir;
-					$dir = FConf::get("galery","sourceServerBase").$galeryUrl;
+					$dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');
 					$imagePath = $dir.'/'.FFile::safeFilename($filename);
 			}
 			if(!empty($dir)) $ffile->makeDir($dir);
@@ -152,6 +150,22 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 	}
 
 	$processMain = false;
+}
+
+if(isset($_GET['test'])) {
+	/*
+	$filename = 'IMG_1308.JPG';
+	$isMultipart=true;
+	$total = 14;
+	
+	$dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');
+	$imagePath = $dir.'/'.FFile::safeFilename($filename);
+	$ffile = new FFile(FConf::get("galery","ftpServer"));
+	if(!empty($dir)) $ffile->makeDir($dir);
+	$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
+	*/
+	echo 'aa';
+	exit;
 }
 
 /**

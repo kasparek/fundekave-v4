@@ -60,12 +60,12 @@ class page_PageItemList implements iPage {
 		$vars = array();
 		$itemId = 0;
 			
-		
-		
+
+
 		$categoryId=0;
 		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
 		$arrPagerExtraVars = array();
-		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId; 
+		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId;
 		if(!isset($_REQUEST['k'])) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
 		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
 		$pagerOptions = array('manualCurrentPage'=>$manualCurrentPage);
@@ -73,16 +73,17 @@ class page_PageItemList implements iPage {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;
 			$arrPagerExtraVars['i'] = $itemId;
 		} else {
-		  $pagerOptions['bannvars']=array('i');
+			$pagerOptions['bannvars']=array('i');
 		}
 		$pagerOptions['extraVars']=$arrPagerExtraVars;
-		
+
 
 		/**
 		 *FORM FOR EDIT ITEM
 		 *- if in edit mode show edit form - blog,event from will redirect to detail view, only forum/foto form will show here
 		 *if in edit mode - param u or forum display form
 		 **/
+		$vars['EDITFORM']='';
 		if($user->pageParam=='u' && !empty($itemVO)) {
 			if(FRules::getCurrent(2)) {
 				$vars['EDITFORM'] = FItemsForm::show($itemVO);
@@ -114,14 +115,14 @@ class page_PageItemList implements iPage {
 			if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
 			if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
 				$writePerm = $pageVO->prop('forumSet');
-				
+
 				if(!empty($itemVO)) {
 					if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
 					$data['simple'] = true;
 				} else {
 					$writePerm=0;
 				}
-				
+
 			}
 			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
@@ -172,10 +173,10 @@ class page_PageItemList implements iPage {
 			if($pageVO->pageId=='event') {
 				$fItems->addWhere("typeId='event'");
 				if($user->pageParam=='o') {
-				//---archiv
-				FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
-				$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
-				$fItems->setOrder('dateStart desc');
+					//---archiv
+					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
+					$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+					$fItems->setOrder('dateStart desc');
 				} else {
 					//---future
 					FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
@@ -201,9 +202,9 @@ class page_PageItemList implements iPage {
 		$listArr = page_PageItemList::buildList($fItems,$pageVO,$pagerOptions);
 		$vars = array_merge($vars,$listArr['vars']);
 		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
-		
+
 		}
-		
+
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('i='.$itemVO->itemId));
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
@@ -230,74 +231,74 @@ class page_PageItemList implements iPage {
 		$perPage = $pageVO->perPage();
 		$pager = new FPager(0,$perPage,$pagerOptions);
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
-		
+
 		$uid = $fItems->getUID($from, $perPage+1);
 		$grpid = 'itemlist'.($pageVO->typeId!='top'?$pageVO->typeId:'');
 		$cache = FCache::getInstance('f');
 		$data = $cache->getData($uid,'itemlist');
-		
+
 		if($data===false) {
-		$fItems->getList($from, $perPage+1);
-		$pager->totalItems = count($fItems->data);
-		if($pager->totalItems > $perPage) {
-			$pager->maybeMore = true;
-			array_pop($fItems->data);
-		}
-		$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data); 
-		if($from > 0) $pager->totalItems += $from;
-		if($pager->totalItems > 0) {
-			$pager->getPager();
-			if ($pager->totalItems > $perPage) {
-				$vars['TOPPAGER'] = $pager->links;
-				$vars['BOTTOMPAGER'] = $pager->links;
+			$fItems->getList($from, $perPage+1);
+			$pager->totalItems = count($fItems->data);
+			if($pager->totalItems > $perPage) {
+				$pager->maybeMore = true;
+				array_pop($fItems->data);
 			}
-			if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();
-			$itemPrev=null;
-			$itemIdTopPrev=null;
-			$pageIdPrev=null;
-			while ($itemVO = array_shift($fItems->data)) {
-				if($pageVO->pageId != $itemVO->pageId) {
-					$fItems->fItemsRenderer->showPage=false;
-					if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
-						//setup renderer if needed
-						if($itemVO->itemIdTop > 0) {
-							//show top item
-							$itemTop = new ItemVO($itemVO->itemIdTop);
-							//figure out how to display showPage for galery items
-							if($itemTop->get('typeId')=='galery') $fItems->fItemsRenderer->showPage=true;
-							$itemTop->render($fItems->fItemsRenderer);
-							$last = $fItems->fItemsRenderer->getLast();
-							$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
-							$fItems->fItemsRenderer->setLast($last);
-							$fItems->fItemsRenderer->showPage=false;
-						} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')
-						&& (!$itemPrev || $pageIdPrev != $itemVO->pageId)
-						) {
-							$fItems->fItemsRenderer->showPage=true;
+			$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data);
+			if($from > 0) $pager->totalItems += $from;
+			if($pager->totalItems > 0) {
+				$pager->getPager();
+				if ($pager->totalItems > $perPage) {
+					$vars['TOPPAGER'] = $pager->links;
+					$vars['BOTTOMPAGER'] = $pager->links;
+				}
+				if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();
+				$itemPrev=null;
+				$itemIdTopPrev=null;
+				$pageIdPrev=null;
+				while ($itemVO = array_shift($fItems->data)) {
+					if($pageVO->pageId != $itemVO->pageId) {
+						$fItems->fItemsRenderer->showPage=false;
+						if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
+							//setup renderer if needed
+							if($itemVO->itemIdTop > 0) {
+								//show top item
+								$itemTop = new ItemVO($itemVO->itemIdTop);
+								//figure out how to display showPage for galery items
+								if($itemTop->get('typeId')=='galery') $fItems->fItemsRenderer->showPage=true;
+								$itemTop->render($fItems->fItemsRenderer);
+								$last = $fItems->fItemsRenderer->getLast();
+								$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
+								$fItems->fItemsRenderer->setLast($last);
+								$fItems->fItemsRenderer->showPage=false;
+							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')
+							&& (!$itemPrev || $pageIdPrev != $itemVO->pageId)
+							) {
+								$fItems->fItemsRenderer->showPage=true;
+							}
 						}
 					}
+					$fItems->parse($itemVO);
+					if($itemVO->itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
+						$last = $fItems->fItemsRenderer->getLast();
+						$last = str_replace('class="hentry','class="hentry reaction',$last);
+						$fItems->fItemsRenderer->setLast($last);
+					}
+
+					$itemPrev = $itemVO;
+					$itemIdTopPrev = $itemVO->itemIdTop;
+					$pageIdPrev = $itemVO->pageId;
+					$readed[] = $itemVO->itemId;
+
+					if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 				}
-				$fItems->parse($itemVO);
-				if($itemVO->itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
-					$last = $fItems->fItemsRenderer->getLast();
-					$last = str_replace('class="hentry','class="hentry reaction',$last);
-					$fItems->fItemsRenderer->setLast($last);
-				}
-				
-				$itemPrev = $itemVO;
-				$itemIdTopPrev = $itemVO->itemIdTop;
-				$pageIdPrev = $itemVO->pageId;
-				$readed[] = $itemVO->itemId;
-				
-				if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
+				FCommand::run(ITEM_READED,$readed);
+				$vars['ITEMS'] = $fItems->show();
+			} else {
+				if(!empty($writePerm)) $touchedBlocks[]='feedempty';
 			}
-			FCommand::run(ITEM_READED,$readed);
-			$vars['ITEMS'] = $fItems->show();
-		} else {
-			if(!empty($writePerm)) $touchedBlocks[]='feedempty';
-		}
-		$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
-		$cache->setData($data,$uid,'itemlist');
+			$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
+			$cache->setData($data,$uid,'itemlist');
 		}
 		return $data;
 	}

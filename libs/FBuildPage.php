@@ -49,17 +49,19 @@ class FBuildPage {
 		}
 
 		//typ
-		if(isset(FLang::$TYPEID[$user->pageVO->typeId])) {
-			//TODO:refactor
+		$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
+		$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId; 
+		if(!empty($typeId)) {
+			//TODO:refactor - cache???
 			//prehled
 			$breadcrumbs[] = array('name'=>FDBTool::getOne("select text from sys_menu where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
 			//typ
-			$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('','foall',$user->pageVO->typeId));
+			$breadcrumbs[] = array('name'=>FLang::$TYPEID[$typeId],'url'=>FSystem::getUri('','foall',$typeId));
 			//category
 			if($user->pageVO->categoryId > 0) {
 				$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
 				if(!empty($categoryArr))
-				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,'foall',''));
+					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,'foall',''));
 			}
 		}
 
@@ -217,9 +219,6 @@ class FBuildPage {
 				$tpl->setCurrentBlock('content');
 				foreach ($tab as $k=>$v)  {
 					if($v!='') $tpl->setVariable($k, $v);
-				}
-				if(!empty($tab['TABID']) && !empty($tab['TABNAME'])) {
-					$tpl->touchBlock('tabidclose');
 				}
 				$tpl->parseCurrentBlock();
 			}
