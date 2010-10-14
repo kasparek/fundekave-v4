@@ -1,4 +1,5 @@
 <?php
+require(INIT_FILENAME);
 /**
  *
  * HEADERS PROCESSING
@@ -12,52 +13,51 @@ if(isset($_GET['header_handler'])) {
 	} else if(strpos($c,'.gif')!==false) {
 		$contentType = 'image/gif';
 	} else if(strpos($c,'.png')!==false) {
-		$contentType = 'image/x-png';
+		$contentType = 'image/png';
 	} else if(strpos($c,'.ico')!==false) {
 		$contentType = 'image/x-icon';
 	} else if(strpos($c,'.css')!==false) {
 		$contentType = 'text/css';
+	} else if(strpos($c,'.js')!==false) {
+		$contentType = 'text/javascript';
 	} else {
-		header('Content-type: text/javascript');
+		FError::write_log('header_handler - UNSPECIFIED TYPE - '.$c);
+		exit;
 	}
-
+	$filesize = 0;
+	$dataLastChange = '';
+	$data = '';	
 	if($_GET['header_handler']=='css' && strpos($c,'/')===false) {
 		//compile global css with skin css
-		$data = '';
 		$filename = 'css/global.css';
-		$dataLastChange = filemtime($filename);
 		$fp = fopen($filename, 'rb');
-		$filesize = filesize($filename);
-		$data .= fread($fp,$filesize);
+		$data .= fread($fp,filesize($filename));
 		$data = str_replace('url(','url(css/',$data);
 		fclose($fp);
-		
+		//skin file
 		$filename = 'css/skin/'.str_replace('.css','',$c).'/screen.css';
 		if(filemtime($filename) < $dataLastChange) $dataLastChange = filemtime($filename);
-		$filesize += filesize($filename);
 		$fp = fopen($filename, 'rb');
 		$data .= str_replace('url(','url(css/skin/'.str_replace('.css','',$c).'/',fread($fp,filesize($filename)));
 		fclose($fp);
-		
-		$fp=null;
-		                                
-		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
-		
-	} else {
-		$fp = fopen($c, 'rb');
-		$dataLastChange = filemtime($c);
-		$filesize = filesize($c);
+		//remove comments	                                
+		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data); 
 	}
-	if(isset($contentType)) header('Content-Type: '.$contentType);
-	header("Content-Length: " . $filesize);
+	
+	if(empty($data) && !file_exists($c)) {
+	  FError::write_log('header_handler - FILE NOT EXISTS - '.$c);
+		exit;
+	} 
+	
+	header('Content-Type: '.$contentType);
 	header("Cache-control: max-age=290304000, public");
-	header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
+	header("Last-Modified: " . date(DATE_ATOM,($dataLastChange==''?filemtime($c):$dataLastChange)));
 	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
-	ob_start("ob_gzhandler");
-	if(!empty($fp)) {
+	if(empty($data)) {
+		$fp = fopen($c, 'rb');
 		fpassthru($fp);
 		fclose($fp);
-	} else if(!empty($data)) {
+	} else {
 		echo $data;
 	}
 	exit;
@@ -68,8 +68,6 @@ if(isset($_GET['header_handler'])) {
  * MAIN PAGE PROCESSING
  *
  **/
-require(INIT_FILENAME);
-
 if(isset($_GET['authCheck'])) {
 	if($user->idkontrol===true) echo '1';
 	else echo '0';

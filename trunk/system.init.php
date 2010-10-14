@@ -1,5 +1,8 @@
 <?php
-ob_start("ob_gzhandler");
+if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false) {
+	ob_start("ob_gzhandler");
+	header('Content-Encoding: gzip');
+}
 //---host name
 $host = $_SERVER['HTTP_HOST'];
 $host = str_replace(array('www','.'),'',$host);
@@ -15,20 +18,21 @@ function class_autoloader($c) {
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
-//--------------------------------------------------------config + constant init
-FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
-date_default_timezone_set(FConf::get('internationalization','timezone'));
-setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
-setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
-if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
-//-------------------------------------------------------------time for debuging
-FProfiler::write('START');
-//---session settings - stored in db
-ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
-ini_set('session.gc_probability',1);
-ini_set('session.save_path', ROOT_SESSION);
-session_start();
+if(isset($_GET['nonInit'])) $nonInit=true;
 if(!isset($nonInit)) {
+	//--------------------------------------------------------config + constant init
+	FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
+	date_default_timezone_set(FConf::get('internationalization','timezone'));
+	setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
+	setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
+	if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
+	//-------------------------------------------------------------time for debuging
+	FProfiler::write('START');
+	//---session settings - stored in db
+	ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
+	ini_set('session.gc_probability',1);
+	ini_set('session.save_path', ROOT_SESSION);
+	session_start();
 	//startup user
 	$user = FUser::getInstance();
 	$user->init();
