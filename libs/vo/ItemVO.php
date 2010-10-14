@@ -297,15 +297,18 @@ class ItemVO extends Fvob {
 			$user = FUser::getInstance();
 			$maxWidth = $user->userVO->clientWidth;
 			if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
-			else $maxWidth = $maxWidth - $confGalery['clientSpace'];
-			//get closest valid width
-			foreach ($sideOptionList as $fib) {
-				if($maxWidth - $fib > 0) {
-					$diff[$fib] = (int) $maxWidth - $fib;
+			else {
+				$maxWidth = $maxWidth - $confGalery['clientSpace'];
+				//get closest valid width
+				foreach ($sideOptionList as $fib) {
+					if($maxWidth - $fib >= 0) {
+						$diff[$fib] = (int) $maxWidth - $fib;
+					}
 				}
+				$fibs = array_flip($diff);
+				$maxWidth = $fibs[min($diff)];
 			}
-			$fibs = array_flip($diff);
-			$this->detailUrl = $this->getImageUrl(null,$fibs[min($diff)].'/prop');
+			$this->detailUrl = $this->getImageUrl(null,$maxWidth.'/prop');
 		}
 
 		//check if is editable
