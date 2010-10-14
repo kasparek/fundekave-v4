@@ -29,11 +29,11 @@
 <div class="header">
 <span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
 <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-<span class="stats">Oznacit: <input type="checkbox" name="del[]" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
+<span class="stats">Oznacit: <input type="checkbox" name="del-{EDITID}" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
 <!-- BEGIN unreadmess --><span class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
 <span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[SKINURL]]/img/comment_delete.png" title="Smazat prispevek" /></a></span>
 </div>
-<div class="avatar">{AVATAR}</div>
+<!-- BEGIN ava --><div class="avatar">{AVATAR}</div><!-- END ava -->
 <div class="entry-content">{TEXT}</div>
 </div><div class="clearbox"></div><!-- END message -->
 </div>

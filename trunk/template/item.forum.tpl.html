@@ -8,5 +8,7 @@
 </div>
 <div class="avatar">{AVATAR}</div>
 <div class="entry-content">{TEXT}</div>
+<!-- BEGIN map --><a name="map{MAPITEMID}"></a><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<br /><strong>Vzdalenost: [[DISTANCE]]NM</strong></p></div></div><!-- END mapdata --></div>
+<div class="mapSmall"><a id="mapThumb{STATICITEMID}" href="{STATICURL}#map" title="Map detail: {STATICITEMTITLE}" class="mapThumbLink"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers={STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path={STATICWPLIST}<!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END map -->
 </div>
 <div class="clearbox"></div>

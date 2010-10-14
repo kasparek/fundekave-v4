@@ -55,3 +55,6 @@ background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
 
 SQL
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
+
+microformat
+<!-- microformat Decimal Degrees = Degrees + minutes/60 + seconds/3600 <address id="geo{MAPITEMID}" class="geo"><abbr class="latitude" title="37.408183">N 37° 24.491</abbr><abbr class="longitude" title="-122.13855">W 122° 08.313</abbr></address> -->

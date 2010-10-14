@@ -192,13 +192,11 @@ function initMapData() {
 			var data = new mapData();
 			$(this.children).each(function(){
 				switch($(this).attr("class")) {
-				case "mapData":
+				case "geoData":
 					data.dataEl = this;
+					data.title = $(this).attr('value'); 
 					break;
-				case "mapTitle":
-					data.title = $(this).attr('value');
-					break;
-				case "mapInfo":
+				case "geoInfo":
 					data.infoEl = this;
 					break;
 				};
@@ -726,7 +724,7 @@ function galeryCheck() {
 	} else if(fotoLoaded < fotoTotal) {	galeryLoadThumb(); }
 }
 
-function galeryLoadThumb(item,type) {
+function galeryLoadThumb(item,type,offset) {
 	var destSet=false;
 	galeryCheckRunning = true;
 	if(item > 0) {
@@ -740,18 +738,13 @@ function galeryLoadThumb(item,type) {
 		addXMLRequest('total', fotoTotal);
 		addXMLRequest('seq', fotoLoaded);
 	}
-	if(destSet===false) {
-		addXMLRequest('result', 'fotoList');
-		addXMLRequest('resultProperty', '$append');
-	}
-	addXMLRequest('call', 'jUIInit');
-	addXMLRequest('call', 'bindDeleteFoto');
-	fotoLoaded++;
-	if(fotoLoaded < fotoTotal) {
-		addXMLRequest('call', 'galeryCheck');
-	} else {
-	  galeryCheckRunning = false;
-	}
+	if(destSet===false) { addXMLRequest('result', 'fotoList'); addXMLRequest('resultProperty', '$append'); }
+	addXMLRequest('call', 'jUIInit');	addXMLRequest('call', 'bindDeleteFoto');
+	if(!offset) offset = 10
+	fotoLoaded+=offset;
+	addXMLRequest('offset', offset);
+	if(fotoLoaded < fotoTotal) addXMLRequest('call', 'galeryCheck');
+	else galeryCheckRunning = false;
 	sendAjax('galery-editThumb',gup('k',$(".fajaxform").attr('action')));
 };
 
