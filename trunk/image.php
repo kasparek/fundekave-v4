@@ -231,11 +231,7 @@ if(isset($imageProps)) {
 	
 	$ratio = $widthParam/$imageProps[0];
 
-	if($ratio < 0.6) {
-		if($c->optimize===true) {
-			$processParams['optimize'] = 1;
-		}
-	} else if($ratio < 1) {
+	if($ratio < 0.3 && $c->optimize===true) {
 		$processParams['optimize'] = 1;
 	}
 

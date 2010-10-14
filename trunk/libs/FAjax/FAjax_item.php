@@ -38,7 +38,7 @@ class FAjax_item extends FAjaxPluginBase {
 			FAjax::addResponse('editForm', '$html', $ret);
 			FAjax::addResponse('call','jUIInit','');
 		} else {
-			FBuildPage::addTab(array("TABID"=>'editForm',"MAINDATA"=>$ret));
+			FBuildPage::addTab(array("MAINID"=>'editForm',"MAINDATA"=>$ret));
 		}
 	}
 

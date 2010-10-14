@@ -40,10 +40,10 @@ class PageVO extends Fvob {
 	public $propDefaults = array('forumSet'=>1,'home'=>'');
 
 	var $defaults = array(
-    'forum'=>array('template'=>'forum.view.php'),
-    'blog'=>array('categoryId'=>'318','template'=>'forum.view.php'),
-    'galery'=>array('template'=>'galery.detail.php'),
-    'culture'=>array('template'=>'culture.view.tpl.html'));
+    'forum'=>array('template'=>'page_PageItemList'),
+    'blog'=>array('template'=>'page_PageItemList'),
+    'galery'=>array('template'=>'page_PageItemList')
+    );
 
 	//---db based
 	var $pageId;

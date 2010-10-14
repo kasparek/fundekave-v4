@@ -188,5 +188,5 @@ static $ARRLOCKED = array(1=>'Zamčeny - mozno číst',2=>'Zamčený, skrytý',3
 static $ARRWHERESEARCHLABELS = array(0=>"-- Kde --",1=>"Vložil",2=>"Text",3=>"Datum");
 static $DAYSSHORT=array("1"=>"Po","2"=>"Út","3"=>"St","4"=>"Ct","5"=>"Pá","6"=>"So","7"=>"Ne");
 static $MONTHS=array("01"=>"Leden","02"=>"Únor","03"=>"Brezen","04"=>"Duben","05"=>"Kveten","06"=>"Cerven","07"=>"Cervenec","08"=>"Srpen","09"=>"Zárí","10"=>"Ríjen","11"=>"Listopad","12"=>"Prosinec");
-static $TYPEID = array('galery'=>'Galerie', 'forum'=>'Klub', 'blog'=>'Blog', 'culture'=>'Stranka');
+static $TYPEID = array('galery'=>'Galerie', 'forum'=>'Klub', 'blog'=>'Blog');
 }

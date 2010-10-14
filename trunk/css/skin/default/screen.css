@@ -91,6 +91,8 @@ div#mainbar fieldset textarea.short {width: 10em;height: 3em;}
 div#mainbar .buttonBar {padding-top: 0.5em;padding-bottom: 0.5em;}
 div#mainbar fieldset input.button {width: auto;min-width: 5em;font-size: 1em;}
 div#mainbar fieldset input.submit {margin-left: 10em;}
+div#mainbar fieldset.buttonBar input.button {margin: 0.5 1em; padding: 0.1em 0.5em;font-size:1.4em;}
+div#mainbar fieldset.buttonBar input.submit {margin-left: 1em;margin-top:5px;}
 textarea {border: 1px solid #aaa;width:400px;height:6em;font-size: 1.2em;margin-bottom: 0.3em;margin-left: 0;margin-right: 0;padding: 0 5px;}
 div#mainbar fieldset textarea.draftNotSave {border-right: 2px solid #dd0000;}
 div#mainbar fieldset textarea.draftSave {border-right: 2px solid #00dd00;}
@@ -112,32 +114,11 @@ div.mainpanel-content div#categories h3 a{color: black;}
 div.mainpanel-content div#categories ul {margin-left: 30px;}
 
 /* LINK LIST */
-div#mainbar ul.linkList {list-style: none;}
-div#mainbar ul.linkList li a.linkItem img {padding: 0;margin: 0;float: left;margin-right: 0.5em;margin-left: -1em;}
-div#mainbar ul.linkList li {margin-top: 0.1em;clear: left;padding-left: 0;background: none;}
-div#mainbar a.linkItem {
-font: 1.3em Georgia,Times,serif;
-clear: both;
-line-height: 25px;
-min-height: 25px;
-display: block;
-background: #FFF3E7;
-text-decoration: none;
-margin-top: 2px;
-padding: 0 1em; 
-}
-div#mainbar a.linkItem:hover {background: #E2E595;text-decoration:underline;}
-/* LINK LIST customs for inline displaying */
+a.linkItem {font: 1.3em Georgia,Times,serif;clear: both;line-height: 25px;min-height: 25px;display: block;background: #FFF3E7;text-decoration: none;margin-top: 2px;padding: 0 1em;}
+a.linkItem:hover {background: #E2E595;text-decoration:underline;}
+div#sidebar a.linkItem { line-height: 20px; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
 div#mainbar div.entry-content a.linkItem img {margin: 0 0 -8px 0 !important;float: none !important;}
-div#mainbar ul.linkList li div.hentry {margin-top: 0;}
-/* LINK LIST customs for sidebar */
-div#sidebar ul.linkList {list-style: none;padding: 0;margin: 0;line-height: 25px;}
-div#sidebar ul.linkList postsNew {display: none;}
-div#sidebar ul.linkList img {float: left;margin-right: 0.5em;}
-div#sidebar ul.linkList li {clear: left;overflow: hidden;background: none;list-style: none;height: 25px;}
-div#sidebar ul.linkList li a {display: block;background: #eeeeee;text-decoration: none;margin-top: 2px;font-weight: bold;vertical-align: middle;padding: 0 1em;}
-div#sidebar ul.linkList li a:hover {background: #bbbbbb}
 
 /* HENTRY */
 div.mainpanel-content div.hentry {clear: left;margin-bottom: 1em;padding-top: 0;position: relative;border-top: 1px solid #ddd;overflow: hidden;}
