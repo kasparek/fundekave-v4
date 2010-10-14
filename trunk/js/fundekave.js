@@ -626,6 +626,7 @@ $(function (){
 	slimboxInit();
 	fullscreenInit();
 	initPager();
+	if(GOOGLEANALID) gaSSDSLoad(GOOGLEANALID);
 });
 //LOAD UI scripts
 function loadUI(callback){
@@ -930,7 +931,31 @@ function resetXMLRequest() { xmlArray = []; };
 function addXMLRequest(key, value) { var str = xmlStr; str = str.replace('{KEY}', key); str = str.replace('{DATA}', value); xmlArray.push(str); };
 function getXMLRequest() { var str = '<FXajax><Request>' + xmlArray.join('') + '</Request></FXajax>'; resetXMLRequest(); return str; };
 //--- CUSTOM AJAX REQUEST BUILDER/HANDLER END
-
+//google anal
+function gaSSDSLoad (acct) {
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www."),
+      pageTracker,
+      s;
+  s = document.createElement('script');
+  s.src = gaJsHost + 'google-analytics.com/ga.js';
+  s.type = 'text/javascript';
+  s.onloadDone = false;
+  function init () {
+    pageTracker = _gat._getTracker(acct);
+    pageTracker._trackPageview();
+  }
+  s.onload = function () {
+    s.onloadDone = true;
+    init();
+  };
+  s.onreadystatechange = function() {
+    if (('loaded' === s.readyState || 'complete' === s.readyState) && !s.onloadDone) {
+      s.onloadDone = true;
+      init();
+    }
+  };
+  document.getElementsByTagName('head')[0].appendChild(s);
+}
 /* jQuery.getCSS plugin http://github.com/furf/jquery-getCSS Copyright 2010, Dave Furfero Dual licensed under the MIT or GPL Version 2 licenses. 
 $.getCSS('http://sexyjs.com/css/sexy.css', function () { $('#description').show(); });
 */
