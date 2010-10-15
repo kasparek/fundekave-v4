@@ -4,91 +4,78 @@
 */
 class FCacheFile
 {
-    // --- Private properties ---
     /**
     * Directory where to put the cache files
-    * (make sure to add a trailing slash)
     * @var string $_cacheDir
     */
-    var $_cacheDir = '/tmp/';
+    private $_cacheDir = '/tmp/';
     /**
     * Enable / disable caching
-    * (can be very usefull for the debug of cached scripts)
     * @var boolean $_caching
     */
-    var $_caching = true;
+    private $_caching = true;
     /**
-    * Cache lifetime (in seconds)
-    * If null, the cache is valid forever.
+    * Cache lifetime (in seconds) If null, the cache is valid forever.
     * @var int $_lifeTime
     */
-    var $_lifeTime = null;
+    private $_lifeTime = null;
     /**
     * Enable / disable fileLocking
-    * (can avoid cache corruption under bad circumstances)
     * @var boolean $_fileLocking
     */
-    var $_fileLocking = true;
+    private $_fileLocking = true;
     /**
     * Timestamp of the last valid cache
     * @var int $_refreshTime
     */
-    var $_refreshTime;
+    private $_refreshTime;
     /**
     * File name (with path)
     * @var string $_file
     */
-    var $_file;
+    private $_file;
     /**
     * File name (without path)
     * @var string $_fileName
     */
-    var $_fileName;
+    private $_fileName;
     /**
     * Current cache id
     * @var string $_id
     */
-    var $_id;
+    private $_id;
     /**
     * Current cache group
     * @var string $_group
     */
-    var $_group;
+    private $_group;
     /**
-    * Enable / Disable "Memory Caching"
-    * NB : There is no lifetime for memory caching ! 
+    * Enable/Disable "Memory Caching" There is no lifetime for memory caching ! 
     * @var boolean $_memoryCaching
     */
-    var $_memoryCaching = true;
+    private $_memoryCaching = true;
     /**
     * Enable / Disable "Only Memory Caching"
-    * (be carefull, memory caching is "beta quality")
     * @var boolean $_onlyMemoryCaching
     */
-    var $_onlyMemoryCaching = false;
+    private $_onlyMemoryCaching = false;
     /**
     * Memory caching array
     * @var array $_memoryCachingArray
     */
-    var $_memoryCachingArray = array();
-       
+    private $_memoryCachingArray = array();
     /**
     * Nested directory level
     * @var int $_hashedDirectoryLevel
     */
-    var $_hashedDirectoryLevel = 0;
-    
+    private $_hashedDirectoryLevel = 0;
     /**
     * Umask for hashed directory structure
-    *
     * @var int $_hashedDirectoryUmask
     */
-    var $_hashedDirectoryUmask = 0777;
-    
-    // --- Public methods ---
+    private $_hashedDirectoryUmask = 0777;
     /**
     * Constructor
-    *
     * $options is an assoc. Available options are :
     * $options = array(
     *     'cacheDir' => directory where to put the cache files (string),
@@ -106,6 +93,7 @@ class FCacheFile
     */
     function __construct($options = array(NULL)) {
         foreach($options as $key => $value) $this->setOption($key, $value);
+        if($this->_cacheDir{strlen($this->_cacheDir)-1}!='/') $this->_cacheDir.='/';
     }
     /**
     * Generic way to set a Cache_Lite option
@@ -117,19 +105,15 @@ class FCacheFile
     function setOption($name, $value) {
         $availableOptions = array('hashedDirectoryUmask', 'hashedDirectoryLevel', 'memoryCaching', 'onlyMemoryCaching', 'cacheDir', 'caching', 'lifeTime', 'fileLocking');
         if (in_array($name, $availableOptions)) $this->{'_'.$name} = $value;
-        if($this->_cacheDir{strlen($this->_cacheDir)-1}!='/') $this->_cacheDir.='/';
     }
-    
     /**
     * Test if a cache is available and (if yes) return it
-    *
     * @param string $id cache id
     * @param string $group name of the cache group
     * @return string data of the cache (else : false)
     * @access public
     */
-    function get($id, $group = 'default')
-    {
+    function get($id, $group = 'default') {
         $this->_id = $id;
         $this->_group = $group;
         $data = false;
@@ -142,33 +126,24 @@ class FCacheFile
                 if ($this->_onlyMemoryCaching) return false;
             }
             if (is_null($this->_refreshTime)) {
-                if (file_exists($this->_file)) {
-                    $data = $this->_read();
-                }
+                if (file_exists($this->_file)) $data = $this->_read();
             } else {
-                if ((file_exists($this->_file)) && (@filemtime($this->_file) > $this->_refreshTime)) {
-                    $data = $this->_read();
-                }
+                if ((file_exists($this->_file)) && (@filemtime($this->_file) > $this->_refreshTime)) $data = $this->_read();
             }
-            if (($data) and ($this->_memoryCaching)) {
-                $this->_memoryCacheAdd($data);
-            }
+            if (($data) and ($this->_memoryCaching)) $this->_memoryCacheAdd($data);
             return $data;
         }
         return false;
     }
-    
     /**
     * Save some data in a cache file
-    *
     * @param string $data data to put in cache
     * @param string $id cache id
     * @param string $group name of the cache group
     * @return boolean true if no problem (else : false or a PEAR_Error object)
     * @access public
     */
-    function save($data, $id = NULL, $group = 'default')
-    {
+    function save($data, $id = NULL, $group = 'default') {
     		if(!is_null($id)) $this->_id = $id;
     		if($this->_group!=$group) $this->_group = $group;
         if ($this->_caching) {
@@ -181,49 +156,35 @@ class FCacheFile
         }
         return false;
     }
-
     /**
     * Remove a cache file
-    *
     * @param string $id cache id
     * @param string $group name of the cache group
     * @param boolean $checkbeforeunlink check if file exists before removing it
     * @return boolean true if no problem
     * @access public
     */
-    function remove($id, $group = 'default', $checkbeforeunlink = true)
-    {
+    function remove($id, $group = 'default', $checkbeforeunlink = true) {
         $this->_setFileName($id, $group);
         if ($this->_memoryCaching) {
-            if (isset($this->_memoryCachingArray[$this->_file])) {
-                unset($this->_memoryCachingArray[$this->_file]);
-            }
-            if ($this->_onlyMemoryCaching) {
-                return true;
-            }
+            if (isset($this->_memoryCachingArray[$this->_file])) unset($this->_memoryCachingArray[$this->_file]);
+            if ($this->_onlyMemoryCaching) return true;
         }
-        if ( $checkbeforeunlink ) {
-            if (!file_exists($this->_file)) return true;
-        }
+        if ( $checkbeforeunlink ) if (!file_exists($this->_file)) return true;
         return $this->_unlink($this->_file);
     }
-
     /**
     * Clean the cache
-    *
     * if no group is specified all cache files will be destroyed
     * else only cache files of the specified group will be destroyed
-    *
     * @param string $group name of the cache group
     * @param string $mode flush cache mode : 'old', 'ingroup' 
     * @return boolean true if no problem
     * @access public
     */
-    function clean($group = false, $mode = 'ingroup')
-    {
+    function clean($group = false, $mode = 'ingroup') {
         return $this->_cleanDir($this->_cacheDir, $group, $mode);
     }
-    
     /**
     * Write error to log
     * @param string $msg error message
@@ -234,53 +195,42 @@ class FCacheFile
         FError::write_log($msg);
         return false;
     }
-        
     // --- Private methods ---
-    
     /**
     * Compute & set the refresh time
-    *
     * @access private
     */
-    function _setRefreshTime() 
-    {
+    function _setRefreshTime() {
         if (is_null($this->_lifeTime)) $this->_refreshTime = null;
         else $this->_refreshTime = time() - $this->_lifeTime;
     }
-    
     /**
     * Remove a file
-    * 
     * @param string $file complete file path and name
     * @return boolean true if no problem
     * @access private
     */
-    function _unlink($file)
-    {
+    function _unlink($file) {
         if (!unlink($file)) return $this->raiseError('Cache_Lite : Unable to remove cache !', -3);
         return true;        
     }
-
     /**
     * Recursive function for cleaning cache file in the given directory
-    *
     * @param string $dir directory complete path (with a trailing slash)
     * @param string $group name of the cache group
     * @param string $mode flush cache mode : 'old', 'ingroup'
     * @return boolean true if no problem
     * @access private
     */
-    function _cleanDir($dir, $group = false, $mode = 'ingroup')     
-    {
+    function _cleanDir($dir, $group = false, $mode = 'ingroup') {
         if(!empty($group)) $dir = $dir.$group.'/';
         
         if ($this->_memoryCaching) {
         	if($group) {
-	    			foreach($this->_memoryCachingArray as $key => $v) {
-                if (strpos($key, '/'.$group.'/') !== false) {
-                    unset($this->_memoryCachingArray[$key]);
-                }
-            }
+        		if(!empty($this->_memoryCachingArray))
+	    				foreach($this->_memoryCachingArray as $key => $v) 
+								if (strpos($key, '/'.$group.'/') !== false) 
+									unset($this->_memoryCachingArray[$key]);
           } else {
 					   $this->_memoryCachingArray = array();
 					}
@@ -288,7 +238,7 @@ class FCacheFile
         }
         
         if($mode=='ingroup') {
-					if(is_dir($dir)) return rrmdir($dir);
+					if(is_dir($dir)) return FCacheFile::rrmdir($dir);
 					return false;
 				}
 				
@@ -314,36 +264,28 @@ class FCacheFile
         }
         return $result;
     }
-    
     /**
      * Delete a file or recursively delete a directory
-     *
      * @param string $str Path to file or directory
      */
-    function rrmdir($path) {
-		  return is_file($path)?@unlink($path):array_map('rrmdir',glob($path.'/*'))==@rmdir($path);
+    static function rrmdir($path) {
+		  return is_file($path)?@unlink($path):array_map(array('FCacheFile','rrmdir'),glob($path.'/*'))==@rmdir($path);
 		}
-      
     /**
     * Add some date in the memory caching array
-    *
     * @param string $data data to cache
     * @access private
     */
-    function _memoryCacheAdd($data)
-    {
+    function _memoryCacheAdd($data) {
         $this->_memoryCachingArray[$this->_file] = $data;
     }
-
     /**
     * Make a file name (with path)
-    *
     * @param string $id cache id
     * @param string $group name of the group
     * @access private
     */
-    function _setFileName($id, $group)
-    {
+    function _setFileName($id, $group) {
         $suffix = 'cache_'.$id;
         $root = $this->_cacheDir.$group.'/';
         if ($this->_hashedDirectoryLevel>0) {
@@ -355,15 +297,12 @@ class FCacheFile
         $this->_fileName = $suffix;
         $this->_file = $root.$suffix;
     }
-    
     /**
     * Read the cache file and return the content
-    *
     * @return string content of the cache file (else : false or a PEAR_Error object)
     * @access private
     */
-    function _read()
-    {
+    function _read() {
         $fp = @fopen($this->_file, "rb");
         if ($this->_fileLocking) @flock($fp, LOCK_SH);
         if ($fp) {
@@ -379,16 +318,13 @@ class FCacheFile
         }
         return $this->raiseError('Cache_Lite : Unable to read cache !', -2); 
     }
-    
     /**
     * Write the given data in the cache file
-    *
     * @param string $data data to put in cache
     * @return boolean true if ok (a PEAR_Error object else)
     * @access private
     */
-    function _write($data)
-    {
+    function _write($data) {
     		$root = $this->_cacheDir;
     		if (!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
         $root .= $this->_group.'/'; 
