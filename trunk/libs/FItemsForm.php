@@ -251,9 +251,10 @@ class FItemsForm {
 			$cache->invalidateData( $itemVO->pageId.$itemVO->typeId, 'form');
 		}
 
-		if(!empty($data))
-		foreach($data as $k=>$v) {
-			$itemVO->set($k,$v);
+		if(is_array($data)) {
+			foreach($data as $k=>$v) {
+				$itemVO->set($k,$v);
+			}
 		}
 
 		$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
