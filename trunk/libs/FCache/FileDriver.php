@@ -1,18 +1,15 @@
 <?php
-require_once(ROOT.'pear/Cache/Lite.php');
 /**
  * file driver for FCache
  * 
- * PHP versions 4 and 5
- * 
- * dependency: PEAR::Cache_Lite
+ * PHP 5
  * 
  * @author frantisek.kaspar
  *
  */
 class FileDriver 
 {
-	var $cacheLite;
+	var $cacheEngine;
 
 	//---could be null to live forever
 	var $lifeTimeDefault = 0;
@@ -24,7 +21,7 @@ class FileDriver
 		$cacheOptions['cacheDir'] = $cacheDir;
 		$cacheOptions['lifeTime'] = $this->lifeTime==0 ? null : $this->lifeTime;
 		$cacheOptions['hashedDirectoryLevel'] = 2;
-		$this->cacheLite = new Cache_Lite($cacheOptions);
+		$this->cacheEngine = new FCacheFile($cacheOptions);
 	}
 	
 	private static $instance;
@@ -36,11 +33,11 @@ class FileDriver
 	}
 
 	function setConf( $lifeTime ) {
-		$this->cacheLite->setLifeTime = $this->lifeTime = empty($lifeTime) ? null : $lifeTime;
+		$this->cacheEngine->setLifeTime = $this->lifeTime = empty($lifeTime) ? null : $lifeTime;
 	}
 
 	function setData($key, $data, $grp) {
-		return $this->cacheLite->save( serialize($data), $key, $grp );
+		return $this->cacheEngine->save( serialize($data), $key, $grp );
 	}
 
 	function getGroup($grp) {
@@ -52,18 +49,18 @@ class FileDriver
 	}
 	
 	function getData($key, $grp) {
-		return unserialize($this->cacheLite->get($key,$grp));
+		return unserialize($this->cacheEngine->get($key,$grp));
 	}
 
 	function invalidateData($key, $grp) {
-		$this->cacheLite->remove($key, $grp);
+		$this->cacheEngine->remove($key, $grp);
 	}
 
 	function invalidateGroup( $grp ) {
-		$this->cacheLite->clean($grp);
+		$this->cacheEngine->clean($grp);
 	}
 
 	function invalidate( ) {
-		$this->cacheLite->clean();
+		$this->cacheEngine->clean();
 	}
 }
