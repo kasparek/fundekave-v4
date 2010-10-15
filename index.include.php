@@ -1,35 +1,25 @@
 <?php
 require(INIT_FILENAME);
 /**
- *
  * HEADERS PROCESSING
- *
  */
 if(isset($_GET['header_handler'])) {
-	date_default_timezone_set("Europe/Prague");
 	$c = $_GET['c'];
-	if(strpos($c,'.jpg')!==false) {
-		$contentType = 'image/jpeg';
-	} else if(strpos($c,'.gif')!==false) {
-		$contentType = 'image/gif';
-	} else if(strpos($c,'.png')!==false) {
-		$contentType = 'image/png';
-	} else if(strpos($c,'.ico')!==false) {
-		$contentType = 'image/x-icon';
-	} else if(strpos($c,'.css')!==false) {
-		$contentType = 'text/css';
-	} else if(strpos($c,'.js')!==false) {
-		$contentType = 'text/javascript';
-	} else {
+	if(strpos($c,'.jpg')!==false) $contentType = 'image/jpeg';
+	else if(strpos($c,'.gif')!==false) $contentType = 'image/gif';
+	else if(strpos($c,'.png')!==false) $contentType = 'image/png';
+	else if(strpos($c,'.ico')!==false) $contentType = 'image/x-icon';
+	else if(strpos($c,'.css')!==false) $contentType = 'text/css';
+	else if(strpos($c,'.js')!==false) $contentType = 'text/javascript';
+	else {
 		FError::write_log('header_handler - UNSPECIFIED TYPE - '.$c);
 		exit;
 	}
-	$filesize = 0;
-	$dataLastChange = '';
-	$data = '';	
+	$filesize = 0; $dataLastChange = ''; $data = '';
 	if($_GET['header_handler']=='css' && strpos($c,'/')===false) {
 		//compile global css with skin css
 		$filename = 'css/global.css';
+		$dataLastChange = filemtime($filename);
 		$fp = fopen($filename, 'rb');
 		$data .= fread($fp,filesize($filename));
 		$data = str_replace('url(','url(css/',$data);
@@ -40,16 +30,14 @@ if(isset($_GET['header_handler'])) {
 		$fp = fopen($filename, 'rb');
 		$data .= str_replace('url(','url(css/skin/'.str_replace('.css','',$c).'/',fread($fp,filesize($filename)));
 		fclose($fp);
-		//remove comments	                                
+		//remove comments
 		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
-		$data = preg_replace('/\s\s+/', ' ', $data); 
+		$data = preg_replace('/\s\s+/', ' ', $data);
 	}
-	
 	if(empty($data) && !file_exists($c)) {
-	  FError::write_log('header_handler - FILE NOT EXISTS - '.$c);
+		FError::write_log('header_handler - FILE NOT EXISTS - '.$c);
 		exit;
-	} 
-	
+	}
 	header('Content-Type: '.$contentType);
 	header("Cache-control: max-age=290304000, public");
 	header("Last-Modified: " . date(DATE_ATOM,($dataLastChange==''?filemtime($c):$dataLastChange)));
@@ -70,8 +58,7 @@ if(isset($_GET['header_handler'])) {
  *
  **/
 if(isset($_GET['authCheck'])) {
-	if($user->idkontrol===true) echo '1';
-	else echo '0';
+	if($user->idkontrol===true) echo '1'; else echo '0';
 	exit;
 }
 if(isset($_GET['mod'])) {
@@ -90,14 +77,14 @@ $processMain = true;
  *
  **/
 if(!empty($_GET['fuupconfig'])) {
-  FFile::printConfigFile( $_GET['fuupconfig'] );
+	FFile::printConfigFile( $_GET['fuupconfig'] );
 	exit;
 }
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
 
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
-		
+
 		//PARAMS
 		$isMultipart = false;
 		$seq = (int)  $_POST['seq'];
@@ -124,11 +111,11 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					$dir = FAvatar::profileBasePath();
 					$folderSize = FFile::folderSize($dir) / 1024;
 					if($folderSize < FConf::get('settings','personal_foto_limit')) {
-						$imagePath = $dir . '/' . FFile::safeFilename($filename);
-						FFile::makeDir($dir);
+					$imagePath = $dir . '/' . FFile::safeFilename($filename);
+					FFile::makeDir($dir);
 					} else {
-						FError::add(FLang::$PERSONAL_FOTO_FOLDER_FULL);
-						$imagePath = '';
+					FError::add(FLang::$PERSONAL_FOTO_FOLDER_FULL);
+					$imagePath = '';
 					}
 					break;   */
 				case 'tempstore':
@@ -153,16 +140,16 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 
 if(isset($_GET['test'])) {
 	/*
-	$filename = 'IMG_1308.JPG';
-	$isMultipart=true;
-	$total = 14;
-	
-	$dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');
-	$imagePath = $dir.'/'.FFile::safeFilename($filename);
-	$ffile = new FFile(FConf::get("galery","ftpServer"));
-	if(!empty($dir)) $ffile->makeDir($dir);
-	$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
-	*/
+	 $filename = 'IMG_1308.JPG';
+	 $isMultipart=true;
+	 $total = 14;
+
+	 $dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');
+	 $imagePath = $dir.'/'.FFile::safeFilename($filename);
+	 $ffile = new FFile(FConf::get("galery","ftpServer"));
+	 if(!empty($dir)) $ffile->makeDir($dir);
+	 $ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
+	 */
 	echo 'aa';
 	exit;
 }
@@ -194,16 +181,15 @@ if($processMain===true) {
 		if(!empty($_GET)) $options['data']['__get'] = $_GET;
 		FAjax::process( $_REQUEST['m'], $data, $options );
 		FProfiler::write('FAJAX PROCESSED DONE');
+	} else {
+		//---process post/get for page - not ajaz processing
+		$data = $_POST;
+		if(!empty($_FILES)) $data['__files'] = $_FILES;
+		if(!empty($_GET)) $data['__get'] = $_GET;
+		foreach($data as $k=>$v)if(($pos = strpos($k,'-'))!==false) $data[substr($k,0,$pos)][]=$v;
+		FBuildPage::process( $data );
+		FProfiler::write('PAGE PROCESS DONE');
 	}
-
-	//---process post/get for page
-	$data = $_POST;
-	if(!empty($_FILES)) $data['__files'] = $_FILES;
-	if(!empty($_GET)) $data['__get'] = $_GET;
-	foreach($data as $k=>$v)if(($pos = strpos($k,'-'))!==false) $data[substr($k,0,$pos)][]=$v;
-	FBuildPage::process( $data );
-	FProfiler::write('PAGE PROCESS DONE');
-
 	//---shows message that page is locked
 	if($user->pageVO)
 	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {

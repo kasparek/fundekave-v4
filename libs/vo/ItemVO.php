@@ -202,6 +202,10 @@ class ItemVO extends Fvob {
 			if(empty($this->dateCreated)) {
 				$this->dateCreated = 'now()';
 				$vo->notQuote('dateCreated');
+				if($this->typeId=='forum') {
+					$this->dateStart = 'now()';
+					$vo->notQuote('dateStart');
+				}
 			}
 			$vo->save();
 			

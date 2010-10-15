@@ -324,47 +324,7 @@ class FBuildPage {
 			$fLeftpanel->show();
 			FProfiler::write('FBuildPage--FLeftPanel');
 		}
-
-		//--- last check
-		//--- js and css included just when needed
-		$useDatePicker = false;
-		$useTabs = false;
-		$useSwfobject = false;
-		$useFuup = false;
-		$useMaps = false;
-
-		foreach ($tpl->blockdata as $item) {
-			if(strpos($item, 'datepicker') !== false) { $useDatePicker = true; }
-			if(strpos($item, 'fuup') !== false) { $useSwfobject = true; $useFuup=true; }
-			if(strpos($item, 'tabs') !== false) { $useTabs = true; }
-			if(strpos($item, 'mapSmall') !== false) { $useMaps = true; }
-		}
-
-		if($useDatePicker === true) {
-			$tpl->touchBlock("juiCSS"); //---js in the header
-			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
-
-			$tpl->touchBlock("datepickerLoad"); //---javascript on the end of the page
-			$tpl->touchBlock("datepickerInit");
-		}
-		if($useSwfobject === true) {
-			$tpl->touchBlock("swfoLoad");
-		}
-		if($useFuup === true) {
-			$tpl->touchBlock("fuupInit");
-		}
-		if($useTabs === true) {
-			$tpl->touchBlock("juiCSS"); //---js in the header
-			$tpl->touchBlock("juiLoad"); //---javascript on the end of the page
-			$tpl->touchBlock("tabsInit");
-		}
-		if($user->idkontrol===true) {
-			$tpl->touchBlock("signedInit");
-		}
-		if($useMaps===true) {
-			$tpl->touchBlock("mapsLoad");
-		}
-
+		$tpl->setVariable("USER",$user->idkontrol?'1':'0');
 		//post messages
 		if($user->userVO->hasNewMessages()) {
 			$tpl->setVariable('NEWPOST',$user->userVO->newPost);
