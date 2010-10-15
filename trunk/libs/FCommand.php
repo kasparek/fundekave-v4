@@ -99,7 +99,7 @@ class FCommand {
 		$cache->invalidateGroup('calendarlefthand');
 		$cache->invalidateGroup('rsslist');
 		$cache->invalidateGroup('itemlist');
-		$cache->invalidateGroup('itemlist'.$data->pageId);
+		$cache->invalidateGroup('itemlist'.$data->get('pageId'));
 	}
 	
 	

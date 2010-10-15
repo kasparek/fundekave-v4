@@ -144,21 +144,15 @@ class FAjax_user extends FAjaxPluginBase {
 	}
 
 	static function tag($data) {
-		$itemId = $data['item'];
-
+		$itemId = (int) $data['item'];
 		if($userId = FUser::logon()) {
-			if(FItemTags::isTagged()) {
+			if(FItemTags::isTagged($itemId,$userId)) {
 				FError::add(FLang::$MESSAGE_TAG_ONLYONE);
 				return;
 			}
-						
 			if(!isset($data['a'])) $data['a'] = 'a';
-			if($data['a']=='r') {
-				FItemTags::removeTag($itemId,$userId);
-			} else {
-				FItemTags::tag($itemId,$userId);	
-			}
-
+			if($data['a']=='r') FItemTags::removeTag($itemId,$userId);
+			else FItemTags::tag($itemId,$userId);	
 			//---create response
 			if($data['__ajaxResponse']==true) { 
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
