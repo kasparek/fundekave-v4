@@ -1,8 +1,6 @@
 <?php
 /**
 * Cache engine
-* TODO: finish _cleanDir refactor
-* TODO: test
 */
 class FCacheFile
 {
@@ -171,6 +169,8 @@ class FCacheFile
     */
     function save($data, $id = NULL, $group = 'default')
     {
+    		if(!is_null($id)) $this->_id = $id;
+    		if($this->_group!=$group) $this->_group = $group;
         if ($this->_caching) {
             if (isset($id)) $this->_setFileName($id, $group);
             if ($this->_memoryCaching) {
@@ -215,8 +215,7 @@ class FCacheFile
     * else only cache files of the specified group will be destroyed
     *
     * @param string $group name of the cache group
-    * @param string $mode flush cache mode : 'old', 'ingroup', 'notingroup', 
-    *                                        'callback_myFunction'
+    * @param string $mode flush cache mode : 'old', 'ingroup' 
     * @return boolean true if no problem
     * @access public
     */
@@ -267,15 +266,13 @@ class FCacheFile
     *
     * @param string $dir directory complete path (with a trailing slash)
     * @param string $group name of the cache group
-    * @param string $mode flush cache mode : 'old', 'ingroup', 'notingroup',
-                                             'callback_myFunction'
+    * @param string $mode flush cache mode : 'old', 'ingroup'
     * @return boolean true if no problem
     * @access private
     */
     function _cleanDir($dir, $group = false, $mode = 'ingroup')     
     {
-        
-        $motif = ($group) ? 'cache_'.$group.'_' : 'cache_';
+        if(!empty($group)) $dir = $dir.$group.'/';
         
         if ($this->_memoryCaching) {
         	if($group) {
@@ -290,46 +287,28 @@ class FCacheFile
           if ($this->_onlyMemoryCaching) return true;
         }
         
+        if($mode=='ingroup') {
+					if(is_dir($dir)) return rrmdir($dir);
+					return false;
+				}
+				
         if (!($dh = opendir($dir))) {
             return $this->raiseError('Cache_Lite : Unable to open cache directory !', -4);
         }
         $result = true;
         while ($file = readdir($dh)) {
             if (($file != '.') && ($file != '..')) {
-                if (substr($file, 0, 6)=='cache_') {
-                    $file2 = $dir . $file;
-                    if (is_file($file2)) {
-                        switch (substr($mode, 0, 9)) {
-                            case 'old':
-                                // files older than lifeTime get deleted from cache
-                                if (!is_null($this->_lifeTime)) {
-                                    if ((time() - @filemtime($file2)) > $this->_lifeTime) {
-                                        $result = ($result and ($this->_unlink($file2)));
-                                    }
-                                }
-                                break;
-                            case 'notingrou':
-                                if (strpos($file2, $motif) === false) {
-                                    $result = ($result and ($this->_unlink($file2)));
-                                }
-                                break;
-                            case 'callback_':
-                                $func = substr($mode, 9, strlen($mode) - 9);
-                                if ($func($file2, $group)) {
-                                    $result = ($result and ($this->_unlink($file2)));
-                                }
-                                break;
-                            case 'ingroup':
-                            default:
-                                if (strpos($file2, $motif) !== false) {
-                                    $result = ($result and ($this->_unlink($file2)));
-                                }
-                                break;
-                        }
-                    }
-                    if ((is_dir($file2)) and ($this->_hashedDirectoryLevel>0)) {
-                        $result = ($result and ($this->_cleanDir($file2 . '/', $group, $mode)));
-                    }
+            	if(is_dir($dir . $file)) {
+							   $result = ($result and ($this->_cleanDir($dir . $file . '/', $group, $mode)));
+							} else  {
+                  if($mode=='old') {
+                      // files older than lifeTime get deleted from cache
+                      if (!is_null($this->_lifeTime)) {
+                          if ((time() - @filemtime($dir.$file)) > $this->_lifeTime) {
+                              $result = ($result and ($this->_unlink($file2)));
+                          }
+                      }
+                  }
                 }
             }
         }
@@ -341,14 +320,9 @@ class FCacheFile
      *
      * @param string $str Path to file or directory
      */
-    function recursiveDelete($str){
-        if(is_file($str)) return @unlink($str);
-        elseif(is_dir($str)){
-            $scan = glob(rtrim($str,'/').'/*');
-            foreach($scan as $index=>$path) recursiveDelete($path);
-            return @rmdir($str);
-        }
-    }
+    function rrmdir($path) {
+		  return is_file($path)?@unlink($path):array_map('rrmdir',glob($path.'/*'))==@rmdir($path);
+		}
       
     /**
     * Add some date in the memory caching array
@@ -417,7 +391,7 @@ class FCacheFile
     {
     		$root = $this->_cacheDir;
     		if (!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
-        $root .= $this->_group 
+        $root .= $this->_group.'/'; 
         if (!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
         if ($this->_hashedDirectoryLevel > 0) {
             $hash = md5($this->_fileName);
