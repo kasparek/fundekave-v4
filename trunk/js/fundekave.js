@@ -4,7 +4,7 @@
 var unreadSentList,messageCheckTimeout;
 function messageCheck() { if(!unreadSentList) $(".hentry.unread").each(function(){if(!unreadSentList) unreadSentList=[]; unreadSentList.push($(this).attr('id')); }); if(unreadSentList) addXMLRequest('unreadedSent', unreadSentList.join(',')); var data=hashData(); if(data) if(data['p']) addXMLRequest('p', data['p']); sendAjax('post-hasNewMessage'); }
 function messageSentReaded(p) { unreadSentList=null; postList = p.split(','); for(i=0;i<postList.length;i++) { var div = $("#".postList[i]); if(div.length>0) { div.removeClass('unread'); $('stats',div).hide(); } } }
-function messageCheckHandler(numMsgs,lastSender) { var div = $("#messageNew"); if(numMsgs>0) { if(div.hasClass('hidden')) div.removeClass('hidden'); $("#numMsg").text(numMsgs); $("#recentSender").text(lastSender); } else { if(!div.hasClass('hidden')) div.addClass('hidden'); } if(messageCheckTimeout) clearTimeout(messageCheckTimeout); messageCheckTimeout = setTimeout(messageCheck,5000); } 
+function messageCheckHandler(numMsgs,lastSender) { var div = $("#messageNew"); if(numMsgs>0) { if(div.hasClass('hidden')) div.removeClass('hidden'); $("#numMsg").text(numMsgs); $("#recentSender").text(lastSender); } else { if(!div.hasClass('hidden')) div.addClass('hidden'); } if(MESSCHECKING>0 && messageCheckTimeout) clearTimeout(messageCheckTimeout); messageCheckTimeout = setTimeout(messageCheck,MESSCHECKING); } 
 /**
  * GALERY NEXT LOADING
  */
@@ -337,8 +337,8 @@ function onFajaxformButton(event) {
 		if(!confirm($(event.currentTarget).attr("title"))) { return; }
 	} 
 	if($(event.currentTarget).hasClass('draftdrop')) draftdrop=true;
-	$('.errormsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
-	$('.okmsg').hide('slow',function(){ if($(this).hasClass('static')) $(this).remove(); } );
+	$('.errormsg').hide('slow',function(){ $(this).html(''); } );
+	$('.okmsg').hide('slow',function(){ $(this).html(''); } );
 	formSent = event.currentTarget.form;
 	$('.button',formSent).attr('disabled',true);
 	var arr = $(formSent).formToArray(false), action, result = false, resultProperty = false;
@@ -457,6 +457,8 @@ function markItUpSwitchInit() {
  */ 
 //$(function (){ boot() });
 function boot() {
+	if($("#errormsgJS").html().length>0) $("#errormsgJS").css('padding','1em');
+	if($("#okmsgJS").html().length>0) $("#errormsgJS").css('padding','1em');
 	var w = $(window).width();
 	if(w>800) $("#loginInput").focus();
 	if ($("#sidebar").length == 0) { $('body').addClass('bodySidebarOff'); }
@@ -465,7 +467,6 @@ function boot() {
 	//---set default listerens - all links with fajaxa class - has to have in href get param m=Module-Function and d= key:val;key:val
 	fajaxaInit();
 	fconfirmInit();
-	$("#errormsgJS").css('display','block').hide();
 	switchOpen();
 	setListeners('popupLink', 'click', function(evt) { openPopup(this.href); evt.preventDefault(); });
 	$(window).resize(onResize);
@@ -500,7 +501,7 @@ function boot() {
 		});
 		//galery edit	
 		fotoTotal = $("#fotoTotal").text(); if(fotoTotal > 0 && $('#fotoList').length>0) galeryLoadThumb();
-		if(MESSCHECKING) messageCheck();
+		if(MESSCHECKING>0) messageCheck();
 	}
 };
 //LOAD UI scripts
@@ -559,7 +560,7 @@ function switchOpen() { setListeners('switchOpen', 'click', function(evt){ $('#'
 function openPopup(href) { window.open(href, 'fpopup', 'scrollbars=' + gup("scrollbars", href) + ',toolbar=' + gup("toolbar", href) + ',menubar=' + gup("menubar", href) + ',status=' + gup("status", href) + ',resizable=' + gup("resizable", href) + ',width=' + gup("width", href) + ',height=' + gup("height", href) + ''); };
 function setListeners(className, eventName, functionDefinition) { $("." + className).unbind(eventName, functionDefinition).bind(eventName, functionDefinition); };
 function gup(name, url) { name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]"); var regex = new RegExp("[\\?&|]" + name + "=([^&#|]*)"), results = regex.exec(url); return (results === null) ? (0) : (results[1]); };
-function msg(type, text) { $("#"+type+"msgJS").html( text ).show('slow').delay(5000).hide('slow'); };
+function msg(type, text) { $("#"+type+"msgJS").css('padding','1em').html( text ).show('slow').delay(10000).hide('slow'); };
 function redirect(dir) { window.location.replace(dir); };
 //SCRIPT LOADER
 var scriptsLoaded = [], scriptsTried={};

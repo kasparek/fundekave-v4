@@ -18,7 +18,9 @@ optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
-
+-custom cache lite :( to fast group flushing
+-manual draft droping, because it often does not work - missing after redirect
+-boost poling in messages for better response
 
 -osobni profil galerie - bude se hodit
 	-nahravani po jedny

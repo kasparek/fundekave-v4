@@ -197,19 +197,12 @@ class FLeftPanel extends FDBTool {
 							$letext = $panel['content'];
 						}
 
-					
 					if(!empty($letext)) {
 						$TOPTPL = FBuildPage::getInstance();
-						$TOPTPL->setCurrentBlock('sidebar-block');
-						//---if login block
-						if($fnc == 'rh_login') {
-							$TOPTPL->touchBlock('sidebar-block-login');
-						}
-						
 						if(!empty($panel['name']))$TOPTPL->setVariable('SIDEBARHEAD',$panel['name']);
 						$TOPTPL->setVariable('SIDEBARBLOCKID',$fnc);
 						$TOPTPL->setVariable('SIDEBARDATA',$letext);
-						$TOPTPL->parseCurrentBlock();
+						$TOPTPL->parse('sidebar-block');
 					}
 				}
 			}

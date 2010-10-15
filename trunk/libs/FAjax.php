@@ -68,12 +68,11 @@ class FAjax {
 		
     foreach($dataProcessed as $k=>$v)if(($pos = strpos($k,'-'))!==false) $dataProcessed[substr($k,0,$pos)][]=$v;
     if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
-    
+    FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
-
+    //---process k - set pageparam on user if needed
 		if(isset($fajax->data['k'])) {
-			//---process k - set pageparam on user if needed
 			FSystem::processK($fajax->data['k']);
 		}
 
@@ -81,28 +80,27 @@ class FAjax {
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
+				FProfiler::write('FAJAX MODULE VALIDATED');
 				call_user_func(array($className,$action), $dataProcessed);
+				FProfiler::write('FAJAX MODULE COMPLETE');
 				if( $ajax === true )
 				if( $fajax->errorsLater===false ) {
 					$arrMsg = FError::get();
 					if(!empty($arrMsg)){
 						$arr = array();
-						foreach ($arrMsg as $k=>$v) {
-							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-						}
+						foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						FAjax::addResponse('call','msg','error,'.implode('<br />',$arr));
 						FError::reset();
 					}
 					$arrMsg = FError::get(1);
 					if(!empty($arrMsg)){
 						$arr = array();
-						foreach ($arrMsg as $k=>$v) {
-							$arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-						}
+						foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
 						FAjax::addResponse('call','msg','ok,'.implode('<br />',$arr));
 						FError::reset(1);
 					}
 				}
+				FProfiler::write('FAJAX ERROR OUTPUT COMPLETE');
 			} else {
 				if($ajax === true) {
 					//redirect to same page because of user does not have permission to access this page
@@ -116,14 +114,13 @@ class FAjax {
 			} else {
 				FAjax::resetResponse();
 			}
+			FProfiler::write('FAJAX RESPONSE COMPLETE');
 		}
 
 		if($ajax === true) {
 			header ("content-type: text/xml");
-			//do super vars
-			$ret = FSystem::superVars($ret);
-			
-			echo $ret;
+			echo  FSystem::superVars($ret);
+			FProfiler::write('FAJAX XML OUTPUT COMPLETE');
 			exit();
 		}
 	}
