@@ -458,7 +458,7 @@ function markItUpSwitchInit() {
 //$(function (){ boot() });
 function boot() {
 	if($("#errormsgJS").html().length>0) $("#errormsgJS").css('padding','1em');
-	if($("#okmsgJS").html().length>0) $("#errormsgJS").css('padding','1em');
+	if($("#okmsgJS").html().length>0) $("#okmsgJS").css('padding','1em');
 	var w = $(window).width();
 	if(w>800) $("#loginInput").focus();
 	if ($("#sidebar").length == 0) { $('body').addClass('bodySidebarOff'); }
