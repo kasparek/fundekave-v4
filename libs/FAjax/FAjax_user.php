@@ -151,12 +151,8 @@ class FAjax_user extends FAjaxPluginBase {
 				FError::add(FLang::$MESSAGE_TAG_ONLYONE);
 				return;
 			}
-			//clean cache
-			FItemTags::invalidateCache();
-			FCommand::run(ITEM_UPDATED,new ItemVO($itemId,true));
-			
+						
 			if(!isset($data['a'])) $data['a'] = 'a';
-			
 			if($data['a']=='r') {
 				FItemTags::removeTag($itemId,$userId);
 			} else {

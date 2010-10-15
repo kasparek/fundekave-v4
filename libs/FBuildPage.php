@@ -228,18 +228,14 @@ class FBuildPage {
 		//---ERROR MESSAGES
 		$arrMsg = FError::get();
 		if(!empty($arrMsg)){
-			foreach ($arrMsg as $k=>$v) {
-				$tpl->setVariable("ERRORMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
-				$tpl->parse("errormsg");
-			}
+			foreach ($arrMsg as $k=>$v) $errmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
+			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
 			FError::reset();
 		}
 		$arrMsg = FError::get(1);
 		if(!empty($arrMsg)){
-			foreach ($arrMsg as $k=>$v) {
-				$tpl->setVariable("OKMSG", $k . (($v>1)?(' ['.$v.']'):('')) );
-				$tpl->parse("okmsg");
-			}
+			foreach ($arrMsg as $k=>$v) $okmsg[]=$k . (($v>1)?(' ['.$v.']'):(''));
+			$tpl->setVariable("OKMSG",implode('<br />',$okmsg));
 			FError::reset(1);
 		}
 		//---HEADER
@@ -249,6 +245,8 @@ class FBuildPage {
 
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
+		
+		$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
@@ -273,7 +271,6 @@ class FBuildPage {
 				$menuItem = array_shift($arrMenuItems);
 				$tpl->setVariable('LINK',$menuItem['LINK']);
 				$tpl->setVariable('TEXT',$menuItem['TEXT']);
-				//if($menuItem['pageId']==$user->pageVO->pageId) {  $tpl->touchBlock('topmenuactivelink'); }
 				$tpl->parse("topmenuitem");
 			}
 			$tpl->parse('menu');
@@ -309,7 +306,7 @@ class FBuildPage {
 					if(isset($options['class'])) $tpl->setVariable('CLASS',$options['class']);
 					if(isset($options['title'])) $tpl->setVariable('LOTITLE',$options['title']);
 					if(isset($options['parentClass'])) $tpl->setVariable('LISTCLASS',$options['parentClass']);
-					$tpl->parse('secondary-menu-item');
+					$tpl->parse('smitem');
 				}
 			}
 		}

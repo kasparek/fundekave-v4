@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-if(window.location.hash) { var h=window.location.hash.replace('#','').split('/'), m=h[0], i=m.indexOf('-'); if(i > -1) window.location.replace('?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'')); };
-var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT_WIDTH = {CLIENT_WIDTH}, CLIENT_HEIGHT = {CLIENT_HEIGHT}, MESSCHECKING=true, GOOGLEANALID="{GOOGLEID}", USER={USER};
+if(window.location.hash){var h=window.location.hash.replace('#','').split('/'), m=h[0], i=m.indexOf('-');window.location.hash='';if(i>-1)window.location.replace('?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:''));};
+var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT_WIDTH = {CLIENT_WIDTH}, CLIENT_HEIGHT = {CLIENT_HEIGHT}, MESSCHECKING={MSGPOLLTIME}, GOOGLEANALID="{GOOGLEID}", USER={USER},LAZYLOAD={'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', JS_URL+'fundekave.js']};
 </script>
 <title>{TITLE}</title>
 <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
@@ -18,8 +18,7 @@ var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT
 <div id="pageholder">
 <div id="header">
 <div id="logo"><a href="http://fundekave.net/"><img src="css/skin/default/img/fundekave-logo.png" title="fundekave.net" alt="FUNDEKAVE" /></a></div>
-{CACHEDMENU}
-<!-- BEGIN menu --><ul id="menu"><!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem --></ul><!-- END menu -->
+{CACHEDMENU}<!-- BEGIN menu --><ul id="menu"><!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem --></ul><!-- END menu -->
 </div>
 <div id="pagebar">
 <div id="mainbar">
@@ -27,15 +26,11 @@ var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT
 <!-- BEGIN breadcrumbs --><div id="breadcrumbs">
 <!-- BEGIN breadcrumbslist --><ul><!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread --></ul><!-- END breadcrumbslist -->
 </div><!-- END breadcrumbs -->
-<!-- BEGIN secondary-menu --><div id="menu-secondary-holder">
-<ul id="menu-secondary">
-<!-- BEGIN secondary-menu-item --><li<!-- BEGIN listclass --> class="{LISTCLASS}"<!-- END listclass -->><a href="{LOLINK}"<!-- BEGIN secondary-menu-title --> title="{LOTITLE}"<!-- END secondary-menu-title --><!-- BEGIN secondary-menu-class-custom --> class="{CLASS}"<!-- END secondary-menu-class-custom --><!-- BEGIN secondary-menu-id --> id="{LOID}"<!-- END secondary-menu-id -->>{LOTEXT}</a></li><!-- END secondary-menu-item -->
-</ul>
-</div><!-- END secondary-menu -->
-<div id="errormsgJS" class="errormsg"></div>
-<div id="okmsgJS" class="okmsg"></div>
-<!-- BEGIN errormsg --><div class="errormsg static">{ERRORMSG}</div><!-- END errormsg -->
-<!-- BEGIN okmsg --><div class="okmsg static">{OKMSG}</div><!-- END okmsg -->
+<!-- BEGIN secondary-menu --><div id="menu-secondary-holder"><ul id="menu-secondary">
+<!-- BEGIN smitem --><li<!-- BEGIN smlicl --> class="{LISTCLASS}"<!-- END smlicl -->><a href="{LOLINK}"<!-- BEGIN smtitle --> title="{LOTITLE}"<!-- END smtitle --><!-- BEGIN smcl --> class="{CLASS}"<!-- END smcl --><!-- BEGIN smid --> id="{LOID}"<!-- END smid -->>{LOTEXT}</a></li><!-- END smitem -->
+</ul></div><!-- END secondary-menu -->
+<div id="errormsgJS" class="errormsg">{ERRORMSG}</div>
+<div id="okmsgJS" class="okmsg">{OKMSG}</div>
 <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
 <!-- BEGIN content --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
 <!-- BEGIN contentheading --><h2>{MAINHEAD}</h2><!-- END contentheading -->
@@ -43,7 +38,7 @@ var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT
 </div><!-- END content -->
 </div>
 <!-- BEGIN sidebar --><div id="sidebar">
-<!-- BEGIN sidebar-block --><div class="sidebarBlock radcon<!-- BEGIN sidebar-block-login --> loginBlock<!-- END sidebar-block-login -->">
+<!-- BEGIN sidebar-block --><div class="sidebarBlock">
 <!-- BEGIN sidebar-heading --><h2>{SIDEBARHEAD}</h2><!-- END sidebar-heading -->
 <div id="{SIDEBARBLOCKID}" class="sidebarBlockContent">
 {SIDEBARDATA}
@@ -54,8 +49,6 @@ var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT
 <div id="footer"><span><a href="http://fundekave.net">fundekave.net</a></span>{FOOTER}</div>
 </div>
 <span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
-<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="[[URL_JS]]fundekave.js"></script>-->
 <script type="text/javascript" src="[[URL_JS]]boot.js"></script>
 </body>
 </html>
