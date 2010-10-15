@@ -18,15 +18,15 @@ function class_autoloader($c) {
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
+//--------------------------------------------------------config + constant init
+FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
+date_default_timezone_set(FConf::get('internationalization','timezone'));
+setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
+setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
+if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
+
 if(isset($_GET['nonInit'])) $nonInit=true;
 if(!isset($nonInit)) {
-	//--------------------------------------------------------config + constant init
-	FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
-	date_default_timezone_set(FConf::get('internationalization','timezone'));
-	setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
-	setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
-	if(FConf::get('internationalization','lang')) require(FConf::get('internationalization','lang'));
-	//-------------------------------------------------------------time for debuging
 	FProfiler::write('START');
 	//---session settings - stored in db
 	ini_set("session.gc_maxlifetime",SESSIONLIFETIME);

@@ -20,10 +20,8 @@
 <input id="ppinput" type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
 <input type="submit" name="special" value="Proved" class="button">
 </fieldset>
-<!-- BEGIN searchfilters --><label>Výsledky hledání:</label><div>
-<!-- BEGIN searchusername --><strong>Jméno:</strong> {FILTERUSERNAME} <!-- END searchusername -->
-<!-- BEGIN searchtext --><strong>Text:</strong> {FILTERTEXT}<!-- END searchtext --> 
-<a href="{FILTRCANCELLINK}">Zrušit filtr</a></div><!-- END searchfilters -->
+<!-- BEGIN searchfilters --><h2>Výsledky hledání: {FILTERUSERNAME} {FILTERTEXT}</h2>
+<h3><a href="{FILTRCANCELLINK}">Zrušit filtr</a></h3><!-- END searchfilters -->
 <div id="itemlist">
 <!-- BEGIN message --><div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
 <div class="header">

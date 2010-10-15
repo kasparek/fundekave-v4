@@ -90,14 +90,11 @@ class FItemsForm {
 				$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
 				break;
 			case 'deleteImage':
-				//TODO: currently it is done via item_delete
 				$itemVO = new ItemVO((int) $data['item']);
 				if($itemVO->load()) {
 					$itemVO->deleteImage();
 					$itemVO->save();
 				}
-				//TODO: refactor - this is remove item for forum only
-				//FAjax::addResponse('function','call','remove;i'.$data['item']);
 				break;
 			case 'delete':
 				$itemVO = new ItemVO((int) $data['item']);
@@ -193,10 +190,8 @@ class FItemsForm {
 						$cache = FCache::getInstance('s',0);
 						$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
 						//---on success
-						if($data['__ajaxResponse']!=true) {
-							$redirectParam = '#dd';
-							$redirect=true;
-						}
+						$redirectParam = '#dd';
+						$redirect=true;
 
 						if($itemVO->itemIdTop > 0) {
 							$itemVO->updateReaded($user->userVO->userId);
@@ -220,8 +215,13 @@ class FItemsForm {
 		if($redirect==true) {
 			FCommand::run(ITEM_UPDATED,$itemVO);
 			if($data['__ajaxResponse']==true) {
-				FAjax::redirect(FSystem::getUri($redirectParam,$pageId,'u',array('short'=>1))); //new item
-				if($itemVO==null) FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'',array('short'=>1))); //deleted item
+				if($itemVO) {
+					//new item
+					FAjax::redirect(FSystem::getUri($redirectParam,$user->pageVO->pageId,'u',array('short'=>1)));
+				} else {
+					//deleted item
+					FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'',array('short'=>1)));
+				}
 			} else {
 				FHTTP::redirect(FSystem::getUri($redirectParam)); //non ajax processing
 			}

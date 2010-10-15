@@ -79,6 +79,7 @@ div#loggedUserContainer div#avatarBox {float: right;}
 div#loggedUserContainer img.userAvatar{border: 1px solid #412c00;}
 
 /* FORMS */
+div#editForm {margin-bottom: 1em;}
 div#mainbar fieldset {margin-bottom: 1em;border: 1px solid #ddd;background: #f0f0f0;}
 div#mainbar form.notpublished fieldset{background: #ffe0c0;}
 div#mainbar fieldset label {float: left;display: inline-block;min-width: 10em;}
@@ -181,11 +182,10 @@ span.commentsNum img {margin-bottom:-4px;	}
 span.linkIco img {margin-bottom:-2px;}
 
 /* HENTRY CONTENT */
-div.mainpanel-content div.hentry div.entry-content {padding-top: 0.5em;line-height:1.8em;}
+div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;line-height:1.8em;}
 div.mainpanel-content div.hentry div.withCommented {margin-right: 250px;}
 div.mainpanel-content div.hentry div.textLong {margin-top: 20px;}
 div.mainpanel-content div.hentry div.entry-content img {max-width: 680px;}
-div#messageBox div.entry-content { padding: 0 50px; }
 
 /* GALERY */
 div.galleryList div.thumbnail {float: left;margin-right: 15px;padding-top: 0;margin-top: -5px;}
