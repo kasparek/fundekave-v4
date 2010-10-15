@@ -203,7 +203,7 @@ class page_PageItemList implements iPage {
 		}
 
 		if(!empty($data['__ajaxResponse'])) {
-			FAjax::addResponse('commentForm','action',FSystem::getUri('i='.$itemVO->itemId));
+			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
 			FAjax::addResponse('topPager','$html',empty($vars['TOPPAGER']) ? '' : $vars['TOPPAGER']);
 			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
