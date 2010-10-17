@@ -74,7 +74,10 @@ class FItemsRenderer {
 	}
 
 	function render( $itemVO ) {
-		
+		if(!$itemVO->itemId) {
+			FError::write_log('RENDERER - empty item');
+			return;
+		}
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
@@ -191,27 +194,23 @@ class FItemsRenderer {
 			}
 		}
 
-		$vars['COMMENTLINK'] = $link;
-		$vars['CNTCOMMENTS'] = $itemVO->cnt;
-		if($itemVO->unreaded > 0) $vars['ALLNEWCNT'] = $itemVO->unreaded;
+		$showCommentNum=true;
+		if($itemVO->typeId=='forum') {
+			$pageType = $itemVO->pageVO->get('typeId');
+			if($pageType=='galery' || $pageType=='forum') $showCommentNum=false; 
+		}
+		if($showCommentNum && $itemVO->cnt>0) {
+			$vars['COMMENTLINK'] = $link;
+			$vars['CNTCOMMENTS'] = $itemVO->cnt;
+			if($itemVO->unreaded > 0) $vars['ALLNEWCNT'] = $itemVO->unreaded;
+		}
 
 		/* google maps */
-		$position = $itemVO->prop('position');
-		if(!empty($position)) {
-			$vars['MAPITEMID'] = $itemVO->itemId;
-			$vars['MAPPOSITION'] = str_replace(";","\n",$position);
-			$vars['MAPTITLE'] = $itemVO->addon;
-			$vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
-
-			$journey = explode(';',$position);
-			$vars['STATICITEMID'] = $itemVO->itemId;
-			$vars['STATICURL'] = $link;
-			$vars['STATICITEMTITLE'] = $itemVO->addon;
-			$vars['STATICMARKERPOS'] = $journey[count($journey)-1];
-			if(count($journey)>1) $vars['STATICWPLIST'] = implode('|',$journey);
-
+		if($itemVO->prop('position')) {
+			$vars = array_merge($vars,FItemsRenderer::gmaps($itemVO));
+			$touchedBlocks['map']=true; //to display map icon
 		}
-		/**/
+		
 		$vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
 		//---FINAL PARSE
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;
@@ -225,6 +224,20 @@ class FItemsRenderer {
 			$cache->setData($cached,$cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 		}
 	}
+	
+	static function gmaps($itemVO) {
+		$vars = array();
+		$position = $itemVO->prop('position');
+		if(empty($position)) return $vars;
+		$journey = explode(';',$position);
+		$vars['MAPITEMID'] = $itemVO->itemId;
+		$vars['MAPPOSITION'] = implode("\n",$journey);
+		$vars['MAPTITLE'] = $itemVO->addon;
+		$vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
+		$vars['STATICMARKERPOS'] = $journey[count($journey)-1];
+		if(count($journey)>1) $vars['STATICWPLIST'] = implode('|',$journey);
+		return $vars;
+	} 
 	
 	function getLast() {
 		return $this->tplParsed[count($this->tplParsed)-1];

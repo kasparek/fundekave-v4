@@ -7,8 +7,8 @@ class FAjax_page extends FAjaxPluginBase {
 		$items = $user->pageVO->refreshImages();
 		$newStr = '';
 		$updatedStr = '';
-		if(isset($items['new'])) $newStr = implode(',',$items['new']);
-		if(isset($items['updated'])) $updatedStr = implode(',',$items['updated']);
+		if(isset($items['new'])) $newStr = implode(';',$items['new']);
+		if(isset($items['updated'])) $updatedStr = implode(';',$items['updated']);
 		FAjax::addResponse('call','galeryRefresh',$newStr.','.$updatedStr.','.$items['total']);
 	}
 
@@ -23,9 +23,7 @@ class FAjax_page extends FAjaxPluginBase {
 	}
 
 	static function edit($data) {
-
 		page_PageEdit::process($data);
-
 	}
 
 }

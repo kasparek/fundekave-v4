@@ -3,12 +3,12 @@
 <div class="header">
 <span class="author vcard"><!-- BEGIN aa --><a href="{AUTHORLINK}" class="author url"><!-- END aa --><span class="fn">{AUTHOR}</span><!-- BEGIN aaclose --></a><!-- END aaclose --></span>
 <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-<span class="stats">{TAG} <span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="[[SKINURL]]/img/link_go.png" /></a></span></span>
+<span class="stats"><!-- BEGIN cmt --><span class="commentsNum"><a href="{COMMENTLINK}&comments=1" title="Pocet komentaru"><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS} <img src="[[SKINURL]]/img/comments.png" alt="Komentare"></a></span><!-- END cmt --> {TAG} <span class="linkIco"><a href="{ITEMLINK}" title="Odkaz na prispevek"><img src="[[SKINURL]]/img/link_go.png" /></a></span></span>
 <!-- BEGIN postdeletecheckbox --><span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[SKINURL]]/img/comment_delete.png" title="Smazat prispevek" /></a></span><!-- END postdeletecheckbox -->
 </div>
 <div class="avatar">{AVATAR}</div>
 <div class="entry-content">{TEXT}</div>
-<!-- BEGIN map --><a name="map{MAPITEMID}"></a><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<br /><strong>Vzdalenost: [[DISTANCE]]NM</strong></p></div></div><!-- END mapdata --></div>
-<div class="mapSmall"><a id="mapThumb{STATICITEMID}" href="{STATICURL}#map" title="Map detail: {STATICITEMTITLE}" class="mapThumbLink"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers={STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN staticjourney -->&path={STATICWPLIST}<!-- END staticjourney -->" title="{STATICITEMTITLE}" alt="Google Maps" /></a></div><!-- END map -->
+<!-- BEGIN map --><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<br /><strong>Vzdalenost: [[DISTANCE]]NM</strong></p></div></div><!-- END mapdata --></div>
+<div class="mapSmall"><a id="mapThumb{MAPITEMID}" href="#map" title="Map detail: {MAPTITLE}" class="mapThumbLink"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers={STATICMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN stwp -->&path={STATICWPLIST}<!-- END stwp -->" title="{MAPTITLE}" alt="Google Maps" /></a></div><!-- END map -->
 </div>
 <div class="clearbox"></div>

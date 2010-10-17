@@ -3,9 +3,9 @@
  *  TODO:
  *  fix kluby, galerie - stranky
  *  profil fotky - galerie na hlavni zalozce
- *  z infa zachovat pouze - motto, info, icq, www   
+ *  z infa zachovat pouze - motto, info, icq, www
  *
- **/  
+ **/
 include_once('iPage.php');
 class page_UserInfo implements iPage {
 
@@ -17,18 +17,18 @@ class page_UserInfo implements iPage {
 	}
 
 	static function build($data=array()) {
-		
+
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo',''), FLang::$LABEL_INFO);
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo','u'), FLang::$LABEL_PERSONALSETTINGS);
-		
+
 		$user = FUser::getInstance();
-		
+
 		if($user->pageParam=='u') {
 			page_UserSettings::build($data);
 			return;
 		}
-		
+
 		$isFriend = false;
 		if($who = $user->whoIs) {
 
@@ -79,11 +79,22 @@ class page_UserInfo implements iPage {
 			if(($www = $userVO->getXMLVal('personal','www')) !='' ) $tpl->setVariable("WWW",$www);
 			if(($motto=$userVO->getXMLVal('personal','motto')) !='') $tpl->setVariable("MOTTO",$motto);
 			if(($about=$userVO->getXMLVal('personal','about')) !='') $tpl->setVariable("ABOUT",$about);
+
+			$cache = FCache::getInstance('d');
+			$fileList = $cache->getData($userVO->userId,'profileFiles');
+			if($fileList===false) {
+				$ffile = new FFile(FConf::get("galery","ftpServer"));
+				$fileList=$ffile->fileList(FAvatar::profileBasePath());
+				$cache->setData($fileList);
+			}
 			
-			if(($profilePageId=$userVO->getXMLVal('personal','profilePage')) !='') {
-				//TODO: print galery items
-				
-        $tpl->setVariable("PROFILEFOTOS",$galItems);
+			if(!empty($fileList)) {
+				sort($fileList);
+				while($file = array_pop($fileList)) {
+					$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
+					$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($userVO->name).'/profile/'.$file);
+					$tpl->parse("foto");	
+				}
 			}
 
 			$bookOrder = $user->userVO->getXMLVal('settings','bookedorder') * 1;

@@ -23,12 +23,12 @@
 <!-- BEGIN searchfilters --><h2>Výsledky hledání: {FILTERUSERNAME} {FILTERTEXT}</h2>
 <h3><a href="{FILTRCANCELLINK}">Zrušit filtr</a></h3><!-- END searchfilters -->
 <div id="itemlist">
-<!-- BEGIN message --><div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
+<!-- BEGIN message --><div id="mess{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
 <div class="header">
 <span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
 <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
 <span class="stats">Oznacit: <input type="checkbox" name="del-{EDITID}" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
-<!-- BEGIN unreadmess --><span class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
+<!-- BEGIN unreadmess --><span id="unreadedLabel" class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
 <span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[SKINURL]]/img/comment_delete.png" title="Smazat prispevek" /></a></span>
 </div>
 <!-- BEGIN ava --><div class="avatar">{AVATAR}</div><!-- END ava -->

@@ -17,7 +17,7 @@ div#pageholder {position: relative;left: 0px;font-size:0.88em;}
 input {font-size: 1em; }
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
-div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.2em;}
+div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
 div#header, div#footer{clear:both;margin-left: 0px;min-width: 750px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
@@ -74,20 +74,20 @@ form#loginForm ul li, div#loggedUserContainer ul li {padding-left: 10px;list-sty
 div#loggedUserContainer ul li a.requests {font-weight: bold;color: #ff0000;}
 div#loggedUserContainer h2 {float: left;font-size: 1.2em;}
 div#loggedUserContainer h2 a {font-weight: bold;text-decoration: none;}
-div#loggedUserContainer div#avatarBox {float: right;}
+div#loggedUserContainer div#avatarBox {float: right;margin-top:5px;}
 div#loggedUserContainer img.userAvatar{border: 1px solid #412c00;}
 
 /* FORMS */
 div#editForm {margin-bottom: 1em;}
 div#mainbar fieldset {margin-bottom: 1em;border: 1px solid #ddd;background: #f0f0f0;}
 div#mainbar form.notpublished fieldset{background: #ffe0c0;}
-div#mainbar fieldset label {float: left;display: inline-block;min-width: 10em;}
+div#mainbar label {float: left;display: inline-block;min-width: 10em;}
 div#mainbar fieldset div.row {clear: left;}
 div#mainbar fieldset input {width: 400px;margin-bottom: 0.3em;padding: 0 4px;}
 div#mainbar fieldset select {margin-bottom: 0.3em;}
 div#mainbar fieldset input.xShort {width: 4em;}
 div#mainbar fieldset input.short {width: 10em;}
-div#mainbar fieldset textarea.short {width: 10em;height: 3em;}
+div#mainbar fieldset textarea.short {width: 300px;height: 3em;}
 div#mainbar .buttonBar {padding-top: 0.5em;padding-bottom: 0.5em;}
 div#mainbar fieldset input.button {width: auto;min-width: 5em;font-size: 1em;}
 div#mainbar fieldset input.submit {margin-left: 10em;}
@@ -101,7 +101,7 @@ span.textAreaResize {float: left;}
 span.textAreaResize a {text-decoration: none;background: url(img/windows.png) no-repeat left top;display: block;width: 16px;height: 16px;margin-top: 2px;margin-right: 4px;margin-left: -20px;}
 
 /* ARTICLE CONTENT */
-div.mainpanel-content {padding-left: 10px;padding-right: 10px;}
+div.mainpanel-content {padding-left: 10px;padding-right: 10px;line-height:1.8em;}
 div.mainpanel-content h3 {margin-top: 1.5em;margin-bottom: 0.5em;padding: 0.6em 0.6em 0.3em 0.6em;color: white;background: #332200;}
 div.mainpanel-content h3 a {color: white;text-decoration: underline;}
 div.mainpanel-content div.galery span.abbr {color: white;margin-right: 1em;position: relative;float: right;top: -2em;}
@@ -126,7 +126,6 @@ div.mainpanel-content div.entry-content div.hentry {margin: 0 0 0 2em;}
 div.mainpanel-content div.hentry span.postsNew {display: inline;float: none;text-align: left;margin: 0;}
 div.mainpanel-content div.hentry div.avatar {float: left;margin: 0 0.5em 1em 0;}
 div.mainpanel-content div.blog div.avatar {float: right;margin: 0 0 1em 0;}
-div.mainpanel-content div.hentry .stats span { padding: 0 0.4em;}
 
 div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padding: 0 1em;margin-top: 0;height:100px;}
 div.mainpanel-content div.opacity div.vevent {margin-bottom: 0;}
@@ -168,10 +167,10 @@ div.mainpanel-content div.vevent span.vcard {float: right;background-color: #f8f
 
 div.mainpanel-content div.notpublished div.notpublishedMsg {color: #ff0000;height: 2em;line-height: 2em;font-weight: bold;background-color: #ffddbb;padding: 0 1em;}
 
+span.viewedTimes,span.monitor,span.tagMe,span.tagIs,span.fotoNum,span.commentsNum,span.linkIco,span.map {padding:0 3px}
 span.tagMe img {margin-bottom: -2px;}
 span.tagIs {line-height: 16px;}
 span.tagIs img {margin-bottom:-4px;}
-span.viewedTimes {}
 span.viewedTimes img {margin-bottom: -2px;padding-left: 0.5em;}
 span.fotoNum {line-height: 2em;}
 span.fotoNum img {margin-bottom: -2px;}
@@ -179,9 +178,10 @@ span.commentsNum {padding-top: 2px;padding-bottom: 0.2em;}
 span.commentsNum a {text-decoration: none;	}
 span.commentsNum img {margin-bottom:-4px;	}
 span.linkIco img {margin-bottom:-2px;}
+span.monitor img,span.map img{margin-bottom:-4px;}
 
 /* HENTRY CONTENT */
-div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;line-height:1.8em;}
+div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;}
 div.mainpanel-content div.hentry div.withCommented {margin-right: 250px;}
 div.mainpanel-content div.hentry div.textLong {margin-top: 20px;}
 div.mainpanel-content div.hentry div.entry-content img {max-width: 680px;}
@@ -221,16 +221,9 @@ div.friends ul li div,div.friends ul li ul {float: left;}
 div.friends ul li div {margin-right: 10px;}
 
 /* NEW MESSAGES WARNING */
-span#messageNew {color:#fff;
-position: fixed;
-z-index:10001;
-display: block;
-background: #C64226;
-font: 1em Georgia,Times,serif;
-right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
+span#messageNew {color:#fff;position: fixed;z-index:10001;display: block;background: #C64226;font: 1em Georgia,Times,serif;right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
 span#messageNew a { color:#fff; }
 span#messageNew .flash {border: 2px #00ffff solid;}
-
 
 /*POST PAGE*/
 div#recipientavatar {float: left;clear: left;min-width: 10em;text-align: center;}
@@ -260,21 +253,16 @@ div.user-info-foto img {margin-bottom: 10px;margin-right: 10px;float: left;}
 .okmsg {color: #000;font-size: 1.2em;background-color: #dfd;margin: 5px 10px;}
 
 /* SIDEBAR USER LIST - deprecated */
-div#sidebar ul.sidebarUsersList {list-style: none;padding: 0;margin: 0;}
-div#sidebar ul.sidebarUsersList span.fn {padding: 0 2px;font-weight: bold;}
-div#sidebar ul.sidebarUsersList span.fn a {text-decoration: none;}
-div#sidebar ul.sidebarUsersList img.userAvatar {float: left;margin: 0 0.5em 0 0;}
-div#sidebar ul.sidebarUsersList li {clear: left;overflow: hidden;background: none;list-style: none;}
+div#sidebar div#onlineFriendList {padding-top:5px;text-align:center;}
+div#sidebar div#onlineFriendList h2 {float:none;}
+div#sidebar div#onlineFriendList a {text-decoration: underline;}
+div#sidebar ul#sidebarUsersList {text-align:left;list-style: none;padding: 1em 0;margin: 0;}
+div#sidebar ul#sidebarUsersList span.fn {padding: 0 2px;font-weight: bold;}
+div#sidebar ul#sidebarUsersList span.fn a {text-decoration: none;}
+div#sidebar ul#sidebarUsersList img.userAvatar {float:right;margin: 3px 0;}
+div#sidebar ul#sidebarUsersList li {padding:0;clear: left;overflow: hidden;background: none;list-style: none;}
 
-div#fullscreenToolbar {
-position:fixed;
-top:0px;
-right:50px;
-height:25px;
-text-align:center;
-z-index:10000;
-background:#eee;
-}
-div#fullscreenToolbar a { line-height:25px;
-padding:0 5px;}
+div#fullscreenToolbar {position:fixed;top:0px;right:50px;height:25px;text-align:center;z-index:10000;background:#eee;}
+div#fullscreenToolbar a { line-height:25px;padding:0 5px;}
+.fullscreenSlideshowOn { background-color:#ff0000; }
 /*} /* END MEDIA SCREEN */

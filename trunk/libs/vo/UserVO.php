@@ -143,17 +143,13 @@ class UserVO extends Fvob {
 			if($refresh==true) {
 				$cache->invalidateGroup($cacheGroup);
 			}
-
 			$q = "SELECT if(f.userIdFriend=".$this->userId.",f.userId,f.userIdFriend),
 			if(f.userIdFriend=".$this->userId.",s2.name,s1.name) as fname
 			FROM sys_users_friends as f 
 			join sys_users as s1 on f.userIdFriend = s1.userId 
 			join sys_users as s2 on f.userId = s2.userId 
 			WHERE f.userId = ".$this->userId." or f.userIdFriend = ".$this->userId." ORDER BY fname";
-			
-			
 			$arrTmp = FDBTool::getAll($q, $this->userId, $cacheGroup, 's', 0);
-
 			$arr = array();
 			if(!empty($arrTmp)) {
 				foreach ($arrTmp as $row) {
@@ -166,49 +162,35 @@ class UserVO extends Fvob {
 	}
 	
 	function loadFriends() {
-		
 		$arr = $this->getFriends();
-		
 		$vo = new FDBvo( $this );
 		$vo->VO = 'UserVO';
-						
 		$vo->setWhere("sys_users.userId in (".implode(',',$arr).")");
 		$vo->setOrder('sys_users.name');
 		return $vo->get();
-		
 	}
 	
 	function loadOnlineFriends() {
 		$vo = new FDBvo( $this );
 		$vo->VO = 'UserVO';
-		
 		$vo->addJoin('join sys_users_friends as f on f.userIdFriend=sys_users.userId');
-		
 		$vo->addSelect('l.dateUpdated as activity,l.location as activityPageId');
 		$vo->addJoin('join sys_users_logged as l on l.userId = sys_users.userId');
-				
 		$vo->addWhere("f.userId = ".$this->userId);
 		$vo->addWhere("l.userId != ".$this->userId);
 		$vo->addWhere("subdate(NOW(),interval ".USERVIEWONLINE." minute) < l.dateUpdated"); 
-
 		$vo->setOrder('sys_users.dateLastVisit');
+		$vo->autojoinSet(true);
 		return $vo->get();
 	}
 	
 	function loadRequests() {
-		
 		$vo = new FDBvo( $this );
-		
 		$vo->addSelect('i.itemId as requestId,i.userId as requestUserId,i.text as requestMessage');
 		$vo->addJoin('join sys_pages_items as i on i.userId=sys_users.userId');
-		
 		$vo->VO = 'UserVO';
-		
-		$vo->setWhere("i.typeId = 'request'");
-		$vo->setWhere("i.addon = '".$this->userId."'");
+		$vo->setWhere("i.typeId = 'request' and i.addon = '".$this->userId."'");
 		$vo->setOrder('sys_users.name');
-		
 		return $vo->get();
-		
 	}
 }

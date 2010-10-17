@@ -68,23 +68,12 @@
 /* END BASIC SCREEN ELEMENTS */
 
 /* GOOGLE MAPS styles */
-.mapSmall {float: right;clear: right;}
+.geoselectorlabel {margin-top:-23px;}
+.mapSmall {float: right;clear: right;padding:0 1em;}
 .mapLarge {width: 100%;height: 600px;}
 .geoInfo {width:300px;}
 .mapsData {display:none;}
-.fullscreen {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #000000;
-}
+.fullscreen {display: block;position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: 9999;margin: 0;padding: 0;overflow: hidden;background: #000000;}
 
 /* PAGER */
 div.pagination {clear: left;margin: 0.3em 0;padding: 1em 0;text-align:right;}

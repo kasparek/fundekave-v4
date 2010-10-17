@@ -10,15 +10,12 @@ class page_PageEdit implements iPage {
 		if(isset($data["save"])) $action = 'save';
 		if(isset($data["del"])) $action = 'del';
 		if(isset($data["delpageavatar"])) $action = 'delpageavatar';
-			
+	
 		$user = FUser::getInstance();
 
-		$redirectAdd = '';
-		
-		if($user->pageParam == 'a') {
-			$redirectAdd = 'e';
-		}
-		
+		$redirectAdd=false; //keep current value
+		if($user->pageParam == 'a') $redirectAdd = 'e';
+
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
@@ -32,9 +29,22 @@ class page_PageEdit implements iPage {
 			return;
 		}
 
+		/*if(strpos($action,'-')) list($action,$actionValue) = explode('-',$action);
+		if($action == 'delfoto') {
+			$deleteItemId = (int) $actionValue;
+			$itemVO = new ItemVO($deleteItemId);
+			if($itemVO->load()) {
+				$itemVO->delete();
+				if($data['__ajaxResponse']) {
+					FAjax::addResponse('call', 'remove', 'foto-'.$deleteItemId);
+				}
+			}
+			return;
+		}*/
+
 		if($action == "save") {
 			FError::reset();
-			
+
 			$pageVO = new PageVO();
 			if($user->pageParam == 'a') {
 				//---new page
@@ -52,7 +62,7 @@ class page_PageEdit implements iPage {
 				$pageVO->pageId = $data['pageId'];
 				$pageVO->load();
 			}
-			
+
 
 			//---categories
 			if($pageVO->typeId=='blog' && $user->pageParam!='a') {
@@ -90,7 +100,7 @@ class page_PageEdit implements iPage {
 					$pageVO->locked = (int) $data['locked'];
 				}
 			}
-			
+
 			if(!empty($data['category'])) {
 				$pageVO->categoryId = (int) $data['category'];
 			}
@@ -142,17 +152,17 @@ class page_PageEdit implements iPage {
 					//---load settings from defaults if not in limits
 					$thumbCut = FConf::get('galery','thumbCut');
 					list($xwidthpx,$xheightpx) = explode('x',substr($thumbCut,0,strpos($thumbCut,'/'))); //thumbCut = 170x170/crop
-					
+
 					if(isset($data['xwidthpx'])) if($data['xwidthpx'] > 20) $xwidthpx = (int) $data['xwidthpx'];
 					if(isset($data['xheightpx'])) if($data['xheightpx'] > 20) $xheightpx = (int) $data['xheightpx'];
-					
+
 					$thumbStyleSelectedIndex = 2;
 					if(isset($data['xthumbstyle'])) $thumbStyleSelectedIndex = (int) $data['xthumbstyle'];
-					$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop'; 
+					$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop';
 					$pageVO->prop('thumbCut',$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle);
-						
+
 					if(isset($data['galeryorder'])) $pageVO->prop('order',(int) $data['galeryorder']);
-						
+
 					//---if setting changed on edited galery delete thumbs
 					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
 						$galery = new FGalery();
@@ -163,7 +173,7 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
-				
+
 				FCommand::run(PAGE_UPDATED,$pageVO);
 
 				//---page editing
@@ -190,7 +200,7 @@ class page_PageEdit implements iPage {
 				}
 				if(isset($data['position'])) {
 					$position = FSystem::textins($data['position'],array('plainText'=>1));
-				  if(!empty($position)) {
+					if(!empty($position)) {
 						$pageVO->prop('position', $position);
 					}
 				}
@@ -215,16 +225,20 @@ class page_PageEdit implements iPage {
 					if(!empty($data['__files'])) {
 						//---upload new foto
 						$adr = FConf::get("galery","sourceServerBase") . $pageVO->galeryDir;
+						$ffile = new FFile(FConf::get("galery","ftpServer"));
 						foreach ($_FILES as $foto) {
-							if ($foto["error"]==0) $up=FSystem::upload($foto,$adr,500000);
+							if ($foto["error"]==0) $up=$ffile->upload($foto,$adr,500000);
 						}
 					}
 
 					//---foto delete
 					if(isset($data['delfoto'])) {
 						foreach ($data['delfoto'] as $deleteItemId) {
-							$itemVO = new ItemVO($deleteItemId,true);
-							$itemVO->delete();
+							$deleteItemId = (int) $deleteItemId;
+							$itemVO = new ItemVO($deleteItemId);
+							if($itemVO->load()) {
+								$itemVO->delete();
+							}
 						}
 					}
 
@@ -240,8 +254,8 @@ class page_PageEdit implements iPage {
 							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
-							$position = FSystem::textins($v['position'],array('plainText'=>1));
-							if(!empty($position)) $itemVO->prop('position',$position);
+							$v['position'] = FSystem::textins($v['position'],array('plainText'=>1));
+							if(!empty($v['position'])) $itemVO->prop('position',$v['position']);
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::add(FLang::$ERROR_DATE_FORMAT);
@@ -251,26 +265,26 @@ class page_PageEdit implements iPage {
 						}
 					}
 
-					$redirParam='#dd';
+					if(!isset($data['draftable'])) {
+						$redirectParam = '#dd';
+					}
 				}
 
 				/* redirect */
+				if($pageCreated === true) {
+					FError::add(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
+				}
 				if($data['__ajaxResponse']) {
 					if($pageCreated === true) {
 						//if new page redirect
 						FAjax::errorsLater();
-						FError::add(FLang::$MESSAGE_SUCCESS_CREATE.': <a href="'.FSystem::getUri('',$pageVO->pageId).'">'.$pageVO->name.'</a>',1);
 						FAjax::addResponse('call','redirect',FSystem::getUri('',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
 						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 						if(!empty($redirectAjax)) {
-							
-							FAjax::redirect(FSystem::getUri('dd=1','','e'));
+							FAjax::redirect(FSystem::getUri(!isset($data['draftables'])?'dd=1':'','','e'));
 						}
-						//FAjax::addResponse('pageedit','$html',page_PageEdit::build($data));
-						//TODO: only update values in form would be best otherwise it is too much jumping
-						
 					}
 				} else {
 					FHTTP::redirect(FSystem::getUri($redirParam,'',$redirectAdd));
@@ -334,7 +348,7 @@ class page_PageEdit implements iPage {
 				else {
 					FError::add('missing page type');
 					return;
-				} 
+				}
 			} else {
 				$pageVO->typeId = $user->pageVO->typeIdChild;
 			}
@@ -343,7 +357,7 @@ class page_PageEdit implements iPage {
 			$pageVO = new PageVO();
 			$pageVO->pageId = $user->pageVO->pageId;
 			$pageVO->load();
-			
+
 			if($pageVO->typeId=='galery') {
 				$pageVO->refreshImages();
 			}
@@ -367,9 +381,9 @@ class page_PageEdit implements iPage {
 			$tpl->touchBlock('extendedtab');
 			if(empty($pageVO->pageIdTop) || $pageVO->pageIdTop==$pageVO->pageId) {
 				$tpl->touchBlock('site');
-				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));	
+				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));
 			}
-			$tpl->setVariable('POSITION',$pageVO->prop('position')); 
+			$tpl->setVariable('POSITION',$pageVO->prop('position'));
 		} else {
 			$tpl->setVariable('T',$pageVO->typeId);
 		}
@@ -382,7 +396,7 @@ class page_PageEdit implements iPage {
 		$pageCont = '';
 
 		if(isset($pageVO->name)) $tpl->setVariable('PAGENAME',$pageVO->name);
-		 
+			
 		if(isset($pageVO->description)) $pageDesc = $pageVO->description;
 		if(isset($pageVO->content)) $pageCont = $pageVO->content;
 
@@ -460,7 +474,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGETEMPLATE',$pageVO->template);
 		}
-		
+
 		if($user->pageParam=='sa' || $pageVO->typeId=='galery') {
 			$date = new DateTime((!empty($pageVO->dateContent))?($pageVO->dateContent):(''));
 			$tpl->setVariable('DATECONTENT',$date->format("d.m.Y"));

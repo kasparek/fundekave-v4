@@ -1,14 +1,14 @@
 <?php
 class FAjax {
-	
+
 	public $template = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<FAjax><Response>\n{CONTENT}\n</Response></FAjax>";
 	public $itemTemplate = '<Item target="{TARGET}" property="{PROP}"><![CDATA[{DATA}]]></Item>';
-	
+
 	public $data;
 	public $responseData;
 	public $errorsLater = false;
 	public $redirecting = false;
-	
+
 	/**
 	 * SINGLETON
 	 * all functions are static
@@ -37,7 +37,7 @@ class FAjax {
 			else {
 				$dataXML = stripslashes( $data );
 				$xml = new SimpleXMLElement($dataXML);
-				
+
 				foreach($xml->Request->Item as $item) {
 					$k = (String)$item['name'];
 					$v = (String)$item;
@@ -65,13 +65,13 @@ class FAjax {
 			}
 			$dataProcessed['__ajaxResponse'] = false;
 		}
-		
-    foreach($dataProcessed as $k=>$v)if(($pos = strpos($k,'-'))!==false) $dataProcessed[substr($k,0,$pos)][]=$v;
-    if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
-    FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
+
+		foreach($dataProcessed as $k=>$v)if(($pos = strpos($k,'-'))!==false) $dataProcessed[substr($k,0,$pos)][]=$v;
+		if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
+		FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
-    //---process k - set pageparam on user if needed
+		//---process k - set pageparam on user if needed
 		if(isset($fajax->data['k'])) {
 			FSystem::processK($fajax->data['k']);
 		}
@@ -82,29 +82,48 @@ class FAjax {
 			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED');
 				call_user_func(array($className,$action), $dataProcessed);
-				FProfiler::write('FAJAX MODULE COMPLETE');
-				if( $ajax === true )
-				if( $fajax->errorsLater===false ) {
-					$arrMsg = FError::get();
-					if(!empty($arrMsg)){
-						$arr = array();
-						foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-						FAjax::addResponse('call','msg','error,'.implode('<br />',$arr));
-						FError::reset();
+				if(!FError::is()) {
+					//drop draft if there are any
+					if(!empty($dataProcessed['draftable'])) {
+						$draftList = explode(',',$dataProcessed['draftable']);
+						while($draftId = array_pop($draftList)) FUserDraft::clear($draftId);
+						FAjax::addResponse('call','draftDroped','');
 					}
-					$arrMsg = FError::get(1);
-					if(!empty($arrMsg)){
-						$arr = array();
-						foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-						FAjax::addResponse('call','msg','ok,'.implode('<br />',$arr));
-						FError::reset(1);
+				}
+				FProfiler::write('FAJAX MODULE COMPLETE');
+				if($ajax===true) {
+					if( $fajax->errorsLater===false ) {
+						$arrMsg = FError::get();
+						if(!empty($arrMsg)){
+							$arr = array();
+							foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
+							FAjax::addResponse('call','msg','error,'.implode('<br />',$arr));
+							FError::reset();
+						}
+						$arrMsg = FError::get(1);
+						if(!empty($arrMsg)){
+							$arr = array();
+							foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
+							FAjax::addResponse('call','msg','ok,'.implode('<br />',$arr));
+							FError::reset(1);
+						}
+					}
+				} else {
+					//check response and if include redirect then redirect
+					if($fajax->redirecting == true) {
+						foreach($fajax->responseData as $response) {
+							if($response['PROP']=='redirect') {
+								FHTTP::redirect($response['DATA']);
+								break;
+							}
+						}
 					}
 				}
 				FProfiler::write('FAJAX ERROR OUTPUT COMPLETE');
 			} else {
 				if($ajax === true) {
 					//redirect to same page because of user does not have permission to access this page
-					FAjax::addResponse('call','redirect',FSystem::getUri());
+					FAjax::addResponse('call','redirect',FSystem::getUri(''));
 				}
 			}
 
@@ -132,13 +151,9 @@ class FAjax {
 
 	static public function redirect($url) {
 		$fajax = FAjax::getInstance();
-		if($fajax->data['__ajaxResponse']===true) {
-			$fajax->errorsLater = true;
-			$fajax->redirecting = true;
-			$fajax->responseData[] = array('TARGET'=>'call','PROP'=>'redirect','DATA'=>$url);
-		} else {
-			FHTTP::redirect($url);
-		}
+		$fajax->errorsLater = true;
+		$fajax->redirecting = true;
+		$fajax->responseData[] = array('TARGET'=>'call','PROP'=>'redirect','DATA'=>$url);
 	}
 
 	static public function isRedirecting() {

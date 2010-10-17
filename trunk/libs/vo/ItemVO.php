@@ -79,7 +79,6 @@ class ItemVO extends Fvob {
 				$name = '_'.$name;
 				break;
 			case 'unreaded':
-				if($this->typeId=='forum') return 0;
 				//number of unreaded reactions
 				$user = FUser::getInstance();
 				if($user->idkontrol==false) {
@@ -212,7 +211,7 @@ class ItemVO extends Fvob {
 			if($this->itemIdTop > 0) {
 				$itemTop = new ItemVO( $this->itemIdTop );
 				$itemTop->saveOnlyChanged = true;
-				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'")+1);
+				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 				$itemTop->save();
 				FPages::cntSet( $this->pageId, 0 );
 			} else {

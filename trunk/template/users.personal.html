@@ -1,5 +1,7 @@
 <form enctype="multipart/form-data" action="{FORMACTION}" method="post" class="fajaxform">
-
+<fieldset class="buttonBar">
+<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+</fieldset>
 <div id="tabs">
 <ul>
 <li><a href="#tabs-1">Profil</a></li>
@@ -9,15 +11,7 @@
 <!-- BEGIN webcamButton --><li><a href="#tabs-4">Webcam</a></li><!-- END webcamButton -->
 </ul>
 
-<div class="buttonBar">
-<input type="submit" name="sava" value="Uložit" class="button submit" />
-</div>
-
 <div id="tabs-1">
-
-<!--<label>FDK Homepage</label><select name="homepageid">
-<option value=""></option>
-{HOMEPAGEOPTIONS}</select><br />-->
 <fieldset>
 <legend>Osobni udaje</legend>
 <label>Icq</label>
@@ -28,40 +22,22 @@
 <input type="text" name="infowww" value="{USERWWW}" class="long" /><br />
 <label>Motto</label>
 <input type="text" name="infomotto" value="{USERMOTTO}" class="long" /><br />
-<label>Místo výskytu</label>
-<input type="text" name="infomisto" value="{USERMISTO}" class="long" /><br />
-<label>Oblíbené jídlo</label>
-<input type="text" name="infojidlo" value="{USERJIDLO}" class="long" /><br />
-<label>Hobby</label>
-<input type="text" name="infohoby" value="{USERHOBBY}" class="long" /><br />
 <label>Neco o me</label>
 <textarea name="infoabout" id="userabout" class="draftable" />{USERABOUT}</textarea><br />
 </fieldset>
-
 </div>
 
 <div id="tabs-5">
 <fieldset>
 <legend>Osobni foto</legend>
-
-<label>Misto</label> <span id="folderSize">{FOLDERSIZE}</span>/{FOLDERLIMIT}<br />
 <label>Upload</label>
-<div id="uava" class="fuup">
-<input type="file" name="idfoto" />
-<p>obrázek musí být menší než 20kb; může být .gif nebo .jpg; ideální rozměry 40x50pix nebo podobný poměr</p>
-</div>
-
-<div id="personalfoto">
-<!-- BEGIN personalImage -->
-<div id="personalfoto{IMGID}">
-<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" style="float:left;" /></a>
-<input type="submit" class="confirm button" name="avatar{IMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /> 
+<div id="tempStore" class="fuup"><input type="file" name="idfoto" /></div>
+<div id="personalfoto"><!-- BEGIN foto --><div id="foto{IMGID}" class="clearbox">
+<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" class="leftbox" /></a>
+<!-- BEGIN likeavatar --><input type="submit" class="confirm button" name="avatar{USEAVATARIMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /><!-- END likeavatar --> 
 <input type="submit" class="confirm button" name="del{IMGID}" value="Smazat" title="Opravdu chcete toto foto smazat?" />
-<div class="clearbox"></div>
+</div><!-- END foto -->
 </div>
-<!-- END personalImage -->
-</div>
-
 </fieldset>
 </div>
 

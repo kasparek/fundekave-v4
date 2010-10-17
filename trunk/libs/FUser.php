@@ -226,7 +226,6 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-
 			if($pageAccess === true) {
 				$permPage = $pageId;
 				if($permissionNeeded === 3) {
@@ -242,7 +241,6 @@ class FUser {
 						}
 					}
 				}
-				
 				//check if user have access to page with current permissions needed - else redirect to error
 				if(!FRules::get($userId,$permPage,$permissionNeeded)) {
 					$pageAccess = $this->pageAccess = false;
@@ -258,21 +256,16 @@ class FUser {
 					}
 				}
 			}
-				
 			//logged user function
 			if($this->idkontrol === true) {
 				//---update user information
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
 				}
-				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated = NOW(),
-			location = '".(($pageId)?($pageId):(''))."', 
-			params = '".$this->pageParam."'    
-			where loginId='".$this->userVO->idlogin."'");
+				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
 			}
 		}
-
 	}
 
 	function setWhoIs($userId) {
@@ -326,41 +319,32 @@ class FUser {
 	 */
 	static function register( $data ) {
 		$reservedUsernames = array('default','admin','administrator','test','aaa','fuvatar','config','profile','page','event','forum','blog','galery');
-
 		$data["jmenoreg"] = FSystem::textins($data["jmenoreg"],array("plaintext"=>'1'));
 		$data["pwdreg1"] = FSystem::textins($data["pwdreg1"],array("plaintext"=>'1'));
 		$data["pwdreg2"] = FSystem::textins($data["pwdreg2"],array("plaintext"=>'1'));
 		$data["email"] = FSystem::textins($data["email"],array("plaintext"=>'1'));
-		
 		$cache = FCache::getInstance('s');
 		$cache->setData($data,'reg','form');
-		
 		$safeJmenoreg = FSystem::safeText($data["jmenoreg"]);
 		if(strlen($data["jmenoreg"])<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
 		elseif(strlen($data["jmenoreg"])>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
 		elseif(!FUser::checkUsername($data["jmenoreg"])) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);
 		elseif(FUser::isUsernameRegistered($data["jmenoreg"]) || in_array(strtolower($data["jmenoreg"]),$reservedUsernames)) FError::add(FLang::$ERROR_REGISTER_NAMEEXISTS);
 		elseif($data["jmenoreg"]!=$safeJmenoreg) FError::add(FLang::$ERROR_REGISTER_BADUSERNAME.$safeJmenoreg);
-		
 		if(strlen($data["pwdreg1"])<2) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 		elseif($data["jmenoreg"]==$data["pwdreg1"]) FError::add(FLang::$ERROR_REGISTER_PASSWORDNOTSAFE);
 		elseif($data["pwdreg1"]!=$data["pwdreg2"]) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
-
-    if(FError::is()) return;
-    
+	    if(FError::is()) return;
 		//validate email
 		$data['email'] = trim($data['email']);
 		require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
 		if(true!==$validator->isValid($data['email']))  FError::add(FLang::$ERROR_INVALID_EMAIL);
-		
 		if(FError::is()) return;
 		//check if email is already registered
 		$db = FDBConn::getInstance();
 		if(FDBTool::getOne("select count(1) from sys_users where email='".$db->escape($data['email'])."'")) FError::add(FLang::$ERROR_USED_EMAIL);
-
 		if(FError::is()) return;
-		
 		$userVO = new UserVO();
 		$userVO->name = $data["jmenoreg"];
 		$userVO->email = $data['email'];

@@ -15,7 +15,7 @@ class FAvatar {
 		}
 		if($userId > 0) {
 			if(!isset($userVO)) $userVO = new UserVO($userId,true);
-			if(!empty($userVO->avatar)) $avatar = strtolower($userVO->name).'/profile/'.$userVO->avatar; //'default/profile/'.$userId.'.jpg';
+			if(!empty($userVO->avatar)) $avatar = strtolower($userVO->name).'/profile/'.$userVO->avatar;
 		}
 		return $urlBase.$avatar;
 	}
@@ -37,10 +37,6 @@ class FAvatar {
 		$cacheId = $avatarUserId;
 		$cacheGrp = 'avatar';
 		
-		$cache = FCache::getInstance('l',0);
-		$ret = $cache->getData($cacheId,$cacheGrp);
-		if($ret!==false) return $ret;
-
 		$cache = FCache::getInstance('f',0);
 		$ret = $cache->getData($cacheId,$cacheGrp);
 		if(false !== $ret) return $ret;
@@ -49,8 +45,8 @@ class FAvatar {
 		if(!isset($user)) $user = FUser::getInstance();
 		$tpl = FSystem::tpl(FLang::$TPL_USER_AVATAR);
 
-		if($userId == -1 ) $avatarUserName = $user->userVO->name;
-		elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
+		if($userId == -1 ) $avatarUserName=$user->userVO->name;
+		elseif($userId > 0) $avatarUserName=FUser::getgidname($avatarUserId);
 		else $avatarUserName = '';
 
 		$tpl->setVariable('USERNAME',$avatarUserName);
@@ -63,20 +59,14 @@ class FAvatar {
 		  $ret = $tpl->get('img');
 		}
 		$cache->setData($ret, $cacheId, $cacheGrp);
-		
-		$cache = FCache::getInstance('l',0);
-		$cache->setData($ret, $cacheId, $cacheGrp);
 		return $ret;
 	}
-
 	static function profileBasePath() {
 		$user = FUser::getInstance();
 		return FConf::get('galery','sourceServerBase') . strtolower($user->userVO->name) . '/profile';
 	}
-
 	static function profileBaseUrl($dir=null) {
 		$user = FUser::getInstance();
 		return FConf::get('galery','sourceUrlBase') . strtolower($user->userVO->name) . '/profile';
 	}
-
 }

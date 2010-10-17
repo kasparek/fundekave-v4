@@ -33,6 +33,7 @@ class FAjax_item extends FAjaxPluginBase {
 			$itemVO->pageId = $user->pageVO->pageId; 
 			$itemVO->set('typeId', $data['t']);	
 		}
+		if(empty($itemVO->typeId) && isset($data['t'])) $itemVO->set('typeId', $data['t']);
 		$ret = FItemsForm::show($itemVO);
 		if($data['__ajaxResponse']===true) {
 			FAjax::addResponse('editForm', '$html', $ret);
@@ -43,11 +44,9 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
-		
 		FItemsForm::process($data);
-		
 		if(FAjax::isRedirecting()===false) {
-			Fajax_item::edit(array('__ajaxResponse'=>true,'item'=>$data['item']));
+			Fajax_item::edit($data);
 			$user = FUser::getInstance();
 			if($itemVO->itemId>0) {
 				$user->itemVO = $itemVO;
@@ -62,21 +61,23 @@ class FAjax_item extends FAjaxPluginBase {
 		$user = FUser::getInstance();
 		if(FRules::getCurrent(2)===true
 		|| (FRules::getCurrent(1)===true && $itemVO->typeId=='forum' && $itemVO->userId==$user->userVO->userId)) {
+			$type = $itemVO->typeId;
 			$itemVO->delete();
-			if($itemVO->typeId=='forum') {
+			if($type=='forum') {
 				FAjax::addResponse('call','remove','i'.$data['item']);
-			} else {
+			} elseif($type!='galery') {
 				FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 			}
 		}
 
 	}
 	
-	//TODO: default image template
-	//TODO: if for finfo then do prepend
-	//TODO: a bit different action for finfo not based on item and check for folder size
 	static function image($data) {
 		$user = FUser::getInstance();
+		if($user->pageVO->pageId=='finfo') {
+			FAjax_user::avatar($data);
+			return true;
+		}
 		if(empty($data['item'])) {
 			//only temporary thumbnail
 			$filename = FFile::getTemplFilename();
