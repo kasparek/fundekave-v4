@@ -15,7 +15,7 @@
 <fieldset>
 <legend>Akce</legend>
 <label for="categoryId">Druh</label><select id="categoryId" name="categoryId"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
-<label for="addon">Název</label><input type="text" id="addon" name="addon" value="{ADDON}" /><br />
+<label for="addon">Název</label><input type="text" id="addon" name="addon" value="{TITLE}" /><br />
 <label for="place">Místo</label> <input type="text" name="location" value="{LOCATION}" /><br />
 <label for="datestart">Datum Cas Od</label><input type="text" name="dateStartLocal" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateStartTime" value="{TIMESTART}" class="xShort" /><br />
 <label for="dateend">Datum Cas Do</label><input type="text" name="dateEndLocal" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateEntTime" value="{TIMEEND}" class="xShort" /><br />
@@ -34,6 +34,18 @@
 </div>
 <div id="tabs-2">
 <fieldset>
+<legend>Mapy</legend>
+<label for="formPosition">Cesta</label><textarea name="position" id="formPosition" class="expand short journeySelector">{POSITION}</textarea><br />
+</fieldset>
+<fieldset>
+<legend>Komentare</legend>
+<label for="forumSet">Nastaveni</label><select id="forumSet" name="forumset">
+<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
+<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>
+<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Vypnuta</option>
+</select>
+</fieldset>
+<!-- BEGIN extEvent --><fieldset>
 <legend>Specialni</legend>
 <label for="reminder">Upozornění</label><select name="reminder" id="reminder">
 <option value="0">Nepripominat</option>
@@ -58,7 +70,7 @@
 <option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
 <option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Osobni - vidim jen ja</option>
 </select><br />
-</fieldset>
+</fieldset><!-- END extEvent -->
 </div>
 </div>
 </form>

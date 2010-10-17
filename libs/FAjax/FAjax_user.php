@@ -1,11 +1,52 @@
 <?php
 class FAjax_user extends FAjaxPluginBase {
-		
+
+	static function avatar($data) {
+		$user = FUser::getInstance();
+		//create filename
+		$ffile = new FFile(FConf::get("galery","ftpServer"));
+		$x=1;
+		$tmpFilename = FFile::getTemplFilename();
+		$ext = FFile::fileExt($tmpFilename);
+		do {
+			$filename = strtolower($user->userVO->name.'.'.$user->userVO->userId.'.'.sprintf("%03d",$x).'.'.$ext);
+			$x++;
+		} while(file_exists(FAvatar::profileBasePath().'/'.$filename));
+		//move file
+		$ffile->makeDir(FAvatar::profileBasePath());
+		$ffile->rename(FConf::get('galery','sourceServerBase').$tmpFilename,FAvatar::profileBasePath().'/'.$filename);
+		//save changes
+		$user->userVO->avatar = $filename;
+		$user->userVO->save();
+		FCommand::run(AVATAR_UPDATED,$user->userVO->userId);
+		//build response
+		$tpl = FSystem::tpl('users.personal.html');
+		$cache = FCache::getInstance('d');
+		$fileList = $cache->getData($userVO->userId,'profileFiles');
+		if($fileList===false) {
+			$ffile = new FFile(FConf::get("galery","ftpServer"));
+			$fileList=$ffile->fileList(FAvatar::profileBasePath());
+			$cache->setData($fileList);
+		}
+		if(!empty($fileList)) {
+			sort($fileList);
+			while($file = array_pop($fileList)) {
+				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
+				$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($user->userVO->name).'/profile/'.$file);
+				$tpl->setVariable('USEAVATARIMGID','-'.FSystem::safetext($file));
+				$tpl->setVariable('IMGID','-'.FSystem::safetext($file));
+				$tpl->parse("foto");
+			}
+		}
+		FAjax::addResponse('personalfoto','$html',$tpl->get('foto'));
+		FAjax::addResponse('avatarBox','$html',FAvatar::showAvatar());
+	}
+
 	static function clientInfo($data) {
 		$user = FUser::getInstance();
-		$user->userVO->clientWidth = $data['view-width'];
-		$user->userVO->clientHeight = $data['view-height']; 
-		FAjax::addResponse('void','void','1');
+		list($w,$h) = explode('x',$data['size']);
+		$user->userVO->clientWidth = (int) $w*1;
+		$user->userVO->clientHeight = (int) $h*1;
 	}
 
 	static function switchFriend($data) {
@@ -22,21 +63,20 @@ class FAjax_user extends FAjaxPluginBase {
 				$user->userVO->addFriend($userIdFriend);
 				$ret = FLang::$LABEL_FRIEND_REMOVE;
 			}
-
 			//---create response
 			if($data['__ajaxResponse']==true) {
 				FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 			}
 		}
 	}
-	
+
 	static function friendremove($data) {
 		$user = FUser::getInstance();
 		$user->userVO->removeFriend( (int) $data['u']);
 		FError::add(FLang::$MSG_FRIEND_REMOVED,1);
 		FAjax::redirect(FSystem::getUri('','frien',''));
 	}
-	
+
 	static function friendrequest($data) {
 		$tpl = FSystem::tpl('friend.request.tpl.html');
 		$tpl->setVariable('ACTION',FSystem::getUri('m=user-friendrequestsend'));
@@ -46,10 +86,10 @@ class FAjax_user extends FAjaxPluginBase {
 		FAjax::addResponse('okmsgJS','$after',$ret);
 		FAjax::addResponse('call','friendRequestInit');
 	}
-	
+
 	static function friendrequestsend($data) {
 		$user = FUser::getInstance();
-	
+
 		$itemVO = new ItemVO();
 		$itemVO->typeId = 'request';
 		$itemVO->text = FSystem::textins($data['message']);
@@ -59,13 +99,13 @@ class FAjax_user extends FAjaxPluginBase {
 		$itemVO->userId = $user->userVO->userId;
 		$itemVO->addon = $data['user'];
 		$itemVO->save();
-		
+
 		sleep(2);
 		FAjax::addResponse('call','remove','friendButt');
 		FAjax::addResponse('call','remove','friendrequest');
 		FAjax::addResponse('okmsgJS','$html','Request sent');
 	}
-	
+
 	static function requestaccept($data) {
 		$action = $data['action'];
 		switch($action) {
@@ -73,14 +113,14 @@ class FAjax_user extends FAjaxPluginBase {
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['request'];
 				$itemVO->load();
-				
+
 				$user = FUser::getInstance();
 				$user->userVO->addFriend( (int) $itemVO->userId );
 				FError::add(FLang::$MSG_FRIEND_ADDED,1);
 				FAjax::addResponse('call','remove','request'.$itemVO->userId);
-				
+
 				$itemVO->delete();
-				
+
 				//send message
 				FMessages::send((int) $itemVO->userId,FLang::$MSG_FRIEND_REQUEST_ACCEPTED,$user->userVO->userId);
 				break;
@@ -88,7 +128,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$itemVO = new ItemVO();
 				$itemVO->itemId = $data['request'];
 				$itemVO->load();
-				
+
 				FError::add(FLang::$MSG_FRIEND_CANCEL,1);
 				FAjax::addResponse('call','remove','request'.$itemVO->userId);
 
@@ -99,33 +139,11 @@ class FAjax_user extends FAjaxPluginBase {
 		$cache = FCache::getInstance('s');
 		$cache->invalidateData('friendrequest');
 	}
-	
+
 	static function settings($data) {
 		page_UserSettings::process($data);
 	}
-	
-	static function avatar($data) {
-		//---list user images
-		$user = FUser::getInstance();
-		$dir = FAvatar::profileBasePath();
-		$arr = FFile::fileList($dir,'jpg');
-		sort($arr);
-		$arr = array_reverse($arr);
-		$tpl = FSystem::tpl("users.personal.html");
-		$ret = '';
-		foreach($arr as $img) {
-			$tpl->setVariable("IMGURL",FAvatar::profileBaseUrl().'/'.$img);
-			$tpl->setVariable("IMGID",md5($img));
-			$tpl->parse('personalImage');
-		}
-		$ret .= $tpl->get('personalImage');
-		FAjax::addResponse('personalfoto', '$html', $ret);
-		FAjax::addResponse('folderSize', '$html', round(FFile::folderSize($dir)/1024).'kB');
-		FAjax::addResponse('call','fconfirmInit');
-		FAjax::addResponse('call','fajaxformInit');
-		FAjax::addResponse('call','slimboxInit');
-	}
-	
+
 	static function book($data) {
 		if(($userId = FUser::logon()) !==false) {
 			if (FDBTool::getOne("select book from sys_pages_favorites where pageId = '".$data['page']."' AND userId = '".$userId."'")) {
@@ -140,7 +158,7 @@ class FAjax_user extends FAjaxPluginBase {
 				//---create response
 				FAjax::addResponse($data['result'], $data['resultProperty'], $ret);
 			}
-		}	
+		}
 	}
 
 	static function tag($data) {
@@ -152,9 +170,9 @@ class FAjax_user extends FAjaxPluginBase {
 			}
 			if(!isset($data['a'])) $data['a'] = 'a';
 			if($data['a']=='r') FItemTags::removeTag($itemId,$userId);
-			else FItemTags::tag($itemId,$userId);	
+			else FItemTags::tag($itemId,$userId);
 			//---create response
-			if($data['__ajaxResponse']==true) { 
+			if($data['__ajaxResponse']==true) {
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
 				FAjax::addResponse('call','fajaxaInit');
 			}
@@ -167,7 +185,7 @@ class FAjax_user extends FAjaxPluginBase {
 		FAjax::addResponse('rh_anketa','$html',FLeftPanelPlugins::rh_anketa($data['po'],$data['an']));
 		FAjax::addResponse('call','setPollListeners');
 	}
-	
+
 	static function postFilter($data) {
 		if(!empty($data['user'])) {
 			$userId = (int) $data['user'];
@@ -178,7 +196,7 @@ class FAjax_user extends FAjaxPluginBase {
 				if(isset($data['s'])) {
 					if($data['s']=='s:received' || $data['s']=='s:sent') {
 						$cache->setData($data['s'], 'select', 'filtrPost');
-					}	
+					}
 				}
 			}
 		}

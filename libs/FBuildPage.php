@@ -188,7 +188,7 @@ class FBuildPage {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
 					}
 
-					if(FRules::getCurrent(2)) {
+					if(FRules::getCurrent(2) && empty($user->itemVO)) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 					}
 				}

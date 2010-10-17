@@ -30,11 +30,12 @@ class FAjax_post extends FAjaxPluginBase {
 
 	static function hasNewMessage($data,$wait=false) {
 		$user = FUser::getInstance();
-		 
-		if(isset($data['unreadSentList'])) {
-			if($readed=FMessages::sentReaded($data['unreadSentList']))
-			FAjax::addResponse('call','messageSentReaded',$readed);
-			$wait = false;
+		
+		if(isset($data['unreadedSent'])) {
+			if($readed=FMessages::sentReaded($data['unreadedSent'])) {
+				FAjax::addResponse('call','messageSentReaded',$readed);
+				$wait = false;
+			}
 		}
 		$check = $user->userVO->hasNewMessages();
 		if($check) $wait = false;

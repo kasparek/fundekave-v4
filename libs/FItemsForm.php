@@ -16,6 +16,7 @@ class FItemsForm {
 			$enclosure = array_pop($filenameArr);
 			$target = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/'.$enclosure;
 			$ffile = new FFile(FConf::get("galery","ftpServer"));
+			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->galeryDir);
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
 			$itemVO->enclosure = $enclosure;
 			$itemVO->save();
@@ -51,7 +52,7 @@ class FItemsForm {
 		if($itemVO->itemIdTop > 0) {
 			$itemVOTop = new ItemVO($itemVO->itemIdTop);
 			if($itemVOTop->load()) {
-				if($itemVOTop->typeId=='forum') $itemVO->itemIdTop=null;
+				if($itemVOTop->pageVO->get('typeId')=='forum') $itemVO->itemIdTop=null;
 				else $itemVO->pageIdTop = $itemVOTop->pageVO->pageIdTop;
 			}
 		}
@@ -96,11 +97,13 @@ class FItemsForm {
 					$itemVO->save();
 				}
 				break;
+			case 'del':
 			case 'delete':
 				$itemVO = new ItemVO((int) $data['item']);
 				if($itemVO->load()) {
 					$itemVO->delete();
 				}
+				FCommand::run(ITEM_UPDATED,$itemVO);
 				$itemVO=null;
 				$user->itemVO=null;
 				FError::add(FLang::$LABEL_DELETED_OK,1);
@@ -190,13 +193,21 @@ class FItemsForm {
 						$cache = FCache::getInstance('s',0);
 						$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
 						//---on success
-						$redirectParam = '#dd';
+						if(!isset($data['draftable'])) {
+							$redirectParam = '#dd';
+						}
 						$redirect=true;
 
 						if($itemVO->itemIdTop > 0) {
 							$itemVO->updateReaded($user->userVO->userId);
 						} else {
 							$itemVO->pageVO->updateReaded($user->userVO->userId);
+						}
+						
+						//redirect
+						if($itemVO->typeId!='forum') {
+							$redirectParam = 'i='.$itemVO->itemId.$redirectParam;
+							FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
 						}
 					}
 				}
@@ -207,23 +218,18 @@ class FItemsForm {
 			$cache->setData($data, $itemVO->pageId.$itemVO->typeId, 'form');
 		}
 
-		//redirect
-		if($itemVO->typeId!='forum') {
-			$redirectParam = 'i='.$itemVO->itemId.$redirectParam;
-			FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
-		}
 		if($redirect==true) {
-			FCommand::run(ITEM_UPDATED,$itemVO);
+			if($itemVO) FCommand::run(ITEM_UPDATED,$itemVO);
 			if($data['__ajaxResponse']==true) {
 				if($itemVO) {
 					//new item
-					FAjax::redirect(FSystem::getUri($redirectParam,$user->pageVO->pageId,'u',array('short'=>1)));
+					if($newItem) FAjax::redirect(FSystem::getUri($redirectParam,$user->pageVO->pageId,'u',array('short'=>1)));
 				} else {
 					//deleted item
 					FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'',array('short'=>1)));
 				}
 			} else {
-				FHTTP::redirect(FSystem::getUri($redirectParam)); //non ajax processing
+				FAjax::redirect(FSystem::getUri($redirectParam)); //non ajax processing
 			}
 		}
 	}
@@ -277,7 +283,14 @@ class FItemsForm {
 
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-
+		
+		$tpl->touchBlock('geo');
+		$position = $itemVO->prop('position');
+		if(!empty($data['position'])) $position = $data['position'];
+		if(!empty($position)) {
+			$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
+		}
+		
 		//TYPE DEPEND
 		if($itemVO->typeId==='forum') {
 
@@ -299,23 +312,16 @@ class FItemsForm {
 			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
 			$tpl->setVariable('LOCATION',$itemVO->location);
 
-
-
-
-			$position = $itemVO->prop('position');
-			if(!empty($data['position'])) $position = $data['position'];
-			if(!empty($position)) {
-				$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
-			}
-			//TODO: comments not loaded from cache
 			//comments settings
 			$tpl->touchBlock('comments'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
 			//public settings
-			if($itemVO->public == 0) {
-				$tpl->touchBlock('classnotpublic');
-				$tpl->touchBlock('headernotpublic');
-			} else {
-				$tpl->touchBlock('public'.$itemVO->public);
+			if($itemVO->typeId=='blog') {
+				if($itemVO->public == 0) {
+					$tpl->touchBlock('classnotpublic');
+					$tpl->touchBlock('headernotpublic');
+				} else {
+					$tpl->touchBlock('public'.$itemVO->public);
+				}
 			}
 			//delete block
 			if($itemVO->itemId>0) {
@@ -323,9 +329,12 @@ class FItemsForm {
 			}
 
 			//event specials
-			$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
-			$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
-			$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
+			$extEvents=false;
+			if($extEvents) {
+				$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
+				$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
+				$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
+			}
 
 			if(!empty($itemVO->enclosure)) {
 				$tpl->setVariable('IMAGEURL', $itemVO->detailUrl );

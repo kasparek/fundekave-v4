@@ -28,10 +28,9 @@ class page_ItemDetail implements iPage {
 		/**
 		 *BLOG ITEM and EVENT ITEM
 		 **/
-		if($itemVO->typeId=='blog' || $itemVO->typeId=='event') {
+		if($itemVO->typeId!='galery') {
 			$itemVO->options['showDetail'] = true;
 			$user->pageVO->htmlTitle = $itemVO->addon.' - '.$user->pageVO->name;
-			//$user->pageVO->htmlName = $itemVO->addon;
 			$user->pageVO->showHeading=false;
 			$itemRender = $itemVO->render();
 			if(!empty($data['__ajaxResponse'])) {
@@ -53,8 +52,8 @@ class page_ItemDetail implements iPage {
 				"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
 				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
-				//comment via pageitemlist "COMMENTS"=>page_PageItemList::build(array('itemId'=>$itemVO->itemId)) //TODO: build comments only if there are any or write perm
-				);
+			);
+			$arrVars = array_merge($arrVars,FItemsRenderer::gmaps($itemVO));
 			//no sidebar	
 			$user->pageVO->showSidebar = false;
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
@@ -71,6 +70,10 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['INFO'])?$arrVars['INFO']:'');
+				$tpl = FSystem::tpl('galery.detail.tpl.html');
+				$tpl->setVariable($arrVars);
+				$tpl->parse('map');
+				FAjax::addResponse('map','$html',$tpl->get('map'));
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);

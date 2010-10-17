@@ -4,9 +4,10 @@
 <fieldset>
 <!-- BEGIN usernotlogged --><label>Jméno</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="1" /><br /><!-- END usernotlogged -->
 <label for="{TEXTID}">Text</label> <textarea id="{TEXTID}" class="markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea><br />
-<!-- BEGIN usernotlogged2 --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
+<!-- BEGIN geo --><label for="position" class="geoselectorlabel"><a href="#" class="geoselector"><img src="[[SKINURL]]/img/map_add.png" alt="Poloha" title="Pridejte polohu" /></a></label><div class="positionSelectorBox hidden"><input id="position" class="expand short positionSelector" value="{POSITION}" name="position" type="text" tabindex="2" /></div><!-- END geo -->
+<!-- BEGIN captcha --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
-<input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END usernotlogged2 -->
+<input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END captcha -->
 <input type="submit" name="send" value="Odeslat" class="button submit" tabindex="4">
 <!-- BEGIN userlogged2 --><input type="submit" name="filtr" value="Hledat" class="button">
 Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" /><!-- END userlogged2 -->

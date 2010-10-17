@@ -29,7 +29,7 @@
 </div>
 <div id="tabs-2">
 <fieldset>
-<legend>Specialni</legend>
+<legend>Obrazek</legend>
 <label>Upload obrazku</label>
 <div id="tempStore" class="fuup">
 <input type="file" name="imageFile"/></div><br />
@@ -40,15 +40,18 @@
 <input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrazek?" class="button confirm" /><br />
 <!-- END image -->
 </div>
-<label for="forumSet">Diskuze</label><select id="forumSet" name="forumset">
-<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
-<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>
-<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Vypnuta</option>
-</select>
 </fieldset>
 <fieldset>
 <legend>Mapy</legend>
 <label for="formPosition">Cesta</label><textarea name="position" id="formPosition" class="expand short journeySelector">{POSITION}</textarea><br />
+</fieldset>
+<fieldset>
+<legend>Komentare</legend>
+<label for="forumSet">Nastaveni</label><select id="forumSet" name="forumset">
+<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
+<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>
+<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Vypnuta</option>
+</select>
 </fieldset>
 </div>  
 </div>

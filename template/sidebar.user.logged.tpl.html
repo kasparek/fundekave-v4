@@ -2,16 +2,20 @@
 <h2><a href="?k=finfo">{NAME}</a></h2>
 <div id="avatarBox">{AVATAR}</div>
 <ul>
-<li class="onlineUsers"><a href="?k=frien">Pratele</a> <!-- BEGIN requests --><a href="?k=frien" class="requests" title="Pozadavky na pratele">{REQUESTSNUM}</a>/<!-- END requests -->{ONLINE}</li>
+<!-- BEGIN requests --><li class="onlineUsers"><a href="?k=frien">Pratele</a><a href="?k=frien" class="requests" title="Pozadavky na pratele">{REQUESTSNUM}</a></li><!-- END requests -->
 <li class="recentMails"><a href="?k=fpost">Posta</a></li>
-<li><a href="?k=elogo">Odhlaseni</a></li>
+<li><a href="?k=elogo">Odhlasit</a></li>
 </ul>
-<div>
-<a href="?k=frien">Pratel online: {NUMFRIENDSONLINE}</a>	
-<ul class="sidebarUsersList hidden">
-<!-- BEGIN user --><li>{FRIENDAVATAR} <span class="vcard fn"><a href="{USERLINK}" title="Posledni aktivita {USERACTIVE}">{USERNAME}</a></span>
-<!-- BEGIN location --><a href="{USERLOCATIONLINK}" title="Prave sleduje: {USERLOCATIONLONG}">{USERLOCATIONSHORT}</a><br /><!-- END location -->
+<!-- BEGIN friends --><div id="onlineFriendList">
+<h2><a href="?k=frien" class="switchOpen" rel="sidebarUsersList">Pratel online: {NUMFRIENDSONLINE}</a></h2>	
+<ul id="sidebarUsersList" class="hidden">
+<!-- BEGIN user --><li>{FRIENDAVATAR}
+<ul>
+<li><h2><span class="vcard fn"><a href="{USERLINK}" title="Posledni aktivita {USERACTIVE}">{USERNAME}</a></span></h2></li>
+<!-- BEGIN location --><li><a href="{USERLOCATIONLINK}" title="Prave sleduje: {USERLOCATIONLONG}">{USERLOCATIONSHORT}</a></li><!-- END location -->
+<li><a href="{MSGLINK}">Poslat zpravu</a></li>
+</ul>
 </li><!-- END user -->
 </ul>
-</div>
+</div><!-- END friends -->
 </div>

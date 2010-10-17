@@ -5,6 +5,7 @@ define("ITEM_UPDATED","actionItemUpdated");
 define("ITEM_READED","actionItemReaded");
 define("PAGE_UPDATED","actionPageUpdated");
 define("RSS_UPDATED","actionRSSUpdated");
+define("AVATAR_UPDATED","avatarUpdated");
 
 //map commands
 FCommand::register(ITEM_UPDATED,'itemUpdated');
@@ -13,6 +14,7 @@ FCommand::register(PAGE_UPDATED,'pageUpdated');
 FCommand::register(PAGE_UPDATED,'flushCache');
 FCommand::register(ITEM_READED,'itemReaded');
 FCommand::register(RSS_UPDATED,'rssUpdated');
+FCommand::register(AVATAR_UPDATED,'avatarUpdated');
 
 class FCommand {
 
@@ -54,6 +56,13 @@ class FCommand {
 	}
 
 	//COMMANDS
+	public static function avatarUpdated($data) {
+		$cache = FCache::getInstance('f');
+		$cache->invalidateData($data,'avatar');
+		$cache = FCache::getInstance('d');
+		$cache->invalidateData($data,'profileFiles');
+	}
+	
 	public static function itemUpdated($data) {
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');

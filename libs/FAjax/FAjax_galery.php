@@ -17,10 +17,10 @@ class FAjax_galery extends FAjaxPluginBase {
 			$fItems->setWhere("pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
 			$fItems->setOrder($pageVO->itemsOrder());
 			$fItems->getList((int) $data['seq'],(int) $data['offset']);
-			$itemId = $fItems->data[0]->itemId;
+			$count = count($fItems->data);
 			$ret = $fItems->render();
+			FAjax::addResponse('call', 'fotoFeeded', $count);
 		}
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
-		FAjax::addResponse('call', 'draftInit', 'fotodesc'.$itemId);
 	}
 }

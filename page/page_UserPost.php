@@ -52,7 +52,9 @@ class page_UserPost implements iPage {
 				foreach ($arrto as $userId){
 					FMessages::send($userId,$data["text"],$user->userVO->userId);
 				}
-				$redirParam = '#dd';
+				if(!isset($data['draftable'])) {
+					$redirectParam = '#dd';
+				}
 				$redirect = true;
 				$cache->invalidateData($user->pageVO->pageId, 'filter');
 			}

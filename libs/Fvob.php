@@ -127,7 +127,7 @@ class Fvob {
 	}
 
 	function prop($propertyName,$value=null,$load=true) {
-		if($value!==null) $this->setProperty($propertyName,$value);
+		if(!is_null($value)) $this->setProperty($propertyName,$value);
 		$default='';
 		if(isset($this->propDefaults[$propertyName])) $default = $this->propDefaults[$propertyName];
 		return $this->getProperty($propertyName,$default,$load);
@@ -150,7 +150,7 @@ class Fvob {
 				$q = "select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'";
 				$value = FDBTool::getOne($q);
 				//---set in list
-				if(empty($value)) $value = false;
+				if(!is_numeric($value) && empty($value)) $value = false;
 				if($value === false || $value === null) $value = $default;
 				$this->properties[$propertyName] = $value;
 				//---save in cache
@@ -167,7 +167,7 @@ class Fvob {
 			if($propertyValue==$this->properties[$propertyName]) return;
 		}
 		//save in db
-		if(empty($propertyValue)) {
+		if(is_null($propertyValue) || $propertyValue===false) {
 			FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
 			$propertyValue = false;
 		} else {

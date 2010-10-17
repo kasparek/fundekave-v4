@@ -23,14 +23,14 @@ class FDBTool {
 	 * f - cache in file
 	 **/
 	var $cacheResults = 0;
-	
+
 	/**
 	 *
 	 * cache group
-	 *	 
-	 */	 	 	
+	 *
+	 */
 	var $cacheGroup = 'fdb';
-	
+
 	/**
 	 * lifetime in seconds of cached results
 	 *
@@ -63,6 +63,9 @@ class FDBTool {
 	private $selectCount = 'count(1)';
 	private $_group = array();
 	private $autojoin = false;
+	public function autojoinSet($v){
+		$this->autojoin=$v; 
+	}
 	private $_join = '';
 	private $_limit = array();
 
@@ -134,35 +137,35 @@ class FDBTool {
 		}
 		$this->_where[] = ' '.$where.' ';
 	}
-	
+
 	/**
 	 *
-	 *	@param order 0 - not ordering, 1-ascemding, 2-descending, 3-asc numeric, 4-desc numeric	 
-	 */	 	
+	 *	@param order 0 - not ordering, 1-ascemding, 2-descending, 3-asc numeric, 4-desc numeric
+	 */
 	function joinOnPropertie($prop,$order=0) {
 		$this->autojoin = true;
 		$this->addSelect($prop.'.value as '.$prop.'_prop');
 		$this->addJoin('left join '.$this->table.'_properties as '.$prop.' on '.$prop.'.'.$this->primaryCol.'='.$this->table.'.'.$this->primaryCol.' and '.$prop.'.name = "'.$prop.'"');
 		switch($order) {
-		  case 1:
+			case 1:
 		  $this->addOrder($prop.".value");
-			break;
-		  case 2:
+		  break;
+			case 2:
 		  $this->addOrder($prop.".value desc");
-			break;
-		  case 3:
+		  break;
+			case 3:
 		  $this->addOrder("(".$prop.".value+0.0)");
 		  break;
-		  case 4:
-			$this->addOrder("(".$prop.".value+0.0) desc");
-			break;
+			case 4:
+				$this->addOrder("(".$prop.".value+0.0) desc");
+				break;
 		}
 	}
-	
+
 	function addJoin($condition) {
 		$this->_join .= ' '.$condition;
 	}
-	
+
 	function addJoinAuto($table,$joinColumn,$selectColumnsArray,$type='LEFT JOIN') {
 		$this->_join .= ' '.$type.' '.$table.' on ' . $this->table.'.'.$joinColumn. '=' .$table.'.'.$joinColumn;
 		$this->autojoin = true;
@@ -237,14 +240,14 @@ class FDBTool {
 		}
 	}
 	function getSelect() {
-	 if($this->autojoin) {
-	 	foreach($this->_select as $col) {
-	 		if(strpos($col,'.')===false && strpos($col,'(')===false ) $col = $this->table.'.'.$col;
-	 		$arrCols[] = $col;
-	 	}
-	 } else {
-	 	$arrCols = $this->_select;
-	 }
+		if($this->autojoin) {
+			foreach($this->_select as $col) {
+				if(strpos($col,'.')===false && strpos($col,'(')===false ) $col = $this->table.'.'.$col;
+				$arrCols[] = $col;
+			}
+		} else {
+			$arrCols = $this->_select;
+		}
 		return implode(',',$arrCols);
 	}
 	function setLimit($from=0, $count=0) {
@@ -335,9 +338,9 @@ class FDBTool {
 								$vo->{$k} = $v;
 							} else {
 								if(strpos($k,'_prop')!==false) {
-								  $propName = str_replace('_prop','',$k);
-								  $propList = $vo->getPropertiesList();
-								  if(in_array($propName,$propList)) {
+									$propName = str_replace('_prop','',$k);
+									$propList = $vo->getPropertiesList();
+									if(in_array($propName,$propList)) {
 										$vo->properties[$propName] = $v;
 									}
 								}
@@ -605,8 +608,8 @@ class FDBTool {
 		$db = FDBConn::getInstance();
 		//---stats
 		if(FDBTool::profilerEnabled === true) $start = FError::getmicrotime();
-		
-		if($fetchmode===1) $db->assoc = true; else $db->assoc = false; 
+
+		if($fetchmode===1) $db->assoc = true; else $db->assoc = false;
 		$ret = $db->$function($query);
 
 		//---stats

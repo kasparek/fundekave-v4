@@ -18,51 +18,27 @@ optimize:
 user ALTER TABLE...ORDER BY?
 
 FIX:
--custom cache lite :( to fast group flushing
--manual draft droping, because it often does not work - missing after redirect
--boost poling in messages for better response
+event/blog - test
+-novy
+	-upload
+	-mazani obrazku
+-edit
+	-upload
+	-mazani
+-edit/novy
+	-ukladani vsech prop - nastaveni diskuze, vsechny pole
 
--osobni profil galerie - bude se hodit
-	-nahravani po jedny
-	-renderer - geo zemekoule na detail, smazat ikona, pouzit jako avatar - custom renderer
+-fullscreen - button bar style
 
-- add gmaps location to 
--foto - icon + map in detail
--event - like blog
--forum - location like blog
--page - v zahlavi
-                       $('input[name="list[]"]:checked').pluck('value')
-drop draft manualy
-profil upload - zalozit galerii, prdet na limit, schovat si funkce, treba budu chtit limit jindy
--tlacitko pouzit na avatar
-nefungje pridat galerii, klub, blog
-tlacitka se zobrazuji neprihlasenym - profil, pridat atd
-fuup - mezera kdyz neni checkbox, vetsi fontsize
-upload - image/profil
-vkladani kratkyho commentu do blogu zustava neprecteny
-nastaveni - category edit - remove pager
-
-sidebar category list
-mainbar category filtering - category to header
-handle itemVo->pageVo - lazy loading
-
-TODO:
--merge logged users with login - show on click
-
--testovat - galery fullscreen
--fullscreen - current item(will be useful for random slidshow)/next/prev/exit button/play/pause(simulate click on item every 5sec)
-
-- galery otestovat ftp nahravani
 - clean up - kesovani vseho, projit stranky
-- osobni - opravit nahravani - novy adresar - test
 - osobni - otestovat ftp nahravani
-- events - nahravani letaku - novy adresat, novy url na thumnail, neni potreba generovat - test
+- events,blog - nahravani,mazani obrazku - test
+-event nastaveni komentaru
 
+-big map - sidebar a otevre se v mainbaru - vsechno na ni 
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
--tagy
- - stranka s nahodnyma fotkama
- - u kazdy fotky ikonka na tagovani
- - v pratelich zebricek tagovani	
-TAGS-PALCE -nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
--udalosti - vlastni,opakujici se,upozorneni
+-stranka s nahodnyma fotkama - nahodna slideshow
 
+-nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
+
+-fuup - mezera kdyz neni checkbox, vetsi fontsize
