@@ -61,12 +61,18 @@ class FAvatar {
 		$cache->setData($ret, $cacheId, $cacheGrp);
 		return $ret;
 	}
-	static function profileBasePath() {
-		$user = FUser::getInstance();
-		return FConf::get('galery','sourceServerBase') . strtolower($user->userVO->name) . '/profile';
+	static function profileBasePath($userVO=null) {
+		if(empty($userVO)) {
+			$user = FUser::getInstance();
+			$userVO = $user->userVO;			
+		}
+		return FConf::get('galery','sourceServerBase') . strtolower($userVO->name) . '/profile';
 	}
-	static function profileBaseUrl($dir=null) {
-		$user = FUser::getInstance();
-		return FConf::get('galery','sourceUrlBase') . strtolower($user->userVO->name) . '/profile';
+	static function profileBaseUrl($userVO=null) {
+		if(empty($userVO)) {
+			$user = FUser::getInstance();
+			$userVO = $user->userVO;			
+		}
+		return FConf::get('galery','sourceUrlBase') . strtolower($userVO->name) . '/profile';
 	}
 }

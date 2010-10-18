@@ -8,8 +8,15 @@ class page_ItemDetail implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		if(empty($user->itemVO)) return false;
-		$itemVO = $user->itemVO;
+		if(isset($data['item'])) {
+			$id = (int) $data['item'];
+			$itemVO = new ItemVO($id);
+			if(!$itemVO->load()) $itemVO=null;
+		}
+		if(empty($itemVO)) {
+			if(empty($user->itemVO)) return false;
+			$itemVO = $user->itemVO;
+		}
 		if(empty($user->pageParam)) {
 			if($itemVO->userId != $user->userVO->userId) {
 				$itemVO->hit();

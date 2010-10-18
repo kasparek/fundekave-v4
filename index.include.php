@@ -106,7 +106,9 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					//---upload in tmp folder in user folder and save filename in db cache
 					$imagePath = FFile::setTempFilename($filename);
 					$imagePath = FConf::get("galery","sourceServerBase") . $imagePath;
-					$dir = FConf::get("galery","sourceServerBase") . FConf::get("galery","tempStore");
+					$dirArr=explode('/',$imagePath);
+					array_pop($dirArr);
+					$dir = implode('/',$dirArr);
 					break;
 				default:
 					$dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');

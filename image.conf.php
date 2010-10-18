@@ -1,7 +1,7 @@
 <?php
 class image_conf {
 var $log = 'tmp/php.log';
-var $quality = 75;
+var $quality = 90;
 var $libraryBasePath = '';
 var $sourceBasePath = 'obr/';
 var $targetBasePath = 'image/';

@@ -14,9 +14,9 @@ class FItemsForm {
 			$pageVO = $itemVO->pageVO;
 			$filenameArr = explode('/',$filename);
 			$enclosure = array_pop($filenameArr);
-			$target = FConf::get('galery','sourceServerBase') . $pageVO->galeryDir.'/'.$enclosure;
+			$target = FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir').'/'.$enclosure;
 			$ffile = new FFile(FConf::get("galery","ftpServer"));
-			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->galeryDir);
+			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir'));
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
 			$itemVO->set('enclosure',$enclosure);
 			$itemVO->saveOnlyChanged=true;
@@ -153,13 +153,18 @@ class FItemsForm {
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
 					//save items
 					if($itemVO->save() > 0){
+						
+						FItemsForm::moveImage($data,$itemVO);
+						
 						if(!empty($data['imageUrl'])) {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
+								//TODO: check file is image
 								$itemVO->deleteImage();
-								$filename = FSystem::safeFilename( $data['imageUrl'] );
+								$filename = FSystem::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
 								$ffile = new FFile(FConf::get("galery","ftpServer"));
+								$ffile->makeDir(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir);
 								$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
 								$itemVO->enclosure = $filename;
 								$itemVO->save();
@@ -188,8 +193,6 @@ class FItemsForm {
 						if(isset($data['reminder'])) $itemVO->prop('reminder',$data['reminder']*1);
 						if(isset($data['reminderEveryday'])) $itemVO->prop('reminderEveryday',$data['reminderEveryday']*1);
 						if(isset($data['repeat'])) $itemVO->prop('repeat',$data['repeat']*1);
-
-						FItemsForm::moveImage($data,$itemVO);
 
 						//clean up stored data
 						$cache = FCache::getInstance('s',0);

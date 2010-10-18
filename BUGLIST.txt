@@ -14,33 +14,18 @@ DROP sys_menu_secondary;
 ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorContent`,DROP `pageParams`;
 update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
-optimize:
-user ALTER TABLE...ORDER BY?
-
 FIX:
-event/blog - test
--novy
-	-upload
-	-mazani obrazku
--edit
-	-upload
-	-mazani
--edit/novy
-	-ukladani vsech prop - nastaveni diskuze, vsechny pole
-	
--on save update claneks
-
--fullscreen - button bar style
-
 - clean up - kesovani vseho, projit stranky
-- osobni - otestovat ftp nahravani
+- osobni,galerie,clanky - otestovat ftp nahravani
 - events,blog - nahravani,mazani obrazku - test
--event nastaveni komentaru
 
--big map - sidebar a otevre se v mainbaru - vsechno na ni 
+-big map - kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni 
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
--stranka s nahodnyma fotkama - nahodna slideshow
+-stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
 
 -nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
 
+-fullscreen - button bar style
+
 -fuup - mezera kdyz neni checkbox, vetsi fontsize
+

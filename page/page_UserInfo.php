@@ -84,7 +84,7 @@ class page_UserInfo implements iPage {
 			$fileList = $cache->getData($userVO->userId,'profileFiles');
 			if($fileList===false) {
 				$ffile = new FFile(FConf::get("galery","ftpServer"));
-				$fileList=$ffile->fileList(FAvatar::profileBasePath());
+				$fileList=$ffile->fileList(FAvatar::profileBasePath($userVO));
 				$cache->setData($fileList);
 			}
 			
@@ -106,7 +106,8 @@ class page_UserInfo implements iPage {
 			$fp->setWhere('sys_pages.userIdOwner="'.$userVO->userId.'" and sys_pages.locked<3');
 			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 			$arrLinks = $fp->getContent();
-			if(count($arrLinks)>0){
+			
+			if(!empty($arrLinks)){
 				//pages
 				$tpl->setVariable('FORUMS',FPages::printPagelinkList($arrLinks,array('noitem'=>1)));
 				$tpl->touchBlock('tabforums');
@@ -117,7 +118,7 @@ class page_UserInfo implements iPage {
 			$fp->setWhere('sys_pages.userIdOwner="'.$userVO->userId.'" and sys_pages.locked<3');
 			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 			$arrLinks = $fp->getContent();
-			if(count($arrLinks)>0){
+			if(!empty($arrLinks)){
 				//pages
 				$tpl->setVariable('BLOGS',FPages::printPagelinkList($arrLinks,array('noitem'=>1)));
 				$tpl->touchBlock('tabblogs');
@@ -128,7 +129,7 @@ class page_UserInfo implements iPage {
 			$fp->setWhere('sys_pages.userIdOwner="'.$userVO->userId.'" and sys_pages.locked<3');
 			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 			$arrLinks = $fp->getContent();
-			if(count($arrLinks)>0){
+			if(!empty($arrLinks)){
 				//pages
 				$tpl->setVariable('GALERYS',FPages::printPagelinkList($arrLinks,array('noitem'=>1)));
 				$tpl->touchBlock('tabgaleries');
@@ -160,7 +161,7 @@ class page_UserInfo implements iPage {
 			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
 			$fp->setWhere('f.book="1" and sys_pages.userIdOwner!="'.$userVO->userId.'" and sys_pages.locked<2');
 			$arrLinks = $fp->getContent();
-			if(count($arrLinks)>0){
+			if(!empty($arrLinks)){
 				$tpl->setVariable('FAVORITES',FPages::printPagelinkList($arrLinks,array('noitem'=>1)));
 				$showFavoritesTab = true;
 			}
