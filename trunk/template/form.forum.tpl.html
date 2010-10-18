@@ -4,7 +4,7 @@
 <fieldset>
 <!-- BEGIN usernotlogged --><label>Jméno</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="1" /><br /><!-- END usernotlogged -->
 <label for="{TEXTID}">Text</label> <textarea id="{TEXTID}" class="markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea><br />
-<!-- BEGIN geo --><label for="position" class="geoselectorlabel"><a href="#" class="geoselector"><img src="[[SKINURL]]/img/map_add.png" alt="Poloha" title="Pridejte polohu" /></a></label><div class="positionSelectorBox hidden"><input id="position" class="expand short positionSelector" value="{POSITION}" name="position" type="text" tabindex="2" /></div><!-- END geo -->
+<!-- BEGIN geo --><label for="position" class="geoselectorlabel"><a href="#" class="geoselector"><img src="[[SKINURL]]/img/map_add.png" alt="Poloha" title="Pridejte polohu" /></a></label><div class="positionSelectorBox hidden"><textarea id="position" class="expand short journeySelector" name="position">{POSITION}</textarea></div><!-- END geo -->
 <!-- BEGIN captcha --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
 <input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END captcha -->
