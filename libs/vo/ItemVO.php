@@ -483,7 +483,7 @@ class ItemVO extends Fvob {
 		if($file->is_file($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure)) {
 			$file->unlink($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure);
 		}
-		$this->set('enclosure',null);
+		$this->set('enclosure','');
 	}
 
 	/**

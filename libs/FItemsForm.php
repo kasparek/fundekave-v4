@@ -4,7 +4,7 @@ class FItemsForm {
 	static function moveImage($data,$itemVO=null) {
 		if($itemVO==null) {
 			if(empty($data['item'])) return;
-			$itemVO = new $itemVO($data['item']);
+			$itemVO = new ItemVO($data['item']);
 			if(!$itemVO->load()) return;
 		}
 		$filename = FFile::getTemplFilename();
@@ -18,7 +18,8 @@ class FItemsForm {
 			$ffile = new FFile(FConf::get("galery","ftpServer"));
 			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->galeryDir);
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
-			$itemVO->enclosure = $enclosure;
+			$itemVO->set('enclosure',$enclosure);
+			$itemVO->saveOnlyChanged=true;
 			$itemVO->save();
 			FFile::flushTemplFile();
 			return $itemVO;
@@ -94,6 +95,7 @@ class FItemsForm {
 				$itemVO = new ItemVO((int) $data['item']);
 				if($itemVO->load()) {
 					$itemVO->deleteImage();
+					$itemVO->saveOnlyChanged=true;
 					$itemVO->save();
 				}
 				break;

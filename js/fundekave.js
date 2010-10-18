@@ -349,9 +349,7 @@ while (arr.length > 0) { var o = arr.shift(), kv = o.split(':'); data[kv[0]] = k
 /**
  * IMAGE UPLOADING TOOL HANDLERS - FUUP
  */ 
-function galeryCheck() {
-	sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));
-};
+function galeryCheck() {sendAjax('page-fuup',gup('k',$(".fajaxform").attr('action')));};
 function fuupUploadComplete() {
 var item = $('#item').attr('value');
 if(item>0) addXMLRequest('item', item);

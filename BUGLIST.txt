@@ -27,6 +27,8 @@ event/blog - test
 	-mazani
 -edit/novy
 	-ukladani vsech prop - nastaveni diskuze, vsechny pole
+	
+-on save update claneks
 
 -fullscreen - button bar style
 
