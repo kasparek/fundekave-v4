@@ -239,7 +239,7 @@ if(isset($imageProps)) {
 		/**
 		 * output original image if it is really close to current side size
 		 */
-		if($ratio < $c->maxNoScaleRatio && $ratio > $c->minNoScaleRatio) {
+		if($ratio <= $c->maxNoScaleRatio && $ratio > $c->minNoScaleRatio) {
 			//display original
 			$targetImage = $sourceImage;
 			$contentType = $imageProps['mime'];

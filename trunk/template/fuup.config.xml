@@ -10,7 +10,7 @@
 <Item name="crop">{CROP}</Item>
 <Item name="multi">{MULTI}</Item>
 <Item name="permissions">0</Item>
-<Item name="maxSize">512000</Item>
+<Item name="maxSize">1024000</Item>
 <Item name="chunkSize">32768</Item>
 <Item name="chunkLimit">4</Item>
 <Item name="fileLimit">80</Item>
