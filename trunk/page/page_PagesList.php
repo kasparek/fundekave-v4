@@ -39,8 +39,11 @@ class page_PagesList implements iPage {
 
 		if($category > 0) {
 			$categoryArr = FCategory::getCategory($category);
-			$user->pageVO->htmlName =  $categoryArr[2] . ' - ' . $user->pageVO->name;
-			$fPages->addWhere("sys_pages.categoryId=".$category);
+			if(!empty($categoryArr)) {
+				if($categoryArr[1]=='galery') $typeId='galery';
+				$user->pageVO->htmlName =  $categoryArr[2] . ' - ' . $user->pageVO->name;
+				$fPages->addWhere("sys_pages.categoryId=".$category);
+			}
 		}
 		if(SITE_STRICT == 1) {
 			$fPages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");

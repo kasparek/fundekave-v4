@@ -488,24 +488,26 @@ var markitupSettings = {
 		{name:'Clean', className:'clean', replaceWith:function(markitup){return markitup.selection.replace(/<(.*?)>/g, "") } }
 	]
 }
-var waitingTA = null;
-function markItUpInit(textareaId) {
-	if(textareaId) waitingTA=textareaId;
-	if(!Lazy.load([JS_URL+'markitup/jquery.markitup.pack.js',JS_URL+'markitup/sets/default/style.css'],JS_URL+'markitup/skins/simple/style.css',markItUpInit)) return;
-	var textid='.markitup'; 
-	if(waitingTA){textid = '#'+waitingTA; waitingTA = null; } 
-	$(textid).markItUp(markitupSettings); 
-};
-
-function markItUpSwitchInit() {
-	$('.markitup').each( function(){$(this).before('<span class="textAreaResize"><a href="?textid='+$(this).attr('id')+'" class="toggleToolSize"></a></span>'); });
-	setListeners('toggleToolSize','click',function(e) {
-		var TAId = gup("textid", e.target.href);
-		if ( $("#" + TAId).hasClass('markItUpEditor') ){$("#" + TAId).markItUpRemove();
-		} else { if(waitingTA===null){markItUpInit( TAId ); } }
-		e.preventDefault();
-	});
+var Richta = {w:null,
+init:function(ta){
+var o=Richta;
+if(ta)o.w=ta;
+if(!Lazy.load(LAZYLOAD.richta,Richta.init))return;
+if(!o.w)o.w=$('.markitup');  
+o.w.markItUp(markitupSettings); 
+o.w=null;
+},
+map:function(){
+$('.markitup').each( function(){$(this).before('<span class="textAreaResize"><a href="?textid='+$(this).attr('id')+'" class="toggleToolSize"></a></span>'); });
+setListeners('toggleToolSize','click',Richta.click);
+},
+click:function(e){
+var ta=$("#"+gup("textid",e.target.href));
+if(ta.hasClass('markItUpEditor'))ta.markItUpRemove();
+else if(!Richta.w) Richta.init(ta);
+e.preventDefault();return false;
 }
+};
 //---MARKITUP SETUP END
 
 /**
@@ -541,7 +543,7 @@ function boot() {
 	if(USER>0) {
 		fajaxformInit();
 		// ---ajax textarea / tools
-		markItUpSwitchInit();
+		Richta.map();
 		draftInit();
 		// ---message page
 		$("#recipient").change( avatarfrominput );
@@ -565,7 +567,7 @@ function jUIInit() {
 	if(!Lazy.load(LAZYLOAD.ui,jUIInit))return;
 	tabsInit();
 	datePickerInit();
-	markItUpSwitchInit();
+	Richta.map();
 	fajaxaInit();
 	fconfirmInit();
 	fajaxformInit();
@@ -811,7 +813,7 @@ function sendAjax(action,k){var data=XMLReq.get();if(k==0)k=null;if(!k)k=gup('k'
 var XMLReq={a:[],s:'<Item name="{KEY}"><![CDATA[{DATA}]]></Item>',reset:function(){XMLReq.a=[];},add:function(k,v){XMLReq.a.push(XMLReq.s.replace('{KEY}',k).replace('{DATA}',v));},get:function(){var s='<FXajax><Request>'+XMLReq.a.join('')+'</Request></FXajax>';XMLReq.a=[];return s;}};
 //--- CUSTOM AJAX REQUEST BUILDER/HANDLER END
 //LAZYLOADER
-var Lazy={r:{},f:null,q:[],load:function(l,f){var o=Lazy,c=true;for(var i=0;i<l.length;i++)if(!o.r[l[i]]){c=false;break}if(c)return c;o.q.push({l:l.concat(),f:f});if(o.q.length==1)return o.p();},p:function(){var o=Lazy;while(o.q[0].l.length>0){var f=o.q[0].l.shift();if(!o.r[f]){o.f=f;if(f.indexOf('.css')>-1){LazyLoad.css(f,o.c);}else{LazyLoad.js(f,o.c);}return;}}return true;},c:function(){var o=Lazy;o.r[o.f]=true;if(o.q[0].l.length>0){o.p();return;}if(o.q[0].f) setTimeout(o.q[0].f,250);o.q.shift();if(o.q.length>0)o.p();}};
+var Lazy={r:{},f:null,q:[],load:function(l,f){var o=Lazy,c=true;for(var i=0;i<l.length;i++)if(!o.r[l[i]]){c=false;break}if(c)return c;o.q.push({l:l.concat(),f:f});if(o.q.length==1)return o.p();},p:function(){var o=Lazy;while(o.q[0].l.length>0){var f=o.q[0].l.shift();if(!o.r[f]){o.f=f;if(f.indexOf('.css')>-1){LazyLoad.css(f,o.c);}else{LazyLoad.js(f,o.c);}return;}}o.q.shift();return true;},c:function(){var o=Lazy;o.r[o.f]=true;if(o.q[0].l.length>0){o.p();return;}if(o.q[0].f)o.q[0].f();o.q.shift();if(o.q.length>0)o.p();}};
 //init google map API
 var GooMapi={loading:false,loaded:false,call:[],load:function(f){var o=GooMapi;if(o.loaded)return true;if(o.call.indexOf(f)==-1)o.call.push(f);if(o.loading)return;o.loading=true;var d=window.document,script=d.createElement('script');script.setAttribute('src','http://maps.google.com/maps/api/js?v=3&sensor=false&callback=GooMapi.c');d.documentElement.firstChild.appendChild(script);},c:function(){var o=GooMapi;o.loading=false;o.loaded=true;while(o.call.length>0){var f=o.call.shift();f();}}};
 //google anal
