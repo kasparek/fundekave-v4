@@ -15,6 +15,7 @@ var Lazy = {
 	    	return;
 	    }
 		}
+		o.q.shift();
 		return true;
 	},
 	c:function(){

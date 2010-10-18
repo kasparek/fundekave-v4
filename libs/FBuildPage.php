@@ -50,32 +50,51 @@ class FBuildPage {
 
 		//typ
 		$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
-		$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId; 
+		$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId;
+		$typeCrumb=false; 
+		$pageCrumb=true;
+		
 		if(!empty($typeId)) {
 			//TODO:refactor - cache???
 			//prehled
 			$breadcrumbs[] = array('name'=>FDBTool::getOne("select text from sys_menu where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
 			//typ
+			$typeCrumb=true;
+			$pageCrumb=false;
 			$breadcrumbs[] = array('name'=>FLang::$TYPEID[$typeId],'url'=>FSystem::getUri('','foall',$typeId));
-			//category
-			if($user->pageVO->categoryId > 0) {
-				$categoryArr = FCategory::getCategory($user->pageVO->categoryId);
-				if(!empty($categoryArr))
-					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$user->pageVO->categoryId,'foall',''));
-			}
+			
+			if($user->pageVO->categoryId > 0) $pageCategory = $user->pageVO->categoryId;
+		}
+		if(empty($pageCategory)) {
+			$c=0;
+			if(isset($_GET['c']) && $user->pageVO->typeId=='top') $c= (int) $_GET['c']*1;
+			if($c>0) $pageCategory=$c;
+		}
+		
+		//category
+		if($pageCategory > 0) {
+			$categoryArr = FCategory::getCategory($pageCategory);
+			if(!empty($categoryArr)) {
+				$pageCrumb=false;
+				if($typeCrumb==false) $breadcrumbs[] = array('name'=>FLang::$TYPEID[$categoryArr[1]],'url'=>FSystem::getUri('','foall',$categoryArr[1]));
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$pageCategory,'foall',$categoryArr[1]));
+				}
 		}
 
 		if(!empty($_REQUEST['date'])) $date = FSystem::checkDate($_REQUEST['date']);
 		if(!empty($date)) $breadcrumbs[] = array('name'=>date(FConf::get('internationalization','date'),strtotime($date)),'url'=>FSystem::getUri('date='.$date));
 
+		if(isset(FLang::$TYPEID[$user->pageVO->typeId])) $pageCrumb=true;
 		//stranka
-		if(!empty($user->pageVO->name)) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+		if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 
-		if($user->itemVO) $categoryId = $user->itemVO->categoryId;
-		if(!empty($_REQUEST['c'])) $categoryId = (int) $_REQUEST['c'];
-		if(!empty($categoryId)) {
-			$categoryArr = FCategory::getCategory($categoryId);
-			$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$categoryId,$user->pageVO->pageId,''));
+    $itemCategory=0;
+    if(isset($_GET['c']) && $user->pageVO->typeId!='top') $itemCategory= (int) $_GET['c']*1;
+		if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
+		if($itemCategory>0) {
+			$categoryArr = FCategory::getCategory($itemCategory);
+			if(!empty($categoryArr)) 
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
 		}
 
 		if($user->itemVO) {

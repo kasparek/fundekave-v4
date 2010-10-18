@@ -5,7 +5,10 @@
 <script type="text/javascript">
 if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0],i=m.indexOf('-');window.location.hash='';if(i>-1){var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
 var ASSETS_URL = '{ASSETS_URL}', JS_URL = '[[URL_JS]]', CSS_URL = 'css/', CLIENT_WIDTH = {CLIENT_WIDTH}, CLIENT_HEIGHT = {CLIENT_HEIGHT}, MESSCHECKING={MSGPOLLTIME}, GOOGLEANALID="{GOOGLEID}", USER={USER};
-var LAZYLOAD={'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js', JS_URL+'fundekave.js'],'swf':['http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js'],'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js',JS_URL+'i18n/ui.datepicker-cs.js','css/themes/ui-lightness/jquery-ui.css']};
+var LAZYLOAD={'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',JS_URL+'fundekave.js']
+,'swf':['http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']
+,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js',JS_URL+'i18n/ui.datepicker-cs.js','css/themes/ui-lightness/jquery-ui.css']
+,'richta':[JS_URL+'markitup/jquery.markitup.pack.js',JS_URL+'markitup/sets/default/style.css',JS_URL+'markitup/skins/simple/style.css']};
 //var LAZYLOAD={'boot':['source/jquery.min.js', JS_URL+'fundekave.js'],'swf':['source/swfobject.js'],'ui':['source/jquery-ui.min.js',JS_URL+'i18n/ui.datepicker-cs.js','css/themes/ui-lightness/jquery-ui.css']};
 </script>
 <title>{TITLE}</title>
