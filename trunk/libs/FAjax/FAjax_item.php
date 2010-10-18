@@ -47,10 +47,11 @@ class FAjax_item extends FAjaxPluginBase {
 		FItemsForm::process($data);
 		if(FAjax::isRedirecting()===false) {
 			Fajax_item::edit($data);
-			$user = FUser::getInstance();
-			if($itemVO->itemId>0) {
-				$user->itemVO = $itemVO;
+			if(!empty($data['item'])) { 
+			$itemVO = new ItemVO((int) $data['item']);
+			if($itemVO->load()) {
 				FAjax::addResponse('i'.$itemId, '$replaceWith', page_ItemDetail::build($data));
+			}
 			}
 		}
 	}
@@ -89,7 +90,7 @@ class FAjax_item extends FAjaxPluginBase {
 			FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 		} else {
 			if($itemVO = FItemsForm::moveImage( $data )) {
-				$tpl = FSystem::tpl('events.edit.tpl.html');
+				$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
 				$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->galeryDir.'/'.$itemVO->enclosure);
 				$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
 				$tpl->parse('image');

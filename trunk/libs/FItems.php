@@ -24,7 +24,7 @@ class FItems extends FDBTool {
 
 	/**
 	 *  userId=false - no restrictions applied, userId=0 - only public
-	 **/	 	
+	 **/
 	function __construct($typeId='',$userId=false,$itemRenderer=null) {
 		parent::__construct('sys_pages_items','itemId');
 		$this->VO = 'ItemVO';
@@ -38,7 +38,7 @@ class FItems extends FDBTool {
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
-		
+
 		if($typeId!='') {
 			//TODO: handle array
 			if(FItems::isTypeValid($typeId)) {
@@ -53,51 +53,51 @@ class FItems extends FDBTool {
 		} elseif($userId > 0) {
 			if(!FRules::getCurrent( 2 )) {
 				//TODO:solve performance issues
-				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList) 
+				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList)
 				$this->addWhere('(sys_pages_items.public = 1 or sys_pages_items.public = 2)'); //---only public item for non-admins
 			}
 			$this->userIdForPageAccess = $userId;
 		}
 
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
-		
+
 		//EXPERIMENTAL
 		$byPagePerm=false;
 		if($byPagePerm) {
-		if($this->permission == 1) {
-			if($this->sa === true) {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-				." {JOIN} where 1 ";
-			} else if($this->userId == 0) {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-				." {JOIN} where ".$this->table.".public=1 and ".$this->table.".locked<2";
+			if($this->permission == 1) {
+				if($this->sa === true) {
+					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+					." {JOIN} where 1 ";
+				} else if($this->userId == 0) {
+					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+					." {JOIN} where ".$this->table.".public=1 and ".$this->table.".locked<2";
+				} else {
+					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+					." left join ".$this->pagesPermissionTableName." as up on "
+					.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
+					." and up.userId='".$this->userId."' {JOIN} "
+					."where (((".$this->table.".public in (0,3) and up.rules >= 1) "
+					."or ".$this->table.".userIdOwner='".$this->userId."' "
+					."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+				}
 			} else {
 				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
 				." left join ".$this->pagesPermissionTableName." as up on "
 				.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
 				." and up.userId='".$this->userId."' {JOIN} "
-				."where (((".$this->table.".public in (0,3) and up.rules >= 1) " 
-				."or ".$this->table.".userIdOwner='".$this->userId."' " 
-				."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+				."where ( ".$this->table.".userIdOwner='".$this->userId."' "
+				."or (up.userId is not null and up.rules=".$this->permission.") )";
 			}
-		} else {
-			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-			." left join ".$this->pagesPermissionTableName." as up on "
-			.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
-			." and up.userId='".$this->userId."' {JOIN} " 
-			."where ( ".$this->table.".userIdOwner='".$this->userId."' " 
-			."or (up.userId is not null and up.rules=".$this->permission.") )";
-		}
-				
-		if(!empty($this->type)) {
-			if(!is_array($this->type)) {
-				$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
-			} else {
-				$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
+
+			if(!empty($this->type)) {
+				if(!is_array($this->type)) {
+					$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
+				} else {
+					$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
+				}
 			}
-		}
-		$queryBase .= ' and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
-		$this->setTemplate($queryBase);
+			$queryBase .= ' and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+			$this->setTemplate($queryBase);
 		}
 	}
 
@@ -181,7 +181,7 @@ class FItems extends FDBTool {
 
 			$q = "select itemId,name,value from sys_pages_items_properties where itemId in (".implode(',',$itemIdList).")";
 			$props = FDBTool::getAll($q);
-			
+				
 			foreach($this->data as $k=>$itemVO) {
 				$invalidate = false;
 				if(!empty($props)) {
