@@ -231,11 +231,11 @@ class FFile {
 		,'DISPLAYCONTENT'=>1
 		,'CROP'=>0
 		,'MULTI'=>1
-		,'QUALITY'=>85
+		,'QUALITY'=>90
 		,'WIDTHMAX'=>$maxSize
 		,'HEIGHTMAX'=>$maxSize
 		,'APPWIDTH'=>-1
-		,'APPHEIGHT'=>25
+		,'APPHEIGHT'=>200
 		,'ONLOADED'=>''
 		,'ONONEUPLOADED'=>'galeryCheck'
 		,'ONUPLOADED'=>''
@@ -248,6 +248,7 @@ class FFile {
 				$vars['AUTOUPLOAD']=1;
 				$vars['DISPLAYCONTENT']=0;
 				$vars['MULTI']=0;
+				$vars['APPHEIGHT']=25;
 				$vars['APPWIDTH']=400;
 				$vars['ONONEUPLOADED']='';
 				$vars['ONUPLOADED']='fuupUploadComplete';
