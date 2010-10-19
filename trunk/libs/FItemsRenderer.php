@@ -199,7 +199,7 @@ class FItemsRenderer {
 			$pageType = $itemVO->pageVO->get('typeId');
 			if($pageType=='galery' || $pageType=='forum') $showCommentNum=false; 
 		}
-		if($showCommentNum && $itemVO->cnt>0) {
+		if($showCommentNum) {
 			$vars['COMMENTLINK'] = $link;
 			$vars['CNTCOMMENTS'] = $itemVO->cnt;
 			if($itemVO->unreaded > 0) $vars['ALLNEWCNT'] = $itemVO->unreaded;

@@ -59,11 +59,10 @@ class FSidebar extends FDBTool {
 					$setByUser = (!empty($newRow['userId'])) ? true : false;
 					$setByPage = (!empty($newRow['pageId'])) ? true : false;
 					$setByDefault = (!empty($newRow['group'])) ? true : false;
-
 				}
-				if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[6];
-				if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[7];
-				if(empty($newRow['userId']) && !empty($row[9])) $newRow['userId'] = $row[8];
+				if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[7];
+				if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[8];
+				//if(empty($newRow['userId']) && !empty($row[9])) $newRow['userId'] = $row[8];
 				if(!empty($newRow['group']) && $setByPage===false && $setByUser===false) {
 					//---defaults
 					$newRow['ord'] = $row[10];

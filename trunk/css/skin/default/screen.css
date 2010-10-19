@@ -56,7 +56,7 @@ color: #9D400D;
 div#search-holder {float: right;padding-top: 10px;padding-right: 10px;margin-bottom: -10px;}
 
 /* SIDEBAR */
-div#sidebar h2 {line-height: 1.1em;margin-bottom: 0.5em;}
+div#sidebar h2 {line-height: 1.1em;margin-bottom: 0.5em;padding:0 5px;}
 div.sidebarBlock {margin: 0 0 1em 0;padding: 0.3em;background: #f8f7ef;}
 
 /* MAIN CONTENT */
@@ -191,7 +191,7 @@ div.galleryList div.thumbnail {float: left;margin-right: 15px;padding-top: 0;mar
 div.galleryList div.hentry {clear: both;min-height: 140px;padding: 0;margin-bottom: 1em;}
 div.galleryList div.hentry h3.entry-title {padding: 0.5em 0;}
 div.galleryList div.hentry span.abbr {line-height: 2em;}
-div.galeryThumb {float: left;clear: none !important;margin: 0 0.5em 1em 0.5em !important;padding: 0.3em 0.6em !important;border: 1px solid #ddd;}
+div#mainbar div.galeryThumb {float: left;clear: none !important;margin: 0 0.5em 1em 0.5em !important;padding: 0.3em 0.6em !important;border: 1px solid #ddd;}
 div.entry-content div.alignRight {float:right;}
 div.entry-content div.alignLeft {float:left;}
 div.entry-content div.alignCenter {text-align: center;margin: auto 0;}
