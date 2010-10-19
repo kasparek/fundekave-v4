@@ -1,5 +1,5 @@
 <?php
-class pageCategories {
+class Sidebar_categories {
 	static function show() {
 		$user = FUser::getInstance();
 		$multiType=false;

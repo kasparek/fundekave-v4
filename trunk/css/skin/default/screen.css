@@ -117,7 +117,7 @@ div.mainpanel-content div#categories ul {margin-left: 30px;}
 /* LINK LIST */
 a.linkItem {font: 1.3em Georgia,Times,serif;clear: both;line-height: 25px;min-height: 25px;display: block;background: #FFF3E7;text-decoration: none;margin-top: 2px;padding: 0 1em;}
 a.linkItem:hover {background: #E2E595;text-decoration:underline;}
-div#sidebar a.linkItem { line-height: 20px; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
+div#sidebar a.linkItem { line-height: 20px;height:20px;overflow:hidden; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
 div#mainbar div.entry-content a.linkItem img {margin: 0 0 -8px 0 !important;float: none !important;}
 

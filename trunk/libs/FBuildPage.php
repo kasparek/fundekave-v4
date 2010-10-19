@@ -53,7 +53,7 @@ class FBuildPage {
 		$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId;
 		$typeCrumb=false; 
 		$pageCrumb=true;
-		
+		$pageCategory=0;
 		if(!empty($typeId)) {
 			//TODO:refactor - cache???
 			//prehled
@@ -72,7 +72,7 @@ class FBuildPage {
 		}
 		
 		//category
-		if($pageCategory > 0) {
+		if($pageCategory>0) {
 			$categoryArr = FCategory::getCategory($pageCategory);
 			if(!empty($categoryArr)) {
 				$pageCrumb=false;
@@ -335,10 +335,10 @@ class FBuildPage {
 		$showSidebar = true;
 		if($user->pageVO) $showSidebar=$user->pageVO->showSidebar;
 		if($showSidebar) {
-			$fLeftpanel = new FLeftPanel(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
-			$fLeftpanel->load();
-			$fLeftpanel->show();
-			FProfiler::write('FBuildPage--FLeftPanel');
+			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
+			$fsidebar->load();
+			$fsidebar->show();
+			FProfiler::write('FBuildPage--FSidebar');
 		}
 		$tpl->setVariable("USER",$user->idkontrol?'1':'0');
 		//post messages
