@@ -161,6 +161,10 @@ class FBuildPage {
 					$user->pageVO->content = FSystem::postText($user->pageVO->prop('home'));
 					if(empty($user->pageVO->content)) $user->pageVO->content = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					break;
+					/* GOOgle mapi */
+				case 'm':
+					$template = 'page_Map';
+					break;
 				default:
 					$template = $user->pageVO->template;
 					if($template != '') {
@@ -170,30 +174,25 @@ class FBuildPage {
 					}
 					break;
 			}
-			FProfiler::write('FBuildPage::baseContent--TPL READY');
 			if($template != '') {
 				if ($staticTemplate === false) {
 					//DYNAMIC TEMPLATE
 					FProfiler::write('FBuildPage::baseContent--TPL LOADED');
-					if( class_exists($template) ) {
-						call_user_func(array($template, 'build'),$data);
-					}
+					if( class_exists($template)) call_user_func(array($template, 'build'),$data);
 					FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 				} else {
 					//STATIC TEMPLATE
 					$tpl = FSystem::tpl($template);
 					FSystem::tplParseBlockFromVars( $tpl, $user->pageVO );
 					FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
-					unset($tpl);
 				}
 			} else {
 				//NOT TEMPLATE AT ALL
 				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content));
 			}
-			FProfiler::write('FBuildPage::baseContent--CONTENT DONE');
+			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
-
 			if($user->pageVO->typeId == 'forum' && $user->pageParam!='h') {
 				$homePage = $user->pageVO->prop('home');
 				if(!empty($homePage)) {
@@ -206,7 +205,6 @@ class FBuildPage {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
 					}
-
 					if(FRules::getCurrent(2) && empty($user->itemVO)) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 					}
@@ -219,19 +217,14 @@ class FBuildPage {
 			if(FRules::get($user->userVO->userId,'sadmi',2)) {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,array('parentClass'=>'opposite'));
 			}
-
 			FProfiler::write('FBuildPage::baseContent--BUTTONS ADDED');
-			/**/
 		}
 	}
 
 	static function show( $data ) {
-
 		FBuildPage::baseContent( $data );
-		FProfiler::write('FBuildPage--FBuildPage::baseContent');
 
 		$tpl = FBuildPage::getInstance();
-
 		$tabsArr = FBuildPage::getTabs();
 		if($tabsArr) {
 			foreach($tabsArr as $tab) {

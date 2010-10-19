@@ -31,6 +31,7 @@
 /* PUBLIC DECLARATIONS */
 	.hidden {display: none !important;}
 	.clearbox {display: table; width: 100%;}
+	.clearreal {clear: both;}
 	.lefttext {text-align: left;}
 	.centertext {text-align: center;}
 	.righttext {text-align: right;}
@@ -71,7 +72,7 @@
 .geoselectorlabel {margin-top:-23px;}
 .mapSmall {float: right;clear: right;padding:0 1em;}
 .mapLarge {width: 100%;height: 600px;}
-.geoInfo {width:300px;}
+/*.geoInfo {width:300px;}*/
 .mapsData {display:none;}
 .fullscreen {display: block;position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: 9999;margin: 0;padding: 0;overflow: hidden;background: #000000;}
 

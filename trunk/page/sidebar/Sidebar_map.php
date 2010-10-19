@@ -6,6 +6,7 @@ class Sidebar_map {
 		$dbtool->setWhere("name='position'");
 		$posList = $dbtool->getContent();
 		$tpl = FSystem::tpl('sidebar.map.tpl.html');
+		$tpl->setVariable("URL",FSystem::getUri('','','m'));
 		while($row=array_pop($posList)) {
 			$position = $row[0];
 			$journey = explode(';',$position);
