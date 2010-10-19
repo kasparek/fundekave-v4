@@ -73,10 +73,12 @@ class page_PageEdit implements iPage {
 			}
 
 			//---leftpanel
+			/*
 			if(isset($data['leftpanel'])) {
 				$fLeft = new FLeftPanel($pageVO->pageId,0,$pageVO->typeId);
 				$fLeft->process($data['leftpanel']);
 			}
+			*/
 
 			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
 			if(empty($pageVO->name)) {
