@@ -135,31 +135,26 @@ package net.fundekave.fuup.view
 				break;
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
 					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-					filesView.globalProgressBar.visible = true;
-					filesView.cancelButt.visible = true;
-					filesView.globalProgressBar.value = 0;
 					filesView.globalMessagesBox.visible = false;
 					stateName = String( note.getBody() );
 					switch(stateName) {
 						case StateConstants.STATE_PROCESSING:
-							filesView.globalProgressBar.maximum = proxy.fileList.length;
+							filesView.initProgress('processing',proxy.fileList.length);
 						break;
 						case StateConstants.STATE_UPLOADING:
-							filesView.globalProgressBar.maximum = proxy.fileList.length;
+							filesView.initProgress('uploading',proxy.fileList.length);
 						break;
 					}
 				break;	
 				case ApplicationFacade.PROCESS_PROGRESS:
 					var obj:Object = (note.getBody() as Object);
-					filesView.globalProgressBar.value = Number( obj.processed );
-					trace('IMAGE PROCESSED::'+obj.processed+'/'+obj.total);
+					filesView.toProgress(Number(obj.processed));
 				break;
 				case StateMachine.CHANGED:
 					stateName = State( note.getBody() ).name;
             		switch( stateName ) {
             			case StateConstants.STATE_SETUPING:
-            				filesView.globalProgressBar.visible = false;
-							filesView.cancelButt.visible = false;
+            				filesView.closeProgress();
 							if(filesView.autoUpload===true) {
 								if(this.imagesProcessed===true || filesView.autoProcess===false) {
 									this.imagesProcessed=false;

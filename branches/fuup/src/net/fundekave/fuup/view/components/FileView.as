@@ -280,16 +280,17 @@ package net.fundekave.fuup.view.components
 			
 			public function removeView():void {
 				TweenLite.to( this, 0.2, {alpha:0, onComplete:onTween, overwrite:0});
-				trace("TWEENREMOVE"+fileVO.filename);
 				if(previewWin) {
 					previewWin.close();
 				}
 			}
 			
 			private function onTween():void {
-				this.fileVO.destroy();
-				this.fileVO = null;
-				this.parent.removeChild( this );	
+				if(this.fileVO) {
+					this.fileVO.destroy();
+					this.fileVO = null;
+					this.parent.removeChild( this );
+				}
 			}
 			
 			/**
