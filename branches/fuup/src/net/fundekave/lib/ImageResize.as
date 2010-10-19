@@ -45,18 +45,19 @@ package net.fundekave.lib
 		public var heightNew:int;
 		public var rotationNew:Number;
 		public var outputQuality:int;
-		
+		/*
 		private var init:CLibInit;
 		private var lib:Object;
-		
+		*/
 		public function ImageResize(widthMax:int=0,heightMax:int=0,rotationNew:Number=0,outputQuality:int=100)
 		{
 			super();
 			
 			//alchemy init
+			/*
 			init = new CLibInit();
 			lib = init.init();
-			
+			/**/
 			this.widthMax = widthMax;
 			this.heightMax = heightMax;
 			this.rotationNew = rotationNew;
@@ -225,10 +226,11 @@ package net.fundekave.lib
         public function encode(bmpd:BitmapData=null):void {
         	if(!bmpd) bmpd = _resultBmpData;
         	resultBytes = new ByteArray();
-			/*        	       	
+			        	       	
         	var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
         	resultBytes = jpgEnc.encode( bmpd );
 			/**/
+			/*
 			var ba:ByteArray = bmpd.getPixels( bmpd.rect );
 			ba.position = 0;
 			lib.encode(ba,resultBytes,bmpd.width,bmpd.height,outputQuality);
