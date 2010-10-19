@@ -1,6 +1,7 @@
 package net.fundekave.fuup.view.components
 {
 	import com.bit101.components.*;
+	import com.greensock.TweenLite;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -10,6 +11,7 @@ package net.fundekave.fuup.view.components
 	import flash.net.FileReference;
 	import flash.net.FileReferenceList;
 	import flash.text.TextFormat;
+	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 	
 	import net.fundekave.Application;
@@ -81,28 +83,41 @@ package net.fundekave.fuup.view.components
 			}
 		}
 		
+		public function initProgress(state:String,max:uint):void {
+			//---init global progress bar
+			globalProgressBar.visible = true;
+			globalProgresslabel.visible = true;
+			cancelButt.visible = true;
+			globalProgressBar.value = 0;
+			globalProgressBar.maximum = max*100;
+			TweenLite.to(globalProgressBar,0.3,{value:globalProgressBar.maximum*0.1});
+			globalProgresslabel.text = lang[state];
+			this.addEventListener(ACTION_CANCEL, onCancel);
+		}
+		public function toProgress(value:int):void {
+			TweenLite.to(globalProgressBar,0.1,{value:value*100});
+		}
+		public function closeProgress():void {
+			globalProgressBar.visible = false;
+			globalProgresslabel.visible = false;
+			cancelButt.visible = false;
+		}
+		
 		private var filesArr:Array;
+		private var populateFilesTimeout:uint;
 		private function onFilesSelect(e:Event):void {
 			filesArr = (e.target as FileReferenceList).fileList;
 			if(filesArr.length>0) {
-				//---init global progress bar
-				globalProgressBar.visible = true;
-				cancelButt.visible = true;
-				globalProgressBar.maximum = filesArr.length;
-				globalProgressBar.value = 0;
-				
-				populateFiles();
-				
-				this.addEventListener(ACTION_CANCEL, onCancel);
+				initProgress('loading',filesArr.length);
+				setTimeout(populateFiles,300);
 			}
 		}
 
 		private function onCancel(e:Event):void
 		{
 			this.removeEventListener(ACTION_CANCEL, onCancel);
-			
-			globalProgressBar.visible = false;
-			cancelButt.visible = false;
+			if(populateFilesTimeout) clearTimeout(populateFilesTimeout);
+			closeProgress();
 			currFile = null;
 			filesArr = [];
 		}
@@ -113,14 +128,19 @@ package net.fundekave.fuup.view.components
 			if( fileRef.name ) {
 				filesArr = [];
 				currFile = fileRef;
-				dispatchEvent( new Event( FILE_CHECK_EXITS ));
+				initProgress('loading',1);
+				setTimeout(fileCheckLater,300);
 			}
+		}
+		private function fileCheckLater():void {
+			dispatchEvent( new Event( FILE_CHECK_EXITS ));
 		}
 		
 		private var currFileView:FileView;
 		public var currFile:FileReference;
 		
 		private function populateFiles():void {
+			if(populateFilesTimeout) populateFilesTimeout=0;
 			if(filesArr.length > 0) {
 				currFile = filesArr.shift();
 				//---check if file is not already in list
@@ -156,8 +176,7 @@ package net.fundekave.fuup.view.components
 				errWin.close();
 				errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
 				
-				globalProgressBar.visible = false;
-				cancelButt.visible = false;
+				closeProgress();
 				currFile = null;
 				filesArr = null;
 				return;
@@ -222,11 +241,10 @@ package net.fundekave.fuup.view.components
 		}
 		
 		private function progressInc():void {
-			globalProgressBar.value = Number(globalProgressBar.value + 1);
-			if(globalProgressBar.value == globalProgressBar.maximum) {
+			toProgress(filesBox.numChildren);
+			if(filesArr.length == 0) {
 				//---hide progress bar
-				globalProgressBar.visible = false;
-				cancelButt.visible = false;
+				closeProgress();
 			}
 		}
 		
@@ -277,6 +295,7 @@ package net.fundekave.fuup.view.components
 		private var uploadButt:PushButton;
 		public var cancelButt:PushButton;
 		public var globalProgressBar:ProgressBar;
+		public var globalProgresslabel:Label;
 		public var globalMessagesBox:Container;
 		public var globalMessages:Label;
 		private var filesBox:Container;
@@ -291,11 +310,11 @@ package net.fundekave.fuup.view.components
 			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
 			correctionsCheckbox.selected = settingsOn;
 			
-			processButt = new PushButton(this,135,5,lang.process,onProcessClick);
+			processButt = new PushButton(this,135-(_settingsVisible?65:0),5,lang.process,onProcessClick);
 			processButt.width = 60;
 			processButt.visible = !_autoUpload;
 			
-			uploadButt = new PushButton(this,200,5,lang.upload,onUploadClick);
+			uploadButt = new PushButton(this,200-(_settingsVisible?65:0),5,lang.upload,onUploadClick);
 			uploadButt.width = 60;
 			uploadButt.visible = !autoUpload;
 			
@@ -304,10 +323,13 @@ package net.fundekave.fuup.view.components
 			cancelButt.visible = false;
 			
 			globalProgressBar = new ProgressBar(this,5,5);
-			globalProgressBar.visible = false;
 			globalProgressBar.width = 190;
 			globalProgressBar.height = 20;
-			globalProgressBar.maximum = 100; 
+			globalProgressBar.maximum = 100;
+			globalProgressBar.visible = false;
+			
+			globalProgresslabel = new Label(this,10,5);
+			globalProgresslabel.visible = false;
 			
 			globalMessagesBox = new Container(this,270,5);
 			globalMessagesBox.visible = false;

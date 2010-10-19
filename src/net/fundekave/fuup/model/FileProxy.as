@@ -1,6 +1,6 @@
 package net.fundekave.fuup.model
 {    
-      
+            
       import flash.events.ErrorEvent;
       import flash.events.Event;
       import flash.events.ProgressEvent;
@@ -57,7 +57,7 @@ package net.fundekave.fuup.model
 			_useFilters = v;
 			_useFiltersPrev = v;
 		}
-        
+        		
         public function FileProxy( )
         {
 			super( NAME );
@@ -152,8 +152,7 @@ package net.fundekave.fuup.model
         	
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
 			fileVO.encodedJPG = new ByteArray();
-			fileVO.encodedJPG.writeBytes( imageResize.resultBytes )
-        	//fileVO.encodedJPG = ByteArray(imageResize.resultBytes);
+			fileVO.encodedJPG.writeBytes(imageResize.resultBytes);
 			fileVO.widthNew = imageResize.widthNew;
 			fileVO.heightNew = imageResize.heightNew;
 			fileVO.renderer.updateThumb();
