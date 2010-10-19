@@ -15,7 +15,6 @@ ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorC
 update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
 FIX:
-- clean up - kesovani vseho, projit stranky
 - osobni,galerie,clanky - otestovat ftp nahravani
 - events,blog - nahravani,mazani obrazku - test
 

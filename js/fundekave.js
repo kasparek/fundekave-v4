@@ -77,11 +77,11 @@ this.map = new google.maps.Map(this.mapEl, { mapTypeId:google.maps.MapTypeId.TER
 this.map.setCenter(new google.maps.LatLng(50, 0));
 this.map.setZoom(5); 
 } } }
-function mapData() {this.parent=null;this.dataEl=null;this.title='';this.infoEl=null;this.map=null;this.marker=null;this.path=null;this.journey=false;this.distance = 0;
-this.updateMarker = function(latLng) {if(!this.marker) this.marker = new google.maps.Marker( {position : latLng,map : this.map,title : this.title});else this.marker.setPosition(latLng);if(this.infoEl) this.marker.html = $(this.infoEl).html();}
-this.resetWP = function() {if(this.path) {this.path.setPath([]);}}
-this.addWP = function(latLng) {if(!this.path) this.path = new google.maps.Polyline( {map : this.map,path : [],strokeColor : "#ff0000",strokeOpacity : 1.0,strokeWeight : 2,geodesic : true});var wpList = this.path.getPath();wpList.push(latLng);this.path.setPath(wpList);}
-this.updateDistance = function() {this.distance = 0;if(!this.path) return;var wpList = this.path.getPath();if(wpList.length>1){for(i=1;i<wpList.length;i++) {this.distance += distance(wpList.getAt(i-1).lat(),wpList.getAt(i-1).lng(),wpList.getAt(i).lat(),wpList.getAt(i).lng());}}this.distance = Math.round(this.distance*10)/10;}
+function mapData() {this.parent=null;this.dataEl=null;this.title='';this.infoEl=null;this.overEl=null;this.map=null;this.marker=null;this.path=null;this.journey=false;this.distance = 0;
+this.updateMarker = function(latLng){if(!this.marker)this.marker=new google.maps.Marker({position:latLng,map:this.map,title:this.title});else this.marker.setPosition(latLng);if(this.infoEl)this.marker.htmlInfo=$(this.infoEl).html();if(this.overEl)this.marker.htmlOver=$(this.overEl).html();}
+this.resetWP=function(){if(this.path){this.path.setPath([]);}}
+this.addWP=function(latLng){if(!this.path)this.path=new google.maps.Polyline({map:this.map,path:[],strokeColor:"#ff0000",strokeOpacity:1.0,strokeWeight:2,geodesic:true});var wpList=this.path.getPath();wpList.push(latLng);this.path.setPath(wpList);}
+this.updateDistance = function(){this.distance=0;if(!this.path)return;var wpList=this.path.getPath();if(wpList.length>1){for(i=1;i<wpList.length;i++){this.distance+=distance(wpList.getAt(i-1).lat(),wpList.getAt(i-1).lng(),wpList.getAt(i).lat(),wpList.getAt(i).lng());}}this.distance = Math.round(this.distance*10)/10;}
 }
 function initMapData(){
 	if(mapHoldersList) return;
@@ -93,12 +93,14 @@ function initMapData(){
 			$(this.children).each(function(){
 				switch($(this).attr("class")) {
 				case "geoData":
-					data.dataEl = this;
-					data.title = $(this).attr('value'); 
+					data.dataEl=this;
+					data.title=$(this).attr('value'); 
 					break;
 				case "geoInfo":
-					data.infoEl = this;
+					data.infoEl=this;
 					break;
+				case "geoOver":
+					data.overEl=this;
 				};
 			});
 			holder.mapDataList.push(data);
@@ -107,6 +109,9 @@ function initMapData(){
 	});
 }
 function initMap() {
+	$(".mapLarge").each(function(){
+		if(!$(this).hasClass('hidden')) showMap($(this).attr('id'));
+	});
 	setListeners('mapThumbLink','click',function(e){
 		var id=$(this).attr('id').replace('mapThumb','');
 		$(this).addClass('hidden');
@@ -158,8 +163,12 @@ function showMap(itemId,callback) {
 					}
 				}
 				if(data.infoEl){
-					data.marker.html = data.marker.html.replace('[[DISTANCE]]',data.distance);
-					google.maps.event.addListener(data.marker, 'click', function(event) {if(!infoWindow) infoWindow = new google.maps.InfoWindow();infoWindow.setContent(this.html);infoWindow.open(data.map,this);});
+					data.marker.htmlInfo = data.marker.htmlInfo.replace('[[DISTANCE]]',data.distance);
+					google.maps.event.addListener(data.marker, 'click', function(event) {if(!infoWindow)infoWindow=new google.maps.InfoWindow();infoWindow.setContent(this.htmlInfo);infoWindow.open(data.map,this);});
+				}
+				if(data.overEl){
+					 google.maps.event.addListener(data.marker, 'mouseover', function(event){$(this.htmlOver).removeClass('hidden').css('position','absolute');});
+					 google.maps.event.addListener(data.marker, 'mouseout', function(event) {$(this.htmlOver).addClass('hidden');});
 				}
 			}
 			if(boundNum>0) {
