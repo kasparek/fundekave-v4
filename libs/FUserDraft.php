@@ -1,24 +1,25 @@
 <?php
 class FUserDraft {
-	static function getAction() {
-		return ' onKeyup="setDraftElement(this);handleDraft();" ';
-	}
 	static function clear($placeId) {
 		$user = FUser::getInstance();
-		if($user->userVO->userId > 0)
-		FDBTool::query("delete from sys_users_draft where userId='".$user->userVO->userId."' and place='".$placeId."'");
+		if($user->userVO->userId > 0) {
+			$placeList = explode(',',$placeId);
+			foreach($placeList as $k=>$v) $placeList[$k] = FSystem::safeText($v); 
+			FDBTool::query("delete from sys_users_draft where userId='".$user->userVO->userId."' and place in ('".implode("','",$placeList)."')");
+		}
 	}
 	static function get($placeId) {
 		$user = FUser::getInstance();
 		if($user->userVO->userId > 0) {
-			$dot = "select text from sys_users_draft where userId='".$user->userVO->userId."' and place='".$placeId."'";
-			return FDBTool::getOne($dot);
+			return FDBTool::getOne("select text from sys_users_draft where userId='".$user->userVO->userId."' and place='".FSystem::safeText($placeId)."'");
 		}
 	}
 	static function save($place,$text) {
 		$user = FUser::getInstance();
-		if($user->userVO->userId > 0)
-		$q = "insert into sys_users_draft (userId,place,text) values ('".$user->userVO->userId."','".$place."','".$text."') on duplicate key update text = '".$text."'";
-		return FDBTool::query($q);
+		if($user->userVO->userId > 0) {
+			$db=FDBConn::getInstance();
+			$text = $db->escape($text); 
+			return FDBTool::query("insert into sys_users_draft (userId,place,text) values ('".$user->userVO->userId."','".FSystem::safeText($placeId)."','".$text."') on duplicate key update text = '".$text."'");
+		}
 	}
 }

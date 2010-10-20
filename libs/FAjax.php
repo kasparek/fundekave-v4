@@ -87,7 +87,7 @@ class FAjax {
 					if(!empty($dataProcessed['draftable'])) {
 						$draftList = explode(',',$dataProcessed['draftable']);
 						while($draftId = array_pop($draftList)) FUserDraft::clear($draftId);
-						FAjax::addResponse('call','draftDroped','');
+						FAjax::addResponse('call','Draft.dropBackHandler','');
 					}
 				}
 				FProfiler::write('FAJAX MODULE COMPLETE');

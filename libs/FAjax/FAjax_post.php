@@ -1,5 +1,6 @@
 <?php
 class FAjax_post extends FAjaxPluginBase {
+	
 	static function page($data) {
 		if(isset($data['p'])) $data['p'] = $data['p']*1; else $data['p']=1;
 		if($data['__ajaxResponse']===true) {
@@ -30,10 +31,9 @@ class FAjax_post extends FAjaxPluginBase {
 
 	static function hasNewMessage($data,$wait=false) {
 		$user = FUser::getInstance();
-		
 		if(isset($data['unreadedSent'])) {
 			if($readed=FMessages::sentReaded($data['unreadedSent'])) {
-				FAjax::addResponse('call','messageSentReaded',$readed);
+				FAjax::addResponse('call','Msg.sentReaded',$readed);
 				$wait = false;
 			}
 		}
@@ -47,7 +47,7 @@ class FAjax_post extends FAjaxPluginBase {
 		}
 		 
 		if($check) {
-			FAjax::addResponse('call','messageCheckHandler',$user->userVO->newPost.','.$user->userVO->newPostFrom);
+			FAjax::addResponse('call','Msg.checkHandler',$user->userVO->newPost.','.$user->userVO->newPostFrom);
 			if($user->pageVO) {
 		  if($user->pageVO->pageId=='fpost') {
 		  	//if search - reset search - $data['refreshPage']=true;
@@ -68,7 +68,7 @@ class FAjax_post extends FAjaxPluginBase {
 		  }
 			}
 		} else {
-			FAjax::addResponse('call','messageCheckHandler','0');
+			FAjax::addResponse('call','Msg.checkHandler','0');
 		}
 	}
 
