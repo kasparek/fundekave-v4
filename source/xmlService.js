@@ -1,123 +1,84 @@
-//template extend
-(function($){  
-  
-    //Attach this new method to jQuery  
-    $.fn.extend({   
-          
-        //This is where you write your plugin's name  
-        pluginname: function() {  
-  
-            //Iterate over the current set of matched elements  
-            return this.each(function() {  
-              
-                //code to be inserted here  
-              
-            });  
-        }  
-    });  
-})(jQuery);
+var Fajax={
+xhrList:{}
+,top:0
+,formStop=false
+,formSent=null
 
-//$.xmlService();
-(function($){
-		var xmlArray = [];
-		var xmlStr = '<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';
-		var call = function(){ return true; };
-		var createEl = function(type,attr) { var el = document.createElement(type); $.each(attr,function(key){ if(typeof(attr[key])!='undefined') el.setAttribute(key, attr[key]); }); return el; };
-		var resetXMLRequest = function() { xmlArray = []; };
-		var addXMLRequest = function(key, value) { var str = xmlStr; str = str.replace('{KEY}', key); str = str.replace('{DATA}', value); xmlArray.push(str); };
-		var getXMLRequest = function() { var str = '<FXajax><Request>' + xmlArray.join('') + '</Request></FXajax>'; resetXMLRequest(); return str; };  
-    $.extend({   
-        xmlServiceSend: function(action,k) {  
-				  var data = getXMLRequest();
-					if(!k) k = gup('k',document.location);
-					$.ajaxSetup({ 
-				        scriptCharset: "utf-8" , 
-				        //contentType: "application/x-www-form-urlencoded; charset=utf-8"
-				        contentType: "text/xml; charset=utf-8"
-					});
-					$.ajax( {
-						type : "POST",
-						url : "index.php?m=" + action + "-x"+((k)?("&k="+k):('')),
-						dataType : 'xml',
-						dataProcess : false,
-						cache : false,
-						//data : "m=" + action + "-x"+((k)?("&k="+k):(''))+"&d=" + $.base64Encode(encodeURIComponent(data)),
-						data : data,
-						error: function(ajaxRequest, textStatus, error) { },
-						success: function(data, textStatus, ajaxRequest) {  },
-						complete : function(ajaxRequest, textStatus) {
-							$(ajaxRequest.responseXML).find("Item").each(
-									function() {
-										var item = $(this);
-										var command = '';
-										switch (item.attr('target')) {
-										case 'document':
-										command =  item.attr('target') + '.' + item.attr('property') + ' = "'+item.text()+'"';
-										break;
-										default:
-										switch (item.attr('property')) {
-											case 'css':
-												el = createEl('link',{'type':'text/css','rel':'stylesheet','href':item.text()});
-										        if ($.browser.msie) el.onreadystatechange = function() { /loaded|complete/.test(el.readyState) && call(); };
-										        else if ($.browser.opera) el.onload = call;
-										        else { //FF, Safari, Chrome
-										          (function(){
-										            try {
-											            el.sheet.cssRule;
-										            } catch(e){
-											            setTimeout(arguments.callee, 200);
-											            return;
-										            };
-										            call();
-										          })();
-										        }
-											  $('head').get(0).appendChild(el);
-								                 break;
-											case 'getScript':
-												var arr = item.text().split(';');
-												if(arr[1]) {
-													command = "$.getScript('"+arr[0]+"',"+arr[1]+");";
-												} else {
-													command = "$.getScript('"+arr[0]+"');";
-												}
-												break;
-											case 'callback':
-												command = item.text() + "( data.responseText );";
-												break;
-											case 'call':
-												var arr = item.text().split(';');
-												var functionName = arr[0];
-												var par = '';
-												if (arr.length > 1) {
-													arr.splice(0,1);
-													par = arr.join("','");
-												}
-												command = functionName + "('" + par + "');";
-												break;
-											case 'void':
-													//just debug message
-												break;
-											case 'body':
-												command = '$("body").append( item.text() );';
-												break;
-											default:
-												var property = item.attr('property');
-												if(property[0]=='$') {
-													property = property.replace('$','');
-													command = '$("#' + item.attr('target') + '").' + property + '( item.text() );'
-												} else { 
-													command = '$("#' + item.attr('target') + '").attr("' + item.attr('property') + '", item.text());';
-												}
-										};
-										};
-										if(command.length>0) eval(command);
-										if(formSent) { 
-											$('.button',formSent).removeAttr('disabled'); formSent=null;
-											if(draftdrop===true) draftDropAll(); 
-										}
-									});
-						}
-					});  
-        }  
-    });  
-})(jQuery);
+,init:function(){
+if($(".fajaxform").length>0)setListeners('button','click',Fajax.form);
+setListeners('fajaxa','click',fajaxaSend);
+}
+
+,pager:function(){
+	Hash.set('post-page/p:'+gup('p',this.href)+'/fpost');
+	return false;
+}
+
+,a:function(e) {
+	var o=Fajax;
+	o.top=null
+	if($(e.currentTarget).hasClass('confirm')){if(!confirm($(e.currentTarget).attr("title")))return false;}
+	var k=gup('k',this.href),id=$(this).attr("id"),m=gup('m',this.href);
+	if(!k)k=0;
+	var action=m+'/'+gup('d',this.href)+'/'+k;
+	if(id)action+='/'+id; 
+	if($(this).hasClass('keepScroll'))o.top=$(window).scrollTop();
+	if($(this).hasClass('progress')){var bar=$(".showProgress"),h=bar.height();bar.addClass('lbLoading').css('height',(h>0?h:$(window).height())+'px').children().hide();}
+	if($(this).hasClass('hash')){Hash.set(action);return false;}
+	o.action(action);
+	return false;
+}
+
+,action:function(action){//action = m/d/k|0/linkElId
+	actionList=action.split('/');
+	var m=actionList[0],d=actionList[1],k=actionList[2],id=actionList[3],d=false,dp=false;
+	if(k==0) k=null;
+	if(d){
+		var arr = d.split(';');
+		while (arr.length > 0) {
+			var rowStr = arr.shift();
+			var row = rowStr.split(':');
+			Fajax.add(row[0], row[1]);
+			if(row[0]=='result')d=true;
+			if(row[0]=='resultProperty')dp=true;
+		}
+	}
+	if(id){
+		if(!d)Fajax.add('result',id);
+		if(!dp)Fajax.add('resultProperty','$html');
+	}
+	Fajax.send(m,k);
+	return false;
+}
+
+,form:function(e) {
+	var o=Fajax;
+	e.preventDefault();
+	if (o.formStop==true){o.formStop=false;return false;}
+	if($(e.currentTarget).hasClass('confirm'))if(!confirm($(e.currentTarget).attr("title")))return false;
+	if($(e.currentTarget).hasClass('draftdrop'))Draft.hasDropAll=true;
+	$('.errormsg').hide('slow',function(){$(this).html('');});
+	$('.okmsg').hide('slow',function(){$(this).html('');});
+	o.formSent=e.currentTarget.form;
+	$('.button',o.formSent).attr('disabled',true);
+	var arr=$(o.formSent).formToArray(false),action,d=false,dp=false;
+	while(arr.length>0) {
+		var obj=arr.shift();
+		if(obj.name=='m')action=obj.value;
+		else o.add(obj.name,obj.value);
+		if (obj.name=='result')d=true;
+		if (obj.name=='resultProperty')dp=true;
+	}
+	if(!d)o.add('result',$(o.formSent).attr("id"));
+	if(!dp)o.add('resultProperty','$html');
+	o.add('action',e.currentTarget.name);
+	o.add('k',gup('k',o.formSent.action));
+	o.send(!action?gup('m',o.formSent.action):action,gup('k',o.formSent.action));
+	return false;
+}
+
+,XMLReq:{a:[],s:'<Item name="{KEY}"><![CDATA[{DATA}]]></Item>',reset:function(){XMLReq.a=[];},add:function(k,v){XMLReq.a.push(XMLReq.s.replace('{KEY}',k).replace('{DATA}',v));},get:function(){var s='<FXajax><Request>'+XMLReq.a.join('')+'</Request></FXajax>';XMLReq.a=[];return s;}}
+,add:function(k,v){Fajax.XMLReq.add(k,v)}
+,send:function(action,k){var data=Fajax.XMLReq.get();if(k==0)k=null;if(!k)k=gup('k',document.location);if(k==-1)k='';$.ajaxSetup({scriptCharset:"utf-8",contentType:"text/xml; charset=utf-8"});Fajax.xhrList[action]=$.ajax({type:"POST",url:"index.php?m="+action+"-x"+((k)?("&k="+k):('')),dataType:'xml',processData:false,cache:false,data:data,complete:function(ajaxRequest,textStatus){Fajax.xhrList[action]=null;$(ajaxRequest.responseXML).find("Item").each(function() {var item = $(this),command = '',target=item.attr('target'),property = item.attr('property'),text=item.text();switch (target) {case 'document': command =  target + '.' + property + ' = "'+text+'"'; break;case 'call':command = property + "("+(text.length>0 ? "'" + text.split(',').join("','") + "'" : "")+");"; break;default: var arr=text.split(';'),part0=arr[0],callback=(arr[1]?arr[1]:null);switch (property) {case 'void': break;case 'css':case 'getScript':Lazy.load([part0],callback);break;case 'body': $("body").append(part0); break;default: if(property[0]=='$') {command = '$("#' + target + '").' + property.replace('$','') + '( text );'} else {command = '$("#' + target + '").attr("' + property + '", text);';}};};if(command.length>0){eval(command);}if(Fajax.formSent){$('.button',Fajax.formSent).removeAttr('disabled');Fajax.formSent=null;Draft.dropAll();}})}});}
+
+};
