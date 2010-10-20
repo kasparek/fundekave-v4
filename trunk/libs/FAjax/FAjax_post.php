@@ -60,7 +60,7 @@ class FAjax_post extends FAjaxPluginBase {
 		  	if(isset($data['p'])) {
 		  		if($data['p'] > 1) {
 		  	  $data['refreshPager']=true;
-		  	  FAjax::addResponse('call','hashReset','');
+		  	  FAjax::addResponse('call','Hash.reset','');
 		  		}
 		  	}
 		  	 
