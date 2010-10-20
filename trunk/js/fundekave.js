@@ -2,16 +2,16 @@
  *MSG CHAT FUNCTIONS
  */
 var Msg={
-unreadSentList=[],timeout=0,
+unreadSentList:[],timeout:0,
 check:function(){
 	var o=Msg;
 	if(o.unreadSentList.length==0)$(".hentry.unread").each(function(){Msg.push($(this).attr('id').replace('mess',''));}); 
 	if(o.unreadSentList.length>0) XMLReq.add('unreadedSent',o.unreadSentList.join(',')); 
-	var p=Hash.data().p; 
-	if(p)XMLReq.add('p',p);
+	var d=Hash.data(); 
+	if(d)if(d.p)XMLReq.add('p',d.p);
 	sendAjax('post-hasNewMessage');
 },
-sentReaded(p){
+sentReaded:function(p){
 	var o=Msg;
 	o.unreadSentList=[];
 	var postList=p.split(',');
@@ -21,7 +21,7 @@ sentReaded(p){
 		$(".unreadedLabel",d).remove();
 	}
 },
-checkHandler(numMsgs,lastSender){
+checkHandler:function(numMsgs,lastSender){
 	var o=Msg,div=$("#messageNew");
 	if(numMsgs>0){
 		div.removeClass('hidden');
@@ -37,7 +37,7 @@ checkHandler(numMsgs,lastSender){
  * GALERY NEXT LOADING
  */
 var ImgNext={
-r:false,i:null,p:null,next:null,top:0
+r:false,i:null,p:null,next:null,top:0,
 click:function(){
 	var o=ImgNext,m=gup('m',this.href);
 	if(xhrList[m])return false;
@@ -54,8 +54,8 @@ click:function(){
 loaded:function(){
 	var o=ImgNext;
 	o.p.css('height','auto');
-	if(fullscreenState)imgResizeToFit(o.i);
-	nextSlide();
+	if(o.state)imgResizeToFit(o.i);
+	Slideshow.next();
 	if(o.top>0)$(window).scrollTop(o.top);	
 },
 xhr:null,
@@ -69,20 +69,20 @@ xhrHand:function(currentUrl,nextUrl){
  * FULLSCREEN
  */
 var Slideshow={
-f=function(){$("#nextButt").click();},
-on=false,timeout=0,interval=5,
-toggle=function(){
+f:function(){$("#nextButt").click();},
+on:false,timeout:0,interval:5,
+toggle:function(){
 	var o=Slideshow;
 	o.on=!o.on;
 	o.next();
 },
-next=function(){
+next:function(){
 	var o=Slideshow;
 	if(o.timeout)clearTimeout(o.timeout);
 	if(o.on)o.timeout=setTimeout(o.f,o.interval*1000);
 }
 }
-,Fullscreen = {
+,Fullscreen={
 state:null,
 isSlideShow:false,
 init:function(){
@@ -121,7 +121,8 @@ go:function(div){
 	}
 },
 click:function(){
-	Fullscreen.go($('#fullscreenBox'));
+	var o=Fullscreen;
+	o.go($('#fullscreenBox'));
 	$("#fullscreenToolbar").removeClass('hidden').delay(100).fadeTo("fast", 1).fadeTo("slow", 0.3);
 	$(window).bind('resize',o.resize);
 	imgResizeToFit($("#detailFoto"));
@@ -143,7 +144,7 @@ leave:function(){
 	var o=Fullscreen;
 	Slideshow.on=false;
 	$(window).unbind('resize',o.resize);
-	$('#detailFoto').css('position','inherit').css('width','auto').css('height','auto').css('margin-top','auto');
+	$('#detailFoto').css('position','inherit').css('width','auto').css('height','auto').css('margin','0 auto');
 	$('#fullscreenToolbar').addClass('hidden');
 	o.go();
 	return false;
@@ -210,12 +211,11 @@ function initMap() {
 	listen('mapThumbLink','click',mapThumbClick);
 }
 function mapThumbClick(){
-		var id=$(this).attr('id').replace('mapThumb','');
-		$(this).addClass('hidden');
-		$('#map'+id).removeClass('hidden');
-		showMap(id);
-		return false;
-	}
+	var id=$(this).attr('id').replace('mapThumb','');
+	$(this).addClass('hidden');
+	$('#map'+id).removeClass('hidden');
+	showMap(id);
+	return false;
 }
 
 var showMapCallback,mapItemId;
@@ -639,7 +639,7 @@ function boot() {
 		fajaxformInit();
 		// ---ajax textarea / tools
 		Richta.map();
-		draftInit();
+		Draft.init();
 		// ---message page
 		$("#recipient").change( avatarfrominput );
 		$('#ppinput').hide();
@@ -780,15 +780,15 @@ function deleteFoto(event) {
 //---AJAX GALLERY EDITING END
 
 /** DRAFT - temporary textarea data storing **/
-function Draft() {
+var Draft={
 timer:3000,
-li={},
+li:{},
 ta:function(id){
 	this.id=id;
 	this.old=null;
 	this.t=0;
 	this.text=function(){return $.trim($('#'+this.id).val());};
-	this.backup=function(){this.old=this.text;};
+	this.backup=function(){this.old=this.text();};
 	this.restore=function(){if(this.old)$('#'+id).val(this.old);this.old=null;};
 	this.check=function(){
 		this.backup();
@@ -845,6 +845,7 @@ restore:function(id){
 	}
 }
 ,dropClick:function(e){
+	e.preventDefault();
 	var o=Draft,id=gup('ta',$(e.currentTarget).attr('href'));
 	if(o.li[id])o.li[id].restore();
   XMLReq.add('result',id);
@@ -856,7 +857,7 @@ restore:function(id){
 	if($('#draftdrop'+id).length>0) {
 		XMLReq.add('result',id);
 		sendAjax('draft-drop');
-		$('#draftdrop'+TAid).remove();
+		$('#draftdrop'+id).remove();
 	}
 }
 ,dropBackHandler:function(){
@@ -864,19 +865,20 @@ restore:function(id){
 	$('.draftable').each( function(){$('#draftdrop'+$(this).attr('id')).remove();});
 }
 ,submit:function(){
-	$.each(Draft.li,function(i,n){n.clearT}); 
+	for(var id in Draft.li)
+		Draft.li[id].clearT(); 
 }
 ,save:function(){
-	$.each(Draft.li,function(i,n){
-		text=n.text;
-		if (text != n.old && text.length > 0) {
-			XMLReq.add('place',i);
+	for(var id in Draft.li){
+		var t=Draft.li[id],text=t.text();
+		if(text!=t.old && text.length>0) {
+			XMLReq.add('place',id);
 			XMLReq.add('text',text);
-			XMLReq.add('call', 'Draft.saveHandler;'+i);
+			XMLReq.add('call','Draft.saveHandler;'+id);
 			sendAjax('draft-save');
-			n.old=text;
+			t.old=text;
 		}
-	});
+	}
 }
 ,saveHandler:function(id){
 	$("#"+id).removeClass('draftNotSave').addClass('draftSave');
@@ -884,7 +886,8 @@ restore:function(id){
 ,key:function(){
 	var o=Draft,id=$(this).attr('id'); 
 	o.unused(id);
-	if (o.li[id].text!=o.li[id].old)$("#"+id).removeClass('draftSave').addClass('draftNotSave');
+	if (o.li[id].text()!=o.li[id].old)
+		$("#"+id).removeClass('draftSave').addClass('draftNotSave');
 	o.li[id].clearT();
 	o.li[id].setT(o.save,o.timer); 
 }
