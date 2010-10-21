@@ -4,7 +4,7 @@ class Sidebar_map {
 		$dbtool = new FDBTool('sys_pages_items_properties');
 		$dbtool->setSelect('value');
 		$dbtool->setWhere("name='position'");
-		$posList = $dbtool->getContent();
+		$posList = $dbtool->getContent(0,10);
 		$tpl = FSystem::tpl('sidebar.map.tpl.html');
 		$tpl->setVariable("URL",FSystem::getUri('','','m'));
 		while($row=array_pop($posList)) {

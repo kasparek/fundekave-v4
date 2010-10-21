@@ -2,35 +2,36 @@
  *MSG CHAT FUNCTIONS
  */
 var Msg={
-unreadSentList:[],timeout:0,
+li:[],timeout:0,
 check:function(){
-	var o=Msg;
-	if(o.unreadSentList.length==0)$(".hentry.unread").each(function(){Msg.push($(this).attr('id').replace('mess',''));}); 
-	if(o.unreadSentList.length>0) XMLReq.add('unreadedSent',o.unreadSentList.join(',')); 
-	var d=Hash.data(); 
-	if(d)if(d.p)XMLReq.add('p',d.p);
+	var o=Msg,p=Hash.data('p');
+	if(o.li.length==0)$(".hentry.unread").each(function(){o.li.push($(this).attr('id').replace('mess',''));}); 
+	if(o.li.length>0)XMLReq.add('unreadedSent',o.li.join(','));
+	if(p)XMLReq.add('p',p);
 	sendAjax('post-hasNewMessage');
 },
 sentReaded:function(p){
-	var o=Msg;
-	o.unreadSentList=[];
-	var postList=p.split(',');
-	for(i=0;i<postList.length;i++){
-		var d=$("#mess"+postList[i]);
+	var o=Msg,l=p.split(',');
+	o.li=[];
+	for(i=0;i<l.length;i++){
+		var d=$("#mess"+l[i]);
 		d.removeClass('unread');
-		$(".unreadedLabel",d).remove();
+		$("#unreadedLabel"+l[i]).remove();
 	}
 },
 checkHandler:function(numMsgs,lastSender){
-	var o=Msg,div=$("#messageNew");
+	var o=Msg,d=$("#messageNew");
 	if(numMsgs>0){
-		div.removeClass('hidden');
+		d.removeClass('hidden');
 		$("#numMsg").text(numMsgs);
 		$("#recentSender").text(lastSender);
 	} else {
-		if(!div.hasClass('hidden'))div.addClass('hidden');
+		if(!d.hasClass('hidden'))d.addClass('hidden');
 	} 
-	if(MESSCHECKING>0 && o.timeout)clearTimeout(o.timeout); o.timeout=setTimeout(o.check,MESSCHECKING);
+	if(MESSCHECKING>0){
+		if(o.timeout)clearTimeout(o.timeout);
+		o.timeout=setTimeout(o.check,MESSCHECKING);
+	}
 },
 };
 /**
@@ -38,12 +39,16 @@ checkHandler:function(numMsgs,lastSender){
  */
 var ImgNext={
 r:false,i:null,p:null,next:null,top:0,
+init:function(){
+	var o=ImgNext;
+	if(!o.r){o.r=true;o.i=$("#detailFoto");o.i.bind('load',o.loaded);o.p=$(".showProgress");}	
+},
 click:function(){
 	var o=ImgNext,m=gup('m',this.href);
 	if(xhrList[m])return false;
 	o.top=$(window).scrollTop();
 	if(o.xhr){o.xhr.abort();o.xhr=null;}
-	if(!o.r){o.r=true;o.i=$("#detailFoto");o.i.bind('load',o.loaded);o.p=$(".showProgress");}
+	o.init();
 	o.i.show();
 	var h=o.p.height();o.p.css('height',(h>0?h:$(window).height())+'px');
 	if(o.next){o.i.attr('src',o.next);o.next=null;}else{o.i.hide();}
@@ -53,14 +58,16 @@ click:function(){
 },
 loaded:function(){
 	var o=ImgNext;
+	o.init();
 	o.p.css('height','auto');
-	if(o.state)imgResizeToFit(o.i);
+	if(Fullscreen.state)imgResizeToFit(o.i);
 	Slideshow.next();
 	if(o.top>0)$(window).scrollTop(o.top);	
 },
 xhr:null,
 xhrHand:function(currentUrl,nextUrl){
 	var o=ImgNext;
+	o.init();
 	if(currentUrl && currentUrl!=o.i.attr('src'))o.i.show().attr('src',currentUrl);
 	if(nextUrl)o.xhr=$.get(nextUrl,function(data){ImgNext.next=nextUrl;ImgNext.xhr=null;});
 }
@@ -122,15 +129,17 @@ go:function(div){
 },
 click:function(){
 	var o=Fullscreen;
+	if(o.state)o.leave();
+	else{
 	o.go($('#fullscreenBox'));
 	$("#fullscreenToolbar").removeClass('hidden').delay(100).fadeTo("fast", 1).fadeTo("slow", 0.3);
 	$(window).bind('resize',o.resize);
-	imgResizeToFit($("#detailFoto"));
+	ImgNext.loaded();
+	}
 	return false;
 },
 resize:function(){
-	if(Fullscreen.state)
-		imgResizeToFit($("#detailFoto"));
+	ImgNext.loaded();
 },
 key:function(event){
 	if(event.keyCode==27){
@@ -141,8 +150,8 @@ key:function(event){
 	} 
 },
 leave:function(){
-	var o=Fullscreen;
 	Slideshow.on=false;
+	var o=Fullscreen;
 	$(window).unbind('resize',o.resize);
 	$('#detailFoto').css('position','inherit').css('width','auto').css('height','auto').css('margin','0 auto');
 	$('#fullscreenToolbar').addClass('hidden');
@@ -471,7 +480,7 @@ fajaxaAction(h);//TODO:change when done
 }});},
 set:function(h){document.location.hash=h;},
 reset:function(hash){document.location.hash=Hash.old=hash;},
-data:function(){var h=document.location.hash.replace('#','').split('/'),d=h[1];if(d){var arr=d.split(';'),data={};while(arr.length>0){var v=arr.shift(),kv=v.split(':');data[kv[0]]=kv[1];} return data;}}
+data:function(k){var h=document.location.hash.replace('#','').split('/'),d=h[1];if(d){var arr=d.split(';'),data={};while(arr.length>0){var v=arr.shift(),kv=v.split(':');data[kv[0]]=kv[1];} if(data)if(data[k])return data[k];}}
 }
 
 /**

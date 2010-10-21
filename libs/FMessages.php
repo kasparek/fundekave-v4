@@ -95,14 +95,17 @@ class FMessages {
 	 * @return String - comma separeted postId	 	 
 	 */	 	
 	static function sentReaded($sentUnreaded) {
-		$sentUnreadedList = explode(',',$sentUnreaded);
-		if(empty($sentUnreadedList)) return;
-		while($postId = array_pop($sentUnreadedList)) {
-			$postId = trim($postId) * 1;
-			if($postId>0) $validatedList[] = $postId;  
-		}
-		if(empty($validatedList)) return;
-		$res = FDBTool::getCol("select postId from sys_users_post where readed=1 and postId in (".implode(',',$validatedList).")");
-		if(!empty($res)) return implode(',',$res);			
+		$userId=FUser::logon();
+		if($userId>0){
+			$sentUnreadedList = explode(',',$sentUnreaded);
+			if(empty($sentUnreadedList)) return;
+			while($postId = array_pop($sentUnreadedList)) {
+				$postId = trim($postId) * 1;
+				if($postId>0) $validatedList[] = $postId;  
+			}
+			if(empty($validatedList)) return;
+			$res = FDBTool::getCol("select postId from sys_users_post where userId!='".$userId."' and readed=1 and postId in (".implode(',',$validatedList).")");
+			if(!empty($res)) return implode(',',$res);
+		}			
 	}
 }
