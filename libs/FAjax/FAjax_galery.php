@@ -21,6 +21,8 @@ class FAjax_galery extends FAjaxPluginBase {
 			$ret = $fItems->render();
 			FAjax::addResponse('call', 'fotoFeeded', $count);
 		}
+		//TODO:f.add('result', 'fotoList');f.add('resultProperty', '$append'); if new or multiple
+		//TODO:f.add('result', 'foto-'+item);f.add('resultProperty', '$replaceWith'); if updated
 		FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 	}
 }
