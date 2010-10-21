@@ -15,6 +15,7 @@ ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorC
 update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
 FIX:
+-draft - novou ikonu na mazani, lepsi title, vysvetlivku vpravo
 -file not found image in image.php
 - osobni,galerie,clanky - otestovat ftp nahravani
 - events,blog - nahravani,mazani obrazku - test
