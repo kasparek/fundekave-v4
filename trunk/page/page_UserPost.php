@@ -190,7 +190,7 @@ class page_UserPost implements iPage {
 				if($post['userIdFrom'] != $user->userVO->userId) $tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
-					$tpl->touchBlock("unreadmess");
+					$tpl->setVariable("UNRID",$post['postId']);
 				}
 				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
