@@ -5,8 +5,8 @@ xhrList:{}
 ,formSent=null
 
 ,init:function(){
-if($(".fajaxform").length>0)setListeners('button','click',Fajax.form);
-setListeners('fajaxa','click',fajaxaSend);
+if($(".fajaxform").length>0)listen('button','click',Fajax.form);
+listen('fajaxa','click',Fajax.a);
 }
 
 ,pager:function(){
@@ -78,7 +78,6 @@ setListeners('fajaxa','click',fajaxaSend);
 }
 
 ,XMLReq:{a:[],s:'<Item name="{KEY}"><![CDATA[{DATA}]]></Item>',reset:function(){XMLReq.a=[];},add:function(k,v){XMLReq.a.push(XMLReq.s.replace('{KEY}',k).replace('{DATA}',v));},get:function(){var s='<FXajax><Request>'+XMLReq.a.join('')+'</Request></FXajax>';XMLReq.a=[];return s;}}
-,add:function(k,v){Fajax.XMLReq.add(k,v)}
+,add:function(k,v){Fajax.Fajax.add(k,v)}
 ,send:function(action,k){var data=Fajax.XMLReq.get();if(k==0)k=null;if(!k)k=gup('k',document.location);if(k==-1)k='';$.ajaxSetup({scriptCharset:"utf-8",contentType:"text/xml; charset=utf-8"});Fajax.xhrList[action]=$.ajax({type:"POST",url:"index.php?m="+action+"-x"+((k)?("&k="+k):('')),dataType:'xml',processData:false,cache:false,data:data,complete:function(ajaxRequest,textStatus){Fajax.xhrList[action]=null;$(ajaxRequest.responseXML).find("Item").each(function() {var item = $(this),command = '',target=item.attr('target'),property = item.attr('property'),text=item.text();switch (target) {case 'document': command =  target + '.' + property + ' = "'+text+'"'; break;case 'call':command = property + "("+(text.length>0 ? "'" + text.split(',').join("','") + "'" : "")+");"; break;default: var arr=text.split(';'),part0=arr[0],callback=(arr[1]?arr[1]:null);switch (property) {case 'void': break;case 'css':case 'getScript':Lazy.load([part0],callback);break;case 'body': $("body").append(part0); break;default: if(property[0]=='$') {command = '$("#' + target + '").' + property.replace('$','') + '( text );'} else {command = '$("#' + target + '").attr("' + property + '", text);';}};};if(command.length>0){eval(command);}if(Fajax.formSent){$('.button',Fajax.formSent).removeAttr('disabled');Fajax.formSent=null;Draft.dropAll();}})}});}
-
 };

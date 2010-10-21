@@ -187,7 +187,6 @@ class page_UserPost implements iPage {
 			$displayedMsgs = array();
 			foreach ($arrpost as $post) {
 				$displayedMsgs[] = $post['postId'];
-				if($post['userIdFrom'] != $user->userVO->userId) $tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
 					$tpl->setVariable("UNRID",$post['postId']);
@@ -198,10 +197,12 @@ class page_UserPost implements iPage {
 				$tpl->setVariable("DATEISO", $post["datum"]);
 				if($post["userIdFrom"]==$user->userVO->userId) {
 					$tpl->touchBlock('sent');
+					$tpl->touchBlock("sentclass");
 					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
 					$muname = FUser::getgidname($post["userIdTo"]);
 				} else {
 					$tpl->touchBlock('received');
+					$tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
 					$muname = FUser::getgidname($post["userIdFrom"]);
 				}

@@ -210,7 +210,7 @@ class page_PageItemList implements iPage {
 			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
-			FAjax::addResponse('call','fajaxaInit');
+			FAjax::addResponse('call','fajaxInit');
 		} else {
 			//render to template
 			$tpl = FSystem::tpl($template);

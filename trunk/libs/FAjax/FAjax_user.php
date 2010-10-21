@@ -174,7 +174,7 @@ class FAjax_user extends FAjaxPluginBase {
 			//---create response
 			if($data['__ajaxResponse']==true) {
 				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
-				FAjax::addResponse('call','fajaxaInit');
+				FAjax::addResponse('call','fajaxInit');
 			}
 		} else {
 			FError::add(FLang::$MESSAGE_TAG_REGISTEREDONLY);

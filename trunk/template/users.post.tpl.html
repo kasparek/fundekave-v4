@@ -9,7 +9,7 @@
 </div>
 <input type="text" id="recipient" name="recipient" value="{RECIPIENTS}" class="long"><br />
 <!-- BEGIN selectedfriend --><div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div><!-- END selectedfriend -->
-<textarea name="text" id="postText" class="draftable markitup expand">{MESSAGE}</textarea><br />
+<textarea name="text" id="postText" class="draftable expand">{MESSAGE}</textarea><br />
 <input type="submit" name="send" value="Odeslat" class="button">
 <select name="saction" id="saction">
 <option value="delete">Smazat oznacene</option>
@@ -23,7 +23,7 @@
 <!-- BEGIN searchfilters --><h2>Výsledky hledání: {FILTERUSERNAME} {FILTERTEXT}</h2>
 <h3><a href="{FILTRCANCELLINK}">Zrušit filtr</a></h3><!-- END searchfilters -->
 <div id="itemlist">
-<!-- BEGIN message --><div id="mess{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
+<!-- BEGIN message --><div id="mess{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread --><!-- BEGIN sentclass --> sent<!-- END sentclass -->">
 <div class="header">
 <span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
 <span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
