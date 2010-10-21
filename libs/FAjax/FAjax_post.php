@@ -7,8 +7,7 @@ class FAjax_post extends FAjaxPluginBase {
 			$data['refreshPager']=true;
 			page_UserPost::build($data);
 			FAjax::addResponse('call','shiftTo','0');
-			FAjax::addResponse('call','initPager','');
-			FAjax::addResponse('call','fajaxaInit','');
+			FAjax::addResponse('call','fajaxInit','');
 		} else {
 			FHTTP::redirect(FSystem::getUri($data['p']>1?'p='.$data['p']:'','',''));
 		}
@@ -19,8 +18,7 @@ class FAjax_post extends FAjaxPluginBase {
 		if($data['__ajaxResponse']===true) {
 			page_UserPost::build($data);
 			FAjax::addResponse('postText','value','');
-			FAjax::addResponse('call','fajaxaInit','');
-			FAjax::addResponse('call','fajaxformInit','');
+			FAjax::addResponse('call','fajaxInit','');
 		}
 	}
 
@@ -29,43 +27,33 @@ class FAjax_post extends FAjaxPluginBase {
 		FAjax::addResponse('recipientavatar','$html',FAvatar::showAvatar($recipientId).'<br/>'.FUser::getgidname($recipientId));
 	}
 
-	static function hasNewMessage($data,$wait=false) {
+	static function hasNewMessage($data) {
 		$user = FUser::getInstance();
 		if(isset($data['unreadedSent'])) {
 			if($readed=FMessages::sentReaded($data['unreadedSent'])) {
 				FAjax::addResponse('call','Msg.sentReaded',$readed);
-				$wait = false;
 			}
 		}
 		$check = $user->userVO->hasNewMessages();
-		if($check) $wait = false;
-		 
-		if($wait) {
-			sleep(5); //wait a bit and try again so client does not poll that often
-			FAjax_post::hasNewMessage($data,false);
-			return;
-		}
-		 
 		if($check) {
 			FAjax::addResponse('call','Msg.checkHandler',$user->userVO->newPost.','.$user->userVO->newPostFrom);
 			if($user->pageVO) {
-		  if($user->pageVO->pageId=='fpost') {
-		  	//if search - reset search - $data['refreshPage']=true;
-		  	$cache = FCache::getInstance('s');
-		  	if($cache->getData('text','filtrPost')) {
-		  		$cache->invalidateData($user->pageVO->pageId, 'filter');
-		  		$data['refreshPage']=true;
-		  	}
-		  	//if page > 0 $data['refreshPager']=true;  - reset hash
-		  	if(isset($data['p'])) {
-		  		if($data['p'] > 1) {
-		  	  $data['refreshPager']=true;
-		  	  FAjax::addResponse('call','Hash.reset','');
-		  		}
-		  	}
-		  	 
-		  	page_UserPost::build($data);
-		  }
+			  if($user->pageVO->pageId=='fpost') {
+			  	//reset search
+			  	$cache = FCache::getInstance('s');
+			  	if($cache->getData('text','filtrPost')) {
+			  		$cache->invalidateData($user->pageVO->pageId, 'filter');
+			  		$data['refreshPage']=true;
+			  	}
+			  	//reset pager
+			  	if(isset($data['p'])) {
+			  		if($data['p'] > 1) {
+			  	  	$data['refreshPager']=true;
+			  	  	FAjax::addResponse('call','Hash.reset','');
+			  		}
+			  	}
+			  	page_UserPost::build($data);
+			  }
 			}
 		} else {
 			FAjax::addResponse('call','Msg.checkHandler','0');

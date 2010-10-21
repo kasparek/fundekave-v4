@@ -104,7 +104,10 @@ class FMessages {
 				if($postId>0) $validatedList[] = $postId;  
 			}
 			if(empty($validatedList)) return;
-			$res = FDBTool::getCol("select postId from sys_users_post where userId!='".$userId."' and readed=1 and postId in (".implode(',',$validatedList).")");
+			$res = FDBTool::getCol("select postId from sys_users_post 
+				where postIdFrom is not null 
+				and readed=1 
+				and postId in (".implode(',',$validatedList).")");
 			if(!empty($res)) return implode(',',$res);
 		}			
 	}
