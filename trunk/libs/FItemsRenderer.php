@@ -235,7 +235,10 @@ class FItemsRenderer {
 		$vars['MAPTITLE'] = $itemVO->addon;
 		$vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
 		$vars['STATICMARKERPOS'] = $journey[count($journey)-1];
-		if(count($journey)>1) $vars['STATICWPLIST'] = implode('|',$journey);
+		if(count($journey)>1) {
+			$geoEncode = new GooEncodePoly();
+			$vars['STATICWPLIST'] = 'enc:'.$geoEncode->encode($journey);
+		}
 		return $vars;
 	} 
 	
