@@ -1,7 +1,7 @@
 package net.fundekave.lib
 {
-	import cmodule.aircall.CLibInit;
-	
+	//import cmodule.aircall.CLibInit;
+		
 	import de.polygonal.gl.codec.JPEGEncode;
 	import de.popforge.imageprocessing.core.Image;
 	import de.popforge.imageprocessing.core.ImageFormat;
@@ -17,6 +17,7 @@ package net.fundekave.lib
 	import flash.geom.Rectangle;
 	import flash.net.FileReference;
 	import flash.utils.ByteArray;
+	import flash.utils.setTimeout;
 		
 	public class ImageResize extends Sprite
 	{
@@ -49,7 +50,7 @@ package net.fundekave.lib
 		private var init:CLibInit;
 		private var lib:Object;
 		*/
-		public function ImageResize(widthMax:int=0,heightMax:int=0,rotationNew:Number=0,outputQuality:int=100)
+		public function ImageResize(widthMax:int=0,heightMax:int=0,rotationNew:Number=0,outputQuality:int=90)
 		{
 			super();
 			
@@ -66,27 +67,28 @@ package net.fundekave.lib
 		
 		private var localFireRef:FileReference;
 		public function loadReference(fileRef:FileReference):void {
-			fileRef.addEventListener(Event.COMPLETE, onFileRef,false,0,true );
+			localFireRef = fileRef;
+			fileRef.addEventListener(Event.COMPLETE, onFileRef);
 			fileRef.load()
 		}
 		private var onlyInfo:Boolean = false;
 		public function loadInfoFromReference(fileRef:FileReference):void {
 			onlyInfo = true;
-			fileRef.addEventListener(Event.COMPLETE, onFileRef,false,0,true );
-			fileRef.load()
+			localFireRef = fileRef;
+			localFireRef.addEventListener(Event.COMPLETE, onFileRef);
+			localFireRef.load()
 		}
 		
 		private function onFileRef( e:Event ):void {
-			var file:FileReference = e.target as FileReference;
-			file.removeEventListener(Event.COMPLETE, onFileRef);
-			this.loadBytes( file.data );
-			localFireRef = file;
+			localFireRef.removeEventListener(Event.COMPLETE, onFileRef);
+			this.loadBytes( localFireRef.data );
 		}
 		
+		private var image:Loader;
 		public function loadBytes(bytes:ByteArray):void {
-			var image:Loader = new Loader();
+			image = new Loader();
     		image.loadBytes( bytes );
-    		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady ,false,0,true );
+    		image.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageReady);
     		this.addChild( image );
 		}
 		
@@ -95,7 +97,6 @@ package net.fundekave.lib
 				localFireRef.data.clear();
 				localFireRef = null;
 			}
-        	var image:Loader = e.target.loader as Loader;
         	image.contentLoaderInfo.removeEventListener(Event.COMPLETE, onImageReady );
         	var imageBmp:Bitmap = image.content as Bitmap;
 			this.widthOriginal = imageBmp.width;
@@ -106,12 +107,12 @@ package net.fundekave.lib
 			} else {       	
         		bmpdOrig = new BitmapData(imageBmp.width+(imageBmp.width%2), imageBmp.height+(imageBmp.height%2) );
         		bmpdOrig.draw( image, null, null, null, null, true );
-				//---remove image
-				image.addEventListener(Event.REMOVED, onImageRemoved,false,0,true);
 			}
         	imageBmp.bitmapData.dispose();
-        	image.unload(); 	
+			imageBmp=null;
+			 
         	image.parent.removeChild( image );
+			setTimeout(onImageRemoved,1);
   		}
 		
 		private function applyFilters(bmpd:BitmapData):BitmapData {
@@ -126,6 +127,7 @@ package net.fundekave.lib
 							case 'sharpen':
 								var filter2: Sharpen = new Sharpen(0.1);
 								filter2.apply( popImage );
+								filter2=null;
 								break;
 						}
 					}
@@ -139,8 +141,11 @@ package net.fundekave.lib
 			return bmpd;
 		}
 		
-  		private function onImageRemoved(e:Event):void {
-  			e.target.removeEventListener(Event.REMOVED, onBmpRemoved);
+		private var bmp:Bitmap;
+  		private function onImageRemoved():void {
+			image.unload();
+			image=null;
+			if(!bmpdOrig) return;
         	//---time for filtering on bmp bitmapdatas
         	//---filtering
 			bmpdOrig = this.applyFilters(bmpdOrig); 
@@ -152,9 +157,10 @@ package net.fundekave.lib
 				croppedBmpd.copyPixels( bmpdOrig, cropped, new Point() );
 				bmpdOrig.dispose();
 				bmpdOrig = croppedBmpd;
+				croppedBmpd=null;
 			}
 			
-        	var bmp:Bitmap = new Bitmap(bmpdOrig, PixelSnapping.NEVER, true);
+        	bmp = new Bitmap(bmpdOrig, PixelSnapping.NEVER, true);
 			
 			//---calculate new size
 			if(widthMax > 0 || heightMax > 0) {
@@ -190,34 +196,30 @@ package net.fundekave.lib
   				break;
   			}
 			resizeDispatched = false;
-        	bmp.addEventListener(Event.ENTER_FRAME, onImageReady2,false,0,true );
+			setTimeout(onImageReady2,1);
         	this.addChild( bmp );
         }
         private var resizeDispatched:Boolean;
-        private function onImageReady2(e:Event):void {
-			
-        	var bmp:Bitmap = e.target as Bitmap;
-        	bmp.removeEventListener(Event.ENTER_FRAME, onImageReady2);
+        private function onImageReady2(e:Event=null):void {
         	if(resizeDispatched===false){
-        	//---draw resized rotated bitmap
-        	_resultBmpData = new BitmapData(Math.round(bmp.width), Math.round(bmp.height) );
-        	_resultBmpData.draw( this, null, null, null, null, true ); 
-        	
-			//_resultBmpData = this.applyFilters(_resultBmpData);
-			
-        	//---dispose
-        	bmp.bitmapData.dispose();
-        	bmp.addEventListener(Event.REMOVED_FROM_STAGE, onBmpRemoved, false,0,true);
-        	bmp.parent.removeChild( bmp );
-        	
-        	//---dispatch event image resized
-			resizeDispatched = true;
-        	dispatchEvent( new Event( RESIZED ) );
+	        	//---draw resized rotated bitmap
+	        	_resultBmpData = new BitmapData(Math.round(bmp.width), Math.round(bmp.height) );
+	        	_resultBmpData.draw( this, null, null, null, null, true ); 
+	        	
+				//_resultBmpData = this.applyFilters(_resultBmpData);
+				        	
+	        	//---dispatch event image resized
+				resizeDispatched = true;
+	        	dispatchEvent( new Event( RESIZED ) );
 			}
+			//---dispose
+			setTimeout(onBmpRemoved,1);
+			bmp.parent.removeChild( bmp );
         }
         
-        private function onBmpRemoved(e:Event):void {
-        	(e.target as Bitmap).removeEventListener(Event.REMOVED_FROM_STAGE, onBmpRemoved);
+        private function onBmpRemoved():void {
+			bmp.bitmapData.dispose();
+			bmp=null;
         	if(autoEncode === true) {
         		this.encode();
         	}
@@ -229,6 +231,7 @@ package net.fundekave.lib
 			        	       	
         	var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
         	resultBytes = jpgEnc.encode( bmpd );
+			jpgEnc=null;
 			/**/
 			/*
 			var ba:ByteArray = bmpd.getPixels( bmpd.rect );
@@ -237,12 +240,12 @@ package net.fundekave.lib
 			ba.clear();
 			/**/
         	onCompressFinished(null);
+			bmpd.dispose();
+			bmpd=null;
         	/**/
         }
         
         private function onCompressFinished( out:ByteArray ):void {
-        	
-        	
            	//---dispatch event bytes encoded  
         	dispatchEvent( new Event( ENCODED ) );
         }

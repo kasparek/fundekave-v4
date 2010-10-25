@@ -14,6 +14,7 @@ package net.fundekave.fuup.model.vo
 		public var renderer:FileView;
 		public var encodedJPG:ByteArray;
 		
+		public var useFiltersPrev:Boolean=false;
 		
 		private var _filename:String;
 		

@@ -45,13 +45,13 @@ package net.fundekave.lib
 		}
 		private function onRefLoad(e:Event):void {
 			var ref:FileReference = e.target as FileReference;
-			ref.addEventListener(Event.COMPLETE, onRefLoad);
+			ref.removeEventListener(Event.COMPLETE, onRefLoad);
 			this.uploadBytes( ref.data );
-			setTimeout( ref.data.clear, 100 );
 		}
 		
 		private function stringChunks( bytes:ByteArray ):void {
 			var encodedStr:String = Base64.encodeByteArray( bytes );
+			bytes.clear();
 			if( chunkSize > 0) {
 				numChunks = Math.ceil( encodedStr.length / chunkSize );
 			} else {
@@ -79,6 +79,8 @@ package net.fundekave.lib
 				chunk.writeBytes( bytes,i*chunkSize , length );
 				chunks.push( {filename:filename ,seq:i,total:numChunks,data:chunk} );	
 			}
+			bytes.clear();
+			bytes=null;
 		}
 		
 		public function uploadBytes( bytes:ByteArray ):void {
@@ -93,16 +95,13 @@ package net.fundekave.lib
 		public function upload():void        
         {
         	if(chunks.length > 0 && chunksUploading < uploadLimit) {
-        		
         		//---prepare service
 	        	var service:Service = new Service();
 	        	service.addEventListener(Event.COMPLETE, onServiceComplete);
-	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError ,false,0,true );
-	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError ,false,0,true );
-	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError ,false,0,true );
-				
+	        	service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError,false,0,true);
+	        	service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError,false,0,true);
+	        	service.addEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError,false,0,true);
 				service.isMultipart = isMultipart;
-        		        		
         		service.url = serviceURL;
         		service.variables = chunks.shift();
 				for(var name:String in extraVars) {
@@ -134,6 +133,13 @@ package net.fundekave.lib
 	        service.removeEventListener(IOErrorEvent.IO_ERROR, onServiceError );
 	        service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onServiceError );
 	        service.removeEventListener(Service.ATTEMPTS_ERROR, onServiceTotalError );
+			
+			if(isMultipart) {
+				(service.request.data as ByteArray).clear();
+			}
+			
+			service.close();
+			service=null;
         	
 			chunksUploading--;
 			currentChunk++;
@@ -141,7 +147,7 @@ package net.fundekave.lib
 			trace('CHUNK::DONE::chunk::'+String(currentChunk)+'/'+String(numChunks));
 			
 			if(chunksUploading < uploadLimit && chunks.length > 0) {
-				upload();
+				setTimeout( upload, 100 );
 			}
 			
 			//---dispatch event progress

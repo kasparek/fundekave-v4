@@ -11,6 +11,7 @@ package net.fundekave.fuup.model
       import net.fundekave.Application;
       import net.fundekave.fuup.ApplicationFacade;
       import net.fundekave.fuup.common.constants.ActionConstants;
+      import net.fundekave.fuup.common.constants.StateConstants;
       import net.fundekave.fuup.model.vo.FileVO;
       import net.fundekave.fuup.view.components.FileView;
       import net.fundekave.lib.FileUpload;
@@ -24,6 +25,8 @@ package net.fundekave.fuup.model
       {
       	
 		public static const NAME:String = 'fileProxy';
+		
+		public var state:String;
         
         //---global settings
         public var filtersList:XMLList;
@@ -43,19 +46,13 @@ package net.fundekave.fuup.model
         public var fileList:Array = new Array();
         private var fileVO:FileVO;
         private var currentFile:int = 0;
+		private var progressFile:int = 0;
 		
-		private var _useFilters:Boolean = true;
-		private var _useFiltersPrev:Boolean = true;
-		public function set useFilters(b:Boolean):void {
-			_useFilters = b;	
-		}
-		public function get useFilters():Boolean {
-			return _useFilters;
-		}
+		public var useFilters:Boolean = true;
+		public var resize:Boolean=false;
 		
 		public function initSettings(v:Boolean):void {
-			_useFilters = v;
-			_useFiltersPrev = v;
+			useFilters = v;
 		}
         		
         public function FileProxy( )
@@ -85,6 +82,7 @@ package net.fundekave.fuup.model
         public function processFiles():void {
 			isCancel = false;
         	currentFile = 0;
+			progressFile = 0;
         	processFile();
         }
 		
@@ -92,7 +90,8 @@ package net.fundekave.fuup.model
 			isCancel = true;
 		}
         
-        private function processFile():void {
+		private var imageResize:ImageResize;
+        private function processFile(onlyOne:Boolean=false):Boolean {
         	var len:int = fileList.length;
         	if(currentFile < len && isCancel===false) {
         		var fileVO:FileVO = fileList[currentFile] as FileVO;
@@ -107,19 +106,20 @@ package net.fundekave.fuup.model
 					compareW = fileVO.widthOriginal
 					compareH = fileVO.heightOriginal
 				}
-        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || _useFilters!=_useFiltersPrev
+        		if(compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation!=fileVO.rotationCurrent || useFilters!=fileVO.useFiltersPrev
 					|| fileSize > this.maxSize) {
+					fileVO.useFiltersPrev=useFilters;
 					fileVO.renderer.setLocalState( FileView.STATE_PROCESSING );
 					var rot:Number = fileVO.rotation+fileVO.rotationFromOriginal;
 					if(rot<0) rot += 360;
 					if(rot>=360) rot -=360;
-	        		var imageResize:ImageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,rot,fileVO.outputQuality);
+	        		imageResize = new ImageResize(fileVO.widthMax,fileVO.heightMax,rot,fileVO.outputQuality);
 					imageResize.crop = crop;
 					fileVO.rotationFromOriginal = rot; 
 					fileVO.rotation = 0;
 					fileVO.rotationCurrent = fileVO.rotation;
 	        		imageResize.autoEncode = true;
-					if(_useFilters===true) {
+					if(useFilters===true) {
 	        			imageResize.filtersList = filtersList;
 					}
 					var loadBytes:Boolean = true;
@@ -136,97 +136,83 @@ package net.fundekave.fuup.model
 	        		imageResize.addEventListener( ImageResize.ENCODED, onCompressFinished,false,0,true );
 	        		Application.application.stage.addChild( imageResize );
 				} else {
-					//---skip file
-					currentFile++;
-					processFile();
+					if(onlyOne===false) {
+						//---skip file
+						currentFile++;
+						progressFile++;
+						processFile();
+					} else {
+						return true;
+					}
 				}
         	} else {
         		//---processing done
         		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
-				_useFiltersPrev = _useFilters;
         	}
+			return false;
         }
         
         private function onCompressFinished( e:Event ):void {
-        	var imageResize:ImageResize = e.target as ImageResize;
-        	
+			imageResize.removeEventListener(ImageResize.ENCODED, onCompressFinished );
         	var fileVO:FileVO = fileList[currentFile] as FileVO;
 			fileVO.encodedJPG = new ByteArray();
 			fileVO.encodedJPG.writeBytes(imageResize.resultBytes);
 			fileVO.widthNew = imageResize.widthNew;
 			fileVO.heightNew = imageResize.heightNew;
-			fileVO.renderer.updateThumb();
-        
-        	currentFile++;
-        	//---send progress
-        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed:currentFile,total:fileList.length} );
-        	
-        	imageResize.dispose();
-        	
-        	setTimeout(processFile, 10);       
+			//fileVO.renderer.updateThumb();
+			var statemachine:StateMachine
+			if(state == StateConstants.STATE_UPLOADING) {
+				setTimeout(uploadFile,500);
+			} else {
+	        	currentFile++;
+				progressFile++;
+	        	//---send progress
+	        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed:progressFile,total:fileList.length} );
+	        	setTimeout(processFile, 10);
+			}
+			imageResize.dispose();
+			imageResize=null;
         }
         
         public function uploadFiles():void {
 			isCancel = false;
         	currentFile = 0;
+			progressFile=0;
         	uploadFile();
         }
         
 		private var isCancel:Boolean = false;
         private function uploadFile():void {
-        	var len:int = fileList.length;
-			var noUpload:Boolean = true;
-			
-        	if(len > 0 && isCancel===false) {
-				var i:int = 0;
-				while(i<len) {
-	        		fileVO = fileList[i] as FileVO;
-	        		var data:ByteArray = (fileVO.encodedJPG)?(fileVO.encodedJPG):(fileVO.file.data);
-					var ref:FileReference;
-					var size:uint;
-					if(data.length==0) {
-						ref = fileVO.file;
-						size = fileVO.file.size;
-					} else {
-						size = data.length;
-					}
-					if(size < this.maxSize) {
-		        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
-						fileUpload.extraVars = {auth:this.authToken};
-		        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete,false,0,true );
-		        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress,false,0,true );
-		        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );
-		        		if(ref) fileUpload.uploadReference( ref );
-						else fileUpload.uploadBytes( data );
-						noUpload = false;
-						break;
-					} else {
-						//---show error on file
-						//---it wont get here because it is stopped on checking before upload						
-					}
-					i++;
+        	if(fileList.length > 0 && isCancel===false) {
+				if(this.resize) {
+					if(!processFile(true)) return;
 				}
-        	} 
-        	
-			if(noUpload===true || isCancel===true) {
+				fileVO = fileList[0] as FileVO;
+        		var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
+				fileUpload.extraVars = {auth:this.authToken};
+        		fileUpload.addEventListener( FileUpload.COMPLETE, onUploadComplete,false,0,true );
+        		fileUpload.addEventListener( FileUpload.PROGRESS, onUploadProgress,false,0,true );
+        		fileUpload.addEventListener( FileUpload.ERROR, onUploadError,false,0,true );
+        		if(!fileVO.encodedJPG) fileUpload.uploadReference( fileVO.file );
+				else fileUpload.uploadBytes( fileVO.encodedJPG );
+        	} else {
 	    		//---upload complete
 	    		trace('FILEPROXY::UPLOAD COMPLETE');
 	    		sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
 				sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_COMPLETE );
 			}
-        	
         }
         
         private function onUploadComplete(e:Event):void {
+			progressFile++;
         	sendNotification( ApplicationFacade.FILE_DELETE, fileVO );
-        	currentFile++;
 			sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.UPLOAD_ONE_COMPLETE );
-        	uploadFile();
+        	setTimeout(uploadFile,500);
 			trace('FILEPROXY::UPLOAD COMPLETE EVENT');
         }
         
         private function onUploadProgress(e:ProgressEvent):void {
-        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: currentFile + (e.bytesLoaded/e.bytesTotal) } );
+        	sendNotification( ApplicationFacade.PROCESS_PROGRESS, {processed: progressFile + (e.bytesLoaded/e.bytesTotal) } );
 			trace('FILEPROXY::UPLOAD PROGRESS');
         }
         
