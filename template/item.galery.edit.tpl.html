@@ -6,7 +6,12 @@
 </td><td>
 <div class="row"><label>Popis:</label><textarea id="fotodesc{ITEMID}" name="foto-{ITEMID}-desc"  class="short">{TEXT}</textarea></div>
 <div class="row"><label>Datum fotky:</label><input type="text" name="foto-{ITEMID}-date" id="foto{ITEMID}" value="{DATELOCAL}" class="short datepicker" /></div>
-<div class="row"><label>Pozice:</label><input type="text" name="foto-{ITEMID}-position" id="foto{ITEMID}position" value="{MAPPOSITION}" class="short positionSelector" /></div>
+<div class="row"><label>Pozice:</label>
+
+<a href="#" class="geoselector" rel="foto{ITEMID}position"><img src="[[SKINURL]]/img/map_add.png" alt="poloha" title="Zadejte polohu" /></a>
+<div class="rightbox"><textarea id="foto{ITEMID}position" class="geoInput" name="foto-{ITEMID}-position" title="Zadejte polohu">{MAPPOSITION}</textarea></div>
+
+</div>
 <div class="row"><input id="delfoto-{ITEMID}" type="button" value="Smazat foto" title="Opravdu chcete smazat foto?" class="button deletefoto" /></div>
 </td></tr>
 </table>

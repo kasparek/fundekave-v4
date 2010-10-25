@@ -27,8 +27,6 @@ class FPages extends FDBTool {
 	
 	var $pagesPermissionTableName = 'sys_users_perm';
 	
-	var $availableTypeArr = array('forum','blog','galery');
-
 	function __construct($type,$userId,$permission=1) {
 
 		$this->type = $type;
