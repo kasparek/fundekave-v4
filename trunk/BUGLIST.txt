@@ -18,17 +18,18 @@ FIX:
 -display gif thumb goomapi instead of input, on click it opens editor, icon to switch to source input code
 -update all forms with position with "rel" icon
 -draft - novou ikonu na mazani, lepsi title, vysvetlivku vpravo
--file not found image in image.php
-- osobni,galerie,clanky - otestovat ftp nahravani
-- events,blog - nahravani,mazani obrazku - test
+
+-do oblibenych tlacitka kluby,galerie,blogy - s textem pokud nic neni
 
 -big map - kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni 
--sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
--stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
 
--nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
 
+-fuup - upload progress bar nefunguje,zmensovat pri uploadu po jedny, usetri pamet
 -fullscreen - button bar style
+-stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
+-sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
+-nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
+-file not found image in image.php
 
--fuup - mezera kdyz neni checkbox, vetsi fontsize
+
 

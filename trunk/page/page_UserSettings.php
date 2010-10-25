@@ -112,7 +112,7 @@ class page_UserSettings implements iPage {
 		$userVO = $user->userVO;
 
 		$tpl = FSystem::tpl('users.personal.html');
-		$tpl->setVariable("FORMACTION",FSystem::getUri('m=user-settings&u='.$userVO->userId));
+		$tpl->setVariable("FORMACTION",FSystem::getUri('m=user-settings&u='.$userVO->userId,'',false,array('short'=>1)));
 		$tpl->setVariable("USERNAME",$userVO->name);
 		$tpl->setVariable("USERICQ",$userVO->icq);
 		$tpl->setVariable("USEREMAIL",$userVO->email);

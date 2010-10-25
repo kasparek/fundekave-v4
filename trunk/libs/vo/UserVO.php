@@ -34,7 +34,7 @@ class UserVO extends Fvob {
 	var $icq = '';
 	//---additional user information XML structure
 	var $info = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
-	var $avatar = AVATAR_DEFAULT;
+	var $avatar;
 	var $deleted = 0;
 	var $hit;
 
@@ -186,6 +186,7 @@ class UserVO extends Fvob {
 	
 	function loadRequests() {
 		$vo = new FDBvo( $this );
+		$vo->autojoinSet(true);
 		$vo->addSelect('i.itemId as requestId,i.userId as requestUserId,i.text as requestMessage');
 		$vo->addJoin('join sys_pages_items as i on i.userId=sys_users.userId');
 		$vo->VO = 'UserVO';

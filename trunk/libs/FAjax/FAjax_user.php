@@ -82,9 +82,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$tpl->setVariable('ACTION',FSystem::getUri('m=user-friendrequestsend'));
 		$tpl->setVariable('USER',$data['u']);
 		$ret = $tpl->get();
-		FAjax::addResponse('call','remove','friendrequest,1');
-		FAjax::addResponse('okmsgJS','$after',$ret);
-		FAjax::addResponse('call','friendRequestInit');
+		FAjax::addResponse('call','friendRequestInit',$ret);
 	}
 
 	static function friendrequestsend($data) {

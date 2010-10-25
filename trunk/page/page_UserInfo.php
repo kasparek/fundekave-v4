@@ -20,7 +20,7 @@ class page_UserInfo implements iPage {
 
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo',''), FLang::$LABEL_INFO);
-		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo','u'), FLang::$LABEL_PERSONALSETTINGS);
+		FMenu::secondaryMenuAddItem(FSystem::getUri('','fedit',''), FLang::$LABEL_PERSONALSETTINGS);
 
 		$user = FUser::getInstance();
 
@@ -87,7 +87,6 @@ class page_UserInfo implements iPage {
 				$fileList=$ffile->fileList(FAvatar::profileBasePath($userVO));
 				$cache->setData($fileList);
 			}
-			
 			if(!empty($fileList)) {
 				sort($fileList);
 				while($file = array_pop($fileList)) {
