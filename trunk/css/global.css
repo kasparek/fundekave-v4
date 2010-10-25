@@ -69,7 +69,7 @@
 /* END BASIC SCREEN ELEMENTS */
 
 /* GOOGLE MAPS styles */
-.geoselectorlabel {margin-top:-23px;}
+.geoInput {width:150px;height:50px;padding:0;margin:0;}
 .mapSmall {float: right;clear: right;padding:0 1em;}
 .mapLarge {width: 100%;height: 600px;clear:both;}
 /*.geoInfo {width:300px;}*/

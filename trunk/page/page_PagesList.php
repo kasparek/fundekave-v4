@@ -16,17 +16,13 @@ class page_PagesList implements iPage {
 		$userId = $user->userVO->userId;
 		$typeId = $user->pageParam;
 		if(!empty($user->pageVO->typeIdChild)) $typeId=$user->pageVO->typeIdChild;
-		if(!isset(FLang::$TYPEID[$typeId])) $typeId='';
+		if(!isset(FLang::$TYPEID[$typeId])) $typeId=array_keys(FLang::$TYPEID);
 
-		//TODO: login check after click
-		//TODO: implment 'a' to create page
 		if($user->idkontrol) {
-			
 			if($user->pageParam=='a') {
 				page_PageEdit::build($data);
 				return;
 			}
-			
 			if($typeId!='galery') {
 				FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
 				FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);

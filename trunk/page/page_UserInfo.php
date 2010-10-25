@@ -10,10 +10,7 @@ include_once('iPage.php');
 class page_UserInfo implements iPage {
 
 	static function process($data) {
-		$user = FUser::getInstance();
-		if($user->pageParam=='u') {
-			page_UserSettings::process($data);
-		}
+		
 	}
 
 	static function build($data=array()) {
@@ -23,11 +20,6 @@ class page_UserInfo implements iPage {
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fedit',''), FLang::$LABEL_PERSONALSETTINGS);
 
 		$user = FUser::getInstance();
-
-		if($user->pageParam=='u') {
-			page_UserSettings::build($data);
-			return;
-		}
 
 		$isFriend = false;
 		if($who = $user->whoIs) {

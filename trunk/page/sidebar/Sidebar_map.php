@@ -1,10 +1,18 @@
 <?php
 class Sidebar_map {
 	static function show() {
+		$user = FUser::getInstance();
+		
 		$dbtool = new FDBTool('sys_pages_items_properties');
 		$dbtool->setSelect('value');
 		$dbtool->setWhere("name='position'");
-		$posList = $dbtool->getContent(0,10);
+		if($user->pageVO->typeId!='top') {
+			$dbtool->addJoinAuto('sys_pages_items','itemId',array(),'join');
+			$dbtool->addWhere('sys_pages_items.public=1 and sys_pages_items.pageId="'.$user->pageVO->pageId.'"');
+		}
+		
+		$posList = $dbtool->getContent(0,20);
+		
 		$tpl = FSystem::tpl('sidebar.map.tpl.html');
 		$tpl->setVariable("URL",FSystem::getUri('','','m'));
 		while($row=array_pop($posList)) {

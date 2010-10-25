@@ -10,7 +10,7 @@ class page_Map implements iPage {
 
     $fitems = new FItems();
     $fitems->joinOnPropertie('position',0,'join');
-		
+		if($user->pageVO->typeId!='top') $fitems->addWhere('pageId="'.$user->pageVO->pageId.'"');
 		$list = $fitems->getList();
 				
 		$tpl = FSystem::tpl('map.tpl.html');
