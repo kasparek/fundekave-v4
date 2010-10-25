@@ -78,14 +78,16 @@ package net.fundekave.fuup.view
 		}
 				
 		protected function onProcess(e:Event):void {
-			var useFilters:Boolean = filesView.correctionsCheckbox.selected;
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-			proxy.useFilters = useFilters;
-			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_PROCESS );
+			proxy.useFilters = filesView.correctionsCheckbox.selected;
+			proxy.resize = filesView.processButt.selected;
+			//sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_PROCESS );
 		}
 		
 		protected function onUpload(e:Event):void {
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+			proxy.useFilters = filesView.correctionsCheckbox.selected;
+			proxy.resize = filesView.processButt.selected;
 			//---check if there are some files processed ready for upload
 			if(proxy.fileList.length > 0) {
 				sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_UPLOAD );
@@ -152,6 +154,8 @@ package net.fundekave.fuup.view
 				break;
 				case StateMachine.CHANGED:
 					stateName = State( note.getBody() ).name;
+					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
+					proxy.state = stateName; 
             		switch( stateName ) {
             			case StateConstants.STATE_SETUPING:
             				filesView.closeProgress();

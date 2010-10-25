@@ -27,11 +27,9 @@ package net.fundekave.lib
 			if( request ) this.request = request;
 			super(request);
 		}
-		
 		public function retry():void {
 			this.send();
 		}
-		
 		public function send(request:URLRequest=null):void {
 			if( request ) this.request = request;
 			else {
@@ -40,22 +38,16 @@ package net.fundekave.lib
 			}
 			
 			if(isMultipart===true) {
-				//this.request.contentType = 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary();
-				
 				var strippedVars:Object = {};
 				for(var name:String in variables) {
 					if(name != 'filename' && name != 'data') {
 						strippedVars[name] = variables[name];
 					}
 				}
-				
 				this.request.data = UploadPostHelper.getPostData( variables.filename, variables.data, strippedVars);
-				
 				this.request.requestHeaders.push( new URLRequestHeader( 'Cache-Control', 'no-cache' ) );
 				this.request.requestHeaders.push( new URLRequestHeader('Content-type', 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary()) );
-				
 				this.dataFormat = URLLoaderDataFormat.BINARY;
-				
 			} else {
 				var vars:URLVariables = new URLVariables();
 				vars.data = variables.data;  
@@ -65,20 +57,16 @@ package net.fundekave.lib
 				this.request.data = vars;
 				this.dataFormat = URLLoaderDataFormat.TEXT;
 			}
-			
 			super.load( this.request );
 		}
 		
 		public function failed():void {
-			
 			if( this.attempts < this.attemptsLimit ) {
 				this.send();
 			} else {
 				dispatchEvent( new ErrorEvent( ATTEMPTS_ERROR ));
 			}
-			
 			this.attempts++;
-			
 		}
 	}
 }

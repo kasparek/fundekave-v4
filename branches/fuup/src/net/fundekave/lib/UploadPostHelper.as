@@ -33,13 +33,11 @@ package net.fundekave.lib {
 		 * Must be passed as part of the contentType of the UrlRequest
 		 */
 		public static function getBoundary():String {
-			
 			if(_boundary.length == 0) {
 				for (var i:int = 0; i < 0x20; i++ ) {
 					_boundary += String.fromCharCode( int( 97 + Math.random() * 25 ) );
 				}
 			}
-			
 			return _boundary;
 		}
 		
@@ -113,6 +111,7 @@ package net.fundekave.lib {
 			postData = BOUNDARY(postData);
 			postData = DOUBLEDASH(postData);
 			
+			byteArray.clear();
 			return postData;
 		}
 		
@@ -152,6 +151,5 @@ package net.fundekave.lib {
 			p.writeShort(0x2d2d);
 			return p;
 		}
-		
 	}
 }

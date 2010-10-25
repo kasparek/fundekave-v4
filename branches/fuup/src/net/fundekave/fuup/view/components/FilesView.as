@@ -94,7 +94,7 @@ package net.fundekave.fuup.view.components
 			globalProgresslabel.text = lang[state];
 			this.addEventListener(ACTION_CANCEL, onCancel);
 		}
-		public function toProgress(value:int):void {
+		public function toProgress(value:Number):void {
 			TweenLite.to(globalProgressBar,0.1,{value:value*100});
 		}
 		public function closeProgress():void {
@@ -108,7 +108,7 @@ package net.fundekave.fuup.view.components
 		private function onFilesSelect(e:Event):void {
 			filesArr = (e.target as FileReferenceList).fileList;
 			if(filesArr.length>0) {
-				initProgress('loading',filesArr.length);
+				initProgress('loading',filesArr.length+filesBox.numChildren);
 				setTimeout(populateFiles,300);
 			}
 		}
@@ -146,12 +146,8 @@ package net.fundekave.fuup.view.components
 				//---check if file is not already in list
 				dispatchEvent( new Event( FILE_CHECK_EXITS ));
 				return;
-			} else {
-				if(autoProcess===true) {
-					doAction(ACTION_PROCESS);
-				} else if(autoUpload === true) {
-					doAction(ACTION_UPLOAD);
-				}
+			} else if(autoUpload === true) {
+				doAction(ACTION_UPLOAD);
 			}
 		}
 		
@@ -291,7 +287,7 @@ package net.fundekave.fuup.view.components
 		private var selectFilesButt:PushButton;
 		private var correctionsCheckboxHolder:Container;
 		public var correctionsCheckbox:CheckBox;
-		private var processButt:PushButton;
+		public var processButt:CheckBox;
 		private var uploadButt:PushButton;
 		public var cancelButt:PushButton;
 		public var globalProgressBar:ProgressBar;
@@ -310,7 +306,8 @@ package net.fundekave.fuup.view.components
 			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
 			correctionsCheckbox.selected = settingsOn;
 			
-			processButt = new PushButton(this,135-(_settingsVisible?65:0),5,lang.process,onProcessClick);
+			processButt = new CheckBox(this,135-(_settingsVisible?65:0)+5,10,lang.process,onProcessClick);
+			processButt.selected=true;
 			processButt.width = 60;
 			processButt.visible = !_autoUpload;
 			
@@ -350,13 +347,13 @@ package net.fundekave.fuup.view.components
 		}
 		
 		private function onProcessClick(e:Event):void {
-			doAction(ACTION_PROCESS)
+			doAction(ACTION_PROCESS);
 		}
 		private function onUploadClick(e:Event):void {
-			doAction(ACTION_UPLOAD)
+			doAction(ACTION_UPLOAD);
 		}
 		private function onCancelClick(e:Event):void {
-			doAction(ACTION_CANCEL)
+			doAction(ACTION_CANCEL);
 		}
 	}
 }

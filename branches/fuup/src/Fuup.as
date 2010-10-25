@@ -2,10 +2,6 @@
  *
  * Image resizer and uploader
  * Author: Frantisek Kaspar fundekave.net 
- *
- * 
- * 
- * 
  * 
  */
 package
