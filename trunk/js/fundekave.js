@@ -4,9 +4,7 @@ var GooMapi={loading:false,loaded:false,call:[],load:function(f){var o=GooMapi;i
 	var o=GooMapi;
 	$(".geoInput").hide().change(o.staticSelector);
 	$(".geoInput").each(function(){if($(this).val().length>0)$(this).change();});
-			
 	listen('geoselector','click',o.geoSelectorClick);
-	
 	$(".mapLarge").each(function(){
 	var id=$(this).attr('id').replace('map','');
 	if(!$(this).hasClass('hidden') && $("map"+id+"holder",this).length==0 )
@@ -18,19 +16,14 @@ var GooMapi={loading:false,loaded:false,call:[],load:function(f){var o=GooMapi;i
 	var id=$(this).attr('id').replace('mapThumb','');$(this).addClass('hidden');$('#map'+id).removeClass('hidden');GooMapi.show(id);return false;
 }
 ,geoSelectorClick:function() {
-	$(".geoselectorlabel").removeClass('geoselectorlabel');
-	$(".positionSelectorBox").removeClass('hidden');
-	
 	var o=GooMapi,data=o.editorData(),rel=$(this).attr('rel');
-	
 	data.journey=$(this).hasClass('journey');
 	data.dataEl=$('#'+rel);
 	o.mapEditor();
-	
 	return false;
 }
 ,staticSelector:function(e){
-	var p=$.trim($(this).val()).split("\n"),id=$(this).attr('id'),w=150,h=70;
+	var p=$.trim($(this).val()).split("\n"),id=$(this).attr('id'),w=$(this).width(),h=$(this).height();
 	if(p.length>0)if(p[0]=='')p=[];
 	var url='http://maps.google.com/maps/api/staticmap?size='+w+'x'+h+'&markers='+p[p.length-1]+'&maptype=terrain&sensor=false'+(p.length>1?'&path='+p.join('|'):'');
 	if($('#'+id+'Thumb').length>0) {
