@@ -107,8 +107,8 @@ class page_PageItemList implements iPage {
 		/**
 		 *FORUM FORM
 		 */
+		$writePerm=1;
 		if($pageVO->typeId!='top') { //no show for live, main etc.
-			$writePerm=1;
 			if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
 			if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
 				$writePerm = $pageVO->prop('forumSet');

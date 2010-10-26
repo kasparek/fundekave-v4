@@ -20,6 +20,8 @@ class page_UserInfo implements iPage {
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fedit',''), FLang::$LABEL_PERSONALSETTINGS);
 
 		$user = FUser::getInstance();
+		
+		$tpl = FSystem::tpl('users.info.tpl.html');
 
 		$isFriend = false;
 		if($who = $user->whoIs) {
@@ -32,18 +34,27 @@ class page_UserInfo implements iPage {
 				if($user->userVO->userId != $userVO->userId) {
 					if($userVO->isFriend($user->userVO->userId)) {
 						//button remove friend
-						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_REMOVE, array('id'=>'removeFriendButt','class'=>'fajaxa confirm','title'=>FLang::$LABEL_FRIEND_REMOVE_CONFIRM));
+						$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId));
+						$tpl->setVariable('FRIENDLINKLABEL',FLang::$LABEL_FRIEND_REMOVE);
+						$tpl->setVariable('FRIENDLINKID','removeFriendButt');
+						$tpl->setVariable('FRIENDLINKCLASS',' confirm');
+						$tpl->setVariable('FRIENDLINKTITLE',FLang::$LABEL_FRIEND_REMOVE_CONFIRM);
 						$isFriend = true;
 					} else {
 						if(!$userVO->isRequest($user->userVO->userId)) {
 							//button send frien request
-							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId), FLang::$LABEL_FRIEND_ADD, array('id'=>'friendButt','class'=>'fajaxa'));
+							$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId));
+							$tpl->setVariable('FRIENDLINKLABEL',FLang::$LABEL_FRIEND_ADD);
+							$tpl->setVariable('FRIENDLINKID','friendButt');
+							$tpl->setVariable('FRIENDLINKCLASS','');
+							$tpl->setVariable('FRIENDLINKTITLE',FLang::$TITLE_FRIEND_ADD);
 						} else {
 							FError::add(FLang::$MSG_REQUEST_WAITING,1);
 						}
 					}
 					//button send message
-					FMenu::secondaryMenuAddItem(FSystem::getUri('who='.$userVO->userId,'fpost',''),FLang::$SEND_MESSAGE);
+					$tpl->setVariable('SENDMSGURL',FSystem::getUri('who='.$userVO->userId,'fpost',''));
+					$tpl->setVariable('SENDMSGLABEL',FLang::$SEND_MESSAGE);
 				}
 			}
 
@@ -58,7 +69,7 @@ class page_UserInfo implements iPage {
 
 		}
 
-		$tpl = FSystem::tpl('users.info.tpl.html');
+		
 
 		$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 		$tpl->setVariable('NAME',$userVO->name);

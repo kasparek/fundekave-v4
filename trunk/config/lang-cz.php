@@ -45,6 +45,7 @@ static $LABEL_BOOK = 'Do oblíbených';
 static $LABEL_UNBOOK = 'Nesledovat';
 static $SEND_MESSAGE = 'Poslat zpravu';
 static $LABEL_FRIEND_ADD = 'Pridat do pratel';
+static $TITLE_FRIEND_ADD = 'Poslat pozadavek';
 static $LABEL_FRIEND_REMOVE = 'Odebrat z pratel';
 static $LABEL_FRIEND_REMOVE_CONFIRM = 'Opravdu chcete odebrat?';
 static $MSG_FRIEND_REMOVED = 'Pritel odebran';

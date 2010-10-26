@@ -15,6 +15,7 @@ ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorC
 update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
 FIX:
+-optimize where is static use of fotobiotic.net
 -pri ukladani obcas divne prazdna ok hlaska
 -v galerii pri uploadu se neobnovuji fotky
 -ajax listener pri listovani fotkama na mapu

@@ -46,6 +46,8 @@
 	.col4 {width: 25%;}
 	.col5 {width: 20%;}
 	.noscreen {position: absolute;top: 0;left: -999em;width: 1em;}
+	.padded { padding:1em;}
+	.margined { margin:1em;}
 	.bottomPadded { margin-bottom: 1em; }
 }
 /* END BASIC ELEMENTS */
