@@ -4,7 +4,7 @@ class FSystem {
 	static function superVars($data) {
 		//TODO: do supervariable some coolway
 		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
-		$superVars = array('SKINURL'=>'css/skin/default',
+		$superVars = array('SKINURL'=>'http://fotobiotic.net/css/skin/default',
 		'URL_JS'=>URL_JS);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
@@ -457,7 +457,7 @@ class FSystem {
 	}
 
 
-	function distance($lat1, $lon1, $lat2, $lon2) {
+	static function distance($lat1, $lon1, $lat2, $lon2) {
 		$earth_radius = 3440;
 		$delta_lat = $lat2 - $lat1 ;
 		$delta_lon = $lon2 - $lon1 ;
