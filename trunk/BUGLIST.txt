@@ -15,6 +15,10 @@ ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorC
 update sys_pages set template='page_PageItemList' where typeId in ('forum','blog','galery');
 
 FIX:
+-pri ukladani obcas divne prazdna ok hlaska
+-v galerii pri uploadu se neobnovuji fotky
+-ajax listener pri listovani fotkama na mapu
+-ukaz na mape - vetsi ikonku
 -update all forms with position with "rel" icon
 -draft - novou ikonu na mazani, lepsi title, vysvetlivku vpravo
 
@@ -23,7 +27,7 @@ FIX:
 -big map - kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni 
 
 
--fuup - upload progress bar nefunguje,zmensovat pri uploadu po jedny, usetri pamet
+
 -fullscreen - button bar style
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje

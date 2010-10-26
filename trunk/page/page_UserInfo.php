@@ -82,7 +82,7 @@ class page_UserInfo implements iPage {
 			if(!empty($fileList)) {
 				sort($fileList);
 				while($file = array_pop($fileList)) {
-					$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
+					$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($userVO->name).'/profile/'.$file);
 					$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($userVO->name).'/profile/'.$file);
 					$tpl->parse("foto");	
 				}
@@ -148,9 +148,9 @@ class page_UserInfo implements iPage {
 			 */
 			$showFavoritesTab = false;
 			$fp = new FPages('',$user->userVO->userId);
-			$fp->addJoin('left join sys_pages_favorites as f on sys_pages.pageId=f.pageId and f.userId="'.$userVO->userId.'"');
+			$fp->addJoin('join sys_pages_favorites as f2 on sys_pages.pageId=f2.pageId and f2.userId="'.$userVO->userId.'"');
 			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
-			$fp->setWhere('f.book="1" and sys_pages.userIdOwner!="'.$userVO->userId.'" and sys_pages.locked<2');
+			$fp->setWhere('f2.book="1" and sys_pages.userIdOwner!="'.$userVO->userId.'" and sys_pages.locked<2');
 			$arrLinks = $fp->getContent();
 			if(!empty($arrLinks)){
 				$tpl->setVariable('FAVORITES',FPages::printPagelinkList($arrLinks,array('noitem'=>1)));

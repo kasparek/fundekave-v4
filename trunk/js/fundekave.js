@@ -279,8 +279,18 @@ var o=GooMapi,m=$("#mapEditor"),d=m.dialog(),data=o.editorData();m.css('width',d
 
 };
 
+function buttonInit(){
+	if($('.button').length>0) {
+		if(!Lazy.load(LAZYLOAD.ui,buttonInit))return;
+		$('.button').button();
+	}
+}
+
 /**INITIALIZATION ON DOM*/ 
 function boot() {
+	
+	buttonInit();
+	
 	if($("#errormsgJS").html().length>0) $("#errormsgJS").css('padding','1em'); else $("#errormsgJS").hide(); 
 	if($("#okmsgJS").html().length>0) $("#okmsgJS").css('padding','1em'); else $("#okmsgJS").hide();
 	var w = $(window).width();

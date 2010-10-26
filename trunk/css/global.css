@@ -69,14 +69,14 @@
 /* END BASIC SCREEN ELEMENTS */
 
 /* GOOGLE MAPS styles */
-.geoselector {float:left;margin-right:-16px;}
+.geoselector {float:left;display:block;margin: 0px 10px;}
 .geoInput {width:150px;height:70px;padding:0;margin:0;}
+.geoForumBox {margin-left: 5px;float:left;}
 .geoInputBox {margin-left: 32px;}
 .geoInputBox textarea{width:250px;height:150px;}
 .geoInputBox .geoselector {margin: 0 3px;}
 .mapSmall {float: right;clear: right;padding:0 1em;}
 .mapLarge {width: 100%;height: 600px;clear:both;}
-/*.geoInfo {width:300px;}*/
 .mapsData {display:none;}
 .fullscreen {display: block;position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: 9999;margin: 0;padding: 0;overflow: hidden;background: #000000;}
 #fullscreenHint {width:100%;position: absolute;left:0;z-index: 10007;text-align:center;font-size:1.66em;background: #fff;padding:2em 0;margin:0;opacity:0.8;}

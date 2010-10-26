@@ -12,6 +12,7 @@ class Sidebar_map {
 		}
 		
 		$posList = $dbtool->getContent(0,20);
+		if(empty($posList)) return;
 		
 		$tpl = FSystem::tpl('sidebar.map.tpl.html');
 		$tpl->setVariable("URL",FSystem::getUri('','','m'));
