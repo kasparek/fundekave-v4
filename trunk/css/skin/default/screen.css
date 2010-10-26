@@ -84,7 +84,7 @@ div#mainbar form.notpublished fieldset{background: #ffe0c0;}
 div#mainbar label {float: left;display: inline-block;min-width: 8em;}
 div#mainbar div.rowcontent {padding-left: 8em;}
 div#mainbar div.row {clear: left;}
-div#mainbar fieldset input {width: 400px;margin-bottom: 0.3em;padding: 0 4px;}
+div#mainbar fieldset input {width: 380px;margin-bottom: 0.3em;}
 div#mainbar fieldset select {margin-bottom: 0.3em;}
 div#mainbar fieldset input.xShort {width: 4em;}
 div#mainbar fieldset input.short {width: 10em;}
@@ -133,13 +133,12 @@ div.mainpanel-content div.opacity {opacity: 0.2;border-left: 2px solid #ddd;padd
 div.mainpanel-content div.opacity div.vevent {margin-bottom: 0;}
 div.mainpanel-content div.reaction {margin-left: 3em;}
 
-div.mainpanel-content div.hentry div.completelink {line-height: 2em;margin-left: 50px;text-align: center;width: 10em;clear: both;}
-div.mainpanel-content div.hentry div.completelink a {display: block;background: #f8f7ef;font-weight: bold;}
-div.mainpanel-content div.hentry div.completelink a:hover {background: #ddd;}
+div.mainpanel-content div.hentry div.completelink {clear: both;}
+/*div.mainpanel-content div.hentry div.completelink a {text-decoration:underline;}*/
 
 /* HENTRY HEADER */
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
-div.mainpanel-content div.hentry h2.entry-title {padding: 0;margin: 0;font-size:1.66em;}
+div.mainpanel-content div.hentry h2 {padding: 0;margin: 0;font-size:1.66em;}
 div.mainpanel-content div.blog h2.entry-title {margin-top: -1em;}
 div.mainpanel-content div.hentry h2.entry-title a {color: black;text-decoration: none;}
 div.mainpanel-content div.hentry h2.entry-title a:hover {color: black;text-decoration: underline;}
@@ -193,9 +192,6 @@ div.galleryList div.hentry {clear: both;min-height: 140px;padding: 0;margin-bott
 div.galleryList div.hentry h3.entry-title {padding: 0.5em 0;}
 div.galleryList div.hentry span.abbr {line-height: 2em;}
 div#mainbar div.galeryThumb {float: left;clear: none !important;margin: 0 0.5em 1em 0.5em !important;padding: 0.3em 0.6em !important;border: 1px solid #ddd;}
-div.entry-content div.alignRight {float:right;}
-div.entry-content div.alignLeft {float:left;}
-div.entry-content div.alignCenter {text-align: center;margin: auto 0;}
 div.entry-content div.galeryThumb {margin: 1em 0.5em 1em 0.5em !important;}
 div.entry-content div.alignCenter div.galeryThumb {float:none;width: 170px;margin: auto;}
 div.galeryThumb div.entry-content {padding: 0 !important;}

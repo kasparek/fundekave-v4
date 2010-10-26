@@ -180,6 +180,7 @@ class FItemsRenderer {
 			if($this->showDetail===true) {
 				$vars['TEXT'] .= '<br /><br />'."\n". $itemVO->textLong;
 			} else {
+				$vars['LONGTITLE'] = $itemVO->addon;
 				$vars['LONGURL'] = $vars['ITEMLINK'];
 			}
 		}

@@ -34,11 +34,14 @@ if(isset($_GET['header_handler'])) {
 		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
 		$data = preg_replace('/\s\s+/', ' ', $data);
 	}
+	//TODO: odkomentovat az to bude zive
+	/*
 	if($contentType == 'text/javascript') {
 		$data = file_get_contents($c);
 		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
 		$data = preg_replace('/\s\s+/', ' ', $data);
 	}
+	*/
 	if(empty($data) && !file_exists($c)) {
 		FError::write_log('header_handler - FILE NOT EXISTS - '.$c);
 		exit;

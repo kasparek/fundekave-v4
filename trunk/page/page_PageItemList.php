@@ -61,7 +61,9 @@ class page_PageItemList implements iPage {
 		$itemId = 0;
 
 		$categoryId=0;
-		if(isset($data['c'])) $categoryId = (int) $data['c']; //for category filtering
+		if(isset($data['__get']['c'])) {
+			$categoryId = (int) $data['__get']['c']; //for category filtering
+		}
 		$arrPagerExtraVars = array();
 		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId;
 		if(!isset($_REQUEST['k'])) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
@@ -133,7 +135,9 @@ class page_PageItemList implements iPage {
 		}
 
 		//HEADER
-		if(empty($itemVO) && !empty($pageVO->content)) $vars['CONTENT'] = FSystem::postText($pageVO->content);
+		if(empty($itemVO) && !empty($pageVO->content)) {
+			$vars['CONTENT'] = FSystem::postText($pageVO->content);
+		}
 
 		if(empty($itemVO) || $writePerm>0) {
 

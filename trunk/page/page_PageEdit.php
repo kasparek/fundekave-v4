@@ -89,18 +89,29 @@ class page_PageEdit implements iPage {
 					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
-			$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
-			if(!empty($data['content'])) $pageVO->content = FSystem::textins($data['content']);
-
-			if(isset($data['datecontent'])) {
-				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
-			}
-
+			
+			
+			
 			if($user->pageParam=='sa') {
 				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
 					$pageVO->locked = (int) $data['locked'];
 				}
+				if(empty($data['description'])) $data['description']='';
+				$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
+			} else {
+				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
+			}
+			
+			if(empty($data['content'])) $data['content']='';
+			$pageVO->content = FSystem::textins($data['content']);
+			
+			if($user->pageParam!='sa' && empty($pageVO->description) && !empty($pageVO->content)) {
+				$pageVO->description=FSystem::textins($pageVO->content,array('plainText'=>1));
+			}
+			 
+			if(isset($data['datecontent'])) {
+				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
 			}
 
 			if(!empty($data['category'])) {
@@ -402,9 +413,6 @@ class page_PageEdit implements iPage {
 		if(isset($pageVO->description)) $pageDesc = $pageVO->description;
 		if(isset($pageVO->content)) $pageCont = $pageVO->content;
 
-		$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
-		$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
-
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
 		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
 
@@ -475,6 +483,9 @@ class page_PageEdit implements iPage {
 		if($user->pageParam=='sa') {
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGETEMPLATE',$pageVO->template);
+			//seo plain text description
+			$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
+			$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
 		}
 
 		if($user->pageParam=='sa' || $pageVO->typeId=='galery') {
