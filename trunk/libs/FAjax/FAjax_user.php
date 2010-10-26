@@ -44,9 +44,11 @@ class FAjax_user extends FAjaxPluginBase {
 
 	static function clientInfo($data) {
 		$user = FUser::getInstance();
-		list($w,$h) = explode('x',$data['size']);
-		$user->userVO->clientWidth = (int) $w*1;
-		$user->userVO->clientHeight = (int) $h*1;
+		if(!empty($data['size'])){
+			list($w,$h) = explode('x',$data['size']);
+			$user->userVO->clientWidth = (int) $w*1;
+			$user->userVO->clientHeight = (int) $h*1;
+		}
 	}
 
 	static function switchFriend($data) {

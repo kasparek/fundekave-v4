@@ -42,6 +42,9 @@ class page_ItemDetail implements iPage {
 			$itemRender = $itemVO->render();
 			if(!empty($data['__ajaxResponse'])) {
 			  FAjax::addResponse('itemDetail','$html',$itemRender);
+			  FAjax::addResponse('backButt','href',$backUri);
+				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
+				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 			} else {
 				$output = $itemRender;
 			}
