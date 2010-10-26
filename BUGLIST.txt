@@ -18,8 +18,8 @@ FIX:
 -optimize where is static use of fotobiotic.net
 -pri ukladani obcas divne prazdna ok hlaska
 -v galerii pri uploadu se neobnovuji fotky
--ajax listovani v blogu
--ukaz na mape - vetsi ikonku
+-ukaz na mape - source ikonka
+-forum ukaz na mape koliduje se zahod draft
 -update all forms with position with "rel" icon
 -draft - novou ikonu na mazani, lepsi title, vysvetlivku vpravo
 

@@ -318,13 +318,19 @@ function boot() {
 		});
 		GaleryEdit.init();	
 		if(parseInt(Sett.msgTi)>0)Msg.check();
+		var perm = $("#accessSel");
+		if(perm.length>0) {
+			perm.change(function(){
+			var v=$(this).val();
+			if(v==0)$("#rule1").show();else $("#rule1").hide();}).change();
+		}
 	}
 };
 /**INIT jQuery UI and everything possibly needed for ajax forms and items*/
-function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;tabsInit();datePickerInit();Richta.map();fajaxInit();fconfirmInit();Draft.init();GooMapi.init();fuupInit();slimboxInit();$("textarea[class*=expand]").autogrow().keydown()};
+function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;buttonInit();tabsInit();datePickerInit();Richta.map();fajaxInit();fconfirmInit();Draft.init();GooMapi.init();fuupInit();slimboxInit();$("textarea[class*=expand]").autogrow().keydown()};
 function datePickerInit(){if($(".datepicker").length>0){if(!Lazy.load(Sett.ll.ui,datePickerInit))return;$.datepicker.setDefaults($.extend({showMonthAfterYear:false},$.datepicker.regional['cs']));$(".datepicker").datepicker();}};
 function slimboxInit(){if(!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)){$("a[rel^='lightbox']").slimbox({overlayFadeDuration : 100, resizeDuration : 100, imageFadeDuration : 100, captionAnimationDuration : 100}, null, function(el){return (this == el) || ((this.rel.length > 8) && (this.rel == el.rel)); }); } }
-function fuupInit(){if($(".fuup").length>0){ if(!Lazy.load(Sett.ll.swf,fuupInit))return; $(".fuup").each(function(i){ swfobject.embedSWF(Sett.AssUrl+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", Sett.AssUrl+"expressInstall.swf", {file:Sett.AssUrl+"Fuup.swf",config:"fuup."+$(this).attr('id')+"."+gup('k',$(".fajaxform").attr('action'))+".xml",containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }}
+function fuupInit(){if($(".fuup").length>0){ if(!Lazy.load(Sett.ll.swf,fuupInit))return; $(".fuup").each(function(i){ swfobject.embedSWF(Sett.assUrl+"load.swf", $(this).attr('id'), "120", "25", "10.0.12", Sett.assUrl+"expressInstall.swf", {file:Sett.assUrl+"Fuup.swf",config:"fuup."+$(this).attr('id')+"."+gup('k',$(".fajaxform").attr('action'))+".xml",containerId:$(this).attr('id')},{wmode:'transparent',allowscriptaccess:'always'}); }); }}
 function tabsInit(){if($("#tabs").length>0){if(!Lazy.load(Sett.ll.ui,tabsInit))return;$("#tabs").tabs();}};
 function buttonInit(){if($('.uibutton').length>0){if(!Lazy.load(Sett.ll.ui,buttonInit))return;$('.uibutton').button();}}
 /**request init*/
@@ -378,7 +384,7 @@ numTotal:0,numLoaded:0,newLi:[],updLi:[],run:false
 	if(item>0){
 		f.add('item', item);
 		if(type=='U'){f.add('result','foto-'+item);f.add('resultProperty','$replaceWith');}
-	}else{f.add('total',fotoTotal);f.add('seq',fotoLoaded);}
+	}else{f.add('total',o.numTotal);f.add('seq',o.numLoaded);}
 	if(type!='U'){f.add('result','fotoList');f.add('resultProperty','$append');}
 	f.add('offset', offset);
 	f.add('call','jUIInit');	

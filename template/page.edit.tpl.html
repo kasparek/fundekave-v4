@@ -2,8 +2,8 @@
 <!-- BEGIN pageid --><input type="hidden" name="pageId" value="{PAGEID}" /><!-- END pageid -->
 <!-- BEGIN t --><input type="hidden" name="t" value="{T}"/><!-- END t -->
 <fieldset class="buttonBar">
-<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
-<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button confirm" /><!-- END delpage -->    
+<input type="submit" name="save" value="Uložit" class="button uibutton submit draftdrop" />
+<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button uibutton confirm" /><!-- END delpage -->    
 </fieldset>
 <div id="tabs">
 <ul>
@@ -25,12 +25,13 @@
 <input type="text" name="name" value="{PAGENAME}" class="long"><br />
 <!-- BEGIN date --><label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short datepicker" /><br /><!-- END date -->
 <!-- BEGIN sadmi --><label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
-<label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="short"><br /><!-- END sadmi -->
-<!-- BEGIN categories --><label>Druh</label><select name="category"><option value="0"></option>{CATOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br /><!-- END categories -->
-<label>Popis</label>
+<label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="short"><br />
+<label>SEO Popis</label>
 <textarea id="{PAGEDESCRIPTIONID}" class="draftable" name="description">{PAGEDESCRIPTION}</textarea><br />
-<!-- BEGIN content --><label>Zahlaví / Obsah</label>
-<textarea id="{PAGECONTENTID}" class="markitup draftable" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br /><!-- END content -->  
+<!-- END sadmi -->
+<!-- BEGIN categories --><label>Kategorie</label><select name="category"><option value="0"></option>{CATOPTIONS}</select> Nova: <input type="text" name="categoryNew" class="short" /><br /><!-- END categories -->
+<!-- BEGIN content --><label>Popis</label>
+<textarea id="{PAGECONTENTID}" class="markitup draftable expand" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br /><!-- END content -->  
 </fieldset>
 </div>
 <!-- BEGIN extended --><div id="tabs-9">
@@ -61,7 +62,9 @@
 <!-- END galeryspecific -->
 <fieldset>
 <legend>Mapy</legend>
-<label for="formPosition">Pozice</label><input id="formPosition" name="position" value="{POSITION}" type="text" class="short positionSelector"><br />
+<label for="formPosition">Pozice</label>
+<a href="#" class="geoselector journey" rel="position"><img src="[[SKINURL]]/img/map_add.png" alt="poloha" title="Zadejte polohu" /></a>
+<div class="leftbox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div>
 </fieldset>
 <!-- BEGIN forumreaction -->
 <fieldset>
