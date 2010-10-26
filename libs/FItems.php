@@ -193,8 +193,10 @@ class FItems extends FDBTool {
 							$propsRest[]=$prop;
 						}
 					}
-					$props=$propsRest;
-					$propsRest=array();
+					if(!empty($propsRest)) {
+						$props=$propsRest;
+						$propsRest=array();
+					}
 				}
 				$propList = $itemVO->getPropertiesList();
 				foreach($propList as $prop) {

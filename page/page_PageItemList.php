@@ -202,7 +202,9 @@ class page_PageItemList implements iPage {
 
 		}
 		}
-
+		if(!empty($itemVO)) {
+			$touchedBlocks[]='comm';
+		}
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
@@ -211,6 +213,7 @@ class page_PageItemList implements iPage {
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
 			FAjax::addResponse('call','fajaxInit');
+			FAjax::addResponse('call','GooMapi.init');
 		} else {
 			//render to template
 			$tpl = FSystem::tpl($template);
