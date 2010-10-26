@@ -167,7 +167,7 @@ div.mainpanel-content div.vevent span.vcard {float: right;background-color: #f8f
 
 div.mainpanel-content div.notpublished div.notpublishedMsg {color: #ff0000;height: 2em;line-height: 2em;font-weight: bold;background-color: #ffddbb;padding: 0 1em;}
 
-span.viewedTimes,span.monitor,span.tagMe,span.tagIs,span.fotoNum,span.commentsNum,span.linkIco,span.map {padding:0 3px}
+span.viewedTimes,span.monitor,span.tagMe,span.tagIs,span.fotoNum,span.commentsNum,span.linkIco,span.map {padding:0}
 span.tagMe img {margin-bottom: -2px;}
 span.tagIs {line-height: 16px;}
 span.tagIs img {margin-bottom:-4px;}
