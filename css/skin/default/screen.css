@@ -266,4 +266,3 @@ div#sidebar ul#sidebarUsersList li {padding:0;clear: left;overflow: hidden;backg
 div#fullscreenToolbar {position:fixed;top:0px;right:50px;height:25px;text-align:center;z-index:10000;background:#eee;}
 div#fullscreenToolbar a { line-height:25px;padding:0 5px;}
 .fullscreenSlideshowOn { background-color:#ff0000; }
-/*} /* END MEDIA SCREEN */
