@@ -11,7 +11,7 @@ if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m
 <!-- BEGIN description --><meta name="description" content="{DESCRIPTION}" /><!-- END description -->
 <link rel="shortcut icon" href="[[SKINURL]]/img/favicon.ico" type="image/x-icon" />
 <link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
-<link rel="stylesheet" type="text/css" href="http://fotobiotic.net/default.css" media="all" title="fundekave" />
+<link rel="stylesheet" type="text/css" href="[[STATIC_DOMAIN]]default.css" media="all" title="fundekave" />
 </head>
 <body>
 <div id="pageholder">
@@ -50,6 +50,7 @@ if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m
 <span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
 <script type="text/javascript">
 var Sett={assUrl:'{ASSETS_URL}',jsUrl:'[[URL_JS]]',skinUrl:'[[SKINURL]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',gooAnal:'{GOOGLEID}',user:'{USER}'
+,ajaxErr:'Doslo k chybe pri spojeni, zkuste odeslat znovu'
 ,ll:{'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js','[[URL_JS]]fundekave.js']
 ,'swf':['http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']
 ,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js','[[URL_JS]]i18n/ui.datepicker-cs.js','css/themes/ui-lightness/jquery-ui.css']
