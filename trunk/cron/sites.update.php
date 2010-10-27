@@ -7,7 +7,7 @@ require(INIT_FILENAME);
 
 $migr = array(
 ROOT=>'/subdomains/test/httpdocs/fdk_v5'
-,WEBROOT.'css'=>'/subdomains/test/httpdocs/css'
+,ROOT=>'/subdomains/eboinnaija/httpdocs/fdk_v5'
 );
 
 $ff = new FFile(FConf::get('settings','ftp'));

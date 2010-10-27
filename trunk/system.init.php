@@ -31,6 +31,10 @@ if(!isset($nonInit)) {
 	//---session settings - stored in db
 	ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
 	ini_set('session.gc_probability',1);
+	if(!is_dir(ROOT_SESSION)) {
+		$ff=new FFile();
+		$ff->makeDir(ROOT_SESSION);
+	}
 	ini_set('session.save_path', ROOT_SESSION);
 	session_start();
 	//startup user

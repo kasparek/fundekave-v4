@@ -1,6 +1,6 @@
 <form enctype="multipart/form-data" action="{FORMACTION}" method="post" class="fajaxform">
 <fieldset class="buttonBar">
-<input type="submit" name="save" value="Uložit" class="button submit draftdrop" />
+<input type="submit" name="save" value="Uložit" class="button uibutton submit draftdrop" />
 </fieldset>
 <div id="tabs">
 <ul>
@@ -33,9 +33,13 @@
 <label>Upload</label>
 <div id="tempStore" class="fuup"><input type="file" name="idfoto" /></div>
 <div id="personalfoto"><!-- BEGIN foto --><div id="foto{IMGID}" class="clearbox">
-<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" class="leftbox" /></a>
-<!-- BEGIN likeavatar --><input type="submit" class="confirm button" name="avatar{USEAVATARIMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /><!-- END likeavatar --> 
-<input type="submit" class="confirm button" name="del{IMGID}" value="Smazat" title="Opravdu chcete toto foto smazat?" />
+<div class="leftbox col2">
+<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" /></a>
+</div>
+<div class="leftbox">
+<!-- BEGIN likeavatar --><input type="submit" class="confirm button uibutton margined" name="avatar{USEAVATARIMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /><br /><!-- END likeavatar --> 
+<input type="submit" class="confirm button uibutton margined" name="del{IMGID}" value="Smazat" title="Opravdu chcete toto foto smazat?" />
+</div>
 </div><!-- END foto -->
 </div>
 </fieldset>

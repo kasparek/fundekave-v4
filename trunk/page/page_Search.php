@@ -155,7 +155,7 @@ class page_Search implements iPage {
 				$fItems->addWhere('sys_pages_items.public > 0');
 				$fItems->addFulltextSearch('text,enclosure,addon,textLong',$pageSearchCache['filtrItems']);
 					
-				$listArr = page_PageItemList::buildList($fItems,$user->pageVO,array('hash'=>'items','urlVar'=>'pi'));
+				$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('hash'=>'items','urlVar'=>'pi'));
 					
 				$ITEMS['vars'] = $listArr['vars'];
 				$ITEMS['vars']['FILTRITEMS'] = $pageSearchCache['filtrItems'];

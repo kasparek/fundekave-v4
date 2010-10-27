@@ -3,8 +3,8 @@
 <input type="hidden" name="t" value="{T}"/>
 <!-- BEGIN edit --><input id="item" name="item" value="{ITEMID}" type="hidden"><!-- END edit -->
 <fieldset class="buttonBar">
-<input type="submit" name="nav" value="Uložit" class="button submit draftdrop" /> 
-<!-- BEGIN delete --><input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button confirm" /><!-- END delete -->    
+<input type="submit" name="nav" value="Uložit" class="button uibutton submit draftdrop" /> 
+<!-- BEGIN delete --><input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button uibutton confirm" /><!-- END delete -->    
 </fieldset>
 <div id="tabs">
 <ul>
@@ -26,7 +26,7 @@
 <div id="imageHolder" class="row">
 <!-- BEGIN image -->
 <label>Letak</label><a rel="lightbox" href="{IMAGEURL}"><img src="{IMAGETHUMBURL}" /></a>
-<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat letak?" class="button confirm" /><br />
+<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat letak?" class="button uibutton confirm" /><br />
 <!-- END image -->
 </div>
 <label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup draftable">{TEXT}</textarea><br />

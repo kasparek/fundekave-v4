@@ -6,7 +6,7 @@ class FAjax_item extends FAjaxPluginBase {
 		if($data['__ajaxResponse']===true) {
 			$user = FUser::getInstance();
 			$user->itemVO = new ItemVO($itemId,true);
-			page_PageItemList::build($data);
+			page_ItemsList::build($data);
 
 			$breadcrumbs = FBuildPage::getBreadcrumbs();
 			$tpl = FSystem::tpl(TPL_MAIN);
