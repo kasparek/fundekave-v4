@@ -9,6 +9,12 @@ class FItemsForm {
 		}
 		$filename = FFile::getTemplFilename();
 		if($filename!==false) {
+			try{
+				getimagesize($data['__files']['imageFile']);
+			} catch(Exception $e) {
+				FError::add(FLang::$ERROR_IMAGE_FORMAT);
+				return $itemVO;	
+			}
 			//delete old image
 			$itemVO->deleteImage();
 			$pageVO = $itemVO->pageVO;
@@ -160,23 +166,42 @@ class FItemsForm {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
-								//TODO: check file is image
-								$itemVO->deleteImage();
-								$filename = FSystem::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
-								$ffile = new FFile(FConf::get("galery","ftpServer"));
-								$ffile->makeDir(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir);
-								$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
-								$itemVO->enclosure = $filename;
-								$itemVO->save();
+								$temp_file = tempnam(sys_get_temp_dir(), 'imageUrl');
+								file_put_contents($temp_file);
+								$processFile=true;
+								try{
+									getimagesize($temp_file);
+								} catch(Exception $e) {
+									FError::add(FLang::$ERROR_IMAGE_FORMAT);
+									$processFile=false;	
+								}
+								if($processFile) {
+									$itemVO->deleteImage();
+									$filename = FSystem::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
+									$ffile = new FFile(FConf::get("galery","ftpServer"));
+									$ffile->makeDir(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir);
+									$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
+									$itemVO->enclosure = $filename;
+									$itemVO->save();
+								}
 							}
 						} elseif(isset($data['__files'])) {
 							if($data['__files']['imageFile']['error'] == 0) {
 								$data['__files']['imageFile']['name'] = FSystem::safeFilename($data['__files']['imageFile']['name']);
-								$itemVO->deleteImage();
-								$ffile = new FFile(FConf::get("galery","ftpServer"));
-								if($ffile->upload($data['__files']['imageFile'],FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir,800000)) {
-									$itemVO->enclosure = $data['__files']['imageFile']['name'];
-									$itemVO->save();
+								$processFile=true;
+								try{
+									getimagesize($data['__files']['imageFile']);
+								} catch(Exception $e) {
+									FError::add(FLang::$ERROR_IMAGE_FORMAT);
+									$processFile=false;	
+								}
+								if($processFile) {
+									$itemVO->deleteImage();
+									$ffile = new FFile(FConf::get("galery","ftpServer"));
+									if($ffile->upload($data['__files']['imageFile'],FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir,800000)) {
+										$itemVO->enclosure = $data['__files']['imageFile']['name'];
+										$itemVO->save();
+									}
 								}
 							}
 						}

@@ -40,7 +40,6 @@ class FItems extends FDBTool {
 		$this->setSelect( $columnsAsed );
 
 		if($typeId!='') {
-			//TODO: handle array
 			if(FItems::isTypeValid($typeId)) {
 				$this->typeId = $typeId;
 				$this->addWhere("typeId='".$typeId."'");
@@ -52,9 +51,10 @@ class FItems extends FDBTool {
 			$this->addWhere('sys_pages_items.public = 1');
 		} elseif($userId > 0) {
 			if(!FRules::getCurrent( 2 )) {
-				//TODO:solve performance issues
+				//TODO:public=3 - jen pro pratele - solve performance issues
 				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList)
-				$this->addWhere('(sys_pages_items.public = 1 or sys_pages_items.public = 2)'); //---only public item for non-admins
+				//---only public item for non-admins
+				$this->addWhere('(sys_pages_items.public = 1 or sys_pages_items.public = 2)');
 			}
 			$this->userIdForPageAccess = $userId;
 		}
@@ -238,7 +238,7 @@ class FItems extends FDBTool {
 	}
 
 	/**
-	 * set unreded items to cache
+	 * set unreaded items to cache
 	 * */
 	static function cacheUnreadedList() {
 		$unreadedCnt = 0;
@@ -248,7 +248,6 @@ class FItems extends FDBTool {
 			$unreadedNum = $user->pageVO->unreaded;
 		} else $unreadedNum = $user->itemVO->unreaded;
 		if(empty($unreadedNum)) return 0;
-		//TODO: optimize this for blog (not published items)
 		$itemId = 0;
 		if($user->itemVO) $itemId = $user->itemVO->itemId;
 		$q = "select itemId,public from sys_pages_items where pageId='".$user->pageVO->pageId."'".(($itemId>0)?(" and itemIdTop='".$itemId."'"):(" and (itemIdTop is null or itemIdTop=0)"))." order by itemId desc limit 0,".$unreadedNum;

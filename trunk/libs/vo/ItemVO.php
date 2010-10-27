@@ -457,7 +457,7 @@ class ItemVO extends Fvob {
 		$confGalery = FConf::get('galery');
 		if($root===null) $root = $confGalery['targetUrlBase'];
 		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];
-		return $root . $thumbCut .'/'. $this->pageVO->get('galeryDir') .'/'. $this->enclosure;
+		return $root . $thumbCut .'/'. $this->pageVO->get('galeryDir') . '/'. $this->enclosure;
 	}
 
 	/**

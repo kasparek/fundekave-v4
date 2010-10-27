@@ -64,6 +64,7 @@ static $ERROR_PAGE_ADD_NONAME = 'Zadejte prosím jméno stránky';
 static $ERROR_DATA_FORMAT = 'Zadali jste špatné datum';
 static $ERROR_DIARY_NAME = 'Nezadali jste název poznámky';
 static $ERROR_DIARY_TEXT = 'Nezadali jste text poznámky';
+static $ERROR_IMAGE_FORMAT = 'Obrazek ma nepodporovany format';
 
 static $ERROR_FORM_TYPE = 'Neznamy typ formulare - kontaktujte administratora';
 

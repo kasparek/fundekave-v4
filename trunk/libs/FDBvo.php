@@ -43,7 +43,6 @@ class FDBvo extends FDBTool {
 		foreach($this->columns as $col=>$select) {
 			if($col==$select) //save only real columns
 			if( $this->vo->$col !== null ) {
-				//TODO: check escaping does not screw anything
 				$this->addCol($col, $fdb->escape($this->vo->$col));
 				if($this->vo->$col == 'null') {
 					$this->notQuote($col);

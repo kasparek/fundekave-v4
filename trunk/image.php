@@ -6,6 +6,11 @@
  * @param array $sideOptionList
  * @param number $default
  * @return number validated size
+ * 
+ *TODO: handle errors - error log
+ *TODO: file not found - show image
+ *TODO: flush remote  
+ *   
  */
 function validateSideParam( $sideParam, $sideOptionList, $default ) {
 
@@ -49,34 +54,6 @@ function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRa
 	return $sideParam;
 }
 
-/**
- *
- *
- * TODO:
- * -0. if side not specified use default
- * -1. if size is close to original show original
- * -2. upsize only to 130%
- * 3. if changed delete gens
- * 4. generate in batch
- * -5. validate input - file exist, max size, cut param
- * 6. ERROR loging into file
- *
- * test different res 200x300
- * test 170x0 resize only by one side
- * somehow overide - not use - list of resolution, be able to use any and flush???
- * $c->salt
- * do remote images /image/size/prop/remote/md5(salt+base64encoded(url))/base64encoded(url)
- *
- * do page images /obr/page/pageId/... - for event flyers or any other page images - blog?
- * do page / item images /obr/page/pageId/ItemId/
- * do user images /obr/username/profile/...
- *
- * use getimagesize_remote if getimagesize fails - esception handling - use it as file exists
- *
- * 7. externalize config file, generate config file from main config
- * require('image.conf.php');
- *
- */
 date_default_timezone_set('Europe/Prague');
 
 //INPUT
@@ -158,7 +135,6 @@ if(strpos($fileParam,'remote')===0) {
  * check source file exists
  */
 if(is_dir($sourceImage) && $cutParam != 'flush') {
-
 	//TODO: error loging
 	echo 'file is dir';
 	exit;
@@ -288,14 +264,11 @@ if(isset($imageProps)) {
  */
 if($c->output===true) {
 	$fp = fopen($targetImage, 'rb');
-
 	header('Content-Type: '.$contentType);
 	header("Content-Length: " . filesize($targetImage));
 	header("Cache-control: max-age=290304000, public");
 	header("Last-Modified: " . date(DATE_ATOM,filemtime($remote===true?$targetImage:$sourceImage)));
 	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
-
 	fpassthru($fp);
-
 	fclose($fp);
 }

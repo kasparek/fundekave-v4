@@ -1,16 +1,4 @@
 <?php
-/**
- *
- * TODO:
- * migrate xml pageparams to properties
- * build properties list
- * put ItemVO prop handling to Fvob
- * check columns in project
- * project - newMess -> this->unreaded
- * //TODO: migrate pageParams home from forum, blog
- //TODO: migrate pageParams orderitems from galery
- *
- */
 class PageVO extends Fvob {
 
 	var $table = 'sys_pages';
@@ -38,12 +26,6 @@ class PageVO extends Fvob {
 
 	var $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
 	public $propDefaults = array('forumSet'=>1,'home'=>'');
-
-	var $defaults = array(
-    'forum'=>array('template'=>'page_PageItemList'),
-    'blog'=>array('template'=>'page_PageItemList'),
-    'galery'=>array('template'=>'page_PageItemList')
-    );
 
 	//---db based
 	var $pageId;
@@ -101,14 +83,6 @@ class PageVO extends Fvob {
 		}
 		$pageVO = new PageVO($pageId, $autoLoad);
 		return $pageVO;
-	}
-
-	function setDefaults() {
-		if(isset($this->defaults[$this->typeId])) {
-			foreach($this->defaults[$this->typeId] as $k=>$v) {
-				$this->{$k} = $v;
-			}
-		}
 	}
 
 	/**
@@ -230,18 +204,6 @@ class PageVO extends Fvob {
 				$this->itemVO->pageId = $this->pageId;
 				$this->itemVO->typeId = $this->typeId;
 				$this->itemVO->enclosure = $file;
-				/*
-				 $itemVO->dateCreated = 'now()';
-				 //---try exif
-				 $exif = @exif_read_data( $galdir.$file );
-				 if(!empty($exif)) {
-					$itemVO->dateCreated = date("Y-m-d",$exif['FileDateTime']);
-					if(!empty($exif['DateTimeOriginal'])) {
-					//TODO: find a way to fix all exif formats
-					//$itemVO->dateCreated = date("Y-m-d",$exif['DateTimeOriginal']);
-					}
-					}
-					*/
 				$this->itemVO->filesize = filesize($galdir.$file);
 				$this->itemVO->text = '';
 				$this->itemVO->hit = 0;
@@ -265,6 +227,7 @@ class PageVO extends Fvob {
 					$this->itemVO->filesize = $newFilesize;
 					$this->itemVO->save();
 					$this->itemVO->flush();
+					FCommand::run(ITEM_UPDATED,$this->itemVO);
 					$change = true;
 					$items['updated'][] = $fotoId;
 				}
@@ -273,10 +236,7 @@ class PageVO extends Fvob {
 
 		//---invalidate all cache places
 		if($change == true) {
-			//TODO:send notification to observer
-			//FCommand::run('itemChanged');
-			//$cache = FCache::getInstance('f');
-			//$cache->invalidateGroup('calendarlefthand');
+			FCommand::run(PAGE_UPDATED,$this);
 		}
 
 		//---update foto count on page

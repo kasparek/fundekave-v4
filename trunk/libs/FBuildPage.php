@@ -55,7 +55,6 @@ class FBuildPage {
 		$pageCrumb=true;
 		$pageCategory=0;
 		if(!empty($typeId)) {
-			//TODO:refactor - cache???
 			//prehled
 			$breadcrumbs[] = array('name'=>FDBTool::getOne("select text from sys_menu where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
 			//typ
@@ -126,6 +125,7 @@ class FBuildPage {
 		if($user->pageAccess == true) {
 			if($user->pageParam=='sa' || $user->pageParam == 'e') $template = 'page_PageEdit';
 			else $template = $user->pageVO->template;
+			if(empty($template)) $template='page_ItemsList';
 			if($template != '') {
 				if (!preg_match("/(.html)$/",$template)) {
 					if( class_exists($template) ) {
@@ -167,6 +167,7 @@ class FBuildPage {
 					break;
 				default:
 					$template = $user->pageVO->template;
+					if(empty($template)) $template='page_ItemsList';
 					if($template != '') {
 						if (preg_match("/(.html)$/",$template)) {
 							$staticTemplate = true;
@@ -209,7 +210,7 @@ class FBuildPage {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 					}
 				}
-				//TODO:refactor and use again
+				//TODO:refactor classes and use again
 				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
 				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
 			}

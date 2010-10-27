@@ -115,23 +115,13 @@ class FSystem {
 		if(isset($pageId{5})) {
 			//---remove the part behind - it is just nice link
 			if(false!==($pos=strpos($pageId,'-'))) {
-				$textLink = substr($pageId,$pos+1);
-				//TODO: security check if textlink match with pageid -  otherwise do redirect
 				$pageId = substr($pageId,0,$pos);
 			}
-			//---slice pageid on fiveid and params
+			//---slice pageid on fiveid
 			if(isset($pageId{5})) {
-				if($pageId{5}==';') {
-					$getArr = explode(";",substr($pageId,5));
-					foreach ($getArr as $getVar) {
-						$getVarArr = explode("=",$getVar);
-						$_GET[$getVarArr[0]] = $getVarArr[1];
-					}
-				} else {
-					$user = FUser::getInstance();
-					$user->pageParam = substr($pageId,5);
-					$pageId = substr($pageId,0,5);
-				}
+				$user = FUser::getInstance();
+				$user->pageParam = substr($pageId,5);
+				$pageId = substr($pageId,0,5);
 			}
 		}
 		return $pageId;
@@ -324,11 +314,6 @@ class FSystem {
 	static function postText($text) {
 		$text = trim($text);
 		if(empty($text)) return $text;
-		//mozna pridat pred i a k ze ma byt [&?|]
-		//TODO: fix first,2,3 link rewrite to item
-		//TODO: remove fitemsrenderer::proccessItemEnclosure and process here
-		//TODO: keep data/cache and rewrite to new structure
-
 		$text = ' '.$text;
 
 		$regList = array(
@@ -343,7 +328,6 @@ class FSystem {
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
 		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		);
-
 
 		$r=0;
 		foreach($regList as $regex) {

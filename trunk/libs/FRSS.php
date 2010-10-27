@@ -65,29 +65,20 @@ class FRSS {
 		$ret = $cache->getData($pageNumber,'pagelist');
 					
 		if($ret === false) {
-
 			$perPage = 20;
-
 			//load items
 			$fi = new FItems('',0);
-			//TODO: decide ordering
-			//$fi->addSelect('if(sys_pages_items.dateStart is not null, sys_pages_items.dateStart, sys_pages_items.dateCreated) as dateorder');
-			
 			if($user->pageVO->typeId != 'top') {
 				$fi->setPage($user->pageVO->pageId);
 				$fi->hasReactions(false);
 				$pageName = $pageVO->name;
 				$totalFoto = $pageVO->cnt;
 			}
-			//$fi->setOrder('dateorder desc');
-			$fi->setOrder('sys_pages_items.dateCreated desc');
-			
+			$fi->setOrder('sys_pages_items.dateStart desc');
 			if($user->pageVO->typeId!='top') {
 				$totalItems = $user->pageVO->cnt;
 			}
-			
 			if($user->pageVO->typeId=='galery') $perPage = $totalItems;
-			
 			$arr = $fi->getList(($pageNumber-1)*$perPage,$perPage);
 
 			$hostSpecArr = array();
