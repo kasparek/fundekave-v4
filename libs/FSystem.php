@@ -2,13 +2,11 @@
 class FSystem {
 
 	static function superVars($data) {
-		//TODO: do supervariable some coolway
-		//TODO: from userVO load custom skin name previously: URL_CSS . SKIN_DEFAULT
-		$superVars = array('SKINURL'=>'http://fotobiotic.net/css/skin/default',
-		'URL_JS'=>URL_JS);
+		$superVars = array('SKINURL'=>STATIC_DOMAIN.SKIN_DEFAULT,
+		'STATIC_DOMAIN'=>STATIC_DOMAIN,
+		'URL_JS'=>STATIC_DOMAIN.URL_JS);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
-
 		}
 		return $data;
 	}

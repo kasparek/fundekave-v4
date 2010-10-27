@@ -96,8 +96,6 @@ div#mainbar fieldset.buttonBar input.button {margin: 0 1em; padding: 0.1em 0.5em
 div#mainbar fieldset.buttonBar input.submit {margin-left: 1em;margin-top:5px;}
 textarea {border: 1px solid #aaa;width:380px;height:6em;font-size: 1.2em;margin-bottom: 0.3em;margin-left: 0;margin-right: 0;padding: 0 5px;}
 textarea.large {width:520px;}
-div#mainbar fieldset textarea.draftNotSave {border-right: 2px solid #dd0000;}
-div#mainbar fieldset textarea.draftSave {border-right: 2px solid #00dd00;}
 div#mainbar fieldset textarea.largeTextarea {width: 90%;height:14em;}
 span.textAreaResize {float: left;}
 span.textAreaResize a {text-decoration: none;background: url(img/windows.png) no-repeat left top;display: block;width: 16px;height: 16px;margin-top: 2px;margin-right: 4px;margin-left: -20px;}
