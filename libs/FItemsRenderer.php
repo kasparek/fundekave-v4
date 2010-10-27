@@ -32,7 +32,6 @@ class FItemsRenderer {
 
 	function setOption($key,$val) {
 		$this->hasDefaultSettings = false;
-		//TODO: check if key exist
 		$this->{$key} = $val;
 	}
 

@@ -1,6 +1,6 @@
 <?php
 include_once('iPage.php');
-class page_PageItemList implements iPage {
+class page_ItemsList implements iPage {
 
 	/**
 	 *  PROCESS FUNCTION

@@ -57,7 +57,6 @@ class page_PageEdit implements iPage {
 					FError::add('missing page type');
 				}
 				$pageVO->pageIdTop = HOME_PAGE;
-				$pageVO->setDefaults();
 			} else {
 				$pageVO->pageId = $data['pageId'];
 				$pageVO->load();
@@ -162,6 +161,8 @@ class page_PageEdit implements iPage {
 						$file->makeDir(FConf::get("galery","sourceServerBase") .$pageVO->galeryDir);
 					}
 
+					$flush=false;
+
 					//---load settings from defaults if not in limits
 					$thumbCut = FConf::get('galery','thumbCut');
 					list($xwidthpx,$xheightpx) = explode('x',substr($thumbCut,0,strpos($thumbCut,'/'))); //thumbCut = 170x170/crop
@@ -172,15 +173,19 @@ class page_PageEdit implements iPage {
 					$thumbStyleSelectedIndex = 2;
 					if(isset($data['xthumbstyle'])) $thumbStyleSelectedIndex = (int) $data['xthumbstyle'];
 					$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop';
-					$pageVO->prop('thumbCut',$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle);
+					$thumbCut=$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle;
+					if($pageVO->prop('thumbCut')!=$thumbCut) {
+						$pageVO->prop('thumbCut',$thumbCut);
+						$flush=true;
+					}
 
 					if(isset($data['galeryorder'])) $pageVO->prop('order',(int) $data['galeryorder']);
 
 					//---if setting changed on edited galery delete thumbs
-					if($pageVO->xmlChanged === true && $user->pageParam!='a') {
-						$galery = new FGalery();
-						$galery->pageVO = PageVO::factory($pageVO->pageId, true);
-						$galery->flush();
+					if($flush==true && $user->pageParam!='a') {
+						$itemVO = new ItemVO();
+						$itemVO->pageId = $pageVO->pageId;
+						$itemVO->flush();
 					}
 				}
 
@@ -377,15 +382,6 @@ class page_PageEdit implements iPage {
 		}
 
 		//---SHOW TIME
-		/***
-		 *TODO:
-		 *-kdyz je admin - tlacitko smazat
-		 *- kdyz se maze top stranka tak se jen skryje
-		 *-
-		 *
-		 *
-		 **/
-			
 		$tpl=FSystem::tpl('page.edit.tpl.html');
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=page-edit&u='.$user->userVO->userId));
 		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');

@@ -1,25 +1,5 @@
 <?php
-/**
- *
- * setup columns, follow FItems initlist
- * unify columns select
- * add f.cnt if registered   - newMess -> unreaded
- * check project total -> cnt
- * FCalendarPlugins - refactor, based on fitems  
- 
-		date_format(i.dateCreated ,'{#date_iso#}')
-		date_format(i.dateCreated ,'{#date_local#}') "
-		
-		addjoin on propertie
-		itemIdLast.value as itemId
-		
-		date_format(dateContent,'{#date_local#}') as datumcz,
-		date_format(dateContent,'{#date_iso#}') as diso
-		  
- *
- */   
 class FPages extends FDBTool {
-	
 	var $type = ''; //type of pages for listing - galery,forum,blog...
 	var $userId = 0; //when it is 0 it work like not logged
 	var $permission = 1; //---read access / 2 - edit/admin access
@@ -138,8 +118,6 @@ class FPages extends FDBTool {
 			}
 		}
 
-		//TODO: ---delete avatar
-
 		FDBTool::query("delete from sys_pages_relations where pageId='".$pageId."' or pageIdRelative='".$pageId."'");
 		FDBTool::query("delete from sys_pages_favorites where pageId='".$pageId."'");
 		FDBTool::query("delete from sys_users_perm where pageId='".$pageId."'");
@@ -213,17 +191,17 @@ class FPages extends FDBTool {
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			foreach ($arrLinks as $page) {
-				 if(FConf::get('settings','pageAvatars')==1) {
+				 /*if(FConf::get('settings','pageAvatars')==1) {
 						if(isset(FLang::$TYPEID[$page->typeId])) {
 							if(!empty($page->pageIco)) {
-								$tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$page->pageIco); //TODO: url_page_avatar does not exist anymore
+								$tpl->setVariable("AVATARURL", $page->pageIco);
 							} else if(!empty($page->typeId)) {
 								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId,''));
 							}
 							$tpl->setVariable("AVATARNAME", $page->name);
 							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);
 					  }
-				}
+				}*/
 				$tpl->setVariable("PAGENAME", $page->name);
 				$tpl->setVariable("URL", FSystem::getUri('',$page->pageId,'',array('name'=>$page->name)));
 				if($user->idkontrol===true) {
