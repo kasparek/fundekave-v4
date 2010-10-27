@@ -480,7 +480,7 @@ class ItemVO extends Fvob {
 		if(empty($this->enclosure)) return;
 		$this->flush();
 		$confGalery = FConf::get('galery');
-		$file = new FFile();
+		$file = new FFile(FConf::get('galery','ftpServer'));
 		if($file->is_file($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure)) {
 			$file->unlink($confGalery['sourceServerBase'] . $this->pageVO->get('galeryDir') . '/' . $this->enclosure);
 		}

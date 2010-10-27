@@ -421,6 +421,7 @@ numTotal:0,numLoaded:0,newLi:[],updLi:[],run:false
 	if(confirm($(this).attr("title"))) {
 		f.add('item', l[1]);
 		f.send('item-delete');
+		f.formStop=true;
 		$('#foto-'+l[1]).hide('slow',function(){$('#foto-'+l[1]).remove()});
 		o.numTotal--;
 		$("#fotoTotal").text(o.numTotal);

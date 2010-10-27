@@ -36,11 +36,12 @@ class FFile {
 
 	function file_exists($filename) {
 		if(!$this->isFtpMode) return file_exists($filename);
+		$isdir=false;
 		if(ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, '/');
-			return true;
+			$iddir=true;
 		}
-		return false;
+		return $iddir || ftp_size($this->ftpConn, $filename)>0;
 	}
 
 	function is_file($filename) {
@@ -75,11 +76,6 @@ class FFile {
 
 	function unlink($filename) {
 		if(!$this->isFtpMode) return unlink($filename);
-		if(strpos($filename,'/')!==false) {
-			$f = explode('/',$filename);
-			$filename = array_pop($f);
-			ftp_chdir($this->ftpConn, implode('/',$filename));
-		}
 		return ftp_delete($this->ftpConn, $filename);
 	}
 
@@ -151,7 +147,8 @@ class FFile {
 	 *
 	 **/
 	function storeChunk($file,$seq) {
-		$this->makeDir(FConf::get("settings","fuup_chunks_path"));
+		$ff=new FFile();
+		$ff->makeDir(FConf::get("settings","fuup_chunks_path"));
 		if(!empty($file['tmp_name'])) {
 			move_uploaded_file($file["tmp_name"], $this->chunkFilename($file["name"],$seq) );
 		} else if(!empty($file['data'])) {
@@ -298,12 +295,13 @@ class FFile {
 			}
 		} else {
 			//ftp
-			$list = ftp_nlist($this->ftpConn,$dir);
+			ftp_chdir($this->ftpConn, $dir); 
+			$list = ftp_rawlist($this->ftpConn, "-A");
+			ftp_chdir($this->ftpConn, '/');
 			if($dir{strlen($dir)-1}!='/') $dir.='/';
-			foreach($list as $file) {
-				if ($file != "." && $file != ".." && ($type=="" || preg_match("/(".$type.")$/i",$file))) {
-					$arrFiles[]= str_replace($dir,'',$file);
-				}
+			foreach($list as $rawfile) {
+				$info=preg_split("/[\s]+/", $rawfile, 9);        
+				$arrFiles[]=$info[8];
 			}
 
 		}
@@ -402,16 +400,12 @@ class FFile {
 	 * recursive folder delete
 	 **/
 	function rm_recursive($filepath) {
-		if ($this->is_dir($filepath) && !$this->is_link($filepath)) {
+		if($this->is_dir($filepath) && !$this->is_link($filepath)) {
 			$list = $this->fileList($filepath);
 			if(!empty($list)) {
-				while (count($list)>0) {
-					$sf = array_pop($list);
-					if ($sf != '.' && $sf != '..') {
-						if (!$this->rm_recursive($filepath.'/'.$sf)) {
-							FError::write_log($filepath.'/'.$sf.' could not be deleted.');
-						}
-					}
+				while($sf=array_pop($list)) {
+					$f=$filepath.'/'.$sf;
+					if(!$this->rm_recursive($f)) FError::write_log($f.' could not be deleted');
 				}
 			}
 			if($ret = $this->rmdir($filepath)) $this->numModified++;

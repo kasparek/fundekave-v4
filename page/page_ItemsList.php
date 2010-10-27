@@ -200,7 +200,7 @@ class page_ItemsList implements iPage {
 				$pageVO->updateReaded($user->userVO->userId);
 			}
 
-			$listArr = page_PageItemList::buildList($fItems,$pageVO,$pagerOptions);
+			$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
 			$vars = array_merge($vars,$listArr['vars']);
 			if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 

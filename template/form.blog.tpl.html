@@ -3,8 +3,8 @@
 <input type="hidden" name="t" value="{T}"/>
 <!-- BEGIN edit --><input id="item" name="item" value="{ITEMID}" type="hidden"><!-- END edit -->
 <fieldset class="buttonBar">
-<input name="save" id="submitButtonSave" value="Uložit" class="button submit draftdrop" type="submit">  
-<!-- BEGIN delete --><input name="delete" id="submitButtonDelete" value="Smazat" class="button confirm" title="Opravdu chcete vymazat tento clánek ?" type="submit" /><!-- END delete -->
+<input name="save" id="submitButtonSave" value="Uložit" class="button uibutton submit draftdrop" type="submit">  
+<!-- BEGIN delete --><input name="delete" id="submitButtonDelete" value="Smazat" class="button uibutton confirm" title="Opravdu chcete vymazat tento clánek ?" type="submit" /><!-- END delete -->
 </fieldset>
 <div id="tabs">
 <ul>
@@ -37,7 +37,7 @@
 <div id="imageHolder" class="row">
 <!-- BEGIN image -->
 <label>Obrazek</label><a rel="lightbox" href="{IMAGEURL}"><img src="{IMAGETHUMBURL}" /></a>
-<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrazek?" class="button confirm" /><br />
+<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrazek?" class="button uibutton confirm" /><br />
 <!-- END image -->
 </div>
 </fieldset>

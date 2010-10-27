@@ -158,8 +158,11 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
  * $cutParam == 'flush' delete cached images
  */
 if($cutParam === 'flush') {
-	if($widthParam!=0) {
-		$sideOptionList = array($widthParam);
+	if(!in_array($widthParam,$sideOptionList)) {
+		$sideOptionList[] = $widthParam;
+	}
+	if(!in_array($heightParam,$sideOptionList)) {
+		$sideOptionList[] = $heightParam;
 	}
 	require_once($c->libraryBasePath.'libs/FFile.php');
 	$ffile = new FFile();

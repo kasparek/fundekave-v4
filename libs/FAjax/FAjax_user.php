@@ -11,7 +11,7 @@ class FAjax_user extends FAjaxPluginBase {
 		do {
 			$filename = strtolower($user->userVO->name.'.'.$user->userVO->userId.'.'.sprintf("%03d",$x).'.'.$ext);
 			$x++;
-		} while(file_exists(FAvatar::profileBasePath().'/'.$filename));
+		} while($ffile->file_exists(FAvatar::profileBasePath().'/'.$filename));
 		//move file
 		$ffile->makeDir(FAvatar::profileBasePath());
 		$ffile->rename(FConf::get('galery','sourceServerBase').$tmpFilename,FAvatar::profileBasePath().'/'.$filename);
