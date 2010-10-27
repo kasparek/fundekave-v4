@@ -8,7 +8,6 @@ class FRSS {
 		$user = FUser::getInstance();
 		$pageId = $user->pageVO->pageId;
 		$typeId = $user->pageVO->typeId;
-
 		$salt = 'fdk35';
 		if(isset($data['hash']) && $typeId=='forum') {
 			$hash = $data['hash'];
@@ -17,26 +16,27 @@ class FRSS {
 				$paramsDecode = base64_decode($data['data']);
 				$paramsDecode = urldecode($paramsDecode);
 				if($paramsDecode) {
-					$paramsArr = explode($hash, $paramsDecode);
-					
-					$params['name'] = $paramsArr[0];
-					$params['text'] = trim($paramsArr[1]);
-
+					if(strpos($paramsDecode,'{')!==false) {
+						$params = unserialize($paramsDecode);
+					} else {
+						$paramsArr = explode($hash, $paramsDecode);
+						$params['name']=$paramsArr[0];
+						$params['text']=$paramsArr[1];
+					}
+					$params['name'] = FSystem::textins($params['name'],array('plainText'=>1));
+					$params['text'] = FSystem::textins($params['text'],array('plainText'=>1));
 					if(empty($params['name'])) FError::add('E:nameEmpty');
 					if(empty($params['text'])) FError::add('E:textEmpty');
-					
 					if(!FError::is()) {
-						if($params['text']!='' && $params['name']!='') {
 							$itemVO = new ItemVO();
 							$itemVO->pageId = $pageId;
 							$itemVO->typeId = 'forum';
-							$itemVO->text = FSystem::textins($params['text']);
-							$itemVO->name = FSystem::textins($params['name'],array('plainText'=>1));
+							$itemVO->text = $params['text'];
+							$itemVO->name = $params['name'];
 							$itemVO->save();
 							FError::add('I:insertOK');
 							//invalidate global cache
 							FCommand::run(ITEM_UPDATED,$itemVO);
-						}
 					} else {
 						//invalidate only this rss
 						FCommand::run(RSS_UPDATED,$user->pageVO);

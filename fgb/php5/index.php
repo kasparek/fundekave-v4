@@ -8,7 +8,7 @@ session_start();
 //---CONFIG array
 $confArray = array(
 'salt' => 'fdk35', //--- hash provided by kasparek
-'serverPageId' => 'fl237', //--- page id of your guestbook on fundekave.net
+'serverPageId' => 'flll1', //--- page id of your guestbook on fundekave.net
 'forumPageUri' => '', //--- local url of guestbook - need for page reload after message is sent
 'arrErrors' => array('nameEmpty'=>'Nezadali jste jmeno','captchaFail'=>'Spatne jste opsali kod'), //--- error messages
 'forumLibsPath' => './libs/', //--- local path to forum libraries - with slash on end
