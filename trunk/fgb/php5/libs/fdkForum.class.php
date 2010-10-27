@@ -49,7 +49,7 @@ class fdkForum {
     if($this->page < 1) $this->page = 1;
     
     //---RSS LOAD
-    $rssUrl = "http://xspace.cz/frss.php?k=".$this->serverPageId.(($this->page > 1)?('&p='.$this->page):('')).((!empty($sendStr))?('&hash='.$hash.'&data='.$sendStr):(''));
+    $rssUrl = "http://awake33.com/frss.php?k=".$this->serverPageId.(($this->page > 1)?('&p='.$this->page):('')).((!empty($sendStr))?('&hash='.$hash.'&data='.$sendStr):(''));
     $xml  = simplexml_load_file($rssUrl);
     
     $this->arrData = $xml->channel;  

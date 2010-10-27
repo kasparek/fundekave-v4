@@ -16,18 +16,16 @@ update sys_pages set template=null where typeId in ('forum','blog','galery');
 //migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
 
 FIX:
--test remove guestbooks
 -v galerii pri uploadu se neobnovuji fotky
 -ukaz na mape - source ikonka
--update all forms with position with "rel" icon
--position editor - ukazat ze se jedna o pozici nebo cestu
--big map - kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni 
+-big map 
+	- kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni
+	- dodelat jednotlivy map item renderery 
 
--fullscreen - button bar style
+TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
 -nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
--file not found image in image.php
 
 
 
