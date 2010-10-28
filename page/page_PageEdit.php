@@ -217,9 +217,11 @@ class page_PageEdit implements iPage {
 					$pageVO->prop('homesite', FSystem::textins($data['homesite'],array('plainText'=>1)));
 				}
 				if(isset($data['position'])) {
-					$position = FSystem::textins($data['position'],array('plainText'=>1));
-					if(!empty($position)) {
-						$pageVO->prop('position', $position);
+					$posData = FSystem::positionProcess($data['position']);
+					$pageVO->setProperty('position', $posData);
+					if(strpos($posData,';')!==false) {
+						$distance = FSystem::journeyLength($posData);
+						$pageVO->setProperty('distance', $distance);
 					}
 				}
 
@@ -272,8 +274,13 @@ class page_PageEdit implements iPage {
 							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
-							$v['position'] = FSystem::textins($v['position'],array('plainText'=>1));
-							if(!empty($v['position'])) $itemVO->prop('position',$v['position']);
+							
+							if(isset($v['position'])){
+								$v['position'] = FSystem::positionProcess($v['position']);
+								$itemVO->setProperty('position', $v['position']);
+								if(strpos($v['position'],';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($v['position']));
+							}
+							
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::add(FLang::$ERROR_DATE_FORMAT);

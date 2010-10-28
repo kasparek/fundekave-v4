@@ -24,6 +24,9 @@ class page_Map implements iPage {
 			: ('<h2><a href="'.FSystem::getUri('i='.$itemVO->itemId).'">'.$itemVO->addon.'</a></h2>'
 			.str_replace(array("\n","\r"),'',$itemVO->text)) )
 			));
+			if($itemVO->typeId=='galery') {
+				$tpl->setVariable('MAPICO',$itemVO->getImageUrl(null,'50x50/crop'));
+			}
 			//info
 			//forum - hover-avatar, click-avatar, datum, <forum name>
 			//galery - hover-100x100 thumb, click-render with <showPage>
