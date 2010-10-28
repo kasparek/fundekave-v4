@@ -37,7 +37,7 @@
 	.righttext {text-align: right;}
 	.uptext {text-transform: uppercase;}
 	.boldtext {font-weight: bold;}
-	.leftbox,.alighnLeft {float: left;}
+	.leftbox,.alignLeft {float: left;}
 	.rightbox,.alignRight {float: right;}
 	.centerbox,.alignCenter {text-align: center;margin: auto 0;}
 	.autosize {width: auto;height: auto;}

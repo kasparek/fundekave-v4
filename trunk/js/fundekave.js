@@ -34,7 +34,7 @@ locale:{}
 		if(p.length==0){$('#'+id+'Thumb').remove();$('#'+id+'Source').remove();$('#'+id).hide();}
 		else $('#'+id+'Thumb').attr('src',url);
 	} else {
-		$(this).after('<a href="#" id="'+id+'Source" class="leftbox">S</a><img id="'+id+'Thumb" src="'+url+'" width="'+w+'" height="'+h+'" alt="Google Maps" />');
+		$(this).after('<img id="'+id+'Thumb" src="'+url+'" width="'+w+'" height="'+h+'" alt="Google Maps" /><a href="#" id="'+id+'Source" title="Source waypoints"><img src="'+Sett.skinUrl+'/img/source.png" alt="waypoints source" /></a>');
 		$('#'+id+'Thumb').click(function(){$('.geoselector[rel='+id+']').click()});
 		$('#'+id+'Source').click(function(){$('#'+id+'Thumb').toggle();$('#'+id).toggle();return false;});
 	}
@@ -439,7 +439,7 @@ var Fullscreen={el:null,tool:null,state:null,init:function(){var o=Fullscreen;li
 /**IMAGE RESIZE TO FIT*/
 function imgResizeToFit(img,fitTo,fit){if(!fit)fit=0.9;if(!fitTo)fitTo=$(window);var ww=fitTo.width()*fit,wh=fitTo.height()*fit;img.css('width','auto').css('height','auto');var iw=img.width(),ih=img.height(),tw=ww,th=ih*ww/iw;if(th-wh>1){iw='auto';ih=wh;}else{iw=tw;ih='auto';}img.css('width',iw).css('height',ih).css('position','absolute').css('left',((fitTo.width()-img.width())/2)+'px').css('top',((fitTo.height()-img.height())/2)+'px');};
 /**RESIZE HANDLER-CLIENT INFO TO SERVER*/
-var Resize={t:0,init:function(){$(window).resize(Resize.on).resize();},on:function(){var o=Resize;clearTimeout(o.t);o.t=setTimeout(o.send,500);},send:function(){var w=$(window),ww=w.width(),wh=w.height(),cw=parseInt(Sett.cw)*1,ch=parseInt(Sett.ch)*1;if(w!=cw || h!=ch){Fajax.add('size',ww+'x'+wh);Fajax.send('user-clientInfo',-1);}}};
+var Resize={t:0,init:function(){$(window).resize(Resize.on).resize();},on:function(){var o=Resize;clearTimeout(o.t);o.t=setTimeout(o.send,500);},send:function(){var w=$(window),ww=w.width(),wh=w.height(),cw=parseInt(Sett.cw)*1,ch=parseInt(Sett.ch)*1;if(w!=cw || h!=ch){Fajax.add('size',ww+'x'+wh);Fajax.send('user-clientInfo',-1,true);}}};
 /**CUSTOM AJAX REQUEST BUILDER/HANDLER * send and process ajax request - if problems with %26 use encodeURIComponent*/
 var Fajax={xhrList:{},top:0,formStop:false,formSent:null
 ,init:function(){if($(".fajaxform").length>0)listen('button','click',Fajax.form);if($(".fajaxpager").length>0)listen('fajaxpager','click',Fajax.pager);listen('fajaxa','click',Fajax.a);}
@@ -449,14 +449,17 @@ var Fajax={xhrList:{},top:0,formStop:false,formSent:null
 ,form:function(e){var o=Fajax,t=e.currentTarget,jt=$(t);e.preventDefault();if(o.formStop==true){o.formStop=false;return false;}if(jt.hasClass('confirm'))if(!confirm(jt.attr("title")))return false;$('#errormsgJS').hide(0).html('');$('#okmsgJS').hide(0).html('');o.formSent=t.form;$('.button',o.formSent).attr('disabled',true);var arr=$(o.formSent).formToArray(false),action,res=false,prop=false;while(arr.length>0){var v=arr.shift();if(v.name=='m')action=v.value;else o.add(v.name,v.value);if(v.name=='result')res=true;if(v.name=='resultProperty')prop=true;}if(!res)o.add('result',$(o.formSent).attr("id"));if(!prop)o.add('resultProperty','$html');o.add('action',t.name);o.add('k',gup('k',o.formSent.action));o.send(!action?gup('m',o.formSent.action):action,gup('k',o.formSent.action));return false;}
 ,XMLReq:{a:[],s:'<Item name="{KEY}"><![CDATA[{DATA}]]></Item>',reset:function(){Fajax.XMLReq.a=[];},add:function(k,v){Fajax.XMLReq.a.push(Fajax.XMLReq.s.replace('{KEY}',k).replace('{DATA}',v));},get:function(){var s='<FXajax><Request>'+Fajax.XMLReq.a.join('')+'</Request></FXajax>';Fajax.XMLReq.a=[];return s;}}
 ,add:function(k,v){Fajax.XMLReq.add(k,v)}
-,send:function(action,k){var data=Fajax.XMLReq.get();if(k==0)k=null;if(!k)k=gup('k',document.location);if(k==-1)k='';
+,send:function(action,k,silent){var data=Fajax.XMLReq.get();if(k==0)k=null;if(!k)k=gup('k',document.location);if(k==-1)k='';
 $.ajaxSetup({scriptCharset:"utf-8",contentType:"text/xml; charset=utf-8"});
 Fajax.xhrList[action]=$.ajax({type:"POST",url:"index.php?m="+action+"-x"+((k)?("&k="+k):('')),dataType:'xml',processData:false,cache:false,data:data
 ,complete:function(a,s){
 var o=Fajax;
 o.xhrList[action]=null;
 if(o.formSent){$('.button',o.formSent).removeAttr('disabled');o.formSent=null;}
-if(s!='success'){msg('error',Sett.ajaxErr);return;}
+if(s!='success'){
+	if(!silent) msg('error',Sett.ajaxErr);
+	return;
+}
 $(a.responseXML).find("Item").each(function(){
 var item=$(this),c='',target=item.attr('target'),prop=item.attr('property'),text=item.text();
 switch(target){
@@ -480,7 +483,7 @@ var Hash={old:'',init:function(){$(window).hashchange(function(){var o=Hash,h=lo
 /**MARKITUP SETUP - rich textarea*/ 
 var Richta = {w:null,init:function(ta){var o=Richta;if(ta)o.w=ta;if(!Lazy.load(Sett.ll.richta,Richta.init))return;if(!o.w)o.w=$('.markitup');o.w.markItUp(markitupSettings);o.w=null;},map:function(){$('.textAreaResize').remove();$('.markitup').each( function(){$(this).before('<span class="textAreaResize"><a href="?textid='+$(this).attr('id')+'" class="toggleToolSize"></a></span>');});listen('toggleToolSize','click',Richta.click);},click:function(e){var ta=$("#"+gup("textid",e.target.href));if(ta.hasClass('markItUpEditor'))ta.markItUpRemove();else if(!Richta.w)Richta.init(ta);return false;}};
 /**MSG CHAT FUNCTIONS*/
-var Msg={t:0,check:function(){var o=Msg,p=Hash.data('p'),l=[];$(".hentry.unread.sent").each(function(){l.push($(this).attr('id').replace('mess',''));});if(l.length>0)Fajax.add('unreadedSent',l.join(','));if(p)Fajax.add('p',p);Fajax.send('post-hasNewMessage',-1);},sentReaded:function(p){var o=Msg,l=p.split(',');for(var i in l){$("#mess"+l[i]).removeClass('unread');$("#unreadedLabel"+l[i]).remove();}},checkHandler:function(num,name){var o=Msg,d=$("#messageNew"),p=parseInt(Sett.msgTi);if(num>0){d.removeClass('hidden');$("#numMsg").text(num);$("#recentSender").text(name);}else if(!d.hasClass('hidden'))d.addClass('hidden');if(p>0){clearTimeout(o.t);o.t=setTimeout(o.check,p);}}};
+var Msg={t:0,check:function(){var o=Msg,p=Hash.data('p'),l=[];$(".hentry.unread.sent").each(function(){l.push($(this).attr('id').replace('mess',''));});if(l.length>0)Fajax.add('unreadedSent',l.join(','));if(p)Fajax.add('p',p);Fajax.send('post-hasNewMessage',-1,true);},sentReaded:function(p){var o=Msg,l=p.split(',');for(var i in l){$("#mess"+l[i]).removeClass('unread');$("#unreadedLabel"+l[i]).remove();}},checkHandler:function(num,name){var o=Msg,d=$("#messageNew"),p=parseInt(Sett.msgTi);if(num>0){d.removeClass('hidden');$("#numMsg").text(num);$("#recentSender").text(name);}else if(!d.hasClass('hidden'))d.addClass('hidden');if(p>0){clearTimeout(o.t);o.t=setTimeout(o.check,p);}}};
 /**LAZYLOADER*/
 var Lazy={r:{},f:null,q:[],loading:false,load:function(l,f){var o=Lazy,c=true;for(var i=0;i<l.length;i++)if(!o.r[l[i]]){c=false;break}if(c)return c;o.q.push({l:l.concat(),f:f});if(!o.loading)return o.p();},p:function(){var o=Lazy;while(o.q[0].l.length>0){var f=o.q[0].l.shift();if(!o.r[f]){o.loading=true;o.f=f;if(f.indexOf('.css')>-1){LazyLoad.css(f,o.c);}else{LazyLoad.js(f,o.c);}return;}}o.qc();return true;},c:function(){var o=Lazy;o.r[o.f]=true;if(o.q[0].l.length>0)o.p();else o.qc();},qc:function(){var o=Lazy;if(o.q[0].f)o.q[0].f();o.q.shift();if(o.q.length>0)o.p();else o.loading=false;}};
 /**google anal*/

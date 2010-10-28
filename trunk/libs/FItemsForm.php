@@ -7,14 +7,21 @@ class FItemsForm {
 			$itemVO = new ItemVO($data['item']);
 			if(!$itemVO->load()) return;
 		}
+
+		$dir = $itemVO->pageVO->get('galeryDir');
+		if(empty($dir)) {
+			$itemVO->pageVO->set('galeryDir','page/'.$itemVO->pageId.'-'.FSystem::safeText($itemVO->pageVO->get('name')));
+			$itemVO->pageVO->save();
+		}
+
 		$filename = FFile::getTemplFilename();
 		if($filename!==false) {
 			try{
-				getimagesize($data['__files']['imageFile']);
+				$size=getimagesize($data['__files']['imageFile']);
 			} catch(Exception $e) {
 				FError::add(FLang::$ERROR_IMAGE_FORMAT);
-				return $itemVO;	
 			}
+			if(empty($size)) return $itemVO;
 			//delete old image
 			$itemVO->deleteImage();
 			$pageVO = $itemVO->pageVO;
@@ -27,6 +34,7 @@ class FItemsForm {
 			$itemVO->set('enclosure',$enclosure);
 			$itemVO->saveOnlyChanged=true;
 			$itemVO->save();
+			$itemVO->prepare();
 			FFile::flushTemplFile();
 			return $itemVO;
 		}
@@ -159,22 +167,22 @@ class FItemsForm {
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
 					//save items
 					if($itemVO->save() > 0){
-						
+
 						FItemsForm::moveImage($data,$itemVO);
-						
+
 						if(!empty($data['imageUrl'])) {
 							$itemVO->deleteImage();
 							$filename = FSystem::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
 								$temp_file = tempnam(sys_get_temp_dir(), 'imageUrl');
-								file_put_contents($temp_file);
-								$processFile=true;
+								file_put_contents($temp_file,$file);
+								$processFile=false;
 								try{
-									getimagesize($temp_file);
+									$size=getimagesize($temp_file);
 								} catch(Exception $e) {
 									FError::add(FLang::$ERROR_IMAGE_FORMAT);
-									$processFile=false;	
 								}
+								if(!empty($size)) if($size[0]>0) $processFile=true;
 								if($processFile) {
 									$itemVO->deleteImage();
 									$filename = FSystem::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
@@ -183,26 +191,29 @@ class FItemsForm {
 									$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
 									$itemVO->enclosure = $filename;
 									$itemVO->save();
-								}
+									$itemVO->prepare();
+								} else FError::add(FLang::$ERROR_IMAGE_FORMAT);
 							}
 						} elseif(isset($data['__files'])) {
 							if($data['__files']['imageFile']['error'] == 0) {
 								$data['__files']['imageFile']['name'] = FSystem::safeFilename($data['__files']['imageFile']['name']);
-								$processFile=true;
+								$processFile=false;
 								try{
-									getimagesize($data['__files']['imageFile']);
+									$size=getimagesize($data['__files']['imageFile']);
 								} catch(Exception $e) {
 									FError::add(FLang::$ERROR_IMAGE_FORMAT);
-									$processFile=false;	
 								}
+								if(!empty($size)) if($size[0]>0) $processFile=true;
+
 								if($processFile) {
 									$itemVO->deleteImage();
 									$ffile = new FFile(FConf::get("galery","ftpServer"));
 									if($ffile->upload($data['__files']['imageFile'],FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir,800000)) {
 										$itemVO->enclosure = $data['__files']['imageFile']['name'];
 										$itemVO->save();
+										$itemVO->prepare();
 									}
-								}
+								} else FError::add(FLang::$ERROR_IMAGE_FORMAT);
 							}
 						}
 						//properties
@@ -233,7 +244,7 @@ class FItemsForm {
 						} else {
 							$itemVO->pageVO->updateReaded($user->userVO->userId);
 						}
-						
+
 						//redirect
 						if($itemVO->typeId!='forum') {
 							$redirectParam = 'i='.$itemVO->itemId.$redirectParam;
@@ -313,14 +324,14 @@ class FItemsForm {
 
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-		
+
 		$tpl->touchBlock('geo');
 		$position = $itemVO->prop('position');
 		if(!empty($data['position'])) $position = $data['position'];
 		if(!empty($position)) {
 			$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
 		}
-		
+
 		//TYPE DEPEND
 		if($itemVO->typeId==='forum') {
 
