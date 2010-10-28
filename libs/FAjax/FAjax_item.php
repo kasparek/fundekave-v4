@@ -50,7 +50,7 @@ class FAjax_item extends FAjaxPluginBase {
 			if(!empty($data['item'])) { 
 			$itemVO = new ItemVO((int) $data['item']);
 			if($itemVO->load()) {
-				FAjax::addResponse('i'.$itemId, '$replaceWith', page_ItemDetail::build($data));
+				page_ItemDetail::build($data);
 			}
 			}
 		}

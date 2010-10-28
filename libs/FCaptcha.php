@@ -102,6 +102,11 @@ class FCaptcha
 		function FCaptcha($config=array(),$secure=TRUE)
 		{
 			$config = array_merge(FConf::get('captcha'),$config);
+			
+			if(!file_exists(WEBROOT.$config['tempfolder'])) {
+				$ff=new FFile();
+				$ff->makeDir(WEBROOT.$config['tempfolder']);
+			}
 
 			// Test for GD-Library(-Version)
 			$this->gd_version = $this->get_gd_version();
@@ -241,7 +246,6 @@ class FCaptcha
 		function get_b2evo_captcha()
 		{
 			$this->make_captcha();
-			//$_SERVER['DOCUMENT_ROOT']
 			return str_replace($this->ftpwebpath,$this->urlwebpath,$this->tempfolder).$this->filename_prefix.$this->public_key.'.jpg';
 		}
 
@@ -423,7 +427,7 @@ class FCaptcha
 		function check_captcha($correct_hash,$attempt)
 		{
 			// when check, destroy picture on disk
-			if(file_exists($this->get_filename($correct_hash)))
+			if($ff->file_exists($this->get_filename($correct_hash)))
 			{
 				$res = @unlink($this->get_filename($correct_hash)) ? 'TRUE' : 'FALSE';
 				if($this->debug) echo "\n<br>-Captcha-Debug: Delete image (".$this->get_filename($correct_hash).") returns: ($res)";

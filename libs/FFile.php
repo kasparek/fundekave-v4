@@ -37,11 +37,11 @@ class FFile {
 	function file_exists($filename) {
 		if(!$this->isFtpMode) return file_exists($filename);
 		$isdir=false;
-		if(ftp_chdir($this->ftpConn, $filename)) {
+		if(@ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, '/');
-			$iddir=true;
+			$isdir=true;
 		}
-		return $iddir || ftp_size($this->ftpConn, $filename)>0;
+		return $isdir || ftp_size($this->ftpConn, $filename)>0;
 	}
 
 	function is_file($filename) {
@@ -62,7 +62,7 @@ class FFile {
 	function is_dir($filename) {
 		if(!$this->isFtpMode) return is_dir($filename);
 		$currentDir = ftp_pwd($this->ftpConn);
-		if(ftp_chdir($this->ftpConn, $filename)) {
+		if(@ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, $current);
 			return true;
 		}
@@ -165,7 +165,7 @@ class FFile {
 		if(!empty($imagePath)) {
 			if(file_exists($imagePath)) unlink($imagePath);
 			if($this->isFtpMode) {
-				$tmpFilename = tempnam(WEBROOT.'tmp','fuup');
+				$tmpFilename = tempnam(sys_get_temp_dir(),'fuup');
 				$handleW = fopen($tmpFilename, "w+");
 			} else {
 				$handleW = fopen($imagePath, "w+");
@@ -198,9 +198,10 @@ class FFile {
 
 	function file_put_contents($filename,$content) {
 		if(!$this->isFtpMode) return file_put_contents($filename,$content);
-		$handleW = tmpfile();
-		fwrite($handleW, $content);
-		ftp_fput($this->ftpConn,$filename,$handleW,FTP_BINARY);
+		$tmpFilename = tempnam(sys_get_temp_dir(),'fuup');
+		$handleW = fopen($tmpFilename, "w+");
+		fwrite($handleW, $content);		
+		ftp_put($this->ftpConn,$filename,$tmpFilename,FTP_BINARY);
 		fclose($handleW);
 	}
 
@@ -233,7 +234,7 @@ class FFile {
 		,'APPWIDTH'=>-1
 		,'APPHEIGHT'=>200
 		,'ONLOADED'=>''
-		,'ONONEUPLOADED'=>'galeryCheck'
+		,'ONONEUPLOADED'=>'GaleryEdit.check'
 		,'ONUPLOADED'=>''
 		,'URL'=>'files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):(''))
 		,'AUTH'=>$user->getRemoteAuthToken()

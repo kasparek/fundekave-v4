@@ -226,7 +226,8 @@ class FSystem {
 		$date = FSystem::textins($date,array('plainText'=>1));
 		$arr = explode(' ',$date);//get time part
 		$date = $arr[0];
-		$time = FSystem::isTime($arr[1]) ? ' '.$arr[1] : '';
+		$time = '';
+		if(isset($arr[1])) $time = FSystem::isTime($arr[1]) ? ' '.$arr[1] : '';
 			
 		if(strpos($date,'.')) {
 			$arr = explode('.',$date);
