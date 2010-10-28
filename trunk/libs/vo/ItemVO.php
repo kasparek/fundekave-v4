@@ -311,7 +311,7 @@ class ItemVO extends Fvob {
 				$fibs = array_flip($diff);
 				$maxWidth = $fibs[min($diff)];
 			}
-			$this->detailUrl = $this->getImageUrl(null,$maxWidth.'/prop');
+			$this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop');
 		}
 
 		//check if is editable
