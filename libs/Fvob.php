@@ -164,7 +164,7 @@ class Fvob {
 	function setProperty($propertyName,$propertyValue) {
 		//check if needed to be saved
 		if(isset($this->properties[$propertyName])) {
-			if($propertyValue==$this->properties[$propertyName]) return;
+			if($propertyValue==$this->properties[$propertyName] || (empty($propertyValue) && empty($this->properties[$propertyName]))) return;
 		}
 		//save in db
 		if(is_null($propertyValue) || $propertyValue===false) {
