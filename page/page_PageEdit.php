@@ -377,7 +377,6 @@ class page_PageEdit implements iPage {
 			} else {
 				$pageVO->typeId = $user->pageVO->typeIdChild;
 			}
-			$pageVO->setDefaults();
 		} else {
 			$pageVO = new PageVO();
 			$pageVO->pageId = $user->pageVO->pageId;

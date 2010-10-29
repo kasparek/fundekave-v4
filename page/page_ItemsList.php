@@ -212,7 +212,6 @@ class page_ItemsList implements iPage {
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			FAjax::addResponse('itemFeed','$html',empty($vars['ITEMS']) ? '' : $vars['ITEMS']);
-			FAjax::addResponse('topPager','$html',empty($vars['TOPPAGER']) ? '' : $vars['TOPPAGER']);
 			FAjax::addResponse('bottomPager','$html',empty($vars['BOTTOMPAGER']) ? '' : $vars['BOTTOMPAGER']);
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
@@ -254,7 +253,6 @@ class page_ItemsList implements iPage {
 			if($pager->totalItems > 0) {
 				$pager->getPager();
 				if ($pager->totalItems > $perPage) {
-					$vars['TOPPAGER'] = $pager->links;
 					$vars['BOTTOMPAGER'] = $pager->links;
 				}
 				if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();

@@ -112,7 +112,6 @@ class page_PagesList implements iPage {
 			}
 			//---pager
 			if($totalItems > $perPage) {
-				$tpl->setVariable('TOPPAGER',$pager->links);
 				$tpl->setVariable('BOTTOMPAGER',$pager->links);
 			}
 
