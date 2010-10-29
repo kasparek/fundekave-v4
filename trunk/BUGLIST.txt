@@ -16,9 +16,10 @@ update sys_pages set template=null where typeId in ('forum','blog','galery');
 //migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
 
 FIX:
+-page title - pageparam=a "Novy:"+typ"KLUB"
 -test map title
 -test map ico
--stranka neuklada pozici
+-flush sidebar map cash on position change
 
 -big map 
 	- kdyz je aspon jedna location pro stranku - kategorie, blog, galerie atd - sidebar a otevre se v mainbaru - vsechno na ni
