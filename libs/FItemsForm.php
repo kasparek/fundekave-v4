@@ -161,13 +161,30 @@ class FItemsForm {
 					if(!empty($data['textLong'])) $itemVO->set('textLong', $data['textLong']);
 					if(!empty($data['location'])) $itemVO->set('location', $data['location']);
 					if(empty($itemVO->typeId)) $itemVO->typeId = $user->pageVO->typeId;
-					if(!empty($data['category'])) $itemVO->set('categoryId', (int) $data['category']);
+					if(isset($data['category'])) {
+						if($itemVO->categoryId>0) if($data['category']!=$itemVO->categoryId) $oldCategoryId=$itemVO->categoryId;
+						$itemVO->set('categoryId', (int) $data['category']);
+						if($itemVO->categoryId>0) {
+							$categoryVO = new CategoryVO($itemVO->categoryId);
+							if(!$categoryVO->load()) {
+								$categoryVO=null;
+								$itemVO->categoryId=0;
+							}
+						}
+					}
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
 					//save items
 					if($itemVO->save() > 0){
-
+						if(!empty($categoryVO)) $categoryVO->updateNum();
+						if(!empty($oldCategoryId)) {
+							$categoryVO = new CategoryVO($oldCategoryId);
+							if($categoryVO->load()) {
+								$categoryVO->updateNum();
+							}
+						}
+						
 						FItemsForm::moveImage($data,$itemVO);
 
 						if(!empty($data['imageUrl'])) {
@@ -219,7 +236,9 @@ class FItemsForm {
 						//properties
 						if(isset($data['position'])) {
 							$posData = FSystem::positionProcess($data['position']);
-							$itemVO->setProperty('position', $posData);
+							if($itemVO->setProperty('position', $posData)){
+								FCommand::run(POSITION_UPDATED);
+							}
 							if(strpos($posData,';')!==false) {
 								$distance = FSystem::journeyLength($posData);
 								$itemVO->setProperty('distance', $distance);

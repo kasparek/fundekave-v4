@@ -26,7 +26,7 @@ class Sidebar_login {
 					$tpl->setVariable('NUMFRIENDSONLINE',count($arrpra));
 					foreach ($arrpra as $pra){
 						$tpl->setVariable('FRIENDAVATAR',FAvatar::showAvatar($pra[0]));
-						$tpl->setVariable('USERLINK',FSystem::getUri('who='.$pra[0],'finfo'));
+						$tpl->setVariable('USERLINK',FSystem::getUri('who='.$pra[0].'#tabs-profil','finfo'));
 						$tpl->setVariable('MSGLINK',FSystem::getUri('who='.$pra[0],'fpost'));
 						$tpl->setVariable('USERNAME',FUser::getgidname($pra[0]));
 						if($pra[4]!='top') {

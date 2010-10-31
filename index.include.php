@@ -180,7 +180,7 @@ if($processMain===true) {
 		$data = $_POST;
 		if(!empty($_FILES)) $data['__files'] = $_FILES;
 		if(!empty($_GET)) $data['__get'] = $_GET;
-		foreach($data as $k=>$v)if(($pos = strpos($k,'-'))!==false) $data[substr($k,0,$pos)][]=$v;
+		$data = FAjax::preprocessPost($data);
 		FBuildPage::process( $data );
 		FProfiler::write('PAGE PROCESS DONE');
 	}

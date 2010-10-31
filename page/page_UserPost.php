@@ -198,12 +198,12 @@ class page_UserPost implements iPage {
 				if($post["userIdFrom"]==$user->userVO->userId) {
 					$tpl->touchBlock('sent');
 					$tpl->touchBlock("sentclass");
-					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
+					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdTo"]);
 				} else {
 					$tpl->touchBlock('received');
 					$tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
-					$mulink = FSystem::getUri("who=".$post["userIdTo"],'finfo');
+					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdFrom"]);
 				}
 				$tpl->setVariable("MULINK", $mulink);

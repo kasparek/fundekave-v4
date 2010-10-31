@@ -20,6 +20,20 @@ class FAjax {
 		}
 		return self::$instance;
 	}
+	
+	static function preprocessPost($data) {
+		foreach($data as $k=>$v) {
+			if(strpos($k,'-')!==false) {
+				$kArr = explode('-',$k);
+				if(count($kArr)==3) {
+					$data[$kArr[0]][$kArr[1]][$kArr[2]]=$v;
+				} else {
+					$data[$kArr[0]][$kArr[1]]=$v;
+				}
+			}
+		}
+		return $data;
+	}
 
 	static function process($actionStr,$data, $options=array()) {
 		$arr = explode('-',$actionStr);
@@ -66,7 +80,8 @@ class FAjax {
 			$dataProcessed['__ajaxResponse'] = false;
 		}
 
-		foreach($dataProcessed as $k=>$v)if(($pos = strpos($k,'-'))!==false) $dataProcessed[substr($k,0,$pos)][]=$v;
+		$dataProcessed = FAjax::preprocessPost($dataProcessed);
+		
 		if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
 		FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();

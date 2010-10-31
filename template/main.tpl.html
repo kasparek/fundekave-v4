@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0],i=m.indexOf('-');if(i>-1){window.location.hash='';var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
+if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0];if(h.length>1 && m.indexOf('-')>-1){window.location.hash='';var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
 </script>
 <title>{TITLE}</title>
 <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
@@ -21,7 +21,7 @@ if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m
 </div>
 <div id="pagebar">
 <div id="mainbar">
-<form action="{SEARCHACTION}" method="post"><div id="search-holder"><div id="search"><img src="[[SKINURL]]/img/magnifier.png" title="Vyhledavani" alt="Hledat" /><input type="text" name="f" class="short" /> <input type="submit" name="search" value="Hledat" /></div></div></form>
+<form action="{SEARCHACTION}" method="post"><div id="search-holder"><div id="search"><img src="[[SKINURL]]/img/magnifier.png" title="Vyhledavani" alt="Hledat" /><input type="text" name="f" class="short" /> <input type="submit" class="button" name="search" value="Hledat" /></div></div></form>
 <!-- BEGIN breadcrumbs --><div id="breadcrumbs">
 <!-- BEGIN breadcrumbslist --><ul><!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread --></ul><!-- END breadcrumbslist -->
 </div><!-- END breadcrumbs -->

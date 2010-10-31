@@ -21,10 +21,6 @@ class Sidebar_map {
 			$journey = explode(';',$position);
 			$tpl->setVariable('STATICMARKERPOS',$journey[count($journey)-1]);
 			$tpl->parse('marker');
-			/*if(count($journey)>1) {
-				$tpl->setVariable('STATICWPLIST',implode('|',$journey));
-				$tpl->parse('stwp');
-			}*/
 		}
 		$ret = $tpl->get();
 		return $ret;

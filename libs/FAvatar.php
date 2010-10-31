@@ -52,7 +52,7 @@ class FAvatar {
 		$tpl->setVariable('USERNAME',$avatarUserName);
 		$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
 		if($userId>0) {
-			$tpl->setVariable('AVATARLINK',FSystem::getUri('who='.$userId,'finfo'));
+			$tpl->setVariable('AVATARLINK',FSystem::getUri('who='.$userId.'#tabs-profil','finfo'));
 			$ret = $tpl->get();
 		} else {
 			$tpl->parse('img');

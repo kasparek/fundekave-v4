@@ -9,7 +9,6 @@ class page_PagesList implements iPage {
 	static function build($data=array()) {
 
 		$user = FUser::getInstance();
-		$user->pageVO->showHeading = false;
 		$category = 0;
 		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
 
@@ -20,6 +19,18 @@ class page_PagesList implements iPage {
 
 		if($user->idkontrol) {
 			if($user->pageParam=='a') {
+				switch($data['__get']['t']){
+				case 'forum':
+				$heading=FLang::$LABEL_PAGE_FORUM_NEW;
+				break;
+				case 'blog':
+				$heading=FLang::$LABEL_PAGE_BLOG_NEW;
+				break;
+				case 'galery':
+				$heading=FLang::$LABEL_PAGE_GALERY_NEW;
+				break;
+				}
+				$user->pageVO->htmlName=$heading;
 				page_PageEdit::build($data);
 				return;
 			}
@@ -29,6 +40,8 @@ class page_PagesList implements iPage {
 			}
 			FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 		}
+		
+		$user->pageVO->showHeading = false;
 
 		//---QUERY RESULTS
 		$fPages = new FPages($typeId, $userId);

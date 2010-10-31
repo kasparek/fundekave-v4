@@ -104,8 +104,8 @@ class FSidebar extends FDBTool {
 					$letext = false;
 						if(!empty($fnc)) {
 							$showBlock = true;
-							$cacheId = $fnc;
-							$cacheGrp = 'sidebar-cache';
+							$cacheId = 'cache';
+							$cacheGrp = 'sidebar-'.$fnc;
 							if(strpos($panel['options'],'cache')!==false) {
 								//---member/non-member dependant block
 								if($panel['public']==0 || strpos($panel['options'],'member')!==false) {

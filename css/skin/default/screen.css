@@ -14,7 +14,6 @@ background: #eae6da url(img/page-bg.png) repeat-x right top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;font-size:0.88em;}
-input {font-size: 1em; }
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
@@ -65,8 +64,8 @@ span.postsNew {color: red;font-weight: bold;float:right;}
 /* LOGIN / LOGGED modul */
 form#loginForm, div#loggedUserContainer {color: #444;margin-top: 0px;padding: 0 10px 10px;}
 form#loginForm label {float: left;display:block;width:6.5em;padding:3px;}
-form#loginForm input {width: 6.5em;margin-bottom: 5px;margin-right: 5px;}
-form#loginForm input#loginButton {float: right;width: auto;}
+form#loginForm input {width: 70px;margin-bottom: 5px;margin-right: 5px;}
+form#loginForm input#loginButton {float: right;width: auto;font-size:1em;}
 form#loginForm p {margin: 0; padding: 0;}
 form#loginForm a, div#loggedUserContainer a {color: #333;font-weight: normal;}
 form#loginForm ul, div#loggedUserContainer ul {clear: left;margin: 0; padding: 0;}
@@ -80,6 +79,8 @@ div#loggedUserContainer img.userAvatar{border: 1px solid #412c00;}
 /* FORMS */
 div#editForm {margin-bottom: 1em;}
 div#mainbar fieldset {margin-bottom: 1em;border: 1px solid #ddd;background: #f0f0f0;}
+div#mainbar fieldset legend {font-size:1em;font-weight:bold;}
+div#mainbar div#tabs fieldset{background: none;border-bottom:none;border-left:none;border-right:none;}
 div#mainbar form.notpublished fieldset{background: #ffe0c0;}
 div#mainbar label {float: left;display: inline-block;min-width: 8em;}
 div#mainbar div.rowcontent {padding-left: 8em;}
@@ -90,11 +91,14 @@ div#mainbar fieldset input.xShort {width: 4em;}
 div#mainbar fieldset input.short {width: 10em;}
 div#mainbar fieldset textarea.short {width: 300px;height: 3em;}
 div#mainbar .buttonBar {padding-top: 0.5em;padding-bottom: 0.5em;}
-div#mainbar fieldset input.button {width: auto;min-width: 5em;font-size: 1em;}
-div#mainbar fieldset input.submit {margin-left: 10em;}
+div#mainbar input.button {width: auto;font-size: 1em;}
+div#mainbar fieldset input.submit {margin-left: 8em;}
 div#mainbar fieldset.buttonBar input.button {margin: 0 1em; padding: 0.1em 0.5em;font-size:1.4em;}
 div#mainbar fieldset.buttonBar input.submit {margin-left: 1em;margin-top:5px;}
-textarea {border: 1px solid #aaa;width:380px;height:6em;font-size: 1.2em;margin-bottom: 0.3em;margin-left: 0;margin-right: 0;padding: 0 5px;}
+textarea {width:380px;height:6em;margin-bottom: 0.3em;
+font-family:Verdana,Arial,sans-serif !important;
+font-size:1em !important;
+}
 textarea.large {width:520px;}
 div#mainbar fieldset textarea.largeTextarea {width: 90%;height:14em;}
 span.textAreaResize {float: left;}
