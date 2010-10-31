@@ -1,6 +1,5 @@
 <?php
 class bookedRelatedPagesList {
-
 	static function show() {
 		$user = FUser::getInstance();
 		$fPages = new FPages('',$user->userVO->userId);
@@ -17,5 +16,4 @@ class bookedRelatedPagesList {
 			return FPages::printPagelinkList($arr);
 		}
 	}
-
 }
