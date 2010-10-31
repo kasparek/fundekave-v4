@@ -16,6 +16,7 @@ update sys_pages set template=null where typeId in ('forum','blog','galery');
 //migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
 
 FIX:
+-ne mapa v poste a pratelich a jinde?
 -ajax ukladani edit kategorie
 -flush cache pri updatu/mazani/novy kategorie
 -test map title
