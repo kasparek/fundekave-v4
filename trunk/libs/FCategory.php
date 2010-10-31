@@ -288,7 +288,8 @@ class FCategory extends FDBTool {
 				if(!empty($pageIdTop)) $catVO->pageIdTop = $pageIdTop;  
 				if($catVO->save()) {
 					$newCategory = true;
-					FMessages::send(1,'NEW CATEGORY CREATED ::' .$newCat. ' :: '.$typeId.' :: <a href="'.FSystem::getUri('who='.FUser::logon(),'finfo').'">user</a>');
+					FMessages::send(1,'NEW CATEGORY CREATED ::' .$newCat. ' :: '.$typeId.' :: <a href="'.FSystem::getUri('who='.FUser::logon().'#tabs-profil','finfo').'">user</a>');
+					FCommand::run(CATEGORY_UPDATED);
 					return $catVO->categoryId;
 				}
 			}

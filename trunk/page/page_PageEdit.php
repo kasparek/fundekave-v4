@@ -112,9 +112,17 @@ class page_PageEdit implements iPage {
 			if(isset($data['datecontent'])) {
 				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
 			}
-
-			if(!empty($data['category'])) {
-				$pageVO->categoryId = (int) $data['category'];
+			
+			if(isset($data['category'])) {
+				if($pageVO->categoryId>0) if($data['category']!=$pageVO->categoryId) $oldCategoryId=$pageVO->categoryId;
+				$pageVO->set('categoryId', (int) $data['category']);
+				if($pageVO->categoryId>0) {
+					$categoryVO = new CategoryVO($pageVO->categoryId);
+					if(!$categoryVO->load()) {
+						$categoryVO=null;
+						$pageVO->categoryId=0;
+					}
+				}
 			}
 
 			if(isset($data['forumhome'])) {
@@ -191,6 +199,14 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
+				
+				if(!empty($categoryVO)) $categoryVO->updateNum();
+				if(!empty($oldCategoryId)) {
+					$categoryVO = new CategoryVO($oldCategoryId);
+					if($categoryVO->load()) {
+						$categoryVO->updateNum();
+					}
+				}
 
 				FCommand::run(PAGE_UPDATED,$pageVO);
 
@@ -218,7 +234,9 @@ class page_PageEdit implements iPage {
 				}
 				if(isset($data['position'])) {
 					$posData = FSystem::positionProcess($data['position']);
-					$pageVO->setProperty('position', $posData);
+					if($pageVO->setProperty('position', $posData)) {
+						FCommand::run(POSITION_UPDATED);
+					}
 					if(strpos($posData,';')!==false) {
 						$distance = FSystem::journeyLength($posData);
 						$pageVO->setProperty('distance', $distance);
@@ -392,6 +410,7 @@ class page_PageEdit implements iPage {
 		$tpl->setVariable('FORMACTION',FSystem::getUri('m=page-edit&u='.$user->userVO->userId));
 		if($pageVO->typeId!="top" && $user->pageParam!='a') $tpl->touchBlock('delpage');
 		if($user->pageParam!='a') {
+			$tpl->touchBlock('settingstab');
 			$tpl->setVariable('PAGEID',$pageVO->pageId);
 			$tpl->touchBlock('extendedtab');
 			if(empty($pageVO->pageIdTop) || $pageVO->pageIdTop==$pageVO->pageId) {
@@ -403,7 +422,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('T',$pageVO->typeId);
 		}
 		if(!empty($pageData['userIdOwner'])) {
-			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner,'finfo'));
+			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner.'#tabs-profil','finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
 		}
 

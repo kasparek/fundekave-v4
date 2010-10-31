@@ -76,7 +76,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$user = FUser::getInstance();
 		$user->userVO->removeFriend( (int) $data['u']);
 		FError::add(FLang::$MSG_FRIEND_REMOVED,1);
-		FAjax::redirect(FSystem::getUri('','frien',''));
+		FAjax::redirect(FSystem::getUri('','finfo',''));
 	}
 
 	static function friendrequest($data) {
@@ -93,7 +93,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$itemVO = new ItemVO();
 		$itemVO->typeId = 'request';
 		$itemVO->text = FSystem::textins($data['message']);
-		$itemVO->pageId = 'frien';
+		$itemVO->pageId = 'finfo';
 		$itemVO->userId = $user->userVO->userId;
 		$itemVO->name = $user->userVO->name;
 		$itemVO->userId = $user->userVO->userId;

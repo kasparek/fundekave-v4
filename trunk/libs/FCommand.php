@@ -6,6 +6,8 @@ define("ITEM_READED","actionItemReaded");
 define("PAGE_UPDATED","actionPageUpdated");
 define("RSS_UPDATED","actionRSSUpdated");
 define("AVATAR_UPDATED","avatarUpdated");
+define("POSITION_UPDATED","positionUpdated");
+define("CATEGORIES_UPDATED","categoriesUpdated");
 
 //map commands
 FCommand::register(ITEM_UPDATED,'itemUpdated');
@@ -15,6 +17,9 @@ FCommand::register(PAGE_UPDATED,'flushCache');
 FCommand::register(ITEM_READED,'itemReaded');
 FCommand::register(RSS_UPDATED,'rssUpdated');
 FCommand::register(AVATAR_UPDATED,'avatarUpdated');
+FCommand::register(POSITION_UPDATED,'positionUpdated');
+FCommand::register(CATEGORIES_UPDATED,'categoriesUpdated');
+
 
 class FCommand {
 
@@ -105,11 +110,19 @@ class FCommand {
 	
 	public static function flushCache($data) {
 		$cache = FCache::getInstance('f');
-		$cache->invalidateGroup('calendarlefthand');
 		$cache->invalidateGroup('rsslist');
 		$cache->invalidateGroup('itemlist');
 		$cache->invalidateGroup('itemlist'.$data->get('pageId'));
 	}
 	
+	public static function positionUpdated($data) {
+		$cache = FCache::getInstance('f');
+	  $cache->invalidateGroup('sidebar-map');
+	}
+	
+	public static function categoriesUpdated($data) {
+		$cache = FCache::getInstance('f');
+	  $cache->invalidateGroup('sidebar-categories');
+	}
 	
 }

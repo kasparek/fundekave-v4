@@ -166,17 +166,22 @@ class Fvob {
 		if(isset($this->properties[$propertyName])) {
 			if($propertyValue==$this->properties[$propertyName] || (empty($propertyValue) && empty($this->properties[$propertyName]))) return;
 		}
+		$prop=$this->getProperty($propertyName,false,true);
+		$ret=false;
 		//save in db
 		if(is_null($propertyValue) || $propertyValue===false) {
 			FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
 			$propertyValue = false;
+			if(!empty($prop)) $ret=true;
 		} else {
 			FDBTool::query("insert into ".$this->getTable()."_properties (".$this->getPrimaryCol().",name,value) values ('".$this->{$this->getPrimaryCol()}."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
+			if($prop!=$propertyValue) $ret=true;
 		}
 		//---save in cache
 		$this->properties[$propertyName] = $propertyValue;
 		//---update cache
 		$this->memStore();
+		return $ret;
 	}
 	
 	function memStore() {

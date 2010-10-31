@@ -32,7 +32,7 @@ where c.pageId='".$user->pageVO->pageId."' group by c.userId order by hitsum des
 			if($poz) $tpl->setVariable('DUMMYODD',' ');
 			$tpl->setVariable('USERNUMBER',$x++);
 			if($row[0]>0) {
-				$tpl->setVariable('USERLINK','?k=finfo&who='.$row[0]);
+				$tpl->setVariable('USERLINK','?k=finfo&who='.$row[0].'#tabs-profil');
 				$tpl->setVariable('USERNAME',FUser::getgidname($row[0]));
 			} else {
 				$tpl->setVariable('DUMMYNOTREG','');

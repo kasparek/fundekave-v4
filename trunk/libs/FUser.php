@@ -7,10 +7,12 @@ class FUser {
 	var $userVO;
 
 	var $pageId;
-	var $pageParam; //---replacing ->currentPageParam
+	var $pageParam;
 	var $pageVO;
 
 	var $itemVO;
+	
+	var $categoryId;
 
 	//---used when looking after someone informations
 	var $whoIs = 0; //---replace with whoIsUserVO
@@ -280,7 +282,7 @@ class FUser {
 				if(!empty($ident)) $tpl->setVariable('BOXID',$ident.$userVO->userId);
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 				$tpl->setVariable('NAME',$userVO->name);
-				$tpl->setVariable('PROFILURL',FSystem::getUri('who='.$userVO->userId,'finfo',''));
+				$tpl->setVariable('PROFILURL',FSystem::getUri('who='.$userVO->userId.'#tabs-profil','finfo',''));
 				if(!empty($userVO->dateLastVisit)) $tpl->setVariable('ACTIVITY',$userVO->dateLastVisit);
 				if(!empty($userVO->activityPageId)) {
 					$pageVO = new PageVO($userVO->activityPageId,true);

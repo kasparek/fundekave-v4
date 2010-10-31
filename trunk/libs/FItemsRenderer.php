@@ -137,7 +137,7 @@ class FItemsRenderer {
 
 		$vars['AUTHOR'] = $itemVO->name;
 		if($itemUserId>0) {
-			$vars['AUTHORLINK'] = FSystem::getUri('who='.$itemUserId,'finfo');
+			$vars['AUTHORLINK'] = FSystem::getUri('who='.$itemUserId.'#tabs-profil','finfo');
 			$touchedBlocks['aaclose']=true;	
 		}
 		$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);

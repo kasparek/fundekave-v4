@@ -2,34 +2,12 @@
 // markItUp! Universal MarkUp Engine, JQuery plugin
 // By Jay Salvat - http://markitup.jaysalvat.com/
 // ------------------------------------------------------------------*/
-/*
-.markItUp * {
-	margin:0px; padding:0px;
-	outline:none;
-}
-.markItUp a:link,
-.markItUp a:visited {
-	color:#000;
-	text-decoration:none;
-}
-.markItUp  {
-	width:700px;
-	margin:5px 0 5px 0;
-}
-*/
-.markItUpContainer  {
-	font:11px Verdana, Arial, Helvetica, sans-serif;
-}
+
 .markItUpEditor {
-	font:12px 'Courier New', Courier, monospace;
-	padding:5px;
-	width:90%;
+	width:90% !important;
 	margin: 0 auto;
-	height:320px;
 	clear:both; 
 	display:block;
-	line-height:18px;
-	overflow:auto;
 }
 .markItUpPreviewFrame	{
 	overflow:auto;

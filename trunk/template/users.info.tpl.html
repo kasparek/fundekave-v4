@@ -1,13 +1,14 @@
 <div id="tabs">
 <ul>
-<li><a href="#tabs-1">Profil</a></li>
 <!-- BEGIN tabfriends --><li><a href="#tabs-3">Pratele</a></li><!-- END tabfriends -->
+<li><a href="#tabs-profil">Profil</a></li>
 <!-- BEGIN tabforums --><li><a href="#tabs-4">Kluby</a></li><!-- END tabforums -->
 <!-- BEGIN tabblogs --><li><a href="#tabs-5">Blogy</a></li><!-- END tabblogs -->
 <!-- BEGIN tabgaleries --><li><a href="#tabs-6">Galerie</a></li><!-- END tabgaleries -->
 <!-- BEGIN tabfavorites --><li><a href="#tabs-7">Oblibene</a></li><!-- END tabfavorites -->
 </ul>
-<div id="tabs-1"><div clas="user-info">
+<!-- BEGIN friends --><div id="tabs-3">{FRIENDS}<!-- BEGIN nofriends -->Zatim nemate zadne pratele, zkuste pouzit vyhledavani, odkazy na autory v klubech a poslat jim pozadavek z jejich profilu.<!-- END nofriends --><div class="clearbox"></div></div><!-- END friends -->
+<div id="tabs-profil"><div clas="user-info">
 <div class="leftbox col2">
 <label>&nbsp;</label><span>{AVATAR}</span><br />
 <label>Nick</label><span>{NAME}</span><br />
@@ -19,10 +20,10 @@
 <label>Registrace</label><span>{DATECREATED}</span><br />
 <label>Poslední přístup</label><span>{DATEUPDATED}</span><br />
 </div>
-<div class="leftbox">
+<!-- BEGIN friendactions --><div class="leftbox">
 <a id="{FRIENDLINKID}" href="{FRIENDLINKURL}" class="fajaxa uibutton margined{FRIENDLINKCLASS}" title="{FRIENDLINKTITLE}">{FRIENDLINKLABEL}</a><br />
 <a href="{SENDMSGURL}" class="uibutton margined">{SENDMSGLABEL}</a>
-</div>
+</div><!-- END friendactions -->
 <div class="clearreal"></div>
 <!-- BEGIN profilfoto --><h2>Profil foto</h2>
 <div class="clearbox centertext">
@@ -30,11 +31,6 @@
 </div><!-- END profilfoto -->
 </div>
 </div>
-<!-- BEGIN friends --><div id="tabs-3">
-<!-- BEGIN userfriends -->{FRIENDS}<!-- END userfriends -->
-<!-- BEGIN commonfriends -->{COMMONFRIENDS}<!-- END commonfriends -->
-<div class="clearbox"></div>
-</div><!-- END friends -->
 <!-- BEGIN forums --><div id="tabs-4"><h3>Kluby</h3>{FORUMS}</div><!-- END forums -->
 <!-- BEGIN blogs --><div id="tabs-5"><h3>Blogy</h3>{BLOGS}</div><!-- END blogs -->
 <!-- BEGIN galeries --><div id="tabs-6"><h3>Galerie</h3>{GALERYS}</div><!-- END galeries -->

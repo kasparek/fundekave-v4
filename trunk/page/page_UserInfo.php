@@ -16,7 +16,6 @@ class page_UserInfo implements iPage {
 	static function build($data=array()) {
 
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
-		FMenu::secondaryMenuAddItem(FSystem::getUri('','finfo',''), FLang::$LABEL_INFO);
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fedit',''), FLang::$LABEL_PERSONALSETTINGS);
 
 		$user = FUser::getInstance();
@@ -143,16 +142,37 @@ class page_UserInfo implements iPage {
 			 * pratele
 			 */
 			$showFriendsTab = false;
-			$arrFriends = $userVO->loadFriends();
-			if(!empty($arrFriends)) {
-				foreach($arrFriends as $friend) {
-					if($user->userVO->isFriend($friend->userId)) $arrFrCom[]=$friend; else $arrFr[]=$friend;
+			$friends='';
+			
+			if(empty($who)) {
+				$arr = $user->userVO->loadRequests();
+				if(!empty($arr)) $friend .= FUser::usersList( $arr, 'request', 'Requests' );
+				$arr = $user->userVO->loadOnlineFriends();
+				if(!empty($arr)) $friends .= FUser::usersList( $arr, 'online', 'Online' );
+			}
+			
+			$arr = $userVO->loadFriends();
+			if(!empty($arr)) {
+				if(!empty($who)) {
+					foreach($arr as $friend) {
+						if($user->userVO->isFriend($friend->userId)) $arrFrCom[]=$friend; else $arrFr[]=$friend;
+					}
+				} else {
+					$arrFr = $arr;
 				}
-				if(!empty($arrFr))$tpl->setVariable('FRIENDS',FUser::usersList( $arrFr,'friends',FLang::$FRIENDS));
-				if(!empty($arrFrCom)) $tpl->setVariable('COMMONFRIENDS',FUser::usersList( $arrFrCom,'commonFriends',FLang::$FRIENDS_COMMON ));
+				if(!empty($arrFr)) $friends .= FUser::usersList( $arrFr,'friends',FLang::$FRIENDS);
+				if(!empty($arrFrCom)) $friends .= FUser::usersList( $arrFrCom,'commonFriends',FLang::$FRIENDS_COMMON);
 				$showFriendsTab=true;
 			}
-			if($showFriendsTab === true) $tpl->touchBlock('tabfriends');
+
+			if(empty($who) && empty($friends)) {
+				$tpl->touchBlock('nofriends');
+				$showFriendsTab=true;
+			} 
+			if($showFriendsTab === true) {
+				if(!empty($friends)) $tpl->setVariable('FRIENDS',$friends);
+				$tpl->touchBlock('tabfriends');
+			}
 
 			/**
 			 * FAVORITES

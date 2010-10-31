@@ -5,19 +5,19 @@
 <tbody>
 <!-- BEGIN arrkateg --><tr>
 <!-- BEGIN kategformelement --><td>
-<!-- BEGIN kateginput --><input type="{INPUTTYPE}" name="kat{INPUTKATEG}[{INPUTID}][{INPUTCOL}]" value="{INPUTVALUE}" class="{INPUTCLASS}" /> <!-- END kateginput -->
-<!-- BEGIN kategselect --><select name="kat{SELECTKATEG}[{SELECTID}][{SELECTNAME}]" class="select">
+<!-- BEGIN kateginput --><input type="{INPUTTYPE}" name="kat{INPUTKATEG}-{INPUTID}-{INPUTCOL}" value="{INPUTVALUE}" class="{INPUTCLASS}" /> <!-- END kateginput -->
+<!-- BEGIN kategselect --><select name="kat{SELECTKATEG}-{SELECTID}-{SELECTNAME}" class="select">
 <!-- BEGIN arrselect --><option value="{OPTIONVALUE}"{OPTIONSELECTED}>{OPTIONTEXT}</option><!-- END arrselect -->
 </select> <!-- END kategselect -->
 <!-- BEGIN kategedit --><a href="?kam={EDITKAM}&amp;kid={EDITID}">EDIT</a><!-- END kategedit -->	
 </td><!-- END kategformelement -->
-<td><input type="checkbox" name="del{KATEG}[]" value="{ID}" class="checkbox"/></td>
+<td><input type="checkbox" name="del{KATEG}-{ID}" value="{ID}" class="checkbox"/></td>
 </tr><!-- END arrkateg -->
 <tr><td colspan="{COLS}"><label>Nová kategorie</label></td></tr>
 <tr>
 <!-- BEGIN kategformelementnew --><td>
-<!-- BEGIN kateginputnew --><input type="{INPUTTYPE}" name="kat{INPUTKATEG}[0][{INPUTCOL}]" value="" class="{INPUTCLASS}" /> <!-- END kateginputnew -->
-<!-- BEGIN kategselectnew --><select name="kat{SELECTKATEG}[0][{SELECTNAME}]" class="select">
+<!-- BEGIN kateginputnew --><input type="{INPUTTYPE}" name="kat{INPUTKATEG}-0-{INPUTCOL}" value="" class="{INPUTCLASS}" /> <!-- END kateginputnew -->
+<!-- BEGIN kategselectnew --><select name="kat{SELECTKATEG}-0-{SELECTNAME}" class="select">
 <!-- BEGIN arrselectnew --><option value="{OPTIONVALUE}">{OPTIONTEXT}</option><!-- END arrselectnew -->
 </select><!-- END kategselectnew -->
 </td><!-- END kategformelementnew -->

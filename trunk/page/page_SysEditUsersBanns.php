@@ -52,7 +52,7 @@ class page_SysEditUsersBanns implements iPage {
 			$tpl->setCurrentBlock('user');
 			$tpl->setVariable('ID',$usr[0]);
 			$tpl->setVariable('NAME',$usr[1]);
-			$tpl->setVariable('URL',FSystem::getUri('who='.$usr[0],'finfo'));
+			$tpl->setVariable('URL',FSystem::getUri('who='.$usr[0].'#tabs-profil','finfo'));
 			$tpl->setVariable('CREATED',$usr[3]);
 			$tpl->setVariable('UPDATED',$usr[4]);
 			$tpl->setVariable('HIT',$usr[5]);
