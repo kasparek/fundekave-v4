@@ -12,62 +12,19 @@
  *TODO: flush remote  
  *   
  */
-function validateSideParam( $sideParam, $sideOptionList, $default ) {
-
-	if(!in_array($sideParam, $sideOptionList)) {
-		if(empty($sideParam)) {
-			return $default;
-		} else {
-			$diff = array();
-			//get closest valid width
-			foreach ($sideOptionList as $fib) {
-				$diff[$fib] = (int) abs($sideParam - $fib);
-			}
-			$fibs = array_flip($diff);
-			return $fibs[min($diff)];
-		}
-	} else {
-		return $sideParam;
-	}
-}
-/**
- * checking if ration is too big from original
- * stop scaling images to much up
- */
-function getMaxScaleUp($sideParam, $sideOriginal, $sideOptionList, $maxScaleUpRatio) {
-	if(empty($sideOriginal)) return $sideParam;
-	$diff = array();
-	$ratio = $sideParam/$sideOriginal;
-	if($ratio > $maxScaleUpRatio) {
-		$maxSize = $sideOriginal * $maxScaleUpRatio;
-		//get closest valid width
-		foreach ($sideOptionList as $fib) {
-			if($maxSize - $fib >= 0) {
-				$diff[$fib] = (int) $maxSize - $fib;
-			}
-		}
-		if($diff) {
-			$fibs = array_flip($diff);
-			return $fibs[min($diff)];
-		}
-	}
-	return $sideParam;
-}
-
 date_default_timezone_set('Europe/Prague');
 
 //INPUT
 $fileParam = isset($_GET['img']) ? $_GET['img'] : '';
 $widthParam = 0;
 $heightParam = 0;
-$customSize = false;
+
 if(isset($_GET['side'])) {
 	$getSide = $_GET['side'];
 	if(strpos($getSide,'x')!==false) {
 		$getSideList = explode('x',$getSide);
 		$widthParam = (int) $getSideList[0];
 		$heightParam = (int) $getSideList[1];
-		$customSize = true;
 	} else {
 		$widthParam = $heightParam = (int) $getSide;
 	}
@@ -93,13 +50,9 @@ $cutOptionsList = explode(',',$c->cutOptions);
 if(!in_array($cutParam, $cutOptionsList)) $cutParam = $c->cutDefault;
 if($cutParam=='flush') $sideOptionList[] = 0;
 
-if($customSize) {
-	$widthParam = $widthParam > $c->maxSize ? $c->maxSize : $widthParam;
-	$heightParam = $widthParam > $c->maxSize ? $c->maxSize : $heightParam;
-} else {
-	$widthParam = validateSideParam($widthParam, $sideOptionList, $c->sideDefault);
-	$heightParam = validateSideParam($heightParam, $sideOptionList, $c->sideDefault);
-}
+$widthParam = $widthParam > $c->maxSize ? $c->maxSize : $widthParam;
+$heightParam = $widthParam > $c->maxSize ? $c->maxSize : $heightParam;
+
 
 $processParams = array('quality'=>$c->quality);
 if($cutParam=='crop') $processParams['crop'] = 1;
@@ -191,10 +144,10 @@ if($cutParam === 'flush') {
 }
 
 if(isset($imageProps)) {
-	
-	$widthParamTmp = getMaxScaleUp($widthParam,$imageProps[0],$sideOptionList,$c->maxScaleUpRatio);
-	$heightParamTmp = getMaxScaleUp($heightParam,$imageProps[1],$sideOptionList,$c->maxScaleUpRatio);
-	
+	if($imageProps[0]==0) $imageProps[0]=$widthParam;
+	if($imageProps[1]==0) $imageProps[1]=$heightParam;
+	$widthParamTmp = $widthParam>$imageProps[0]?$imageProps[0]:$widthParam;
+	$heightParamTmp = $heightParam>$imageProps[1]?$imageProps[1]:$heightParam;
 	if($widthParam==$heightParam) {
 		if($widthParamTmp > $heightParamTmp) {
 			$widthParam = $widthParamTmp;

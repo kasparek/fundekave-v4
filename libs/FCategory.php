@@ -155,34 +155,26 @@ class FCategory extends FDBTool {
 		return $rediraddon;
 	}
 
-	function process($data, $redirect=false) {
-		//---action part
-		if(isset($data["save"])){
-			if(!empty($data["kat".$this->ident]))
-			foreach ($data["kat".$this->ident] as $k=>$kat){
-				foreach ($kat as $key=>$val) $kat[$key] = trim($val);
-				if(isset($this->arrSaveAddon)) $kat=array_merge($kat,$this->arrSaveAddon);
-				if($kat[$this->requiredCol]!='') {
-					$sCat = new FDBTool($this->table,$this->primaryCol);
-					if($k > 0){ //update
-						$kat[$this->primaryCol] = $k;
-						$dot = $sCat->buildUpdate($kat);
-					} else { //insert
-						$dot = $sCat->buildInsert($kat);
-					}
-					$sCat->query($dot);
+	function process($data) {
+		if(!empty($data["kat".$this->ident]))
+		foreach ($data["kat".$this->ident] as $k=>$kat){
+			foreach ($kat as $key=>$val) $kat[$key] = trim($val);
+			if(isset($this->arrSaveAddon)) $kat=array_merge($kat,$this->arrSaveAddon);
+			if($kat[$this->requiredCol]!='') {
+				$sCat = new FDBTool($this->table,$this->primaryCol);
+				if($k > 0){ //update
+					$kat[$this->primaryCol] = $k;
+					$dot = $sCat->buildUpdate($kat);
+				} else { //insert
+					$dot = $sCat->buildInsert($kat);
 				}
+				$sCat->query($dot);
 			}
-			if (isset($data["del".$this->ident])) {
-				foreach ($data["del".$this->ident] as $gkid) {
-					FDBTool::query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');	
-				}	
-			}
-
-			if($redirect===true) {
-				$rediraddon = $this->getUriAddon();
-				FHTTP::redirect(FSystem::getUri($rediraddon));
-			}
+		}
+		if (isset($data["del".$this->ident])) {
+			foreach ($data["del".$this->ident] as $gkid) {
+				FDBTool::query('delete from '.$this->table.' where '.$this->primaryCol.'="'.$gkid.'"');	
+			}	
 		}
 	}
 

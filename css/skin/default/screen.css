@@ -32,8 +32,9 @@ ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
 ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
 background: #fff3e7;
 }
-ul#menu li a {padding: 0 0.8em;display: block;font: 1.5em/29px Georgia,Times,serif;text-decoration: none;
-font-weight: bold;color: #425d21;}
+ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/29px Georgia,Times,serif;text-decoration: none;
+font-weight: bold;
+color: #425d21;}
 ul#menu li a:hover,a.active {background: #fff;}
 
 /* SECONDARY MENU */

@@ -45,9 +45,7 @@ class page_UserPost implements iPage {
 			}
 			if(empty($arrto)) {
 				FError::add(FLang::$MESSAGE_RECIPIENT_EMPTY);
-				FUserDraft::save('postText',$data["text"]);
 			}
-				
 			if(!Ferror::is()) {
 				foreach ($arrto as $userId){
 					FMessages::send($userId,$data["text"],$user->userVO->userId);
