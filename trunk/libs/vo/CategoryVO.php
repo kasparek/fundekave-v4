@@ -24,13 +24,11 @@ class CategoryVO extends Fvob {
   var $num = 0;
   
   public function updateNum() {
-		$currentNum = $this->get('num');
-		$pageVO = new PageVO($this->pageIdTop);
-		
-		$pageType=$pageVO->get('typeId');
-		if($pageType=='top') {
+		$currentNum = $this->num;
+		$typeId=$this->typeId;
+		if(isset(FLang::$TYPEID[$typeId]) && $typeId!='event') {
 			$q="select count(1) from sys_pages where categoryId='".$this->categoryId."'";
-		} else if($pageType=='event') {
+		} else if($typeId=='event') {
 		  $q="select count(1) from sys_pages_items where (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))) and categoryId='".$this->categoryId."' and typeId='event'";
 		} else {
 		  $q="select count(1) from sys_pages_items where categoryId='".$this->categoryId."' and public=1";

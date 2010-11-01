@@ -49,7 +49,7 @@ if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m
 </div>
 <span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
 <script type="text/javascript">
-var Sett={assUrl:'{ASSETS_URL}',jsUrl:'[[URL_JS]]',skinUrl:'[[SKINURL]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',gooAnal:'{GOOGLEID}',user:'{USER}'
+var Sett={assUrl:'{ASSETS_URL}',jsUrl:'[[URL_JS]]',skinUrl:'[[SKINURL]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',user:'{USER}'
 ,ajaxErr:'Doslo k chybe pri spojeni, zkuste odeslat znovu'
 ,locale:{goomapi:{title:'Vyberte více bodů pro zobrazení trasy',distance:'Vzdálenost: ',search:'Hledat',removelast:'Smazat poslední',clear:'Smazat',cancel:'Zpět',save:'Uložit'}}
 ,ll:{'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js','[[URL_JS]]fundekave.js']
@@ -60,6 +60,7 @@ var Sett={assUrl:'{ASSETS_URL}',jsUrl:'[[URL_JS]]',skinUrl:'[[SKINURL]]',cw:'{CL
 ,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js','[[URL_JS]]i18n/ui.datepicker-cs.js','[[STATIC_DOMAIN]]css/themes/ui-lightness/jquery-ui.css']
 ,'richta':['[[URL_JS]]markitup/jquery.markitup.pack.js','[[URL_JS]]markitup/sets/default/style.css','[[URL_JS]]markitup/skins/simple/style.css','[[URL_JS]]markitup/sets/default/set.js']}
 };
+var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
 </script>
 <script type="text/javascript" src="[[URL_JS]]boot.js"></script>
 </body>

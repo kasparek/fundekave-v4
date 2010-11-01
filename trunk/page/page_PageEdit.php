@@ -69,6 +69,7 @@ class page_PageEdit implements iPage {
 				$category->addWhere("typeId = '".$pageVO->pageId."'");
 				$category->arrSaveAddon = array('typeId'=>$pageVO->pageId,'pageIdTop'=>HOME_PAGE);
 				$category->process($data);
+				FCommand::run(CATEGORIES_UPDATED);
 			}
 
 			//---leftpanel
@@ -143,7 +144,6 @@ class page_PageEdit implements iPage {
 				}
 				if(!empty($data['categoryNew'])) {
 					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId,HOME_PAGE);
-					$redirectAjax = true;
 				}
 
 				/* PAGE AVATAR */
@@ -325,18 +325,11 @@ class page_PageEdit implements iPage {
 					} else {
 						//if updating just message
 						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
-						if(!empty($redirectAjax)) {
-							FAjax::redirect(FSystem::getUri(!isset($data['draftables'])?'dd=1':'','','e'));
-						}
 					}
 				} else {
 					FHTTP::redirect(FSystem::getUri($redirParam,'',$redirectAdd));
 				}
 			} else {
-				//---error during value check .. let the values stay in form - data remain in _POST
-				FUserDraft::save($textareaIdDescription, $data['description']);
-				FUserDraft::save($textareaIdContent, $data['content']);
-				if($user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') FUserDraft::save($textareaIdForumHome, $data['forumhome']);
 				//---cache data
 				$cache = FCache::getInstance('l');
 				$cache->setData($pageVO, 'page', 'form');
@@ -532,7 +525,8 @@ class page_PageEdit implements iPage {
 			/**/
 			
 		if(!empty($data['__ajaxResponse'])) {
-			return $tpl->get();
+			FAjax::addResponse('pageedit','$html',$tpl->get());
+			FAjax::addResponse('call','jUIInit');
 		} else {
 			FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));

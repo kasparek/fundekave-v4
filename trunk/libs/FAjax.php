@@ -97,14 +97,6 @@ class FAjax {
 			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED');
 				call_user_func(array($className,$action), $dataProcessed);
-				if(!FError::is()) {
-					//drop draft if there are any
-					if(!empty($dataProcessed['draftable'])) {
-						$draftList = explode(',',$dataProcessed['draftable']);
-						while($draftId = array_pop($draftList)) FUserDraft::clear($draftId);
-						FAjax::addResponse('call','Draft.dropBackHandler','');
-					}
-				}
 				FProfiler::write('FAJAX MODULE COMPLETE');
 				if($ajax===true) {
 					if( $fajax->errorsLater===false ) {

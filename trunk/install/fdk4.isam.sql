@@ -422,22 +422,6 @@ CREATE TABLE IF NOT EXISTS `sys_users_diary` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sys_users_draft`
---
-
-DROP TABLE IF EXISTS `sys_users_draft`;
-CREATE TABLE IF NOT EXISTS `sys_users_draft` (
-  `userId` mediumint(8) unsigned NOT NULL,
-  `place` varchar(20) NOT NULL,
-  `text` text,
-  UNIQUE KEY `userDraft` (`userId`,`place`),
-  KEY `draft-user` (`userId`),
-  KEY `draft-place` (`place`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `sys_users_friends`
 --
 

@@ -15,7 +15,7 @@ class Sidebar_map {
 		if(empty($posList)) return;
 		
 		$tpl = FSystem::tpl('sidebar.map.tpl.html');
-		$tpl->setVariable("URL",FSystem::getUri('','','m'));
+		$tpl->setVariable("URL",FSystem::getUri('',$user->pageVO->typeId!='top','m'));
 		while($row=array_pop($posList)) {
 			$position = $row[0];
 			$journey = explode(';',$position);
