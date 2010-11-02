@@ -121,6 +121,7 @@ class page_ItemsList implements iPage {
 					$writePerm=0;
 				}
 			}
+			
 			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
 				$formItemVO->typeId = 'forum';
@@ -171,7 +172,7 @@ class page_ItemsList implements iPage {
 				$fItems->setOrder('dateLive desc');
 			} else {
 				//ORDER
-				if($pageVO->pageId=='event') {
+				if($pageVO->pageId=='event' && empty($itemVO)) {
 					$fItems->addWhere("typeId='event'");
 					if($user->pageParam=='o') {
 						//---archiv

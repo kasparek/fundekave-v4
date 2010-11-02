@@ -166,7 +166,7 @@ div.mainpanel-content div.stats{margin: 0 auto;padding: 0 0 0.3em 0; text-align:
 
 div.mainpanel-content div.hentry span.edit {float: right;padding: 0 1em;line-height: 1.9em;background-color: #f8f7ef;border: none;font-weight: bold;}
 
-div.mainpanel-content div.vevent span.vcard {float: right;background-color: #f8f7ef;font-weight: bold;padding: 0 1em;margin-right: 1em;}
+div.mainpanel-content div.vevent span.vcard {float: right;background-color: #f8f7ef;font-weight: bold;padding: 0 1em;}
 
 div.mainpanel-content div.notpublished div.notpublishedMsg {color: #ff0000;height: 2em;line-height: 2em;font-weight: bold;background-color: #ffddbb;padding: 0 1em;}
 
@@ -209,6 +209,9 @@ div.sidebarBlock div.hentry div.entry-content {margin: 0 auto;}
 div.sidebarBlock div.vevent {text-align: center;}
 div.sidebarBlock div.vevent span.location {display: block;}
 div.mainpanel-content div.vevent div.nextToFlyer {margin-left: 180px;}
+div.mainpanel-content div.vevent div.nextToFlyer div.category {margin-top: -18px;}
+div.mainpanel-content div.vevent div.nextToFlyer abbr.dtstart {font-size: 1.5em;}
+div.mainpanel-content div.vevent div.nextToFlyer h2 {padding-bottom:1em;}
 div.mainpanel-content div.hentry img.hentryimage {float: left;padding: 0.5em;}
 div.participant {float:left;padding: 0 1em 1em 0;text-align: center;}
 

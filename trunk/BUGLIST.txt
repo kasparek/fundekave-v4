@@ -1,5 +1,12 @@
 MIGRATION:
+1.copy files http://fundekave.net/migrate/filescopy.php
+2.dump db http://fundekave.net/migrate/dbDump.php  
+3.copy db http://fundekave.net/migrate/dbcopy.php
+4.import db http://awake33.com/migrate/import.php
+4.run ___db_exp/premigration.sql on awake db
+5.run following
 delete FROM `sys_pages_items` where typeId='' or typeId is null;
+update sys_users set avatar=null where avatar like "%nobody%";
 update sys_pages set galeryDir='page/event' where pageId='event';
 update sys_pages set galeryDir=concat('page/',pageId) where typeId='blog' or typeId='forum';
 update sys_pages_items set text = concat(text,"<br /><br />\n",enclosure) where typeId='forum' and enclosure is not null;
@@ -13,9 +20,12 @@ ALTER TABLE `sys_users_friends` DROP `comment`;
 DROP sys_menu_secondary;
 ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorContent`,DROP `pageParams`;
 update sys_pages set template=null where typeId in ('forum','blog','galery');
-ALTER TABLE `sys_pages_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`
-ALTER TABLE `sys_pages_items_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`
-//migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
+ALTER TABLE `sys_pages_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
+ALTER TABLE `sys_pages_items_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
+
+6.import page data from install
+7. migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
+8.clean cache http://awake33.com/cron/cache.total.clean.cron.job.php
 
 FIX:
 -ne mapa v poste a pratelich a jinde?
@@ -24,6 +34,9 @@ FIX:
 							-prehled - based on category, pageParam
 -test map title
 -test map ico
+
+-event - kategorie v archivu
+-event - kdyz neni zadny tip v kategorii, zobrazit message
 
 -big map 
 	- dodelat jednotlivy map item renderery 
