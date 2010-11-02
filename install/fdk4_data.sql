@@ -8,13 +8,10 @@ INSERT INTO `sys_pages` VALUES ('roger', null, 'top', null, null, 'page_Registra
 INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', 'post', null, 'page_UserPost', 'Pošta', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', 'friend', null, 'page_UserInfo', 'Profil', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fedit', null, 'top', 'friend', null, 'page_UserSettings', 'Nastavení osobního profilu', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
-INSERT INTO `sys_pages` VALUES ('event', null, 'top', 'event', null, 'page_ItemsList', 'Tipy na kulturní a jiné akce', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, 'page/event') ;
+INSERT INTO `sys_pages` VALUES ('event', null, 'event', null, null, 'page_ItemsList', 'Tipy na kulturní a jiné akce', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, 'page/event') ;
 INSERT INTO `sys_pages` VALUES ('sadmi', null, 'admin', null, null, 'page_SysEdit', 'Tam jsou lvi', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 'page_SysEditUsersBanns', 'Kontrola nad uživateli - blokování', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('skate', null, 'admin', null, null, 'page_SysEditCategories', 'Editace kategorií', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
-INSERT INTO `sys_pages` VALUES ('spoll', null, 'admin', null, null, 'page_PollEdit', 'Ankety', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL, NULL, NULL) ;
-INSERT INTO `sys_pages` VALUES ('sfunc', null, 'admin', null, null, 'page_SysEditLeftpanelFunctions', 'Sidebar funkce', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
-INSERT INTO `sys_pages` VALUES ('sleft', null, 'admin', null, null, 'page_SysEditLeftpanel', 'Propojení panel-stránka', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('spaka', null, 'admin', null, null, 'page_SysEditPages', 'Nastaveni stranek', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 
 truncate sys_menu;
