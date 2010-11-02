@@ -61,8 +61,8 @@ class page_ItemsList implements iPage {
 		$itemId = 0;
 
 		$categoryId=0;
-		if(isset($data['__get']['c'])) {
-			$categoryId = (int) $data['__get']['c']; //for category filtering
+		if($user->categoryVO) {
+			$categoryId = $user->categoryVO->categoryId; //for category filtering
 		}
 		$arrPagerExtraVars = array();
 		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId;

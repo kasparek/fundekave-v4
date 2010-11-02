@@ -23,20 +23,6 @@ class FSystem {
 		return file_exists(ROOT.ROOT_TEMPLATES.$template);
 	}
 
-	static function tplParseBlockFromVars($tpl, $vars, $block='__global__') {
-		foreach($vars as $k=>$v) $varArr[strtolower($k)] = $v;
-		if (isset($tpl->blocklist[$block]) && !empty($vars)) {
-			if(preg_match_all("{{([A-Za-z0-9]*)}}", $tpl->blocklist[$block], $arr)){
-				foreach($arr[1] as $vartoset){
-					$vartosetLower = strtolower($vartoset);
-					if(isset($varArr[$vartosetLower])) $tpl->setVariable($vartoset,$varArr[$vartosetLower]);
-				}
-			}
-		}
-		$tpl->parse($block);
-		return $tpl;
-	}
-
 	/**
 	 * Build local path for redirects, buttons, etc.
 	 * @param $otherParams
