@@ -117,7 +117,7 @@ class FDBTool {
 			$where[] = '1';
 		} else if($this->autojoin===true) {
 			foreach($this->_where as $cond) {
-				if(!strpos($cond,'.')) {
+				if(!strpos($cond,'.') && strpos($cond,'(')===false) {
 					$cond = $this->table.'.'.trim($cond).' ';
 				}
 				$where[] = $cond;
@@ -133,7 +133,7 @@ class FDBTool {
 	function addWhere($where,$condition='AND') {
 		$len = count($this->_where);
 		if($len>0) {
-			$this->_where[$len-1] .= $condition;
+			$this->_where[$len-1] .= ' '.$condition;
 		}
 		$this->_where[] = ' '.$where.' ';
 	}

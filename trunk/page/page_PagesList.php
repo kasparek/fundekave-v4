@@ -10,7 +10,7 @@ class page_PagesList implements iPage {
 
 		$user = FUser::getInstance();
 		$category = 0;
-		if(isset($_REQUEST['c'])) $category = (int) $_REQUEST['c'];
+		if($user->categoryVO) $category = $user->categoryVO->categoryId;
 
 		$userId = $user->userVO->userId;
 		$typeId = $user->pageParam;

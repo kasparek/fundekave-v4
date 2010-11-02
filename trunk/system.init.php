@@ -62,6 +62,17 @@ if(!isset($nonInit)) {
 			if($itemVO->itemIdTop > 0) $itemVO = new ItemVO( $itemVO->itemIdTop,true );
 		} else $itemVO = null;
 	}
+	//check category
+	if(isset($_REQUEST['c'])) {
+		$c = (int) $_REQUEST['c'];
+		if($c>0) {
+			$catVO = new CategoryVO($c);
+			if($catVO->load()) {
+				$user->categoryVO = $catVO;
+			}
+		}
+	}
+
 	//recheck pageId
 	if(empty($pageId)) $pageId = HOME_PAGE;
 	$pageId = FSystem::processK($pageId);

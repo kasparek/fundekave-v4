@@ -33,7 +33,7 @@ INSERT INTO `sys_menu` VALUES ('idega', 'booke', 'Oblíbené', 0, 8);
 truncate sys_leftpanel_functions;
 INSERT INTO `sys_leftpanel_functions` VALUES ('login', '', 1, 1, null,null,null);
 INSERT INTO `sys_leftpanel_functions` VALUES ('galeryRand', 'Galerie', 1, 1, null,null,null);
-INSERT INTO `sys_leftpanel_functions` VALUES ('map', 'Mapa', 1, 1, null,null,'cache:page,pageparam,category');
+INSERT INTO `sys_leftpanel_functions` VALUES ('map', 'Mapa', 1, 1, null,null,'cache:page,pageparam,category,item');
 INSERT INTO `sys_leftpanel_functions` VALUES ('categories','Kategorie', 1, 1, null, null,'cache:page,pageparam,category');
 
 truncate sys_leftpanel_defaults;

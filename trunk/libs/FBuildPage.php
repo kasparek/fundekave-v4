@@ -51,7 +51,7 @@ class FBuildPage {
 		//typ
 		$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
 		$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId;
-		$typeCrumb=false; 
+		$typeCrumb=false;
 		$pageCrumb=true;
 		$pageCategory=0;
 		if(!empty($typeId)) {
@@ -61,15 +61,13 @@ class FBuildPage {
 			$typeCrumb=true;
 			$pageCrumb=false;
 			$breadcrumbs[] = array('name'=>FLang::$TYPEID[$typeId],'url'=>FSystem::getUri('','foall',$typeId));
-			
+				
 			if($user->pageVO->categoryId > 0) $pageCategory = $user->pageVO->categoryId;
 		}
 		if(empty($pageCategory)) {
-			$c=0;
-			if(isset($_GET['c']) && $user->pageVO->typeId=='top') $c= (int) $_GET['c']*1;
-			if($c>0) $pageCategory=$c;
+			if($user->categoryVO && $user->pageVO->typeId=='top') $pageCategory=$user->categoryVO->categoryId;
 		}
-		
+
 		//category
 		if($pageCategory>0) {
 			$categoryArr = FCategory::getCategory($pageCategory);
@@ -77,7 +75,7 @@ class FBuildPage {
 				$pageCrumb=false;
 				if($typeCrumb==false) $breadcrumbs[] = array('name'=>FLang::$TYPEID[$categoryArr[1]],'url'=>FSystem::getUri('','foall',$categoryArr[1]));
 				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$pageCategory,'foall',$categoryArr[1]));
-				}
+			}
 		}
 
 		if(!empty($_REQUEST['date'])) $date = FSystem::checkDate($_REQUEST['date']);
@@ -87,13 +85,13 @@ class FBuildPage {
 		//stranka
 		if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 
-    $itemCategory=0;
-    if(isset($_GET['c']) && $user->pageVO->typeId!='top') $itemCategory= (int) $_GET['c']*1;
+		$itemCategory=0;
+		if($user->categoryVO && $user->pageVO->typeId!='top') $itemCategory=$user->categoryVO->categoryId;
 		if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
 		if($itemCategory>0) {
 			$categoryArr = FCategory::getCategory($itemCategory);
-			if(!empty($categoryArr)) 
-				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
+			if(!empty($categoryArr))
+			$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
 		}
 
 		if($user->itemVO) {
@@ -141,7 +139,6 @@ class FBuildPage {
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		if($user->pageAccess == true) {
-			$staticTemplate = false;
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
@@ -167,29 +164,17 @@ class FBuildPage {
 					break;
 				default:
 					$template = $user->pageVO->template;
-					if(empty($template)) $template='page_ItemsList';
-					if($template != '') {
-						if (preg_match("/(.html)$/",$template)) {
-							$staticTemplate = true;
-						}
-					}
+					if(empty($template) && $user->pageVO->typeId!='culture') $template='page_ItemsList';
 					break;
 			}
 			if($template != '') {
-				if ($staticTemplate === false) {
-					//DYNAMIC TEMPLATE
-					FProfiler::write('FBuildPage::baseContent--TPL LOADED');
-					if( class_exists($template)) call_user_func(array($template, 'build'),$data);
-					FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
-				} else {
-					//STATIC TEMPLATE
-					$tpl = FSystem::tpl($template);
-					FSystem::tplParseBlockFromVars( $tpl, $user->pageVO );
-					FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
-				}
+				//DYNAMIC TEMPLATE
+				FProfiler::write('FBuildPage::baseContent--TPL LOADED');
+				if( class_exists($template)) call_user_func(array($template, 'build'),$data);
+				FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 			} else {
 				//NOT TEMPLATE AT ALL
-				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content));
+				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content.'<div class="clearbox"></div>'));
 			}
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
@@ -201,7 +186,7 @@ class FBuildPage {
 				}
 			}
 
-			if($user->idkontrol==true && ($staticTemplate==true || $user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
+			if($user->idkontrol==true && ($user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam) && empty($user->itemVO)) {
 					if($user->pageVO->userIdOwner != $user->userVO->userId) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
@@ -258,7 +243,7 @@ class FBuildPage {
 
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
-		
+
 		$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
 
 		//searchform
@@ -277,7 +262,7 @@ class FBuildPage {
 		//---MAIN MENU - cached rendered
 		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
 		$menu = $cache->getData('menu'.HOME_PAGE,'main');
-		
+
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
 			while($arrMenuItems) {
@@ -292,7 +277,7 @@ class FBuildPage {
 		} else {
 			$tpl->setVariable("CACHEDMENU", $menu);
 		}
-		
+
 		FProfiler::write('FBuildPage--FSystem::topMenu');
 
 		if($user->pageAccess === true) {
@@ -350,9 +335,9 @@ class FBuildPage {
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
-		
+
 		//$data = preg_replace('/\s\s+/', ' ', $data);
-						
+
 		echo $data;
 	}
 }

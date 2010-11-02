@@ -129,9 +129,12 @@ class FSidebar extends FDBTool {
 								}
 								//category
 								if(strpos($panel['options'],'category')!==false) {
-									$c=0;
-									if(!empty($_GET['c'])) $c=(int)$_GET['c']*1;
-									if($c>0) $cacheId .= '-'.$c.'-cat';
+									if(!isset($user)) $user = FUser::getInstance();
+									if($user->categoryVO) $cacheId .= '-'.$user->categoryVO->categoryId.'-cat';
+								}
+								//item
+								if(strpos($panel['options'],'item')!==false) {
+									if(!empty($user->itemVO)) $cacheId .= '-'.$user->itemVO->itemId.'-i';
 								}	
 								
 								$cache = FCache::getInstance('f');

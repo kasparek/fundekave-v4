@@ -23,24 +23,20 @@ update sys_pages set template=null where typeId in ('forum','blog','galery');
 ALTER TABLE `sys_pages_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
 ALTER TABLE `sys_pages_items_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
 update sys_pages_items as i set pageIdTop=(select pageIdTop from sys_pages as p where p.pageId=i.pageId);
+update `sys_pages` set template = null where template='culture.view.tpl.html';
+delete FROM `sys_pages_items_properties` where name='position' and (value='' or value is null or value='Array');
+delete FROM `sys_pages_properties` where name='position' and (value='' or value is null or value='Array');
+delete FROM `sys_pages_items_properties` where name='position' and value like "% %";
+delete FROM `sys_pages_properties` where name='position' and value like "% %";
 
 6.import page data from install
 7. migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
 8.clean cache http://awake33.com/cron-cache.total.clean.cron.job.php
 
 FIX:
--ne mapa v poste a pratelich a jinde?
--mapa sidebar - oblibene - omezit jen na oblibene
-							-galerie - jen galerie
-							-prehled - based on category, pageParam
--test map title
--test map ico
-
 -event - kategorie v archivu
 -event - kdyz neni zadny tip v kategorii, zobrazit message
 
--big map 
-	- dodelat jednotlivy map item renderery 
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category

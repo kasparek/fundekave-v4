@@ -12,7 +12,7 @@ class FUser {
 
 	var $itemVO;
 	
-	var $categoryId;
+	var $categoryVO;
 
 	//---used when looking after someone informations
 	var $whoIs = 0; //---replace with whoIsUserVO
