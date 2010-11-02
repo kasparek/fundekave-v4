@@ -1,9 +1,4 @@
 <?php
-chdir("../");
-$nonIndex = true;
-require('index.php');
-require(INIT_FILENAME);
-
 $truncate = array( WEBROOT.'tmp/fuup_chunks' ,WEBROOT.'tmp' );
 $recursive = array( WEBROOT.'tmp/lite' );
 

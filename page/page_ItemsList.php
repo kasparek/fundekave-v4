@@ -266,7 +266,7 @@ class page_ItemsList implements iPage {
 						$fItems->fItemsRenderer->showPage=false;
 						if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
 							//setup renderer if needed
-							if($itemVO->itemIdTop > 0) {
+							if($itemVO->itemIdTop > 0 && $itemPrev->itemId!=$itemVO->itemIdTop) {
 								//show top item
 								$itemTop = new ItemVO($itemVO->itemIdTop);
 								//figure out how to display showPage for galery items
@@ -274,6 +274,7 @@ class page_ItemsList implements iPage {
 								$itemTop->render($fItems->fItemsRenderer);
 								$last = $fItems->fItemsRenderer->getLast();
 								$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
+								$last = str_replace($itemVO->itemIdTop.'" class="vevent',$itemVO->itemIdTop.'" class="vevent opacity',$last);
 								$fItems->fItemsRenderer->setLast($last);
 								$fItems->fItemsRenderer->showPage=false;
 							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')) {

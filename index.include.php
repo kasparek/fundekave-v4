@@ -1,6 +1,13 @@
 <?php
 require(INIT_FILENAME);
 /**
+ *CRON JOBS
+ **/
+if(isset($_GET['cron'])) {
+	require_once(ROOT.'cron/'.$_GET['cron'].'.php');
+	exit;
+} 
+/**
  * HEADERS PROCESSING
  */
 if(isset($_GET['header_handler'])) {

@@ -22,10 +22,11 @@ ALTER TABLE `sys_pages` DROP `menuSecondaryGroup`,DROP `nameshort`,DROP `authorC
 update sys_pages set template=null where typeId in ('forum','blog','galery');
 ALTER TABLE `sys_pages_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
 ALTER TABLE `sys_pages_items_properties` CHANGE `value` `value` text COLLATE 'utf8_general_ci' NOT NULL AFTER `name`;
+update sys_pages_items as i set pageIdTop=(select pageIdTop from sys_pages as p where p.pageId=i.pageId);
 
 6.import page data from install
 7. migrate sys_pages xml pageparams to properties - home(forum,blog),orderitems(galery)
-8.clean cache http://awake33.com/cron/cache.total.clean.cron.job.php
+8.clean cache http://awake33.com/cron-cache.total.clean.cron.job.php
 
 FIX:
 -ne mapa v poste a pratelich a jinde?

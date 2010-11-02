@@ -9,6 +9,7 @@ RewriteRule ^image/([0-9x]*)/([a-z]*)/(.*) image.php?side=$1&cut=$2&img=$3 [QSA,
 RewriteRule ^page-([a-zA-Z0-9]{5,6}).*-category-([0-9]{1,6}).*.html$ index.php?k=$1&c=$2 [QSA,L]
 RewriteRule ^page-([a-zA-Z0-9]{5,6}).*.html$ index.php?k=$1 [QSA,L]
 RewriteRule ^item-([0-9]{1,8})(.*).html$ index.php?i=$1 [QSA,L]
+RewriteRule ^cron-(.*).php$ index.php?cron=$1 [QSA,L]
 
 RewriteRule (.*\.css)$ index.php?nonInit=1&header_handler=css&c=$1 [L]
 RewriteRule (.*\.js)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
