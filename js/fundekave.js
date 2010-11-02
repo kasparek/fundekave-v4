@@ -43,6 +43,7 @@ o.distance=function(lat1,lon1,lat2,lon2,R){if(!R)R=3440;var pr=Math.PI/180,dLat=
 /* degrees, mins, secs to decimal degrees - possible format 20.5468,15.1568 or 20 10 30 N,15 23 40 W */
 o.posFormat=function(p){p=$.trim(p);var dir=p.charAt(p.length-1).toUpperCase();if(dir=='W' || dir=='E' || dir=='N' || dir=='S'){var posArr=p.substr(0,p.length-2).split(' '),d=posArr[0]-0,m=posArr.length>1?posArr[1]-0:0,s=posArr.length>2?posArr[2]-0:0,sign=(dir=='W' || dir=='S')?-1:1;return (((s/60+m)/60)+d)*sign;}return p-0;};
 o.hold=function(mapEl){
+	this.editor=false;
 	this.mapEl=mapEl;
 	this.li=[];
 	this.map = null;
@@ -52,8 +53,8 @@ o.hold=function(mapEl){
 		this.geocoder=new google.maps.Geocoder();
 		this.map=new google.maps.Map(this.mapEl,{mapTypeId:google.maps.MapTypeId.TERRAIN});
 		this.map.setCenter(new google.maps.LatLng(50,0));this.map.setZoom(5);
-		this.cluster=new MarkerClusterer(this.map,[],{'maxZoom':10,'zoomOnClick':true});
-		}
+		if(!this.editor)this.cluster=new MarkerClusterer(this.map,[],{'maxZoom':10,'zoomOnClick':true});
+	}
 	}
 };
 o.data=function(){
@@ -150,6 +151,7 @@ o.mapEditor=function(){
 	if(!o.load(o.mapEditor))return;
 	if(!Lazy.load(Sett.ll.goomapi,o.mapEditor))return;
 	var data=o.editorData();
+	data.parent.editor=true;
 	data.parent.init();
 	var bo=[
 	{text:o.locale.removelast,id:'goomapideletelast'
@@ -296,7 +298,7 @@ function remove(id){$('#'+id).remove();};
 function switchOpen(){$('.switchOpen').click(function(){$('#'+this.rel).toggleClass('hidden');return false;});};
 function openPopup(href){ window.open(href, 'fpopup', 'scrollbars=' + gup("scrollbars", href) + ',toolbar=' + gup("toolbar", href) + ',menubar=' + gup("menubar", href) + ',status=' + gup("status", href) + ',resizable=' + gup("resizable", href) + ',width=' + gup("width", href) + ',height=' + gup("height", href) + ''); };
 function listen(c,e,f){$("."+c).unbind(e,f).bind(e,f);};
-function gup(n,url){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var r=new RegExp("[\\?&|]"+n+"=([^&#|]*)"),res=r.exec(url);return res===null?0:results[1];};
+function gup(n,url){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var r=new RegExp("[\\?&|]"+n+"=([^&#|]*)"),res=r.exec(url);return res===null?0:res[1];};
 var msgOkTime=0,msgErrorTime=0;
 function msg(type,text){if(type=='ok'){clearTimeout(msgOkTime);msgOkTime=setTimeout(function(){$("#okmsgJS").hide('slow')},5000);}else{clearTimeout(msgErrorTime);msgErrorTime=setTimeout(function(){$("#errormsgJS").hide('slow')},10000);}$("#"+type+"msgJS").hide(0).html(text).show();};
 function redirect(dir){window.location.replace(dir);};
