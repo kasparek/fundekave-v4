@@ -118,7 +118,7 @@ class FDBTool {
 		} else if($this->autojoin===true) {
 			foreach($this->_where as $cond) {
 				if(!strpos($cond,'.')) {
-					$cond = $this->table.'.'.$cond;
+					$cond = $this->table.'.'.trim($cond).' ';
 				}
 				$where[] = $cond;
 			}
@@ -205,7 +205,7 @@ class FDBTool {
 	 if($this->autojoin===true) {
 	 	foreach($this->_order as $cond) {
 	 		if(!strpos($cond,'.')) {
-	 			$cond = $this->table.'.'.$cond;
+	 			$cond = $this->table.'.'.trim($cond).' ';
 	 		}
 	 		$order[] = $cond;
 	 	}
@@ -242,7 +242,7 @@ class FDBTool {
 	function getSelect() {
 		if($this->autojoin) {
 			foreach($this->_select as $col) {
-				if(strpos($col,'.')===false && strpos($col,'(')===false ) $col = $this->table.'.'.$col;
+				if(strpos($col,'.')===false && strpos($col,'(')===false ) $col = $this->table.'.'.trim($col).' ';
 				$arrCols[] = $col;
 			}
 		} else {

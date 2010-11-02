@@ -1,10 +1,4 @@
 <?php
-chdir("../");
-$nonIndex = true;
-$nonInit = true;
-require('index.php');
-require(INIT_FILENAME);
-
 $migr = array(
 ROOT=>'/subdomains/test/httpdocs/fdk_v5'
 ,ROOT=>'/subdomains/eboinnaija/httpdocs/fdk_v5'

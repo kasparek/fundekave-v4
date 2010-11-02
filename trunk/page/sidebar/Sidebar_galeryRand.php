@@ -4,7 +4,7 @@ class Sidebar_galeryRand {
 		$cache = FCache::getInstance('f',86400);
 		$itemIdList = $cache->getData('itemIdList','sidebar');
 		if(empty($itemIdList)) {
-			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'");
+			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT == 1 ? " and pageIdTop='".HOME_PAGE."'" : ''));
 			$keyList = array_rand($allList,500);
 			$itemIdList=array();
 			while($k = array_pop($keyList)) $itemIdList[]=$allList[$k];

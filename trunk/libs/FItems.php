@@ -128,7 +128,7 @@ class FItems extends FDBTool {
 
 	function hasReactions($value=false) {
 		if($value===false) {
-			$this->addWhere("(itemIdTop is null or itemIdTop=0)");
+			$this->addWhere("(sys_pages_items.itemIdTop is null or sys_pages_items.itemIdTop=0)");
 		}
 	}
 
