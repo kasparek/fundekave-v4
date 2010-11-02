@@ -22,12 +22,20 @@ class page_Map implements iPage {
 				case 'galery':
 					$pageName = $itemVO->pageVO->get('name');
 					$title = $pageName;
-					//$info = '<h3><a href="'.FSystem::getUri('',$itemVO->pageId,'').'">'.$pageName.'</a></h3>';
+					$info .= '<strong><a href="'.FSystem::getUri('',$itemVO->pageId,'').'">'.$pageName.'</a></strong><br />';
 					$info .= '<a href="'.FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'').'"><img src="'.$itemVO->thumbUrl.'" /></a>';
 					$tpl->setVariable('MAPICO',$itemVO->getImageUrl(null,'40x40/crop')); 
 				break;
 				case 'forum':
-					//$tpl->setVariable('MAPICO',$itemVO->getImageUrl(null,'40x40/crop'));avatar
+					$pageName = $itemVO->pageVO->get('name');
+					$title = $pageName;
+					$info .= '<strong><a href="'.FSystem::getUri('i='.$itemVo->itemId,$itemVO->pageId,'').'">'.$pageName.'</a></strong><br />';
+					$info .= FSystem::textIns($itemVO->text,array('plainText'=>1));
+					$tpl->setVariable('MAPICO',FAvatar::getAvatarUrl($itemVO->userId));
+				break;
+				case 'event':
+				case 'blog':
+					$info .= '<strong><a href="'.FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'').'">'.$itemVO->addon.'</a></strong><br />';
 				break;
 			}
 			$distance = (int) $itemVO->prop('distance');

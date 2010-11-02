@@ -10,7 +10,7 @@ class page_PageEdit implements iPage {
 		if(isset($data["save"])) $action = 'save';
 		if(isset($data["del"])) $action = 'del';
 		if(isset($data["delpageavatar"])) $action = 'delpageavatar';
-	
+
 		$user = FUser::getInstance();
 
 		$redirectAdd=false; //keep current value
@@ -30,17 +30,17 @@ class page_PageEdit implements iPage {
 		}
 
 		/*if(strpos($action,'-')) list($action,$actionValue) = explode('-',$action);
-		if($action == 'delfoto') {
+		 if($action == 'delfoto') {
 			$deleteItemId = (int) $actionValue;
 			$itemVO = new ItemVO($deleteItemId);
 			if($itemVO->load()) {
-				$itemVO->delete();
-				if($data['__ajaxResponse']) {
-					FAjax::addResponse('call', 'remove', 'foto-'.$deleteItemId);
-				}
+			$itemVO->delete();
+			if($data['__ajaxResponse']) {
+			FAjax::addResponse('call', 'remove', 'foto-'.$deleteItemId);
+			}
 			}
 			return;
-		}*/
+			}*/
 
 		if($action == "save") {
 			FError::reset();
@@ -74,11 +74,11 @@ class page_PageEdit implements iPage {
 
 			//---leftpanel
 			/*
-			if(isset($data['leftpanel'])) {
+			 if(isset($data['leftpanel'])) {
 				$fLeft = new FLeftPanel($pageVO->pageId,0,$pageVO->typeId);
 				$fLeft->process($data['leftpanel']);
-			}
-			*/
+				}
+				*/
 
 			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
 			if(empty($pageVO->name)) {
@@ -89,9 +89,9 @@ class page_PageEdit implements iPage {
 					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
-			
-			
-			
+				
+				
+				
 			if($user->pageParam=='sa') {
 				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
@@ -102,18 +102,18 @@ class page_PageEdit implements iPage {
 			} else {
 				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
 			}
-			
+				
 			if(empty($data['content'])) $data['content']='';
 			$pageVO->content = FSystem::textins($data['content']);
-			
+				
 			if($user->pageParam!='sa' && empty($pageVO->description) && !empty($pageVO->content)) {
 				$pageVO->description=FSystem::textins($pageVO->content,array('plainText'=>1));
 			}
-			 
+
 			if(isset($data['datecontent'])) {
 				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
 			}
-			
+				
 			if(isset($data['category'])) {
 				if($pageVO->categoryId>0) if($data['category']!=$pageVO->categoryId) $oldCategoryId=$pageVO->categoryId;
 				$pageVO->set('categoryId', (int) $data['category']);
@@ -199,7 +199,7 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
-				
+
 				if(!empty($categoryVO)) $categoryVO->updateNum();
 				if(!empty($oldCategoryId)) {
 					$categoryVO = new CategoryVO($oldCategoryId);
@@ -292,13 +292,13 @@ class page_PageEdit implements iPage {
 							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
-							
+								
 							if(isset($v['position'])){
 								$v['position'] = FSystem::positionProcess($v['position']);
 								$itemVO->setProperty('position', $v['position']);
 								if(strpos($v['position'],';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($v['position']));
 							}
-							
+								
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::add(FLang::$ERROR_DATE_FORMAT);
@@ -410,7 +410,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('site');
 				$tpl->setVariable('HOMESITE',$pageVO->prop('homesite'));
 			}
-			$tpl->setVariable('POSITION',$pageVO->prop('position'));
+			$tpl->setVariable('POSITION',str_replace(';',"\n",$pageVO->prop('position')));
 		} else {
 			$tpl->setVariable('T',$pageVO->typeId);
 		}
@@ -447,16 +447,17 @@ class page_PageEdit implements iPage {
 			}
 		}
 
-		if($pageVO->typeId == 'forum') {
-			//enable avatar
-			$tpl->touchBlock('forumspecifictab');
-			//FORUM HOME
-			$home = FSystem::textToTextarea($pageVO->prop('home'));
-			$tpl->setVariable('CONTENT',$home);
-			$tpl->setVariable('HOMEID',$textareaIdForumHome);
-		}
+
 
 		if($user->pageParam != 'a') {
+			if($pageVO->typeId == 'forum') {
+				//enable avatar
+				$tpl->touchBlock('forumspecifictab');
+				//FORUM HOME
+				$home = FSystem::textToTextarea($pageVO->prop('home'));
+				$tpl->setVariable('CONTENT',$home);
+				$tpl->setVariable('HOMEID',$textareaIdForumHome);
+			}
 			if($pageVO->typeId == 'galery') {
 				$thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
 				$thumbSizeList = explode('x',$thumbPropList[0]);

@@ -296,7 +296,7 @@ DROP TABLE IF EXISTS `sys_pages_properties`;
 CREATE TABLE IF NOT EXISTS `sys_pages_properties` (
   `pageId` varchar(5) NOT NULL,
   `name` varchar(20) NOT NULL,
-  `value` varchar(100) NOT NULL,
+  `value` text NOT NULL,
   PRIMARY KEY  (`pageId`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

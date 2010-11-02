@@ -71,7 +71,7 @@
 /* END BASIC SCREEN ELEMENTS */
 
 /* GOOGLE MAPS styles */
-.geoInfo {padding:0;margin:0;overflow:hidden !important;}
+.geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}
 .geoInput {width:150px;height:70px;padding:0;margin:0;}
 .geoForumBox {margin-left: 5px;float:left;}
