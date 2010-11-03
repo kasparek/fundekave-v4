@@ -301,7 +301,7 @@ class page_ItemsList implements iPage {
 				}
 				$vars['ITEMS'] = $fItems->show();
 			} else {
-				if(!empty($writePerm)) $touchedBlocks[]='feedempty';
+				$touchedBlocks[]='feedempty';
 			}
 			$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
 			if(!empty($readed)) {

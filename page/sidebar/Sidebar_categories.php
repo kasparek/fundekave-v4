@@ -48,7 +48,7 @@ class Sidebar_categories {
 				}
 			}
 			foreach ($arr as $category) {
-				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$user->pageId,''));
+				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$user->pageId));
 				$tpl->setVariable('PAGENAME', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
 				if($category[2]>0) $tpl->setVariable('SUM', $category[2]);
 				$tpl->parse();
