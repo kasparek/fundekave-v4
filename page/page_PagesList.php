@@ -91,20 +91,17 @@ class page_PagesList implements iPage {
 
 			//---results
 			if($typeId == 'galery') {
-				//TODO: galery listing - maybe get galery top foto different way, do not render whole item, just thumb, faster?
+
 				$fItems = new FItems('galery',$user->userVO->userId);
 				$fItems->thumbInSysRes = true;
 				$fItems->setOrder('hit desc');
 
 				$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 				foreach ($arr as $gal) {
-
-					$fItems->setWhere('pageId="'.$gal->pageId.'" and (itemIdTop is null or itemIdTop=0)');
+					$fItems->setWhere('sys_pages_items.pageId="'.$gal->pageId.'" and (itemIdTop is null or itemIdTop=0)');
 					$itemList = $fItems->getList(0,1);
-					if(!empty($itemList)) $fotoItemVO = $itemList[0];
-
-					$tplGal->setCurrentBlock('item');
-					if(isset($fotoItemVO)) {
+					if(!empty($itemList)) {
+						$fotoItemVO = $itemList[0];
 						$tplGal->setVariable("IMGURL",$fotoItemVO->detailUrl);
 						$tplGal->setVariable("IMGURLTHUMB",$fotoItemVO->thumbUrl);
 					}
@@ -116,7 +113,7 @@ class page_PagesList implements iPage {
 					$tplGal->setVariable("GALERYTEXT",$gal->description);
 					if($gal->unreaded>0)$tplGal->setVariable("FOTONEW",$gal->unreaded);
 					$tplGal->setVariable("FOTONUM",$gal->cnt);
-					$tplGal->parseCurrentBlock();
+					$tplGal->parse('item');
 				}
 				$tpl->setVariable('PAGELINKS',$tplGal->get());
 
