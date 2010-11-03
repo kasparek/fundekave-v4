@@ -95,6 +95,7 @@ class FItemsRenderer {
 		}
 		
 		if($itemVO->loaded!==true) $itemVO->load();
+		if($itemVO->prepared!==true) $itemVO->prepare();
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;

@@ -427,7 +427,7 @@ class FCaptcha
 		function check_captcha($correct_hash,$attempt)
 		{
 			// when check, destroy picture on disk
-			if($ff->file_exists($this->get_filename($correct_hash)))
+			if(file_exists($this->get_filename($correct_hash)))
 			{
 				$res = @unlink($this->get_filename($correct_hash)) ? 'TRUE' : 'FALSE';
 				if($this->debug) echo "\n<br>-Captcha-Debug: Delete image (".$this->get_filename($correct_hash).") returns: ($res)";

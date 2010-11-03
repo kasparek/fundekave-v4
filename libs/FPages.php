@@ -52,7 +52,7 @@ class FPages extends FDBTool {
 				." and up.userId='".$this->userId."' {JOIN} "
 				."where (((".$this->table.".public in (0,3) and up.rules >= 1) " 
 				."or ".$this->table.".userIdOwner='".$this->userId."' " 
-				."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+				."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0)) and ".$this->table.".locked<3";
 			}
 		} else {
 			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
@@ -98,7 +98,7 @@ class FPages extends FDBTool {
 	}
 
 	static function page_exist($col,$val) {
-		return FDBTool::getOne("SELECT count(1) FROM sys_pages WHERE ".$col." = '".$val."'");
+		return FDBTool::getOne("SELECT count(1) FROM sys_pages WHERE locked<3 and ".$col." = '".$val."'");
 	}
 
 	static function pageOwner($pageId) {
