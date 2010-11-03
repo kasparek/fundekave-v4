@@ -1,5 +1,19 @@
 <?php
 include_once('iPage.php');
+
+function array_insert($array,$pos,$val){
+    $array2 = array_splice($array,$pos);
+    $array[] = $val;
+    $array = array_merge($array,$array2);
+    return $array;
+}
+function array_indexOf($array,$prop,$val) {
+	for($i=0;$i<count($array);$i++){
+		if($val==$array[$i]->{$prop}) return $i;
+	}
+	return -1;
+}
+
 class page_ItemsList implements iPage {
 
 	/**
@@ -143,7 +157,7 @@ class page_ItemsList implements iPage {
 		if(empty($itemVO) || $writePerm>0) {
 
 			//LIST ITEMS
-			$fItems = new FItems('',FUser::logon());
+			$fItems = new FItems('',$user->userVO->userId);
 			if($pageVO->typeId!='top') {
 				$fItems->setPage($pageVO->pageId);
 				$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
@@ -186,7 +200,7 @@ class page_ItemsList implements iPage {
 						$fItems->setOrder('dateStart');
 					}
 				} else {
-					if(!empty($itemVO)) {
+					if(!empty($itemVO) || $pageVO->typeId=='top') {
 						//reactions
 						$fItems->setOrder('dateCreated desc');
 					} else {
@@ -261,6 +275,43 @@ class page_ItemsList implements iPage {
 				$typeIdPrev=null;
 				$itemIdTopPrev=null;
 				$pageIdPrev=null;
+				if($pageVO->typeId=='top') {
+					//sort by page
+					$newArr=array();
+					while($itemVO = array_shift($fItems->data)){
+						$index = array_indexOf($newArr,'pageId',$itemVO->pageId);
+						if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
+						else $newArr[]=$itemVO;
+					}
+					$fItems->data=$newArr;
+					
+					//sort by itemtop
+					$newArr=array();
+					while($itemVO = array_shift($fItems->data)){
+						if(!empty($itemVO->itemIdTop)) {
+							$index = array_indexOf($newArr,'itemIdTop',$itemVO->itemIdTop);
+							if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
+							else $newArr[]=$itemVO;
+						} else $newArr[]=$itemVO;
+					}
+					$fItems->data=$newArr;
+					     
+					//sort reaction after top item if present
+					$newArr=array();
+					while($itemVO = array_shift($fItems->data)){
+						if(empty($itemVO->itemIdTop)) {
+							$index = array_indexOf($newArr,'itemIdTop',$itemVO->itemId);
+							if($index>-1) $newArr=array_insert($newArr,$index,$itemVO);
+							else $newArr[]=$itemVO;
+						} else {
+							$index = array_indexOf($newArr,'itemId',$itemVO->itemIdTop);
+							if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
+							else $newArr[]=$itemVO;
+						}
+					}
+					$fItems->data=$newArr;
+					/**/
+				}
 				while ($itemVO = array_shift($fItems->data)) {
 					if($pageVO->pageId != $itemVO->pageId) {
 						$fItems->fItemsRenderer->showPage=false;
@@ -277,7 +328,7 @@ class page_ItemsList implements iPage {
 								$last = str_replace($itemVO->itemIdTop.'" class="vevent',$itemVO->itemIdTop.'" class="vevent opacity',$last);
 								$fItems->fItemsRenderer->setLast($last);
 								$fItems->fItemsRenderer->showPage=false;
-							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery')) {
+							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery') && empty($itemVO->itemIdTop)) {
 								$fItems->fItemsRenderer->showPage=true;
 							}
 						}

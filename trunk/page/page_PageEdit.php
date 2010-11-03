@@ -308,9 +308,6 @@ class page_PageEdit implements iPage {
 						}
 					}
 
-					if(!isset($data['draftable'])) {
-						$redirectParam = '#dd';
-					}
 				}
 
 				/* redirect */
@@ -321,7 +318,7 @@ class page_PageEdit implements iPage {
 					if($pageCreated === true) {
 						//if new page redirect
 						FAjax::errorsLater();
-						FAjax::addResponse('call','redirect',FSystem::getUri('',$pageVO->pageId,$redirectAdd));
+						FAjax::addResponse('call','redirect',FSystem::getUri($pageVO->typeId=='galery'?'#tabs-upload':'',$pageVO->pageId,$redirectAdd));
 					} else {
 						//if updating just message
 						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
@@ -351,6 +348,7 @@ class page_PageEdit implements iPage {
 				//---lock & hide
 				$pageVO->locked = 3;
 				$pageVO->save();
+				FDBTool::query("update sys_pages_items set public=0 where pageId='".$pageVO->pageId."'");
 			} else {
 				//---complete delete
 				FPages::deletePage($pageId);

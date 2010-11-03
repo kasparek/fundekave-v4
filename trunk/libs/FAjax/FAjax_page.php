@@ -24,7 +24,9 @@ class FAjax_page extends FAjaxPluginBase {
 
 	static function edit($data) {
 		page_PageEdit::process($data);
-		page_PageEdit::build($data);
+		if(FAjax::isRedirecting()===false) {
+			page_PageEdit::build($data);
+		}
 	}
 
 }

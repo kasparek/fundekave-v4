@@ -55,11 +55,11 @@ class FRules {
 		$cache = FCache::getInstance('s');
 		if(false === ($retVal = &$cache->getPointer($key, 'fRules'))) {
 			//---if is rules = 0 is ban
-			$dot = "select r.userId,r.rules,s.public,s.userIdOwner
+			$dot = "select r.userId,r.rules,s.public,s.userIdOwner 
 			from sys_pages as s 
 			left join sys_users_perm as r 
 			on r.pageId=s.pageId and r.userId='".$usr."'
-			where s.pageId='".$page."'";
+			where s.locked<3 and s.pageId='".$page."'";
 			$arr = FDBTool::getRow($dot);
 			if(empty($arr)) $ret = false;			
 			elseif ($arr[3] == $usr) $ret = true;
