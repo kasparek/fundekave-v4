@@ -37,7 +37,8 @@ class Sidebar_map {
 			$dbtool->setSelect('value');
 			$dbtool->setWhere("name='position'");
 			$dbtool->addJoinAuto('sys_pages','pageId',array(),'join');
-			if($user->pageVO->typeId!='top') $dbtool->addWhere('sys_pages.public=1');
+			$dbtool->addWhere('sys_pages.public=1');
+			if($user->pageVO->typeId!='top') $dbtool->addWhere("sys_pages.pageId='".$user->pageVO->pageId."'"); 
 			if(SITE_STRICT == 1) $dbtool->addWhere("sys_pages.pageIdTop='".HOME_PAGE."'");
 			if($type!='') $dbtool->addWhere("sys_pages.typeId='".$type."'");
 			if($category>0) $dbtool->addWhere("sys_pages.categoryId='".$category."'");

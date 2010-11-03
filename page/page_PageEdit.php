@@ -528,6 +528,7 @@ class page_PageEdit implements iPage {
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('pageedit','$html',$tpl->get());
 			FAjax::addResponse('call','jUIInit');
+			if($pageVO->typeId=='galery')FAjax::addResponse('call','GaleryEdit.init');
 		} else {
 			FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
