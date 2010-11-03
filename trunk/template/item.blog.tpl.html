@@ -15,8 +15,8 @@
 <!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page"><img class="hentryimage" src="{IMGURLTHUMB}" title="{IMGTITLE}" alt="{IMGALT}" /></a><!-- END image -->
 <!-- BEGIN category --><span class="category"><a href="{CATEGORYURL}">{CATEGORYNAME}</a></span><!-- END category -->
 <div class="entry-content">{TEXT}</div>
-<!-- BEGIN map --><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<br /><strong>Vzdalenost: [[DISTANCE]]NM</strong></p></div></div><!-- END mapdata --></div>
-<div class="mapSmall"><a id="mapThumb{MAPITEMID}" href="#" title="Map detail: {MAPTITLE}" class="mapThumbLink"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200<!-- BEGIN marker -->&markers={STATICMARKERPOS}<!-- END marker -->&maptype=terrain&sensor=false<!-- BEGIN stwp -->&path={STATICWPLIST}<!-- END stwp -->" title="{MAPTITLE}" alt="Google Maps" /></a></div><!-- END map -->
+<!-- BEGIN smap --><div class="rightbox"><a id="mapThumb{SMAPITEMID}" href="#" title="Map detail: {SMAPTITLE}" class="mapThumbLink"><img width="100" height="100" src="http://maps.google.com/maps/api/staticmap?size=100x100&markers={SMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN stwp -->&path={SWPLIST}<!-- END stwp -->" title="{SMAPTITLE}" alt="Google Maps" /></a></div><!-- END smap -->
+<!-- BEGIN map --><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<!--BEGIN mapdist --><br /><strong>Vzdalenost: {DISTANCE}NM</strong><!--END mapdist --></p></div></div><!-- END mapdata --></div><!-- END map -->
 <!-- BEGIN detailLink --><div class="completelink"><h2><a href="{LONGURL}" title="{LONGTITLE}">Cely clanek</a></h2></div><!-- END detailLink -->
 </div>
 <div class="clearbox"></div>

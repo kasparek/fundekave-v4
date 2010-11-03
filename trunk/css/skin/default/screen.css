@@ -8,12 +8,12 @@ div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
 /* BASE FRAMEWORK */
-body {text-align: center;color: black;font:0.8125em/1 Verdana,sans-serif;
+body {text-align: center;color: black;font:0.72em/1 Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
 background: #eae6da url(img/page-bg.png) repeat-x right top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
-div#pageholder {position: relative;left: 0px;font-size:0.88em;}
+div#pageholder {position: relative;left: 0px;}
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}

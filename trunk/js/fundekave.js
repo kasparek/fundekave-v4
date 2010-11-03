@@ -173,7 +173,7 @@ o.mapEditor=function(){
 		$(this).dialog('close');
 	}},
 	{text:o.locale.save,id:'goomapisave',click:function() {
-		var data=o.editorData();
+		var data=o.editorData(),oldVal=$(data.dataEl).val();
 		$(this).dialog('close');
 		$(data.dataEl).val('');
 		if(data.journey===true) {
@@ -184,7 +184,10 @@ o.mapEditor=function(){
 		} else {
 			if(data.marker)$(data.dataEl).val(data.marker.getPosition().toUrlValue(4));
 		}
-		$(data.dataEl).change();
+		if(oldVal!=$(data.dataEl).val()){
+			$(data.dataEl).change();
+			/*TODO: keep open same tab if want to to save $(".button.submit",data.dataEl[0].form).click();*/
+		}
 	}}
 	];
 	$("#mapEditor").dialog({
@@ -308,7 +311,7 @@ function avatarfrominput(evt){Fajax.add('username', $("#recipient").attr("value"
 function fuupUploadComplete(){var item=$('#item').attr('value');if(item>0)Fajax.add('item', item);Fajax.add('call','jUIInit');Fajax.send('item-image',gup('k',$(".fajaxform").attr('action')));}
 /**AJAX GALLERY EDITING THUMBNAILS LOADING AND REFRESHING*/
 var GaleryEdit=new function(){var o=this;o.numTotal=0;o.numLoaded=0;o.newLi=[];o.updLi=[];o.run=false;
-o.init=function(){o.numTotal=parseInt($("#fotoTotal").text());if(o.numTotal>0 && $('#fotoList').length>0)o.load(0,10);};
+o.init=function(){o.numLoaded=0;o.numTotal=parseInt($("#fotoTotal").text());if(o.numTotal>0 && $('#fotoList').length>0)o.load(0,10);};
 o.check=function(){Fajax.send('page-fuup',gup('k',$(".fajaxform").attr('action')));};
 o.refresh=function(n,u,t){o.numTotal=parseInt(t);$("#fotoTotal").text(o.numTotal);if(n.length>0)o.newLi=o.newLi.concat(n.split(';'));if(u.length>0)o.updLi=o.updLi.concat(u.split(';'));if(!o.run)o.next();};
 o.next=function(){if(o.updLi.length>0)o.load(o.updLi.pop(),1,'U');else if(o.newLi.length>0)o.load(o.newLi.pop(),1);else if(o.numLoaded<o.numTotal)o.load(0,10);else o.run=false;};
@@ -415,7 +418,7 @@ o.qc=function(){if(o.q[0].f)o.q[0].f();o.q.shift();if(o.q.length>0)o.p();else o.
 				,val=this.value.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&/g,'&amp;').replace(/\n$/,'<br/>&nbsp;').replace(/\n/g,'<br/>').replace(/ {2,}/g,function(space){return times('&nbsp;',space.length-1)+' '});
 				if(!width || width!=$this.width())r();
 				shadow.html(val);
-				$this.css('height',Math.max(shadow.height()+20,minHeight));
+				$this.css('height',Math.max(shadow.height()+40,minHeight));
 			}
 			,r=function(){
 				width=$this.width();

@@ -228,16 +228,18 @@ class FItemsRenderer {
 	static function gmaps($itemVO) {
 		$vars = array();
 		$position = $itemVO->prop('position');
+		$distance = $itemVO->prop('distance');
 		if(empty($position)) return $vars;
 		$journey = explode(';',$position);
-		$vars['MAPITEMID'] = $itemVO->itemId;
+		$vars['SMAPITEMID'] = $vars['MAPITEMID'] = $itemVO->itemId;
 		$vars['MAPPOSITION'] = implode("\n",$journey);
-		$vars['MAPTITLE'] = $itemVO->addon;
-		$vars['MAPINFO'] = str_replace(array("\n","\r"),'',$itemVO->text);
-		$vars['STATICMARKERPOS'] = $journey[count($journey)-1];
+		$vars['SMAPTITLE'] = $vars['MAPTITLE'] = $itemVO->addon;
+		$vars['SMAPINFO'] = $vars['MAPINFO'] = FSystem::textins($itemVO->text,array('plaintext'=>1));
+		$vars['SMARKERPOS'] = $journey[count($journey)-1];
+		if($distance>0) $vars['DISTANCE'] = $distance;
 		if(count($journey)>1) {
 			$geoEncode = new GooEncodePoly();
-			$vars['STATICWPLIST'] = 'enc:'.$geoEncode->encode($journey);
+			$vars['SWPLIST'] = 'enc:'.$geoEncode->encode($journey);
 		}
 		return $vars;
 	} 
