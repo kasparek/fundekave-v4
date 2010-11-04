@@ -89,9 +89,9 @@ class page_PageEdit implements iPage {
 					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
-				
-				
-				
+
+
+
 			if($user->pageParam=='sa') {
 				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
@@ -102,10 +102,10 @@ class page_PageEdit implements iPage {
 			} else {
 				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
 			}
-				
+
 			if(empty($data['content'])) $data['content']='';
 			$pageVO->content = FSystem::textins($data['content']);
-				
+
 			if($user->pageParam!='sa' && empty($pageVO->description) && !empty($pageVO->content)) {
 				$pageVO->description=FSystem::textins($pageVO->content,array('plainText'=>1));
 			}
@@ -113,7 +113,7 @@ class page_PageEdit implements iPage {
 			if(isset($data['datecontent'])) {
 				$pageVO->set('dateContent',$data['datecontent'],array('type'=>'date'));
 			}
-				
+
 			if(isset($data['category'])) {
 				if($pageVO->categoryId>0) if($data['category']!=$pageVO->categoryId) $oldCategoryId=$pageVO->categoryId;
 				$pageVO->set('categoryId', (int) $data['category']);
@@ -292,13 +292,15 @@ class page_PageEdit implements iPage {
 							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
-								
+
 							if(isset($v['position'])){
 								$v['position'] = FSystem::positionProcess($v['position']);
-								$itemVO->setProperty('position', $v['position']);
+								if($itemVO->setProperty('position', $v['position'])) {
+									FCommand::run(POSITION_UPDATED);
+								}
 								if(strpos($v['position'],';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($v['position']));
 							}
-								
+
 							if(!empty($v['date'])) {
 								if(false === $itemVO->set('dateStart',$v['date'],array('type'=>'date'))) {
 									FError::add(FLang::$ERROR_DATE_FORMAT);
