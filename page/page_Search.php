@@ -88,11 +88,10 @@ class page_Search implements iPage {
 				$touchedBlocks = array();
 				//---QUERY RESULTS
 				$fPages = new FPages(array('galery','forum','blog'), $userId);
+				$fPages->addWhere('sys_pages.locked < 2');
+				if(SITE_STRICT == 1) $fPages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");
 				if(!empty($pageSearchCache['filtrPages'])){
 					$fPages->addWhereSearch(array('sys_pages.name','sys_pages.description','sys_pages.dateContent'),$pageSearchCache['filtrPages'],'OR');
-				}
-				if($user->idkontrol!==true) {
-					$fPages->addWhere('sys_pages.locked < 2');
 				}
 				$fPages->setOrder("sys_pages.name");
 				$pager = new FPager(0,$perPage ,array('noAutoparse'=>1,'urlVar'=>'pp','hash'=>'pages'));
@@ -148,15 +147,11 @@ class page_Search implements iPage {
 			$cacheKey = $pageSearchCache['filtrItems'].'-i-'.(($p>1)?('-p-'.$p):(''));
 			$cacheGrp = 'search-'.$user->userVO->userId;
 			$ITEMS = $mainCache->getData($cacheKey,$cacheGrp);
-
 			if(false === $ITEMS) {
-					
 				$fItems = new FItems('',$user->userVO->userId);
-				$fItems->addWhere('sys_pages_items.public > 0');
+				if(SITE_STRICT == 1) $fItems->addWhere("sys_pages_items.pageIdTop = '".HOME_PAGE."'");
 				$fItems->addFulltextSearch('text,enclosure,addon,textLong',$pageSearchCache['filtrItems']);
-					
 				$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('hash'=>'items','urlVar'=>'pi'));
-					
 				$ITEMS['vars'] = $listArr['vars'];
 				$ITEMS['vars']['FILTRITEMS'] = $pageSearchCache['filtrItems'];
 				if(!empty($listArr['blocks'])) $ITEMS['touchedblocks'] = $listArr['blocks'];
