@@ -2,7 +2,9 @@
 class FSystem {
 
 	static function superVars($data) {
-		$superVars = array('SKINURL'=>STATIC_DOMAIN.SKIN_DEFAULT,
+		$superVars = array(
+		'SKIN'=>SKIN,
+		'SKINURL'=>STATIC_DOMAIN.URL_CSS.SKIN,
 		'STATIC_DOMAIN'=>STATIC_DOMAIN,
 		'URL_JS'=>STATIC_DOMAIN.URL_JS);
 		foreach($superVars as $k=>$v) {
@@ -42,7 +44,7 @@ class FSystem {
 		$newPageId = '';
 		if($user->pageVO) $newPageId = $user->pageVO->pageId;
 		if(!empty($pageId)) $newPageId = $pageId;
-		if($newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
+		if(!isset($options['short']) && $newPageId == HOME_PAGE && empty($pageParam)) $newPageId = '';
 
 		if(preg_match("/i=([0-9]*)/" , $otherParams)) {
 			if(empty($pageParam)) $newPageId = '';

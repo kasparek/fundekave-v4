@@ -97,7 +97,7 @@ class FAjax_item extends FAjaxPluginBase {
 				FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 			}
 		}
-		if($data['item']>0) {
+		if(!empty($data['item'])) {
 			FAjax::addResponse('i'.$data['item'], 'replaceWith', page_ItemDetail::build($data));
 		}
 	}
