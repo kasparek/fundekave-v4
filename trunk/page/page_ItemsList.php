@@ -172,7 +172,7 @@ class page_ItemsList implements iPage {
 				$itemId = $itemVO->itemId;
 				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 			}
-			if(SITE_STRICT == 1) {
+			if(SITE_STRICT == 1 && $pageVO->typeId=='top') {
 				$fItems->addWhere("pageIdTop = '".HOME_PAGE."'");
 			}
 

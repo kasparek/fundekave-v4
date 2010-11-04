@@ -163,7 +163,7 @@ class FItemsRenderer {
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
 		} else {
-			if($itemVO->typeId=='forum') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
+			if($itemVO->typeId=='event') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 		}
 
 		//modifiers to standart

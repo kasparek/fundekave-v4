@@ -16,8 +16,9 @@ class FItemsForm {
 
 		$filename = FFile::getTemplFilename();
 		if($filename!==false) {
+			
 			try{
-				$size=getimagesize($data['__files']['imageFile']);
+				$size=getimagesize(FConf::get('galery','sourceServerBase').$filename);
 			} catch(Exception $e) {
 				FError::add(FLang::$ERROR_IMAGE_FORMAT);
 			}
@@ -356,6 +357,7 @@ class FItemsForm {
 
 			if ($user->idkontrol) {
 				if($data['simple']===false) {
+					$tpl->touchBlock('userlogged');
 					$tpl->setVariable('PERPAGE',$data['perpage']);
 				}
 			} else {

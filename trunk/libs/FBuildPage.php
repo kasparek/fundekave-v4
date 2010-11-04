@@ -237,6 +237,7 @@ class FBuildPage {
 			FError::reset(1);
 		}
 		//---HEADER
+		$tpl->setVariable('PAGEID', $user->pageVO->pageId);
 		$tpl->setVariable("CHARSET", FConf::get('internationalization','charset'));
 		$tpl->setVariable("ASSETS_URL", STATIC_DOMAIN.URL_ASSETS);
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
