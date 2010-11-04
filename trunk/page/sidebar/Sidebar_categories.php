@@ -5,10 +5,11 @@ class Sidebar_categories {
 		$multiType=false;
 		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
 		if($user->pageVO->typeId=='top') {
-			if(!empty($user->pageVO->typeIdChild)) {
-				$tool->setWhere("c.typeId = '".$user->pageVO->typeIdChild."'");
-			} elseif(isset(FLang::$TYPEID[$user->pageParam])) {
-				$tool->setWhere("c.typeId = '".$user->pageParam."'");
+			$type='';
+			if(isset(FLang::$TYPEID[$user->pageVO->typeIdChild])) $user->pageVO->typeIdChild;
+			if(isset(FLang::$TYPEID[$user->pageParam])) $type=$user->pageParam;
+			if($type!='') {
+				$tool->setWhere("c.typeId = '".$type."'");
 			} else {
 				$tool->setWhere("c.typeId in ('galery','forum','blog')");
 				$multiType=true;
@@ -42,13 +43,13 @@ class Sidebar_categories {
 			$tpl = FSystem::tpl('item.pagelink.tpl.html');
 			if($multiType){
 				foreach(FLang::$TYPEID as $k=>$v) {
-					$tpl->setVariable('URL', FSystem::getUri('',$user->pageId,$k));
+					$tpl->setVariable('URL', FSystem::getUri('',$multiType?'foall':$user->pageId,$k));
 					$tpl->setVariable('PAGENAME', $v);
 					$tpl->parse();
 				}
 			}
 			foreach ($arr as $category) {
-				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$user->pageId));
+				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId));
 				$tpl->setVariable('PAGENAME', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
 				if($category[2]>0) $tpl->setVariable('SUM', $category[2]);
 				$tpl->parse();

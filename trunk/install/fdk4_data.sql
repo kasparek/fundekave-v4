@@ -1,9 +1,9 @@
 delete from sys_pages where typeId not in ('forum','blog','galery','culture');
-INSERT INTO `sys_pages` VALUES ('maina', null, 'top', 'home', null, 'page_ItemsList', '', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL);
+INSERT INTO `sys_pages` VALUES ('maina', null, 'top', null, null, 'page_ItemsList', '', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL);
 INSERT INTO `sys_pages` VALUES ('booke', null, 'top', 'book', null, 'page_PagesBooked', 'Oblíbené', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
-INSERT INTO `sys_pages` VALUES ('searc', null, 'top', 'top', null, 'page_Search', 'Vyhledavani', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
+INSERT INTO `sys_pages` VALUES ('searc', null, 'top', 'top', null, 'page_Search', 'Vyhledávání', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('galer', null, 'top', 'galery', null, 'page_PagesList', 'Galerie', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
-INSERT INTO `sys_pages` VALUES ('foall', null, 'top', null, null, 'page_PagesList', 'Prehled', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
+INSERT INTO `sys_pages` VALUES ('foall', null, 'top', null, null, 'page_PagesList', 'Přehled', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('roger', null, 'top', null, null, 'page_Registration', 'Registrace', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('fpost', null, 'top', 'post', null, 'page_UserPost', 'Pošta', NULL, NULL, 2, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('finfo', null, 'top', 'friend', null, 'page_UserInfo', 'Profil', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
@@ -18,7 +18,6 @@ truncate sys_menu;
 INSERT INTO `sys_menu` VALUES ('maina', 'maina', 'Úvod', 1, 1);
 INSERT INTO `sys_menu` VALUES ('maina', 'event', 'Tipy', 1, 2);
 INSERT INTO `sys_menu` VALUES ('maina', 'galer', 'Galerie', 1, 3);
-INSERT INTO `sys_menu` VALUES ('maina', 'foall', 'Přehled', 1, 4);
 INSERT INTO `sys_menu` VALUES ('maina', 'finfo', 'Přátelé', 0, 7);
 INSERT INTO `sys_menu` VALUES ('maina', 'booke', 'Oblíbené', 0, 8);
 
@@ -38,6 +37,6 @@ INSERT INTO `sys_leftpanel_functions` VALUES ('categories','Kategorie', 1, 1, nu
 
 truncate sys_leftpanel_defaults;
 INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'login', 0, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'categories', 20, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'galeryRand', 40, 1);
-INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'map', 50, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'categories', 30, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('top', 'galeryRand', 10, 1);
+INSERT INTO `sys_leftpanel_defaults` VALUES ('default', 'map', 20, 1);

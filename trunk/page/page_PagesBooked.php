@@ -7,9 +7,13 @@ class page_PagesBooked implements iPage {
 	}
 
 	static function build($data=array()) {
-		FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','',''),FLang::$LABEL_FORUMS);
-		FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','',''),FLang::$LABEL_BLOGS);
-		FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','',''),FLang::$LABEL_GALERIES);
+		if(FRules::getCurrent(FConf::get('settings','perm_add_forum')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','foall','a'), FLang::$LABEL_PAGE_FORUM_NEW);
+		if(FRules::getCurrent(FConf::get('settings','perm_add_blog')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','foall','a'), FLang::$LABEL_PAGE_BLOG_NEW);
+		if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','foall','a'), FLang::$LABEL_PAGE_GALERY_NEW);
+	
+		FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','',''),FLang::$LABEL_FORUMS,array('parentClass'=>'opposite'));
+		FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','',''),FLang::$LABEL_BLOGS,array('parentClass'=>'opposite'));
+		FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','',''),FLang::$LABEL_GALERIES,array('parentClass'=>'opposite'));
 
 		$type='';
 		if(isset($data['__get']['t'])) $type = $data['__get']['t'];

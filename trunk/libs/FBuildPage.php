@@ -56,7 +56,7 @@ class FBuildPage {
 		$pageCategory=0;
 		if(!empty($typeId)) {
 			//prehled
-			$breadcrumbs[] = array('name'=>FDBTool::getOne("select text from sys_menu where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
+			$breadcrumbs[] = array('name'=>FDBTool::getOne("select name from sys_pages where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
 			//typ
 			$typeCrumb=true;
 			$pageCrumb=false;
