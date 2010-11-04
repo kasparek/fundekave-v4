@@ -23,12 +23,12 @@ INSERT INTO `sys_menu` VALUES ('maina', 'finfo', 'Přátelé', 0, 7);
 INSERT INTO `sys_menu` VALUES ('maina', 'booke', 'Oblíbené', 0, 8);
 
 INSERT INTO `sys_menu` VALUES ('idega', 'idega', 'Blog', 1, 1);
-INSERT INTO `sys_menu` VALUES ('idega', 'ideg1', 'Neco o me', 1, 2);
+INSERT INTO `sys_menu` VALUES ('idega', 'ideg1', 'Něco o mě', 1, 2);
 INSERT INTO `sys_menu` VALUES ('idega', 'ideg2', 'Hudba', 1, 3);
 INSERT INTO `sys_menu` VALUES ('idega', 'galer', 'Galerie', 1, 4);
-INSERT INTO `sys_menu` VALUES ('idega', 'maina', 'Live', 0, 5);
+INSERT INTO `sys_menu` VALUES ('idega', 'maina', 'Přehled', 0, 5);
 INSERT INTO `sys_menu` VALUES ('idega', 'finfo', 'Přátelé', 0, 7);
-INSERT INTO `sys_menu` VALUES ('idega', 'booke', 'Oblíbené', 0, 8);
+
 
 truncate sys_leftpanel_functions;
 INSERT INTO `sys_leftpanel_functions` VALUES ('login', '', 1, 1, null,null,null);

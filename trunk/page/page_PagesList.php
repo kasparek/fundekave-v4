@@ -35,10 +35,10 @@ class page_PagesList implements iPage {
 				return;
 			}
 			if($typeId!='galery') {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
-				FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);
+				if(FRules::getCurrent(FConf::get('settings','perm_add_forum')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_FORUM_NEW);
+				if(FRules::getCurrent(FConf::get('settings','perm_add_blog')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_BLOG_NEW);
 			}
-			FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
+			if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 		}
 		
 		$user->pageVO->showHeading = false;

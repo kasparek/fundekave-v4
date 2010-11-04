@@ -188,8 +188,10 @@ class FBuildPage {
 
 			if($user->idkontrol==true && ($user->pageVO->typeId == 'forum' || $user->pageVO->typeId == 'galery' || $user->pageVO->typeId == 'blog')) {
 				if(empty($user->pageParam) && empty($user->itemVO)) {
-					if($user->pageVO->userIdOwner != $user->userVO->userId) {
-						FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
+					if(FRules::getCurrent(FConf::get('settings','perm_book'))){
+						if($user->pageVO->userIdOwner != $user->userVO->userId){
+							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
+						}
 					}
 					if(FRules::getCurrent(2) && empty($user->itemVO)) {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
