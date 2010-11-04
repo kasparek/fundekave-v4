@@ -45,11 +45,13 @@ class FRules {
 
 	//---END---functions from user class
 	static function getCurrent($type=1) {
+		if($type==0)return false;
 		$user = FUser::getInstance();
 		return FRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
 	}
 
 	static function get($usr,$page,$type=1) {
+		if($type==0)return false;
 		$ret = false;
 		$key = $usr.'-'.$page.'-'.$type;
 		$cache = FCache::getInstance('s');
