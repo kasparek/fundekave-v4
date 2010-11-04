@@ -25,9 +25,10 @@ class Sidebar_map {
 		$dbtool->addWhere('sys_pages_items.public=1');
 		if($user->pageVO->typeId!='top') {
 			$dbtool->addWhere('sys_pages_items.pageId="'.$user->pageVO->pageId.'"');
+		} else {
+			if($type!='') $dbtool->addWhere("sys_pages_items.typeId='".$type."'");
+			if($category>0) $dbtool->addWhere("sys_pages_items.categoryId='".$category."'");
 		}
-		if($type!='') $dbtool->addWhere("sys_pages_items.typeId='".$type."'");
-		if($category>0) $dbtool->addWhere("sys_pages_items.categoryId='".$category."'");
 		$tmp = $dbtool->getContent(0,20);
 		if(!empty($tmp)) $list = array_merge($list,$tmp);
 		
@@ -53,6 +54,7 @@ class Sidebar_map {
 		else if(isset(FLang::$TYPEID[$user->pageVO->typeIdChild])) $pageId=$user->pageVO->pageId;
 		else $pageId='foall';
 		$par=array();
+		if(!empty($user->itemVO)) $par[] = 'i='.$user->itemVO->itemId;
 		if($type!='') $par[] = 't='.$type;
 		if($category>0) $par[] = 'c='.$category;
 		$tpl->setVariable("URL",FSystem::getUri(implode('&',$par),$pageId,'m'));
