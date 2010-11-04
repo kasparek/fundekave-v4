@@ -15,9 +15,9 @@ background: #eae6da url(img/page-bg.png) repeat-x right top;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;}
 div#header {position: relative;z-index: 1;}
-div#pagebar {float:left;width:100%;min-width: 750px;display:inline; background-color: white;padding: 0;}
+div#pagebar {float:left;width:100%;min-width: 610px;display:inline; background-color: white;padding: 0;}
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
-div#header, div#footer{clear:both;margin-left: 0px;min-width: 750px;}
+div#header, div#footer{clear:both;margin-left: 0px;min-width: 400px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
 div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
@@ -47,7 +47,7 @@ div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;paddi
 /* BREADCRUMBS */
 div#breadcrumbs {margin:0;padding:1.2em 0 1em 10px;}
 div#breadcrumbs ul {margin: 0; padding: 0;}
-div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow-brown-bg.gif) no-repeat left center;
+div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;
 font:0.9em Verdana,sans-serif;
 color: #9D400D;
 }
@@ -70,7 +70,7 @@ form#loginForm input#loginButton {float: right;width: auto;font-size:1em;}
 form#loginForm p {margin: 0; padding: 0;}
 form#loginForm a, div#loggedUserContainer a {color: #333;font-weight: normal;}
 form#loginForm ul, div#loggedUserContainer ul {clear: left;margin: 0; padding: 0;}
-form#loginForm ul li, div#loggedUserContainer ul li {padding-left: 10px;list-style: none;background: url(img/arrow-brown-bg.gif) no-repeat left center;font-weight: bold;}
+form#loginForm ul li, div#loggedUserContainer ul li {padding-left: 10px;list-style: none;background: url(img/arrow.png) no-repeat left center;font-weight: bold;}
 div#loggedUserContainer ul li a.requests {font-weight: bold;color: #ff0000;}
 div#loggedUserContainer h2 {float: left;font-size: 1.2em;}
 div#loggedUserContainer h2 a {font-weight: bold;text-decoration: none;}
@@ -113,11 +113,6 @@ div.mainpanel-content h3 a {color: white;text-decoration: underline;}
 div.mainpanel-content div.galery span.abbr {color: white;margin-right: 1em;position: relative;float: right;top: -2em;}
 div.mainpanel-content div.galery span.abbr abbr {border: none;}
 div.mainpanel-content h3.summary, div.mainpanel-content h3.entry-title {border: none;}
-
-/* CATEGORIES LIST */
-div.mainpanel-content div#categories h3 {border: none;margin: 0;padding: 0 0 0.5em 10px;color: black;background: transparent url(img/arrow-white-bg.gif) no-repeat left 0.3em;}
-div.mainpanel-content div#categories h3 a{color: black;}
-div.mainpanel-content div#categories ul {margin-left: 30px;}
 
 /* LINK LIST */
 a.linkItem {font: 1.3em/25px Georgia,Times,serif;clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
@@ -220,7 +215,7 @@ div.participant {float:left;padding: 0 1em 1em 0;text-align: center;}
 div.friends ul li ul {padding: 0;}
 div.friends {float: left;width: 48%;margin-right: 2%;}
 div.friends ul li {list-style: none;background-image: none;clear: left;}
-div.friends ul li ul li {padding-left: 1em;background: url(img/arrow-white-bg.gif) no-repeat left center;}
+div.friends ul li ul li {padding-left: 1em;background: url(img/arrow.png) no-repeat left center;}
 div.friends ul li div,div.friends ul li ul {float: left;}
 div.friends ul li div {margin-right: 10px;}
 

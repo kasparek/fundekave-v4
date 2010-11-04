@@ -34,7 +34,8 @@ delete FROM `sys_pages_properties` where name='position' and value like "% %";
 8.clean cache http://awake33.com/cron-cache.total.clean.cron.job.php
 
 FIX:
-
+-map filtering jako na sidebaru
+-map renderery
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category

@@ -78,45 +78,6 @@ class FCategory extends FDBTool {
 		return FDBTool::getRow($q,$categoryId,'categories','f');
 	}
 
-	/**
-	 * print list of categories to select from - static html for frontend
-	 *
-	 * @param String $typeId - from sys_pages_category
-	 * @return String - HTML
-	 */
-	function getList($typeId='') {
-		$user = FUser::getInstance();
-		if(isset($_REQUEST['kat'])) $selectedCat = (int) $_REQUEST['kat'];
-		else $selectedCat = 0;
-		if(!empty($typeId)) $this->addWhere("typeId='".$typeId."'");
-		$this->addOrder('name');
-		$this->setSelect('categoryId,name,description');
-		$arr = $this->getContent();
-		if(!empty($arr)) {
-			$tpl = FSystem::tpl($this->templateList);
-			foreach ($arr as $row) {
-				if($row[0] == $selectedCat) {
-					$tpl->setVariable('CATEGORYNAME',$row[1]);
-					$this->selected = $row;
-					$user->pageVO->name =  $this->selected[1] . ' - ' . $user->pageVO->name;
-				}
-				$tpl->setCurrentBlock('category');
-				$tpl->setVariable('CATLINK',FSystem::getUri('kat='.$row[0]));
-				$tpl->setVariable('CATNAME',$row[1]);
-				$tpl->setVariable('DESC',$row[2]);
-				$tpl->parseCurrentBlock('category');
-			}
-			return $tpl->get();
-		}
-	}
-	function getCats($typeId='') {
-		$user = FUser::getInstance();
-		if(!empty($typeId)) $this->addWhere("typeId='".$typeId."'");
-		$this->addOrder('name');
-		$this->setSelect('categoryId,name,description');
-		return $this->getContent();
-	}
-
 	function parseComboBox($blockname,$selectname,$arr,$selected=0){
 		$tpl = &$this->tplObject;
 		foreach ($this->arrDefaultValues as $k=>$v) $arrtmp['SELECT'.$k]=$v;

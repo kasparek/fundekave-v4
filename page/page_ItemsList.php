@@ -278,10 +278,10 @@ class page_ItemsList implements iPage {
 				if($pageVO->typeId=='top') {
 					//sort by page
 					$newArr=array();
-					while($itemVO = array_shift($fItems->data)){
+					while($itemVO = array_pop($fItems->data)){
 						$index = array_indexOf($newArr,'pageId',$itemVO->pageId);
-						if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
-						else $newArr[]=$itemVO;
+						if($index>-1) $newArr=array_insert($newArr,$index,$itemVO);
+						else array_unshift($newArr,$itemVO);
 					}
 					$fItems->data=$newArr;
 					
@@ -295,6 +295,7 @@ class page_ItemsList implements iPage {
 						} else $newArr[]=$itemVO;
 					}
 					$fItems->data=$newArr;
+					/**/
 					     
 					//sort reaction after top item if present
 					$newArr=array();
