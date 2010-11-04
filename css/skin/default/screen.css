@@ -8,7 +8,7 @@ div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
 /* BASE FRAMEWORK */
-body {text-align: center;color: black;font:0.72em/1 Verdana,sans-serif;
+body {text-align: center;color: black;font:0.68em/1 Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
 background: #eae6da url(img/page-bg.png) repeat-x right top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}

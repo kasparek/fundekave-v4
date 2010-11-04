@@ -43,9 +43,11 @@ class Sidebar_categories {
 			$tpl = FSystem::tpl('item.pagelink.tpl.html');
 			if($multiType){
 				foreach(FLang::$TYPEID as $k=>$v) {
-					$tpl->setVariable('URL', FSystem::getUri('',$multiType?'foall':$user->pageId,$k));
-					$tpl->setVariable('PAGENAME', $v);
-					$tpl->parse();
+					if(FConf::get('settings','perm_add_'.$k)>0) {
+						$tpl->setVariable('URL', FSystem::getUri('',$multiType?'foall':$user->pageId,$k));
+						$tpl->setVariable('PAGENAME', $v);
+						$tpl->parse();
+					}
 				}
 			}
 			foreach ($arr as $category) {
