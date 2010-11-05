@@ -59,6 +59,7 @@ class page_PagesList implements iPage {
 		}
 		if($typeId == 'galery') {
 			$fPages->setOrder("dateContent desc");
+			$fPages->addWhere('sys_pages.cnt>0');
 		} else {
 			$fPages->joinOnPropertie('itemIdLast');
 			$fPages->setOrder("dateUpdated desc");
