@@ -128,7 +128,7 @@ class page_UserInfo implements iPage {
 
 			$fp = new FPages('galery',$user->userVO->userId);
 			$fp->setWhere('sys_pages.userIdOwner="'.$userVO->userId.'" and sys_pages.locked<3');
-			$fp->setOrder($bookOrder==1?'sys_pages.name':'(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
+			$fp->setOrder('dateCreated desc');
 			$arrLinks = $fp->getContent();
 			if(!empty($arrLinks)){
 				//pages

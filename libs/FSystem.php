@@ -6,7 +6,9 @@ class FSystem {
 		'SKIN'=>SKIN,
 		'SKINURL'=>STATIC_DOMAIN.URL_CSS.SKIN,
 		'STATIC_DOMAIN'=>STATIC_DOMAIN,
-		'URL_JS'=>STATIC_DOMAIN.URL_JS);
+		'URL_JS'=>STATIC_DOMAIN.URL_JS,
+		'ASSETS_URL'=>STATIC_DOMAIN.URL_ASSETS
+		);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
 		}

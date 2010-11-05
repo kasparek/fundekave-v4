@@ -35,8 +35,12 @@ class page_PagesBooked implements iPage {
 
 		$fPages = new FPages($type,$user->userVO->userId);
 		$fPages->setWhere('sys_pages.userIdOwner="'.$userId.'" and sys_pages.locked<3');
-		if($bookOrder==1) $fPages->setOrder('name');
-		else $fPages->setOrder('(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
+		if($type!='galery'){
+			if($bookOrder==1) $fPages->setOrder('name');
+			else $fPages->setOrder('(sys_pages.cnt-favoriteCnt) desc,sys_pages.name');
+		} else {
+			$fPages->setOrder('dateCreated desc');
+		}
 		$arraudit = $fPages->getContent();
 		if(count($arraudit)>0){
 			$tpl->setVariable('PAGELINKSOWN',$fPages->printPagelinkList($arraudit,array('noitem'=>true)));
