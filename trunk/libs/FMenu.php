@@ -1,8 +1,7 @@
 <?php
 class FMenu {
 	static function topmenu(){
-		$q = "SELECT pageId,text FROM sys_menu where pageIdTop='".HOME_PAGE."'".((FUser::logon()>0)?(""):(' and public=1'))." ORDER BY ord";
-		$arrmenu = FDBTool::getAll($q);
+		$arrmenu = FDBTool::getAll("SELECT pageId,text FROM sys_menu where pageIdTop='".MENU_SET."'".((FUser::logon()>0)?(""):(' and public=1'))." ORDER BY ord");
 		foreach ($arrmenu as $ro) {
 			$menuItems[] = array("LINK"=>FSystem::getUri('',$ro[0],''), "pageId"=>$ro[0], "TEXT"=>$ro[1]);
 		}
@@ -13,6 +12,7 @@ class FMenu {
 		$cache = FCache::getInstance('l');
 		return $cache->getData('secondarymenu');
 	}
+	
 	/**
 	 *  before ,$opposite='0',$buttonId='',$buttonClass='',$listItemClass='',$title='') {
 	 *  options [ id, class, parentClass, title ]	 
