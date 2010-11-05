@@ -10,7 +10,7 @@ div#mainbar ul {padding: 0;margin: 0;}
 /* BASE FRAMEWORK */
 body {text-align: center;color: black;font:0.68em/1 Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
-background: #eae6da url(img/page-bg.png) repeat-x right top;}
+background: #eae6da url(img/page-bg.jpg) no-repeat left top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;}
@@ -23,16 +23,19 @@ div#footer span {float: left;}
 div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
 
 /* HEADER CONTENT */
-div#logo {float:right;position:relative;top:0;
-width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
+div#logo {
+float:left;
+/*height:45px;*/
+margin:-100px 0 0 -15px;
+}
 .bodySidebarOff div#logo {margin-right:0px;}
 
 /* PRIMARY MENU */
-ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
+ul#menu {margin: 100px 0 0 0;text-transform:uppercase;}
 ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
 background: #F8FBDB;
 }
-ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/29px Georgia,Times,serif;text-decoration: none;
+ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/30px Georgia,Times,serif;text-decoration: none;
 font-weight: bold;
 color: #223d01;}
 ul#menu li a:hover,a.active {background: #E2E595;}
