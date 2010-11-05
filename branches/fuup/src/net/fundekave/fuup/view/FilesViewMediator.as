@@ -42,15 +42,20 @@ package net.fundekave.fuup.view
 			filesView.filesNumMax = Number( configProxy.getValue("fileLimit") );
 			filesView.multiFiles = Number( configProxy.getValue("multi") )==1 ? true : false;
 			filesView.settingsVisible = Number( configProxy.getValue("settingsEnabled") )==1 ? true : false;
-			
 			filesView.settingsOn = Number( configProxy.getValue("settingsOn") )==1 ? true : false;
-			
+			filesView.settingsVisible = Number( configProxy.getValue("resizeVisible") )==1 ? true : false;
+						
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			proxy.initSettings( filesView.settingsOn );
 			
 			filesView.autoProcess = Number( configProxy.getValue("autoProcess") )==1 ? true : false;
 			filesView.autoUpload = Number( configProxy.getValue("autoUpload") )==1 ? true : false;
 			filesView.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
+			
+			filesView.processOn = Number( configProxy.getValue("resize") )==1 ? true : false;
+			filesView.processVisible = Number( configProxy.getValue("resizeVisible") )==1 ? true : false;
+			
+			filesView.setup();
 		}
 
 		private function onCancel(e:Event):void

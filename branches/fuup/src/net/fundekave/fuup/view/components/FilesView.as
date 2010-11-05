@@ -23,7 +23,6 @@ package net.fundekave.fuup.view.components
 		{
 			super(parent, xpos, ypos);
 			this.lang = lang;
-			this.setup();
 		}
 		
 		import net.fundekave.fuup.model.vo.FileVO;
@@ -55,17 +54,40 @@ package net.fundekave.fuup.view.components
 		}
 		
 		public var settingsOn:Boolean = false;
+		public var _processVisible:Boolean = true;
+		public function set processVisible(v:Boolean):void {
+			_processVisible = v;
+			if(processButt)processButt.visible = v; 
+		}
+		public function get processVisible():Boolean { return _autoUpload; }
+		
+		public var _processOn:Boolean = true;
+		public function set processOn(v:Boolean):void {
+			_processOn = v;
+			if(processButt)processButt.selected = v; 
+		}
+		public function get processOn():Boolean { return _autoUpload; }
 		
 		private var _autoProcess:Boolean = false;
-		public function set autoProcess(v:Boolean):void { _autoProcess = v; processButt.visible = !v }
+		public function set autoProcess(v:Boolean):void { 
+			_autoProcess = v;
+			if(processButt)processButt.visible = !v && processVisible; 
+		}
 		public function get autoProcess():Boolean { return _autoProcess; }
 		
 		private var _autoUpload:Boolean = false;
-		public function set autoUpload(v:Boolean):void { _autoUpload = v; processButt.visible = !v; uploadButt.visible = !v; }
+		public function set autoUpload(v:Boolean):void {
+			_autoUpload = v; 
+			if(processButt)processButt.visible = !v && processVisible;
+			if(uploadButt)uploadButt.visible = !v; 
+		}
 		public function get autoUpload():Boolean { return _autoUpload; }
 		
 		private var _displayContent:Boolean = true;
-		public function set displayContent(v:Boolean):void { _displayContent = v; filesBox.visible = v }
+		public function set displayContent(v:Boolean):void { 
+			_displayContent = v; 
+			if(filesBox)filesBox.visible = v;
+		}
 		public function get displayContent():Boolean { return _displayContent; }
 				
 		private var fileRefList:FileReferenceList
@@ -295,7 +317,7 @@ package net.fundekave.fuup.view.components
 		public var globalMessagesBox:Container;
 		public var globalMessages:Label;
 		private var filesBox:Container;
-		private function setup():void {
+		public function setup():void {
 			selectFilesButt = new PushButton(this,5,5,lang.selectfiles,browseFiles);
 			selectFilesButt.width = 60;
 			
@@ -307,13 +329,13 @@ package net.fundekave.fuup.view.components
 			correctionsCheckbox.selected = settingsOn;
 			
 			processButt = new CheckBox(this,135-(_settingsVisible?65:0)+5,10,lang.process,onProcessClick);
-			processButt.selected=true;
+			processButt.selected=_processOn;
 			processButt.width = 60;
-			processButt.visible = !_autoUpload;
+			processButt.visible = !_autoUpload && _processVisible;
 			
-			uploadButt = new PushButton(this,200-(_settingsVisible?65:0),5,lang.upload,onUploadClick);
+			uploadButt = new PushButton(this,200-(!_settingsVisible?65:0)-(!processButt.visible?65:0),5,lang.upload,onUploadClick);
 			uploadButt.width = 60;
-			uploadButt.visible = !autoUpload;
+			uploadButt.visible = !_autoUpload;
 			
 			cancelButt = new PushButton(this,200,5,lang.cancel,onCancelClick);
 			cancelButt.width = 60;

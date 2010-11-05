@@ -37,7 +37,7 @@ package com.bit101.components
 		// So if you are using the Flex 3.x sdk compiler, switch the embed statment below to expose the correct version.
 		
 		// Flex 4.x sdk:
-		[Embed(source="/assets/pf_ronda_seven.ttf", embedAsCFF="false", fontName="PF Ronda Seven", mimeType="application/x-font")]
+//		[Embed(source="/assets/pf_ronda_seven.ttf", embedAsCFF="false", fontName="PF Ronda Seven", mimeType="application/x-font")]
 		// Flex 3.x sdk:
 //		[Embed(source="/assets/pf_ronda_seven.ttf", fontName="PF Ronda Seven", mimeType="application/x-font")]
 		protected var Ronda:Class;
@@ -50,8 +50,9 @@ package com.bit101.components
 		public static var PANEL:uint = 0xF3F3F3;
 		public static var PROGRESS_BAR:uint = 0xFFFFFF;
 		
-		public static var embedFonts:Boolean = true;
-		public static var fontName:String = "PF Ronda Seven";
-		public static var fontSize:Number = 8;
+		public static var embedFonts:Boolean = false;
+		//public static var fontName:String = "PF Ronda Seven";
+		public static var fontName:String = "Georgia";
+		public static var fontSize:Number = 11;
 	}
 }
