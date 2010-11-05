@@ -2,6 +2,8 @@
 <Fuup>
 <Config>
 <Settings>
+<Item name="resizeVisible">{RESIZEVISIBLE}</Item>
+<Item name="resize">{RESIZE}</Item>
 <Item name="settingsEnabled">{SETTINGSENABLED}</Item>
 <Item name="settingsOn">{SETTINGSON}</Item>
 <Item name="autoProcess">{AUTOPROCESS}</Item>

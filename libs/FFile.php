@@ -221,7 +221,9 @@ class FFile {
 		$maxSize = array_pop($sizeOptList);
 		//defaults
 		$vars = array(
-		'SETTINGSENABLED'=>0
+		'RESIZE'=>1
+		,'RESIZEVISIBLE'=>0
+		,'SETTINGSENABLED'=>0
 		,'SETTINGSON'=>0
 		,'AUTOPROCESS'=>0
 		,'AUTOUPLOAD'=>0
