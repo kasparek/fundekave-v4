@@ -113,6 +113,7 @@ class FItemsForm {
 					$itemVO->saveOnlyChanged=true;
 					$itemVO->save();
 				}
+				FFile::flushTemplFile();
 				break;
 			case 'del':
 			case 'delete':
@@ -254,13 +255,11 @@ class FItemsForm {
 						$cache = FCache::getInstance('s',0);
 						$cache->invalidateData($itemVO->pageId.$itemVO->typeId,'form');
 						//---on success
-						if(!isset($data['draftable'])) {
-							$redirectParam = '#dd';
-						}
 						$redirect=true;
 
 						if($itemVO->itemIdTop > 0) {
-							$itemVO->updateReaded($user->userVO->userId);
+							$itemVOTop = new ItemVO($itemVO->itemIdTop);
+							$itemVOTop->updateReaded($itemVO->userId);
 						} else {
 							$itemVO->pageVO->updateReaded($user->userVO->userId);
 						}
@@ -357,8 +356,7 @@ class FItemsForm {
 
 			if ($user->idkontrol) {
 				if($data['simple']===false) {
-					$tpl->touchBlock('userlogged');
-					$tpl->setVariable('PERPAGE',$data['perpage']);
+					$tpl->touchBlock('p'.$data['perpage']);
 				}
 			} else {
 				$tpl->setVariable('USERNAME','');

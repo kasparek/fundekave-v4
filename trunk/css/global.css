@@ -71,6 +71,8 @@
 }
 /* END BASIC SCREEN ELEMENTS */
 
+#tempStore{margin-bottom:-5px;}
+
 /* GOOGLE MAPS styles */
 .geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}

@@ -6,13 +6,19 @@
 <div class="clearbox">
 <label for="{TEXTID}">Text</label><textarea id="{TEXTID}" class="leftbox markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea><a href="#" class="geoselector" rel="position"><img src="[[SKINURL]]/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
 <div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div></div>
-<!-- BEGIN userlogged --><label>Přiložit foto</label><div id="tempStore" class="fuup leftbox"><input type="file" name="imageFile"/></div><div id="imageHolder" class="row"></div><!-- END userlogged -->
 <!-- BEGIN captcha --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
 <input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END captcha -->
 <input type="submit" name="send" value="Odeslat" class="button submit" tabindex="4">
-<!-- BEGIN userlogged2 --><input type="submit" name="filtr" value="Hledat" class="button">
-Na stránku <input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
+<!-- BEGIN userlogged2 -->Přiložit foto <span id="tempStore" class="fuup">Need a Flash player</span>
+<select name="perpage" title="Počet zpráv na stránku" class="xShort">
+<option value="10"<!-- BEGIN p10 --> selected="selected"<!-- END p10 -->>10</option>
+<option value="20"<!-- BEGIN p20 --> selected="selected"<!-- END p20 -->>20</option>
+<option value="50"<!-- BEGIN p50 --> selected="selected"<!-- END p50 -->>50</option>
+<option value="100"<!-- BEGIN p100 --> selected="selected"<!-- END p100 -->>100</option>
+</select>
+<input type="submit" name="filtr" value="Hledat" class="button" title="Filtrovat zpravy podle textu zadaneho v poli text" />
+<div id="imageHolder" class="row"></div>
 <!-- END userlogged2 -->
 </fieldset>
 </form>

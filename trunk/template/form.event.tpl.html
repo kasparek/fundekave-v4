@@ -25,8 +25,8 @@
 <label> - nebo URL</label><input type="text" name="imageUrl" /><br />
 <div id="imageHolder" class="row">
 <!-- BEGIN image -->
-<label>Letak</label><a rel="lightbox" href="{IMAGEURL}"><img src="{IMAGETHUMBURL}" /></a>
-<input type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat letak?" class="button uibutton confirm" /><br />
+<label>Obrázek</label><a rel="lightbox" href="{IMAGEURL}"><img class="rightPadded leftbox" src="{IMAGETHUMBURL}" /></a>
+<input id="tempStoreButt" type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrázek?" class="leftbox button uibutton<!-- BEGIN confirm --> confirm<!-- END confirm -->" />
 <!-- END image -->
 </div>
 <label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup expand draftable">{TEXT}</textarea><br />

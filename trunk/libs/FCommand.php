@@ -97,6 +97,7 @@ class FCommand {
 		$user= FUser::getInstance();
 		$cache = FCache::getInstance('f');
 		$cache->invalidateGroup('itemlist'.$user->pageVO->pageId);
+		$cache->invalidateGroup('itemlist');
 	}
 	
 	public static function pageUpdated($data) {
