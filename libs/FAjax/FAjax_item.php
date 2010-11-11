@@ -45,6 +45,7 @@ class FAjax_item extends FAjaxPluginBase {
 
 	static function submit($data) {
 		FItemsForm::process($data);
+		if($data['__ajaxResponse']===true)
 		if(FAjax::isRedirecting()===false) {
 			Fajax_item::edit($data);
 			if(!empty($data['item'])) { 
@@ -88,11 +89,13 @@ class FAjax_item extends FAjaxPluginBase {
 			$tpl->setVariable('IMAGETHUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
 			$tpl->parse('image');
 			FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
+			FAjax::addResponse('call','tempStoreDeleteInit');
 		} else {
 			if($itemVO=FItemsForm::moveImage($data)) {
 				$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
 				$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->get('galeryDir').'/'.$itemVO->enclosure);
 				$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
+				$tpl->touchBlock('confirm');
 				$tpl->parse('image');
 				FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 			}
@@ -100,6 +103,10 @@ class FAjax_item extends FAjaxPluginBase {
 		if(!empty($data['item'])) {
 			FAjax::addResponse('i'.$data['item'], 'replaceWith', page_ItemDetail::build($data));
 		}
+	}
+	
+	static function tempStoreFlush($data) {
+	  FFile::flushTemplFile();
 	}
 
 }

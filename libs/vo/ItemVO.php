@@ -88,7 +88,6 @@ class ItemVO extends Fvob {
 				$numReaded = (int) FDBTool::getOne('select cnt from sys_pages_items_readed_reactions where itemId="'.$this->itemId.'" and userId="'.$user->userVO->userId.'"');
 				if($numReaded < 1) $numReaded = $this->cnt;
 				$this->unreaded = $this->cnt - $numReaded;
-				//$this->unreaded = (int) FDBTool::getOne('select i.cnt-r.cnt from sys_pages_items as i join sys_pages_items_readed_reactions as r on i.itemId=r.itemId and r.userId="'.$user->userVO->userId.'" and i.itemId="'.$this->itemId.'"');
 				if($this->unreaded < 0) $this->unreaded=0;
 				$name = 'unreaded';
 				break;
@@ -243,25 +242,19 @@ class ItemVO extends Fvob {
 
 	function delete() {
 		$itemId = $this->itemId;
-
 		$vo = new FDBvo( $this );
 		$vo->delete(null);
 		$vo->vo = false;
 		$vo = false;
-
 		if($this->itemIdTop > 0) {
-
 			$itemTop = new ItemVO( $this->itemIdTop );
 			$itemTop->saveOnlyChanged = true;
 			$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 			$itemTop->save();
-
 			FDBTool::query("update sys_pages_items_readed_reactions set cnt=cnt-1 where itemId='".$this->itemIdTop."'");
 			FDBTool::query("delete from sys_pages_items_readed_reactions where cnt < 0");
-
 		} else {
 			FPages::cntSet($this->pageId, -1);
-
 			FDBTool::query("update sys_pages_favorites set cnt=cnt-1 where pageId='".$this->pageId."'");
 			FDBTool::query("update sys_pages_favorites as pf set pf.cnt=(select p.cnt from sys_pages as p where p.pageId=pf.pageId) where pf.cnt < 0 or pf.cnt > (select p.cnt from sys_pages as p where p.pageId=pf.pageId)");
 		}
@@ -271,12 +264,9 @@ class ItemVO extends Fvob {
 		FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
 		FDBTool::query("delete from sys_pages_items_hit where itemId='".$itemId."'");
 		FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."'");
-			
 		//---last item
 		$this->updateItemIdLast();
-		
 		$this->memFlush();
-		
 		FCommand::run(ITEM_UPDATED,$this);
 	}
 
@@ -492,9 +482,13 @@ class ItemVO extends Fvob {
 	 * */
 	function updateReaded($userId) {
 		if(empty($userId)) return;
-		if($this->cnt==0) return;
+		if($this->get('cnt')==0) return;
 		$this->unreaded = 0;
-		FDBTool::query("insert delayed into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$this->itemId."','".$userId."',(select cnt from sys_pages_items where itemId='".$this->itemId."'),now()) on duplicate key update cnt=(select cnt from sys_pages_items where itemId='".$this->itemId."')");
+		$this->cnt = FDBTool::getOne("select cnt from sys_pages_items where itemId='".$this->itemId."'");
+		if($this->cnt>0) {
+			$q="insert into sys_pages_items_readed_reactions (itemId,userId,cnt,dateCreated) values ('".$this->itemId."','".$userId."','".$this->cnt."',now()) on duplicate key update cnt='".$this->cnt."'";
+			FDBTool::query($q);
+		}
 	}
 
 }
