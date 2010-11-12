@@ -102,8 +102,6 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
 		//PARAMS
 		$isMultipart = false;
-		$seq = (int)  $_POST['seq'];
-		$total = (int)  $_POST['total'];
 		if(!empty($_FILES)) {
 			$file = $_FILES['Filedata'];
 			$isMultipart = true;
@@ -111,6 +109,12 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			$file['name'] = $_POST['filename'];
 			$data['data'] = $_POST['data'];
 		}
+		if(empty($file)) {
+			echo '0';
+			exit;
+		}
+		$seq = (int) $_POST['seq'];
+		$total = (int) $_POST['total'];
 		$filename = $file['name'];
 		$ffile = new FFile(FConf::get("galery","ftpServer"));
 		$ffile->storeChunk($file,$seq);
