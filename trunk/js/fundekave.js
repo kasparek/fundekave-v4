@@ -320,7 +320,20 @@ o.init=function(){o.numLoaded=0;o.numTotal=parseInt($("#fotoTotal").text());if(o
 o.check=function(){Fajax.send('page-fuup',Sett.page);};
 o.refresh=function(n,u,t){o.numTotal=parseInt(t);$("#fotoTotal").text(o.numTotal);if(n.length>0)o.newLi=o.newLi.concat(n.split(';'));if(u.length>0)o.updLi=o.updLi.concat(u.split(';'));if(!o.run)o.next();};
 o.next=function(){if(o.updLi.length>0)o.load(o.updLi.pop(),1,'U');else if(o.newLi.length>0)o.load(o.newLi.pop(),1);else if(o.numLoaded<o.numTotal)o.load(0,10);else o.run=false;};
-o.load=function(item,offset,type){var f=Fajax;o.run=true;if(item>0){f.add('item', item);if(type=='U'){f.add('result','foto-'+item);f.add('resultProperty','$replaceWith');}}else{f.add('total',o.numTotal);f.add('seq',o.numLoaded);}if(type!='U'){f.add('result','fotoList');f.add('resultProperty','$append');}f.add('offset', offset);f.add('call','jUIInit');f.add('call','GaleryEdit.bindDelete');f.send('galery-editThumb',Sett.page);};
+o.load=function(item,offset,type){
+var f=Fajax;o.run=true;
+if(item>0){
+	f.add('item', item);
+	if(type=='U'){f.add('result','foto-'+item);f.add('resultProperty','$replaceWith');}
+}else{
+	f.add('total',o.numTotal);
+	f.add('seq',o.numLoaded);
+}
+f.add('offset', offset);
+f.add('call','jUIInit');
+f.add('call','GaleryEdit.bindDelete');
+f.send('galery-editThumb',Sett.page);
+};
 o.loadHandler=function(num){var n=parseInt(num);if(n>0)o.numLoaded+=n;o.next();};
 o.bindDelete=function(){listen('deletefoto','click',GaleryEdit.del);};
 o.del=function(e){var f=Fajax,l=$(this).attr("id").split("-");if(confirm($(this).attr("title"))){f.add('item', l[1]);f.send('item-delete');f.formStop=true;$('#foto-'+l[1]).hide('slow',function(){$('#foto-'+l[1]).remove()});o.numTotal--;$("#fotoTotal").text(o.numTotal);}return false;};}; 

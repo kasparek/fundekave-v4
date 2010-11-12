@@ -1,6 +1,8 @@
 <?php
 class FAjax_galery extends FAjaxPluginBase {
 	static function editThumb($data) {
+		if(empty($data['result'])) $data['result'] = 'fotoList';
+		if(empty($data['resultProperty'])) $data['resultProperty'] = '$append';
 		$user = FUser::getInstance();
 		$pageId = $user->pageId;
 		$itemRenderer = new FItemsRenderer();
