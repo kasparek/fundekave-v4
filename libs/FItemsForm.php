@@ -337,8 +337,8 @@ class FItemsForm {
 		$tpl->setVariable('TEXTID',$itemVO->typeId.$itemVO->pageId.'text');
 		$tpl->setVariable('TEXTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
 
-		$tpl->setVariable('TEXT',$itemVO->text);
-		$tpl->setVariable('TEXTLONG',$itemVO->textLong);
+		$tpl->setVariable('TEXT',FSystem::textToTextarea($itemVO->text));
+		$tpl->setVariable('TEXTLONG',FSystem::textToTextarea($itemVO->textLong));
 
 		$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
 		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);
