@@ -8,6 +8,7 @@ posta - nacitani novych zprav
 posta - otestovat v safari
 palce - otestovat bez JS
 clanky - ukladani - zdvojovani BR
+galerie detail - nezobrazuji se popisky
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
