@@ -9,6 +9,8 @@ posta - otestovat v safari
 palce - otestovat bez JS
 clanky - ukladani - zdvojovani BR
 galerie detail - nezobrazuji se popisky
+posta - smazat mezi nefunguje
+upload - nejak vycistit stary cunky pokud tam jsou
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
