@@ -31,8 +31,8 @@ class page_UserPost implements iPage {
 		if(isset($data["send"])) $data['action']='send';
 		//---SEND MESSAGE
 		if($data['action']=='send') {
-			$data["text"] = FSystem::textins($data["text"],array('plainText'=>1));
-			$data["recipient"] = FSystem::textins($data["recipient"]);
+			$data["text"] = FSystem::textins($data["text"]);
+			$data["recipient"] = FSystem::textins($data["recipient"],array('plainText'=>1));
 			if(empty($data["text"])) FError::add(FLang::$MESSAGE_EMPTY);
 			if(!empty($data["recipient"])) {
 				$recipientList=explode(",",$data["recipient"]);

@@ -28,6 +28,11 @@ INSERT INTO `sys_menu` VALUES ('idega', 'galer', 'Galerie', 1, 4);
 INSERT INTO `sys_menu` VALUES ('idega', 'maina', 'Přehled', 0, 5);
 INSERT INTO `sys_menu` VALUES ('idega', 'finfo', 'Přátelé', 0, 7);
 
+INSERT INTO `sys_menu` VALUES ('awake', 'maina', 'Blog', 1, 1);
+INSERT INTO `sys_menu` VALUES ('awake', 'fl327', 'Vzkazy', 1, 2);
+INSERT INTO `sys_menu` VALUES ('awake', 'galer', 'Galerie', 1, 4);
+INSERT INTO `sys_menu` VALUES ('awake', 'finfo', 'Přátelé', 0, 7);
+
 
 truncate sys_leftpanel_functions;
 INSERT INTO `sys_leftpanel_functions` VALUES ('login', '', 1, 1, null,null,null);
