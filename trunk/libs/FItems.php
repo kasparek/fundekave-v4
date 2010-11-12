@@ -49,7 +49,7 @@ class FItems extends FDBTool {
 		//---check permissions for given user
 		if($userId===0) {
 			$this->addJoinAuto('sys_pages','pageId',array(),'join');
-			$this->addWhere('sys_pages.public = 1 and sys_pages.locked<2');
+			$this->addWhere('sys_pages_items.public=1 and sys_pages.public = 1 and sys_pages.locked<2');
 		} elseif($userId > 0) {
 			if(!FRules::getCurrent( 2 )) {
 				//TODO:public=3 - jen pro pratele - solve performance issues

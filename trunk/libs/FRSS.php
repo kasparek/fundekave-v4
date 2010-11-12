@@ -71,8 +71,8 @@ class FRSS {
 			if($user->pageVO->typeId != 'top') {
 				$fi->setPage($user->pageVO->pageId);
 				$fi->hasReactions(false);
-				$pageName = $pageVO->name;
-				$totalFoto = $pageVO->cnt;
+				$pageName = $user->pageVO->name;
+				$totalFoto = $user->pageVO->cnt;
 			}
 			$fi->setOrder('sys_pages_items.dateStart desc');
 			if($user->pageVO->typeId!='top') {

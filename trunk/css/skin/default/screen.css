@@ -2,8 +2,8 @@
 /* BASIC ELEMENTS */
 /*@media screen,projection {*/
 a {color: #320;}
-h1 {font: 1.66em Georgia,Times,serif; padding: 0 10px 0 10px;}
-h2 {font: 2em Georgia,Times,serif;}
+h1 {font: 1.66em Verdana,Georgia,Times,serif; padding: 0 10px 0 10px;}
+h2 {font: 2em Verdana,Georgia,Times,serif;}
 div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
@@ -32,7 +32,7 @@ ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
 ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
 background: #F8FBDB;
 }
-ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/29px Georgia,Times,serif;text-decoration: none;
+ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/29px Verdana,Georgia,Times,serif;text-decoration: none;
 font-weight: bold;
 color: #223d01;}
 ul#menu li a:hover,a.active {background: #E2E595;}
@@ -115,7 +115,7 @@ div.mainpanel-content div.galery span.abbr abbr {border: none;}
 div.mainpanel-content h3.summary, div.mainpanel-content h3.entry-title {border: none;}
 
 /* LINK LIST */
-a.linkItem {font: 1.3em/25px Georgia,Times,serif;clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
+a.linkItem {font: 1.3em/25px Verdana,Georgia,Times,serif;clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
 a.linkItem:hover {background: #E2E595;text-decoration:underline;}
 div#sidebar a.linkItem { line-height: 20px;height:20px;overflow:hidden; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
@@ -220,7 +220,7 @@ div.friends ul li div,div.friends ul li ul {float: left;}
 div.friends ul li div {margin-right: 10px;}
 
 /* NEW MESSAGES WARNING */
-span#messageNew {color:#fff;position: fixed;z-index:10001;display: block;background: #C64226;font: 1em Georgia,Times,serif;right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
+span#messageNew {color:#fff;position: fixed;z-index:10001;display: block;background: #C64226;font: 1em Verdana,Georgia,Times,serif;right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
 span#messageNew a { color:#fff; }
 span#messageNew .flash {border: 2px #00ffff solid;}
 
