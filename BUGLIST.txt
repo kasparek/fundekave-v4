@@ -35,6 +35,13 @@ delete FROM `sys_pages_properties` where name='position' and value like "% %";
 
 FIX:
 logout - elogo neexistuje
+cache - mazani pri zmenach na subdomains
+galerie - filtrovat seznam kategorii jen pro galerie
+detail clanku - rewrite nahledu na odkaz do galerie
+posta - radkovani
+posta - nacitani novych zprav
+posta - otestovat v safari
+palce - otestovat bez JS
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category

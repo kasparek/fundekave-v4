@@ -156,8 +156,10 @@ class FItemsForm {
 				 *save item
 				 */
 				if(!FError::is()) {
-					$itemVO->userId = (int) $user->userVO->userId;
-					$itemVO->name = $data['name'];
+					if(empty($itemVO->itemId)){
+						$itemVO->userId = (int) $user->userVO->userId;
+						$itemVO->name = $data['name'];
+					}
 					if(!empty($data['addon'])) $itemVO->set('addon', $data['addon']);
 					if(!empty($data['text'])) $itemVO->set('text', $data['text']);
 					if(!empty($data['textLong'])) $itemVO->set('textLong', $data['textLong']);
