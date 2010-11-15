@@ -1,6 +1,14 @@
 <?php
 class FSystem {
 
+	static function superInvalidate($grp,$id='') {
+		//domain list
+		$domains = array('fundekave.net','eboinnaija.fundekave.net');
+		foreach($domains as $dom) {
+			file_get_contents('http://'.$dom.'/cron-invalidate.php?invalidate='.$grp.($id!=''?'-'.$id:''));
+		}
+	}
+
 	static function superVars($data) {
 		$superVars = array(
 		'SKIN'=>SKIN,
@@ -308,33 +316,33 @@ class FSystem {
 		$text = ' '.$text;
 
 		$regList = array(
-		"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
-		,"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
+		'a'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
+		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
 		
-		,"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
-		,"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
-		,"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
+		,'c'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
+		,'d'=>/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
+		,'e'=>"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		
-		,"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
-		,"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
-		,"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
+		,'f'=>"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
+		,'g'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
+		,'h'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
-		
+		,'i'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]x[0-9]\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.[jpg|png|gif]+)([^\"]*+)\"[^<]+?>/i"
 		
 		);
 		
-		//,"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]x[0-9]\/crop\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
-
-		$r=0;
-		foreach($regList as $regex) {
+		//i example - http://fotobiotic.net/image/1400x1400/prop/kopretinka/20101107_bonfire-night-a-slunecni-prochazka_Bviqw/pb060003.jpg
+       
+		
+		foreach($regList as $r=>$regex) {
 			if(preg_match_all($regex , $text, $matches, PREG_OFFSET_CAPTURE)) {
 				$offset = 0;
 				$matchNum = count($matches[0]);
 				for($x=0;$x<$matchNum;$x++) {
 					switch($r) {
-						case 2:
-						case 3:
-						case 4:
+						case 'c':
+						case 'd':
+						case 'e':
 							$fi = new FItems();
 							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 							$arr = $fi->getList();
@@ -345,7 +353,7 @@ class FSystem {
 							}
 
 							break;
-						case 6:
+						case 'g':
 							$item = new ItemVO((int)$matches[1][$x][0],true);
 							if($item->itemId > 0) {
 								$replaceText = $item->render();
@@ -353,7 +361,7 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
-						case 7:
+						case 'h':
 							//page link
 							$userId = FUser::logon();
 							$fPages = new FPages('', $userId);
@@ -365,7 +373,7 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
-						case 5:
+						case 'f':
 							$pos = strpos($text,$matches[1][$x]);
 							if($matches[1][$x][0]!='"' && $matches[1][$x][0]!="'") {
 								//check extension
@@ -383,8 +391,8 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[2][$x][0]);
 							}
 							break;
-						case 0:
-						case 1:
+						case 'a':
+						case 'b':
 							$pos = false;
 							if(!empty($matches[3][$x][0])) $pos = strpos($matches[2][$x][0],$matches[3][$x][0]);
 							if($r==7 || $pos!==false) { //only if text of link is link itself
@@ -397,7 +405,7 @@ class FSystem {
 					}
 				}
 			}
-			$r++;
+			
 		}
 		
 		return trim($text);

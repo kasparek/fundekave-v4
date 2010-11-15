@@ -62,8 +62,7 @@ class FCommand {
 
 	//COMMANDS
 	public static function avatarUpdated($data) {
-		$cache = FCache::getInstance('f');
-		$cache->invalidateData($data,'avatar');
+		FSystem::superInvalidate('avatar',$data);
 		$cache = FCache::getInstance('d');
 		$cache->invalidateData($data,'profileFiles');
 	}
@@ -72,9 +71,8 @@ class FCommand {
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
 		$unreadedList=array();
-		$cache = FCache::getInstance('f');
-		$cache->invalidateData($data->itemId,'renderedItem');
-		$cache->invalidateData($data->itemId.'detail','renderedItem');
+		FSystem::superInvalidate('renderedItem',$data->itemId);
+		FSystem::superInvalidate('renderedItem',$data->itemId.'detail');
 	}
 	
 	public static function itemReaded($data) {
@@ -95,9 +93,8 @@ class FCommand {
 		}
 		
 		$user= FUser::getInstance();
-		$cache = FCache::getInstance('f');
-		$cache->invalidateGroup('itemlist'.$user->pageVO->pageId);
-		$cache->invalidateGroup('itemlist');
+		FSystem::superInvalidate('itemlist');
+		FSystem::superInvalidate('itemlist'.$user->pageVO->pageId);
 	}
 	
 	public static function pageUpdated($data) {
@@ -105,25 +102,21 @@ class FCommand {
 	}
 	
 	public static function rssUpdated($data) {
-	  $cache = FCache::getInstance('f');
-	  $cache->invalidateGroup('rsslist'.$data->pageId);
+		FSystem::superInvalidate('rsslist'.$user->pageVO->pageId);
 	}
 	
 	public static function flushCache($data) {
-		$cache = FCache::getInstance('f');
-		$cache->invalidateGroup('rsslist');
-		$cache->invalidateGroup('itemlist');
-		$cache->invalidateGroup('itemlist'.$data->get('pageId'));
+		FCommand::rssUpdated();
+		FSystem::superInvalidate('itemlist');
+		FSystem::superInvalidate('itemlist'.$data->get('pageId'));
 	}
 	
 	public static function positionUpdated($data) {
-		$cache = FCache::getInstance('f');
-	  $cache->invalidateGroup('sidebar-map');
+	  FSystem::superInvalidate('sidebar-map');
 	}
 	
 	public static function categoriesUpdated($data) {
-		$cache = FCache::getInstance('f');
-	  $cache->invalidateGroup('sidebar-categories');
+	  FSystem::superInvalidate('sidebar-categories');
 	}
 	
 }
