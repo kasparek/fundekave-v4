@@ -55,6 +55,7 @@ class page_ItemDetail implements iPage {
 		 **/		 		
 		if($itemVO->typeId=='galery') {
 			$arrVars = array(
+				"TEXT"=>$itemVO->text,
 				"IMGALT"=>$itemVO->enclosure,
 				"IMGTITLE"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
@@ -79,7 +80,7 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
-				FAjax::addResponse('description','$html',isset($arrVars['INFO'])?$arrVars['INFO']:'');
+				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
 				$tpl->parse('map');

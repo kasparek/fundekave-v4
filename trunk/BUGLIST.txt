@@ -1,14 +1,7 @@
 FIX:
-logout - elogo neexistuje
 cache - mazani pri zmenach na subdomains
-galerie - spis tam ty kategorie vubec nejsou,filtrovat seznam kategorii jen pro galerie
 detail clanku - rewrite nahledu na odkaz do galerie
-posta - radkovani
-posta - nacitani novych zprav
 posta - otestovat v safari
-palce - otestovat bez JS
-clanky - ukladani - zdvojovani BR
-galerie detail - nezobrazuji se popisky
 posta - smazat mezi nefunguje
 upload - nejak vycistit stary cunky pokud tam jsou
 

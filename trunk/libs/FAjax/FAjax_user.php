@@ -166,18 +166,21 @@ class FAjax_user extends FAjaxPluginBase {
 		if($userId = FUser::logon()) {
 			if(FItemTags::isTagged($itemId,$userId)) {
 				FError::add(FLang::$MESSAGE_TAG_ONLYONE);
-				return;
-			}
-			if(!isset($data['a'])) $data['a'] = 'a';
-			if($data['a']=='r') FItemTags::removeTag($itemId,$userId);
-			else FItemTags::tag($itemId,$userId);
-			//---create response
-			if($data['__ajaxResponse']==true) {
-				FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
-				FAjax::addResponse('call','fajaxInit');
+			} else {
+				if(!isset($data['a'])) $data['a'] = 'a';
+				if($data['a']=='r') FItemTags::removeTag($itemId,$userId);
+				else FItemTags::tag($itemId,$userId);
+				//---create response
+				if($data['__ajaxResponse']==true) {
+					FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
+					FAjax::addResponse('call','fajaxInit');
+				}
 			}
 		} else {
 			FError::add(FLang::$MESSAGE_TAG_REGISTEREDONLY);
+		}
+		if($data['__ajaxResponse']==false) {
+			FHTTP::redirect(FSystem::getUri('i='.$itemId,'',''));
 		}
 	}
 

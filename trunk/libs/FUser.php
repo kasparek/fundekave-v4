@@ -193,19 +193,9 @@ class FUser {
 		$userId = $this->userVO->userId;
 		$pageAccess = $this->pageAccess = true;
 		$pageId = $this->pageId;
-
 		if($pageId) {
-			//---logout action
-			if( $pageId == 'elogo') {
-				if($userId > 0) {
-					FUser::logout($userId);
-					FError::add(FLang::$MESSAGE_LOGOUT_OK,1);
-					FHTTP::redirect('index.php');
-				}
-			}
 			//---try load current page
 			$this->pageVO = new PageVO($pageId,true);
-			
 			if( $this->pageVO->loaded !== true ) {
 				$pageAccess = $this->pageAccess = false;
 				$pageId = $this->pageId = null;
