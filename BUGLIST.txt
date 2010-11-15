@@ -1,9 +1,11 @@
 FIX:
+image resized - divny velikosti se odnekud objevuji
 cache - mazani pri zmenach na subdomains
 detail clanku - rewrite nahledu na odkaz do galerie
 posta - otestovat v safari
 posta - smazat mezi nefunguje
 upload - nejak vycistit stary cunky pokud tam jsou
+hasNewMessage checker - do not kick user, if kicked, redirect
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category

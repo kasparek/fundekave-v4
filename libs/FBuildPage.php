@@ -331,14 +331,12 @@ class FBuildPage {
 			$tpl->touchBlock('msgHidden');
 		}
 
-		FProfiler::write('FBuildPage--custom js sections');
 		//---PRINT PAGE
 		header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));
 
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
-
 		//$data = preg_replace('/\s\s+/', ' ', $data);
 
 		echo $data;
