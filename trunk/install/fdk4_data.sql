@@ -14,6 +14,8 @@ INSERT INTO `sys_pages` VALUES ('sbann', null, 'admin', null, null, 'page_SysEdi
 INSERT INTO `sys_pages` VALUES ('skate', null, 'admin', null, null, 'page_SysEditCategories', 'Editace kategorií', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 INSERT INTO `sys_pages` VALUES ('spaka', null, 'admin', null, null, 'page_SysEditPages', 'Nastaveni stranek', NULL, NULL, 3, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
 
+INSERT INTO `sys_pages` VALUES ('gamas', null, 'top', null, null, 'page_fotoMashup', 'Foto Mix', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL) ;
+
 truncate sys_menu;
 INSERT INTO `sys_menu` VALUES ('maina', 'maina', 'Úvod', 1, 1);
 INSERT INTO `sys_menu` VALUES ('maina', 'event', 'Tipy', 1, 2);
