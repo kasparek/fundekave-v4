@@ -80,6 +80,12 @@ if(!isset($nonInit)) {
 	if($itemVO) $user->itemVO = $itemVO;
 	$user->pageId = $pageId;
 	if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
+	//---logout action
+	if(isset($_GET['logout']) && $user->userVO->userId>0) {
+			FUser::logout($user->userVO->userId);
+			FError::add(FLang::$MESSAGE_LOGOUT_OK,1);
+			FHTTP::redirect(FSystem::getUri('','',''));
+	}
 	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
 	$pageVO = $user->pageVO; 

@@ -6,7 +6,7 @@ class Sidebar_categories {
 		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
 		if($user->pageVO->typeId=='top') {
 			$type='';
-			if(isset(FLang::$TYPEID[$user->pageVO->typeIdChild])) $user->pageVO->typeIdChild;
+			if(isset(FLang::$TYPEID[$user->pageVO->typeIdChild])) $type=$user->pageVO->typeIdChild;
 			if(isset(FLang::$TYPEID[$user->pageParam])) $type=$user->pageParam;
 			if($type!='') {
 				$tool->setWhere("c.typeId = '".$type."'");
