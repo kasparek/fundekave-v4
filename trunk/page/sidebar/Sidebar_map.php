@@ -16,7 +16,7 @@ class Sidebar_map {
 		} 
 		
 		$dbtool = new FDBTool('sys_pages_items_properties');
-		$dbtool->setSelect('value');
+		$dbtool->setSelect("value,'type.item'");
 		$dbtool->setWhere("name='position'");
 		$dbtool->addJoinAuto('sys_pages_items','itemId',array(),'join');
 		if(empty($user->itemVO)) $dbtool->addWhere("(sys_pages_items.itemIdTop is null or sys_pages_items.itemIdTop='')");
@@ -33,9 +33,10 @@ class Sidebar_map {
 		if(!empty($tmp)) $list = array_merge($list,$tmp);
 		
 		//PAGES
+		$showPageLine = false; 
 		if(empty($user->itemVO)) {
 			$dbtool = new FDBTool('sys_pages_properties');
-			$dbtool->setSelect('value');
+			$dbtool->setSelect("value,'type.page'");
 			$dbtool->setWhere("name='position'");
 			$dbtool->addJoinAuto('sys_pages','pageId',array(),'join');
 			$dbtool->addWhere('sys_pages.public=1');
@@ -44,6 +45,7 @@ class Sidebar_map {
 			if($type!='') $dbtool->addWhere("sys_pages.typeId='".$type."'");
 			if($category>0) $dbtool->addWhere("sys_pages.categoryId='".$category."'");
 			$tmp = $dbtool->getContent(0,20);
+			if(count($tmp)==1) $showPageLine=true; 
 			if(!empty($tmp)) $list = array_merge($list,$tmp);
 		}
 		if(empty($list)) return;
@@ -63,6 +65,12 @@ class Sidebar_map {
 			$journey = explode(';',$position);
 			list($lat,$lng)=explode(',',$journey[count($journey)-1]);
 			$tpl->setVariable('STATICMARKERPOS',round($lat,4).','.round($lng,4));
+			if(count($journey)>1) {
+				if($row[1]=='type.page' && $showPageLine==true) {
+					$geoEncode = new GooEncodePoly();
+					$tpl->setVariable('SWPLIST','enc:'.$geoEncode->encode($journey));
+				}
+			}
 			$tpl->parse('marker');
 		}
 		$ret = $tpl->get();

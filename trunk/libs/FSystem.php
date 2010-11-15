@@ -368,7 +368,7 @@ class FSystem {
 							$fPages->setWhere("sys_pages.pageId='".$matches[1][$x][0]."'");
 							$arr = $fPages->getContent();
 							if(!empty($arr)) {
-								$replaceText = FPages::printPagelinkList($arr,array('inline'=>1));
+								$replaceText = FPages::printPagelinkList($arr,array('inline'=>1,'noitem'=>1));
 								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
