@@ -125,7 +125,13 @@ class FRSS {
 					
 					$link = 'http://'.$homesite.'/'.FSystem::getUri('i='.$item->itemId,$item->pageId);
 					$tpl->setVariable('LINK',$link);
-					$tpl->setVariable('PUBDATE',$item->dateStart ? $item->dateStartIso : $item->dateCreatedIso);
+					
+					//TODO:vyjimka pro php4 broskev a druhou travu :/
+					if($user->pageVO->pageId=='fl205' || $user->pageVO->pageId=='fl189') {
+						$tpl->setVariable('PUBDATE',$item->dateStart ? $item->dateStart : $item->dateCreated);
+					} else {
+						$tpl->setVariable('PUBDATE',$item->dateStart ? $item->dateStartIso : $item->dateCreatedIso);
+					}
 					
 					switch($item->typeId) {
 						case 'galery':

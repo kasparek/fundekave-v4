@@ -20,7 +20,7 @@ class FUser {
 	//---user access
 	var $idkontrol = false;
 	var $pageAccess = false;
-
+	
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
 	'u'=>2, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
@@ -85,6 +85,9 @@ class FUser {
 				//---db logon
 				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
 				("'.$gid.'","'.$userVO->idlogin.'",NOW(),NOW(),"'.$pageId.'","'.$userVO->ip.'")');
+				//user total item num
+				$cache = FCache::getInstance('d');
+				$userVO->itemsMyNum = (int) $cache->getData($gid,'userItemsNum');
 				//---session cache
 				$cache = FCache::getInstance( 's' );
 				$cache->invalidate();
@@ -173,14 +176,11 @@ class FUser {
 	
 	function init() {
 		if( $this->userVO===null ) {
-			
 			//---try to load user from cache
 			$cache = FCache::getInstance('s');
-			
 			if(false === ($this->userVO = &$cache->getPointer('user'))) {
 				$this->userVO = new UserVO();
 			}
-			
 		}
 	}
 
@@ -256,8 +256,31 @@ class FUser {
 				}
 				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
+				
+				$this->updateTotalItemsNum();
+				
 			}
 		}
+	}
+	
+	function updateTotalItemsNum($updateMy=false) {
+	   //check total items number
+			//---update total items public number
+			$fpages = new FPages('',$this->userVO->userId);
+			$fpages->VO = null;
+			$fpages->fetchmode=0;
+			$fpages->setSelect("sum(sys_pages.cnt)");
+			//TODO:cache this query result?
+			$res = $fpages->getContent();
+			$totalNum = $res[0][0];
+			if($this->userVO->itemsTotalNum != $totalNum){
+				$this->userVO->itemsTotalNum = $totalNum;
+				$cache = FCache::getInstance('d');
+				$cache->setData($totalNum,$this->userVO->userId,'userItemsNum');
+			}
+			if($updateMy) {
+				$this->userVO->itemsMyNum = $totalNum;
+			}
 	}
 
 	function setWhoIs($userId) {

@@ -5,7 +5,7 @@ class FSystem {
 		//domain list
 		$domains = array('fundekave.net','eboinnaija.fundekave.net');
 		foreach($domains as $dom) {
-			file_get_contents('http://'.$dom.'/cron-invalidate.php?invalidate='.$grp.($id!=''?'-'.$id:''));
+			file_get_contents('http://'.$dom.'/cron-invalidate.php?invalidate='.$grp.($id!=''?'/'.$id:''));
 		}
 	}
 
@@ -320,7 +320,7 @@ class FSystem {
 		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
 		
 		,'c'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
-		,'d'=>/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
+		,'d'=>"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		,'e'=>"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		
 		,'f'=>"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"

@@ -1,4 +1,5 @@
 FIX:
+main page - change number of items base of unread
 pager - nefunguje kdyz je i=>0 ve forum
 image resized - divny velikosti se odnekud objevuji
 cache - mazani pri zmenach na subdomains
@@ -7,6 +8,7 @@ posta - smazat mezi nefunguje
 upload - nejak vycistit stary cunky pokud tam jsou
 hasNewMessage checker - do not kick user, if kicked, redirect
 itemlist - nefunguje data= -> order by dataLive pridava spatnej prefix
+profilefiles - cached - kdyz neni adresar tak to nacte silene vsechno protoze se asi nepovede zmenit adresar
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
