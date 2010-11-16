@@ -301,6 +301,7 @@ class ItemVO extends Fvob {
 				$maxWidth = $fibs[min($diff)];
 			}
 			$this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop');
+			FError::write_log('ITEMVO::DETAILURL='.$this->detailUrl);
 		}
 
 		//check if is editable
