@@ -12,8 +12,8 @@ class FileDriver
 	var $cacheEngine;
 
 	//---could be null to live forever
-	var $lifeTimeDefault = 0;
-	var $lifeTime = 0;
+	var $lifeTimeDefault = null;
+	var $lifeTime = null;
 
 	function __construct() {
 		$cacheDir = FConf::get('settings','cache_path'); 
@@ -33,7 +33,8 @@ class FileDriver
 	}
 
 	function setConf( $lifeTime ) {
-		$this->cacheEngine->setLifeTime = $this->lifeTime = empty($lifeTime) ? null : $lifeTime;
+		$this->lifeTime = empty($lifeTime) ? null : $lifeTime;
+		$this->cacheEngine->setLifeTime($this->lifeTime);
 	}
 
 	function setData($key, $data, $grp) {
