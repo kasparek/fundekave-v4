@@ -187,7 +187,6 @@ class ItemVO extends Fvob {
 	function save() {
 		$vo = new FDBvo( $this );
 		$vo->resetIgnore();
-		
 			
 		if($this->itemId > 0) {
 			//---update

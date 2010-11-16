@@ -56,6 +56,9 @@ class UserVO extends Fvob {
 	//client
 	var $clientWidth=0;
 	var $clientHeight=0;
+	//total items num
+	var $itemsTotalNum=0;
+	var $itemsMyNum=0;
 		
 	function save(){
 		$this->saveIgnore = array('dateLastVisit');

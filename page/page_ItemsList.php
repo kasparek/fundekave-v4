@@ -57,9 +57,22 @@ class page_ItemsList implements iPage {
 		}
 
 		//perpage based on unreaded items
+		$diff=0;
 		if( $user->idkontrol ) {
-			$unreadedCnt = FItems::cacheUnreadedList();
-			if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) $pageVO->perPage($unreadedCnt + 3);
+			if($pageVO->typeId!='top') {
+				$unreadedCnt = FItems::cacheUnreadedList();
+				if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) {
+					$pageVO->perPage($unreadedCnt + 3);
+					$diff = $unreadedCnt; 
+				}
+			} else {
+				//for top pages based on super total item num
+				$diff = $user->userVO->itemsTotalNum-$user->userVO->itemsMyNum;
+				if($diff>0) {
+					$user->userVO->itemsMyNum = $user->userVO->itemsTotalNum;
+					if($diff>$pageVO->perPage()) $pageVO->perPage($diff + 3);
+				}
+			}
 		}
 
 		//---DEEPLINKING for forum pages
@@ -74,6 +87,10 @@ class page_ItemsList implements iPage {
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
 		$vars = array();
+		if($diff>0) {
+			$max = FConf::get('perpage','max');
+			$vars['UNREADNUM']= $diff>$max ? $max.'+' : $diff;
+		}
 		$itemId = 0;
 
 		$categoryId=0;

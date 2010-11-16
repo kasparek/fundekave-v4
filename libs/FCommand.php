@@ -73,6 +73,9 @@ class FCommand {
 		$unreadedList=array();
 		FSystem::superInvalidate('renderedItem',$data->itemId);
 		FSystem::superInvalidate('renderedItem',$data->itemId.'detail');
+		//update total my num
+		$user = FUser::getInstance();
+		$user->updateTotalItemsNum(true);
 	}
 	
 	public static function itemReaded($data) {
@@ -92,7 +95,7 @@ class FCommand {
  				$unreadedList = $newList;
 		}
 		
-		$user= FUser::getInstance();
+		$user = FUser::getInstance();
 		FSystem::superInvalidate('itemlist');
 		FSystem::superInvalidate('itemlist'.$user->pageVO->pageId);
 	}
@@ -101,7 +104,8 @@ class FCommand {
 		
 	}
 	
-	public static function rssUpdated($data) {
+	public static function rssUpdated($data=null) {
+		$user = FUser::getInstance();
 		FSystem::superInvalidate('rsslist'.$user->pageVO->pageId);
 	}
 	
