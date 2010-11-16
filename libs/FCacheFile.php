@@ -10,6 +10,7 @@ class FCacheFile
 	private $_caching = true;
 	/*** Cache lifetime (in seconds) If null, the cache is valid forever.*/
 	private $_lifeTime = null;
+	public function setLifeTime($t) { $this->_lifeTime=$t; }
 	/*** Enable / disable fileLocking*/
 	private $_fileLocking = true;
 	/*** Timestamp of the last valid cache*/
