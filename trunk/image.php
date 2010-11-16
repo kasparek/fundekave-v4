@@ -14,10 +14,23 @@
  */
 date_default_timezone_set('Europe/Prague');
 
+function getClosest($val,$list) {
+	if($val==0) return 0;
+	if(in_array($val,$list)) return $val;
+	//get closest valid value
+	foreach ($list as $fib) {
+		$d = (int) $val - $fib;
+		if($d >= 0) $diff[$fib] = $d;
+	}
+	$fibs = array_flip($diff);
+	return (int) $fibs[min($diff)];
+}
+
 //INPUT
 $fileParam = isset($_GET['img']) ? $_GET['img'] : '';
 $widthParam = 0;
 $heightParam = 0;
+$validator = '';
 
 if(isset($_GET['side'])) {
 	$getSide = $_GET['side'];
@@ -25,6 +38,7 @@ if(isset($_GET['side'])) {
 		$getSideList = explode('x',$getSide);
 		$widthParam = (int) $getSideList[0];
 		$heightParam = (int) $getSideList[1];
+		if(isset($getSideList[2])) $validator = $getSideList[2]; 
 	} else {
 		$widthParam = $heightParam = (int) $getSide;
 	}
@@ -53,6 +67,11 @@ if($cutParam=='flush') $sideOptionList[] = 0;
 $widthParam = $widthParam > $c->maxSize ? $c->maxSize : $widthParam;
 $heightParam = $widthParam > $c->maxSize ? $c->maxSize : $heightParam;
 
+if($widthParam==$heightParam) $widthParam = $heightParam = getClosest($widthParam,$sideOptionList);
+else {
+  $widthParam = getClosest($widthParam,$sideOptionList);
+  $heightParam = getClosest($heightParam,$sideOptionList);
+}
 
 $processParams = array('quality'=>$c->quality);
 if($cutParam=='crop') $processParams['crop'] = 1;

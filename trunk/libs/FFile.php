@@ -63,7 +63,7 @@ class FFile {
 		if(!$this->isFtpMode) return is_dir($filename);
 		$currentDir = ftp_pwd($this->ftpConn);
 		if(@ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, $current);
+			ftp_chdir($this->ftpConn, $currentDir);
 			return true;
 		}
 		return false;
@@ -298,7 +298,7 @@ class FFile {
 			}
 		} else {
 			//ftp
-			ftp_chdir($this->ftpConn, $dir); 
+			if(!ftp_chdir($this->ftpConn, $dir)) return array(); 
 			$list = ftp_rawlist($this->ftpConn, "-A");
 			ftp_chdir($this->ftpConn, '/');
 			if($dir{strlen($dir)-1}!='/') $dir.='/';
