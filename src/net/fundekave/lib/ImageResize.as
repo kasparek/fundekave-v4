@@ -228,21 +228,26 @@ package net.fundekave.lib
         public function encode(bmpd:BitmapData=null):void {
         	if(!bmpd) bmpd = _resultBmpData;
         	resultBytes = new ByteArray();
-			        	       	
-        	var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
-        	resultBytes = jpgEnc.encode( bmpd );
+			
+			//haxe encoder
+			var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
+			resultBytes = jpgEnc.encode(bmpd);
+			
+			//optimized as3 encoder
+        	//var jpgEnc:JPEGEncode = new JPEGEncode( outputQuality );
+        	//resultBytes = jpgEnc.encode( bmpd );
+			
+			//alchemy encoder
+			//var ba:ByteArray = bmpd.getPixels( bmpd.rect );
+			//ba.position = 0;
+			//lib.encode(ba,resultBytes,bmpd.width,bmpd.height,outputQuality);
+			//ba.clear();
+			
+			jpgEnc.free();
 			jpgEnc=null;
-			/**/
-			/*
-			var ba:ByteArray = bmpd.getPixels( bmpd.rect );
-			ba.position = 0;
-			lib.encode(ba,resultBytes,bmpd.width,bmpd.height,outputQuality);
-			ba.clear();
-			/**/
         	onCompressFinished(null);
 			bmpd.dispose();
 			bmpd=null;
-        	/**/
         }
         
         private function onCompressFinished( out:ByteArray ):void {
