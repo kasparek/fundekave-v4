@@ -113,11 +113,24 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			echo '0';
 			exit;
 		}
+		if(empty($_POST['crc'])) {
+			echo '0';
+			exit; 
+		}
+		$crcReceived = $_POST['crc'];
+				
 		$seq = (int) $_POST['seq'];
 		$total = (int) $_POST['total'];
 		$filename = $file['name'];
 		$ffile = new FFile(FConf::get("galery","ftpServer"));
-		$ffile->storeChunk($file,$seq);
+		$crcStored = $ffile->storeChunk($file,$seq);
+		FError::write_log("CRC ".$crcReceived." ".$crcStored);
+		if($crcStored!=$crcReceived) {
+			$ffile->deleteChunk($file,$seq);
+			echo '0';
+			exit;
+		}
+				
 		//---file complete
 		if($ffile->hasAllChunks($filename,$total) === true) {
 			//--concat all files
