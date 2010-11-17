@@ -8,6 +8,7 @@ package net.fundekave.lib
 	import flash.net.URLRequestHeader;
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
+	import nochump.util.zip.CRC32;
 	
 	public class Service extends URLLoader
 	{
@@ -44,6 +45,9 @@ package net.fundekave.lib
 						strippedVars[name] = variables[name];
 					}
 				}
+				var crc32:CRC32 = new CRC32();
+				crc32.update(variables.data);
+				strippedVars['crc'] = crc32.getValue();
 				this.request.data = UploadPostHelper.getPostData( variables.filename, variables.data, strippedVars);
 				this.request.requestHeaders.push( new URLRequestHeader( 'Cache-Control', 'no-cache' ) );
 				this.request.requestHeaders.push( new URLRequestHeader('Content-type', 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary()) );
