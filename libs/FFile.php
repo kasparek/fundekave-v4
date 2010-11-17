@@ -149,11 +149,26 @@ class FFile {
 	function storeChunk($file,$seq) {
 		$ff=new FFile();
 		$ff->makeDir(FConf::get("settings","fuup_chunks_path"));
+		$filename = $this->chunkFilename($file["name"],$seq);
 		if(!empty($file['tmp_name'])) {
-			move_uploaded_file($file["tmp_name"], $this->chunkFilename($file["name"],$seq) );
+			move_uploaded_file($file["tmp_name"], $filename );
 		} else if(!empty($file['data'])) {
-			file_put_contents($this->chunkFilename($file["name"],$seq),$file["data"]);
+			file_put_contents($filename,$file["data"]);
 		}
+		/*
+		$hash = hash_file('crc32b', $filename);
+		$array = unpack('N', pack('H*', $hash));
+		return $array[1];
+		*/
+		$handle = fopen($filename, "rb");
+		$data = fread($handle, filesize($filename)-2);
+		fclose($handle);
+		return crc32($data);
+	}
+	
+	function deleteChunk($file,$seq) {
+		$filename = $this->chunkFilename($file["name"],$seq);
+		if(file_exists($filename)) unlink($filename);
 	}
 
 	/**

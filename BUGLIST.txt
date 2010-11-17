@@ -1,4 +1,5 @@
 FIX:
+sys_cache - cleaning
 image resized - divny velikosti se odnekud objevuji
 cache - mazani pri zmenach na subdomains
 detail clanku - rewrite nahledu na odkaz do galerie - potrebuje dodelat
