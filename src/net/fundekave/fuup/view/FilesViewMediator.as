@@ -116,9 +116,11 @@ package net.fundekave.fuup.view
 		
 		private var imagesProcessed:Boolean;
 		private var stateName:String;
+		private var proxy:FileProxy;
 		override public function handleNotification(note:INotification):void
 		{
 			var configProxy:ConfigProxy
+			if (!proxy) proxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			switch ( note.getName() )
 			{
 				case ApplicationFacade.FILESIZE_ERROR:
@@ -141,7 +143,6 @@ package net.fundekave.fuup.view
 					filesView.addFile();
 				break;
 				case ApplicationFacade.GLOBAL_PROGRESS_INIT:
-					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 					filesView.globalMessagesBox.visible = false;
 					stateName = String( note.getBody() );
 					switch(stateName) {
@@ -159,7 +160,6 @@ package net.fundekave.fuup.view
 				break;
 				case StateMachine.CHANGED:
 					stateName = State( note.getBody() ).name;
-					var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 					proxy.state = stateName; 
             		switch( stateName ) {
             			case StateConstants.STATE_SETUPING:
