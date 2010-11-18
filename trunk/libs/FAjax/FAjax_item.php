@@ -2,7 +2,7 @@
 class FAjax_item extends FAjaxPluginBase {
 
 	static function show($data) {
-		$itemId = $data['item'];
+		$itemId = $data['i'];
 		if($data['__ajaxResponse']===true) {
 			$user = FUser::getInstance();
 			$user->itemVO = new ItemVO($itemId,true);
@@ -26,7 +26,7 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function edit($data,$itemVO=null) {
-		if(empty($itemVO) && !empty($data['item'])) $itemVO = new ItemVO($data['item'],true);
+		if(empty($itemVO) && !empty($data['i'])) $itemVO = new ItemVO($data['i'],true);
 		if(empty($itemVO)) {
 			$user = FUser::getInstance();
 			$itemVO = new ItemVO();
@@ -44,12 +44,14 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
+	
 		FItemsForm::process($data);
+		
 		if($data['__ajaxResponse']===true)
 		if(FAjax::isRedirecting()===false) {
 			Fajax_item::edit($data);
-			if(!empty($data['item'])) { 
-			$itemVO = new ItemVO((int) $data['item']);
+			if(!empty($data['i'])) { 
+			$itemVO = new ItemVO((int) $data['i']);
 			if($itemVO->load()) {
 				page_ItemDetail::build($data);
 			}
@@ -58,7 +60,7 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function delete($data) {
-		$itemVO = new ItemVO($data['item']);
+		$itemVO = new ItemVO($data['i']);
 		if(!$itemVO->load()) return;
 		$user = FUser::getInstance();
 		if(FRules::getCurrent(2)===true
@@ -66,7 +68,7 @@ class FAjax_item extends FAjaxPluginBase {
 			$type = $itemVO->typeId;
 			$itemVO->delete();
 			if($type=='forum') {
-				FAjax::addResponse('call','remove','i'.$data['item']);
+				FAjax::addResponse('call','remove','i'.$data['i']);
 			} elseif($type!='galery') {
 				FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 			}
@@ -80,7 +82,7 @@ class FAjax_item extends FAjaxPluginBase {
 			FAjax_user::avatar($data);
 			return true;
 		}
-		if(empty($data['item'])) {
+		if(empty($data['i'])) {
 			//only temporary thumbnail
 			$filename = FFile::getTemplFilename();
 			if($filename===false) return;
@@ -100,8 +102,8 @@ class FAjax_item extends FAjaxPluginBase {
 				FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
 			}
 		}
-		if(!empty($data['item'])) {
-			FAjax::addResponse('i'.$data['item'], 'replaceWith', page_ItemDetail::build($data));
+		if(!empty($data['i'])) {
+			FAjax::addResponse('i'.$data['i'], 'replaceWith', page_ItemDetail::build($data));
 		}
 	}
 	

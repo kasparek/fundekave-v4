@@ -55,7 +55,7 @@ if(!isset($nonInit)) {
 	$itemVO = null;
 	if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
 	elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
-	if ($itemId > 0) {
+	if($itemId > 0) {
 		$itemVO = new ItemVO($itemId);
 		if($itemVO->load()) {
 			if(empty($pageId)) $pageId = $itemVO->pageId;
@@ -86,10 +86,6 @@ if(!isset($nonInit)) {
 			FError::add(FLang::$MESSAGE_LOGOUT_OK,1);
 			FHTTP::redirect(FSystem::getUri('','',''));
 	}
-	$user->kde(); //---check user / load info / load page content / chechk page exist
-	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
-	$pageVO = $user->pageVO; 
-	FProfiler::write('USER/PAGE CHECK DONE');
 	//map commands
 	FCommand::getInstance(); //to load up class and get static constants
 }

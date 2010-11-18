@@ -6,7 +6,7 @@ require(INIT_FILENAME);
 if(isset($_GET['cron'])) {
 	require_once(ROOT.'cron/'.$_GET['cron'].'.php');
 	exit;
-} 
+}
 /**
  * HEADERS PROCESSING
  */
@@ -43,12 +43,12 @@ if(isset($_GET['header_handler'])) {
 	}
 	//TODO: odkomentovat az to bude zive
 	/*
-	if($contentType == 'text/javascript') {
+	 if($contentType == 'text/javascript') {
 		$data = file_get_contents($c);
 		$data = preg_replace('/\/\*(.*)\*\/\r\n|\n\r/i', '', $data);
 		$data = preg_replace('/\s\s+/', ' ', $data);
-	}
-	*/
+		}
+		*/
 	if(empty($data) && !file_exists($c)) {
 		FError::write_log('header_handler - FILE NOT EXISTS - '.$c);
 		exit;
@@ -73,8 +73,9 @@ if(isset($_GET['header_handler'])) {
  *
  **/
 if(isset($_GET['authCheck'])) {
+	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if($user->idkontrol===true) echo '1'; else echo '0';
-	exit;
+	fin();
 }
 if(isset($_GET['mod'])) {
 	$dir = getcwd().'/'.str_replace('..','',$_GET['mod']);
@@ -85,19 +86,18 @@ if(isset($_GET['mod'])) {
 	die();
 }
 
-$processMain = true;
-
 /**
  *
  * FILES UPLOAD PROCESSING
  *
  **/
 if(!empty($_GET['fuupconfig'])) {
+	$user->kde(); //---check user / load info / load page content / chechk page exist
 	FFile::printConfigFile( $_GET['fuupconfig'] );
 	exit;
 }
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
-
+	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
 		//PARAMS
@@ -111,14 +111,14 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		if(empty($file)) {
 			echo '0';
-			exit;
+			fin();
 		}
 		if(empty($_POST['crc'])) {
 			echo '0';
-			exit; 
+			fin();
 		}
 		$crcReceived = $_POST['crc'];
-				
+
 		$seq = (int) $_POST['seq'];
 		$total = (int) $_POST['total'];
 		$filename = $file['name'];
@@ -128,9 +128,9 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		if($crcStored!=$crcReceived) {
 			$ffile->deleteChunk($file,$seq);
 			echo '0';
-			exit;
+			fin();
 		}
-				
+
 		//---file complete
 		if($ffile->hasAllChunks($filename,$total) === true) {
 			//--concat all files
@@ -152,8 +152,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		echo 1;
 	}
-
-	$processMain = false;
+	fin();
 }
 
 if(isset($_GET['test'])) {
@@ -169,7 +168,7 @@ if(isset($_GET['test'])) {
 	 $ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
 	 */
 	echo 'aa';
-	exit;
+	fin();
 }
 
 /**
@@ -178,56 +177,69 @@ if(isset($_GET['test'])) {
  *
  **/
 if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_URI'],"/frss.php")!==false) {
+	$user->kde();
 	FRSS::process($_GET);
 	FRSS::build($_GET);
-	$processMain = false;
+	fin();
 }
 
-if($processMain===true) {
-	//---process ajax requests - or alternative POST requests
-	if(isset($_REQUEST['m'])) {
-		if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
-		if(strpos($_REQUEST['m'],'-x')!==false) {
-			if(empty($data)) {
-				if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
-				else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
-			} elseif(strpos($data,'<')===false) $data = urldecode(base64_decode($data));
-		}
-		if(empty($data)) $data = $_POST; //handling post if not ajax
-		$options = array();
-		if(!empty($_FILES)) $options['data']['__files'] = $_FILES;
-		if(!empty($_GET)) $options['data']['__get'] = $_GET;
-		FAjax::process( $_REQUEST['m'], $data, $options );
-		FProfiler::write('FAJAX PROCESSED DONE');
-	} else {
-		//---process post/get for page - not ajaz processing
-		$data = $_POST;
-		if(!empty($_FILES)) $data['__files'] = $_FILES;
-		if(!empty($_GET)) $data['__get'] = $_GET;
-		$data = FAjax::preprocessPost($data);
-		FBuildPage::process( $data );
-		FProfiler::write('PAGE PROCESS DONE');
+
+//---process ajax requests - or alternative POST requests
+if(isset($_REQUEST['m'])) {
+	if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
+	if(strpos($_REQUEST['m'],'-x')!==false) {
+		if(empty($data)) {
+			if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
+			else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
+		} elseif(strpos($data,'<')===false) $data = urldecode(base64_decode($data));
 	}
-	//---shows message that page is locked
-	if($user->pageVO)
-	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
-		FError::add(FLang::$MESSAGE_PAGE_LOCKED);
-		if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+	if(empty($data)) $data = $_POST; //handling post if not ajax
+	$options = array();
+	if(!empty($_FILES)) $options['data']['__files'] = $_FILES;
+	if(!empty($_GET)) $options['data']['__get'] = $_GET;
+	FAjax::prepare($_REQUEST['m'], $data, $options);
+	$fajax = FAjax::getInstance();
+	if(!empty($fajax->data['i'])) {
+		$itemVO = new ItemVO($fajax->data['i'],false);
+		if($itemVO->load()) $user->itemVO = $itemVO; else $itemVO=null;
 	}
-
-	//TODO: create headers
-	//header("Cache-control: max-age=290304000, public");
-	//header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
-	//header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
-
-	//---generate page
-	FBuildPage::show( $data );
-
+	$user->kde(); //---check user / load info / load page content / chechk page exist
+	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
+	FAjax::process($_REQUEST['m'], $data, $options);
+	FProfiler::write('FAJAX PROCESSED DONE');
+} else {
+	$user->kde(); //---check user / load info / load page content / chechk page exist
+	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
+	//---process post/get for page - not ajaz processing
+	$data = $_POST;
+	if(!empty($_FILES)) $data['__files'] = $_FILES;
+	if(!empty($_GET)) $data['__get'] = $_GET;
+	$data = FAjax::preprocessPost($data);
+	FBuildPage::process( $data );
+	FProfiler::write('PAGE PROCESS DONE');
 }
+//---shows message that page is locked
+if($user->pageVO)
+if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
+	FError::add(FLang::$MESSAGE_PAGE_LOCKED);
+	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+}
+
+//TODO: create headers
+//header("Cache-control: max-age=290304000, public");
+//header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
+//header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
+
+//---generate page
+FBuildPage::show( $data );
+
 //---profiling
 FProfiler::write('PAGE COMPLETE');
 
 //---close resources
-session_write_close();
-$db = FDBConn::getInstance();
-$db->kill();
+function fin() {
+	session_write_close();
+	$db = FDBConn::getInstance();
+	$db->kill();
+	exit;
+}

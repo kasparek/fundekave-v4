@@ -307,7 +307,7 @@ function redirect(dir){window.location.replace(dir);};
 /**AVATAR FROM input IN fpost*/
 function avatarfrominput(evt){Fajax.add('username', $("#recipient").attr("value"));Fajax.add('call', 'fajaxInit');Fajax.send('post-avatarfrominput','');}
 /**IMAGE UPLOADING TOOL HANDLERS - FUUP*/ 
-function fuupUploadComplete(){var item=$('#item').attr('value');if(item>0)Fajax.add('item',item);Fajax.add('call','jUIInit');Fajax.send('item-image',Sett.page);}
+function fuupUploadComplete(){var item=$('#item').attr('value');if(item>0)Fajax.add('i',item);Fajax.add('call','jUIInit');Fajax.send('item-image',Sett.page);}
 function tempStoreDeleteInit(){$("#tempStoreButt").click(function(e){
 $("#imageHolder").html('');
 Fajax.send('item-tempStoreFlush',Sett.page);

@@ -8,8 +8,9 @@ class page_ItemDetail implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		if(isset($data['item'])) {
-			$id = (int) $data['item'];
+		if(isset($data['item'])) $data['i']=$data['item'];
+		if(isset($data['i'])) {
+			$id = (int) $data['i'];
 			$itemVO = new ItemVO($id);
 			if(!$itemVO->load()) $itemVO=null;
 		}

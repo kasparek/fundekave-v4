@@ -3,8 +3,8 @@ class FItemsForm {
 
 	static function moveImage($data,$itemVO=null) {
 		if($itemVO==null) {
-			if(empty($data['item'])) return;
-			$itemVO = new ItemVO($data['item']);
+			if(empty($data['i'])) return;
+			$itemVO = new ItemVO($data['i']);
 			if(!$itemVO->load()) return;
 		}
 
@@ -46,7 +46,7 @@ class FItemsForm {
 		$itemVO = new ItemVO();
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
-			FError::write_log('FItemsForm::process - unset type - item:'.$data['item']);
+			FError::write_log('FItemsForm::process - unset type - item:'.$data['i']);
 			return;
 		}
 
@@ -81,15 +81,16 @@ class FItemsForm {
 
 		//check permissions
 		if(FRules::getCurrent(2) === true
+		|| ($user->pageVO->pageId=='event' && $user->userVO->userId>0)
 		|| ($user->pageVO->typeId=='forum' && FRules::getCurrent(1) === true)
 		|| ($user->pageVO->typeId!='forum' && $itemVO->typeId=='forum'
-		&& ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2)))) {
+			&& ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2)))) {
 			//access granted
 		} else {
 			FError::add(FLang::$ERROR_RULES_CREATE);
 		}
 
-		if(!empty($data['item'])) $itemVO->itemId = (int) $data['item'];
+		if(!empty($data['i'])) $itemVO->itemId = (int) $data['i'];
 		if($itemVO->itemId>0) if($itemVO->load()) $newItem=false;
 
 		$itemVO->pageId = $user->pageVO->pageId;
@@ -107,7 +108,7 @@ class FItemsForm {
 				$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
 				break;
 			case 'deleteImage':
-				$itemVO = new ItemVO((int) $data['item']);
+				$itemVO = new ItemVO((int) $data['i']);
 				if($itemVO->load()) {
 					$itemVO->deleteImage();
 					$itemVO->saveOnlyChanged=true;
@@ -117,7 +118,7 @@ class FItemsForm {
 				break;
 			case 'del':
 			case 'delete':
-				$itemVO = new ItemVO((int) $data['item']);
+				$itemVO = new ItemVO((int) $data['i']);
 				if($itemVO->load()) {
 					$itemVO->delete();
 				}
@@ -282,6 +283,7 @@ class FItemsForm {
 
 		if($redirect==true) {
 			if($itemVO) FCommand::run(ITEM_UPDATED,$itemVO);
+			FError::write_log('__ajaxResponse'.($data['__ajaxResponse']?'1':'0'));
 			if($data['__ajaxResponse']==true) {
 				if($itemVO) {
 					//new item
@@ -388,6 +390,7 @@ class FItemsForm {
 			//delete block
 			if($itemVO->itemId>0) {
 				$tpl->touchBlock('delete');
+				$tpl->touchBlock('confirm');
 			}
 
 			//event specials

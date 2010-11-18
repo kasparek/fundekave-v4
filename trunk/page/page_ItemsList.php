@@ -117,7 +117,7 @@ class page_ItemsList implements iPage {
 		 **/
 		$vars['EDITFORM']='';
 		if($user->pageParam=='u' && !empty($itemVO)) {
-			if(FRules::getCurrent(2)) {
+			if(FRules::getCurrent(2) || $user->userVO->userId==$itemVO->userId) {
 				$vars['EDITFORM'] = FItemsForm::show($itemVO);
 			}
 		}
