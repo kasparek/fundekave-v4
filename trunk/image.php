@@ -162,9 +162,8 @@ if($cutParam === 'flush') {
 	exit;
 }
 
-if(isset($imageProps)) {
-	if($imageProps[0]==0) $imageProps[0]=$widthParam;
-	if($imageProps[1]==0) $imageProps[1]=$heightParam;
+if(isset($imageProps))
+if($imageProps[0]>0 && $imageProps[1]>0) {
 	$widthParamTmp = $widthParam>$imageProps[0]?$imageProps[0]:$widthParam;
 	$heightParamTmp = $heightParam>$imageProps[1]?$imageProps[1]:$heightParam;
 	if($widthParam==$heightParam) {

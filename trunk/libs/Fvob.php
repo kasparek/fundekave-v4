@@ -147,8 +147,7 @@ class Fvob {
 			$value = $this->properties[$propertyName];
 		} else {
 			if($load===true) {
-				$q = "select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'";
-				$value = FDBTool::getOne($q);
+				$value = FDBTool::getOne("select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
 				//---set in list
 				if(!is_numeric($value) && empty($value)) $value = false;
 				if($value === false || $value === null) $value = $default;
