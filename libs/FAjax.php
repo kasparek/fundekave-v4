@@ -35,7 +35,7 @@ class FAjax {
 		return $data;
 	}
 
-	static function process($actionStr,$data, $options=array()) {
+	static function prepare($actionStr,$data, $options=array()) {
 		$arr = explode('-',$actionStr);
 		$mod = $arr[0];
 		$action = $arr[1];
@@ -44,6 +44,7 @@ class FAjax {
 			//---system parameters missing
 			exit();
 		}
+		
 		//---process
 		$dataProcessed = array();
 		if($ajax == true) {
@@ -83,20 +84,34 @@ class FAjax {
 		$dataProcessed = FAjax::preprocessPost($dataProcessed);
 		
 		if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
+				
 		FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
+		
 		//---process k - set pageparam on user if needed
 		if(isset($fajax->data['k'])) {
 			FSystem::processK($fajax->data['k']);
 		}
-
+	}
+	static function process($actionStr,$data, $options=array()) {
+		$fajax = FAjax::getInstance();
+		
+		$arr = explode('-',$actionStr);
+		$mod = $arr[0];
+		$action = $arr[1];
+		$ajax = (isset($arr[2]))?(true):(false);
+		if(empty($mod) || empty($action)) {
+			//---system parameters missing
+			exit();
+		}
+		
 		//---dealing with ajax requests
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
-			if(call_user_func(array($className,'validate'), array_merge($dataProcessed,array('function'=>$action)))) {
+			if(call_user_func(array($className,'validate'), array_merge($fajax->data,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED');
-				call_user_func(array($className,$action), $dataProcessed);
+				call_user_func(array($className,$action), $fajax->data);
 				FProfiler::write('FAJAX MODULE COMPLETE');
 				if($ajax===true) {
 					if( $fajax->errorsLater===false ) {
