@@ -1,12 +1,13 @@
 FIX:
-sys_cache - cleaning
-image resized - divny velikosti se odnekud objevuji
-cache - mazani pri zmenach na subdomains
+setup nz subdomain, upload photos
+finish awake33 skin
+setup iobosa config - presmerovate domenu iyobosa@seznam.cz
 detail clanku - rewrite nahledu na odkaz do galerie - potrebuje dodelat
 posta - smazat mezi nefunguje
 upload - nejak vycistit stary cunky pokud tam jsou
 hasNewMessage checker - do not kick user, if kicked, redirect
 itemlist - nefunguje data= -> order by dataLive pridava spatnej prefix
+palec nahoru - na hlavni dat nekdo ma rad tohle
 
 TODO:
 -stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category

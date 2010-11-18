@@ -86,8 +86,7 @@ class FUser {
 				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
 				("'.$gid.'","'.$userVO->idlogin.'",NOW(),NOW(),"'.$pageId.'","'.$userVO->ip.'")');
 				//user total item num
-				$cache = FCache::getInstance('d');
-				$userVO->itemsMyNum = (int) $cache->getData($gid,'userItemsNum');
+				$userVO->itemsLastNum = (int) $this->userVO->prop('itemsNum');
 				//---session cache
 				$cache = FCache::getInstance( 's' );
 				$cache->invalidate();
@@ -273,13 +272,11 @@ class FUser {
 			//TODO:cache this query result?
 			$res = $fpages->getContent();
 			$totalNum = $res[0][0];
-			if($this->userVO->itemsTotalNum != $totalNum){
-				$this->userVO->itemsTotalNum = $totalNum;
-				$cache = FCache::getInstance('d');
-				$cache->setData($totalNum,$this->userVO->userId,'userItemsNum');
+			if($this->userVO->prop('itemsNum') != $totalNum){
+				$this->userVO->prop('itemsNum',$totalNum);
 			}
 			if($updateMy) {
-				$this->userVO->itemsMyNum = $totalNum;
+				$this->userVO->itemsLastNum = $totalNum;
 			}
 	}
 

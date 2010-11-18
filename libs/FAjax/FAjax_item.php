@@ -2,7 +2,7 @@
 class FAjax_item extends FAjaxPluginBase {
 
 	static function show($data) {
-		$itemId = $data['i'];
+		$itemId = isset($data['item']) ? $data['item'] : $data['i'];
 		if($data['__ajaxResponse']===true) {
 			$user = FUser::getInstance();
 			$user->itemVO = new ItemVO($itemId,true);

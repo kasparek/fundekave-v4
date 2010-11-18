@@ -67,9 +67,9 @@ class page_ItemsList implements iPage {
 				}
 			} else {
 				//for top pages based on super total item num
-				$diff = $user->userVO->itemsTotalNum-$user->userVO->itemsMyNum;
+				$diff = $this->userVO->prop('itemsNum')-$user->userVO->itemsLastNum;
 				if($diff>0) {
-					$user->userVO->itemsMyNum = $user->userVO->itemsTotalNum;
+					$user->userVO->itemsLastNum = $this->userVO->prop('itemsNum');
 					if($diff>$pageVO->perPage()) $pageVO->perPage($diff + 3);
 				}
 			}

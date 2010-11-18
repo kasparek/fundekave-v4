@@ -1,11 +1,14 @@
 <?php
 $migr = array(
-ROOT=>'/subdomains/test/httpdocs/fdk_v5'
-,ROOT=>'/subdomains/eboinnaija/httpdocs/fdk_v5'
+array('src'=>ROOT,'tgt'=>'/subdomains/test/httpdocs/fdk_v5')
+,array('src'=>ROOT,'tgt'=>'/subdomains/eboinnaija/httpdocs/fdk_v5')
+,array('src'=>ROOT,'tgt'=>'/subdomains/nz/httpdocs/fdk_v5')
 );
 
 $ff = new FFile(FConf::get('settings','ftp'));
-foreach( $migr as $source=>$target) {								
+foreach( $migr as $site) {
+$source = $site['src'];								
+$target = $site['tgt']; 
 $ff->rm_recursive($target);
 $ff->makeDir($target);
 $ff->sourceFolder = $source;

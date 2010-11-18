@@ -359,7 +359,6 @@ class FImgProcess {
 		try {
 			$imageSize = getimagesize($temp_file);
 			$imageSize['source'] = $temp_file;
-
 		} catch (Exception $e) {
 			return false;
 		}
