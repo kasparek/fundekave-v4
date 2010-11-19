@@ -60,7 +60,8 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function delete($data) {
-		$itemVO = new ItemVO($data['i']);
+		$itemId = isset($data['i'])?$data['i']:$data['item'];
+		$itemVO = new ItemVO($itemId);
 		if(!$itemVO->load()) return;
 		$user = FUser::getInstance();
 		if(FRules::getCurrent(2)===true
@@ -68,7 +69,7 @@ class FAjax_item extends FAjaxPluginBase {
 			$type = $itemVO->typeId;
 			$itemVO->delete();
 			if($type=='forum') {
-				FAjax::addResponse('call','remove','i'.$data['i']);
+				FAjax::addResponse('call','remove','i'.$itemId);
 			} elseif($type!='galery') {
 				FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 			}
