@@ -2,10 +2,10 @@
 include_once('iPage.php');
 
 function array_insert($array,$pos,$val){
-    $array2 = array_splice($array,$pos);
-    $array[] = $val;
-    $array = array_merge($array,$array2);
-    return $array;
+	$array2 = array_splice($array,$pos);
+	$array[] = $val;
+	$array = array_merge($array,$array2);
+	return $array;
 }
 function array_indexOf($array,$prop,$val) {
 	for($i=0;$i<count($array);$i++){
@@ -53,7 +53,7 @@ class page_ItemsList implements iPage {
 			}
 		}
 		if($user->pageVO->pageId=='event' && $user->userVO->userId>0){
-		   FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+			FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 		}
 
 		//perpage based on unreaded items
@@ -63,13 +63,13 @@ class page_ItemsList implements iPage {
 				$unreadedCnt = FItems::cacheUnreadedList();
 				if($unreadedCnt > 0 && $unreadedCnt > $pageVO->perPage()) {
 					$pageVO->perPage($unreadedCnt + 3);
-					$diff = $unreadedCnt; 
+					$diff = $unreadedCnt;
 				}
 			} else {
 				//for top pages based on super total item num
-				$diff = $this->userVO->prop('itemsNum')-$user->userVO->itemsLastNum;
+				$diff = $user->userVO->prop('itemsNum')-$user->userVO->itemsLastNum;
 				if($diff>0) {
-					$user->userVO->itemsLastNum = $this->userVO->prop('itemsNum');
+					$user->userVO->itemsLastNum = $user->userVO->prop('itemsNum');
 					if($diff>$pageVO->perPage()) $pageVO->perPage($diff + 3);
 				}
 			}
@@ -154,7 +154,7 @@ class page_ItemsList implements iPage {
 					$writePerm=0;
 				}
 			}
-			
+
 			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
 				$formItemVO->typeId = 'forum';
@@ -295,43 +295,40 @@ class page_ItemsList implements iPage {
 				$itemIdTopPrev=null;
 				$pageIdPrev=null;
 				if($pageVO->typeId=='top') {
-				
 					//sort by page
-					
 					$newArr=array();
 					$fItems->data = array_reverse($fItems->data);
 					while($itemVO = array_pop($fItems->data)){
 						$index = array_indexOf($newArr,'pageId',$itemVO->pageId);
-						if($index>-1 && $itemVO->typeId!='blog') $newArr=array_insert($newArr,$index,$itemVO);
+						if($index>-1 && ($itemVO->typeId!='blog' && empty($itemVO->itemIdTop))) $newArr=array_insert($newArr,$index,$itemVO);
 						else array_unshift($newArr,$itemVO);
 					}
 					$fItems->data=array_reverse($newArr);
 					/**/
-					
+					//sort reaction after top item if present
+					$newArr=array();
+					while($itemVO = array_shift($fItems->data)){
+						if(!empty($itemVO->itemIdTop)) {
+							foreach($fItems->data as $k=>$topItem) {
+								if($topItem->itemId==$itemVO->itemIdTop) {
+									$newArr[]=$topItem;
+									unset($fItems->data[$k]);
+								}
+							}
+						}
+						$newArr[]=$itemVO;
+					}
+					$fItems->data=$newArr;
+					/**/
 					//sort by itemtop
 					$newArr=array();
 					while($itemVO = array_shift($fItems->data)){
 						if(!empty($itemVO->itemIdTop)) {
 							$index = array_indexOf($newArr,'itemId',$itemVO->itemIdTop);
-							if($index>-1) $newArr=array_insert($newArr,$index,$itemVO);
-							else $newArr[]=$itemVO;
-						} else $newArr[]=$itemVO;
-					}
-					$fItems->data=$newArr;
-					/**/
-					    
-					//sort reaction after top item if present
-					$newArr=array();
-					while($itemVO = array_shift($fItems->data)){
-						if(empty($itemVO->itemIdTop)) {
-							$index = array_indexOf($newArr,'itemIdTop',$itemVO->itemId);
-							if($index>-1) $newArr=array_insert($newArr,$index,$itemVO);
-							else $newArr[]=$itemVO;
-						} else {
-							$index = array_indexOf($newArr,'itemId',$itemVO->itemIdTop);
+							if($index==-1) $index = array_indexOf($newArr,'itemIdTop',$itemVO->itemIdTop);
 							if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
 							else $newArr[]=$itemVO;
-						}
+						} else $newArr[]=$itemVO;
 					}
 					$fItems->data=$newArr;
 					/**/
@@ -341,7 +338,11 @@ class page_ItemsList implements iPage {
 						$fItems->fItemsRenderer->showPage=false;
 						if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
 							//setup renderer if needed
-							if($itemVO->itemIdTop > 0 && $itemPrev->itemId!=$itemVO->itemIdTop) {
+							$itemIdTop=0;
+							$itemIdPrev=0;
+							if($itemVO)$itemIdTop=$itemVO->itemIdTop;
+							if($itemPrev)$itemIdPrev=$itemPrev->itemId;
+							if($itemIdTop > 0 && $itemIdPrev!=$itemIdTop) {
 								//show top item
 								$itemTop = new ItemVO($itemVO->itemIdTop);
 								//figure out how to display showPage for galery items

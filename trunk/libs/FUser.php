@@ -86,7 +86,7 @@ class FUser {
 				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
 				("'.$gid.'","'.$userVO->idlogin.'",NOW(),NOW(),"'.$pageId.'","'.$userVO->ip.'")');
 				//user total item num
-				$userVO->itemsLastNum = (int) $this->userVO->prop('itemsNum');
+				$userVO->itemsLastNum = (int) $userVO->prop('itemsNum');
 				//---session cache
 				$cache = FCache::getInstance( 's' );
 				$cache->invalidate();
