@@ -74,8 +74,10 @@ class FCommand {
 		FSystem::superInvalidate('renderedItem',$data->itemId);
 		FSystem::superInvalidate('renderedItem',$data->itemId.'detail');
 		//update total my num
-		$user = FUser::getInstance();
-		$user->updateTotalItemsNum(true);
+		if($user->idkontrol === true) {
+			$user = FUser::getInstance();
+			$user->updateTotalItemsNum(true);
+		}
 	}
 	
 	public static function itemReaded($data) {

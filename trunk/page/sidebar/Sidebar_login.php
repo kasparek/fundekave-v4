@@ -17,7 +17,7 @@ class Sidebar_login {
 			FROM sys_users_logged as l 
 			join sys_users_friends as f ON ((f.userIdFriend=l.userId AND f.userIdFriend!='".$user->userVO->userId."' and f.userId='".$user->userVO->userId."') or (f.userId=l.userId AND f.userId!='".$user->userVO->userId."' and f.userIdFriend='".$user->userVO->userId."'))
 			join sys_pages as p on p.pageId=l.location  
-			WHERE subdate(NOW(),interval ".USERVIEWONLINE." minute)<l.dateUpdated 
+			WHERE subdate(NOW(),interval ".USERVIEWONLINE." second)<l.dateUpdated 
 			GROUP BY l.userId 
 			ORDER BY casklik";
 				
