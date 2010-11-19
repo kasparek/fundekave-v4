@@ -181,7 +181,7 @@ class UserVO extends Fvob {
 		$vo->addJoin('join sys_users_logged as l on l.userId = sys_users.userId');
 		$vo->addWhere("f.userId = ".$this->userId);
 		$vo->addWhere("l.userId != ".$this->userId);
-		$vo->addWhere("subdate(NOW(),interval ".USERVIEWONLINE." minute) < l.dateUpdated"); 
+		$vo->addWhere("subdate(NOW(),interval ".USERVIEWONLINE." second) < l.dateUpdated"); 
 		$vo->setOrder('sys_users.dateLastVisit');
 		$vo->autojoinSet(true);
 		return $vo->get();
