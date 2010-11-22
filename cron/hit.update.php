@@ -1,4 +1,9 @@
 <?php
+$cache = FCache::getInstance('d');
+
+$date = $cache->getData('hitupdate','cron');
+if(!$date) $date = '2010-09-28 08:00:00';
+
 $q = 'select count(1),itemId,max(dateCreated) as orderdate from sys_pages_items_hit group by itemId order by orderdate desc';
 
 $dbc = FConf::get('db');
@@ -13,9 +18,12 @@ while($row = mysql_fetch_row($result)) {
 if($row[0]>5 && $row[1]>0) {
 $q = "update sys_pages_items set hit = '".$row[0]."' where itemId='".$row[1]."';\n";
 mysql_query($q,$db);
-if($row[2]<'2010-09-28 08:00:00') break; //TODO: use date when last updated
+if($row[2]<$date) break; //TODO: use date when last updated
 $counter++;
 }
 }
 }
+
+$cache->setData(date("Y-m-d 00:00:00"),'hitupdate','cron');
+
 echo 'updated:'.$counter;
