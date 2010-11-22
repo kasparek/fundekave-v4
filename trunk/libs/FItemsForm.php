@@ -360,7 +360,7 @@ class FItemsForm {
 
 			if ($user->idkontrol) {
 				if($data['simple']===false) {
-					$tpl->touchBlock('p'.$data['perpage']);
+					$tpl->touchBlock('p'.$user->pageVO->perPage());
 				}
 			} else {
 				$tpl->setVariable('USERNAME','');

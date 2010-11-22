@@ -6,8 +6,9 @@ if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false) {
 }
 //---host name
 $host = $_SERVER['HTTP_HOST'];
-$host = str_replace(array('www','.'),'',$host);
-if($host=='localhost') $host='fundekavenet';
+$hostArr = explode('.',$host);
+$host = $hostArr[0]=='www' ? $hostArr[1] : $hostArr[0];  
+if($host=='localhost') $host='fundekave';
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;

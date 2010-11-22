@@ -322,11 +322,15 @@ class page_ItemsList implements iPage {
 					/**/
 					//sort by itemtop
 					$newArr=array();
+					$sortedItems=array();
 					while($itemVO = array_shift($fItems->data)){
 						if(!empty($itemVO->itemIdTop)) {
 							$index = array_indexOf($newArr,'itemId',$itemVO->itemIdTop);
 							if($index==-1) $index = array_indexOf($newArr,'itemIdTop',$itemVO->itemIdTop);
-							if($index>-1) $newArr=array_insert($newArr,$index+1,$itemVO);
+							if($index>-1) {
+								if(isset($sortedItems[$itemVO->itemIdTop])) $sortedItems[$itemVO->itemIdTop]++; else $sortedItems[$itemVO->itemIdTop]=1;
+								$newArr=array_insert($newArr,$index+$sortedItems[$itemVO->itemIdTop],$itemVO);
+							}
 							else $newArr[]=$itemVO;
 						} else $newArr[]=$itemVO;
 					}

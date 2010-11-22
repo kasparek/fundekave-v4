@@ -251,8 +251,9 @@ class FBuildPage {
 
 		//searchform
 		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
-
+		
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
+		
 		if($user->pageVO) {
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 			$pageVOTop = new PageVO($pageIdTop);
