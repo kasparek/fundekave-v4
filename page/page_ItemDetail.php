@@ -69,7 +69,7 @@ class page_ItemDetail implements iPage {
 			//no sidebar	
 			$user->pageVO->showSidebar = false;
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
-			$user->pageVO->htmlTitle = $user->itemVO->htmlName . ' ' . $user->pageVO->htmlTitle; 
+			$user->pageVO->htmlTitle = $user->itemVO->htmlName .' - '.$user->pageVO->name; 
 			$user->pageVO->showHeading=false;
 			if(!empty($data['__ajaxResponse'])) {
 				//next image

@@ -327,13 +327,10 @@ class FSystem {
 		,'g'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
 		,'h'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
-		,'i'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]x[0-9]\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.[jpg|png|gif]+)([^\"]*+)\"[^<]+?>/i"
+		,'i'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]+jpg|png|gif+).*>/i"
 		
 		);
-		
-		//i example - http://fotobiotic.net/image/1400x1400/prop/kopretinka/20101107_bonfire-night-a-slunecni-prochazka_Bviqw/pb060003.jpg
-       
-		
+			
 		foreach($regList as $r=>$regex) {
 			if(preg_match_all($regex , $text, $matches, PREG_OFFSET_CAPTURE)) {
 				$offset = 0;
@@ -402,6 +399,13 @@ class FSystem {
 								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 							}
 							break;
+						case 'i':
+							 $user = FUser::getInstance();
+							 if($user->userVO->userId==1) {
+							 print_r(matches);
+							 die();
+							 }
+						break;
 					}
 				}
 			}

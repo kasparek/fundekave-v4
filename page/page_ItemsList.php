@@ -178,7 +178,7 @@ class page_ItemsList implements iPage {
 			//LIST ITEMS
 			$fItems = new FItems('',$user->userVO->userId);
 			if($pageVO->typeId!='top') {
-				$fItems->setPage($pageVO->pageId);
+				if($pageVO->pageId!='event') $fItems->setPage($pageVO->pageId);
 				$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
 			}
 			if($categoryId > 0) {
