@@ -33,7 +33,6 @@ class page_Map implements iPage {
 		}
 		
 		$list = $fitems->getList();
-
 		$tpl = FSystem::tpl('map.tpl.html');
 
 		if(!empty($list))
