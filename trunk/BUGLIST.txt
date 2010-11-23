@@ -1,4 +1,6 @@
 FIX:
+flash title on new message
+setup CSS color templating
 setup nz subdomain, upload photos
 finish awake33 skin
 setup iobosa config - presmerovate domenu iyobosa@seznam.cz

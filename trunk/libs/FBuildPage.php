@@ -13,8 +13,18 @@ class FBuildPage {
 	static function getTitle() {
 		$user = FUser::getInstance();
 		if($user->pageVO) {
-			$pageTitle = $user->pageVO->htmlName ? $user->pageVO->htmlName : $user->pageVO->name;
-			return (!empty($pageTitle)?($pageTitle.' - '):('')).(!empty($user->pageVO->htmlTitle)?($user->pageVO->htmlTitle.' - '):('')).BASEPAGETITLE;
+			$title = $user->pageVO->htmlName ? $user->pageVO->htmlName : $user->pageVO->name;
+			if(!empty($user->pageVO->htmlTitle)) $pageTitle[] = $user->pageVO->htmlTitle;
+			else if(!empty($title)) $pageTitle[] = $title;
+			if(BASEPAGETITLE!="") $pageTitle[] = BASEPAGETITLE;
+			else {
+				//use top page name if BASEPAGETITLE empty
+				if($user->pageVO->pageId!=HOME_PAGE) {
+					$pageTitle[] = FDBTool::getOne("select name from sys_pages where pageId='".HOME_PAGE."'"); 
+				}
+			}
+			
+			return implode(" - ",$pageTitle);
 		}
 	}
 	static function getHeading() {

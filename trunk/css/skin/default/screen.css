@@ -1,3 +1,18 @@
+/*
+BG #eae6da - body
+BG_CONTENT #f8f7ef - pagebar,sidebarblock
+BG_FIELDSET #f0f0f0
+BG_LINK #F8FBDB - menu,linkitem
+BG_LINK_HOVER #E2E595 - menu,linkitem
+BG_SECONDARY #f8f7ef - h3,menu-secondary,item stat
+COLOR_ALERT #C64226 - color unread ...,bg messageNew,notpublished
+BORDER
+BORDER_ALERT
+COLOR_MAIN black - body
+COLOR_INVERT #fff - messageNew
+COLOR_A #320 -links,menu
+COLOR_ALT #9D400D - breadcrumbs
+*/
 /* css fundekave, http://www.fundekave.net/ */
 /* BASIC ELEMENTS */
 /*@media screen,projection {*/
@@ -222,7 +237,6 @@ div.friends ul li div {margin-right: 10px;}
 /* NEW MESSAGES WARNING */
 span#messageNew {color:#fff;position: fixed;z-index:10001;display: block;background: #C64226;font: 1em Verdana,Georgia,Times,serif;right: -2px; top: 20px;padding: 1em;width: 150px;border: 2px #ffffff solid;text-align: center;}
 span#messageNew a { color:#fff; }
-span#messageNew .flash {border: 2px #00ffff solid;}
 
 /*POST PAGE*/
 div#recipientavatar {float: left;clear: left;min-width: 10em;text-align: center;margin: 1em 0;}
