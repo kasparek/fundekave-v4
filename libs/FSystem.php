@@ -3,7 +3,7 @@ class FSystem {
 
 	static function superInvalidate($grp,$id='') {
 		//domain list
-		$domains = array('fundekave.net','eboinnaija.fundekave.net','hanspaulovka.fundekave.net');
+		$domains = array('fundekave.net','eboinnaija.fundekave.net','upsidedown.fundekave.net');
 		foreach($domains as $dom) {
 			file_get_contents('http://'.$dom.'/cron-invalidate.php?invalidate='.$grp.($id!=''?'/'.$id:''));
 		}
@@ -402,8 +402,8 @@ class FSystem {
 						case 'i':
 							 $user = FUser::getInstance();
 							 if($user->userVO->userId==1) {
-							 print_r(matches);
-							 die();
+							 //print_r(matches);
+							 //die();
 							 }
 						break;
 					}

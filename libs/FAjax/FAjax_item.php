@@ -83,6 +83,7 @@ class FAjax_item extends FAjaxPluginBase {
 			FAjax_user::avatar($data);
 			return true;
 		}
+		
 		if(empty($data['i'])) {
 			//only temporary thumbnail
 			$filename = FFile::getTemplFilename();

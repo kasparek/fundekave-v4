@@ -284,7 +284,7 @@ function boot() {
 function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;buttonInit();tabsInit();datePickerInit();Richta.map();fajaxInit();fconfirmInit();GooMapi.init();fuupInit();slimboxInit();$(".expand").autogrow();};
 function datePickerInit(){if($(".datepicker").length>0){if(!Lazy.load(Sett.ll.ui,datePickerInit))return;$.datepicker.setDefaults($.extend({showMonthAfterYear:false},$.datepicker.regional['cs']));$(".datepicker").datepicker();}};
 function slimboxInit(){if(!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)){if($("a[rel^='lightbox']").length>0){if(!Lazy.load(Sett.ll.slim,slimboxInit))return;$("a[rel^='lightbox']").slimbox({overlayFadeDuration:100,resizeDuration:100,imageFadeDuration:100,captionAnimationDuration:100},null,function(el){return(this==el)||((this.rel.length > 8)&&(this.rel==el.rel));});}}};
-function fuupInit(){if($(".fuup").length>0){if(!Lazy.load(Sett.ll.swf,fuupInit))return;$(".fuup").each(function(i){var id=$(this).attr('id');swfobject.embedSWF(Sett.assUrl+"load.swf",id,"80","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:"fuup."+id+"."+Sett.page+".xml",containerId:id},{wmode:'transparent',allowscriptaccess:'always'});});$("#uploadTip").removeClass('hidden');}}
+function fuupInit(){if($(".fuup").length>0){if(!Lazy.load(Sett.ll.swf,fuupInit))return;$(".fuup").each(function(i){var id=$(this).attr('id');swfobject.embedSWF(Sett.assUrl+"load.swf",id,"100","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:"fuup."+id+"."+Sett.page+".xml",containerId:id},{wmode:'transparent',allowscriptaccess:'always'});});$("#uploadTip").removeClass('hidden');}}
 function tabsInit(){if($("#tabs").length>0){if(!Lazy.load(Sett.ll.ui,tabsInit))return;$("#tabs").tabs({select:function(event, ui){window.location.hash = '';}});}};
 function buttonInit(){if($('.uibutton').length>0){if(!Lazy.load(Sett.ll.ui,buttonInit))return;$('.uibutton').button();}}
 /**request init*/
@@ -307,7 +307,7 @@ function redirect(dir){window.location.replace(dir);};
 /**AVATAR FROM input IN fpost*/
 function avatarfrominput(evt){Fajax.add('username', $("#recipient").attr("value"));Fajax.add('call', 'fajaxInit');Fajax.send('post-avatarfrominput','');}
 /**IMAGE UPLOADING TOOL HANDLERS - FUUP*/ 
-function fuupUploadComplete(){var item=$('#item').attr('value');if(item>0)Fajax.add('i',item);Fajax.add('call','jUIInit');Fajax.send('item-image',Sett.page);}
+function fuupUploadComplete(){var i=$('#i').attr('value');if(i>0)Fajax.add('i',i);Fajax.add('call','jUIInit');Fajax.send('item-image',Sett.page);}
 function tempStoreDeleteInit(){$("#tempStoreButt").click(function(e){
 $("#imageHolder").html('');
 Fajax.send('item-tempStoreFlush',Sett.page);
