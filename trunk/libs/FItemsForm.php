@@ -7,20 +7,30 @@ class FItemsForm {
 			$itemVO = new ItemVO($data['i']);
 			if(!$itemVO->load()) return;
 		}
-
 		$dir = $itemVO->pageVO->get('galeryDir');
 		if(empty($dir)) {
 			$itemVO->pageVO->set('galeryDir','page/'.$itemVO->pageId.'-'.FSystem::safeText($itemVO->pageVO->get('name')));
 			$itemVO->pageVO->save();
 		}
-
 		$filename = FFile::getTemplFilename();
 		if($filename!==false) {
-			
-			try{
-				$size=getimagesize(FConf::get('galery','sourceServerBase').$filename);
-			} catch(Exception $e) {
-				FError::add(FLang::$ERROR_IMAGE_FORMAT);
+			$ftpserver = FConf::get("galery","ftpServer");
+			$ffile = new FFile($ftpserver);
+			if(empty($ftpserver)) {
+				//on direct check image size
+				try{
+					$size=getimagesize(FConf::get('galery','sourceServerBase').$filename);
+				} catch(Exception $e) {
+					FError::add(FLang::$ERROR_IMAGE_FORMAT);
+				}
+			} else {
+				//on ftp site check extension and file exists
+				$ext = FFile::fileExt($filename);
+				if($ext == 'jpg' || $ext == 'jpeg' || $ext == 'png' || $ext == 'gif') {
+					if($ffile->file_exists(FConf::get('galery','sourceServerBase').$filename)) {
+						$size = true;
+					}
+				}
 			}
 			if(empty($size)) return $itemVO;
 			//delete old image
@@ -29,7 +39,6 @@ class FItemsForm {
 			$filenameArr = explode('/',$filename);
 			$enclosure = array_pop($filenameArr);
 			$target = FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir').'/'.$enclosure;
-			$ffile = new FFile(FConf::get("galery","ftpServer"));
 			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir'));
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
 			$itemVO->set('enclosure',$enclosure);
@@ -84,7 +93,7 @@ class FItemsForm {
 		|| ($user->pageVO->pageId=='event' && $user->userVO->userId>0)
 		|| ($user->pageVO->typeId=='forum' && FRules::getCurrent(1) === true)
 		|| ($user->pageVO->typeId!='forum' && $itemVO->typeId=='forum'
-			&& ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2)))) {
+		&& ($user->pageVO->prop('forumSet')==1 || ($user->idkontrol && $user->pageVO->prop('forumSet')==2)))) {
 			//access granted
 		} else {
 			FError::add(FLang::$ERROR_RULES_CREATE);
@@ -189,7 +198,7 @@ class FItemsForm {
 								$categoryVO->updateNum();
 							}
 						}
-						
+
 						FItemsForm::moveImage($data,$itemVO);
 
 						if(!empty($data['imageUrl'])) {
@@ -390,7 +399,6 @@ class FItemsForm {
 			//delete block
 			if($itemVO->itemId>0) {
 				$tpl->touchBlock('delete');
-				$tpl->touchBlock('confirm');
 			}
 
 			//event specials
@@ -404,6 +412,7 @@ class FItemsForm {
 			if(!empty($itemVO->enclosure)) {
 				$tpl->setVariable('IMAGEURL', $itemVO->detailUrl );
 				$tpl->setVariable('IMAGETHUMBURL', $itemVO->thumbUrl );
+				$tpl->touchBlock('confirm');
 			}
 		}
 		return $tpl->get();

@@ -263,7 +263,7 @@ class FFile {
 				$vars['DISPLAYCONTENT']=0;
 				$vars['MULTI']=0;
 				$vars['APPHEIGHT']=25;
-				$vars['APPWIDTH']=80;
+				$vars['APPWIDTH']=160;
 				$vars['ONONEUPLOADED']='';
 				$vars['ONUPLOADED']='fuupUploadComplete';
 				break;
