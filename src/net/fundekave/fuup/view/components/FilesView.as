@@ -42,6 +42,8 @@ package net.fundekave.fuup.view.components
 		public var filesNumMax:int;
 		public var multiFiles:Boolean = true;
 				
+		public var embedWidth:Number;
+		
 		private var _settingsVisible:Boolean = true;
 		public function get settingsVisible():Boolean {
 			return _settingsVisible;
@@ -341,8 +343,9 @@ package net.fundekave.fuup.view.components
 			cancelButt.width = 60;
 			cancelButt.visible = false;
 			
+			if (embedWidth == -1) embedWidth = 200;
 			globalProgressBar = new ProgressBar(this,5,5);
-			globalProgressBar.width = 190;
+			globalProgressBar.width = embedWidth < 190 ? embedWidth-10 : 190;
 			globalProgressBar.height = 20;
 			globalProgressBar.maximum = 100;
 			globalProgressBar.visible = false;

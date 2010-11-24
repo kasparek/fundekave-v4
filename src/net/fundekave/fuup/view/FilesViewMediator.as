@@ -54,6 +54,7 @@ package net.fundekave.fuup.view
 			
 			filesView.processOn = Number( configProxy.getValue("resize") )==1 ? true : false;
 			filesView.processVisible = Number( configProxy.getValue("resizeVisible") )==1 ? true : false;
+			filesView.embedWidth = Number( configProxy.getValue("embedWidth") );
 			
 			filesView.setup();
 		}

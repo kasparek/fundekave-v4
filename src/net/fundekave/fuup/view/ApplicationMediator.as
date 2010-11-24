@@ -29,7 +29,6 @@ package net.fundekave.fuup.view
 					ApplicationFacade.LOGIN_SUCCESS,
 					ApplicationFacade.CONFIG_LOADED,
 					StateMachine.CHANGED,
-					ApplicationFacade.SERVICE_ERROR
 					];
 		}
 		
@@ -38,9 +37,6 @@ package net.fundekave.fuup.view
 			
 			switch ( note.getName() )
 			{
-				case ApplicationFacade.SERVICE_ERROR:
-					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
-					break;
                 case ApplicationFacade.CONFIG_LOADED:
                     trace( "CONFIG >>> Loading Complete" );
 					sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );

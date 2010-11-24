@@ -225,6 +225,7 @@ package net.fundekave.fuup.model
 			}
 			trace('FILEPROXY::TOTAL SERVICE ERROR');
         	sendNotification( ApplicationFacade.SERVICE_ERROR, 'Service error' );
+			sendNotification( StateMachine.ACTION, null, ActionConstants.ACTION_SETUP );
         }
    
              
