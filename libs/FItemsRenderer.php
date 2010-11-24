@@ -59,8 +59,15 @@ class FItemsRenderer {
 			else $tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
 			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId];
 			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId].': '.$itemVO->pageVO->name;*/
-			$vars['URL'] = FSystem::getUri('',$itemVO->pageId,'',array('name'=>$itemVO->pageVO->get('name')));
-			$vars['PAGENAME'] = $itemVO->pageVO->get('name');
+			$pageVO = $itemVO->pageVO;
+			$pTop=$pageVO->get('pageIdTop');
+			$homeUrl='';
+			if(!empty($pTop) && $pTop!=HOME_PAGE){
+				$pVOTop = new PageVO($pTop);
+				$homeUrl = ' - '.$pVOTop->prop('homesite');
+			}
+			$vars['URL'] = FSystem::getUri('',$itemVO->pageId,'',array('name'=>$pageVO->get('name')));
+			$vars['PAGENAME'] = $pageVO->get('name') . $homeUrl;
 			$vars['ITEM'] = '[[ITEM]]';
 			$tpl->setVariable($vars);
 			$page = $tpl->get();
