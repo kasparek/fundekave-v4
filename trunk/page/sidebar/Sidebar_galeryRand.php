@@ -2,7 +2,7 @@
 class Sidebar_galeryRand {
 	static function show() {
 		$cache = FCache::getInstance('f',86400);
-		$itemIdList = $cache->getData('itemIdList','sidebar');
+		$itemIdList = $cache->getData('itemIdList'.(SITE_STRICT == 1 ? HOME_PAGE : ''),'sidebar');
 		if(empty($itemIdList)) {
 			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT == 1 ? " and pageIdTop='".HOME_PAGE."'" : ''));
 			if(empty($allList)) return;
