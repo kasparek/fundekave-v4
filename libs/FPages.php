@@ -150,10 +150,8 @@ class FPages extends FDBTool {
 		$incStr = '';
 		if($refresh===true) {
 			$incStr = '(select count(1) from sys_pages_items where pageId="'.$pageId.'" and (itemIdTop is null or itemIdTop=0))';
-		} else if($value > 0) {
+		} else {
 			$incStr = 'cnt + '.$value;
-		} else if($value < 0) {
-			$incStr = 'cnt - '.abs($value);
 		}
 		if(!empty($incStr)) $incStr = ',cnt = '.$incStr;
 		return FDBTool::query('update sys_pages set dateUpdated=now()'.$incStr.' where pageId="'.$pageId.'"');

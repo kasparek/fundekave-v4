@@ -149,7 +149,7 @@ class FItemsRenderer {
 			$touchedBlocks['aaclose']=true;	
 		}
 		$vars['AVATAR'] = FAvatar::showAvatar( (int) $itemUserId);
-		$vars['TEXT'] = FSystem::postText( $itemVO->text );
+		$vars['TEXT'] = $itemVO->text;
 		$vars['HITS'] = $itemVO->hit;
 		$vars['LOCATION'] = $itemVO->location;
 
