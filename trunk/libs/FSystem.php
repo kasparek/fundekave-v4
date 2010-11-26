@@ -40,7 +40,7 @@ class FSystem {
 	 * @param $otherParams
 	 * @param $pageId
 	 * @param $pageParam
-	 * @param array $options - scriptname, short	 
+	 * @param array $options - scriptname, short
 	 * @return string - URL
 	 */
 	static function getUri($otherParams='', $pageId='', $pageParam=false, $options=array()) {
@@ -87,20 +87,20 @@ class FSystem {
 			while($k = key($params)) {
 				$v = array_shift($params);
 				if($rewrite) {
-				if($k=='i') {
-					$script = 'item-'.$v.'.html';
-				} elseif($k=='k') {
-					$c='';
-					if(isset($params['c'])) {
-						$c='-category-'.$params['c'];
-						unset($params['c']);
+					if($k=='i') {
+						$script = 'item-'.$v.'.html';
+					} elseif($k=='k') {
+						$c='';
+						if(isset($params['c'])) {
+							$c='-category-'.$params['c'];
+							unset($params['c']);
+						}
+						$script = 'page-'.$v.$c.'.html';
+					} else {
+						$parStr.= $k.'='.$v.($params?'&':'');
 					}
-					$script = 'page-'.$v.$c.'.html';
 				} else {
- 					$parStr.= $k.'='.$v.($params?'&':'');
- 				}
- 				} else {
-				$parStr.= $k.'='.$v.($params?'&':''); 
+					$parStr.= $k.'='.$v.($params?'&':'');
 				}
 			}
 			$parStr = ($parStr!=''?'?'.$parStr:'');
@@ -318,7 +318,7 @@ class FSystem {
 		$regList = array(
 		'a'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
 		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
-		
+		,'i'=>"/<img.*src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.-_]+jpg|png|gif+)([^\"]*+)\"[^<]+?>/i"//.*>/i"
 		,'c'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
 		,'d'=>"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		,'e'=>"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
@@ -327,8 +327,8 @@ class FSystem {
 		,'g'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
 		,'h'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
-		,'i'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]+jpg|png|gif+).*>/i"
 		
+
 		);
 			
 		foreach($regList as $r=>$regex) {
@@ -400,18 +400,26 @@ class FSystem {
 							}
 							break;
 						case 'i':
-							 $user = FUser::getInstance();
-							 if($user->userVO->userId==1) {
-							 //print_r(matches);
-							 //die();
-							 }
-						break;
+							$fi = new FItems();
+							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
+							$arr = $fi->getList();
+							if(!empty($arr)) {
+								$replaceText = $arr[0]->render();
+								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
+							}
+		/*						
+							$user = FUser::getInstance();
+							if($user->userVO->userId==1) {
+								print_r($text);
+							}*/
+							break;
 					}
 				}
 			}
-			
+				
 		}
-		
+
 		return trim($text);
 	}
 
@@ -452,18 +460,18 @@ class FSystem {
 		$delta_lat = $lat2 - $lat1 ;
 		$delta_lon = $lon2 - $lon1 ;
 		/*
-		//Spherical Law of Cosines
-		$distance  = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($delta_lon)) ;
-		$distance  = acos($distance);
-		$distance  = rad2deg($distance);
-		$distance  = $distance * 60 * 1.1515;
-		*/
+		 //Spherical Law of Cosines
+		 $distance  = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($delta_lon)) ;
+		 $distance  = acos($distance);
+		 $distance  = rad2deg($distance);
+		 $distance  = $distance * 60 * 1.1515;
+		 */
 		//Haversine Formula
 		$alpha    = $delta_lat/2;
-  		$beta     = $delta_lon/2;
-  		$a        = sin(deg2rad($alpha)) * sin(deg2rad($alpha)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin(deg2rad($beta)) * sin(deg2rad($beta)) ;
-  		$c        = asin(min(1, sqrt($a)));
-  		$distance = 2*$earth_radius * $c;
+		$beta     = $delta_lon/2;
+		$a        = sin(deg2rad($alpha)) * sin(deg2rad($alpha)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin(deg2rad($beta)) * sin(deg2rad($beta)) ;
+		$c        = asin(min(1, sqrt($a)));
+		$distance = 2*$earth_radius * $c;
 		return $distance;
 	}
 }
