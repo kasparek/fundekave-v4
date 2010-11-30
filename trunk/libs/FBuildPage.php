@@ -184,7 +184,7 @@ class FBuildPage {
 				FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 			} else {
 				//NOT TEMPLATE AT ALL
-				FBuildPage::addTab(array("MAINDATA"=>$user->pageVO->content.'<div class="clearbox"></div>'));
+				FBuildPage::addTab(array("MAINDATA"=>FSystem::postText($user->pageVO->content).'<div class="clearbox"></div>'));
 			}
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum

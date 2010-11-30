@@ -197,12 +197,11 @@ class page_ItemsList implements iPage {
 
 			if(!empty($date)) {
 				//used for sorting
-				$fItems->addSelect("if( sys_pages_items.typeId='forum', sys_pages_items.dateCreated, sys_pages_items.dateStart) as dateLive");
 				$fItems->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
 				."or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y-%m-%d')) "
 				."or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
 				);
-				$fItems->setOrder('dateLive desc');
+				$fItems->setOrder('dateStart desc');
 			} else {
 				//ORDER
 				if($pageVO->pageId=='event' && empty($itemVO)) {

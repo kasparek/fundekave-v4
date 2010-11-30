@@ -400,19 +400,16 @@ class FSystem {
 							}
 							break;
 						case 'i':
-							$fi = new FItems();
-							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
-							$arr = $fi->getList();
-							if(!empty($arr)) {
-								$replaceText = $arr[0]->render();
-								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-							}
-		/*						
-							$user = FUser::getInstance();
-							if($user->userVO->userId==1) {
-								print_r($text);
-							}*/
+							if(strpos($matches[0][$x][0],"#norender")===false){
+								$fi = new FItems();
+								$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
+								$arr = $fi->getList();
+								if(!empty($arr)) {
+									$replaceText = $arr[0]->render();
+									$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
+									$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
+								}
+							}		
 							break;
 					}
 				}

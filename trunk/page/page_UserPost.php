@@ -56,6 +56,7 @@ class page_UserPost implements iPage {
 		}
 
 		if($data['action']=='special') $data['special'] = 'true';
+		
 		if(isset($data['special'])) {
 			switch($data['saction']) {
 				case 'setpp':
@@ -71,9 +72,12 @@ class page_UserPost implements iPage {
 					if(empty($data["del"])) break;
 					if($data['saction']=='deletebetween' && count($data["del"]) > 1) {
 						$displayedMsgs = &$cache->getPointer('displayedMsgs');
+						$to = array_pop($data['del']);
+						$from = array_pop($data['del']);
 						if(empty($displayedMsgs)) break;
-						$firstIndex = array_search($data["del"][0],$displayedMsgs);
-						$len = array_search($data["del"][(count($data["del"])-1)],$displayedMsgs) - $firstIndex;
+						$firstIndex = array_search($from,$displayedMsgs);
+						$lastIndex = array_search($to,$displayedMsgs)+1;
+						$len = $lastIndex - $firstIndex;
 						$data["del"] = array_slice($displayedMsgs, $firstIndex, $len);
 						$displayedMsgs = null;
 					}
