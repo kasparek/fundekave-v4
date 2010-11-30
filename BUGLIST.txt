@@ -5,12 +5,8 @@ flash title on new message
 setup CSS color templating
 setup nz subdomain, upload photos
 finish awake33 skin
-setup iobosa config - presmerovate domenu iyobosa@seznam.cz
-detail clanku - rewrite nahledu na odkaz do galerie - potrebuje dodelat
-posta - smazat mezi nefunguje
-upload - nejak vycistit stary cunky pokud tam jsou
-hasNewMessage checker - do not kick user, if kicked, redirect
-itemlist - nefunguje data= -> order by dataLive pridava spatnej prefix
+
+novy kluby/stranky nekam vyrazne
 palec nahoru - na hlavni dat nekdo ma rad tohle
 
 TODO:
