@@ -239,7 +239,7 @@ if($imageProps[0]>0 && $imageProps[1]>0) {
 if($c->output===true) {
 	$fp = fopen($targetImage, 'rb');
 	header('Content-Type: '.$contentType);
-	header("Content-Length: " . filesize($targetImage));
+	//header("Content-Length: ".filesize($targetImage));
 	header("Cache-control: max-age=290304000, public");
 	header("Last-Modified: " . date(DATE_ATOM,filemtime($remote===true?$targetImage:$sourceImage)));
 	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));

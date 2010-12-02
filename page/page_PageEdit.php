@@ -99,6 +99,7 @@ class page_PageEdit implements iPage {
 				}
 				if(empty($data['description'])) $data['description']='';
 				$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
+				if(isset($data['pageIdTop'])) $pageVO->pageIdTop = $data['pageIdTop']; 
 			} else {
 				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
 			}
@@ -498,6 +499,7 @@ class page_PageEdit implements iPage {
 		if($user->pageParam=='sa') {
 			$tpl->setVariable('LOCKEDOPTIONS',FCategory::getOptions(FLang::$ARRLOCKED,$pageVO->locked));
 			$tpl->setVariable('PAGETEMPLATE',$pageVO->template);
+			$tpl->setVariable('PAGEIDTOP',$pageVO->pageIdTop);
 			//seo plain text description
 			$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
 			$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
