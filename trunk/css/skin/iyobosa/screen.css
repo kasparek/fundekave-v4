@@ -10,21 +10,31 @@ div#mainbar ul {padding: 0;margin: 0;}
 /* BASE FRAMEWORK */
 body {text-align: center;color: black;font:0.68em/1 Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
-background: #39a142;/* url(img/page-bg.jpg) no-repeat right top;*/}
+background: #fff url(img/page-bg.png); }
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;}
 div#header {position: relative;z-index: 1;}
-div#pagebar {float:left;width:100%;min-width: 610px;display:inline; background-color: #ffc;padding: 0;}
+div#pagebar {float:left;width:100%;min-width: 700px;display:inline; background-color: #ffc;padding: 0;}
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
-div#header, div#footer{clear:both;margin-left: 0px;min-width: 400px;}
+div#header, div#footer{clear:both;margin-left: 0px;min-width: 700px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
 div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
 
 /* HEADER CONTENT */
-div#logo {float:left;position:relative;top:0;
-text-align:center;margin:-100px 0 0 0;height:100px;}
+.htop { float:left;
+float: left;
+font-family: Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
+font-weight: bold;
+    font-size: 2em;
+    height: 100px;
+    margin: 0;
+    padding: 0;
+    line-height: 100px; }
+div#logo {float:right;position:relative;top:0;
+text-align:center;margin:-110px -220px 0 0;height:100px;
+}
 .bodySidebarOff div#logo {margin-right:0px;}
 
 /* PRIMARY MENU */
