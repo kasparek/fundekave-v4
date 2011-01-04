@@ -42,7 +42,7 @@ class DBDriver
 	}
 
 	function flushOld() {
-		FDBTool::query("delete from ".$this->tableName." where datediff(now(),dateUpdated) > lifeTime");
+		FDBTool::query("delete from ".$this->tableName." where lifeTime>0 and TIME_TO_SEC(timediff(now(),dateUpdated)) > lifeTime");
 	}
 
 	function setData($key, $data, $grp) {
