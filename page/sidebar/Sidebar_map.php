@@ -21,7 +21,7 @@ class Sidebar_map {
 		$dbtool->addJoinAuto('sys_pages_items','itemId',array(),'join');
 		if(empty($user->itemVO)) $dbtool->addWhere("(sys_pages_items.itemIdTop is null or sys_pages_items.itemIdTop='')");
 		else $dbtool->addWhere("(sys_pages_items.itemId='".$user->itemVO->itemId."' or sys_pages_items.itemIdTop='".$user->itemVO->itemId."')");
-		if(SITE_STRICT == 1) $dbtool->addWhere("sys_pages_items.pageIdTop='".HOME_PAGE."'");
+		if(SITE_STRICT) $dbtool->addWhere("sys_pages_items.pageIdTop='".SITE_STRICT."'");
 		$dbtool->addWhere('sys_pages_items.public=1');
 		if($user->pageVO->typeId!='top') {
 			$dbtool->addWhere('sys_pages_items.pageId="'.$user->pageVO->pageId.'"');
@@ -41,7 +41,7 @@ class Sidebar_map {
 			$dbtool->addJoinAuto('sys_pages','pageId',array(),'join');
 			$dbtool->addWhere('sys_pages.public=1');
 			if($user->pageVO->typeId!='top') $dbtool->addWhere("sys_pages.pageId='".$user->pageVO->pageId."'"); 
-			if(SITE_STRICT == 1) $dbtool->addWhere("sys_pages.pageIdTop='".HOME_PAGE."'");
+			if(SITE_STRICT) $dbtool->addWhere("sys_pages.pageIdTop='".SITE_STRICT."'");
 			if($type!='') $dbtool->addWhere("sys_pages.typeId='".$type."'");
 			if($category>0) $dbtool->addWhere("sys_pages.categoryId='".$category."'");
 			$tmp = $dbtool->getContent(0,20);

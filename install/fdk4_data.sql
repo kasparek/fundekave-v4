@@ -43,11 +43,13 @@ INSERT INTO `sys_menu` VALUES ('ehZJn', 'galer', 'Galerie', 1, 4);
 INSERT INTO `sys_menu` VALUES ('ehZJn', 'maina', 'Přehled', 0, 5);
 INSERT INTO `sys_menu` VALUES ('ehZJn', 'finfo', 'Přátelé', 0, 6);
 
+delete from sys_menu where pageIdTop='Nr1ZZ';
 INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr1ZZ', 'Novinky', 1, 1);
 INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr3ZZ', 'O nás', 1, 2);
 INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'galer', 'Galerie', 1, 3);
-INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr2ZZ', 'Kontakt', 1, 4);
-INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr4ZZ', 'Přispějte', 1, 5);
+INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr5ZZ', 'Video', 1, 4);
+INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr2ZZ', 'Kontakt', 1, 5);
+INSERT INTO `sys_menu` VALUES ('Nr1ZZ', 'Nr4ZZ', 'Přispějte', 1, 6);
 
 INSERT INTO `sys_pages` VALUES ('Nr2ZZ', null, 'culture', null, null, null, 'Kontakt', NULL, NULL, 1, now(), NULL, NULL, 1, NULL, 0, 0, NULL);
 INSERT INTO `sys_pages` VALUES ('Nr3ZZ',NULL,'culture',NULL,0,'','O nás',	'',	'',1,now(),null,null,1,NULL,0,0,NULL);

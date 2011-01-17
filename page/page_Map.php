@@ -22,7 +22,7 @@ class page_Map implements iPage {
 
 		$fitems = new FItems('',$user->userVO->userId);
 		$fitems->joinOnPropertie('position',0,'join');
-		if(SITE_STRICT == 1) $fitems->addWhere("pageIdTop='".HOME_PAGE."'");
+		if(SITE_STRICT) $fitems->addWhere("pageIdTop='".SITE_STRICT."'");
 		if(!empty($user->itemVO)) $fitems->addWhere("(sys_pages_items.itemId='".$user->itemVO->itemId."' or sys_pages_items.itemIdTop='".$user->itemVO->itemId."')");
 		if($user->pageVO->typeId!='top') {
 			$fitems->addWhere('sys_pages_items.pageId="'.$user->pageVO->pageId.'"');
@@ -74,7 +74,7 @@ class page_Map implements iPage {
 			$fitems = new FPages($type,$user->userVO->userId);
 			$fitems->joinOnPropertie('position',0,'join');
 			if($user->pageVO->typeId!='top') $fitems->addWhere('pageId="'.$user->pageVO->pageId.'"');
-			if(SITE_STRICT == 1) $fitems->addWhere("pageIdTop='".HOME_PAGE."'");
+			if(SITE_STRICT) $fitems->addWhere("pageIdTop='".SITE_STRICT."'");
 			if($type!='') $fitems->addWhere("sys_pages.typeId='".$type."'");
 			if($category>0) $fitems->addWhere("sys_pages.categoryId='".$category."'");
 			$list = $fitems->getContent();

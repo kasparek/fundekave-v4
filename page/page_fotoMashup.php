@@ -20,7 +20,7 @@ class page_fotoMashup implements iPage {
 		$num = count($itemIdList);
 		
 		if(empty($itemIdList)) {
-			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT == 1 ? " and pageIdTop='".HOME_PAGE."'" : '')." order by itemId desc");
+			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId desc");
 			
 			$num = 100;
 			$len = count($allList);
