@@ -54,8 +54,8 @@ class page_PagesList implements iPage {
 				$fPages->addWhere("sys_pages.categoryId=".$category);
 			}
 		}
-		if(SITE_STRICT == 1) {
-			$fPages->addWhere("sys_pages.pageIdTop = '".HOME_PAGE."'");
+		if(SITE_STRICT) {
+			$fPages->addWhere("sys_pages.pageIdTop = '".SITE_STRICT."'");
 		}
 		if($typeId == 'galery') {
 			$fPages->setOrder("dateContent desc");

@@ -2,10 +2,10 @@
 class Sidebar_galeryRand {
 	static function show() {
 		$cache = FCache::getInstance('f');
-		$itemIdList = $cache->getData(HOME_PAGE.'fotorand','sidebar');
+		$itemIdList = $cache->getData(SITE_STRICT.'fotorand','sidebar');
 				
 		if(empty($itemIdList)) {
-			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT == 1 ? " and pageIdTop='".HOME_PAGE."'" : '')." order by itemId desc");
+			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId desc");
 			
 			$num = 100;
 			$len = count($allList);
@@ -20,7 +20,7 @@ class Sidebar_galeryRand {
 		
 		$itemId = array_pop($itemIdList);
 
-		$cache->setData($itemIdList,HOME_PAGE.'fotorand','sidebar');
+		$cache->setData($itemIdList,SITE_STRICT.'fotorand','sidebar');
 				
 		$itemVO = new ItemVO($itemId,false);
 		$itemVO->options=array('showPage'=>true);
