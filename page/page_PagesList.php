@@ -100,6 +100,7 @@ class page_PagesList implements iPage {
 				$tplGal = FSystem::tpl('item.galerylink.tpl.html');
 				foreach ($arr as $gal) {
 					$fItems->setWhere('sys_pages_items.pageId="'.$gal->pageId.'" and (itemIdTop is null or itemIdTop=0)');
+					$fItems->setOrder('sys_pages_items.hit desc');
 					$itemList = $fItems->getList(0,1);
 					if(!empty($itemList)) {
 						$fotoItemVO = $itemList[0];

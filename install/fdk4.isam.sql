@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `sys_leftpanel_pages` (
   `functionName` varchar(40) NOT NULL,
   `ord` smallint(5) unsigned default NULL,
   `visible` tinyint(3) unsigned default NULL,
-  `minimized` tinyint(3) unsigned default NULL,
+  `name` varchar(40) default NULL,
   PRIMARY KEY  (`pageId`,`functionName`),
   KEY `leftpanel_group` (`pageId`),
   KEY `leftpanel_func` (`functionName`)

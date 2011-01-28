@@ -46,7 +46,7 @@ class FBuildPage {
 
 		$breadcrumbs = array();
 		//breadcrumbs
-		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
+		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : SITE_STRICT;
 		if($pageIdTop!=$user->pageVO->pageId) {
 			$pageTop = new PageVO($pageIdTop);
 		} else {

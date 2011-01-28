@@ -1,11 +1,4 @@
 FIX:
-zobrazovat subdomain url v nazvu stranky na funde pokud je to ze sub
-invalid password error
-flash title on new message
-setup CSS color templating
-setup nz subdomain, upload photos
-finish awake33 skin
-
 novy kluby/stranky nekam vyrazne
 palec nahoru - na hlavni dat nekdo ma rad tohle
 

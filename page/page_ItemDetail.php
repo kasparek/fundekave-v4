@@ -19,7 +19,7 @@ class page_ItemDetail implements iPage {
 			$itemVO = $user->itemVO;
 		}
 		if(empty($user->pageParam)) {
-			if($itemVO->userId != $user->userVO->userId) {
+			if(!$user->idkontrol || $itemVO->userId != $user->userVO->userId) {
 				$itemVO->hit();
 			}
 		}
@@ -28,8 +28,8 @@ class page_ItemDetail implements iPage {
 		}
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
-		if(($itemNext = $itemVO->getNext(true))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$itemVO->pageId);
-		if(($itemPrev = $itemVO->getPrev(true))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$itemVO->pageId);
+		if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$itemVO->pageId);
+		if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$itemVO->pageId);
 		
 		//generic vars for all item details
 		
@@ -96,8 +96,13 @@ class page_ItemDetail implements iPage {
 				
 		if(!empty($output)) {
 			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,array('id'=>'backButt'));
-			if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri,FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>$itemVO->typeId=='galery'?'hash keepscroll galerynext':'','parentClass'=>'opposite'));
-			if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri,FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>$itemVO->typeId=='galery'?'fajaxa progress hash keepscroll':'','parentClass'=>'opposite'));
+			if($itemVO->typeId!='galery') {
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_NEWER ,array('id'=>'prevButt','class'=>$itemVO->typeId=='galery'?'fajaxa progress hash keepscroll':'','parentClass'=>'opposite'));
+				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri, FLang::$BUTTON_PAGE_OLDER ,array('id'=>'nextButt','class'=>$itemVO->typeId=='galery'?'hash keepscroll galerynext':'','parentClass'=>'opposite'));
+			} else {
+				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri, $itemVO->typeId!='galery' ? FLang::$BUTTON_PAGE_NEWER : FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>$itemVO->typeId=='galery'?'hash keepscroll galerynext':'','parentClass'=>'opposite'));
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, $itemVO->typeId!='galery' ? FLang::$BUTTON_PAGE_OLDER : FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>$itemVO->typeId=='galery'?'fajaxa progress hash keepscroll':'','parentClass'=>'opposite'));
+			}
 			return $output;
 		} 	
 	}

@@ -35,6 +35,8 @@ static $BUTTON_PAGE_BACK = 'Zpět';
 static $BUTTON_PAGE_BACK_ALBUM = 'Zpět na album';
 static $BUTTON_PAGE_NEXT = 'Dalsi &gt;&gt;';
 static $BUTTON_PAGE_PREV = '&lt;&lt; Predchozi';
+static $BUTTON_PAGE_NEWER = 'Novější &gt;&gt;';
+static $BUTTON_PAGE_OLDER = '&lt;&lt; Starší';
 static $BUTTON_EDIT = 'Upravit';
 static $MESSAGE_PAGE_LOCKED = 'Stránka je zamčena administrátory. Připadné dotazy: <a href="?k=fl168">.:--<< FUN.de.KAVE >>--:. typy, rady, chyby</a>';
 
