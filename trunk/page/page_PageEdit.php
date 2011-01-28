@@ -99,7 +99,7 @@ class page_PageEdit implements iPage {
 				}
 				if(empty($data['description'])) $data['description']='';
 				$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
-				if(isset($data['pageIdTop'])) $pageVO->pageIdTop = $data['pageIdTop']; 
+				if(isset($data['pageIdTop'])) $pageVO->pageIdTop = $data['pageIdTop'];
 			} else {
 				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
 			}
@@ -127,10 +127,6 @@ class page_PageEdit implements iPage {
 				}
 			}
 
-			if(isset($data['forumhome'])) {
-				$pageVO->prop('home', FSystem::textins($data['forumhome']));
-			}
-
 			if(!FError::is()) {
 
 				if($user->pageParam == 'a') {
@@ -143,6 +139,15 @@ class page_PageEdit implements iPage {
 					$pageVO->forceInsert=true;
 					$pageVO->save();
 				}
+
+				if(isset($data['forumhome'])) {
+					$pageVO->prop('home', FSystem::textins($data['forumhome']));
+				}
+					
+				if(isset($data['sidebar'])) {
+					$pageVO->prop('sidebar', FSystem::textins($data['sidebar']));
+				}
+
 				if(!empty($data['categoryNew'])) {
 					$pageVO->categoryId = FCategory::tryGet( $data['categoryNew'],$pageVO->typeId,HOME_PAGE);
 				}
@@ -452,42 +457,45 @@ class page_PageEdit implements iPage {
 
 		if($user->pageParam != 'a') {
 			if($pageVO->typeId == 'forum') {
+				//FORUM
 				//enable avatar
 				$tpl->touchBlock('forumspecifictab');
 				//FORUM HOME
 				$home = FSystem::textToTextarea($pageVO->prop('home'));
 				$tpl->setVariable('CONTENT',$home);
 				$tpl->setVariable('HOMEID',$textareaIdForumHome);
-			}
-			if($pageVO->typeId == 'galery') {
+			} elseif($pageVO->typeId == 'galery') {
+				//GALERY
 				$thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
 				$thumbSizeList = explode('x',$thumbPropList[0]);
 				$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
 				$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
 				if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
 				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
+
+				$tpl->touchBlock('galeryspecifictabs');
+				if($pageVO->itemsOrder()=='dateCreated desc') {
+					$tpl->touchBlock('gorddate');
+				}
+				$fItems = new FItems('galery',false);
+				$fItems->setWhere("pageId='".$pageVO->pageId."' and (itemIdTop is null or itemIdTop=0)");
+				$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
+
+				/* UPLOAD INPUTS */
+				$numInputs=7;
+				for ($x=1;$x<$numInputs;$x++) {
+					$tpl->setCurrentBlock('uploadinput');
+					$tpl->setVariable('UPLOADINPUTLABEL','Foto '.$x.'.');
+					$tpl->setVariable('UPLOADINPUTID',$x);
+					$tpl->parseCurrentBlock();
+				}
 			} elseif ($pageVO->typeId=='blog') {
+				//BLOG
 				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 			}
-		}
-
-		if($pageVO->typeId == 'galery' && $user->pageParam != 'a') {
-			$tpl->touchBlock('galeryspecifictabs');
-			if($pageVO->itemsOrder()=='dateCreated desc') {
-				$tpl->touchBlock('gorddate');
-			}
-			$fItems = new FItems('galery',false);
-			$fItems->setWhere("pageId='".$pageVO->pageId."' and (itemIdTop is null or itemIdTop=0)");
-			$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
-
-			/* UPLOAD INPUTS */
-			$numInputs=7;
-			for ($x=1;$x<$numInputs;$x++) {
-				$tpl->setCurrentBlock('uploadinput');
-				$tpl->setVariable('UPLOADINPUTLABEL','Foto '.$x.'.');
-				$tpl->setVariable('UPLOADINPUTID',$x);
-				$tpl->parseCurrentBlock();
-			}
+				
+			$tpl->setVariable('SIDEBAR',FSystem::textToTextarea($pageVO->prop('sidebar')));
+				
 		}
 
 		$categoryId = (isset($pageVO->categoryId))?($pageVO->categoryId):(0);
@@ -519,13 +527,11 @@ class page_PageEdit implements iPage {
 		}
 
 		//---left panels configure
-		/*
-		 if($user->pageParam != 'a') {
+
+		if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
-			$fLeft = new FLeftPanelEdit($pageVO->pageId,0,$pageVO->typeId);
-			$tpl->setVariable('LEFTPANELEDIT',$fLeft->showEdit());
-			}
-			/**/
+			$tpl->setVariable('SIDEBARID','sidebar');
+		}
 			
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('pageedit','$html',$tpl->get());

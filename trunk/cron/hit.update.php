@@ -15,7 +15,7 @@ $total = mysql_num_rows($result);
 $counter=0;
 if($total>0) {
 while($row = mysql_fetch_row($result)) {
-if($row[0]>5 && $row[1]>0) {
+if($row[0]>3 && $row[1]>0) {
 $q = "update sys_pages_items set hit = '".$row[0]."' where itemId='".$row[1]."';\n";
 mysql_query($q,$db);
 if($row[2]<$date) break; //TODO: use date when last updated

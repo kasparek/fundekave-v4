@@ -341,7 +341,7 @@ class FSystem {
 						case 'd':
 						case 'e':
 							$fi = new FItems();
-							$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
+							$fi->setWhere("sys_pages_items.pageId='".$matches[1][$x][0]."' and sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 							$arr = $fi->getList();
 							if(!empty($arr)) {
 								$replaceText = $arr[0]->render();
@@ -402,7 +402,7 @@ class FSystem {
 						case 'i':
 							if(strpos($matches[0][$x][0],"#norender")===false){
 								$fi = new FItems();
-								$fi->setWhere("sys_pages_items.enclosure='".$matches[2][$x][0]."'");
+								$fi->setWhere("pageId = '".$matches[1][$x][0]."' and sys_pages_items.enclosure='".$matches[2][$x][0]."'");
 								$arr = $fi->getList();
 								if(!empty($arr)) {
 									$replaceText = $arr[0]->render();

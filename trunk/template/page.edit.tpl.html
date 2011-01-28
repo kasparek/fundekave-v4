@@ -15,7 +15,7 @@
 <!-- BEGIN relatedtab --><li><a href="#tabs-3">Spratelene stranky</a></li><!-- END relatedtab -->
 <!-- BEGIN forumspecifictab --><li><a href="#tabs-4">Nastenka</a></li><!-- END forumspecifictab -->
 <!-- BEGIN categorytab --><li><a href="#tabs-7">Kategorie</a></li><!-- END categorytab -->
-<!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Levy panel</a></li><!-- END leftpaneltab -->
+<!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Postranní panel</a></li><!-- END leftpaneltab -->
 </ul><!-- END tabul -->
 <div id="tabs-1">
 <fieldset>
@@ -84,7 +84,8 @@
 </div><!-- END extended -->
 
 <!-- BEGIN forumspecific --><div id="tabs-4"><fieldset><legend>Nastenka klubu</legend>
-<textarea id="{HOMEID}" name="forumhome" class="markitup draftable largeTextarea">{CONTENT}</textarea>{CONTENTTOOLBOX}<br />
+<textarea id="{HOMEID}" name="forumhome" class="markitup draftable largeTextarea">{CONTENT}</textarea>
+</fieldset>
 </div><!-- END forumspecific -->
 <!-- BEGIN galeryspecificcontent --><div id="tabs-5">
 <fieldset>
@@ -117,7 +118,10 @@ Při výběru fotografií mMůžete vybrat více najednou držením klávesy CTR
 <!-- BEGIN perm --><div id="tabs-2">{PAGEPERMISIONSFORM}</div><!-- END perm -->
 <!-- BEGIN relations --><div id="tabs-3">{RELATIONSFORM}</div><!-- END relations -->
 <!-- BEGIN categoryedit --><div id="tabs-7">{PAGECATEGORYEDIT}</div><!-- END categoryedit -->
-<!-- BEGIN leftpaneledit --><div id="tabs-8">{LEFTPANELEDIT}</div><!-- END leftpaneledit -->
-
+<!-- BEGIN leftpaneledit --><div id="tabs-8">
+<fieldset>
+<textarea id="sidebar" name="sidebar" class="markitup draftable largeTextarea">{SIDEBAR}</textarea>
+</fieldset>
+</div><!-- END leftpaneledit -->
 </div>
 </form>
