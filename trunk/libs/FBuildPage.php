@@ -328,7 +328,7 @@ class FBuildPage {
 		$showSidebar = true;
 		if($user->pageVO) {
 			$showSidebar = $user->pageVO->showSidebar;
-			$showSidebar = !$user->pageVO->prop('hideSidebar');
+			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
 		}
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));

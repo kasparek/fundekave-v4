@@ -90,5 +90,5 @@ if(!isset($nonInit)) {
 	//map commands
 	FCommand::getInstance(); //to load up class and get static constants
 	
-	if(FSystem::isRobot()) FError::write_log("Robot visit - Page:".$user->pageId." Item:".(isset($user->itemVO)?$user->itemVO->itemId:0)." Host".$_SERVER['HTTP_USER_AGENT']);
+	//if(FSystem::isRobot()) FError::write_log("Robot visit - Page:".$user->pageId." Item:".(isset($user->itemVO)?$user->itemVO->itemId:0)." Host".$_SERVER['HTTP_USER_AGENT']);
 }
