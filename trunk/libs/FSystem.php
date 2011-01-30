@@ -473,13 +473,14 @@ class FSystem {
 	}
 
 	static function isRobot() {
-		$bot_list = array('google',"teoma", "alexa", "froogle", "gigabot", "inktomi",
+		if(empty($_SERVER['HTTP_USER_AGENT'])) return false;
+		$bot_list = array('google',"yahoo","teoma", "alexa", "froogle", "gigabot", "inktomi",
 "looksmart", "url_spider_sql", "firefly", "nationaldirectory",
 "ask jeeves", "tecnoseek", "infoseek", "webfindbot", "girafabot",
 "crawler", "www.galaxy.com", "googlebot", "scooter", "slurp",
 "msnbot", "appie", "fast", "webbug", "spade", "zyborg", "rabaz",
 "baiduspider", "feedfetcher-google", "technoratisnoop", "rankivabot",
-"mediapartners-google", "sogou web spider", "webalta crawler","google","rambler","yahoo","abachobot","accoona",
+"mediapartners-google", "sogou web spider", "webalta crawler","google","rambler","abachobot","accoona",
 "acoirobot",'msnbot','rambler','yahoo','abachobot','accoona','acoirobot','aspseek','croccrawler','dumbot','fast-webcrawler','geonabot','lycos','msrbot','altavista','idbot','estyle','scrubby'
 		);
 		$lowerAgent = strtolower($_SERVER['HTTP_USER_AGENT']);

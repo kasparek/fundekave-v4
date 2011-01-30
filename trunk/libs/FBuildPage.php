@@ -260,7 +260,7 @@ class FBuildPage {
 		$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
 
 		//searchform
-		$tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
+		if(!$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
 		
 		$tpl->setVariable("TITLE", FBuildPage::getTitle());
 		
@@ -326,7 +326,10 @@ class FBuildPage {
 
 		//---LEFT PANEL POPULATING
 		$showSidebar = true;
-		if($user->pageVO) $showSidebar=$user->pageVO->showSidebar;
+		if($user->pageVO) {
+			$showSidebar = $user->pageVO->showSidebar;
+			$showSidebar = !$user->pageVO->prop('hideSidebar');
+		}
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();
