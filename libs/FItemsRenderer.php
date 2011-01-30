@@ -55,10 +55,6 @@ class FItemsRenderer {
 		$page = $cache->getData($cacheId,$cacheGroup);
 		if($page===false) {
 			$tpl = FSystem::tpl('item.pagelink.tpl.html');
-			/*if(!empty($itemVO->pageVO->pageIco)) $tpl->setVariable("AVATARURL", URL_PAGE_AVATAR.$itemVO->pageVO->pageIco);
-			else $tpl->setVariable("AVATARURL", FConf::get('pageavatar',$itemVO->pageVO->typeId));
-			$vars['AVATARALT'] = FLang::$TYPEID[$page->typeId];
-			$vars['AVATARNAME'] = FLang::$TYPEID[$page->typeId].': '.$itemVO->pageVO->name;*/
 			$pageVO = $itemVO->pageVO;
 			$pTop=$pageVO->get('pageIdTop');
 			$homeUrl='';
@@ -72,8 +68,6 @@ class FItemsRenderer {
 			$tpl->setVariable($vars);
 			$page = $tpl->get();
 			$cache->setData($page,$cacheId,$cacheGroup);
-		} else {
-			FProfiler::write('FItemsRenderer::addPageName--RENDER PAGENAME FROM CACHE-'.$cacheId);
 		}
 		$rendered = str_replace('[[ITEM]]',$rendered,$page);
 		return $rendered;
@@ -87,7 +81,7 @@ class FItemsRenderer {
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
-		$cacheGroup = 'renderedItem';
+		$cacheGroup = 'item';
 		$cacheId = $itemVO->itemId;
 		if($isDefault) {
 			//try cache
@@ -96,7 +90,6 @@ class FItemsRenderer {
 			if($cached!==false) {
 				if($this->showPage) $cached = $this->addPageName($cached,$itemVO);
 				$this->tplParsed[] = $cached;
-				FProfiler::write('FItemsRenderer::render--RENDER LOADED FROM CACHE-'.$cacheId);
 				return;
 			}
 		}

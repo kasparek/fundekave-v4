@@ -71,8 +71,8 @@ class FCommand {
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
 		$unreadedList=array();
-		FSystem::superInvalidate('renderedItem',$data->itemId);
-		FSystem::superInvalidate('renderedItem',$data->itemId.'detail');
+		FSystem::superInvalidate('item',$data->itemId);
+		FSystem::superInvalidate('item',$data->itemId.'detail');
 		//update total my num
 		$user = FUser::getInstance();
 		if($user->idkontrol === true) {

@@ -3,9 +3,9 @@ class FSystem {
 
 	static function superInvalidate($grp,$id='') {
 		//domain list
-		$domains = array('fundekave.net','eboinnaija.fundekave.net','upsidedown.fundekave.net');
+		$domains = array('iyobosahelpinghand.com','awake33.com','fundekave.net','eboinnaija.fundekave.net','upsidedown.fundekave.net');
 		foreach($domains as $dom) {
-			file_get_contents('http://'.$dom.'/cron-invalidate.php?invalidate='.$grp.($id!=''?'/'.$id:''));
+			file_get_contents('http://'.$dom.'/index.php?cron=invalidate&g='.$grp.($id!=''?'/'.$id:''));
 		}
 	}
 
@@ -409,12 +409,12 @@ class FSystem {
 									$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
 									$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
 								}
-							}		
+							}
 							break;
 					}
 				}
 			}
-				
+
 		}
 
 		return trim($text);
@@ -471,4 +471,21 @@ class FSystem {
 		$distance = 2*$earth_radius * $c;
 		return $distance;
 	}
+
+	static function isRobot() {
+		$bot_list = array('google',"teoma", "alexa", "froogle", "gigabot", "inktomi",
+"looksmart", "url_spider_sql", "firefly", "nationaldirectory",
+"ask jeeves", "tecnoseek", "infoseek", "webfindbot", "girafabot",
+"crawler", "www.galaxy.com", "googlebot", "scooter", "slurp",
+"msnbot", "appie", "fast", "webbug", "spade", "zyborg", "rabaz",
+"baiduspider", "feedfetcher-google", "technoratisnoop", "rankivabot",
+"mediapartners-google", "sogou web spider", "webalta crawler","google","rambler","yahoo","abachobot","accoona",
+"acoirobot",'msnbot','rambler','yahoo','abachobot','accoona','acoirobot','aspseek','croccrawler','dumbot','fast-webcrawler','geonabot','lycos','msrbot','altavista','idbot','estyle','scrubby'
+		);
+		$lowerAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+		foreach ($bot_list as $bot)	if(strpos($lowerAgent,$bot)!==false) return true;
+		return false;
+	}
+
+
 }

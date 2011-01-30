@@ -46,7 +46,7 @@ class FBuildPage {
 
 		$breadcrumbs = array();
 		//breadcrumbs
-		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : SITE_STRICT;
+		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 		if($pageIdTop!=$user->pageVO->pageId) {
 			$pageTop = new PageVO($pageIdTop);
 		} else {
@@ -275,7 +275,7 @@ class FBuildPage {
 		//---BODY PARAMETERS
 		//---MAIN MENU - cached rendered
 		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
-		$menu = $cache->getData('menu'.HOME_PAGE,'main');
+		$menu = $cache->getData('menu','main');
 
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
