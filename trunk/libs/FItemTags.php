@@ -12,6 +12,7 @@ class FItemTags {
  	 * @return boolean
 	 */
 	static function tag($itemId,$userId,$weight=1,$tag='') {
+		if(FSystem::isRobot()) return;
 		if(0 == FDBTool::getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
 			FItemTags::invalidateCache();
 			FDBTool::query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');

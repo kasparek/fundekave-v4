@@ -1,6 +1,6 @@
 <?php
 $truncate = array( WEBROOT.'tmp/fuup_chunks' ,WEBROOT.'tmp' );
-$recursive = array( WEBROOT.'tmp/lite' );
+$recursive = array( FConf::get('settings','cache_path') );
 
 $counter = 0;
 foreach($truncate as $dir) {

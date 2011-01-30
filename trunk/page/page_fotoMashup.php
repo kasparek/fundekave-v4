@@ -16,7 +16,7 @@ class page_fotoMashup implements iPage {
 	static function build($data=array()) {
 		$cache = FCache::getInstance('f');
 		$cache->setConf(180);
-		$itemIdList = $cache->getData(SITE_STRICT.'fotomashup','sidebar');
+		$itemIdList = $cache->getData('fotomashup','sidebar');
 		$num = count($itemIdList);
 
 		if(empty($itemIdList)) {
@@ -32,7 +32,7 @@ class page_fotoMashup implements iPage {
 			}
 			$itemIdList = array_reverse($itemIdList);
 				
-			$cache->setData($itemIdList,SITE_STRICT.'fotomashup','sidebar');
+			$cache->setData($itemIdList,'fotomashup','sidebar');
 		}
 
 		$data='';
