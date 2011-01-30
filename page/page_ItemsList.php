@@ -92,6 +92,38 @@ class page_ItemsList implements iPage {
 			$vars['UNREADNUM']= $diff>$max ? $max.'+' : $diff;
 		}
 		$itemId = 0;
+		$typeRequest='';
+		if(!empty($data['__get']['type'])) {
+			$typeRequest = $data['__get']['type'];
+			if(!isset(FLang::$TYPEID[$typeRequest])) $typeRequest='';
+		}
+		$cache = FCache::getInstance('f');
+		$tagGroups = $cache->getData($user->pageVO->pageId.(!empty($typeRequest)?'-'.$typeRequest:''),'tagfilter');
+		if($tagGroups===false) {
+			$tagGroups = FDBTool::getCol("SELECT tag_weight FROM `sys_pages_items` where tag_weight>0 ".(!empty($typeRequest)?" and typeId='".$typeRequest."' ":'').($user->pageVO->typeId!='top'?" and pageId='".$user->pageVO->pageId."' ":'')." group by tag_weight");
+			$cache->setData($tagGroups);
+		}
+		$len = count($tagGroups);
+		if($len>0) {
+			$steps = ceil($len/5);
+			if($steps<1) $steps = 1;
+			for($i=0;$i<($len/$steps);$i++) if($i*$steps<$len) $tagGroupsFiltered[] = $tagGroups[$i*$steps];	
+			$currentTag = 0;
+			if(!empty($data['__get']['tag'])) $currentTag = (int) $data['__get']['tag'];
+			if($currentTag>0) $tagsHtmlList[] = '<a href="'.FSystem::getUri("").'" title="'.FLang::$LABEL_TAG_ALL.'">0</a> ';
+			else $tagsHtmlList[] = '<span class="current" title="'.FLang::$LABEL_TAG_ALL.'">0</span> ';
+			foreach($tagGroupsFiltered as $tag) {
+				if($tag==$currentTag) $tagsHtmlList[] = '<span class="current">'.$tag.'</span>';
+				else $tagsHtmlList[] = '<a href="'.FSystem::getUri((!empty($typeRequest)?'type='.$typeRequest.'&':'')."tag=".$tag).'" title="'.FLang::$LABEL_TAG_FILTER.$tag.'">'.$tag.'</a> ';
+			}
+			if($user->pageVO->typeId=='top') {
+				if($typeRequest=='galery') $tagsHtmlList[] = '<span class="current">Jen foto</span>';
+				else $tagsHtmlList[] = '<a href="'.FSystem::getUri("type=galery&tag=".$currentTag).'">Jen foto</a>';
+			}
+			$tagsHtml = implode("\n",$tagsHtmlList);
+			$vars['TAGFILTERLINKS'] = $tagsHtml;
+		}
+
 
 		$categoryId=0;
 		if($user->categoryVO) {
@@ -177,6 +209,15 @@ class page_ItemsList implements iPage {
 
 			//LIST ITEMS
 			$fItems = new FItems('',$user->userVO->userId);
+			if(!empty($data['__get']['tag'])) {
+				$tag = (int) $data['__get']['tag'];
+				$fItems->addWhere("tag_weight >= '". $tag ."'");
+			}
+			if(!empty($data['__get']['type'])) {
+				$type = $data['__get']['type'];
+				$fItems->addWhere("typeId = '". $type ."'");
+			}
+			//$fItems->debug=1;
 			if($pageVO->typeId!='top') {
 				if($pageVO->pageId!='event') $fItems->setPage($pageVO->pageId);
 				$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);

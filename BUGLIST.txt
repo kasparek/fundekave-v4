@@ -1,11 +1,5 @@
-FIX:
-novy kluby/stranky nekam vyrazne
-palec nahoru - na hlavni dat nekdo ma rad tohle
-
 TODO:
--stranka s nahodnyma fotkama - nahodna slideshow - start random slideshow base on selected category
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
--nej stranka - podle palcu za obdobi,podle zobrazeni za odbobi TODO: history update
 
 
 

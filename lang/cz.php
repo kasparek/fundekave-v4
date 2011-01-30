@@ -8,7 +8,6 @@ static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
 static $TPL_SIDEBAR_USER_LOGIN = 'sidebar.user.login.tpl.html';
 static $TPL_USER_AVATAR = 'user.avatar.tpl.html';
 
-
 static $LABEL_PAGES_LIVE = 'Živě';
 static $LABEL_WEEK = 'Tyden';
 static $LABEL_TOP = 'Nej';
@@ -91,6 +90,9 @@ static $LABEL_TAG_PAGE = 'Popisuj fotky';
 static $LABEL_RULES_ACCESS = 'Pristup';
 static $LABEL_RULES_HELP = 'Napoveda';
 static $LABEL_RULES_HELP_TEXT = 'Pokud je pristup nasteveny na Soukromy - pristup maji jen uzivatele uvedeni v poli Uzivatele a Administratori';
+static $LABEL_TAG_ALL = 'Zobraz všechny příspěvky';
+static $LABEL_TAG_CURRENT = '';
+static $LABEL_TAG_FILTER = 'Zobraz příspěvky pouze s tímto počtem palců nebo více: ';
 
 static $LABEL_DELETED_OK = 'Uspesne smazano';
 static $LABEL_EVENTS_ARCHIV = 'Archiv';
