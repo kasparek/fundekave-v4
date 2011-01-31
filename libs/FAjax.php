@@ -113,6 +113,7 @@ class FAjax {
 				FProfiler::write('FAJAX MODULE VALIDATED');
 				call_user_func(array($className,$action), $fajax->data);
 				FProfiler::write('FAJAX MODULE COMPLETE');
+				FSystem::superInvalidateFlush();
 				if($ajax===true) {
 					if( $fajax->errorsLater===false ) {
 						$arrMsg = FError::get();
@@ -161,7 +162,6 @@ class FAjax {
 		if($ajax === true) {
 			header ("content-type: text/xml");
 			echo  FSystem::superVars($ret);
-			FSystem::superInvalidateFlush();
 			FProfiler::write('FAJAX XML OUTPUT COMPLETE');
 			exit();
 		}
