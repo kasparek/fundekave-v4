@@ -194,6 +194,7 @@ class ItemVO extends Fvob {
 				$vo->addIgnore('dateCreated');
 			}
 			$vo->save();
+			FCommand::run(ITEM_INSERTED,$this);
 		} else {
 			//---insert
 			if(empty($this->dateCreated)) {
@@ -267,6 +268,7 @@ class ItemVO extends Fvob {
 		$this->updateItemIdLast();
 		$this->memFlush();
 		FCommand::run(ITEM_UPDATED,$this);
+		FCommand::run(ITEM_DELETED,$this);
 	}
 
 	function prepare() {

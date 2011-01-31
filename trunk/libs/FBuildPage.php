@@ -165,6 +165,7 @@ class FBuildPage {
 					/* home */
 				case 'h':
 					$template='';
+					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 					$user->pageVO->content = FSystem::postText($user->pageVO->prop('home'));
 					if(empty($user->pageVO->content)) $user->pageVO->content = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					break;
