@@ -173,6 +173,8 @@ class Fvob {
 			$propertyValue = false;
 			if(!empty($prop)) $ret=true;
 		} else {
+			$db = FDBConn::getInstance();
+			$propertyValue = $db->escape($propertyValue);
 			FDBTool::query("insert into ".$this->getTable()."_properties (".$this->getPrimaryCol().",name,value) values ('".$this->{$this->getPrimaryCol()}."','".$propertyName."','".$propertyValue."') on duplicate key update value='".$propertyValue."'");
 			if($prop!=$propertyValue) $ret=true;
 		}

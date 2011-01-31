@@ -141,7 +141,8 @@ class page_PageEdit implements iPage {
 				}
 
 				if(isset($data['forumhome'])) {
-					$pageVO->prop('home', FSystem::textins($data['forumhome']));
+					$homeStr = FSystem::textins($data['forumhome']);
+					$pageVO->setProperty('home', $homeStr);
 				}
 					
 				if(isset($data['sidebar'])) {
@@ -205,6 +206,8 @@ class page_PageEdit implements iPage {
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
+				
+				FProfiler::write('page_PageEdit::process - saved');
 
 				if(!empty($categoryVO)) $categoryVO->updateNum();
 				if(!empty($oldCategoryId)) {
@@ -215,6 +218,8 @@ class page_PageEdit implements iPage {
 				}
 
 				FCommand::run(PAGE_UPDATED,$pageVO);
+				
+				FProfiler::write('page_PageEdit::process - page cache flushed');
 
 				//---page editing
 				if($user->pageParam != 'a') {
@@ -294,16 +299,18 @@ class page_PageEdit implements iPage {
 						}
 					}
 					if(isset($fotoArr)) {
+						$invalidateMap = false;
 						foreach ($fotoArr as $k=>$v) {
 							$itemVO = new ItemVO($k,true);
 							$itemVO->saveOnlyChanged = true;
+							
+							FProfiler::write('page_PageEdit::process - foto loaded');
+							
 							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
 
 							if(isset($v['position'])){
 								$v['position'] = FSystem::positionProcess($v['position']);
-								if($itemVO->setProperty('position', $v['position'])) {
-									FCommand::run(POSITION_UPDATED);
-								}
+								if($itemVO->setProperty('position', $v['position'])) $invalidateMap=true;
 								if(strpos($v['position'],';')!==false) $itemVO->setProperty('distance', FSystem::journeyLength($v['position']));
 							}
 
@@ -312,11 +319,19 @@ class page_PageEdit implements iPage {
 									FError::add(FLang::$ERROR_DATE_FORMAT);
 								}
 							}
+
+							FProfiler::write('page_PageEdit::process - foto values updated');
+							
 							$itemVO->save();
+							
+							FProfiler::write('page_PageEdit::process - foto updated');
 						}
+						if($invalidateMap) FCommand::run(POSITION_UPDATED);
 					}
 
 				}
+
+        FProfiler::write('page_PageEdit::process - page save complete');
 
 				/* redirect */
 				if($pageCreated === true) {

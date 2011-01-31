@@ -232,11 +232,14 @@ if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userId
 //---generate page
 FBuildPage::show( $data );
 
+fin();
+
 //---profiling
 FProfiler::write('PAGE COMPLETE');
 
 //---close resources
 function fin() {
+	FSystem::superInvalidateFlush();
 	session_write_close();
 	$db = FDBConn::getInstance();
 	$db->kill();

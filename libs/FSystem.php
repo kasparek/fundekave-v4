@@ -1,12 +1,19 @@
 <?php
 class FSystem {
 
+	private static $invalidate = array(); 
+
 	static function superInvalidate($grp,$id='') {
-		//domain list
+		$serialized = $grp.($id!=''?'/'.$id:'');
+		if(!in_array($serialized,self::$invalidate)) self::$invalidate[] = $serialized;	
+	}
+	
+	static function superInvalidateFlush() {
+	  if(empty(self::$invalidate)) return;
+		$grps = implode(";",self::$invalidate);
+	  self::$invalidate = array();
 		$domains = array('iyobosahelpinghand.com','awake33.com','fundekave.net','eboinnaija.fundekave.net','upsidedown.fundekave.net');
-		foreach($domains as $dom) {
-			file_get_contents('http://'.$dom.'/index.php?cron=invalidate&g='.$grp.($id!=''?'/'.$id:''));
-		}
+		foreach($domains as $dom) file_get_contents('http://'.$dom.'/index.php?cron=invalidate&g='.$grps);
 	}
 
 	static function superVars($data) {

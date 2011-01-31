@@ -161,6 +161,7 @@ class FAjax {
 		if($ajax === true) {
 			header ("content-type: text/xml");
 			echo  FSystem::superVars($ret);
+			FSystem::superInvalidateFlush();
 			FProfiler::write('FAJAX XML OUTPUT COMPLETE');
 			exit();
 		}

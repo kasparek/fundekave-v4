@@ -2,6 +2,10 @@
 
 //define constants
 define("ITEM_UPDATED","actionItemUpdated");
+
+define("ITEM_INSERTED","actionItemInserted");
+define("ITEM_DELETED","actionItemDeleted");
+
 define("ITEM_READED","actionItemReaded");
 define("PAGE_UPDATED","actionPageUpdated");
 define("RSS_UPDATED","actionRSSUpdated");
@@ -11,6 +15,10 @@ define("CATEGORIES_UPDATED","categoriesUpdated");
 
 //map commands
 FCommand::register(ITEM_UPDATED,'itemUpdated');
+
+FCommand::register(ITEM_INSERTED,'itemInserted');
+FCommand::register(ITEM_DELETED,'itemDeleted');
+
 FCommand::register(ITEM_UPDATED,'flushCache');
 FCommand::register(PAGE_UPDATED,'pageUpdated');
 FCommand::register(PAGE_UPDATED,'flushCache');
@@ -73,7 +81,19 @@ class FCommand {
 		$unreadedList=array();
 		FSystem::superInvalidate('item',$data->itemId);
 		FSystem::superInvalidate('item',$data->itemId.'detail');
-		//update total my num
+	}
+	
+	public static function itemInserted($data) {
+	   //update total my num
+		$user = FUser::getInstance();
+		if($user->idkontrol === true) {
+			$user = FUser::getInstance();
+			$user->updateTotalItemsNum(true);
+		}
+	}
+	
+	public static function itemDeleted($data) {
+	   //update total my num
 		$user = FUser::getInstance();
 		if($user->idkontrol === true) {
 			$user = FUser::getInstance();
