@@ -1,7 +1,0 @@
-Je potreba prepsat vsechny AJAX
-
-1. zbavit se XAJAXu
-2. tim se zbavit zavislosti sablon javascriptu na backend PHP
-3. pouzit jQuery ktery se pouzivat pro lightbox
-
-Bude potreba prepsat php funkce a napsat nove javascripty
