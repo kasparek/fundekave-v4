@@ -71,7 +71,12 @@ o.data=function(){
 	this.journey=false;
 	this.distance=0;
 	this.addListeners=function(){
+	if(!this.marker)return;
 	if(!this.parent.editor)return;
+	google.maps.event.addListener(this.marker, 'drag', function(){
+			this.data.path.getPath().pop();
+			this.data.path.getPath().push(new google.maps.LatLng(this.data.marker.getPosition().lat(),this.data.marker.getPosition().lng()));
+	}                           );
 	google.maps.event.addListener(this.marker, 'dragend', function(){
 			this.data.path.getPath().pop();
 			this.data.path.getPath().push(new google.maps.LatLng(this.data.marker.getPosition().lat(),this.data.marker.getPosition().lng()));
@@ -84,8 +89,11 @@ o.data=function(){
 		} );
 	}
 	this.updateMarker=function(latLng){if(!this.marker){
-		this.marker=new google.maps.Marker(this.parent.editor?{title:this.title,draggable:true}:{title:this.title});
+		this.marker=new google.maps.Marker(this.parent.editor?{title:this.title,draggable:true,raiseOnDrag:false}:{title:this.title});
 		this.marker.data=this;
+		if(this.parent.editor){this.addListeners();
+		this.marker.setTitle(o.locale.markerTitle);
+		}
 		if(this.parent.cluster) this.parent.cluster.addMarker(this.marker);
 		}
 		if(this.ico){this.marker.setIcon(this.ico);this.marker.setZIndex(1);}
@@ -95,7 +103,7 @@ o.data=function(){
 	this.resetWP=function(){if(this.path){this.path.setPath([]);}};
 	this.addWP=function(latLng){if(!this.path)this.path=new google.maps.Polyline({map:this.parent.map,path:[],strokeColor:this.pathColor,strokeOpacity:1.0,strokeWeight:2,geodesic:true});if(!this.path.getMap())this.path.setMap(this.parent.map);var l=this.path.getPath();l.push(latLng);this.path.setPath(l);};
 	this.updateDistance=function(){this.distance=0;if(!this.path)return;var l=this.path.getPath();if(l.length>1){for(i=1;i<l.length;i++){this.distance+=o.distance(l.getAt(i-1).lat(),l.getAt(i-1).lng(),l.getAt(i).lat(),l.getAt(i).lng());}}this.distance=Math.round(this.distance*10)/10;
-	$("#mapEditor").dialog("option","title",this.distance>0?o.locale.distance+this.distance+o.unit:o.locale.title);
+	if(this.parent.editor)$("#mapEditor").dialog("option","title",this.distance>0?o.locale.distance+this.distance+o.unit:o.locale.title);
 	};
 	this.get=function(){var r=[],v=$(this.dataEl).val(),l;if(v.length>0){l=v.split("\n");for(i=0;i<l.length;i++){l[i]=l[i].split(',');if(l[i].length==2){l[i][0]=o.posFormat(l[i][0]);l[i][1]=o.posFormat(l[i][1]);if(l[i][0]==0 && l[i][1]==0)l[i]=false;}else{l[i]=false;}}for(i=0;i<l.length;i++){if(l[i]!==false)r.push(l[i]);}}return r;};
 };
@@ -177,18 +185,19 @@ o.mapEditor=function(){
 	var data=o.editorData();
 	data.parent.editor=true;
 	data.parent.init();
+	data.addListeners();
 	var bo=[
-	{text:o.locale.removelast,id:'goomapideletelast'
-	,click:function(){
-		var data=o.editorData();
-		if(data.path){
-			data.path.getPath().pop();
-			var path=data.path.getPath();
-			data.updateMarker(path.getAt(path.getLength()-1));
-			data.updateDistance();
-		}
-	}}
-	,{text:o.locale.clear
+	{text:'NM',id:'unitNM',title:o.locale.unitTitle
+	,click:function() {
+		o.setUnit(o.units[0].n,o.units[0].R);
+		o.editorData().updateDistance();
+	}},
+	{text:'Km',title:o.locale.unitTitle
+	,click:function() {
+		o.setUnit(o.units[1].n,o.units[1].R);
+		o.editorData().updateDistance();
+	}},
+	{text:o.locale.clear,title:o.locale.clearTitle
 	,click:function() {
 		var data=o.editorData();
 		if(data.marker){data.marker.setMap(null);data.marker=null;}
@@ -196,10 +205,7 @@ o.mapEditor=function(){
 		data.updateDistance();
 		$("#mapEditor").dialog("option","title",o.locale.title);
 	}},
-	{text:o.locale.cancel,click:function() {
-		$(this).dialog('close');
-	}},
-	{text:o.locale.save,id:'goomapisave',click:function() {
+	{text:o.locale.save,title:o.locale.saveTitle,id:'goomapisave',click:function() {
 		var data=o.editorData(),oldVal=$(data.dataEl).val();
 		$(this).dialog('close');
 		$(data.dataEl).val('');
@@ -219,7 +225,7 @@ o.mapEditor=function(){
 	];
 	$("#mapEditor").dialog({title:o.locale.title,modal:true,minWidth:640,minHeight:200,width:$(window).width()*0.8,height:$(window).height()*0.8,resizeStop:o.resize,buttons:bo});
 	$("#goomapisave").focus();
-	$("#goomapideletelast").blur();
+	$("#unitNM").blur();
 	$(".ui-dialog-buttonpane").prepend(o.mapSearchHTML);
 	$("#mapSearchButt").unbind('click',o.address).button().click(o.address);
 	$("#mapaddress").unbind('keydown',o.addressKey).keydown(o.addressKey);
