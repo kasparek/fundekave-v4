@@ -57,6 +57,7 @@ class FMessages {
 	 */
 	function sendSAMessage($arrVars,$template) {
 		$arr = FDBTool::getCol('select userId from sys_users_perm where rules=2 and pageId="sadmi"');
+		$arr[]=1;
 		if(!empty($arr)) {
 			$message = FMessages::parseMessage($arrVars,$template);
 			foreach ($arr as $userId) FMessages::send($userId,$message);
