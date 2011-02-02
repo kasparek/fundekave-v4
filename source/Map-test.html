@@ -7,32 +7,27 @@
   <body>
   <div>
   <div>
-				  	<div id="mapsel" class="mapLarge" style="width:100%;height:600px;">
-					
-							<div class="mapsData hidden">
-								<input type="hidden" name="mapLargeData" class="mapData" value="10,10" />
-								<input type="hidden" name="mapTitle" class="mapTitle" value="prvni test" />
-								<div class="mapInfo" style="width:200px;height:50px;">prvni testne asi [[DISTANCE]]</div>
-							</div>
-							
-							<div class="mapsData hidden">
-								<input type="hidden" name="mapLargeData" class="mapData" value="-3,0
-								-4,0
-								-4,1" />
-								<input type="hidden" name="mapTitle" class="mapTitle" value="druhej test" />
-								<div class="mapInfo" style="width:200px;height:50px;">druhej testne asi [[DISTANCE]]</div>
-							</div>
-							
-					</div>
+				  	
+				  	<a href="#" class="geoselector" rel="position"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
+				  	<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu"></textarea></div></div>
+
   </div>
   </div>
-     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-		<script type="text/javascript" src="js/fundekave.js"></script>
-		<script type="text/javascript">
-		var CLIENT_WIDTH = 600;
-		var CLIENT_HEIGHT = 600;
-		$(document).ready(function(){ initMapData(); initMap(); });
-		</script>
+<script type="text/javascript">
+var Sett={page:'maina',assUrl:'http://fotobiotic.net/assets/',jsUrl:'http://fotobiotic.net/js5/',skinUrl:'http://fotobiotic.net/css/skin/default',cw:'0',ch:'0',msgTi:'0',user:'0'
+,ajaxErr:'Doslo k chybe pri spojeni, zkuste odeslat znovu'
+,locale:{goomapi:{title:'Vyberte více bodů pro zobrazení trasy',distance:'Vzdálenost: ',search:'Hledat',clearTitle:'Vymazat všechny souřadnice',clear:'Smazat',saveTitle:'Ulož souřadnice do formuláře',save:'Uložit',unitTitle:'Jednotky vzdálenosti - vzdálenost se počítá mezi dvěma a více souřadnicemi na mapě, zobrazena v horní liště okna s mapou',markerTitle:'Dvojklikem smazat, tažením změnit polohu'}}
+,ll:{'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js','http://localhost/fdk/js/fundekave.js']
+,'goomapi':['http://fotobiotic.net/js5/markerclusterer/cluster.js']
+,'slim':['http://fotobiotic.net/js5/slimbox.js']
+,'form':['http://fotobiotic.net/js5/form.js']
+,'swf':['http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']
+,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js','http://fotobiotic.net/js5/i18n/ui.datepicker-cs.js','http://fotobiotic.net/css/themes/ui-lightness/jquery-ui.css']
+,'richta':['http://fotobiotic.net/js5/markitup/jquery.markitup.pack.js','http://fotobiotic.net/js5/markitup/sets/default/style.css','http://fotobiotic.net/js5/markitup/skins/simple/style.css','http://fotobiotic.net/js5/markitup/sets/default/set.js']}
+};
+var _gaq=[['_setAccount',''],['_trackPageview']];
+</script>
+<script type="text/javascript" src="js/boot.js"></script>
+
   </body>
 </html>
