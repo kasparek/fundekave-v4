@@ -178,7 +178,7 @@ o.clear=function(e){var data=o.editorData();if(data.marker){data.marker.setMap(n
 o.wkey=function(e){if(e.keyCode==27)o.close();}
 o.searchKey=function(e){if(e.keyCode==13)o.search();};
 o.searchResultHandler=function(g){var data=o.editorData();o.fit.push({m:data.parent.map,b:g.bounds});setTimeout(o.fitLater,50);o.editorClick({latLng:g.location});};
-o.search=function(){var data=o.editorData(),valI=data.parent.mapSearchI.value,pos=o.parsePos(valI);if(pos.length>0)o.searchResultHandler({bounds:new google.maps.LatLngBounds(new google.maps.LatLng(pos[0][0], pos[0][1]),new google.maps.LatLng(pos[0][0], pos[0][1])),location:new google.maps.LatLng(pos[0][0], pos[0][1])});else data.parent.geocoder.geocode({address:data.parent.mapSearchI.value},function(results,status){if(status==google.maps.GeocoderStatus.OK) o.searchResultHandler(results[0].geometry);});};
+o.search=function(){var data=o.editorData(),valI=data.parent.mapSearchI.value,pos=o.parsePos(valI);if(pos.length>0)o.searchResultHandler({bounds:new google.maps.LatLngBounds(new google.maps.LatLng(pos[0][0], pos[0][1]),new google.maps.LatLng(pos[0][0], pos[0][1])),location:new google.maps.LatLng(pos[0][0], pos[0][1])});else data.parent.geocoder.geocode({address:data.parent.mapSearchI.value.replace(/,/g," ")},function(results,status){if(status==google.maps.GeocoderStatus.OK) o.searchResultHandler(results[0].geometry);});};
 };
 /**INITIALIZATION ON DOM*/ 
 function boot() {
