@@ -69,10 +69,11 @@ class page_PagesBooked implements iPage {
 		}
 
 		//vypis novych
-		$fPages = new FPages($type,$user->userVO->userId);
+		$fPages = new FPages('',$user->userVO->userId);
 		$fPages->setWhere('f.pageId=sys_pages.pageId and f.book="0" and f.userId!=sys_pages.userIdOwner and sys_pages.userIdOwner!="'.$userId.'" and sys_pages.locked < 2');
+		$fPages->addWhere('datediff(now(),sys_pages.dateCreated)<10');
 		$fPages->setOrder('sys_pages.dateCreated desc');
-		$fPages->setLimit(0,6);
+		$fPages->setLimit(0,7);
 		$arraudit = $fPages->getContent();
 		if(count($arraudit)>0) {
 			$tpl->setVariable('PAGELINKSNEW',$fPages->printPagelinkList($arraudit,array('noitem'=>true)));
