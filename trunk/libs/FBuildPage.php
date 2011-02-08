@@ -352,8 +352,8 @@ class FBuildPage {
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
-		//$data = preg_replace('/\s\s+/', ' ', $data);
-
+		$data = preg_replace('/\s\s+/', ' ', $data);
+    FProfiler::write('FBuildPage--complete');
 		echo $data;
 	}
 }

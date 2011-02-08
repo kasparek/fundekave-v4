@@ -75,15 +75,14 @@ if(isset($_GET['header_handler'])) {
 if(isset($_GET['authCheck'])) {
 	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if($user->idkontrol===true) echo '1'; else echo '0';
-	fin();
+	FSystem::fin();
 }
-if(isset($_GET['mod'])) {
+if($user->userVO->userId==1 && isset($_GET['mod'])) {
 	$dir = getcwd().'/'.str_replace('..','',$_GET['mod']);
 	$ffile = new FFile();
-	//$ret = $ffile->rm_recursive($dir);
 	$ret = $ffile->chmod_recursive($dir);
 	var_dump($ret);
-	die();
+	FSystem::fin();
 }
 
 /**
@@ -111,11 +110,11 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		if(empty($file)) {
 			echo '0';
-			fin();
+			FSystem::fin();
 		}
 		if(empty($_POST['crc'])) {
 			echo '0';
-			fin();
+			FSystem::fin();
 		}
 		$crcReceived = $_POST['crc'];
 
@@ -127,7 +126,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		if($crcStored!=$crcReceived) {
 			$ffile->deleteChunk($file,$seq);
 			echo '0';
-			fin();
+			FSystem::fin();
 		}
 		
 		//---file complete
@@ -151,7 +150,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		echo 1;
 	}
-	fin();
+	FSystem::fin();
 }
 
 if(isset($_GET['test'])) {
@@ -167,7 +166,7 @@ if(isset($_GET['test'])) {
 	 $ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
 	 */
 	echo 'aa';
-	fin();
+	FSystem::fin();
 }
 
 /**
@@ -179,7 +178,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_UR
 	$user->kde();
 	FRSS::process($_GET);
 	FRSS::build($_GET);
-	fin();
+	FSystem::fin();
 }
 
 
@@ -232,16 +231,7 @@ if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userId
 //---generate page
 FBuildPage::show( $data );
 
-fin();
-
 //---profiling
 FProfiler::write('PAGE COMPLETE');
 
-//---close resources
-function fin() {
-	FSystem::superInvalidateFlush();
-	session_write_close();
-	$db = FDBConn::getInstance();
-	$db->kill();
-	exit;
-}
+FSystem::fin();

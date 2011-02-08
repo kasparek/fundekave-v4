@@ -29,7 +29,6 @@ if(FConf::get('internationalization','lang')) require(FConf::get('internationali
 
 if(isset($_GET['nonInit'])) $nonInit=true;
 if(!isset($nonInit)) {
-	FProfiler::write('START');
 	//---session settings - stored in db
 	ini_set("session.gc_maxlifetime",SESSIONLIFETIME);
 	ini_set('session.gc_probability',1);
@@ -39,9 +38,11 @@ if(!isset($nonInit)) {
 	}
 	ini_set('session.save_path', ROOT_SESSION);
 	session_start();
+	FProfiler::write('START - session started');
 	//startup user
 	$user = FUser::getInstance();
 	$user->init();
+	FProfiler::write('USER - initialized - "'.($user->userVO?$user->userVO->userId:'anonym').'"');
 	if(isset($_GET['auth'])) $user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
 	//initial pageid retrieve
 	if(isset($_REQUEST['k'])) $pageId = $_REQUEST['k'];

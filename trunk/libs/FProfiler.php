@@ -31,7 +31,7 @@ class FProfiler {
 				if(!is_array(self::$logList)) self::$logList = array();
 				$handle = self::$handleIfEmpty = count(self::$logList);
 				//delete profile file
-				self::$logList[] = FConf::get('settings','logs_path').'time.log';
+				self::$logList[] = FConf::get('settings','logs_path').'time.log';//.substr(session_id(),0,5).'.log';
 				self::$truncateList[$handle] = true;
 				self::$starttimeList[$handle] = self::$lasttimeList[$handle] = $now;
 			}
