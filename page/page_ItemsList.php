@@ -97,34 +97,7 @@ class page_ItemsList implements iPage {
 			$typeRequest = $data['__get']['type'];
 			if(!isset(FLang::$TYPEID[$typeRequest])) $typeRequest='';
 		}
-		$cache = FCache::getInstance('f');
-		$tagGroups = $cache->getData($user->pageVO->pageId.(!empty($typeRequest)?'-'.$typeRequest:''),'tagfilter');
-		if($tagGroups===false) {
-			$tagGroups = FDBTool::getCol("SELECT tag_weight FROM `sys_pages_items` where tag_weight>0 ".(!empty($typeRequest)?" and typeId='".$typeRequest."' ":'').($user->pageVO->typeId!='top'?" and pageId='".$user->pageVO->pageId."' ":'')." group by tag_weight");
-			$cache->setData($tagGroups);
-		}
-		$len = count($tagGroups);
-		if($len>0) {
-			$steps = ceil($len/5);
-			if($steps<1) $steps = 1;
-			for($i=0;$i<($len/$steps);$i++) if($i*$steps<$len) $tagGroupsFiltered[] = $tagGroups[$i*$steps];	
-			$currentTag = 0;
-			if(!empty($data['__get']['tag'])) $currentTag = (int) $data['__get']['tag'];
-			if($currentTag>0) $tagsHtmlList[] = '<a href="'.FSystem::getUri("").'" title="'.FLang::$LABEL_TAG_ALL.'">0</a> ';
-			else $tagsHtmlList[] = '<span class="current" title="'.FLang::$LABEL_TAG_ALL.'">0</span> ';
-			foreach($tagGroupsFiltered as $tag) {
-				if($tag==$currentTag) $tagsHtmlList[] = '<span class="current">'.$tag.'</span>';
-				else $tagsHtmlList[] = '<a href="'.FSystem::getUri((!empty($typeRequest)?'type='.$typeRequest.'&':'')."tag=".$tag).'" title="'.FLang::$LABEL_TAG_FILTER.$tag.'">'.$tag.'</a> ';
-			}
-			if($user->pageVO->typeId=='top') {
-				if($typeRequest=='galery') $tagsHtmlList[] = '<span class="current">Jen foto</span>';
-				else $tagsHtmlList[] = '<a href="'.FSystem::getUri("type=galery&tag=".$currentTag).'">Jen foto</a>';
-			}
-			$tagsHtml = implode("\n",$tagsHtmlList);
-			$vars['TAGFILTERLINKS'] = $tagsHtml;
-		}
-
-
+		
 		$categoryId=0;
 		if($user->categoryVO) {
 			$categoryId = $user->categoryVO->categoryId; //for category filtering
@@ -157,12 +130,44 @@ class page_ItemsList implements iPage {
 		/**
 		 *ITEM DETAIL
 		 **/
+		$detail = false;
 		if(!empty($itemVO)) {
 			if($itemVO->pageVO->get('typeId')!='forum') {
 				//show item detail
 				$vars['DETAIL'] = page_ItemDetail::build($data);
+				$detail = true;
 			} else {
 				$itemVO = null;
+			}
+		}
+		
+		if($detail==false) {
+			//TAG FILTERING
+			$cache = FCache::getInstance('f');
+			$tagGroups = $cache->getData($user->pageVO->pageId.(!empty($typeRequest)?'-'.$typeRequest:''),'tagfilter');
+			if($tagGroups===false) {
+				$tagGroups = FDBTool::getCol("SELECT tag_weight FROM `sys_pages_items` where tag_weight>0 ".(!empty($typeRequest)?" and typeId='".$typeRequest."' ":'').($user->pageVO->typeId!='top'?" and pageId='".$user->pageVO->pageId."' ":'')." group by tag_weight");
+				$cache->setData($tagGroups);
+			}
+			$len = count($tagGroups);
+			if($len>0) {
+				$steps = ceil($len/5);
+				if($steps<1) $steps = 1;
+				for($i=0;$i<($len/$steps);$i++) if($i*$steps<$len) $tagGroupsFiltered[] = $tagGroups[$i*$steps];	
+				$currentTag = 0;
+				if(!empty($data['__get']['tag'])) $currentTag = (int) $data['__get']['tag'];
+				if($currentTag>0) $tagsHtmlList[] = '<a href="'.FSystem::getUri("").'" title="'.FLang::$LABEL_TAG_ALL.'">0</a> ';
+				else $tagsHtmlList[] = '<span class="current" title="'.FLang::$LABEL_TAG_ALL.'">0</span> ';
+				foreach($tagGroupsFiltered as $tag) {
+					if($tag==$currentTag) $tagsHtmlList[] = '<span class="current">'.$tag.'</span>';
+					else $tagsHtmlList[] = '<a href="'.FSystem::getUri((!empty($typeRequest)?'type='.$typeRequest.'&':'')."tag=".$tag).'" title="'.FLang::$LABEL_TAG_FILTER.$tag.'">'.$tag.'</a> ';
+				}
+				if($user->pageVO->typeId=='top') {
+					if($typeRequest=='galery') $tagsHtmlList[] = '<span class="current">Jen foto</span>';
+					else $tagsHtmlList[] = '<a href="'.FSystem::getUri("type=galery&tag=".$currentTag).'">Jen foto</a>';
+				}
+				$tagsHtml = implode("\n",$tagsHtmlList);
+				$vars['TAGFILTERLINKS'] = $tagsHtml;
 			}
 		}
 
