@@ -1,6 +1,14 @@
 <?php
 class FSystem {
 
+	//---close resources
+	static function fin() {
+		FSystem::superInvalidateFlush();
+		$db = FDBConn::getInstance();
+		$db->kill();
+		exit;
+	}
+
 	private static $invalidate = array(); 
 
 	static function superInvalidate($grp,$id='') {

@@ -40,7 +40,7 @@ class FHTTP
             printf('Redirecting to: <a href="%s">%s</a>.', $url, $url);
         }
         if ($exit) {
-            exit;
+            FSystem::fin();
         }
         return true;
     }

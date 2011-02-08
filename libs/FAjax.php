@@ -42,7 +42,8 @@ class FAjax {
 		$ajax = (isset($arr[2]))?(true):(false);
 		if(empty($mod) || empty($action)) {
 			//---system parameters missing
-			exit();
+			FError::write_log("FAjax::prepare - missing parameters");
+			FSystem::fin();
 		}
 		
 		//---process
@@ -103,7 +104,8 @@ class FAjax {
 		$ajax = (isset($arr[2]))?(true):(false);
 		if(empty($mod) || empty($action)) {
 			//---system parameters missing
-			exit();
+			FError::write_log("FAjax::prepare - missing system parameters");
+			FSystem::fin();
 		}
 		
 		//---dealing with ajax requests
@@ -163,7 +165,7 @@ class FAjax {
 			header ("content-type: text/xml");
 			echo  FSystem::superVars($ret);
 			FProfiler::write('FAJAX XML OUTPUT COMPLETE');
-			exit();
+			FSystem::fin();
 		}
 	}
 
