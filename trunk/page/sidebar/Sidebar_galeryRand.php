@@ -12,7 +12,7 @@ class Sidebar_galeryRand {
 			$steps = ceil($len/$num);
 			for($i=0;$i<$num;$i++){
 				$from = $i*$steps;
-				$rand = rand($from,$from+$steps>$len?$len:$from+$steps);
+				$rand = rand($from,$from+$steps > $len ? $len : $from+$steps);
 				$itemIdList[]=$allList[$rand];
 			}
 			$itemIdList = array_reverse($itemIdList);
