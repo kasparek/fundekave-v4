@@ -21,7 +21,28 @@ class FSystem {
 		$grps = implode(";",self::$invalidate);
 	  self::$invalidate = array();
 		$domains = array('iyobosahelpinghand.com','awake33.com','fundekave.net','eboinnaija.fundekave.net','upsidedown.fundekave.net');
-		foreach($domains as $dom) file_get_contents('http://'.$dom.'/index.php?cron=invalidate&g='.$grps);
+  	$mh = curl_multi_init();
+  	$curlys=array();
+		//prepare curl
+	  foreach($domains as $dom) {
+	  	$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
+	    $curl = curl_init();
+	    curl_setopt($curl, CURLOPT_URL,            $url);
+	    curl_setopt($curl, CURLOPT_HEADER,         1);
+	    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
+	    curl_multi_add_handle($mh, $curl);
+	    $curly[] = $curl;
+	  }
+    //execute curl
+	  $active = null;
+	  do {
+	    $mrc = curl_multi_exec($mh, $active);
+		} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+    //remove handles
+	  foreach($curly as $id => $c) curl_multi_remove_handle($mh, $c);
+		//close curl
+	  curl_multi_close($mh);
+  	FProfiler::write('FSystem::superInvalidateFlush complete');
 	}
 
 	static function superVars($data) {
