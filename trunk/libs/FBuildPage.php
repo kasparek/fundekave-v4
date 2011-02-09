@@ -48,7 +48,7 @@ class FBuildPage {
 		//breadcrumbs
 		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 		if($pageIdTop!=$user->pageVO->pageId) {
-			$pageTop = new PageVO($pageIdTop);
+			$pageTop = PageVO::factory($pageIdTop);
 		} else {
 			$pageTop = $user->pageVO;
 		}
@@ -267,7 +267,7 @@ class FBuildPage {
 		
 		if($user->pageVO) {
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			$pageVOTop = new PageVO($pageIdTop);
+			$pageVOTop = PageVO::factory($pageIdTop);
 			$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));

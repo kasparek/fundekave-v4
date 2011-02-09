@@ -21,7 +21,7 @@ class FPages extends FDBTool {
 		
 		$this->VO = 'PageVO';
 		$this->fetchmode = 1;
-		$pageVO = new PageVO();
+		$pageVO = PageVO::factory();
 		
 		$this->columns = $pageVO->getColumns();
 		
@@ -107,7 +107,7 @@ class FPages extends FDBTool {
 	}
 
 	static function deletePage($pageId) {
-		$pageVO = new PageVO($pageId,true);
+		$pageVO = PageVO::factory($pageId,true);
 		//---galery - delete photos
 		if($pageVO->typeId=='galery') {
 			//---delete photo

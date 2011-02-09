@@ -194,7 +194,7 @@ class FUser {
 		$pageId = $this->pageId;
 		if($pageId) {
 			//---try load current page
-			$this->pageVO = new PageVO($pageId,true);
+			$this->pageVO = PageVO::factory($pageId,true);
 			if( $this->pageVO->loaded !== true ) {
 				$pageAccess = $this->pageAccess = false;
 				$pageId = $this->pageId = null;
@@ -295,7 +295,7 @@ class FUser {
 				$tpl->setVariable('PROFILURL',FSystem::getUri('who='.$userVO->userId.'#tabs-profil','finfo',''));
 				if(!empty($userVO->dateLastVisit)) $tpl->setVariable('ACTIVITY',$userVO->dateLastVisit);
 				if(!empty($userVO->activityPageId)) {
-					$pageVO = new PageVO($userVO->activityPageId,true);
+					$pageVO = PageVO::factory($userVO->activityPageId,true);
 					if($pageVO->typeId!='top') {
 					$tpl->setVariable('ACTIVITYURL',FSystem::getUri('',$userVO->activityPageId,''));
 					$tpl->setVariable('ACTIVITYPAGENAME',$pageVO->name);
