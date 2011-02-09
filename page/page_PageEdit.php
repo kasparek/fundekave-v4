@@ -21,7 +21,7 @@ class page_PageEdit implements iPage {
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
 
 		if($action == 'delpageavatar') {
-			$pageVO = new PageVO($data['pageId'],true);
+			$pageVO = PageVO::factory($data['pageId'],true);
 			$pageVO->saveOnlyChanged=true;
 			$pageVO->set('pageIco','');
 			$pageVO->save();
@@ -45,7 +45,7 @@ class page_PageEdit implements iPage {
 		if($action == "save") {
 			FError::reset();
 
-			$pageVO = new PageVO();
+			$pageVO = PageVO::factory();
 			if($user->pageParam == 'a') {
 				//---new page
 				if(isset(FLang::$TYPEID[$data['t']])) {
@@ -366,7 +366,7 @@ class page_PageEdit implements iPage {
 			if(empty($arrd)) $delete = true;
 			if($user->pageParam == 'sa') $delete = true;
 
-			$pageVO = new PageVO($pageId,true);
+			$pageVO = PageVO::factory($pageId,true);
 			if($delete === false) {
 				//---lock & hide
 				$pageVO->locked = 3;
@@ -398,7 +398,7 @@ class page_PageEdit implements iPage {
 			$pageVO = $pageVOCached;
 		} elseif($user->pageParam == 'a') {
 			//---new page
-			$pageVO = new PageVO();
+			$pageVO = PageVO::factory();
 			if(empty($user->pageVO->typeIdChild)) {
 				//try data 't'
 				if(isset(FLang::$TYPEID[$data['__get']['t']])) $pageVO->typeId=$data['__get']['t'];
@@ -410,7 +410,7 @@ class page_PageEdit implements iPage {
 				$pageVO->typeId = $user->pageVO->typeIdChild;
 			}
 		} else {
-			$pageVO = new PageVO();
+			$pageVO = PageVO::factory();
 			$pageVO->pageId = $user->pageVO->pageId;
 			$pageVO->load();
 

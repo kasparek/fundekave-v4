@@ -5,6 +5,7 @@ class Fvob {
 	
 	var $table;
 	var $primaryCol;
+	var $cacheType = 'l';
 
 	var $columns;
 	var $propertiesList;
@@ -185,17 +186,18 @@ class Fvob {
 		return $ret;
 	}
 	
+	private $cacheInstance;
 	function memStore() {
-		$cache = FCache::getInstance('l');
-		$cache->setData( $this, $this->{$this->primaryCol}, 'cached'.$this->getTable());
+		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
+		$this->$cacheInstance->setData( $this, $this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 	function memGet() {
-		$cache = FCache::getInstance('l');
-		return $cache->getData($this->{$this->primaryCol}, 'cached'.$this->getTable());
+		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
+		return $this->$cacheInstance->getData($this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 	function memFlush() {
-		$cache = FCache::getInstance('l');
-		$cache->invalidateData($this->{$this->primaryCol}, 'cached'.$this->getTable());
+		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
+		$this->$cacheInstance->invalidateData($this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 
 	public function getTable() {
