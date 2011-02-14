@@ -345,13 +345,13 @@ o.a=function(e){var t=$(e.currentTarget),href=t.attr('href');o.top=null;if(t.has
 o.action=function(action){var l=action.split('/'),m=l[0],d=l[1],k=l[2],id=l[3],res=false,prop=false;if(k==0)k=null;if(d){l=d.split(';');while(l.length>0) {var row=l.shift().split(':');o.add(row[0], row[1]);if(row[0]=='result')res=true;if(row[0]=='resultProperty')prop=true;}}if(id){if(!res)o.add('result',id);if(!prop)o.add('resultProperty','$html');}o.send(m,k);return false;};
 o.form=function(e){var t=e.currentTarget,jt=$(t);e.preventDefault();if(o.formStop==true){o.formStop=false;return false;}if(jt.hasClass('confirm'))if(!confirm(jt.attr("title")))return false;$('#errormsgJS').hide(0).html('');$('#okmsgJS').hide(0).html('');o.formSent=t.form;
 $('.button').attr("disabled", true);
-$('.ui-button').button('disable');
+if($('.ui-button').length>0) $('.ui-button').button('disable');
 var arr=$(o.formSent).formToArray(false),action,res=false,prop=false;while(arr.length>0){var v=arr.shift();if(v.name=='m')action=v.value;else o.add(v.name,v.value);if(v.name=='result')res=true;if(v.name=='resultProperty')prop=true;}if(!res)o.add('result',$(o.formSent).attr("id"));if(!prop)o.add('resultProperty','$html');o.add('action',t.name);o.add('k',gup('k',o.formSent.action));o.send(!action?gup('m',o.formSent.action):action,gup('k',o.formSent.action));return false;};
 o.XMLReq=new function(){var x=this;x.a=[];x.s='<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';x.reset=function(){o.XMLReq.a=[];};x.add=function(k,v){x.a.push(x.s.replace('{KEY}',k).replace('{DATA}',v));};x.get=function(){var s='<FXajax><Request>'+x.a.join('')+'</Request></FXajax>';x.a=[];return s;}};
 o.add=function(k,v){o.XMLReq.add(k,v)};
 o.send=function(action,k,silent){var data=o.XMLReq.get();if(k==0)k=null;if(!k)k=Sett.page;if(k==-1)k='';$.ajaxSetup({scriptCharset:"utf-8",contentType:"text/xml; charset=utf-8"});o.xhrList[action]=$.ajax({type:"POST",url:"index.php?m="+action+"-x"+((k)?("&k="+k):('')),dataType:'xml',processData:false,cache:false,data:data,complete:function(a,s){o.xhrList[action]=null;if(o.formSent){
 $('.button').removeAttr('disabled');
-$('.ui-button').button('enable');
+if($('.ui-button').length>0) $('.ui-button').button('enable');
 o.formSent=null;}if(s!='success'){if(!silent)msg('error',Sett.ajaxErr);return;}$(a.responseXML).find("Item").each(function(){var item=$(this),c='',target=item.attr('target'),prop=item.attr('property'),text=item.text();switch(target){case 'document':c=target+'.'+prop+'=text;';break;case 'call':var par=text.split(','),p=[];for(var i=0;i<par.length;i++)p.push("par["+i+"]");c=prop+"("+(p.length>0?p.join(","):"")+");";break;default:switch(prop){case'void': break;default:if(prop[0]=='$'){c='$("#'+target+'").'+prop.replace('$','')+'(text);';}else{c='$("#'+target+'").attr("'+prop+'",text);';}};};if(c.length>0)eval(c);})}});}};
 /**HASH HANDLING*/
 var Hash=new function(){var o=this;o.old='';

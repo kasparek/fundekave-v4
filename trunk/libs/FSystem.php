@@ -195,16 +195,13 @@ class FSystem {
 			require_once(ROOT.'pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
 			if($user->idkontrol && $paramsArr['formatOption']>0) {
-				$objectKey = array_search('object',$safe->deleteTags);
-				array_splice($safe->deleteTags, $objectKey, 1);
-				$objectKey = array_search('embed',$safe->deleteTags);
-				array_splice($safe->deleteTags, $objectKey, 1);
-				$objectKey = array_search('name',$safe->attributes);
-				array_splice($safe->attributes, $objectKey, 1);
-				if(FRules::getCurrent(2)) {
-					$objectKey = array_search('iframe',$safe->deleteTags);
-					array_splice($safe->deleteTags, $objectKey, 1);
-				}
+				$safe->deleteTags = array(
+        'applet', 'base',   'basefont', 'bgsound', 'blink',  'body',
+        'frame',  'frameset', 'head',    'html',   'ilayer',
+        'layer',  'link',     'meta', 'style',
+        'title',  'script',
+	    	);
+	    	$safe->attributes = array('dynsrc', 'id');
 			}
 			$text = $safe->parse($text);
 		}
