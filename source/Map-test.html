@@ -3,12 +3,65 @@
   <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <title>map test</title>
+   <style>
+  
+  
+  </style>
   </head>
+ 
   <body>
   
+  <div id="map"> <div id="map180367" class="mapLarge hidden"><div class="mapsData"><input type="hidden" class="geoData" title="" value="48.6485,-2.0304" /><div class="geoInfo"><h3></h3><p><br /><strong>Vzdalenost: [[DISTANCE]]NM</strong></p></div></div></div> <div class="mapSmall"><a id="mapThumb180367" href="#" title="Map detail: " class="mapThumbLink"><img width="200" height="200" src="http://maps.google.com/maps/api/staticmap?size=200x200&markers=48.6485,-2.0304&maptype=terrain&sensor=false" title="" alt="Google Maps" /></a></div>
+  
+<textarea class="geoInput" name="position" title="Zadejte polohu" style="height:150px;"></textarea>
+<a href="#" class="geoInput">aaa</a>
+<div class="mapLarge editor" style="height:200px;width:400px;"></div>
+<br><br><br>
+<!--
+<a href="#" class="geoselector" rel="position2"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
+<textarea class="geoInput" id="position2" name="position2" title="Zadejte polohu" style="height:150px;">49.3531,-58.4473
+49.9576,1.2085
+53.1066,1.3403
+52.9414,7.8442</textarea>
+
+
+<a href="#" class="geoselector" rel="position3"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
+<textarea class="geoInput" id="position3" name="position2" title="Zadejte polohu" style="height:150px;">49.3531,-58.4473
+52.9414,7.8442</textarea>
+<!--
+<h3>Editor na plose</h3> 
+<div class="mapLarge editor" style="height:500px;width:100%;"></div>
+ 
+<h3>Popup editor bez ukladani</h3>  
+ 
+ 
+ 
+<h3>Popup editor s ukladanim</h3> 
+<a href="#" class="geoselector" rel="position"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a> 
+<textarea class="geoInput" name="position" title="Zadejte polohu" style="height:150px;">49.3531,-58.4473
+49.9576,1.2085
+53.1066,1.3403
+52.9414,7.8442</textarea> 
+ 
+ 
+ 
+<h3>Mapa bez editoru</h3> 
+<div style="text-align:center;">  
+<div class="mapLarge" style="height:200px;width:80%;"> 
+<div class="mapsData"> 
+<input type="hidden" class="geoData" title="Way of Destiny" value="49.3531,-58.4473
+49.9576,1.2085
+53.1066,1.3403
+52.9414,7.8442" /> 
+</div> 
+</div> 
+</div><div class="clearbox"></div>
+--> 
+  
 <!-- TEST 1----------------------------------------------------------------- -->
+<!-- 
 <h3>Editor na plose</h3>  
-<div id="mapOnDesk" rel="editmedata" class="mapLarge editor" style="height:500px;width:100%;">
+<div id="mapOnDesk" rel="editmedata" class="mapLarge editor" style="height:500px;width:800px;">
 <div class="mapsData">
 <input type="hidden" id="editmedata" class="geoData" title="testWay" value="49.3531,-58.4473
 49.9576,1.2085
@@ -18,10 +71,12 @@
 </div>
 <!-- ----------------------------------------------------------------------- -->
 <!-- TEST 2----------------------------------------------------------------- -->
+<!-- 
 <h3>Popup editor bez ukladani</h3>			  	
 <a href="#" class="geoselector"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
 <!-- ----------------------------------------------------------------------- -->
 <!-- TEST 3----------------------------------------------------------------- -->
+<!-- 
 <h3>Popup editor s ukladanim</h3>
 <a href="#" class="geoselector" rel="position"><img src="http://fotobiotic.net/css/skin/default/img/map_add.png" alt="Poloha" title="Ukaz na mape" /></a>
 
@@ -32,6 +87,7 @@
 
 <!-- ----------------------------------------------------------------------- -->
 <!-- TEST 4----------------------------------------------------------------- -->
+<!-- 
 <h3>Mapa bez editoru</h3>
 <div style="text-align:center;">							
 <div id="mapa" class="mapLarge" style="height:200px;width:80%;">
