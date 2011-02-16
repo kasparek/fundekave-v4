@@ -43,7 +43,7 @@ class ItemVO extends Fvob {
 		switch($name) {
 			case 'pageVO':
 				if(empty($this->pageId)) return null;
-				if(!$this->_pageVO) $this->_pageVO = PageVO::factory($this->pageId);
+				if(!$this->_pageVO) $this->_pageVO = FactoryVO::get('PageVO',$this->pageId);
 				return $this->_pageVO;
 				break;
 			case 'dateStartIso':

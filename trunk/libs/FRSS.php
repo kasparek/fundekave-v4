@@ -102,7 +102,7 @@ class FRSS {
 			}
 
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			$pageTop = PageVO::factory($pageIdTop,true);
+			$pageTop = FactoryVO::get('PageVO',$pageIdTop,true);
 			$homesite = $pageTop->prop('homesite');
 
 			$rssNow = date("Y-m-d H:i:s");
@@ -118,7 +118,7 @@ class FRSS {
 			if(!empty($arr)) {
 				foreach($arr as $item) {
 					if($item->typeId == 'galery' && empty($totalFoto)) {
-						$pageVO = PageVO::factory($item->pageId,true);
+						$pageVO = FactoryVO::get('PageVO',$item->pageId,true);
 						$pageName = $pageVO->name;
 						$totalFoto = $pageVO->cnt;
 					}

@@ -15,7 +15,7 @@ class FAjax_galery extends FAjaxPluginBase {
 			if($data['resultProperty']=='$replaceWith') $count=-1;
 			else $count=1;
 		} else {
-			$pageVO = PageVO::factory($pageId,true);
+			$pageVO = FactoryVO::get('PageVO',$pageId,true);
 			$fItems->setWhere("pageId='".$pageId."' and (itemIdTop is null or itemIdTop=0)");
 			$fItems->setOrder($pageVO->itemsOrder());
 			$fItems->getList((int) $data['seq'],(int) $data['offset']);

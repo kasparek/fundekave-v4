@@ -143,7 +143,7 @@ class FSystem {
 		}
 		if(!empty($newPageId)) {
 			if(!isset($options['short']) && empty($pageParam)) {
-				$pageVO  = PageVO::factory($newPageId,true);
+				$pageVO  = FactoryVO::get('PageVO',$newPageId,true);
 				$safeName = FSystem::safetext($pageVO->name);
 			}
 			if(isset($options['name'])) $safeName = FSystem::safetext($options['name']);

@@ -20,17 +20,14 @@ class FPages extends FDBTool {
 		parent::__construct('sys_pages','pageId');
 		
 		$this->VO = 'PageVO';
-		$this->fetchmode = 1;
-		$pageVO = PageVO::factory();
-		
+		$this->fetchmode = 1;    
+		$pageVO = FactoryVO::get('PageVO');
 		$this->columns = $pageVO->getColumns();
-		
 		//---set select
 		foreach($this->columns as $k=>$v) {
 			if(strpos($v,' as ')===false) $v = $pageVO->getTable().'.'.$v.' as '.$k;
 			$columnsAsed[]=$v;
 		}
-		
 		$this->setSelect( $columnsAsed );
 		
 		if(!empty($userId)) {
@@ -107,7 +104,7 @@ class FPages extends FDBTool {
 	}
 
 	static function deletePage($pageId) {
-		$pageVO = PageVO::factory($pageId,true);
+		$pageVO = FactoryVO::get('PageVO',$pageId,true);
 		//---galery - delete photos
 		if($pageVO->typeId=='galery') {
 			//---delete photo
