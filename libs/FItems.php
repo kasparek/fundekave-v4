@@ -188,7 +188,7 @@ class FItems extends FDBTool {
 				if(!empty($props)) {
 					while($prop = array_pop($props)) {
 						if($prop[0] == $itemVO->itemId) {
-							$itemVO->properties[$prop[1]] = $prop[2];
+							$itemVO->properties->{$prop[1]} = $prop[2];
 							$invalidate = true;
 						} else {
 							$propsRest[]=$prop;
@@ -201,8 +201,8 @@ class FItems extends FDBTool {
 				}
 				$propList = $itemVO->getPropertiesList();
 				foreach($propList as $prop) {
-					if(!isset($itemVO->properties[$prop])) {
-						$itemVO->properties[$prop] = false;
+					if(!isset($itemVO->properties->$prop)) {
+						$itemVO->properties->$prop = false;
 						$invalidate = true;
 					}
 				}

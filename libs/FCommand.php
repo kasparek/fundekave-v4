@@ -21,7 +21,6 @@ FCommand::register(ITEM_DELETED,'itemDeleted');
 
 FCommand::register(ITEM_UPDATED,'flushCache');
 FCommand::register(PAGE_UPDATED,'pageUpdated');
-FCommand::register(PAGE_UPDATED,'flushCache');
 FCommand::register(ITEM_READED,'itemReaded');
 FCommand::register(RSS_UPDATED,'rssUpdated');
 FCommand::register(AVATAR_UPDATED,'avatarUpdated');
@@ -83,8 +82,8 @@ class FCommand {
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
 		$unreadedList=array();
-		FSystem::superInvalidate('item',$data->itemId);
-		FSystem::superInvalidate('item',$data->itemId.'detail');
+		FSystem::superInvalidate('page/'.$data->pageId.'/item',$data->itemId);
+		FSystem::superInvalidate('page/'.$data->pageId.'/item',$data->itemId.'detail');
 	}
 	
 	public static function itemInserted($data) {
@@ -121,25 +120,21 @@ class FCommand {
 				}
  				$unreadedList = $newList;
 		}
-		
-		$user = FUser::getInstance();
-		FSystem::superInvalidate('itemlist');
-		FSystem::superInvalidate('itemlist'.$user->pageVO->pageId);
 	}
 	
 	public static function pageUpdated($data) {
-		
+		FSystem::superInvalidate('page/top');
+		FSystem::superInvalidate('page/'.$data->pageId);
 	}
 	
 	public static function rssUpdated($data=null) {
-		$user = FUser::getInstance();
-		FSystem::superInvalidate('rsslist'.$user->pageVO->pageId);
+		FSystem::superInvalidate('page/'.$data->pageId.'/rss');
 	}
 	
 	public static function flushCache($data) {
-		FCommand::rssUpdated();
-		FSystem::superInvalidate('itemlist');
-		FSystem::superInvalidate('itemlist'.$data->get('pageId'));
+		FSystem::superInvalidate('page/top');
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/list');
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/rss');
 	}
 	
 	public static function positionUpdated($data) {

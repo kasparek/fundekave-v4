@@ -53,9 +53,9 @@ class FDBvo extends FDBTool {
 	}
 
 	function save( $cols=array(), $notQuoted=array() ) {
-		if($this->vo->changed === true || $this->vo->saveOnlyChanged === false) {
+		if($this->vo->getChanged() === true || $this->vo->getSaveOnlyChanged() === false) {
 			$this->feed();
-			$this->vo->changed = false;
+			$this->vo->setChanged(false);
 			$id = parent::save();
 			$idList = explode(',',$id);
 			$primCol = explode(',',$this->primaryCol);

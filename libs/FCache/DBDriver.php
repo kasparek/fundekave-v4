@@ -9,6 +9,9 @@
  */
 class DBDriver
 {
+
+	var $father;
+
 	var $tableName = 'sys_cache';
 	var $tableDef = "CREATE TABLE {TABLENAME} (
      groupId VARCHAR(20) not null default 'default', nameId VARCHAR(20) not null
@@ -18,6 +21,8 @@ class DBDriver
 
 	var $lifeTimeDefault = 0;
 	var $lifetime = 0;
+	
+	var $data;
 
 	function __construct() {
 		$db = FDBConn::getInstance();
@@ -30,10 +35,11 @@ class DBDriver
 	}
 	
 	private static $instance;
-	static function &getInstance() {
+	static function &getInstance($father) {
 		if (!isset(self::$instance)) {
 			self::$instance = new DBDriver();
 		}
+		self::$instance->father=$father;
 		return self::$instance;
 	}
 
@@ -46,10 +52,13 @@ class DBDriver
 	}
 
 	function setData($key, $data, $grp) {
-		$dataSerialized = serialize($data);
-		return FDBTool::query("insert into ".$this->tableName." (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
-			values ('".$grp."','".$key."','".$dataSerialized."',now(),now(),'".$this->lifeTime."') 
-			on duplicate key update dateUpdated=now(), lifeTime='".$this->lifeTime."', value = '".$dataSerialized."'");
+		$dataSerialized = $this->father->serialize($data);
+		if($dataSerialized!=$this->data[$grp][$key]) {
+			$this->data[$grp][$key] = $dataSerialized;
+			return FDBTool::query("insert into ".$this->tableName." (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
+				values ('".$grp."','".$key."','".$dataSerialized."',now(),now(),'".$this->lifeTime."') 
+				on duplicate key update dateUpdated=now(), lifeTime='".$this->lifeTime."', value = '".$dataSerialized."'");
+		}
 	}
 
 	function getGroup($grp) {
@@ -57,7 +66,7 @@ class DBDriver
 		$arr = FDBTool::getCol($q);
 		if(!empty($arr)) {
 			while($row = array_shift($arr)) {
-				$arrUnserialized[] = unserialize($row);
+				$arrUnserialized[] = $this->father->unserialize($row);
 			}
 			return $arrUnserialized;
 		} else {
@@ -70,11 +79,13 @@ class DBDriver
 	}
 	
 	function getData( $key, $grp ) {
-		$q = "select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
-		if($value = FDBTool::getOne($q)) {
-			if(!empty($value)) {
-				return unserialize($value);
-			}
+		if(isset($this->data[$grp][$key])) {
+			if(empty($this->data[$grp][$key])) return false;
+			return $this->father->unserialize($this->data[$grp][$key]); 
+		} else {
+			$this->data[$grp][$key] = $v = FDBTool::getOne("select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)");
+			if(!empty($v)) $v = $this->father->unserialize($v);
+			return $v;
 		}
 		return false;
 	}

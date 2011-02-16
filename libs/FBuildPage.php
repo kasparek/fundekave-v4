@@ -327,10 +327,11 @@ class FBuildPage {
 
 		//---LEFT PANEL POPULATING
 		$showSidebar = true;
-		if($user->pageVO) {
+		if($user->pageVO){
 			$showSidebar = $user->pageVO->showSidebar;
 			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
 		}
+		var_dump($showSidebar);
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();

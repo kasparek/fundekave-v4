@@ -22,7 +22,7 @@ class page_PageEdit implements iPage {
 
 		if($action == 'delpageavatar') {
 			$pageVO = PageVO::factory($data['pageId'],true);
-			$pageVO->saveOnlyChanged=true;
+			$pageVO->setSaveOnlyChanged(true);
 			$pageVO->set('pageIco','');
 			$pageVO->save();
 			FAjax::addResponse('pageavatarBox','$html','');
@@ -136,7 +136,7 @@ class page_PageEdit implements iPage {
 				//---first save - if new page to get pageId
 				if(empty($pageVO->pageId)) {
 					$pageVO->pageId = FPages::newPageId();
-					$pageVO->forceInsert=true;
+					$pageVO->setForceInsert(true);
 					$pageVO->save();
 				}
 
@@ -302,7 +302,7 @@ class page_PageEdit implements iPage {
 						$invalidateMap = false;
 						foreach ($fotoArr as $k=>$v) {
 							$itemVO = new ItemVO($k,true);
-							$itemVO->saveOnlyChanged = true;
+							$itemVO->setSaveOnlyChanged(true);
 							
 							FProfiler::write('page_PageEdit::process - foto loaded');
 							

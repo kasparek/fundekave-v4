@@ -1,10 +1,9 @@
 <?php
 class PageVO extends Fvob {
 
-	var $table = 'sys_pages';
-	var $primaryCol = 'pageId';
-
-	var $columns = array('pageId' => 'pageId',
+	protected $table = 'sys_pages';
+	protected $primaryCol = 'pageId';
+	protected $columns = array('pageId' => 'pageId',
 	'pageIdTop' => 'pageIdTop',
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
@@ -24,35 +23,35 @@ class PageVO extends Fvob {
 	'galeryDir' => 'galeryDir'
 	);
 
-	var $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
-	public $propDefaults = array('forumSet'=>1,'home'=>'');
+	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
+	protected $propDefaults = array('forumSet'=>1,'home'=>'');
 
 	//---db based
-	var $pageId;
-	var $pageIdTop;
-	var $typeId;
-	var $typeIdChild;
-	var $categoryId;
-	var $categoryVO;
-	var $template;
-	var $name;
-	var $description;
-	var $content;
-	var $public = 1;
-	var $userIdOwner;
-	var $ownerUserVO;
-	var $pageIco;
-	var $locked = 0;
-	var $galeryDir;
-	var $cnt;
-	var $dateContent;
-	var $dateCreated;
-	var $dateUpdated;
+	public $pageId;
+	public $pageIdTop;
+	public $typeId;
+	public $typeIdChild;
+	public $categoryId;
+	public $categoryVO;
+	public $template;
+	public $name;
+	public $description;
+	public $content;
+	public $public = 1;
+	public $userIdOwner;
+	public $ownerUserVO;
+	public $pageIco;
+	public $locked = 0;
+	public $galeryDir;
+	public $cnt;
+	public $dateContent;
+	public $dateCreated;
+	public $dateUpdated;
 
 	//---dedicted
 	//---based on logged user
-	var $favorite; //is booked
-	var $favoriteCnt; //readed items
+	public $favorite; //is booked
+	public $favoriteCnt; //readed items
 
 	function __get($name) {
 		switch($name) {
@@ -65,12 +64,12 @@ class PageVO extends Fvob {
 	}
 
 	//---changed
-	var $showHeading=true;
-	var $htmlName;
-	var $htmlTitle;
-	var $htmlDescription;
-	var $htmlKeywords;
-	var $showSidebar = true;
+	public $showHeading=true;
+	public $htmlName;
+	public $htmlTitle;
+	public $htmlDescription;
+	public $htmlKeywords;
+	public $showSidebar = true;
 
 	static function factory( $pageId=0, $autoLoad = false ) {
 		$user = FUser::getInstance();
@@ -82,7 +81,7 @@ class PageVO extends Fvob {
 			}
 		}
 		if(!$pageVO) $pageVO = new PageVO($pageId, $autoLoad);
-		$pageVO->cacheType='d';
+		$pageVO->cacheType='l';
 		return $pageVO;
 	}
 

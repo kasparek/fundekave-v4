@@ -49,8 +49,8 @@ class FItemsRenderer {
 	}
 
 	function addPageName($rendered,$itemVO) {
-		$cacheGroup = 'renderedPagelink';
-		$cacheId = $itemVO->pageId;
+		$cacheGroup = 'page/'.$itemVO->pageId;
+		$cacheId = 'pagelink';
 		$cache = FCache::getInstance('f');
 		$page = $cache->getData($cacheId,$cacheGroup);
 		if($page===false) {
@@ -81,7 +81,7 @@ class FItemsRenderer {
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
-		$cacheGroup = 'item';
+		$cacheGroup = 'page/'.$itemVO->pageId.'/item';
 		$cacheId = $itemVO->itemId;
 		if($isDefault) {
 			//try cache

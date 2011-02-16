@@ -1,12 +1,9 @@
 <?php
 class ItemVO extends Fvob {
 
-	var $table = 'sys_pages_items';
-	var $primaryCol = 'itemId';
-
-	var $options = array();
-
-	var $columns = array('itemId' => 'itemId',
+	protected $table = 'sys_pages_items';
+	protected $primaryCol = 'itemId';
+	protected $columns = array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
 	'typeId' => 'typeId',
 	'pageId' => 'pageId',
@@ -29,8 +26,11 @@ class ItemVO extends Fvob {
 	'public' => 'public'
 	);
 
-	var $propertiesList = array('position','forumSet');
-	public $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);
+	protected $propertiesList = array('position','forumSet');
+	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);
+	
+	//rendering options
+	public $options = array();
 
 	public function __get($name) {
 		if(!$name) return;
@@ -115,32 +115,32 @@ class ItemVO extends Fvob {
 		return null;
 	}
 
-	var $itemId;
-	var $itemIdTop;
-	var $typeId;
-	var $pageId;
-	var $_pageVO;
-	var $pageIdTop;
-	var $categoryId;
-	var $userId;
-	var $name;
-	var $dateStart;
-	var $dateEnd;
-	var $dateCreated;
-	var $text;
-	var $textLong;
-	var $enclosure;
-	var $addon;
-	var $filesize;
-	var $hit;
+	public $itemId;
+	public $itemIdTop;
+	public $typeId;
+	public $pageId;
+	private $_pageVO;
+	public $pageIdTop;
+	public $categoryId;
+	public $userId;
+	public $name;
+	public $dateStart;
+	public $dateEnd;
+	public $dateCreated;
+	public $text;
+	public $textLong;
+	public $enclosure;
+	public $addon;
+	public $filesize;
+	public $hit;
 
 	//---comments on blog/forum
-	var $cnt;
+	public $cnt;
 	//$unreaded - get by getter
 
-	var $tag_weight;
-	var $location;
-	var $public;
+	public $tag_weight;
+	public $location;
+	public $public;
 
 	private $_dateStartIso;
 	private $_dateStartLocal;
@@ -153,18 +153,18 @@ class ItemVO extends Fvob {
 	private $dateCreatedIso;
 	private $dateCreatedLocal;
 
-	var $editable = false;
-	var $prepared = false;
+	public $editable = false;
+	public $prepared = false;
 
-	var $thumbInSysRes = false;
-	var $thumbUrl;
-	var $detailUrl;
+	public $thumbInSysRes = false;
+	public $thumbUrl;
+	public $detailUrl;
 
 	//---changed
-	var $htmlName;
+	public $htmlName;
 
 	//private
-	var $itemList;
+	private $itemList;
 
 	function load() {
 		if($ret = parent::load()) {
@@ -209,7 +209,7 @@ class ItemVO extends Fvob {
 			
 			if($this->itemIdTop > 0) {
 				$itemTop = new ItemVO( $this->itemIdTop );
-				$itemTop->saveOnlyChanged = true;
+				$itemTop->setSaveOnlyChanged(true);
 				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 				$itemTop->save();
 				FPages::cntSet( $this->pageId, 0 );
@@ -248,7 +248,7 @@ class ItemVO extends Fvob {
 		$vo = false;
 		if($this->itemIdTop > 0) {
 			$itemTop = new ItemVO( $this->itemIdTop );
-			$itemTop->saveOnlyChanged = true;
+			$itemTop->setSaveOnlyChanged(true);
 			$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 			$itemTop->save();
 			FDBTool::query("update sys_pages_items_readed_reactions set cnt=cnt-1 where itemId='".$this->itemIdTop."'");

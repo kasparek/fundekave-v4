@@ -9,6 +9,8 @@
  */
 class FileDriver 
 {
+	var $father;
+
 	var $cacheEngine;
 
 	//---could be null to live forever
@@ -20,15 +22,16 @@ class FileDriver
 		if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
 		$cacheOptions['cacheDir'] = $cacheDir;
 		$cacheOptions['lifeTime'] = $this->lifeTime==0 ? null : $this->lifeTime;
-		$cacheOptions['hashedDirectoryLevel'] = 2;
+		$cacheOptions['hashedDirectoryLevel'] = 1;
 		$this->cacheEngine = new FCacheFile($cacheOptions);
 	}
 	
 	private static $instance;
-	static function &getInstance() {
+	static function &getInstance($father) {
 		if (!isset(self::$instance)) {
 			self::$instance = new FileDriver();
 		}
+		self::$instance->father=$father;
 		return self::$instance;
 	}
 
@@ -38,7 +41,7 @@ class FileDriver
 	}
 
 	function setData($key, $data, $grp) {
-		return $this->cacheEngine->save( serialize($data), $key, $grp );
+		return $this->cacheEngine->save( $this->father->serialize($data), $key, $grp );
 	}
 
 	function getGroup($grp) {
@@ -50,7 +53,7 @@ class FileDriver
 	}
 	
 	function getData($key, $grp) {
-		return unserialize($this->cacheEngine->get($key,$grp));
+		return $this->father->unserialize($this->cacheEngine->get($key,$grp));
 	}
 
 	function invalidateData($key, $grp) {

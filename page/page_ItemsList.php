@@ -316,7 +316,7 @@ class page_ItemsList implements iPage {
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 
 		$uid = $fItems->getUID($from, $perPage+1);
-		$grpid = 'itemlist'.($pageVO->typeId!='top'?$pageVO->pageId:'');
+		$grpid = 'page/'.($pageVO->typeId!='top'?$pageVO->pageId:'top').'/list';
 		$cache = FCache::getInstance('f');
 		$data = $cache->getData($uid,$grpid);
 
