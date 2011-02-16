@@ -3,12 +3,11 @@ class UserVO extends Fvob {
 	//---token is changed every check
 	//---if true user can NOT work in multiple windows
 	//---use true for webservice - more secure
-	var $strictLogin = false;
+	public $strictLogin = false;
 
-	var $table = 'sys_users';
-	var $primaryCol = 'userId';
-
-	var $columns = array('userId'=>'userId',
+	protected $table = 'sys_users';
+	protected $primaryCol = 'userId';
+	protected $columns = array('userId'=>'userId',
 	'name'=>'name',
 	'password'=>'password',
 	'ipcheck'=>'ipcheck',
@@ -22,43 +21,43 @@ class UserVO extends Fvob {
 	'deleted'=>'deleted',
 	'hit'=>'hit');
 
-	var $userId = 0;
-	var $name;
-	var $password;
-	var $passwordNew;
-	var $ipcheck = true;
-	var $dateCreated;
-	var $dateUpdated;
-	var $dateLastVisit;
-	var $email = '';
-	var $icq = '';
+	public $userId = 0;
+	public $name;
+	public $password;
+	public $passwordNew;
+	public $ipcheck = true;
+	public $dateCreated;
+	public $dateUpdated;
+	public $dateLastVisit;
+	public $email = '';
+	public $icq = '';
 	//---additional user information XML structure
-	var $info = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
-	var $avatar;
-	var $deleted = 0;
-	var $hit;
+	public $info = "<user><personal><www/><motto/><place/><food/><hobby/><about/><HomePageId/></personal><webcam /></user>";
+	public $avatar;
+	public $deleted = 0;
+	public $hit;
 
 	//---security
-	var $idlogin = '';
-	var $ip = '';
+	public $idlogin = '';
+	public $ip = '';
 
 	//---user messages
 	//---new post alerting
-	var $newPost = 0;
-	var $newPostFrom = '';
+	public $newPost = 0;
+	public $newPostFrom = '';
 	
-	var $requestId;
-	var $requestUserId;
-	var $requestMessage;
+	public $requestId;
+	public $requestUserId;
+	public $requestMessage;
 	
-	var $activityPageId;
+	public $activityPageId;
 	
 	//client
-	var $clientWidth=0;
-	var $clientHeight=0;
+	public $clientWidth=0;
+	public $clientHeight=0;
 	
 	//total items previous login num
-	var $itemsLastNum=0;
+	public $itemsLastNum=0;
 		
 	function save(){
 		$this->saveIgnore = array('dateLastVisit');

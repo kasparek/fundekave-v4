@@ -341,7 +341,7 @@ class FDBTool {
 									$propName = str_replace('_prop','',$k);
 									$propList = $vo->getPropertiesList();
 									if(in_array($propName,$propList)) {
-										$vo->properties[$propName] = $v;
+										$vo->properties->$propName = $v;
 									}
 								}
 							}

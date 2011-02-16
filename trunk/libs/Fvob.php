@@ -3,31 +3,42 @@ class Fvob {
 
 	var $debug=0;
 	
-	var $table;
-	var $primaryCol;
-	var $cacheType = 'l';
-
-	var $columns;
-	var $propertiesList;
-	public $propDefaults;
+	protected $cacheType = 'l';
+	
+	protected $table;
+	protected $primaryCol;
+	protected $columns;
+	protected $propertiesList;
+	protected $propDefaults;
 
 	//extra array of key/value array properties
-	var $properties = array();
+	public $properties;
 
-	//---watcher
-	public $forceInsert = false;
-	public $saveIgnore = array();
-	public $saveOnlyChanged = false;
-	public $changed = false;
-	public $loaded = false;
+  //---public watcher
+  public $loaded = false;
 	public $loadedCached = false;
-	
+	//---watcher
+	protected $forceInsert = false;
+	protected $saveIgnore = array();
+	protected $saveOnlyChanged = false;
+	protected $changed = false;
+		
 	function __construct($primaryId=0, $autoLoad = false) {
+		$this->properties = new stdClass();
 		$this->{$this->primaryCol} = $primaryId;
 		if($autoLoad == true) {
 			$this->load();
 		}
 	}
+	
+	public function setForceInsert($val){ $this->forceInsert = $val; }
+	public function setSaveIgnore($arr){ $this->saveIgnore = $arr; }
+	
+	public function getSaveOnlyChanged() { return $this->saveOnlyChanged; }
+	public function setSaveOnlyChanged($val){ $this->saveOnlyChanged = $val; }
+	
+	public function getChanged() { return $this->changed; }
+	public function setChanged($val){ $this->changed = $val; }
 
 	public function date($value,$format) {
 		if(!$value) return null;
@@ -72,27 +83,31 @@ class Fvob {
 		return $changed;
 	}
 
+	function loadCached() {
+		if(empty($this->{$this->primaryCol})) return false;
+		$dataVO = $this->memGet();
+		if($dataVO===false) return false;
+		$this->reload($dataVO);
+		$this->loadedCached = true;
+		return true;
+	}
+
 	function load() {
-		if(!empty($this->{$this->primaryCol})) {
-			$dataVO = $this->memGet();
-			$loaded = false;
-			if($dataVO !== false) if($dataVO->loaded===true) $loaded=true; 
-			if($loaded===false) {
-				$vo = new FDBvo( $this );
-				$this->loaded = $vo->load();
-				if(!$this->loaded) $this->{$this->primaryCol} = null;
-				else $this->memStore();
-				return $this->loaded;
-			} else {
-				$this->reload($dataVO);
-				$this->loadedCached = true;
-				return $this->loaded;
-			}
+		if(empty($this->{$this->primaryCol})) return false;
+		$this->loadCached();
+		if($this->loaded===false) {
+			$vo = new FDBvo( $this );
+			$this->loaded = $vo->load();
+			if(!$this->loaded) $this->{$this->primaryCol} = null;
+			else $this->memStore();
+			return $this->loaded;
 		}
+		return true;
 	}
 	
 	function reload($VO) {
-		foreach ($VO as $key => $val) {
+		if(!empty($VO))
+		foreach($VO as $key => $val) {
 			if($this->debug) echo $key.'='.$val."<br>\n";
 			$this->{$key} = $val;
 		}
@@ -140,19 +155,19 @@ class Fvob {
 			FError::write_log("Fvob::getProperty - missing propertyName -  default:".$default);
 			return;
 		}
-			$dataVO = $this->memGet();
-			if($dataVO!==false) $this->properties = $dataVO->properties;
+		
+		$this->loadCached();
 
 		$value = null;
-		if(isset($this->properties[$propertyName])) {
-			$value = $this->properties[$propertyName];
+		if(isset($this->properties->$propertyName)) {
+			$value = $this->properties->$propertyName;
 		} else {
 			if($load===true) {
 				$value = FDBTool::getOne("select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
 				//---set in list
 				if(!is_numeric($value) && empty($value)) $value = false;
 				if($value === false || $value === null) $value = $default;
-				$this->properties[$propertyName] = $value;
+				$this->properties->$propertyName = $value;
 				//---save in cache
 				$this->memStore();
 			}
@@ -163,8 +178,8 @@ class Fvob {
 
 	function setProperty($propertyName,$propertyValue) {
 		//check if needed to be saved
-		if(isset($this->properties[$propertyName])) {
-			if($propertyValue==$this->properties[$propertyName] || (empty($propertyValue) && empty($this->properties[$propertyName]))) return;
+		if(isset($this->properties->$propertyName)) {
+			if($propertyValue==$this->properties->$propertyName || (empty($propertyValue) && empty($this->properties->$propertyName))) return;
 		}
 		$prop=$this->getProperty($propertyName,false,true);
 		$ret=false;
@@ -180,24 +195,24 @@ class Fvob {
 			if($prop!=$propertyValue) $ret=true;
 		}
 		//---save in cache
-		$this->properties[$propertyName] = $propertyValue;
+		$this->properties->$propertyName = $propertyValue;
 		//---update cache
 		$this->memStore();
 		return $ret;
 	}
 	
-	private $cacheInstance;
+	
 	function memStore() {
-		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
-		$this->$cacheInstance->setData( $this, $this->{$this->primaryCol}, 'cached_'.$this->table);
+		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
+		$c->setData( $this, $this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 	function memGet() {
-		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
-		return $this->$cacheInstance->getData($this->{$this->primaryCol}, 'cached_'.$this->table);
+		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
+		return $c->getData($this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 	function memFlush() {
-		if(!$this->$cacheInstance) $cacheInstance = FCache::getInstance($this->cacheType);
-		$this->$cacheInstance->invalidateData($this->{$this->primaryCol}, 'cached_'.$this->table);
+		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
+		$c->invalidateData($this->{$this->primaryCol}, 'cached_'.$this->table);
 	}
 
 	public function getTable() {

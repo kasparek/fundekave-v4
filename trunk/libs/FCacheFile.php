@@ -228,7 +228,7 @@ class FCacheFile
 	private function _setFileName($id, $group) {
 		$suffix = 'cache_'.$id;
 		$root = $this->_cacheDir.$group.'/';
-		if ($this->_hashedDirectoryLevel>0) {
+		if($this->_hashedDirectoryLevel>0) {
 			$hash = md5($suffix);
 			for ($i=0 ; $i<$this->_hashedDirectoryLevel ; $i++) {
 				$root = $root . 'cache_' . substr($hash, 0, $i + 1) . '/';
@@ -265,8 +265,12 @@ class FCacheFile
 	private function _write($data) {
 		$root = $this->_cacheDir;
 		if (!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
-		$root .= $this->_group.'/';
-		if (!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
+		$groupTree = explode("/",$this->_group);
+		while($groupTree) {
+			$groupDir=array_shift($groupTree);
+			$root .= $groupDir.'/';
+			if(!(@is_dir($root))) @mkdir($root, $this->_hashedDirectoryUmask);
+		}
 		if ($this->_hashedDirectoryLevel > 0) {
 			$hash = md5($this->_fileName);
 			for ($i=0 ; $i<$this->_hashedDirectoryLevel ; $i++) {
@@ -283,6 +287,7 @@ class FCacheFile
 			if ($mqr) set_magic_quotes_runtime($mqr);
 			if ($this->_fileLocking) @flock($fp, LOCK_UN);
 			@fclose($fp);
+			chmod($this->_file,$this->_hashedDirectoryUmask);
 			return true;
 		}
 		return $this->raiseError('Cache_Lite : Unable to write cache file : '.$this->_file, -1);

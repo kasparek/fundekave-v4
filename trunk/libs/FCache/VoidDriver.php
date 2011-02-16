@@ -12,12 +12,15 @@ class VoidDriver
 	
 	var $lifeTimeDefault = 0;
 	var $lifeTime = 0;
+	
+	var $father;
 
 	private static $instance;
-	static function &getInstance() {
+	static function &getInstance($father) {
 		if (!isset(self::$instance)) {
 			self::$instance = new VoidDriver();
 		}
+		self::$instance->father=$father;
 		return self::$instance;
 	}
 	

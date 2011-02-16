@@ -9,16 +9,20 @@
  */
 class LoadDriver
 {
+
+	var $father;
+
 	var $data;
 
 	var $lifeTimeDefault = 0;
 	var $lifeTime = 0;
 
 	private static $instance;
-	static function &getInstance() {
+	static function &getInstance($father) {
 		if (!isset(self::$instance)) {
 			self::$instance = new LoadDriver();
 		}
+		//self::$instance->father=$father;
 		return self::$instance;
 	}
 	
@@ -27,17 +31,12 @@ class LoadDriver
 	}
 
 	function getGroup( $grp ) {
-		if(isset($this->data[$grp])) {
-			$arr = $this->data[$grp];
-			while($row = array_shift($arr)) {
-				$arrUnserialized[] = unserialize($row);
-			}
-			return $arrUnserialized;
-		} else return false;
+		if(isset($this->data[$grp])) return $this->data[$grp];
+		return false;
 	}
 
 	function setData($key, $data, $grp ) {
-		$this->data[$grp][$key] = serialize($data);
+		$this->data[$grp][$key] = $data;
 		return true;
 	}
 
@@ -47,9 +46,8 @@ class LoadDriver
 	}
 	
 	function getData($key, $grp) {
-		if(isset($this->data[$grp][$key])) {
-			return unserialize($this->data[$grp][$key]);
-		} else return false;
+		if(isset($this->data[$grp][$key])) return $this->data[$grp][$key];
+		return false;
 	}
 
 	function invalidateData($key,$grp) {

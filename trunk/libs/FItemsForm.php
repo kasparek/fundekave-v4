@@ -42,7 +42,7 @@ class FItemsForm {
 			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir'));
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);
 			$itemVO->set('enclosure',$enclosure);
-			$itemVO->saveOnlyChanged=true;
+			$itemVO->setSaveOnlyChanged(true);
 			$itemVO->save();
 			$itemVO->prepare();
 			FFile::flushTemplFile();
@@ -120,7 +120,7 @@ class FItemsForm {
 				$itemVO = new ItemVO((int) $data['i']);
 				if($itemVO->load()) {
 					$itemVO->deleteImage();
-					$itemVO->saveOnlyChanged=true;
+					$itemVO->setSaveOnlyChanged(true);
 					$itemVO->save();
 				}
 				FFile::flushTemplFile();

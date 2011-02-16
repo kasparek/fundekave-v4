@@ -10,6 +10,8 @@
 class SessionDriver
 {
 
+	var $father;
+
 	var $data;
 	var $lifeTimeDefault = 0;
 	var $lifeTime = 0;
@@ -19,10 +21,11 @@ class SessionDriver
 	}
 	
 	private static $instance;
-	static function &getInstance() {
+	static function &getInstance($father) {
 		if (!isset(self::$instance)) {
 			self::$instance = new SessionDriver();
 		}
+		self::$instance->father=$father;
 		return self::$instance;
 	}
 
@@ -34,7 +37,7 @@ class SessionDriver
 		if(isset($this->data[$grp])) {
 			$arr = $this->data[$grp];
 			while($row = array_shift($arr)) {
-				$arrUnserialized[] = unserialize($row[2]);
+				$arrUnserialized[] = $this->father->unserialize($row[2]);
 			}
 			return $arrUnserialized;
 		} else return false;
@@ -43,7 +46,7 @@ class SessionDriver
 	function setData($key, $data, $grp) {
 		$time = 0;
 		if($this->lifeTime > 0) $time = date("U");
-		$this->data[$grp][$key] = array($this->lifeTime, $time , serialize($data));
+		$this->data[$grp][$key] = array($this->lifeTime, $time , $this->father->serialize($data));
 		return true;	
 	}
 
@@ -56,7 +59,7 @@ class SessionDriver
 		if(isset($this->data[$grp][$key])) {
 			$data = $this->data[$grp][$key];
 			if($data[0] + $data[1] > date("U") || $data[0]==0) {
-				return unserialize($data[2]);
+				return $this->father->unserialize($data[2]);
 			} else {
 				$this->invalidateData($key, $grp);
 			}

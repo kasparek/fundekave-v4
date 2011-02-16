@@ -61,7 +61,7 @@ class FRSS {
 		$pageNumber = $pageNumber<1 ? 1 : $pageNumber;
 
 		$cache = FCache::getInstance('f',0);
-		$cacheGrp = 'rsslist'.$user->pageVO->pageId;
+		$cacheGrp = 'page/'.$user->pageVO->pageId.'/rss';
 		$ret = $cache->getData($pageNumber,'pagelist');
 					
 		if($ret === false) {

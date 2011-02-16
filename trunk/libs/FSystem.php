@@ -1,4 +1,12 @@
 <?php
+function strlenSort($a,$b){
+	if($a==$b)return 0;
+	$la=strlen($a);
+	$lb=strlen($b);
+	if($la==$lb)return 0;
+	if($la>$lb)return 1;
+	return -1;
+}
 class FSystem {
 
 	//---close resources
@@ -11,14 +19,31 @@ class FSystem {
 
 	private static $invalidate = array(); 
 
-	static function superInvalidate($grp,$id='') {
-		$serialized = $grp.($id!=''?'/'.$id:'');
+  static function superInvalidate($grp,$id='') {
+		$serialized = $grp.($id!=''?'|'.$id:'');
 		if(!in_array($serialized,self::$invalidate)) self::$invalidate[] = $serialized;	
 	}
 	
 	static function superInvalidateFlush() {
 	  if(empty(self::$invalidate)) return;
-		$grps = implode(";",self::$invalidate);
+	  $grpList = self::$invalidate;
+		
+		//sort grpList
+		usort($grpList, strlenSort);
+		//remove all grps unnecessary to invalidate
+		$i=0;
+		while($i<count($grpList)){
+			$grpListNew = array();
+			foreach($grpList as $grp) if($grp==$grpList[$i] || strpos($grp,$grpList[$i])!==0)$grpListNew[]=$grp;
+			$grpList=$grpListNew;
+		  $i++;
+		}
+		//remove duplicates
+		$grpListNew = array();
+		foreach($grpList as $grp) if(!in_array($grp,$grpListNew)) $grpListNew[]=$grp;
+		$grpList=$grpListNew;
+		 
+		$grps = implode(";",$grpList);
 	  self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net');
   	$mh = curl_multi_init();
@@ -26,16 +51,19 @@ class FSystem {
 		//prepare curl
 	  foreach($domains as $dom) {
 	  	$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
-	  	file_get_contents($url);
-	  	/*
-	    $curl = curl_init();
-	    curl_setopt($curl, CURLOPT_URL,            $url);
-	    curl_setopt($curl, CURLOPT_HEADER,         1);
-	    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
-	    curl_multi_add_handle($mh, $curl);
-	    $curly[] = $curl;*/
+	  	if($_SERVER['HTTP_HOST']==$dom) {
+	  		FError::write_log("cron::invalidate - LOCAL begin - ".$_GET['g']);
+				FSystem::superInvalidateHandle($grps);
+				FError::write_log("cron::invalidate - LOCAL COMPLETE - ".$_GET['g']);
+	  	} else {
+		    $curl = curl_init();
+		    curl_setopt($curl, CURLOPT_URL,            $url);
+		    curl_setopt($curl, CURLOPT_HEADER,         1);
+		    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
+		    curl_multi_add_handle($mh, $curl);
+		    $curly[] = $curl;
+	    }
 	  }
-	  /*
     //execute curl
 	  $active = null;
 	  do {
@@ -45,8 +73,17 @@ class FSystem {
 	  foreach($curly as $id => $c) curl_multi_remove_handle($mh, $c);
 		//close curl
 	  curl_multi_close($mh);
-	  */
   	FProfiler::write('FSystem::superInvalidateFlush complete');
+	}
+	
+	static function superInvalidateHandle($grps){
+		if(empty($grps))return;
+		$cache = FCache::getInstance('f');
+		foreach($grps as $grp) {
+			$inv = explode('|',$grp);
+			if(count($inv)>1) $cache->invalidateData($inv[1],$inv[0]);
+			else $cache->invalidateGroup($inv[0]);
+		}
 	}
 
 	static function superVars($data) {
