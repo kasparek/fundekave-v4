@@ -26,9 +26,7 @@ class Fvob {
 	function __construct($primaryId=0, $autoLoad = false) {
 		$this->properties = new stdClass();
 		$this->{$this->primaryCol} = $primaryId;
-		if($autoLoad == true) {
-			$this->load();
-		}
+		if($autoLoad == true) $this->load();
 	}
 	
 	public function setForceInsert($val){ $this->forceInsert = $val; }
@@ -155,9 +153,7 @@ class Fvob {
 			FError::write_log("Fvob::getProperty - missing propertyName -  default:".$default);
 			return;
 		}
-		
-		$this->loadCached();
-
+		if(!$this->loadedCached) $this->loadCached();
 		$value = null;
 		if(isset($this->properties->$propertyName)) {
 			$value = $this->properties->$propertyName;

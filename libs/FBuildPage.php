@@ -48,7 +48,7 @@ class FBuildPage {
 		//breadcrumbs
 		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 		if($pageIdTop!=$user->pageVO->pageId) {
-			$pageTop = PageVO::factory($pageIdTop);
+			$pageTop = FactoryVO::get('PageVO',$pageIdTop);
 		} else {
 			$pageTop = $user->pageVO;
 		}
@@ -267,7 +267,7 @@ class FBuildPage {
 		
 		if($user->pageVO) {
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			$pageVOTop = PageVO::factory($pageIdTop);
+			$pageVOTop = FactoryVO::get('PageVO',$pageIdTop);
 			$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
@@ -331,7 +331,7 @@ class FBuildPage {
 			$showSidebar = $user->pageVO->showSidebar;
 			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
 		}
-		var_dump($showSidebar);
+		
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();

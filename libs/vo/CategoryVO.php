@@ -1,9 +1,9 @@
 <?php
 class CategoryVO extends Fvob {
 
-	var $protected = 'sys_pages_category';
-	var $protected = 'categoryId';
-	var $protected = array('categoryId' => 'categoryId',
+	protected $table = 'sys_pages_category';
+	protected $primaryCol = 'categoryId';
+	protected $columns = array('categoryId' => 'categoryId',
 	'typeId' => 'typeId',
 	'pageIdTop' => 'pageIdTop',
 	'name' => 'name',

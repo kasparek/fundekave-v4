@@ -59,7 +59,7 @@ class FItemsRenderer {
 			$pTop=$pageVO->get('pageIdTop');
 			$homeUrl='';
 			if(!empty($pTop) && $pTop!=HOME_PAGE){
-				$pVOTop = PageVO::factory($pTop);
+				$pVOTop = FactoryVO::get('PageVO',$pTop);
 				$homeUrl = ' - '.$pVOTop->prop('homesite');
 			}
 			$vars['URL'] = FSystem::getUri('',$itemVO->pageId,'',array('name'=>$pageVO->get('name')));

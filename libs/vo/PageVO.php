@@ -71,20 +71,6 @@ class PageVO extends Fvob {
 	public $htmlKeywords;
 	public $showSidebar = true;
 
-	static function factory( $pageId=0, $autoLoad = false ) {
-		$user = FUser::getInstance();
-		$pageVO = null;
-		if(!empty($pageId))
-		if($user->pageVO) {
-			if($user->pageVO->pageId == $pageId) {
-				$pageVO = $user->pageVO;
-			}
-		}
-		if(!$pageVO) $pageVO = new PageVO($pageId, $autoLoad);
-		$pageVO->cacheType='l';
-		return $pageVO;
-	}
-
 	/**
 	 * type specific perpage / galery has in xml
 	 * @return number

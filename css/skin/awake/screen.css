@@ -8,14 +8,15 @@ div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
 /* BASE FRAMEWORK */
-body {text-align: center;color: black;font:0.68em/1 Verdana,sans-serif;
+body {text-align: center;color: black;font:0.79em/1 Georgia,Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
 background: #eae6da url(img/page-bg.jpg) no-repeat left top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
 div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;}
 div#header {position: relative;z-index: 1;}
-div#pagebar {float:left;width:100%;min-width: 610px;display:inline; background-color: white;padding: 0;}
+div#pagebar {float:left;width:750px;display:inline; background-color: white;padding: 0;clear:both;}
+body.bodySidebarOff div#pagebar { min-width:750px;width:100%; }
 div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
 div#header, div#footer{clear:both;margin-left: 0px;min-width: 400px;}
 div#footer{padding: 5px 0;text-align: right;}
@@ -183,7 +184,7 @@ span.linkIco img {margin-bottom:-2px;}
 span.monitor img,span.map img{margin-bottom:-4px;}
 
 /* HENTRY CONTENT */
-div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;}
+div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;max-width: 610px;text-align: justify;}
 div.mainpanel-content div.hentry div.withCommented {margin-right: 250px;}
 div.mainpanel-content div.hentry div.textLong {margin-top: 20px;}
 div.mainpanel-content div.hentry div.entry-content img {max-width: 680px;}
