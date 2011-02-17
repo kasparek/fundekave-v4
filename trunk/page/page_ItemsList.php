@@ -144,7 +144,7 @@ class page_ItemsList implements iPage {
 		if($detail==false) {
 			//TAG FILTERING
 			$cache = FCache::getInstance('f');
-			$tagGroups = $cache->getData($user->pageVO->pageId.(!empty($typeRequest)?'-'.$typeRequest:''),'tagfilter');
+			$tagGroups = $cache->getData('tagGrouped'.(!empty($typeRequest)?'-'.$typeRequest:''),'page/'.$user->pageVO->pageId.'/tag');
 			if($tagGroups===false) {
 				$tagGroups = FDBTool::getCol("SELECT tag_weight FROM `sys_pages_items` where tag_weight>0 ".(!empty($typeRequest)?" and typeId='".$typeRequest."' ":'').($user->pageVO->typeId!='top'?" and pageId='".$user->pageVO->pageId."' ":'')." group by tag_weight");
 				$cache->setData($tagGroups);
@@ -319,7 +319,7 @@ class page_ItemsList implements iPage {
 		$grpid = 'page/'.($pageVO->typeId!='top'?$pageVO->pageId:'top').'/list';
 		$cache = FCache::getInstance('f');
 		$data = $cache->getData($uid,$grpid);
-
+		
 		if($data===false) {
 			$fItems->getList($from, $perPage+1);
 			$pager->totalItems = count($fItems->data);

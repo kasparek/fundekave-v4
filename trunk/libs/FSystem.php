@@ -1,12 +1,4 @@
 <?php
-function strlenSort($a,$b){
-	if($a==$b)return 0;
-	$la=strlen($a);
-	$lb=strlen($b);
-	if($la==$lb)return 0;
-	if($la>$lb)return 1;
-	return -1;
-}
 class FSystem {
 
 	//---close resources
@@ -15,6 +7,15 @@ class FSystem {
 		$db = FDBConn::getInstance();
 		$db->kill();
 		exit;
+	}
+	
+	static function strlenSort($a,$b){
+		if($a==$b)return 0;
+		$la=strlen($a);
+		$lb=strlen($b);
+		if($la==$lb)return 0;
+		if($la>$lb)return 1;
+		return -1;
 	}
 
 	private static $invalidate = array(); 
@@ -29,7 +30,7 @@ class FSystem {
 	  $grpList = self::$invalidate;
 		
 		//sort grpList
-		usort($grpList, strlenSort);
+		usort($grpList, "FSystem::strlenSort");
 		//remove all grps unnecessary to invalidate
 		$i=0;
 		while($i<count($grpList)){
@@ -46,15 +47,16 @@ class FSystem {
 		$grps = implode(";",$grpList);
 	  self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net');
+		$domains[]='test.fundekave.net';
   	$mh = curl_multi_init();
   	$curlys=array();
 		//prepare curl
 	  foreach($domains as $dom) {
 	  	$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
 	  	if($_SERVER['HTTP_HOST']==$dom) {
-	  		FError::write_log("cron::invalidate - LOCAL begin - ".$_GET['g']);
+	  		FError::write_log("cron::invalidate - LOCAL begin - ".$grps);
 				FSystem::superInvalidateHandle($grps);
-				FError::write_log("cron::invalidate - LOCAL COMPLETE - ".$_GET['g']);
+				FError::write_log("cron::invalidate - LOCAL COMPLETE - ".$grps);
 	  	} else {
 		    $curl = curl_init();
 		    curl_setopt($curl, CURLOPT_URL,            $url);
@@ -79,6 +81,7 @@ class FSystem {
 	static function superInvalidateHandle($grps){
 		if(empty($grps))return;
 		$cache = FCache::getInstance('f');
+		if(!is_array($grps)) $grps = explode(';',$grps);
 		foreach($grps as $grp) {
 			$inv = explode('|',$grp);
 			if(count($inv)>1) $cache->invalidateData($inv[1],$inv[0]);
@@ -358,8 +361,7 @@ class FSystem {
 	}
 
 	static function safeFilename($text) {
-		$text = strtolower($text);
-		$arr = explode('.',$text);
+		$arr = explode('.',strtolower($text));
 		$extension = FSystem::safeText(array_pop($arr));
 		return FSystem::safeText(implode('.',$arr)).'.'.$extension;
 	}

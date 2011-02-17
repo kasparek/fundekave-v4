@@ -37,7 +37,8 @@ class FItemsForm {
 			$itemVO->deleteImage();
 			$pageVO = $itemVO->pageVO;
 			$filenameArr = explode('/',$filename);
-			$enclosure = array_pop($filenameArr);
+			$enclosure = FSystem::safeFilename(array_pop($filenameArr));
+			$enclosure = $itemVO->itemId.'-'.$enclosure;
 			$target = FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir').'/'.$enclosure;
 			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir'));
 			$ffile->rename(FConf::get('galery','sourceServerBase').$filename,$target);

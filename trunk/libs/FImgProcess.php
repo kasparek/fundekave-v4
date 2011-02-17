@@ -226,16 +226,12 @@ class FImgProcess {
 			if($targetWidth == 0) $targetWidth = $p_width;
 			if($targetHeight == 0) $targetHeight = $p_height;
 
-			if(!$this->imagick) {
-				$targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
-			}
-
 			if($this->imagick) {
-				if($crop) {
-					$this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
-				}
+				if($crop) $this->imagick->cropImage($cropWidth, $cropHeight, $cropX, $cropY);
 				$this->imagick->resizeImage( $targetWidth  , $targetHeight  , Imagick::FILTER_LANCZOS  , 1 );
+				if($this->sourceMimeType == 1) $this->imagick->setImagePage($targetWidth  , $targetHeight, 0, 0);
 			} else {
+				$targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 				imagecopyresampled($targetImage, $this->image, $targetX, $targetY, $cropX, $cropY, $p_width, $p_height, $cropWidth, $cropHeight);
 				$this->image = $targetImage;
 			}
@@ -281,17 +277,14 @@ class FImgProcess {
 					$this->imagick->setImageCompressionQuality($this->quality);
 			}
 
-
 			if($this->targetUrl) {
 				$data = $this->imagick->writeImage($this->targetUrl);
 			} else {
 				//get only data
 				$data = $this->imagick->getImage();
-
 			}
 			$this->imagick->clear();
 			$this->imagick->destroy();
-
 		} else {
 			if(empty($this->targetUrl)) ob_start(); // start a new output buffer
 			switch($this->targetMimeType) {
