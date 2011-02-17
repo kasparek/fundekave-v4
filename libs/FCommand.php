@@ -138,11 +138,11 @@ class FCommand {
 	}
 	
 	public static function positionUpdated($data) {
-	  FSystem::superInvalidate('sidebar-map');
+	  FSystem::superInvalidate('sidebar/map');
 	}
 	
 	public static function categoriesUpdated($data) {
-	  FSystem::superInvalidate('sidebar-categories');
+	  FSystem::superInvalidate('sidebar/categories');
 	}
 	
 }

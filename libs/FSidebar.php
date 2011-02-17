@@ -29,7 +29,7 @@ class FSidebar extends FDBTool {
 		$this->panels = array();
 		$this->panelsUsed = array();
 		$cache = FCache::getInstance( 'f' );
-		if( false === ($arrSidebar = $cache->getData($this->pageId.'-'.($this->userId * 1),'sidebar_set')) ) {
+		if( false === ($arrSidebar = $cache->getData($this->pageId.'-'.($this->userId * 1),'sidebar/set')) ) {
 			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible");
 			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup in ('default','".$this->pageType."'))");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
@@ -109,7 +109,7 @@ class FSidebar extends FDBTool {
 						if(!empty($fnc)) {
 							$showBlock = true;
 							$cacheId = 'cache';
-							$cacheGrp = 'sidebar-'.$fnc;
+							$cacheGrp = 'sidebar/'.$fnc;
 							if(strpos($panel['options'],'cache')!==false) {
 								//if(SITE_STRICT == 1) $cacheId .= '-'.SITE_STRICT.'site'; //each site has different cache folder
 								
