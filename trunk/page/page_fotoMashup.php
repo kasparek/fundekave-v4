@@ -17,7 +17,7 @@ class page_fotoMashup implements iPage {
 		$cache = FCache::getInstance('f');
 		$cache->setConf(180);
 		
-		$data = $cache->getData('fotomashup','sidebar');
+		$data = $cache->getData('fotomashup');
 		
 		if(!$data) {
 			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId desc");
@@ -43,7 +43,7 @@ class page_fotoMashup implements iPage {
 				}
 			}
 			
-			$cache->setData($data,'fotomashup','sidebar');
+			$cache->setData($data,'fotomashup');
 		}
 
 		FBuildPage::addTab(array("MAINDATA"=>$data,"MAINID"=>'fotoMashup'));
