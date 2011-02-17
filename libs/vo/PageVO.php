@@ -23,7 +23,7 @@ class PageVO extends Fvob {
 	'galeryDir' => 'galeryDir'
 	);
 
-	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order');
+	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order','hideSearchbox','hideSidebar','sidebar');
 	protected $propDefaults = array('forumSet'=>1,'home'=>'');
 
 	//---db based
@@ -70,6 +70,11 @@ class PageVO extends Fvob {
 	public $htmlDescription;
 	public $htmlKeywords;
 	public $showSidebar = true;
+	
+	function __construct($primaryId=0, $autoLoad = false) {
+		parent::__construct($primaryId,$autoLoad);
+		$this->propLoadAtOnce = true;
+	}
 
 	/**
 	 * type specific perpage / galery has in xml

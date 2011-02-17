@@ -10,6 +10,7 @@ class Fvob {
 	protected $columns;
 	protected $propertiesList;
 	protected $propDefaults;
+	protected $propLoadAtOnce=false;
 
 	//extra array of key/value array properties
 	public $properties;
@@ -155,11 +156,24 @@ class Fvob {
 		}
 		if(!$this->loadedCached) $this->loadCached();
 		$value = null;
-		if(isset($this->properties->$propertyName)) {
+		if(property_exists($this->properties,$propertyName)) {
 			$value = $this->properties->$propertyName;
 		} else {
 			if($load===true) {
-				$value = FDBTool::getOne("select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
+				$value=null;
+				if(!$this->propLoadAtOnce) {
+					$value = FDBTool::getOne("select value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");
+				} else {
+					$q="select name,value from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."'";
+					$values = FDBTool::getAll($q);
+					foreach($this->propertiesList as $p) 
+						if(!property_exists($this->properties,$p)) 
+							$this->properties->{$p} = null; 
+					foreach($values as $row) {
+						  $this->properties->{$row[0]} = $row[1];
+						  if($row[0]==$propertyName) $value=$row[1];
+					}
+				}
 				//---set in list
 				if(!is_numeric($value) && empty($value)) $value = false;
 				if($value === false || $value === null) $value = $default;
@@ -174,11 +188,11 @@ class Fvob {
 
 	function setProperty($propertyName,$propertyValue) {
 		//check if needed to be saved
-		if(isset($this->properties->$propertyName)) {
+		if(property_exists($this->properties,$propertyName)) {
 			if($propertyValue==$this->properties->$propertyName || (empty($propertyValue) && empty($this->properties->$propertyName))) return;
 		}
-		$prop=$this->getProperty($propertyName,false,true);
-		$ret=false;
+		$prop = $this->getProperty($propertyName,false,true);
+		$ret = false;
 		//save in db
 		if(is_null($propertyValue) || $propertyValue===false) {
 			FDBTool::query("delete from ".$this->getTable()."_properties where ".$this->getPrimaryCol()."='".$this->{$this->getPrimaryCol()}."' and name='".$propertyName."'");

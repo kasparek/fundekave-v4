@@ -20,7 +20,7 @@ class FPages extends FDBTool {
 		parent::__construct('sys_pages','pageId');
 		
 		$this->VO = 'PageVO';
-		$this->fetchmode = 1;    
+		$this->fetchmode = 1;
 		$pageVO = FactoryVO::get('PageVO');
 		$this->columns = $pageVO->getColumns();
 		//---set select

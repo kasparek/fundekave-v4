@@ -203,7 +203,6 @@ class FUser {
 			}
 		}
 		//---if page not exists redirect to error
-
 		if($pageAccess === true) {
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
@@ -255,9 +254,7 @@ class FUser {
 				}
 				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
-				
 				$this->updateTotalItemsNum();
-				
 			}
 		}
 	}
@@ -272,12 +269,9 @@ class FUser {
 			//TODO:cache this query result?
 			$res = $fpages->getContent();
 			$totalNum = $res[0][0];
-			if($this->userVO->prop('itemsNum') != $totalNum){
+			if($this->userVO->prop('itemsNum') != $totalNum) 
 				$this->userVO->prop('itemsNum',$totalNum);
-			}
-			if($updateMy) {
-				$this->userVO->itemsLastNum = $totalNum;
-			}
+			if($updateMy) $this->userVO->itemsLastNum = $totalNum;
 	}
 
 	function setWhoIs($userId) {

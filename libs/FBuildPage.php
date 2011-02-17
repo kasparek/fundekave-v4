@@ -355,6 +355,7 @@ class FBuildPage {
 		$data = FSystem::superVars($data);
 		$data = preg_replace('/\s\s+/', ' ', $data);
     FProfiler::write('FBuildPage--complete');
-		echo $data;
+		if(!isset($_GET['nooutput'])) echo $data;
+		else echo strlen($data).'Bytes produced';
 	}
 }

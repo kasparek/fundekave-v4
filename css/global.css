@@ -70,14 +70,13 @@
 	.checkbox {width: auto !important;}
 }
 /* END BASIC SCREEN ELEMENTS */
-
 #tempStore{margin-bottom:-5px;}
 
 /* GOOGLE MAPS styles */
 .geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}
 .geoInput {width:150px;height:70px;padding:0;margin:0;}
-.geoForumBox {margin-left: 5px;overflow:hidden;}
+.geoForumBox {min-height: 50px;overflow:hidden;}
 .geoInputBox {margin-left: 32px;}
 .geoInputBox textarea{width:250px;height:150px;}
 .geoInputBox .geoselector {margin: 0 3px;}

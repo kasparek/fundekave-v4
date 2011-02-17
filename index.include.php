@@ -131,6 +131,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		
 		//---file complete
 		if($ffile->hasAllChunks($filename,$total) === true) {
+			$filename = FSystem::safeFilename($filename);
 			//--concat all files
 			switch($f) {
 				case 'tempstore':
@@ -181,7 +182,6 @@ if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_UR
 	FSystem::fin();
 }
 
-
 //---process ajax requests - or alternative POST requests
 if(isset($_REQUEST['m'])) {
 	if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
@@ -216,6 +216,7 @@ if(isset($_REQUEST['m'])) {
 	FBuildPage::process( $data );
 	FProfiler::write('PAGE PROCESS DONE');
 }
+
 //---shows message that page is locked
 if($user->pageVO)
 if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
