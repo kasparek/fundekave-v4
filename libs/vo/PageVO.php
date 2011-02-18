@@ -23,7 +23,7 @@ class PageVO extends Fvob {
 	'galeryDir' => 'galeryDir'
 	);
 
-	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order','hideSearchbox','hideSidebar','sidebar');
+	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order','hideSearchbox','hideSidebar','sidebar','homesite','home');
 	protected $propDefaults = array('forumSet'=>1,'home'=>'');
 
 	//---db based
