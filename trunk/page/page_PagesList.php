@@ -69,6 +69,14 @@ class page_PagesList implements iPage {
 		$pager = new FPager(0,$perPage ,array('noAutoparse'=>1));
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 		$fPages->setLimit( $from, $perPage+1 );
+		
+		$uid = $fPages->getUID($from, $perPage+1);
+		if(is_array($typeId)) $cachetype= count($typeId)>1 ? 'all' : $typeId[0]; else $cachetype = $typeId;
+		$grpid = 'pages/'.($cachetype?$cachetype:'all');
+		$cache = FCache::getInstance('f');
+		$data = $cache->getData($uid,$grpid);
+		if($data===false) {
+		
 		$arr = $fPages->getContent();
 
 		$totalItems = count($arr);
@@ -130,11 +138,12 @@ class page_PagesList implements iPage {
 		} else {
 			$tpl->touchBlock('noresults');
 		}
-		$ret = $tpl->get();
-		//$mainCache->setData($ret,$cacheKey,$cacheGrp);
+			$data = $tpl->get();
+		
+			$cache->setData($data,$uid,$grpid);
+		}
 
-
-		FBuildPage::addTab(array( "MAINDATA"=>$ret ));
+		FBuildPage::addTab(array( "MAINDATA"=>$data ));
 
 	}
 }

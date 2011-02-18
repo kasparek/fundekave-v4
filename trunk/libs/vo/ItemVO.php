@@ -26,7 +26,7 @@ class ItemVO extends Fvob {
 	'public' => 'public'
 	);
 
-	protected $propertiesList = array('position','forumSet');
+	protected $propertiesList = array('position','distance','forumSet','reminder','reminderEveryday','repeat');
 	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);
 	
 	//rendering options
