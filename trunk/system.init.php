@@ -81,6 +81,7 @@ if(!isset($nonInit)) {
 	//setup userVO
 	if($itemVO) $user->itemVO = $itemVO;
 	$user->pageId = $pageId;
+	FProfiler::write('SYSTEM INIT - page params - page='.$pageId.($itemVO?' item='.$itemVO->itemId:''));
 	if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 	//---logout action
 	if(isset($_GET['logout']) && $user->userVO->userId>0) {
@@ -90,6 +91,5 @@ if(!isset($nonInit)) {
 	}
 	//map commands
 	FCommand::getInstance(); //to load up class and get static constants
-	
 	//if(FSystem::isRobot()) FError::write_log("Robot visit - Page:".$user->pageId." Item:".(isset($user->itemVO)?$user->itemVO->itemId:0)." Host".$_SERVER['HTTP_USER_AGENT']);
 }

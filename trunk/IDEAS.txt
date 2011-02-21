@@ -1,44 +1,17 @@
-SIMPLE VERSION
--layout with no right bar
--in right bar only login and categories
-
-TAGS
--tagovani fotek popiskama - u kazdy fotky ajax pole
-
+kalendar - diary - events
+---sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
+diar -  predelat aby byly repetitivni akce videt zase?
 events - tipy -> udalosti
 soukromy - vidi pouze pratele
 osobni - vidim pouze ja a vybrani pratele
-repetitini - jako v diary
-upozorneni - pro vsechny kdo prijdou 
+repetitini - jako v diary 
+pro kazdou stranku
+kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
 
-kalendar - diary
- - pro kazdou stranku
- - kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
- - rewrite page_UserDiary
- 
-feed
-	- pro homesite
-	- vybrat ci stranky se budou ukazovat v zive, zive jako hlavni stranka
-	- RSS - pouze dva druhy - zive, k - stranka
-
-DB	optimizations
-user ALTER TABLE...ORDER BY?
- 
-WEBCAM
-  - moznost aktivovat webcam swf
-  - stranka s online webcam
-  - nastaveni prav pro prohlizeni, pro seznam uzivatelu, pro pratele, vsechny ...
+DB	optimizations - user ALTER TABLE...ORDER BY?
   
 TIPS & TRICKS:
-animated progress loader - http://ajaxload.info/
 handling time php/mysql - http://jokke.dk/blog/2007/07/timezones_in_mysql_and_php
-
-CSS 
-gradient
-background: #999; /* for non-css3 browsers */
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
-background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
-background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
 
 SQL
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
@@ -46,5 +19,5 @@ swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
 microformat
 <!-- microformat Decimal Degrees = Degrees + minutes/60 + seconds/3600 <address id="geo{MAPITEMID}" class="geo"><abbr class="latitude" title="37.408183">N 37° 24.491</abbr><abbr class="longitude" title="-122.13855">W 122° 08.313</abbr></address> -->
 
-selector example
+jquery selector example
 $('input[name="list[]"]:checked').pluck('value')
