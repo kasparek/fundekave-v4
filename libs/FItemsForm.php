@@ -342,7 +342,17 @@ class FItemsForm {
 		$tpl->setVariable('FORMACTION',FSystem::getUri('','',false,array('short'=>1)));
 		$tpl->setVariable('M','item-submit');
 		$tpl->setVariable('T',$itemVO->typeId);
-		if(!empty($itemVO->itemId)) $tpl->setVariable('ITEMID',$itemVO->itemId);
+		
+		$tpl->touchBlock('geo');
+		
+		if(!empty($itemVO->itemId)) {
+			$tpl->setVariable('ITEMID',$itemVO->itemId);
+			$position = $itemVO->prop('position');
+			if(!empty($data['position'])) $position = $data['position'];
+			if(!empty($position)) {
+				$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
+			}
+		}
 
 		$tpl->setVariable('TITLE',$itemVO->addon);
 
@@ -357,13 +367,6 @@ class FItemsForm {
 
 		$tpl->setVariable('DATEEND',$itemVO->dateEndLocal);
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
-
-		$tpl->touchBlock('geo');
-		$position = $itemVO->prop('position');
-		if(!empty($data['position'])) $position = $data['position'];
-		if(!empty($position)) {
-			$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
-		}
 
 		//TYPE DEPEND
 		if($itemVO->typeId==='forum') {

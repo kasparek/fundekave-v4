@@ -125,6 +125,9 @@ class FCommand {
 	public static function pageUpdated($data) {
 		FSystem::superInvalidate('page/top');
 		FSystem::superInvalidate('page/'.$data->pageId);
+		
+		FSystem::superInvalidate('pages/'.$data->get('typeId'));
+		FSystem::superInvalidate('pages/all');
 	}
 	
 	public static function rssUpdated($data=null) {
@@ -135,6 +138,10 @@ class FCommand {
 		FSystem::superInvalidate('page/top');
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/list');
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/rss');
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/static');
+		
+		FSystem::superInvalidate('pages/'.$data->get('typeId'));
+		FSystem::superInvalidate('pages/all');
 	}
 	
 	public static function positionUpdated($data) {

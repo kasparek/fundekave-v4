@@ -342,12 +342,7 @@ class ItemVO extends Fvob {
 	function hit() {
 		if(FSystem::isRobot()) return;
 		if(!empty($this->itemId)){
-			//due to locking update hit sometimes from _hit table
-			//FDBTool::query("update low_priority sys_pages_items set hit=hit+1 where itemId=".$this->itemId);
-
-			//---write
 			FDBTool::query("insert into sys_pages_items_hit values ('".$this->itemId."','".(FUser::logon()*1)."',now())");
-
 			$this->hit++;
 		}
 	}
