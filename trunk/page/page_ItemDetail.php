@@ -18,11 +18,6 @@ class page_ItemDetail implements iPage {
 			if(empty($user->itemVO)) return false;
 			$itemVO = $user->itemVO;
 		}
-		if(empty($user->pageParam)) {
-			if(!$user->idkontrol || $itemVO->userId != $user->userVO->userId) {
-				$itemVO->hit();
-			}
-		}
 		if($itemVO->public!=1) {
 			if(!FRules::getCurrent(2)) return;
 		}

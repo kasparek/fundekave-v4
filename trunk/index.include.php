@@ -206,31 +206,61 @@ if(isset($_REQUEST['m'])) {
 	FAjax::process($_REQUEST['m'], $data, $options);
 	FProfiler::write('FAJAX PROCESSED DONE');
 } else {
-	$user->kde(); //---check user / load info / load page content / chechk page exist
-	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
-	//---process post/get for page - not ajaz processing
+	/**
+	 * BUILDING GENERIC PAGE
+	 * */
+	 //---process post/get for page - not ajaz processing
 	$data = $_POST;
 	if(!empty($_FILES)) $data['__files'] = $_FILES;
 	if(!empty($_GET)) $data['__get'] = $_GET;
-	$data = FAjax::preprocessPost($data);
-	FBuildPage::process( $data );
-	FProfiler::write('PAGE PROCESS DONE');
+	$data = FAjax::preprocessPost($data);	 	
+	//cache check
+	$html=false;
+	if(empty($_POST)) {
+	  $McacheId = md5(serialize($_GET));
+		$McacheGroup = 'page/'.$user->pageId.'/static';
+		$Mcache=false;
+		if(empty($user->userVO->userId)) {
+			$Mcache = FCache::getInstance('f');
+			$html = $Mcache->getData($McacheId,$McacheGroup);
+		}
+	}
+
+	if($html===false) {
+		$user->kde(); //---check user / load info / load page content / chechk page exist
+		if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
+		FBuildPage::process( $data );
+		FProfiler::write('PAGE PROCESS DONE');
+	}
+	//increment hit for items
+	if($user->itemVO)
+	if(empty($user->pageParam)) {
+			if(!$user->idkontrol || $itemVO->userId != $user->userVO->userId) {
+				$itemVO->hit();
+			}
+		}
 }
 
 //---shows message that page is locked
-if($user->pageVO)
-if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3)  {
-	FError::add(FLang::$MESSAGE_PAGE_LOCKED);
-	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
-}
-
-//TODO: create headers
-//header("Cache-control: max-age=290304000, public");
-//header("Last-Modified: " . date(DATE_ATOM,$dataLastChange));
-//header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
+if($html===false)
+	if($user->pageVO)
+		if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3) {
+			FError::add(FLang::$MESSAGE_PAGE_LOCKED);
+			if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+		}
 
 //---generate page
-FBuildPage::show( $data );
+if($html===false){
+	$html = FBuildPage::show( $data );
+	if($Mcache) {
+		//exceptions for cache storing
+		if($user->pageVO->typeId!='top')
+			$Mcache->setData($html,$McacheId,$McacheGroup);
+	}
+}
+if(!isset($_GET['nooutput'])) echo $html;
+else echo strlen($html).'Bytes produced';
+		
 
 //---profiling
 FProfiler::write('PAGE COMPLETE');

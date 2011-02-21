@@ -229,6 +229,8 @@ class FBuildPage {
 	}
 
 	static function show( $data ) {
+		$user = FUser::getInstance();
+			  
 		FBuildPage::baseContent( $data );
 
 		$tpl = FBuildPage::getInstance();
@@ -243,7 +245,6 @@ class FBuildPage {
 			}
 		}
 
-		$user = FUser::getInstance();
 		//---ERROR MESSAGES
 		$arrMsg = FError::get();
 		if(!empty($arrMsg)){
@@ -363,7 +364,7 @@ class FBuildPage {
 		$data = FSystem::superVars($data);
 		$data = preg_replace('/\s\s+/', ' ', $data);
     FProfiler::write('FBuildPage--complete');
-		if(!isset($_GET['nooutput'])) echo $data;
-		else echo strlen($data).'Bytes produced';
+		
+		return $data;
 	}
 }

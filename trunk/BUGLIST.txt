@@ -1,8 +1,4 @@
 TODO:
 -sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
 
--invalidate page/'.$user->pageId|breadcrumbs
--invalidate pages
-
-
 
