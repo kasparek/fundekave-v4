@@ -83,8 +83,8 @@ class FUser {
 				$userVO->ip = FSystem::getUserIp();
 				FUser::invalidateUsers($gid);
 				//---db logon
-				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip) values
-				("'.$gid.'","'.$userVO->idlogin.'",NOW(),NOW(),"'.$pageId.'","'.$userVO->ip.'")');
+				FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip,sessId) values
+				("'.$gid.'","'.$userVO->idlogin.'",NOW(),NOW(),"'.$pageId.'","'.$userVO->ip.'","'.session_id().'")');
 				//user total item num
 				$userVO->itemsLastNum = (int) $userVO->prop('itemsNum');
 				//---session cache
@@ -107,6 +107,13 @@ class FUser {
 		FUser::invalidateUsers( $userId );
 		$cache = FCache::getInstance( 's' );
 		$cache->invalidate();
+		//delete session
+		$_SESSION = array();
+		if(ini_get("session.use_cookies")) {
+    	$params = session_get_cookie_params();
+    	setcookie(session_name(), '', time()-42000,$params["path"], $params["domain"],$params["secure"], $params["httponly"]);
+		}
+		session_destroy();
 	}
 
 	/**

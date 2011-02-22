@@ -12,32 +12,27 @@ class FBuildPage {
 
 	static function getTitle() {
 		$user = FUser::getInstance();
-		if($user->pageVO) {
-			$title = $user->pageVO->htmlName ? $user->pageVO->htmlName : $user->pageVO->name;
-			if(!empty($user->pageVO->htmlTitle)) $pageTitle[] = $user->pageVO->htmlTitle;
-			else if(!empty($title)) $pageTitle[] = $title;
-			if(BASEPAGETITLE!="") $pageTitle[] = BASEPAGETITLE;
-			else {
-				//use top page name if BASEPAGETITLE empty
-				if($user->pageVO->pageId!=HOME_PAGE) {
-					$pageTitle[] = FDBTool::getOne("select name from sys_pages where pageId='".HOME_PAGE."'"); 
-				}
+		$title = $user->pageVO->htmlName ? $user->pageVO->htmlName : $user->pageVO->name;
+		if(!empty($user->pageVO->htmlTitle)) $pageTitle[] = $user->pageVO->htmlTitle;
+		else if(!empty($title)) $pageTitle[] = $title;
+		if(BASEPAGETITLE!="") $pageTitle[] = BASEPAGETITLE;
+		else {
+			//use top page name if BASEPAGETITLE empty
+			if($user->pageVO->pageId!=HOME_PAGE) {
+				$pageTitle[] = FDBTool::getOne("select name from sys_pages where pageId='".HOME_PAGE."'"); 
 			}
-			
-			return implode(" - ",$pageTitle);
 		}
+		return implode(" - ",$pageTitle);
 	}
 	static function getHeading() {
 		$user = FUser::getInstance();
-		if($user->pageVO) {
-			if($user->pageVO->showHeading===false) return '';
-			if(!empty($user->pageVO->htmlName)) {
-				return $user->pageVO->htmlName;
-			} else if(empty($user->pageVO->name)) {
-				return false;
-			} else {
-				return $user->pageVO->name;
-			}
+		if($user->pageVO->showHeading===false) return '';
+		if(!empty($user->pageVO->htmlName)) {
+			return $user->pageVO->htmlName;
+		} else if(empty($user->pageVO->name)) {
+			return false;
+		} else {
+			return $user->pageVO->name;
 		}
 	}
 
@@ -244,6 +239,10 @@ class FBuildPage {
 				$tpl->parseCurrentBlock();
 			}
 		}
+		
+		if(empty($user->pageVO)) {
+			FError::write_log("FBuildPage::show - missing page - pageid'".$user->pageId."'");
+		}
 
 		//---ERROR MESSAGES
 		$arrMsg = FError::get();
@@ -252,41 +251,40 @@ class FBuildPage {
 			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
 			FError::reset();
 		}
+		
 		$arrMsg = FError::get(1);
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) $okmsg[]=$k . (($v>1)?(' ['.$v.']'):(''));
 			$tpl->setVariable("OKMSG",implode('<br />',$okmsg));
 			FError::reset(1);
 		}
+		
 		//---HEADER
 		$tpl->setVariable('HOME_PAGE', FSystem::getUri('',HOME_PAGE,''));
-		$tpl->setVariable('PAGEID', $user->pageVO->pageId);
 		$tpl->setVariable("CHARSET", FConf::get('internationalization','charset'));
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
-
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
-
-		$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
-
-		//searchform
-		if(!$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
-		
-		$tpl->setVariable("TITLE", FBuildPage::getTitle());
-		
-		if($user->pageVO) {
+  
+	  if($user->pageVO) {
+	    $tpl->setVariable('PAGEID', $user->pageVO->pageId);
+			$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
+			//searchform
+			if(!$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
+			$tpl->setVariable("TITLE", FBuildPage::getTitle());
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 			$pageVOTop = FactoryVO::get('PageVO',$pageIdTop);
 			$tpl->setVariable("HOMESITE", $pageVOTop->prop('homesite'));
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
+			if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 		}
-		if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
-		//---BODY PARAMETERS
-		//---MAIN MENU - cached rendered
+		
+		//---BODY PARTS
+		
+		//---MAIN MENU
 		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
 		$menu = $cache->getData('mainmenu');
-
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
 			while($arrMenuItems) {
@@ -301,34 +299,34 @@ class FBuildPage {
 		} else {
 			$tpl->setVariable("CACHEDMENU", $menu);
 		}
-
 		FProfiler::write('FBuildPage--FSystem::topMenu');
 
+    //---BREADCRUMBS & SECONDARY MENU
 		if($user->pageAccess === true) {
-
-			//breadcrumbs
-			$breadcrumbs = FBuildPage::getBreadcrumbs();
-			foreach($breadcrumbs as $crumb) {
-				$tpl->setVariable('BREADNAME',$crumb['name']);
-				if(isset($crumb['url'])) {
-					$tpl->setVariable('BREADURL',$crumb['url']);
-					$tpl->touchBlock('breadlinkend');
+      if($user->pageVO) {
+				//---BREADCRUMBS
+				$breadcrumbs = FBuildPage::getBreadcrumbs();
+				foreach($breadcrumbs as $crumb) {
+					$tpl->setVariable('BREADNAME',$crumb['name']);
+					if(isset($crumb['url'])) {
+						$tpl->setVariable('BREADURL',$crumb['url']);
+						$tpl->touchBlock('breadlinkend');
+					}
+					$tpl->parse('bread');
 				}
-				$tpl->parse('bread');
-			}
-
-			//---SECONDARY MENU
-			$lomenuItems = FMenu::secondaryMenu();
-			if(!empty($lomenuItems)) {
-				foreach($lomenuItems as $menuItem) {
-					$tpl->setVariable('LOLINK',$menuItem['LINK']);
-					$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
-					$options = $menuItem['options'];
-					if(isset($options['id'])) $tpl->setVariable('LOID',$options['id']);
-					if(isset($options['class'])) $tpl->setVariable('CLASS',$options['class']);
-					if(isset($options['title'])) $tpl->setVariable('LOTITLE',$options['title']);
-					if(isset($options['parentClass'])) $tpl->setVariable('LISTCLASS',$options['parentClass']);
-					$tpl->parse('smitem');
+				//---SECONDARY MENU
+				$lomenuItems = FMenu::secondaryMenu();
+				if(!empty($lomenuItems)) {
+					foreach($lomenuItems as $menuItem) {
+						$tpl->setVariable('LOLINK',$menuItem['LINK']);
+						$tpl->setVariable('LOTEXT',$menuItem['TEXT']);
+						$options = $menuItem['options'];
+						if(isset($options['id'])) $tpl->setVariable('LOID',$options['id']);
+						if(isset($options['class'])) $tpl->setVariable('CLASS',$options['class']);
+						if(isset($options['title'])) $tpl->setVariable('LOTITLE',$options['title']);
+						if(isset($options['parentClass'])) $tpl->setVariable('LISTCLASS',$options['parentClass']);
+						$tpl->parse('smitem');
+					}
 				}
 			}
 		}
@@ -340,7 +338,6 @@ class FBuildPage {
 			$showSidebar = $user->pageVO->showSidebar;
 			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
 		}
-		
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();
@@ -356,13 +353,13 @@ class FBuildPage {
 			$tpl->touchBlock('msgHidden');
 		}
 
-		//---PRINT PAGE
-		header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));
-
+		//---GET PAGE DATA
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
+		//strip whitespace
 		$data = preg_replace('/\s\s+/', ' ', $data);
+		
     FProfiler::write('FBuildPage--complete');
 		
 		return $data;

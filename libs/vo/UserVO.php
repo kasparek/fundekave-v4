@@ -5,9 +5,9 @@ class UserVO extends Fvob {
 	//---use true for webservice - more secure
 	public $strictLogin = false;
 
-	protected $table = 'sys_users';
-	protected $primaryCol = 'userId';
-	protected $columns = array('userId'=>'userId',
+  public function getTable(){ return 'sys_users'; }
+	public function getPrimaryCol() { return 'userId'; }
+	public function getColumns() { return array('userId'=>'userId',
 	'name'=>'name',
 	'password'=>'password',
 	'ipcheck'=>'ipcheck',
@@ -20,6 +20,7 @@ class UserVO extends Fvob {
 	'avatar'=>'avatar',
 	'deleted'=>'deleted',
 	'hit'=>'hit');
+	}
 
 	public $userId = 0;
 	public $name;

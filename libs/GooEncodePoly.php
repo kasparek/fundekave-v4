@@ -23,9 +23,9 @@ class GooEncodePoly {
 
 	function encode($points){
 		$dists=array();
+		$absMaxDist=0;
 		for($i=0;$i<count($points);$i++)$points[$i]=explode(',',$points[$i]);
 		if(count($points) > 2){
-			$absMaxDist=0;
 			$stack[]=array(0,count($points)-1);
 			while(count($stack)>0){
 		    $current = array_pop($stack);

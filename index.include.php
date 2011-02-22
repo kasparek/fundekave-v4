@@ -258,10 +258,11 @@ if($html===false){
 			$Mcache->setData($html,$McacheId,$McacheGroup);
 	}
 }
+
+header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));
 if(!isset($_GET['nooutput'])) echo $html;
 else echo strlen($html).'Bytes produced';
 		
-
 //---profiling
 FProfiler::write('PAGE COMPLETE');
 
