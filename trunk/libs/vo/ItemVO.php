@@ -1,9 +1,9 @@
 <?php
 class ItemVO extends Fvob {
 
-	protected $table = 'sys_pages_items';
-	protected $primaryCol = 'itemId';
-	protected $columns = array('itemId' => 'itemId',
+	public function getTable(){ return 'sys_pages_items'; }
+	public function getPrimaryCol() { return 'itemId'; }
+	public function getColumns() { return array('itemId' => 'itemId',
 	'itemIdTop' => 'itemIdTop',
 	'typeId' => 'typeId',
 	'pageId' => 'pageId',
@@ -24,7 +24,7 @@ class ItemVO extends Fvob {
 	'tag_weight' => 'tag_weight',
 	'location' => 'location',
 	'public' => 'public'
-	);
+	); }
 
 	protected $propertiesList = array('position','distance','forumSet','reminder','reminderEveryday','repeat');
 	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);

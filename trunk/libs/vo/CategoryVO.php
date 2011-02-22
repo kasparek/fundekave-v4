@@ -1,9 +1,9 @@
 <?php
 class CategoryVO extends Fvob {
 
-	protected $table = 'sys_pages_category';
-	protected $primaryCol = 'categoryId';
-	protected $columns = array('categoryId' => 'categoryId',
+	public function getTable(){ return 'sys_pages_category'; }
+	public function getPrimaryCol() { return 'categoryId'; }
+	public function getColumns() { return array('categoryId' => 'categoryId',
 	'typeId' => 'typeId',
 	'pageIdTop' => 'pageIdTop',
 	'name' => 'name',
@@ -11,7 +11,7 @@ class CategoryVO extends Fvob {
 	'ord' => 'ord',
 	'public' => 'public',
 	'num' => 'num'
-	);
+	); }
 
   public $categoryId;
   public $typeId;

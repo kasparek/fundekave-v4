@@ -1,9 +1,9 @@
 <?php
 class PageVO extends Fvob {
 
-	protected $table = 'sys_pages';
-	protected $primaryCol = 'pageId';
-	protected $columns = array('pageId' => 'pageId',
+	public function getTable(){ return 'sys_pages'; }
+	public function getPrimaryCol() { return 'pageId'; }
+	public function getColumns() { return array('pageId' => 'pageId',
 	'pageIdTop' => 'pageIdTop',
 	'typeId' => 'typeId',
 	'typeIdChild' => 'typeIdChild',
@@ -21,7 +21,7 @@ class PageVO extends Fvob {
 	'cnt' => 'cnt',
 	'locked' => 'locked',
 	'galeryDir' => 'galeryDir'
-	);
+	); }
 
 	protected $propertiesList = array('position','itemIdLast','forumSet','thumbCut','order','hideSearchbox','hideSidebar','sidebar','homesite','home');
 	protected $propDefaults = array('forumSet'=>1,'home'=>'');

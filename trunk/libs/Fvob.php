@@ -4,10 +4,12 @@ class Fvob {
 	var $debug=0;
 	
 	protected $cacheType = 'l';
-	
-	protected $table;
-	protected $primaryCol;
-	protected $columns;
+
+	//need to be overriden in child class
+	public function getTable() { return ''; }
+	public function getPrimaryCol() { return ''; }
+	public function getColumns() { return ''; }
+		
 	protected $propertiesList;
 	protected $propDefaults;
 	protected $propLoadAtOnce=false;
@@ -26,7 +28,7 @@ class Fvob {
 		
 	function __construct($primaryId=0, $autoLoad = false) {
 		$this->properties = new stdClass();
-		$this->{$this->primaryCol} = $primaryId;
+		$this->{$this->getPrimaryCol()} = $primaryId;
 		if($autoLoad == true) $this->load();
 	}
 	
@@ -83,7 +85,7 @@ class Fvob {
 	}
 
 	function loadCached() {
-		if(empty($this->{$this->primaryCol})) return false;
+		if(empty($this->{$this->getPrimaryCol()})) return false;
 		$dataVO = $this->memGet();
 		if($dataVO===false) return false;
 		$this->reload($dataVO);
@@ -92,12 +94,12 @@ class Fvob {
 	}
 
 	function load() {
-		if(empty($this->{$this->primaryCol})) return false;
+		if(empty($this->{$this->getPrimaryCol()})) return false;
 		$this->loadCached();
 		if($this->loaded===false) {
 			$vo = new FDBvo( $this );
 			$this->loaded = $vo->load();
-			if(!$this->loaded) $this->{$this->primaryCol} = null;
+			if(!$this->loaded) $this->{$this->getPrimaryCol()} = null;
 			else $this->memStore();
 			return $this->loaded;
 		}
@@ -115,7 +117,7 @@ class Fvob {
 	function save(){
 		$vo = new FDBvo( $this );
 		if(!empty($this->saveIgnore)) foreach($this->saveIgnore as $col) $vo->addIgnore($col);
-		if($this->forceInsert===false && !empty($this->{$this->primaryCol})) {
+		if($this->forceInsert===false && !empty($this->{$this->getPrimaryCol()})) {
 			$this->dateUpdated = 'now()';
 			$vo->notQuote('dateUpdated');
 			$vo->addIgnore('dateCreated');
@@ -131,8 +133,8 @@ class Fvob {
 			//---update in cache
 			$this->memFlush();
 			//---update primary value
-			$this->{$this->primaryCol} = $vo->vo->{$this->primaryCol};
-			return $this->{$this->primaryCol};
+			$this->{$this->getPrimaryCol()} = $vo->vo->{$this->getPrimaryCol()};
+			return $this->{$this->getPrimaryCol()};
 		}
 	}
 
@@ -214,27 +216,15 @@ class Fvob {
 	
 	function memStore() {
 		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
-		$c->setData( $this, $this->{$this->primaryCol}, 'cached_'.$this->table);
+		$c->setData( $this, $this->{$this->getPrimaryCol()}, 'cached_'.$this->getTable());
 	}
 	function memGet() {
 		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
-		return $c->getData($this->{$this->primaryCol}, 'cached_'.$this->table);
+		return $c->getData($this->{$this->getPrimaryCol()}, 'cached_'.$this->getTable());
 	}
 	function memFlush() {
 		$c = FCache::getInstance($this->cacheType,-1,FCache::SERIALIZE_JSON);
-		$c->invalidateData($this->{$this->primaryCol}, 'cached_'.$this->table);
-	}
-
-	public function getTable() {
-		return $this->table;
-	}
-
-	public function getPrimaryCol() {
-		return $this->primaryCol;
-	}
-
-	public function getColumns() {
-		return $this->columns;
+		$c->invalidateData($this->{$this->getPrimaryCol()}, 'cached_'.$this->getTable());
 	}
 
 	public function getPropertiesList() {
