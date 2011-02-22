@@ -604,6 +604,11 @@ class FDBTool {
 	static function query($query) {
 		return FDBTool::getData('query',$query);
 	}
+	
+	static function queryLater($query) {
+		 $db = FDBConn::getInstance();
+		 $db->queuePush($query);
+	}
 
 	private static function getData($function, $query, $fetchmode=0) {
 		$db = FDBConn::getInstance();
@@ -625,5 +630,6 @@ class FDBTool {
 		}
 		return $ret;
 	}
+	
 }
 

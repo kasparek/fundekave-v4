@@ -252,18 +252,18 @@ class ItemVO extends Fvob {
 			$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 			$itemTop->save();
 			FDBTool::query("update sys_pages_items_readed_reactions set cnt=cnt-1 where itemId='".$this->itemIdTop."'");
-			FDBTool::query("delete from sys_pages_items_readed_reactions where cnt < 0");
+			FDBTool::queryLater("delete from sys_pages_items_readed_reactions where cnt < 0");
 		} else {
 			FPages::cntSet($this->pageId, -1);
 			FDBTool::query("update sys_pages_favorites set cnt=cnt-1 where pageId='".$this->pageId."'");
-			FDBTool::query("update sys_pages_favorites as pf set pf.cnt=(select p.cnt from sys_pages as p where p.pageId=pf.pageId) where pf.cnt < 0 or pf.cnt > (select p.cnt from sys_pages as p where p.pageId=pf.pageId)");
+			FDBTool::queryLater("update sys_pages_favorites as pf set pf.cnt=(select p.cnt from sys_pages as p where p.pageId=pf.pageId) where pf.cnt < 0 or pf.cnt > (select p.cnt from sys_pages as p where p.pageId=pf.pageId)");
+			FDBTool::queryLater("delete from sys_pages_favorites where cnt <= 0 and book=0");
 		}
 		$this->deleteImage();
 		//---delete in other tables
-		FDBTool::query("delete from sys_users_pocket where itemId='".$itemId."'");
-		FDBTool::query("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
-		FDBTool::query("delete from sys_pages_items_hit where itemId='".$itemId."'");
-		FDBTool::query("delete from sys_pages_items_tag where itemId='".$itemId."'");
+		FDBTool::queryLater("delete from sys_pages_items_readed_reactions where itemId='".$itemId."'");
+		FDBTool::queryLater("delete from sys_pages_items_hit where itemId='".$itemId."'");
+		FDBTool::queryLater("delete from sys_pages_items_tag where itemId='".$itemId."'");
 		//---last item
 		$this->updateItemIdLast();
 		$this->memFlush();
