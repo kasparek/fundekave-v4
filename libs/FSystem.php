@@ -8,7 +8,7 @@ class FSystem {
 		$db->kill();
 		exit;
 	}
-	
+
 	static function strlenSort($a,$b){
 		if($a==$b)return 0;
 		$la=strlen($a);
@@ -18,17 +18,18 @@ class FSystem {
 		return -1;
 	}
 
-	private static $invalidate = array(); 
+	private static $invalidate = array();
 
-  static function superInvalidate($grp,$id='') {
+	static function superInvalidate($grp,$id='') {
 		$serialized = $grp.($id!=''?'|'.$id:'');
-		if(!in_array($serialized,self::$invalidate)) self::$invalidate[] = $serialized;	
+		if(!in_array($serialized,self::$invalidate)) self::$invalidate[] = $serialized;
 	}
-	
+
 	static function superInvalidateFlush() {
-	  if(empty(self::$invalidate)) return;
-	  $grpList = self::$invalidate;
-		
+		FProfiler::write('FSystem::superInvalidateFlush start');
+		if(empty(self::$invalidate)) return;
+		$grpList = self::$invalidate;
+
 		//sort grpList
 		usort($grpList, "FSystem::strlenSort");
 		//remove all grps unnecessary to invalidate
@@ -37,47 +38,49 @@ class FSystem {
 			$grpListNew = array();
 			foreach($grpList as $grp) if($grp==$grpList[$i] || strpos($grp,$grpList[$i])!==0)$grpListNew[]=$grp;
 			$grpList=$grpListNew;
-		  $i++;
+			$i++;
 		}
 		//remove duplicates
 		$grpListNew = array();
 		foreach($grpList as $grp) if(!in_array($grp,$grpListNew)) $grpListNew[]=$grp;
 		$grpList=$grpListNew;
-		 
+			
 		$grps = implode(";",$grpList);
-	  self::$invalidate = array();
+		self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net');
 		$domains[]='test.fundekave.net';
-  	$mh = curl_multi_init();
-  	$curlys=array();
+		$mh = curl_multi_init();
+		$curlys=array();
 		//prepare curl
-	  foreach($domains as $dom) {
-	  	$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
-	  	if($_SERVER['HTTP_HOST']==$dom) {
-	  		FError::write_log("cron::invalidate - LOCAL begin - ".$grps);
+		foreach($domains as $dom) {
+			FProfiler::write('FSystem::superInvalidateFlush curl prepare');
+			$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
+			if($_SERVER['HTTP_HOST']==$dom) {
 				FSystem::superInvalidateHandle($grps);
 				FError::write_log("cron::invalidate - LOCAL COMPLETE - ".$grps);
-	  	} else {
-		    $curl = curl_init();
-		    curl_setopt($curl, CURLOPT_URL,            $url);
-		    curl_setopt($curl, CURLOPT_HEADER,         1);
-		    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
-		    curl_multi_add_handle($mh, $curl);
-		    $curly[] = $curl;
-	    }
-	  }
-    //execute curl
-	  $active = null;
-	  do {
-	    $mrc = curl_multi_exec($mh, $active);
+			} else {
+				$curl = curl_init();
+				curl_setopt($curl, CURLOPT_URL,            $url);
+				curl_setopt($curl, CURLOPT_HEADER,         1);
+				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
+				curl_multi_add_handle($mh, $curl);
+				$curly[] = $curl;
+				FProfiler::write('FSystem::superInvalidateFlush curl prepare complete');
+			}
+		}
+		//execute curl
+		$active = null;
+		do {
+			$mrc = curl_multi_exec($mh, $active);
+			FProfiler::write('FSystem::superInvalidateFlush curl executed');
 		} while ($mrc == CURLM_CALL_MULTI_PERFORM);
-    //remove handles
-	  foreach($curly as $id => $c) curl_multi_remove_handle($mh, $c);
+		//remove handles
+		foreach($curly as $id => $c) curl_multi_remove_handle($mh, $c);
 		//close curl
-	  curl_multi_close($mh);
-  	FProfiler::write('FSystem::superInvalidateFlush complete');
+		curl_multi_close($mh);
+		FProfiler::write('FSystem::superInvalidateFlush complete');
 	}
-	
+
 	static function superInvalidateHandle($grps){
 		if(empty($grps))return;
 		$cache = FCache::getInstance('f');
@@ -244,8 +247,8 @@ class FSystem {
         'frame',  'frameset', 'head',    'html',   'ilayer',
         'layer',  'link',     'meta', 'style',
         'title',  'script',
-	    	);
-	    	$safe->attributes = array('dynsrc', 'id');
+				);
+				$safe->attributes = array('dynsrc', 'id');
 			}
 			$text = $safe->parse($text);
 		}
@@ -558,10 +561,10 @@ class FSystem {
 "baiduspider", "feedfetcher-google", "technoratisnoop", "rankivabot",
 "mediapartners-google", "sogou web spider", "webalta crawler","google","rambler","abachobot","accoona",
 "acoirobot",'msnbot','rambler','yahoo','abachobot','accoona','acoirobot','aspseek','croccrawler','dumbot','fast-webcrawler','geonabot','lycos','msrbot','altavista','idbot','estyle','scrubby'
-		);
-		$lowerAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
-		foreach ($bot_list as $bot)	if(strpos($lowerAgent,$bot)!==false) return true;
-		return false;
+);
+$lowerAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+foreach ($bot_list as $bot)	if(strpos($lowerAgent,$bot)!==false) return true;
+return false;
 	}
 
 

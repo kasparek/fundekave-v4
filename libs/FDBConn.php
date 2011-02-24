@@ -5,7 +5,6 @@ class FDBConn extends mysqli
 	private static $allowInstantiation = false;
 	
 	public $assoc = false;
-	private $cache;
 
 	function __construct() {
 		if(self::$allowInstantiation==true) {
@@ -87,35 +86,4 @@ class FDBConn extends mysqli
 	function kill() {
 		$this->close();
 	}
-	
-	public function queueProcess() {
-    $cache = $this->getCache();
-    $dataRaw = $cache->get('queue');
-    if($dataRaw===false) return;
-    $data = unserialize($dataRaw);
-    if(!empty($data)) {
-			foreach($data as $q) {
-				$this->query($q);
-				FError::write_log("queueProcess - ".$q);
-			}
-		}
-    $cache->remove('queue');
-	}
-	
-	public function queuePush($query) {
-		$cache = $this->getCache();
-		$data = array();
-		$dataRaw = $cache->get('queue');
-		if($dataRaw!==false) $data = unserialize($dataRaw);
-		$data[]=$query;
-		$cache->save(serialize($data)); 
-	}
-	
-	private function &getCache() {
-		if($this->cache) return $this->cache;
-		$cacheDir = FConf::get('settings','logs_path').'fdbtool/'; 
-		if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
-		$this->cache = new FCacheFile(array('cacheDir'=>$cacheDir));
-		return $this->cache;
-	} 
 }
