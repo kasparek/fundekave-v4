@@ -64,7 +64,7 @@ class FDBTool {
 	private $_group = array();
 	private $autojoin = false;
 	public function autojoinSet($v){
-		$this->autojoin=$v; 
+		$this->autojoin=$v;
 	}
 	private $_join = '';
 	private $_limit = array();
@@ -604,10 +604,10 @@ class FDBTool {
 	static function query($query) {
 		return FDBTool::getData('query',$query);
 	}
-	
+
 	static function queryLater($query) {
-		 $db = FDBConn::getInstance();
-		 $db->queuePush($query);
+		$q = $FQueue->getInstance();
+		$q->push('query',$query);
 	}
 
 	private static function getData($function, $query, $fetchmode=0) {
@@ -630,6 +630,6 @@ class FDBTool {
 		}
 		return $ret;
 	}
-	
+
 }
 
