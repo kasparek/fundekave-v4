@@ -138,7 +138,6 @@ class FCommand {
 		FSystem::superInvalidate('page/top');
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/list');
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/rss');
-		FSystem::superInvalidate('page/'.$data->get('pageId').'/static');
 		
 		FSystem::superInvalidate('pages/'.$data->get('typeId'));
 		FSystem::superInvalidate('pages/all');

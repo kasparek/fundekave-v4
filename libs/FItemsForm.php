@@ -68,7 +68,7 @@ class FItemsForm {
 		$captchaCheck = true;
 		if($user->idkontrol !== true) {
 			$captcha = new FCaptcha();
-			if(!$captcha->validate_submit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
+			if(!$captcha->validateSubmit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
 		}
 		$itemVO->itemIdTop=null;
 		if($user->itemVO) {
@@ -111,7 +111,7 @@ class FItemsForm {
 		}
 
 		if (isset($data["perpage"])) $user->pageVO->perPage( $data["perpage"] );
-
+    
 		switch($data['action']) {
 			case 'search':
 				$cache = FCache::getInstance('s',0);
@@ -285,15 +285,15 @@ class FItemsForm {
 					}
 				}
 		}
+		
 		//if any error safe data to display in form
 		if(FError::is()) {
 			$cache = FCache::getInstance('s',0);
 			$cache->setData($data, $itemVO->pageId.$itemVO->typeId, 'form');
 		}
-
+		 
 		if($redirect==true) {
 			if($itemVO) FCommand::run(ITEM_UPDATED,$itemVO);
-			FError::write_log('__ajaxResponse'.($data['__ajaxResponse']?'1':'0'));
 			if($data['__ajaxResponse']==true) {
 				if($itemVO) {
 					//new item
@@ -383,7 +383,7 @@ class FItemsForm {
 					}
 				}
 				$captcha = new FCaptcha();
-				$tpl->setVariable('CAPTCHASRC',$captcha->get_b2evo_captcha());
+				$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
 			}
 		}else{
 			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);

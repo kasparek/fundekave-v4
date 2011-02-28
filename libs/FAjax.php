@@ -133,40 +133,34 @@ class FAjax {
 							FError::reset(1);
 						}
 					}
-				} else {
-					//check response and if include redirect then redirect
-					if($fajax->redirecting == true) {
-						foreach($fajax->responseData as $response) {
-							if($response['PROP']=='redirect') {
-								FHTTP::redirect($response['DATA']);
-								break;
-							}
-						}
-					}
 				}
 				FProfiler::write('FAJAX ERROR OUTPUT COMPLETE');
 			} else {
-				if($ajax === true) {
-					//redirect to same page because of user does not have permission to access this page
-					FAjax::addResponse('call','redirect',FSystem::getUri(''));
-				}
+				//redirect to same page because of user does not have permission to access this page
+				FAjax::redirect(FSystem::getUri());
 			}
 
 			//---send response
 			if($ajax === true) {
 				$ret = FAjax::buildResponse();
+				header ("content-type: text/xml");
+				echo  FSystem::superVars($ret);
+				FProfiler::write('FAJAX RESPONSE COMPLETE');
+				FSystem::fin();
 			} else {
+				//check response and if include redirect then redirect
+				if($fajax->redirecting == true) {
+					foreach($fajax->responseData as $response) {
+						if($response['PROP']=='redirect') {
+							FProfiler::write('FAJAX PROCESSING COMPLETE - REDIRECTING');
+							FHTTP::redirect($response['DATA']);
+						}
+					}
+				}
 				FAjax::resetResponse();
 			}
-			FProfiler::write('FAJAX RESPONSE COMPLETE');
 		}
-
-		if($ajax === true) {
-			header ("content-type: text/xml");
-			echo  FSystem::superVars($ret);
-			FProfiler::write('FAJAX XML OUTPUT COMPLETE');
-			FSystem::fin();
-		}
+		FProfiler::write('FAJAX PROCESSING COMPLETE ajax='.($ajax?'true':'false'));
 	}
 
 	static public function errorsLater() {

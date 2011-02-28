@@ -311,6 +311,8 @@ class ItemVO extends Fvob {
 				$this->editable = true;
 			} else if(FRules::get($userId,$this->pageId,2)) {
 				$this->editable = true;
+			} else if(FRules::get($userId,'sadmi',2)) {
+				$this->editable = true;
 			}
 		}
 		$this->prepared = true;
