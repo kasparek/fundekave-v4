@@ -606,7 +606,7 @@ class FDBTool {
 	}
 
 	static function queryLater($query) {
-		$q = $FQueue->getInstance();
+		$q = FQueue::getInstance();
 		$q->push('query',$query);
 	}
 

@@ -44,17 +44,18 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
-	
+	  //save item
 		FItemsForm::process($data);
 		
-		if($data['__ajaxResponse']===true)
-		if(FAjax::isRedirecting()===false) {
-			Fajax_item::edit($data);
-			if(!empty($data['i'])) { 
-			$itemVO = new ItemVO((int) $data['i']);
-			if($itemVO->load()) {
-				page_ItemDetail::build($data);
-			}
+		if($data['__ajaxResponse']===true) {
+			if(FAjax::isRedirecting()===false) {
+				Fajax_item::edit($data);
+				if(!empty($data['i'])) { 
+					$itemVO = new ItemVO((int) $data['i']);
+					if($itemVO->load()) {
+						page_ItemDetail::build($data);
+					}
+				}
 			}
 		}
 	}
@@ -62,17 +63,17 @@ class FAjax_item extends FAjaxPluginBase {
 	static function delete($data) {
 		$itemId = isset($data['i'])?$data['i']:$data['item'];
 		$itemVO = new ItemVO($itemId);
-		if(!$itemVO->load()) return;
-		$user = FUser::getInstance();
-		if(FRules::getCurrent(2)===true
-		|| (FRules::getCurrent(1)===true && $itemVO->typeId=='forum' && $itemVO->userId==$user->userVO->userId)) {
-			$type = $itemVO->typeId;
-			$itemVO->delete();
-			if($type=='forum') {
-				FAjax::addResponse('call','remove','i'.$itemId);
-			} elseif($type!='galery') {
-				FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
-			}
+		$itemVO->load();
+		if(!$itemVO->loaded) return;
+		if(!$itemVO->editable) return;
+		
+		$type = $itemVO->typeId;
+		$itemVO->delete();
+		if($type=='forum') {
+			FAjax::addResponse('call','remove','i'.$itemId);
+		} elseif($type!='galery') {
+			$user = FUser::getInstance();
+			FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 		}
 
 	}

@@ -28,11 +28,11 @@ class FQueue {
 		$dataRaw = $this->cache->get('queue');
 		if($dataRaw!==false) $data = unserialize($dataRaw);
 		$data[]=array('type'=>$type,'data'=>$data);
-		$cache->save(serialize($data));
+		$this->cache->save(serialize($data));
 	}
 
 	public function process() {
-		$dataRaw = $cache->get('queue');
+		$dataRaw = $this->cache->get('queue');
 		if($dataRaw===false) return;
 		$data = unserialize($dataRaw);
 		if(!empty($data)) {
@@ -49,6 +49,6 @@ class FQueue {
 				FError::write_log("FQueue::Process - ".$q['data']);
 			}
 		}
-		$cache->remove('queue');
+		$this->cache->remove('queue');
 	}
 }
