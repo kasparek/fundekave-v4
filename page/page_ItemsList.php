@@ -27,6 +27,21 @@ class page_ItemsList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
+		
+		if(!empty($data['__get']['abot'])) {
+			$abotUid = $data['__get']['abot'];
+			$cache = FCache::getInstance('d');
+			$storedData = $cache->getData($abotUid,'antibot');
+			if($storedData!==false) {
+				$data = 'Jako ochranu proti automatickemu spamu ktery se zacal vsude objevovat jsem musel pridat tento krok pri vkladani prispevku do klubu, prosim kliknete na nasledujici odkaz pro vlozeni prispevku. <a href="'.FSystem::getUri('m=item-submit&abot='.$abotUid.'&submit=1').'">Potvrdit prispevek</a>. <a href="'.FSystem::getUri('','roger').'">Registrovanym</a> uzivatelum se tento krok pri vkladani prispevku nezobrazuje.';
+				FBuildPage::addTab(array( "MAINDATA"=>$data ));
+				return;
+			} else {
+				FError::add('Invalid submit data');
+				FHTTP::redirect(FSystem::getUri());
+			}
+		}
+	
 		if(isset($data['__get']['date'])) {
 			$date = FSystem::checkDate($data['__get']['date']);
 		}

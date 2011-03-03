@@ -54,22 +54,51 @@ class FItemsForm {
 	static function process($data) {
 
 		$itemVO = new ItemVO();
+		
+		$redirectParam = '';
+		$newItem=false;
+		if(empty($itemVO->itemId)) $newItem=true;
+		$redirect = false;
+		
+		$user = FUser::getInstance();
+		$captchaCheck = true;
+		if($user->idkontrol !== true) {
+			//store data and redirect to confirm page
+			$storedData=false;
+			$abotUid = false;
+			if(!empty($data['abot'])) $abotUid=$data['abot'];
+			if(!empty($data['__get']['abot'])) $abotUid=$data['__get']['abot'];
+			if(!empty($abotUid)) {
+				$cache = FCache::getInstance('d');
+				$storedData = $cache->getData($abotUid,'antibot');
+				$cache->invalidateData($abotUid,'antibot');
+				if(!$storedData) {
+					FError::add('Invalid submit data');
+					FHTTP::redirect(FSystem::getUri());
+				}
+			} 
+			if(!$storedData) {
+				$cache = FCache::getInstance('d');
+				$dataUid = uniqid('abot');
+				$cache->setData($data,$dataUid,'antibot');
+				FAjax::redirect(FSystem::getUri('abot='.$dataUid));
+				return;
+			} else {
+				$data = $storedData;
+			}
+			
+			if(isset($data['captchaimage'])) {
+				$captcha = new FCaptcha();
+				if(!$captcha->validateSubmit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
+			}
+		}
+		
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
 			FError::write_log('FItemsForm::process - unset type - item:'.$data['i']);
 			return;
 		}
-
-		$redirectParam = '';
-		$newItem=false;
-		if(empty($itemVO->itemId)) $newItem=true;
-		$redirect = false;
-		$user = FUser::getInstance();
-		$captchaCheck = true;
-		if($user->idkontrol !== true) {
-			$captcha = new FCaptcha();
-			if(!$captcha->validateSubmit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
-		}
+		
 		$itemVO->itemIdTop=null;
 		if($user->itemVO) {
 			$itemVO->itemIdTop = $user->itemVO->itemId;

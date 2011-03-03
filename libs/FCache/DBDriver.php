@@ -21,7 +21,7 @@ class DBDriver
 
 	var $lifeTimeDefault = 0;
 	var $lifetime = 0;
-	
+	var $db;
 	var $data;
 
 	function __construct() {
@@ -32,6 +32,7 @@ class DBDriver
 			FDBTool::query($q);
 		}
 		$this->flushOld();
+		$this->db = FDBConn::getInstance();
 	}
 	
 	private static $instance;
@@ -52,16 +53,23 @@ class DBDriver
 	}
 
 	function setData($key, $data, $grp) {
-		$dataSerialized = $this->father->serialize($data);
-		if($dataSerialized!=$this->data[$grp][$key]) {
-			$this->data[$grp][$key] = $dataSerialized;
+		$data = $this->father->serialize($data);
+		
+		$key = $this->db->escape($key);
+		$data = $this->db->escape($data);
+		$grp = $this->db->escape($grp);
+		$data = str_replace('\"','"',$data);
+		
+		if($data!=$this->data[$grp][$key]) {
+			$this->data[$grp][$key] = $data;
 			return FDBTool::query("insert into ".$this->tableName." (groupId,nameId,value,dateCreated,dateUpdated,lifeTime)
-				values ('".$grp."','".$key."','".$dataSerialized."',now(),now(),'".$this->lifeTime."') 
-				on duplicate key update dateUpdated=now(), lifeTime='".$this->lifeTime."', value = '".$dataSerialized."'");
+				values ('".$grp."','".$key."','".$data."',now(),now(),'".$this->lifeTime."') 
+				on duplicate key update dateUpdated=now(), lifeTime='".$this->lifeTime."', value = '".$data."'");
 		}
 	}
 
 	function getGroup($grp) {
+		$grp = $this->db->escape($grp);
 		$q = "select value from ".$this->tableName." where groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
 		$arr = FDBTool::getCol($q);
 		if(!empty($arr)) {
@@ -79,6 +87,8 @@ class DBDriver
 	}
 	
 	function getData( $key, $grp ) {
+		$key = $this->db->escape($key);
+		$grp = $this->db->escape($grp);
 		if(isset($this->data[$grp][$key])) {
 			if(empty($this->data[$grp][$key])) return false;
 			return $this->father->unserialize($this->data[$grp][$key]); 
@@ -91,10 +101,13 @@ class DBDriver
 	}
 
 	function invalidateData($key, $grp) {
+		$key = $this->db->escape($key);
+		$grp = $this->db->escape($grp);
 		FDBTool::query("delete from ".$this->tableName." where groupId = '".$grp."' and nameId='".$key."'");
 	}
 
 	function invalidateGroup( $grp ) {
+		$grp = $this->db->escape($grp);
 		FDBTool::query("delete from ".$this->tableName." where groupId = '".$grp."'");
 	}
 
