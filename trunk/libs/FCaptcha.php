@@ -125,7 +125,10 @@ class FCaptcha
 		  *
 		  **/
 		function validateSubmit($image,$attempt) {
+			if(empty($image)) return false;
+			if(empty($attempt)) return false;
 			$correct_hash = substr($image,-36,32);
+			if(strlen($correct_hash)!=32) return false;
 			if($this->case_sensitive==0) $attempt = strtoupper($attempt);
 			if(file_exists($this->get_filename($correct_hash))) unlink($this->get_filename($correct_hash));
 			else return false;
