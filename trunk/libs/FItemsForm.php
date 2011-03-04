@@ -411,8 +411,8 @@ class FItemsForm {
 						$tpl->setVariable('USERNAME',$itemVO->name);
 					}
 				}
-				$captcha = new FCaptcha();
-				$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
+				//$captcha = new FCaptcha();
+				//$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
 			}
 		}else{
 			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);

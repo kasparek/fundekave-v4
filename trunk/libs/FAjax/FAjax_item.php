@@ -62,11 +62,9 @@ class FAjax_item extends FAjaxPluginBase {
 
 	static function delete($data) {
 		$itemId = isset($data['i'])?$data['i']:$data['item'];
-		$itemVO = new ItemVO($itemId);
-		$itemVO->load();
+		$itemVO = new ItemVO($itemId,true);
 		if(!$itemVO->loaded) return;
 		if(!$itemVO->editable) return;
-		
 		$type = $itemVO->typeId;
 		$itemVO->delete();
 		if($type=='forum') {

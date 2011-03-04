@@ -24,17 +24,17 @@ class FQueue {
 	}
 
 	public function push($type,$data) {
-		$data = array();
-		$dataRaw = $this->cache->get('queue');
-		if($dataRaw!==false) $data = unserialize($dataRaw);
-		$data[]=array('type'=>$type,'data'=>$data);
-		$this->cache->save(serialize($data));
+		$q = $this->cache->get('queue');
+		if(!empty($q)) $q = unserialize($q);
+		else $q=array();
+		$q[]=array('type'=>$type,'data'=>$data);
+		$this->cache->save(serialize($q));
 	}
 
 	public function process() {
-		$dataRaw = $this->cache->get('queue');
-		if($dataRaw===false) return;
-		$data = unserialize($dataRaw);
+		$data = $this->cache->get('queue');
+		if($data===false) return;
+		$data = unserialize($data);
 		if(!empty($data)) {
 			foreach($data as $q) {
 				switch($q['type']) {
