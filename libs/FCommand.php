@@ -82,8 +82,8 @@ class FCommand {
 		$cache = FCache::getInstance( 's' );
 		$unreadedList = &$cache->getPointer('unreadedItems');
 		$unreadedList=array();
-		FSystem::superInvalidate('page/'.$data->pageId.'/item',$data->itemId);
-		FSystem::superInvalidate('page/'.$data->pageId.'/item',$data->itemId.'detail');
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/item',$data->itemId);
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/item',$data->itemId.'detail');
 	}
 	
 	public static function itemInserted($data) {
