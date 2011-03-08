@@ -128,6 +128,7 @@ class FFile {
 	 **/
 	function chunkFilename($ident,$iter,$f='') {
 		$user = FUser::getInstance();
+		$ident=FSystem::safeText($ident);
 		return  $file = FConf::get("settings","fuup_chunks_path").'chunk-'.$user->userVO->name.$f.'-'.$ident.'-'.$iter.'.txt';
 	}
 

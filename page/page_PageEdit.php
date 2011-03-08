@@ -488,7 +488,8 @@ class page_PageEdit implements iPage {
 				}
 				$fItems = new FItems('galery',false);
 				$fItems->setWhere("pageId='".$pageVO->pageId."' and (itemIdTop is null or itemIdTop=0)");
-				$tpl->setVariable('FOTOTOTAL',$fItems->getCount());
+				$fotoCnt = $fItems->getCount();
+				$tpl->setVariable('FOTOTOTAL',$fotoCnt);
 
 				/* UPLOAD INPUTS */
 				$numInputs=7;
