@@ -320,7 +320,7 @@ class FDBTool {
 	function getCount() {
 		$dot = $this->buildGetCount();
 		if($this->debug == 1) echo "GETCOUNT RUN: ".$dot." <br />\n"; ;
-		return FDBTool::getOne($dot, md5($dot), $this->cacheGroup, $this->cacheResults, $this->lifeTime);
+		return FDBTool::getOne($dot);
 	}
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
