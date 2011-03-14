@@ -23,8 +23,13 @@ class FFile {
 			$this->ftpUser = $user[0];
 			$this->ftpPass = $user[1];
 			$this->ftpConn = ftp_connect($this->ftpServer);
-			ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
+			$ret = ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
 			ftp_pasv($this->ftpConn, true);
+      if($ret) {
+        FError::write_log('FFile::construc - CONNECTED TO FTP');
+      } else {
+        FError::write_log('FFile::construc - FTP FAIL');
+      }
 		}
 	}
 
@@ -156,20 +161,19 @@ class FFile {
 		} else if(!empty($file['data'])) {
 			file_put_contents($filename,$file["data"]);
 		}
-		/*
-		$hash = hash_file('crc32b', $filename);
-		$array = unpack('N', pack('H*', $hash));
-		return $array[1];
-		*/
+    $fsize = filesize($filename);
 		$handle = fopen($filename, "rb");
-		$data = fread($handle, filesize($filename)-2);
+		$data = fread($handle, $fsize-2);
 		fclose($handle);
+    FError::write_log('FFile::storeChunk - CHUNK SAVED: '.$filename.'('.$fsize.')');
 		return crc32($data);
 	}
 	
 	function deleteChunk($file,$seq) {
 		$filename = $this->chunkFilename($file["name"],$seq);
-		if(file_exists($filename)) unlink($filename);
+		if(file_exists($filename)) {
+      unlink($filename);
+    }
 	}
 
 	/**
@@ -192,7 +196,7 @@ class FFile {
 				fwrite($handleW, fread($handle, filesize($fileChunk)-($isMultipart===true?2:0)));
 				fclose($handle);
 				unlink($fileChunk);
-				FError::write_log('writing image to:'.$imagePath.' deleting chunk '.$fileChunk);
+				FError::write_log('FFile::mergeChunks - writing image to:'.$imagePath.' deleting chunk '.$fileChunk);
 			}
 			//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART
 			if($isMultipart===false) {
@@ -206,9 +210,11 @@ class FFile {
 			}
 			if($this->isFtpMode) {
 				ftp_put($this->ftpConn,$imagePath,$tmpFilename,FTP_BINARY);
+        FError::write_log('FFile::mergeChunks - ftp upload complete: '.$tmpFilename.'('.filesize($tmpFilename).')');
 				unlink($tmpFilename);
 			}
 			fclose($handleW);
+      FError::write_log('FFile::mergeChunks - merge complete: '.$tmpFilename);
 		}
 	}
 

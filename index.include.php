@@ -96,9 +96,11 @@ if(!empty($_GET['fuupconfig'])) {
 	exit;
 }
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
+	FError::write_log('index::fileManagement START');
 	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
+		FError::write_log('index::fileManagement OPERATION: '.$f);
 		//PARAMS
 		$isMultipart = false;
 		if(!empty($_FILES)) {
@@ -132,6 +134,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		//---file complete
 		if($ffile->hasAllChunks($filename,$total) === true) {
 			$filename = FSystem::safeFilename($filename);
+			FError::write_log('index::fileManagement ALL CHUNKS READY: '.$filename);
 			//--concat all files
 			switch($f) {
 				case 'tempstore':
@@ -148,9 +151,11 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 			}
 			if(!empty($dir)) $ffile->makeDir($dir);
 			$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
+			FError::write_log('index::fileManagement ALL CHUNKS MERGED');
 		}
 		echo 1;
 	}
+  FError::write_log('index::fileManagement COMPLETE');
 	FSystem::fin();
 }
 

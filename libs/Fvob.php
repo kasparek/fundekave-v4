@@ -73,15 +73,10 @@ class Fvob {
 		if($key=='typeId') {
 			if(!in_array($value,array('forum','galery','event','blog'))) return false;
 		}
-		$changed = false;
-		//---check if changed
-		if($this->{$key} != $value) {
-			$changed = true;
-			$this->changed = $changed;
-		}
-		//---set
+    if($this->{$key} != $value) return false; //has not changed
+		$this->changed = true;
 		$this->{$key} = $value;
-		return $changed;
+		return true;
 	}
 
 	function loadCached() {
