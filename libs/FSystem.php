@@ -279,7 +279,7 @@ class FSystem {
 		$arr = explode(' ',$str);
 		foreach ($arr as $word) {
 			$word=trim($word);
-			if(strlen($word)>$i && strpos($word,'http:')===false) {
+			if(strlen($word)>$i && strpos($word,'http')===false) {
 				$arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
 			}
 
@@ -395,16 +395,16 @@ class FSystem {
 		$text = ' '.$text;
 
 		$regList = array(
-		'a'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
-		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
-		,'i'=>"/<img.*src=\"http:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.-_]+jpg|png|gif+)([^\"]*+)\"[^<]+?>/i"//.*>/i"
-		,'c'=>"/<img src=\"http:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
+		'a'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"([http|https]:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
+		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"([http|https]:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
+		,'i'=>"/<img.*src=\"[http|https]:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.-_]+jpg|png|gif+)([^\"]*+)\"[^<]+?>/i"//.*>/i"
+		,'c'=>"/<img src=\"[http|https]:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
 		,'d'=>"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		,'e'=>"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
 		
 		,'f'=>"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
-		,'g'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
-		,'h'=>"/<\s*a\s*href=\"http:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
+		,'g'=>"/<\s*a\s*href=\"[http|https]:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
+		,'h'=>"/<\s*a\s*href=\"[http|https]:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
 		
 		
 

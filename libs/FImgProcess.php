@@ -323,11 +323,9 @@ class FImgProcess {
 			return getimagesize($image_url);
 		}
 
-		//filename is not URL
-		if(strpos($image_url,'http://')===false && strpos($image_url,'http://')===false) return false;
-
+    if(!preg_match('/^(http|https):\/\/.*/i', $image_url, $match)) return false; //filename is not URL
+    
 		$temp_file = tempnam(sys_get_temp_dir(), 'Tux');
-
 		$handle = fopen ($image_url, "rb");
 		if (!$handle) return false;
 
