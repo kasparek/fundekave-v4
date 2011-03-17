@@ -84,7 +84,6 @@ if($fileParam{0}=='/') $fileParam = substr($fileParam,1);
 
 $remote = false;
 if(strpos($fileParam,'remote')===0) {
-
 	//remote file
 	$remotePartList = explode('/',$fileParam);
 	if($remotePartList[1] != md5($c->salt.$remotePartList[2])) {
@@ -94,10 +93,8 @@ if(strpos($fileParam,'remote')===0) {
 	$remote = true;
 	$fileParam = base64_decode($remotePartList[2]);
 	$sourceImage = $fileParam;
-
 	$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
 	if(!file_exists($targetImage)) $targetImage = null;
-
 } else {
 	$fileParam = str_replace(array('https://','http://','..','\\'),'',$fileParam);
 	$sourceImage = $c->sourceBasePath . $fileParam;
