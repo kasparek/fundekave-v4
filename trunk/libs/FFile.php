@@ -1,5 +1,7 @@
 <?php
 class FFile {
+
+  var $ftpLogin;
 	var $isFtpMode = false;
 	var $ftpServer;
 	var $ftpConn;
@@ -16,20 +18,7 @@ class FFile {
 	 */
 	function __construct($ftpServer='') {
 		if(!empty($ftpServer)) {
-			$this->isFtpMode = true;
-			$arr = explode('@',$ftpServer);
-			$user = explode(":",$arr[0]);
-			$this->ftpServer = $arr[1];
-			$this->ftpUser = $user[0];
-			$this->ftpPass = $user[1];
-			$this->ftpConn = ftp_connect($this->ftpServer);
-			$ret = ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
-			ftp_pasv($this->ftpConn, true);
-      if($ret) {
-        FError::write_log('FFile::construc - CONNECTED TO FTP');
-      } else {
-        FError::write_log('FFile::construc - FTP FAIL');
-      }
+		  $this->ftpLogin = $ftpServer;	
 		}
 	}
 
@@ -38,9 +27,29 @@ class FFile {
 			ftp_close($this->ftpConn);
 		}
 	}
+  
+  function ftpConnect($ftpServer) {
+    if($this->isFtpMode) return true;
+    if(empty($this->ftpLogin)) return false;
+    $this->isFtpMode = true;
+    $arr = explode('@',$ftpServer);
+    $user = explode(":",$arr[0]);
+    $this->ftpServer = $arr[1];
+    $this->ftpUser = $user[0];
+    $this->ftpPass = $user[1];
+    $this->ftpConn = ftp_connect($this->ftpServer);
+    $ret = ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
+    ftp_pasv($this->ftpConn, true);
+    if($ret) {
+      FError::write_log('FFile::construc - CONNECTED TO FTP');
+      return true;
+    } 
+    FError::write_log('FFile::construc - FTP FAIL');
+    return false;
+  }
 
 	function file_exists($filename) {
-		if(!$this->isFtpMode) return file_exists($filename);
+		if(!$this->ftpConnect()) return file_exists($filename);
 		$isdir=false;
 		if(@ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, '/');
@@ -50,7 +59,7 @@ class FFile {
 	}
 
 	function is_file($filename) {
-		if(!$this->isFtpMode) return is_file($filename);
+		if(!$this->ftpConnect()) return is_file($filename);
 		if(ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, '/');
 			return false;
@@ -60,12 +69,12 @@ class FFile {
 	}
 
 	function filesize($filename) {
-		if(!$this->isFtpMode) return filesize($filename);
+		if(!$this->ftpConnect()) return filesize($filename);
 		return ftp_size($this->ftpConn, $filename);
 	}
 
 	function is_dir($filename) {
-		if(!$this->isFtpMode) return is_dir($filename);
+		if(!$this->ftpConnect()) return is_dir($filename);
 		$currentDir = ftp_pwd($this->ftpConn);
 		if(@ftp_chdir($this->ftpConn, $filename)) {
 			ftp_chdir($this->ftpConn, $currentDir);
@@ -75,17 +84,17 @@ class FFile {
 	}
 
 	function is_link($filename) {
-		if(!$this->isFtpMode) return is_link($filename);
+		if(!$this->ftpConnect()) return is_link($filename);
 		return false;
 	}
 
 	function unlink($filename) {
-		if(!$this->isFtpMode) return unlink($filename);
+		if(!$this->ftpConnect()) return unlink($filename);
 		return ftp_delete($this->ftpConn, $filename);
 	}
 
 	function mkdir($filename, $mode=0777, $recursive=true) {
-		if(!$this->isFtpMode) return mkdir($filename, $mode, $recursive);
+		if(!$this->ftpConnect()) return mkdir($filename, $mode, $recursive);
 		
 		$dir=explode("/", $filename);
 		if(empty($dir[0])) array_shift($dir);
@@ -107,23 +116,23 @@ class FFile {
 	}
 
 	function rmdir($filename) {
-		if(!$this->isFtpMode) return rmdir($filename);
+		if(!$this->ftpConnect()) return rmdir($filename);
 		return ftp_rmdir($this->ftpConn, $filename);
 	}
 
 	function chmod($filename,$mode=0777) {
 		if(empty($filename)) return;
-		if(!$this->isFtpMode) return chmod($filename,$mode);
+		if(!$this->ftpConnect()) return chmod($filename,$mode);
 		return ftp_chmod($this->ftpConn,$mode,$filename);
 	}
 
 	function rename($source, $target) {
-		if(!$this->isFtpMode) return rename($source, $target);
+		if(!$this->ftpConnect()) return rename($source, $target);
 		return ftp_rename($this->ftpConn, $source, $target);
 	}
 
 	function move_uploaded_file($source, $target) {
-		if(!$this->isFtpMode) return move_uploaded_file($source, $target);
+		if(!$this->ftpConnect()) return move_uploaded_file($source, $target);
 		return ftp_put($this->ftpConn, $source, $target, FTP_BINARY);
 	}
 
@@ -184,7 +193,7 @@ class FFile {
 		//---PUT CHUNKS TOGETHER
 		if(!empty($imagePath)) {
 			if(file_exists($imagePath)) unlink($imagePath);
-			if($this->isFtpMode) {
+			if($this->ftpConnect()) {
 				$tmpFilename = tempnam(sys_get_temp_dir(),'fuup');
 				$handleW = fopen($tmpFilename, "w+");
 			} else {
@@ -208,7 +217,7 @@ class FFile {
 				}
 				fwrite($handleW, base64_decode( $data ));
 			}
-			if($this->isFtpMode) {
+			if($this->ftpConnect()) {
 				ftp_put($this->ftpConn,$imagePath,$tmpFilename,FTP_BINARY);
         FError::write_log('FFile::mergeChunks - ftp upload complete: '.$tmpFilename.'('.filesize($tmpFilename).')');
 				unlink($tmpFilename);
@@ -219,7 +228,7 @@ class FFile {
 	}
 
 	function file_put_contents($filename,$content) {
-		if(!$this->isFtpMode) return file_put_contents($filename,$content);
+		if(!$this->ftpConnect()) return file_put_contents($filename,$content);
 		$tmpFilename = tempnam(sys_get_temp_dir(),'fuup');
 		$handleW = fopen($tmpFilename, "w+");
 		fwrite($handleW, $content);		
@@ -307,7 +316,7 @@ class FFile {
 	 **/
 	function fileList($dir,$type="") {
 		$arrFiles = array();
-		if(!$this->isFtpMode) {
+		if(!$this->ftpConnect()) {
 			//local
 			if(is_dir($dir)) {
 				$handle=opendir($dir);

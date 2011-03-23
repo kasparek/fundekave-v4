@@ -24,12 +24,12 @@ class page_fotoMashup implements iPage {
 				
 			$num = 100;
 			$len = count($allList);
-			if($num>$len) $num = $len;
+			if($num > $len) $num = $len;
 			$steps = ceil($len/$num);
 			for($i=0;$i<$num;$i++){
 				$from = $i*$steps;
-				$rand = rand($from,$from+$steps>$len?$len:$from+$steps);
-				$itemIdList[]=$allList[$rand];
+				$rand = rand($from, $from+$steps > $len ? $len-1 : $from+$steps-1);
+				$itemIdList[] = $allList[$rand];
 			}
 			$itemIdList = array_reverse($itemIdList);
 			

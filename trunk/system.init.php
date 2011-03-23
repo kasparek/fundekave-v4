@@ -50,7 +50,8 @@ if(!isset($nonInit)) {
 	if(isset($_GET['kam'])) {
 		$add = ''; if($_GET['kam']>33000) { $add = 'f'; $kam=$_GET['kam']-33000; }
 		elseif($_GET['kam']>23000 && $_GET['kam']<33000) { $add = 'g'; $kam=$_GET['kam']-23000; }
-		$els=''; for($x=0;$x<(4-strlen($kam));$x++) $els.='l'; $pageId = $add . $els . $kam;
+		$els=''; for($x=0;$x<(4-strlen($kam));$x++) $els.='l'; 
+    if(!empty($kam)) $pageId = $add . $els . $kam;
 	}
 	//check for item
 	$itemId = 0;
