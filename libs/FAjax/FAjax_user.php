@@ -162,7 +162,10 @@ class FAjax_user extends FAjaxPluginBase {
 	}
 
 	static function tag($data) {
-		$itemId = (int) $data['item'];
+    if(!empty($data['item'])) $itemId = (int) $data['item'];
+		if(!empty($data['i'])) $itemId = (int) $data['i'];
+    if(empty($itemId)) return;
+    
 		if($userId = FUser::logon()) {
 			if(FItemTags::isTagged($itemId,$userId)) {
 				FError::add(FLang::$MESSAGE_TAG_ONLYONE);
