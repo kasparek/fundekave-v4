@@ -33,8 +33,17 @@ class page_ItemsList implements iPage {
 			$cache = FCache::getInstance('d');
 			$storedData = $cache->getData($abotUid,'antibot');
 			if($storedData!==false) {
-				$data = 'Jako ochranu proti automatickemu spamu ktery se zacal vsude objevovat jsem musel pridat tento krok pri vkladani prispevku do klubu, prosim kliknete na nasledujici odkaz pro vlozeni prispevku. <a href="'.FSystem::getUri('m=item-submit&abot='.$abotUid.'&submit=1').'">Potvrdit prispevek</a>. <a href="'.FSystem::getUri('','roger').'">Registrovanym</a> uzivatelum se tento krok pri vkladani prispevku nezobrazuje.';
-				FBuildPage::addTab(array( "MAINDATA"=>$data ));
+        $tpl = FSystem::tpl('antibot.tpl.html');
+        $len = rand(1,5);
+        $fixtext = '';
+        for($i=0;$i<$len;$i++) $fixtext.='_';
+        
+        $tpl->setVariable('PREFIXTEXT',$fixtext.' ');
+        $tpl->setVariable('POSTFIXTEXT',' '.$fixtext);
+        $tpl->setVariable('LINKPOSTMEAT',' rel="'.rand(0,999999).'"');
+  			$tpl->setVariable('ANTIBOTURL',FSystem::getUri('m=item-submit&abot='.$abotUid.'&submit=1'));
+        $tpl->setVariable('REGISTERURL',FSystem::getUri('','roger'));
+				FBuildPage::addTab(array( "MAINDATA"=>$tpl->get() ));
 				return;
 			} else {
 				FError::add('Invalid submit data');
