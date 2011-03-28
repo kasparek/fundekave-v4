@@ -414,7 +414,8 @@ class FItemsForm {
 				//$captcha = new FCaptcha();
 				//$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
 			}
-		}else{
+      
+		} else {
 			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
 			$tpl->setVariable('LOCATION',$itemVO->location);
 
