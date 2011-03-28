@@ -212,9 +212,11 @@ class page_ItemsList implements iPage {
 					if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
 					$data['simple'] = true;
 				} else {
-					$writePerm=0;
+					$writePerm = 0;
 				}
 			}
+      //global override from config
+      if(($pageVO->typeId == 'forum' || $detail===true) && !FConf::get('settings','perm_forum_unsigned')) $writePerm = 2;
 
 			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
