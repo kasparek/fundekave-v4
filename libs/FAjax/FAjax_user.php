@@ -8,10 +8,7 @@ class FAjax_user extends FAjaxPluginBase {
 		$x=1;
 		$tmpFilename = FFile::getTemplFilename();
 		$ext = FFile::fileExt($tmpFilename);
-		do {
-			$filename = strtolower($user->userVO->name.'.'.$user->userVO->userId.'.'.sprintf("%03d",$x).'.'.$ext);
-			$x++;
-		} while($ffile->file_exists(FAvatar::profileBasePath().'/'.$filename));
+		$filename = strtolower($user->userVO->name.'.'.$user->userVO->userId.'.'.date("U").'.'.$ext);
 		//move file
 		$ffile->makeDir(FAvatar::profileBasePath());
 		$ffile->rename(FConf::get('galery','sourceServerBase').$tmpFilename,FAvatar::profileBasePath().'/'.$filename);
@@ -22,7 +19,7 @@ class FAjax_user extends FAjaxPluginBase {
 		//build response
 		$tpl = FSystem::tpl('users.personal.html');
 		$cache = FCache::getInstance('d');
-		$fileList = $cache->getData($userVO->userId,'profileFiles');
+		$fileList = $cache->getData($user->userVO->userId,'profileFiles');
 		if($fileList===false) {
 			$ffile = new FFile(FConf::get("galery","ftpServer"));
 			$fileList=$ffile->fileList(FAvatar::profileBasePath());

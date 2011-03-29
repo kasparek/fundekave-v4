@@ -28,11 +28,11 @@ class FFile {
 		}
 	}
   
-  function ftpConnect($ftpServer) {
+  function ftpConnect() {
     if($this->isFtpMode) return true;
     if(empty($this->ftpLogin)) return false;
     $this->isFtpMode = true;
-    $arr = explode('@',$ftpServer);
+    $arr = explode('@',$this->ftpLogin);
     $user = explode(":",$arr[0]);
     $this->ftpServer = $arr[1];
     $this->ftpUser = $user[0];
@@ -50,22 +50,12 @@ class FFile {
 
 	function file_exists($filename) {
 		if(!$this->ftpConnect()) return file_exists($filename);
-		$isdir=false;
-		if(@ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, '/');
-			$isdir=true;
-		}
-		return $isdir || ftp_size($this->ftpConn, $filename)>0;
+    return file_exists('ftp://'.$this->ftpLogin.$filename);
 	}
 
 	function is_file($filename) {
 		if(!$this->ftpConnect()) return is_file($filename);
-		if(ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, '/');
-			return false;
-		} else {
-			return true;
-		}
+    return is_file('ftp://'.$this->ftpLogin.$filename);
 	}
 
 	function filesize($filename) {
@@ -75,12 +65,7 @@ class FFile {
 
 	function is_dir($filename) {
 		if(!$this->ftpConnect()) return is_dir($filename);
-		$currentDir = ftp_pwd($this->ftpConn);
-		if(@ftp_chdir($this->ftpConn, $filename)) {
-			ftp_chdir($this->ftpConn, $currentDir);
-			return true;
-		}
-		return false;
+    return is_dir('ftp://'.$this->ftpLogin.$filename);
 	}
 
 	function is_link($filename) {
