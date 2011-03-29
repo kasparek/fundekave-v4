@@ -15,23 +15,17 @@ o.c=function(){o.loading=false;o.loaded=true;while(o.call.length>0){var f=o.call
 o.sourceTOut=null;o.sourceT=1000;o.sourceTF=function(el){$('.'+$(el).attr('class').replace("ThumbA","")+'Source').show();};
 o.sourceOver=function(e){o.sourceTOut=setTimeout(o.sourceTF,o.sourceT,this);};
 o.sourceOut=function(){clearTimeout(o.sourceTOut);};
-o.init=function(){
-o.locale=Sett.locale.goomapi;
+o.init=function(){o.locale=Sett.locale.goomapi;
 $(".geoInput").each(function(){var id=$(this).attr('id'),w=$(this).width(),h=$(this).height();if(!id){id=o.uid();$(this).attr('id',id);}if($(this).is("textarea")){if($('.'+id+'Thumb').length==0){$(this).change(o.staticSel).hide().after('<a href="#" class="'+id+'ThumbA" title="Ukaz na mape"><img class="'+id+'Thumb" src="" width="'+w+'" height="'+h+'" alt="Google Maps" /></a><a href="#" class="'+id+'Source" title="Source waypoints"><img src="'+Sett.skinUrl+'/img/source.png" alt="Waypoints source" /></a>');$('.'+id+'Source').click(function(){clearTimeout(o.sourceTOut);$('#'+$(this).attr('class').replace('Source','')).toggle().change();return false;}).hide();$('.'+id+'Thumb').click(function(){o.geoInputClick(null,$(this).attr('class').replace('Thumb',''));});$('.'+id+'ThumbA').hover(o.sourceOver,o.sourceOut).click(function(){return false;});}} else $(this).unbind('click',o.geoInputClick).click(o.geoInputClick);}).change();
 $(".mapLarge").each(function(){var id=$(this).attr('id');if(!id){id=o.uid();$(this).attr('id',id);}if(!$(this).hasClass('hidden') && $("map"+id+"holder",this).length==0)if($(this).hasClass('editor')){var d=o.editorData(id,this),rel=$(this).attr('rel');if(rel)d.dataEl=document.getElementById(rel);d.parent.pop=false;o.mapEditor(id);} else o.show(id);});
 listen('mapThumbLink','click',o.thumbClick);
 };
-o.thumbClick=function(){var id=$(this).attr('id').replace('Thumb','');
-$(this).remove();$('#'+id).removeClass('hidden');
-o.show(id);return false;};
+o.thumbClick=function(){var id=$(this).attr('id').replace('Thumb','');$(this).remove();$('#'+id).removeClass('hidden');o.show(id);return false;};
 o.geoInputClick=function(e,id){if(e)id=$(this).attr('id');if(o.popid)o.close();var d=o.editorData();d.dataEl=null;if(id){var el=document.getElementById(id);if(el){if($(el).is('textarea'))d.dataEl=el;}}if(!d.dataEl)$(d.parent.eli.mapSaveB).hide(); else $(d.parent.eli.mapSaveB).show();o.mapEditor('Editor');return false;};
 o.staticSel=function(e){var t=$.trim($(this).val()),p=t.length>0?t.split("\n"):[],id=$(this).attr('id'),w=$(this).width(),h=$(this).height();
 var u='http://maps.google.com/maps/api/staticmap?size='+w+'x'+h+(p.length>0?'&markers='+p[p.length-1]:'&zoom=3&center=51.477222,0&maptype=terrain')+'&sensor=false'+(p.length>1?'&path='+p.join('|'):'');
 $('.'+id+'Thumb').css("width",(p.length>0 ? w : 64)+"px").css("height",(p.length>0 ? h : (h/w)*64)+"px").attr('src',u);
-if(!$(this).is(':visible')){
-$('.'+id+'Thumb').show();
-//if(p.length>0)$('.'+id+'Thumb').show();else $('.'+id+'Thumb').hide();
-} else $('.'+id+'Thumb').hide();};
+if(!$(this).is(':visible')){$('.'+id+'Thumb').show();} else $('.'+id+'Thumb').hide();};
 o.editorData=function(id,parent){if(!id)id='Editor';if(o.li[id]){$(o.li[id].eli.mainEl).show();return o.li[id].li[0];};
 var style='border: 1px solid #707070;background-color:#d0d0d0;';if(parent)style+='position:relative;width:100%;height:100%;';else style+='position:fixed;z-index:10000;';
 $(parent?parent:"body").append('<div style="'+style+'" id="map'+id+'Overlay">'
@@ -55,10 +49,7 @@ d.get=function(){if(!d.dataEl)return [];return o.parsePos($(d.dataEl).val());};
 o.showQueue=[];o.show=function(id,f){if(id)o.showQueue.push({id:id,f:f});if(!o.load(o.show))return;if(!Lazy.load(Sett.ll.goomapi,o.show))return;if(o.showQueue.length==0)return;while(o.showQueue.length>0){var q=o.showQueue.pop(),id=q.id,f=q.f;if(!o.li[id]){var md=document.getElementById(id);if(!md)return;$(md).append('<div id="map'+id+'holder" style="width:100%;height:'+$(md).height()+'px;"></div>');o.li[id]=new o.hold(document.getElementById("map"+id+"holder"));o.li[id].id=id;o.li[id].init();$('.mapsData',md).each(function(){var d=new o.data(o.li[id]);d.dataEl=$('.geoData',this);d.title=$(d.dataEl).attr('title');d.infoEl=$('.geoInfo',this);d.ico=$('.geoIco',this).val();o.li[id].li.push(d);});}var h=o.li[id],bounds=new google.maps.LatLngBounds();for(var i=0;i<h.li.length;i++){var d=h.li[i],l=d.get(),ll=l.length;d.resetWP();if(ll>0){po=(Math.round(l[ll-1][0]*1000))+','+(Math.round(l[ll-1][1]*1000));if(o.poLi[po]){var a=Math.ceil(o.poLi[po]/4),b=4-((a*4)-o.poLi[po]);if(b==1)l[ll-1][0]+=a*0.0001;else if(b==2)l[ll-1][1]+=a*0.0002;else if(b==3)l[ll-1][0]-=a*0.0001;else l[ll-1][1]-=a*0.0002;o.poLi[po]++;}else o.poLi[po]=1;for(var j=0;j<ll;j++){var p=new google.maps.LatLng(l[j][0],l[j][1]);d.addWP(p,d.parent.editor || j==ll-1);bounds.extend(p);}d.updateDistance();};ll=d.markers.length;if(!d.parent.editor && ll>0){var m=d.markers[ll-1];google.maps.event.clearListeners(m);if(d.infoEl.length>0){m.htmlInfo=m.htmlInfo.replace('[[DISTANCE]]',d.distance);google.maps.event.addListener(m,'click',function(e){if(!o.info)o.info=new google.maps.InfoWindow({maxWidth:300});o.info.setContent(this.htmlInfo);o.info.open(this.getMap(),this);});}}};if(!bounds.isEmpty()){o.fit.push({m:h.map,b:bounds});setTimeout(o.fitLater,100);}$(window).unbind('resize',o.mapResize).resize(o.mapResize).resize();if($.isFunction(f))f(id);}};
 o.mapEditorQueue=[];o.mapEditor=function(id){if(id)if(indexOf(o.mapEditorQueue,id)==-1)o.mapEditorQueue.push(id);if(!o.load(o.mapEditor))return;if(!Lazy.load(Sett.ll.goomapi,o.mapEditor))return;if(o.mapEditorQueue.length==0)return;while(o.mapEditorQueue.length>0){id=o.mapEditorQueue.pop();o.editorData(id).parent.init();o.show(id,function(id){var d=o.editorData(id);if(!d.dataEl)$(d.parent.eli.mapSaveB).hide(); else $(d.parent.eli.mapSaveB).show();d.addListeners();d.updateDistance();if(d.parent.pop){$(window).resize(o.resize).resize();$(window).keydown(o.wkey);}});}};
 o.fit=[];o.fitLater=function(){while(o.fit.length>0){var b=o.fit.pop();b.m.fitBounds(b.b);}};
-o.resize=function(e){
-var w=$(window).width(),h=$(window).height(),mw=w*0.9,mh=h*0.9,mx=(w-mw)/2,my=(h-mh)/2;
-for(k in o.li) if(o.li[k].pop) $("#map"+o.li[k].id+"Overlay").css('width',mw+'px').css('height',mh+'px').css('left',mx+'px').css('top',my+'px');
-};
+o.resize=function(e){var w=$(window).width(),h=$(window).height(),mw=w*0.9,mh=h*0.9,mx=(w-mw)/2,my=(h-mh)/2;for(k in o.li) if(o.li[k].pop) $("#map"+o.li[k].id+"Overlay").css('width',mw+'px').css('height',mh+'px').css('left',mx+'px').css('top',my+'px');};
 o.mapResize=function(){for(k in o.li){if(o.li[k].editor)$(o.li[k].mapEl).css('width','100%').css('position','absolute').css('top','20px').css('bottom','30px');if(o.li[k].map)google.maps.event.trigger(o.li[k].map,'resize');}};
 o.editorClick=function(e){var d=o.editorData(e.id?e.id:this.data.id),r=d.path?d.path.getPath():null,add=true,l=0;if(r)l=r.getLength();if(l>0)if(r.getAt(l-1).lat()==e.latLng.lat() && r.getAt(l-1).lng()==e.latLng.lng())add=false;if(add)d.addWP(e.latLng,true);d.updateDistance();};
 o.close=function(e){var d=o.editorData(o.popid);$(d.parent.eli.mainEl).hide();$(window).unbind('resize',o.resize);$(window).unbind('keydown',o.wkey);o.popid=null;return false;};
@@ -81,7 +72,7 @@ function boot() {
 	var w=$(window).width();
 	if($("#sidebar").length==0)$('body').addClass('bodySidebarOff');
 	$(".expand").autogrow();
-	$(".opacity").bind('mouseenter',function(){ $(this).fadeTo("fast",1); }).bind('mouseleave',function(){ $(this).fadeTo("fast",0.2); });
+	$(".opacity").bind('mouseenter',function(){$(this).fadeTo("fast",1);}).bind('mouseleave',function(){$(this).fadeTo("fast",0.2);});
 	fajaxInit();
 	fconfirmInit();
 	switchOpen();
@@ -109,20 +100,7 @@ function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;buttonInit();tabsIni
 function juilater(){ $(".expand").change(); }
 function datePickerInit(){if($(".datepicker").length>0){if(!Lazy.load(Sett.ll.ui,datePickerInit))return;$.datepicker.setDefaults($.extend({showMonthAfterYear:false},$.datepicker.regional['cs']));$(".datepicker").datepicker();}};
 function slimboxInit(){if(!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)){if($("a[rel^='lightbox']").length>0){if(!Lazy.load(Sett.ll.slim,slimboxInit))return;$("a[rel^='lightbox']").slimbox({overlayFadeDuration:100,resizeDuration:100,imageFadeDuration:100,captionAnimationDuration:100},null,function(el){return(this==el)||((this.rel.length > 8)&&(this.rel==el.rel));});}}};
-function fuupInit(){
-if($(".fuup").length>0){
-  if(!Lazy.load(Sett.ll.swf,fuupInit)) {
-    return;
-  }
-  
-  $(".fuup").each(function(i){
-    var id=$(this).attr('id');
-    swfobject.embedSWF(Sett.assUrl+"load.swf",id,"100","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:"fuup."+id+"."+Sett.page+".xml",containerId:id},{wmode:'transparent',allowscriptaccess:'always'});
-    });
-    
-  $("#uploadTip").removeClass('hidden');
-}
-}
+function fuupInit(){if($(".fuup").length>0){if(!Lazy.load(Sett.ll.swf,fuupInit))return;$(".fuup").each(function(i){var id=$(this).attr('id');swfobject.embedSWF(Sett.assUrl+"load.swf",id,"100","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:"fuup."+id+"."+Sett.page+".xml",containerId:id},{wmode:'transparent',allowscriptaccess:'always'});});$("#uploadTip").removeClass('hidden');}}
 function tabsInit(){if($("#tabs").length>0){if(!Lazy.load(Sett.ll.ui,tabsInit))return;$("#tabs").tabs({select:function(event, ui){window.location.hash = '';}});juilater();}};
 function buttonInit(){if($('.uibutton').length>0){if(!Lazy.load(Sett.ll.ui,buttonInit))return;$('.uibutton').button();}}
 /**request init*/
@@ -192,61 +170,11 @@ var Richta=new function(){var o=this;o.w=null;o.init=function(ta){if(ta)o.w=ta;i
 /**MSG CHAT FUNCTIONS*/
 var Msg=new function(){var o=this;o.t=0;o.check=function(){var p=Hash.data('p'),l=[];$(".hentry.unread.sent").each(function(){l.push($(this).attr('id').replace('mess',''));});if(l.length>0)Fajax.add('unreadedSent',l.join(','));if(p)Fajax.add('p',p);Fajax.send('post-hasNewMessage',Sett.page=='fpost'?'fpost':-1,true);};o.sentReaded=function(p){var l=p.split(',');for(var i in l){$("#mess"+l[i]).removeClass('unread');$("#unreadedLabel"+l[i]).remove();}};o.checkHandler=function(num,name){var d=$("#messageNew"),p=parseInt(Sett.msgTi);if(num>0){d.removeClass('hidden');$("#numMsg").text(num);$("#recentSender").text(name);}else if(!d.hasClass('hidden'))d.addClass('hidden');if(p>0){clearTimeout(o.t);o.t=setTimeout(o.check,p);}}};
 /**LAZYLOADER*/
-var Lazy=new function(){
-var o=this;
-o.r={};
-o.f=null;
-o.q=[];
-o.loading=false;
-o.load=function(l,f){
-var c=true;
-  for(var i=0;i<l.length;i++)
-    if(!o.r[l[i]]){
-      c=false;
-      break
-    }
-  if(c)return c;
-  o.q.push({l:l.concat(),f:f});
-  if(!o.loading)return o.p();
-};
-o.p=function(){
-  while(o.q[0].l.length>0){
-    var f=o.q[0].l.shift();
-    if(!o.r[f]){
-    o.loading=true;
-    o.f=f;
-    if(f.indexOf('.css')>-1){
-      LazyLoad.css(f,function(){Lazy.c()});
-    }else{
-      LazyLoad.js(f,function(){Lazy.c()});
-    }return;}
-  }
-  o.qc();
-  return true;
-};
-o.c=function(){
-o.r[o.f]=true;
-if(o.q[0].l.length>0)o.p();
-else o.qc();
-};
-o.qc=function(){
-if(o.q[0].f)o.q[0].f();
-o.q.shift();
-if(o.q.length>0)o.p();
-else o.loading=false;
-}
-};
+var Lazy=new function(){var o=this;o.r={};o.f=null;o.q=[];o.loading=false;o.load=function(l,f){var c=true;for(var i=0;i<l.length;i++)if(!o.r[l[i]]){c=false;break}if(c)return c;o.q.push({l:l.concat(),f:f});if(!o.loading)return o.p();};o.p=function(){while(o.q[0].l.length>0){var f=o.q[0].l.shift();if(!o.r[f]){o.loading=true;o.f=f;if(f.indexOf('.css')>-1){LazyLoad.css(f,function(){Lazy.c()});}else{LazyLoad.js(f,function(){Lazy.c()});}return;}}o.qc();return true;};o.c=function(){o.r[o.f]=true;if(o.q[0].l.length>0)o.p();else o.qc();};o.qc=function(){if(o.q[0].f)o.q[0].f();o.q.shift();if(o.q.length>0)o.p();else o.loading=false;}};
 /* autogrow */ 
 ;(function($){$.fn.autogrow = function(options){this.filter('textarea').each(function(){var $this=$(this),minHeight=$this.height(),u=function(){var h=$this.height(),sh=$this.attr('scrollHeight');if(sh>h+5)$this.css('height',sh+60);};$this.unbind('change',u).unbind('keydown',u).change(u).keydown(u).change();});return this;}})(jQuery);
 /* jQuery hashchange event - v1.3 - 7/21/2010 http://benalman.com/projects/jquery-hashchange-plugin/ Copyright (c) 2010 "Cowboy" Ben Alman, Dual licensed under the MIT and GPL licenses. http://benalman.com/about/license/ */
 ;(function($,e,b){var c="hashchange",h=document,f,g=$.event.special,i=h.documentMode,d="on"+c in e&&(i===b||i>7);function a(j){j=j||location.href;return"#"+j.replace(/^[^#]*#?(.*)$/,"$1")}$.fn[c]=function(j){return j?this.bind(c,j):this.trigger(c)};$.fn[c].delay=50;g[c]=$.extend(g[c],{setup:function(){if(d){return false}$(f.start)},teardown:function(){if(d){return false}$(f.stop)}});f=(function(){var j={},p,m=a(),k=function(q){return q},l=k,o=k;j.start=function(){p||n()};j.stop=function(){p&&clearTimeout(p);p=b};function n(){var r=a(),q=o(m);if(r!==m){l(m=r,q);$(e).trigger(c)}else{if(q!==m){location.href=location.href.replace(/#.*/,"")+q}}p=setTimeout(n,$.fn[c].delay)}$.browser.msie&&!d&&(function(){var q,r;j.start=function(){if(!q){r=$.fn[c].src;r=r&&r+a();q=$('<iframe tabindex="-1" title="empty"/>').hide().one("load",function(){r||l(a());n()}).attr("src",r||"javascript:0").insertAfter("body")[0].contentWindow;h.onpropertychange=function(){try{if(event.propertyName==="title"){q.document.title=h.title}}catch(s){}}}};j.stop=k;o=function(){return a(q.location.href)};l=function(v,s){var u=q.document,t=$.fn[c].domain;if(v!==s){u.title=h.title;u.open();t&&u.write('<script>document.domain="'+t+'"<\/script>');u.close();q.location.hash=v}}})();return j})()})(jQuery,this);
 ;function indexOf(arr,obj,start){for(var i=(start || 0);i<arr.length;i++)if(arr[i]==obj)return i;return -1;}
 /*lazy google analytics load*/
-function gaLoad() {
-  var ga = document.createElement('script');
-  ga.type = 'text/javascript';
-  ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; 
-  s.parentNode.insertBefore(ga, s);
-}
+function gaLoad(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga, s);}
