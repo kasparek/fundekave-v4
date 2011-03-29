@@ -42,8 +42,8 @@ class page_UserSettings implements iPage {
 			case 'del':
 				$cache = FCache::getInstance('d');
 				$fileList = $cache->getData($userVO->userId,'profileFiles');
+        $ffile = new FFile(FConf::get("galery","ftpServer"));
 				if($fileList===false) {
-					$ffile = new FFile(FConf::get("galery","ftpServer"));
 					$fileList=$ffile->fileList(FAvatar::profileBasePath());
 					$cache->setData($fileList);
 				}
@@ -52,7 +52,7 @@ class page_UserSettings implements iPage {
 					if(FSystem::safetext($file)==$foto) $delFile=$file;
 				}
 				if(empty($delFile)) return;
-				unlink(FAvatar::profileBasePath().'/'.$delFile);
+				$ffile->unlink(FAvatar::profileBasePath().'/'.$delFile);
 				if($delFile==$userVO->avatar) {
 					$userVO->avatar='';
 					$userVO->save();

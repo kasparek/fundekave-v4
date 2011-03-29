@@ -70,8 +70,8 @@ class FCommand {
 	//COMMANDS
 	public static function avatarUpdated($data) {
 		$user = FUser::getInstance();
-		$urlFlush = FConf::get('galery','targetUrlBase').str_replace("crop","flush",FConf::get('galery','avatar_thumbCut')).'/';
-		$urlFlush .= strtolower($userVO->name).'/profile/';
+		$url = FConf::get('galery','targetUrlBase').str_replace("crop","flush",FConf::get('galery','avatar_thumbCut')).'/';
+		$url .= strtolower($user->userVO->name).'/profile/';
 		file_get_contents($url);
 		FSystem::superInvalidate('avatar',$data);
 		$cache = FCache::getInstance('d');
