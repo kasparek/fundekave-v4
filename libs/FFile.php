@@ -208,7 +208,7 @@ class FFile {
 				unlink($tmpFilename);
 			}
 			fclose($handleW);
-      FError::write_log('FFile::mergeChunks - merge complete: '.$tmpFilename);
+      FError::write_log('FFile::mergeChunks - merge complete');
 		}
 	}
 
