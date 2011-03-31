@@ -95,7 +95,7 @@ class FItemsForm {
 		
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
-			FError::write_log('FItemsForm::process - unset type - item:'.$data['i']);
+			FError::write_log('FItemsForm::process - unset type - type:'.$data['t'].(isset($data['i'])?'item:'.$data['i']:''));
 			return;
 		}
 		

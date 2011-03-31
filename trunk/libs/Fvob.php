@@ -73,7 +73,7 @@ class Fvob {
 		if($key=='typeId') {
 			if(!in_array($value,array('forum','galery','event','blog'))) return false;
 		}
-    if($this->{$key} != $value) return false; //has not changed
+    if($this->{$key} == $value) return true; //has not changed
 		$this->changed = true;
 		$this->{$key} = $value;
 		return true;
