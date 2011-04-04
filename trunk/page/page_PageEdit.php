@@ -79,11 +79,11 @@ class page_PageEdit implements iPage {
 				}
 				*/
 
-			$nameChanged = $pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
+			$pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
 			if(empty($pageVO->name)) {
 				FError::add(FLang::$ERROR_PAGE_ADD_NONAME);
 			}
-			if($nameChanged) {
+			if($pageVO->changed) {
 				if(FPages::page_exist('name',$pageVO->name)) {
 					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
