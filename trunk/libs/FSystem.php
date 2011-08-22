@@ -293,11 +293,15 @@ class FSystem {
 	}
 
 	static function textinsBr2nl($text,$br='<br />') {
-		return str_replace(array($br."\r\n",$br."\n"),array("\n","\n"),$text);
+    return str_replace(array($br."\r\n",$br."\n"),array("&#10;","&#10;"),$text);
 	}
 
 	static function textToTextarea($text) {
-		return htmlspecialchars(FSystem::textinsBr2nl($text));
+		//return htmlspecialchars(FSystem::textinsBr2nl($text));
+    
+    //$text = str_replace('<br />','<br>',$text);
+    //return htmlspecialchars($text);
+    return FSystem::textinsBr2nl($text);
 	}
 
 	static function checkDate($date) {
