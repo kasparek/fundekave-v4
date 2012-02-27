@@ -62,6 +62,14 @@ class FItemsForm {
 		
 		$user = FUser::getInstance();
 		$captchaCheck = true;
+    if($user->idkontrol !== true) {
+      if(isset($data['math_q'])) {
+				$mathP = new FMathProtect();
+				if(!$mathP->validate($data['math_q'],$data['math_a'])) $captchaCheck = false;
+			}
+    }
+    
+    /*
 		if($user->idkontrol !== true) {
 			//store data and redirect to confirm page
 			$storedData=false;
@@ -92,6 +100,7 @@ class FItemsForm {
 				if(!$captcha->validateSubmit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
 			}
 		}
+    */
 		
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
@@ -192,6 +201,19 @@ class FItemsForm {
 					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
 					if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1));
 				}
+        //anti spam
+        /*
+         if(!$user->idkontrol && $itemVO->typeId=='forum') {
+          if(FSystem::isSpam(array('author-name' => $data['name'], 'content' => $data['text'].' '.$data['location']))) {
+            //store data
+            $cache = FCache::getInstance('d');
+				    $dataUid = uniqid('abot');
+				    $cache->setData($data,$dataUid,'antibot');
+            //set error
+            FError::add(FLang::$ERROR_ANTISPAM);
+          }
+        }
+        */
 				/**
 				 *save item
 				 */
@@ -413,6 +435,9 @@ class FItemsForm {
 				}
 				//$captcha = new FCaptcha();
 				//$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
+        $mathP = new FMathProtect();
+        $tpl->setVariable('MATH_Q',$mathP->getQuestion());
+        $tpl->setVariable('MATH_Q_HIDE',$mathP->getQuestionHide());
 			}
       
 		} else {

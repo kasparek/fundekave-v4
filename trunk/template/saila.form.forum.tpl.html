@@ -1,0 +1,25 @@
+<form id="commentForm" action="{FORMACTION}" method="post" name="audit">
+<input type="hidden" name="m" value="{M}"/>
+<input type="hidden" name="t" value="{T}"/>
+<fieldset>
+<!-- BEGIN usernotlogged --><label>Name</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="1" /><br /><!-- END usernotlogged -->
+<div class="clearbox">
+<label for="{TEXTID}">Message</label><textarea id="{TEXTID}" class="leftbox markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea>
+<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="On the map">{POSITION}</textarea></div></div>
+<!-- BEGIN captcha --><label>Anti spam</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
+<input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
+<input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END captcha -->
+<!-- BEGIN math --><label>What is {MATH_Q}</label><input type="hidden" name="math_q" value="{MATH_Q_HIDE}" /><input type="text" name="math_a" value="" class="xShort" tabindex="3" title="Anti-spam protection" /><br /><!-- END math -->
+<input type="submit" name="send" value="Post comment" class="button submit" tabindex="4">
+<!-- BEGIN userlogged2 -->Attach image <span id="tempStore" class="fuup">Need a Flash player</span>
+<select name="perpage" title="Comments per page" class="xShort">
+<option value="10"<!-- BEGIN p10 --> selected="selected"<!-- END p10 -->>10</option>
+<option value="20"<!-- BEGIN p20 --> selected="selected"<!-- END p20 -->>20</option>
+<option value="50"<!-- BEGIN p50 --> selected="selected"<!-- END p50 -->>50</option>
+<option value="100"<!-- BEGIN p100 --> selected="selected"<!-- END p100 -->>100</option>
+</select>
+<input type="submit" name="filtr" value="Search" class="button" title="Search by text in message input" />
+<div id="imageHolder" class="row"></div>
+<!-- END userlogged2 -->
+</fieldset>
+</form>

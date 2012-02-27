@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="{CHARSET}"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
+<head>
+<script type="text/javascript">
+if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0];if(h.length>1 && m.indexOf('-')>-1){window.location.hash='';var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
+</script>
+<title>{TITLE}</title>
+<meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+<meta http-equiv="Content-language" content="cs" />
+<!-- BEGIN description --><meta name="description" content="{DESCRIPTION}" /><!-- END description -->
+<link rel="shortcut icon" href="[[SKINURL]]/img/favicon.ico" type="image/x-icon" />
+<link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
+<link rel="stylesheet" type="text/css" href="[[STATIC_DOMAIN]][[SKIN]].css" media="all" title="fundekave" />
+</head>
+<body>
+<div id="pageholder">
+<div id="header">
+<div id="logo"><a href="/"><img src="[[SKINURL]]/img/awake-logo.png" title="awake33.com czech blog" alt="awake33.com logo" /></a></div>
+{CACHEDMENU}<!-- BEGIN menu --><ul id="menu"><!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem --></ul><!-- END menu -->
+</div>
+<div id="pagebar">
+<div id="mainbar">
+<div id="errormsgJS" class="errormsg">{ERRORMSG}</div>
+<div id="okmsgJS" class="okmsg">{OKMSG}</div>
+<!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
+<!-- BEGIN content --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
+<!-- BEGIN contentheading --><h2>{MAINHEAD}</h2><!-- END contentheading -->
+{MAINDATA}
+</div><!-- END content -->
+</div>
+
+<div id="sidebar">
+<!-- sidebar block -->
+<div class="sidebarBlock">
+<h2>On the Chart</h2>
+<div id="sidebarid" class="sidebarBlockContent">
+<div class="centertext">
+<a href="?k=sail4" title="On the Chart - itinerary and logbook" class="mapSidebar"><img width="170" height="170" src="{GMAPURL}" title="Itinerary and logbook" alt="Google Maps" /></a></div>
+</div>
+</div>
+<!-- sidebar block END -->
+</div>
+</div>
+<div id="footer">
+<a href="http://awake33.com" title="kdo chce na more, ten tam je">Awake33 Blog</a>
+</div>
+</div>
+<span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
+<script type="text/javascript">
+var Sett={page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',skinUrl:'[[SKINURL]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',user:'{USER}'
+,ajaxErr:'Doslo k chybe pri spojeni, zkuste odeslat znovu'
+,locale:{goomapi:{title:'Vyberte více bodů pro zobrazení trasy',distance:'Vzdálenost: ',search:'Hledat',clearTitle:'Vymazat všechny souřadnice',clear:'Smazat',saveTitle:'Ulož souřadnice do formuláře',save:'Uložit',unitTitle:'Jednotky vzdálenosti - vzdálenost se počítá mezi dvěma a více souřadnicemi na mapě, zobrazena v horní liště okna s mapou',markerTitle:'Dvojklikem smazat, tažením změnit polohu',close:'Zavřít'}}
+,ll:{'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js','[[URL_JS]]fundekave.js']
+,'goomapi':['[[URL_JS]]markerclusterer/cluster.js']
+,'slim':['[[URL_JS]]slimbox.js']
+,'form':['[[URL_JS]]form.js']
+,'swf':['http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']
+,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js','[[URL_JS]]i18n/ui.datepicker-cs.js','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/ui-lightness/jquery-ui.css']
+,'richta':['[[URL_JS]]markitup/jquery.markitup.pack.js','[[URL_JS]]markitup/sets/default/style.css','[[URL_JS]]markitup/skins/simple/style.css','[[URL_JS]]markitup/sets/default/set.js']}
+};
+var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
+</script>
+<script type="text/javascript" src="[[URL_JS]]boot.js"></script>
+</body>
+</html>

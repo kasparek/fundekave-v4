@@ -39,10 +39,11 @@ class FBuildPage {
 	static function getBreadcrumbs() {
 		$user = FUser::getInstance();
 		
-		$cacheid = 'breadcrumbs';
-		$grpid = 'page/'.$user->pageId;
-		$cache = FCache::getInstance('f');
-		$breadcrumbs = $cache->getData($cacheid,$grpid);
+		//$cacheid = 'breadcrumbs';
+		//$grpid = 'page/'.$user->pageId;
+		//$cache = FCache::getInstance('f');
+		//$breadcrumbs = $cache->getData($cacheid,$grpid);
+		$breadcrumbs=false;
 		
 		if($breadcrumbs===false) {
 			$breadcrumbs = array();
@@ -118,7 +119,7 @@ class FBuildPage {
 				}
 			}
 			unset($breadcrumbs[count($breadcrumbs)-1]['url']);
-			$cache->setData($breadcrumbs,$cacheid,$grpid);
+			//$cache->setData($breadcrumbs,$cacheid,$grpid);
 		}
 		return $breadcrumbs;
 	}
@@ -249,6 +250,7 @@ class FBuildPage {
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) $errmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
 			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
+      FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
 			FError::reset();
 		}
 		
@@ -305,6 +307,7 @@ class FBuildPage {
 		if($user->pageAccess === true) {
       if($user->pageVO) {
 				//---BREADCRUMBS
+				if(!FConf::get('settings','breadcrumbs_hide')) {
 				$breadcrumbs = FBuildPage::getBreadcrumbs();
 				foreach($breadcrumbs as $crumb) {
 					$tpl->setVariable('BREADNAME',$crumb['name']);
@@ -314,6 +317,8 @@ class FBuildPage {
 					}
 					$tpl->parse('bread');
 				}
+        }
+				
 				//---SECONDARY MENU
 				$lomenuItems = FMenu::secondaryMenu();
 				if(!empty($lomenuItems)) {
@@ -334,10 +339,13 @@ class FBuildPage {
 
 		//---LEFT PANEL POPULATING
 		$showSidebar = true;
-		if($user->pageVO){
+    if(FConf::get('settings','sidebar_off')) {
+      $showSidebar = false;
+    } else if($user->pageVO){
 			$showSidebar = $user->pageVO->showSidebar;
 			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
 		}
+    
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();
@@ -352,13 +360,23 @@ class FBuildPage {
 		} else {
 			$tpl->touchBlock('msgHidden');
 		}
-
+    
+    //---custom code
+    
+    $cClassname = 'page_'.HOME_PAGE;
+    try {
+      if( class_exists($cClassname) ) {
+  		  call_user_func(array($cClassname, 'show'),$tpl);
+  		}
+    } catch(Exception $e){;}
+    
+    
 		//---GET PAGE DATA
 		$data = $tpl->get();
 		//replace super variables
 		$data = FSystem::superVars($data);
 		//strip whitespace
-		$data = preg_replace('/\s\s+/', ' ', $data);
+		//$data = preg_replace('/\s\s+/', ' ', $data);
 		
     FProfiler::write('FBuildPage--complete');
 		

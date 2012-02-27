@@ -1,5 +1,41 @@
 <?php
 class FSystem {
+  //defension implementation
+  static function isSpam($docData) {
+    require_once('defensio-php/Defensio.php');
+    $defensio = new Defensio(FConf::get("settings","defensio_api_key"));
+    $server = array();
+    foreach($_SERVER as $k=>$v) $server[] = $k.':'.$v;
+    $docBase = array('type'=>'comment'
+      ,'platform'=>'php'
+      ,'http-headers'=>implode("\n",$server)
+      ,'author-ip'=>$_SERVER['REMOTE_ADDR']);
+    
+    $document = array_merge($docBase,$docData);
+        
+    $allow = false;
+    $tryAgain = false;
+    for($i=0;i<3;$i++) {
+      try { 
+        $post_result = $defensio->postDocument($document);
+        $xml = $post_result[1];
+        $allow = $xml->allow;
+        if($xml->profanity_match) {
+          $allow = false;
+          FError::write_log("DEFENSIO::profanity : ".$document['content']);
+        }
+        if($xml->spaminess > 0.8) {
+          $allow = false;
+          FError::write_log("DEFENSIO::spaminess=".$xml->spaminess." : ".$document['content']);
+        } 
+      }
+      // Silently rescue connection errors, not much the plugin can do in these cases
+      catch(DefensioConnectionTimeout $ex){ $tryAgain=true;FError::add('Antispam protection timeout'); }
+      catch(DefensioUnexpectedHTTPStatus $ex){ $tryAgain=true;FError::add('Antispam protection timeout'); }
+      if(!$tryAgain) break;
+    }
+    return $allow?false:true;
+  }
 
 	//---close resources
 	static function fin() {
@@ -47,8 +83,8 @@ class FSystem {
 			
 		$grps = implode(";",$grpList);
 		self::$invalidate = array();
-		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net');
-		$domains[]='test.fundekave.net';
+		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net','sail.awake33.com');
+		//$domains[]='test.fundekave.net';
 		$mh = curl_multi_init();
 		$curlys=array();
 		//prepare curl
@@ -107,9 +143,17 @@ class FSystem {
 	}
 
 	//TEMPLATE HELPER
+  static function isTpl($templatefile,$root='') {
+    if($root == '') $root = ROOT.ROOT_TEMPLATES;
+    if(file_exists($root.$templatefile)) return true;
+    return false;
+  }
 	static function tpl($templatefile,$root = '', $removeUnknownVariables=true, $removeEmptyBlocks=true){
 		if($root == '') $root = ROOT.ROOT_TEMPLATES;
 		$tpl = new FHTMLTemplateIT($root);
+    if(FSystem::isTpl(HOME_PAGE.'.'.$templatefile,$root)) {
+      $templatefile = HOME_PAGE.'.'.$templatefile; 
+    }
 		$tpl->loadTemplatefile($templatefile, $removeUnknownVariables, $removeEmptyBlocks);
 		return $tpl;
 	}
@@ -254,9 +298,9 @@ class FSystem {
 		}
 
 		if($endOfLine==1) {
-			$br='<br />';
-			$text = str_replace(array($br."\r\n",$br."\n"),array("\r\n","\r\n"),$text);
-			$text = nl2br($text);
+			//$br='<br />';
+			//$text = str_replace(array($br."\r\n",$br."\n"),array("\r\n","\r\n"),$text);
+			//$text = nl2br($text);
 		}
 		elseif($endOfLine==2) $text = FSystem::textinsBr2nl($text);
 			
@@ -293,14 +337,11 @@ class FSystem {
 	}
 
 	static function textinsBr2nl($text,$br='<br />') {
-    return str_replace(array($br."\r\n",$br."\n"),array("&#10;","&#10;"),$text);
+    return $text;
+    //return str_replace(array($br."\r\n",$br."\n"),array("&#10;","&#10;"),$text);
 	}
 
 	static function textToTextarea($text) {
-		//return htmlspecialchars(FSystem::textinsBr2nl($text));
-    
-    //$text = str_replace('<br />','<br>',$text);
-    //return htmlspecialchars($text);
     return FSystem::textinsBr2nl($text);
 	}
 
@@ -497,6 +538,32 @@ class FSystem {
 			}
 
 		}
+    
+    //add line breaks
+    $textArr = explode("\n",$text);
+    $textArrLen = count($textArr);
+    for($i=0;$i<$textArrLen;$i++) {
+      $thisWord = trim($textArr[$i]);
+      $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : '';
+      $nextWordLen = strlen($nextWord);
+      //exceptions
+      if($nextWordLen) {
+        if($nextWord{0}=='<') {
+          //when next word strlen>0 break will be added
+          if(strpos($nextWord,'<a')==0) $nextWord = ' ';
+          if(strpos($nextWord,'<img')==0) $nextWord = ' ';
+          if(strpos($nextWord,'<span')==0) $nextWord = ' ';
+          $nextWordLen = strlen($nextWord);
+        }
+      }
+
+      if($thisWord{strlen($thisWord)-1}!='>') {
+        if($i<$textArrLen-1 && $nextWord{0}!='<'){
+          $textArr[$i] .= "<br />";
+        } 
+      }
+    }
+    $text = implode("\n",$textArr);
 
 		return trim($text);
 	}

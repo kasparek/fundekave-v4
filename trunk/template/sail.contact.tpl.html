@@ -1,0 +1,13 @@
+<p>{CONTENT}</p>
+<form id="contactForm" action="{FORMACTION}" method="post" name="contact">
+<input type="hidden" name="m" value="sail-contact"/>
+<fieldset>
+<label>Name</label><input type="text" name="name" value="{NAME}" class="short" tabindex="1" /><br />
+<label>E-mail</label><input type="text" name="email" value="{EMAIL}" class="short" tabindex="1" /><br />
+<label for="contactText">Message</label><textarea id="contactText" name="text" tabindex="3">{MESSAGE}</textarea><br />
+<!-- a BEGIN captcha <label>antispam</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
+<input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
+<input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /> END captcha -->
+<input type="submit" name="send" value="Submit" class="button submit" tabindex="4">
+</fieldset>
+</form>

@@ -41,7 +41,7 @@ class page_PagesList implements iPage {
 			if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery',$user->pageVO->pageId,'a'), FLang::$LABEL_PAGE_GALERY_NEW);
 		}
 		
-		$user->pageVO->showHeading = false;
+		//$user->pageVO->showHeading = false;
 
 		//---QUERY RESULTS
 		$fPages = new FPages($typeId, $userId);
