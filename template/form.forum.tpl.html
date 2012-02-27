@@ -5,10 +5,9 @@
 <!-- BEGIN usernotlogged --><label>Jméno</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="1" /><br /><!-- END usernotlogged -->
 <div class="clearbox">
 <label for="{TEXTID}">Text</label><textarea id="{TEXTID}" class="leftbox markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea>
-<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div></div>
-<!-- BEGIN captcha --><label>Opiš kód</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
-<input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
-<input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /><!-- END captcha -->
+<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div>
+</div>
+<!-- BEGIN math --><label>Kolik je {MATH_Q}</label><input type="hidden" name="math_q" value="{MATH_Q_HIDE}" /><input type="text" name="math_a" value="" class="xShort" tabindex="3" title="Proti spamova ochrana" /><br /><!-- END math -->
 <input type="submit" name="send" value="Odeslat" class="button submit" tabindex="4">
 <!-- BEGIN userlogged2 -->Přiložit foto <span id="tempStore" class="fuup">Need a Flash player</span>
 <select name="perpage" title="Počet zpráv na stránku" class="xShort">

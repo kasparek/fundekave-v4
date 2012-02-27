@@ -41,11 +41,8 @@ class FItemsRenderer {
 	}
 
 	function getTemplateName($typeId) {
-		if(empty($this->customTemplateName)) {
-			return 'item.'.$typeId.'.tpl.html';
-		} else {
-			return $this->customTemplateName;
-		}
+		if(!empty($this->customTemplateName)) return $this->customTemplateName;
+		return 'item.'.$typeId.'.tpl.html';
 	}
 
 	function addPageName($rendered,$itemVO) {

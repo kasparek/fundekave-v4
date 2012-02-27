@@ -105,7 +105,7 @@ static $MESSAGE_FORUM_REGISTEREDONLY = 'Vkládat příspěvky do diskuze mohou p
 static $MESSAGE_TAG_REGISTEREDONLY = 'Zvednout palec muze jen registrovany uzivatel';
 static $MESSAGE_TAG_ONLYONE = 'Zvednout palec muzes jen jednou';
 static $MESSAGE_FORUM_HOME_EMPTY = 'Nastenka je praznda';
-static $MESSAGE_EMPTY = 'Nezadali jste zadny text';
+static $MESSAGE_EMPTY = 'Please enter some text';
 static $MESSAGE_NAME_EMPTY = 'Nezadali jste jmeno';
 static $MESSAGE_NAME_USED = 'Jmeno uz nekdo pouziva';
 
@@ -120,7 +120,7 @@ static $ERROR_BLOG_NAMEEMPTY = 'Nezadali jste jmeno blogu';
 static $ERROR_BLOG_NAMEEXISTS = 'Takove jmeno blogu jiz existuje';
 
 static $REGISTER_WELCOME = '<strong>REGISTRACE PROBĚHLA ÚSPĚŠNĚ</strong><br />Vitejte na Fundekave. Zde si muzete nastavit svuj profil.';
-static $ERROR_INVALID_EMAIL = 'Neplatny email';
+static $ERROR_INVALID_EMAIL = 'Invalid email';
 static $ERROR_USED_EMAIL = 'Tento email je jiz u nas registrovany';
 static $ERROR_REGISTER_TOSHORTNAME = 'Jméno je příliš krátké';
 static $ERROR_REGISTER_TOLONGNAME = 'Jméno je příliš dlouhé';
@@ -188,7 +188,8 @@ static $LABEL_CATEGORY_DELETE = 'Smazat';
 static $LABEL_PAGES_DEFAULTFORALL = 'Default pro vsechny stranky';
 static $LABEL_PAGES_USEDON = 'Pouzito na strankach';
 
-static $ERROR_ANTISPAM = 'Anti spamova ochrana nepovolila tento prispevek, bude zkontrolovan pozdeji osobne a pokud to neni spam bude publikovan.';
+static $ERROR_ANTISPAM = 'Anti spam control blocked your message, after personal check it might be published.';
+static $MESSAGE_SENT = 'Thanks for you message, we will contact you as soon as we can.';
 
 static $ARRPUBLIC = array("0"=>"Soukromé","1"=>"Veřejné","2"=>"Pro registrované");
 static $ARRPERMISSIONS = array(0=>'Nemá přístup',1=>'Uživatelé',2=>'Administrátoři');

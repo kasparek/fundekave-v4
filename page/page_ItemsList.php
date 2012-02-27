@@ -27,7 +27,7 @@ class page_ItemsList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
-		
+    
 		if(!empty($data['__get']['abot'])) {
 			$abotUid = $data['__get']['abot'];
 			$cache = FCache::getInstance('d');
@@ -50,7 +50,7 @@ class page_ItemsList implements iPage {
 				FHTTP::redirect(FSystem::getUri());
 			}
 		}
-	
+    	
 		if(isset($data['__get']['date'])) {
 			$date = FSystem::checkDate($data['__get']['date']);
 		}

@@ -20,3 +20,9 @@ $ff->makeDir($dir);
 echo "recursive flushed: ".$dir."<br>\n";
 }
 echo "deleted files: ".$ff->numModified."<br>\n";
+
+/*
+if(isset($_GET['dir'])) {
+	$ff->rm_recursive('tmp/'.$_GET['dir']);
+}
+*/

@@ -15,7 +15,7 @@ function class_autoloader($c) {
 	elseif(strpos($c,'FAjax_')!==false) $c = ROOT . 'libs/FAjax/' . $c;
 	elseif(strpos($c,'VO')!==false) $c = ROOT . 'libs/vo/'.$c;
 	else $c = ROOT . 'libs/' . $c ;
-	require( $c . '.php' );
+	include_once( $c . '.php' );
 }
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
