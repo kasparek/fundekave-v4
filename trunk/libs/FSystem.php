@@ -133,7 +133,7 @@ class FSystem {
 		'SKIN'=>SKIN,
 		'SKINURL'=>STATIC_DOMAIN.URL_CSS.SKIN,
 		'STATIC_DOMAIN'=>STATIC_DOMAIN,
-		'URL_JS'=>STATIC_DOMAIN.URL_JS,
+		'URL_JS'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
 		'ASSETS_URL'=>STATIC_DOMAIN.URL_ASSETS
 		);
 		foreach($superVars as $k=>$v) {
@@ -556,7 +556,7 @@ class FSystem {
           $nextWordLen = strlen($nextWord);
         }
       }
-
+      if(strlen($thisWord)>0)
       if($thisWord{strlen($thisWord)-1}!='>') {
         if($i<$textArrLen-1 && $nextWord{0}!='<'){
           $textArr[$i] .= "<br />";

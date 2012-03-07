@@ -274,6 +274,8 @@ class ItemVO extends Fvob {
 	function prepare() {
 		//galery item or any item with image enclosed
 		if(!empty($this->enclosure)) {
+      $user = FUser::getInstance();
+      
 			$confGalery = FConf::get('galery');
 			$thumbCut = $confGalery['thumbCut'];
 			if(isset($confGalery[$this->typeId.'_thumbCut'])) {
@@ -287,8 +289,19 @@ class ItemVO extends Fvob {
 			//detail image URL
 			//get optional sizes list
 			$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
+
+      //picasa
+      if($this->pageVO->typeId=='galery') {
+        $picasaAlbumId = $this->pageVO->getProperty('picasaAlbum',false,true);
+        if(!$picasaAlbumId) {
+          //create album
+          $fgapps = FGApps::getInstance();
+          $picasaAlbumId = $fgapps->createAlbum($this->pageVO->name,$this->pageVO->description);
+          $this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
+        }
+      }
+      
 			//get closest lower
-			$user = FUser::getInstance();
 			$maxWidth = $user->userVO->clientWidth;
 			if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
 			else {
@@ -302,7 +315,21 @@ class ItemVO extends Fvob {
 				$fibs = array_flip($diff);
 				$maxWidth = $fibs[min($diff)];
 			}
-			$this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop');
+      
+      if(!empty($picasaAlbumId)){
+        $picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
+        if(!$picasaPhotoUrl) {
+          $this->setProperty('picasaPhoto','TODO');
+        } elseif($picasaPhotoUrl != 'TODO' && $picasaPhotoUrl != 'INPROGRESS') {
+          //get google side equialent
+          $gsizeList = array(300=>288,400=>400,500=>512,600=>640,800=>800,1000=>1024,1200=>1280);
+          $gsize = $gsizeList[$maxWidth];
+          if($gsize!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$gsize.'/',$picasaPhotoUrl);
+          $this->detailUrl = $picasaPhotoUrl;
+        }
+      }
+      
+      if(!$this->detailUrl) $this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop');
 		}
 
 		//check if is editable

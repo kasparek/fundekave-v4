@@ -30,7 +30,7 @@ function getClosest($val,$list) {
 $fileParam = isset($_GET['img']) ? $_GET['img'] : '';
 $widthParam = 0;
 $heightParam = 0;
-$validator = '';
+$quality = 0;
 
 if(isset($_GET['side'])) {
 	$getSide = $_GET['side'];
@@ -38,7 +38,7 @@ if(isset($_GET['side'])) {
 		$getSideList = explode('x',$getSide);
 		$widthParam = (int) $getSideList[0];
 		$heightParam = (int) $getSideList[1];
-		if(isset($getSideList[2])) $validator = $getSideList[2]; 
+		if(isset($getSideList[2])) $quality = (int) $getSideList[2];
 	} else {
 		$widthParam = $heightParam = (int) $getSide;
 	}
@@ -74,6 +74,7 @@ else {
 }
 
 $processParams = array('quality'=>$c->quality);
+if($quality>10) $processParams['quality']=$quality; 
 if($cutParam=='crop') $processParams['crop'] = 1;
 if($cutParam=='prop') $processParams['proportional'] = 1;
 
@@ -84,6 +85,7 @@ if($fileParam{0}=='/') $fileParam = substr($fileParam,1);
 
 $remote = false;
 if(strpos($fileParam,'remote')===0) {
+
 	//remote file
 	$remotePartList = explode('/',$fileParam);
 	if($remotePartList[1] != md5($c->salt.$remotePartList[2])) {
@@ -93,8 +95,10 @@ if(strpos($fileParam,'remote')===0) {
 	$remote = true;
 	$fileParam = base64_decode($remotePartList[2]);
 	$sourceImage = $fileParam;
+
 	$targetImage = $c->targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/remote/'.md5($fileParam);
 	if(!file_exists($targetImage)) $targetImage = null;
+
 } else {
 	$fileParam = str_replace(array('https://','http://','..','\\'),'',$fileParam);
 	$sourceImage = $c->sourceBasePath . $fileParam;
@@ -236,7 +240,8 @@ if($imageProps[0]>0 && $imageProps[1]>0) {
 if($c->output===true) {
 	$fp = fopen($targetImage, 'rb');
 	header('Content-Type: '.$contentType);
-	//header("Content-Length: ".filesize($targetImage));
+	header("Content-Length: ".filesize($targetImage));
+  header('Content-Transfer-Encoding: binary');
 	header("Cache-control: max-age=290304000, public");
 	header("Last-Modified: " . date(DATE_ATOM,filemtime($remote===true?$targetImage:$sourceImage)));
 	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
