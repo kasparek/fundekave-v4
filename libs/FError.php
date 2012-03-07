@@ -59,6 +59,13 @@ class FError {
 	}
 	
 	static function handle_error ($errno, $errstr, $errfile, $errline) {
-	    FError::write_log("$errstr in $errfile on line $errline");
+      switch ($errno) {  
+        case E_WARNING:  
+            throw new RuntimeException($errstr,$errno);  
+        break;  
+        default:  
+            FError::write_log("$errstr in $errfile on line $errline");  
+        break;  
+    }
 	}
 }

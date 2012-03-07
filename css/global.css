@@ -72,6 +72,12 @@
 /* END BASIC SCREEN ELEMENTS */
 #tempStore{margin-bottom:-5px;}
 
+/* galery */
+#detailFoto {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 /* GOOGLE MAPS styles */
 .geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}
