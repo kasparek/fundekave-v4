@@ -249,6 +249,8 @@ class FFile {
 		,'QUALITY'=>90
 		,'WIDTHMAX'=>$maxSize
 		,'HEIGHTMAX'=>$maxSize
+    ,'MAXSIZE'=>2048000
+    ,'CHUNKSIZE'=>1024000
 		,'APPWIDTH'=>-1
 		,'APPHEIGHT'=>200
 		,'ONLOADED'=>''
