@@ -131,10 +131,11 @@ class FSystem {
 	static function superVars($data) {
 		$superVars = array(
 		'SKIN'=>SKIN,
-		'SKINURL'=>STATIC_DOMAIN.URL_CSS.SKIN,
 		'STATIC_DOMAIN'=>STATIC_DOMAIN,
+    'URL_CSS'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
+		'URL_SKIN'=>((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS).'skin/'.SKIN,
 		'URL_JS'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
-		'ASSETS_URL'=>STATIC_DOMAIN.URL_ASSETS
+		'ASSETS_URL'=>(strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS
 		);
 		foreach($superVars as $k=>$v) {
 			$data = str_replace('[['.$k.']]',$v,$data);
@@ -542,29 +543,32 @@ class FSystem {
     //add line breaks
     $textArr = explode("\n",$text);
     $textArrLen = count($textArr);
+    
     for($i=0;$i<$textArrLen;$i++) {
       $thisWord = trim($textArr[$i]);
-      $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : '';
-      $nextWordLen = strlen($nextWord);
-      //exceptions
-      if($nextWordLen) {
-        if($nextWord{0}=='<') {
-          //when next word strlen>0 break will be added
-          if(strpos($nextWord,'<a')==0) $nextWord = ' ';
-          if(strpos($nextWord,'<img')==0) $nextWord = ' ';
-          if(strpos($nextWord,'<span')==0) $nextWord = ' ';
-          $nextWordLen = strlen($nextWord);
+       
+      $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : false;
+      $addBr = true;
+      $regexBegin = "/^(<p|<div|<img)/i";
+      $regexEnd = "/(\/p>|div>)$/i";
+      if($nextWord!==false) {
+        if(preg_match($regexBegin,$nextWord)) {
+          $addBr=false;
         }
       }
-      if(strlen($thisWord)>0)
-      if($thisWord{strlen($thisWord)-1}!='>') {
-        if($i<$textArrLen-1 && $nextWord{0}!='<'){
-          $textArr[$i] .= "<br />";
-        } 
+      
+      if($addBr) {
+        if(preg_match($regexEnd,$thisWord)) {
+          $addBr=false;
+        }
       }
+        
+      if($addBr){
+        $textArr[$i] .= "<br />";
+      } 
     }
+    
     $text = implode("\n",$textArr);
-
 		return trim($text);
 	}
 
