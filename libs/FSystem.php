@@ -550,7 +550,7 @@ class FSystem {
       $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : false;
       $addBr = true;
       $regexBegin = "/^(<p|<div|<img)/i";
-      $regexEnd = "/(\/p>|div>)$/i";
+      $regexEnd = "/(\/p>|div>|<br>|<br \/>)$/i";
       if($nextWord!==false) {
         if(preg_match($regexBegin,$nextWord)) {
           $addBr=false;
