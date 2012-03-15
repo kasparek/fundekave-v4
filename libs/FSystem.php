@@ -555,16 +555,16 @@ class FSystem {
         if(preg_match($regexBegin,$nextWord)) {
           $addBr=false;
         }
-      }
-      
-      if($addBr) {
-        if(preg_match($regexEnd,$thisWord)) {
-          $addBr=false;
+               
+        if($addBr) {
+          if(preg_match($regexEnd,$thisWord)) {
+            $addBr=false;
+          }
         }
-      }
-        
-      if($addBr){
-        $textArr[$i] .= "<br />";
+          
+        if($addBr){
+          $textArr[$i] .= "<br />";
+        }
       } 
     }
     

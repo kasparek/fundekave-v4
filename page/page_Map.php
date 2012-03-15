@@ -5,7 +5,9 @@ class page_Map implements iPage {
 	static function process($data){}
 
 	static function build($data=array()) {
-		FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
+    if(!empty($user->pageParam)) {
+		  FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
+    }
 
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
@@ -42,8 +44,9 @@ class page_Map implements iPage {
 				case 'galery':
 					$pageName = $itemVO->pageVO->get('name');
 					$title = $pageName;
-					$info .= '<strong><a href="'.FSystem::getUri('',$itemVO->pageId,'').'">'.$pageName.'</a></strong><br />';
-					$info .= '<a href="'.FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'').'"><img src="'.$itemVO->thumbUrl.'" /></a>';
+					$info .= 'Album: <strong><a href="'.FSystem::getUri('',$itemVO->pageId,'').'">'.$pageName.'</a></strong><br />';
+					$info .= '<a href="'.FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'').'">Detail</a>';
+          //<img src="'.$itemVO->thumbUrl.'" />
 					$tpl->setVariable('MAPICO',$itemVO->getImageUrl(null,'40x40/crop'));
 					break;
 				case 'forum':

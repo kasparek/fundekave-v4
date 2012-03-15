@@ -184,7 +184,7 @@ span.linkIco img {margin-bottom:-2px;}
 span.monitor img,span.map img{margin-bottom:-4px;}
 
 /* HENTRY CONTENT */
-div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;max-width: 610px;text-align: justify;}
+div.mainpanel-content div.hentry div.entry-content {padding: 0.5em 0.5em;text-align: justify;}
 div.mainpanel-content div.hentry div.withCommented {margin-right: 250px;}
 div.mainpanel-content div.hentry div.textLong {margin-top: 20px;}
 div.mainpanel-content div.hentry div.entry-content img {max-width: 680px;}

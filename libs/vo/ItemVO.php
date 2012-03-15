@@ -325,7 +325,7 @@ class ItemVO extends Fvob {
           $gsizeList = array(300=>288,400=>400,500=>512,600=>640,800=>800,1000=>1024,1200=>1280);
           $gsize = $gsizeList[$maxWidth];
           if($gsize!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$gsize.'/',$picasaPhotoUrl);
-          $this->detailUrl = $picasaPhotoUrl;
+          $this->detailUrl = str_replace('https://','http://',$picasaPhotoUrl);;
         }
       }
       
