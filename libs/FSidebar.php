@@ -152,8 +152,13 @@ class FSidebar extends FDBTool {
 									
 							if($showBlock === true) {
 								if($letext === false) {
-									include(ROOT.'page/sidebar/Sidebar_'.$fnc.'.php');
-									$letext = call_user_func(array('Sidebar_'.$fnc, 'show'));
+                  $filename = ROOT.'page/sidebar/Sidebar_'.$fnc.'.php';
+                  if(file_exists($filename)) {
+  									include($filename);
+  									$letext = call_user_func(array('Sidebar_'.$fnc, 'show'));
+                  } else {
+                    $letext = $panel['content'];
+                  }
 									if(isset($cache)) {
 										$cache->setData($letext,$cacheId,$cacheGrp);
 										unset($cache);
