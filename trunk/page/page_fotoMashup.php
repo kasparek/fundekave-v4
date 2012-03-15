@@ -39,7 +39,7 @@ class page_fotoMashup implements iPage {
 				$itemId = array_pop($itemIdList);
 				if($itemId) {
 					$itemVO = new ItemVO($itemId,true);
-					$data .= '<a href="'.$itemVO->detailUrl.'" rel="lightbox-mashup" title="'.htmlspecialchars('<a href="'.FSystem::getUri('i='.$itemVO->itemId,'','').'">'.$itemVO->pageVO->get('name').'</a>').'"><img src="'.$itemVO->thumbUrl.'" class="leftbox" /></a>';
+					$data .= '<a href="'.$itemVO->detailUrl.'" rel="lightbox-mashup" title="'.htmlspecialchars('<a href="'.FSystem::getUri('k='.$itemVO->pageId,'','').'">'.$itemVO->pageVO->get('name').'</a>').'"><img src="'.$itemVO->thumbUrl.'" class="leftbox" /></a>';
 				}
 			}
 			

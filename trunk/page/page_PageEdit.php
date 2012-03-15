@@ -174,34 +174,33 @@ class page_PageEdit implements iPage {
 						$file = new FFile(FConf::get("galery","ftpServer"));
 						$file->makeDir(FConf::get("galery","sourceServerBase") .$pageVO->galeryDir);
 					}
+          if(isset($data['galeryorder'])) $pageVO->prop('order',(int) $data['galeryorder']);
+        }
 
-					$flush=false;
+				$flush=false;
 
-					//---load settings from defaults if not in limits
-					$thumbCut = FConf::get('galery','thumbCut');
-					list($xwidthpx,$xheightpx) = explode('x',substr($thumbCut,0,strpos($thumbCut,'/'))); //thumbCut = 170x170/crop
+				//---load settings from defaults if not in limits
+				$thumbCut = FConf::get('galery','thumbCut');
+				list($xwidthpx,$xheightpx) = explode('x',substr($thumbCut,0,strpos($thumbCut,'/'))); //thumbCut = 170x170/crop
+				if(isset($data['xwidthpx'])) if($data['xwidthpx'] > 20) $xwidthpx = (int) $data['xwidthpx'];
+				if(isset($data['xheightpx'])) if($data['xheightpx'] > 20) $xheightpx = (int) $data['xheightpx'];
 
-					if(isset($data['xwidthpx'])) if($data['xwidthpx'] > 20) $xwidthpx = (int) $data['xwidthpx'];
-					if(isset($data['xheightpx'])) if($data['xheightpx'] > 20) $xheightpx = (int) $data['xheightpx'];
-
-					$thumbStyleSelectedIndex = 2;
-					if(isset($data['xthumbstyle'])) $thumbStyleSelectedIndex = (int) $data['xthumbstyle'];
-					$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop';
-					$thumbCut=$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle;
-					if($pageVO->prop('thumbCut')!=$thumbCut) {
-						$pageVO->prop('thumbCut',$thumbCut);
-						$flush=true;
-					}
-
-					if(isset($data['galeryorder'])) $pageVO->prop('order',(int) $data['galeryorder']);
-
-					//---if setting changed on edited galery delete thumbs
-					if($flush==true && $user->pageParam!='a') {
-						$itemVO = new ItemVO();
-						$itemVO->pageId = $pageVO->pageId;
-						$itemVO->flush();
-					}
+				$thumbStyleSelectedIndex = 2;
+				if(isset($data['xthumbstyle'])) $thumbStyleSelectedIndex = (int) $data['xthumbstyle'];
+				$thumbStyle = $thumbStyleSelectedIndex=='2' ? 'crop' : 'prop';
+				$thumbCut=$xwidthpx.'x'.$xheightpx.'/'.$thumbStyle;
+				if($pageVO->prop('thumbCut')!=$thumbCut) {
+					$pageVO->prop('thumbCut',$thumbCut);
+					$flush=true;
 				}
+
+				//---if setting changed on edited galery delete thumbs
+				if($flush==true && $user->pageParam!='a') {
+					$itemVO = new ItemVO();
+					$itemVO->pageId = $pageVO->pageId;
+					$itemVO->flush();
+				}
+				
 
 				//---second save to save pageId related stuff
 				$pageVO->save();
@@ -475,11 +474,7 @@ class page_PageEdit implements iPage {
 				$tpl->setVariable('HOMEID',$textareaIdForumHome);
 			} elseif($pageVO->typeId == 'galery') {
 				//GALERY
-				$thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
-				$thumbSizeList = explode('x',$thumbPropList[0]);
-				$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
-				$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
-				if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
+				
 				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 
 				$tpl->touchBlock('galeryspecifictabs');
@@ -503,6 +498,12 @@ class page_PageEdit implements iPage {
 				//BLOG
 				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 			}
+      
+      $thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
+			$thumbSizeList = explode('x',$thumbPropList[0]);
+			$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
+			$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
+			if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
 				
 			$tpl->setVariable('SIDEBAR',FSystem::textToTextarea($pageVO->prop('sidebar')));
 				
