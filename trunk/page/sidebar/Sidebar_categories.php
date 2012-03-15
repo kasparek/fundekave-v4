@@ -18,8 +18,9 @@ class Sidebar_categories {
 			$tool->setWhere("c.typeId = '".$user->pageVO->pageId."'");
 		}
 		if(SITE_STRICT) {
-			$tool->addWhere("c.pageIdTop = '".SITE_STRICT."'");
+			$tool->addWhere("c.pageIdTop in ('".SITE_STRICT."','".$user->pageVO->pageId."')");
 		}
+    $tool->addWhere("c.public = '1'");
 		$tool->setOrder('c.name');
 
 		$pageId='';
