@@ -208,7 +208,7 @@ div.mainpanel-content div.vevent div.nextToFlyer {margin-left: 180px;}
 div.mainpanel-content div.vevent div.nextToFlyer div.category {margin-top: -18px;}
 div.mainpanel-content div.vevent div.nextToFlyer abbr.dtstart {font-size: 1.5em;}
 div.mainpanel-content div.vevent div.nextToFlyer h2 {padding-bottom:1em;}
-div.mainpanel-content div.hentry img.hentryimage {float: left;padding: 0.5em;}
+div.mainpanel-content div.hentry img.hentryimage {float: left;padding: 0.5em;clear:left;}
 div.participant {float:left;padding: 0 1em 1em 0;text-align: center;}
 
 /* FRIENDS SECTION */
