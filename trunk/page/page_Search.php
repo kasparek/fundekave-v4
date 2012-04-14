@@ -188,7 +188,7 @@ class page_Search implements iPage {
 				$vo->addWhere("sys_users.deleted=0");
 				$vo->setOrder('sys_users.name');
 				$vo->setLimit(0,2);
-				$arr = $vo->get();
+				$arr = $vo->getContent();
 				
 				$pager = new FPager(0,$perPage,array('noAutoparse'=>1,'hash'=>'users','urlVar'=>'pu'));
 				$from = ($pager->getCurrentPageID()-1) * $perPage;

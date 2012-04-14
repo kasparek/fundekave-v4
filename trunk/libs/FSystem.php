@@ -327,7 +327,6 @@ class FSystem {
 			if(strlen($word)>$i && strpos($word,'http')===false) {
 				$arrRep[$word] = wordwrap( $word , $i , $wrap , 1);
 			}
-
 		}
 		if(!empty($arrRep)) {
 			foreach ($arrRep as $k=>$v) {
@@ -434,119 +433,187 @@ class FSystem {
 		}
 		return $return;
 	}
+  static function postText($text) {
+    if(empty($text)) return $text;
+    //replace all plain text URLs with html
+    libxml_use_internal_errors(true);
+    $dom = new DOMDocument();
+    $dom->preserveWhiteSpace=false;
+    $dom->loadHTML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div id="posttextprocessing">'.$text.'</div></body></html>');
 
-	static function postText($text) {
-		$text = trim($text);
-		if(empty($text)) return $text;
-		$text = ' '.$text;
+    $x = new DOMXPath($dom);
+    $nodes = $x->query("//text()[not(ancestor::a)]");
 
-		$regList = array(
-		'a'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*img\s*src=\"(http.*:[^\"]+\.[jpeg|jpg|png|gif]+)\".*>([^>]*)/i"
-		,'b'=>"/(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)<\s*a\s*href=\"(http.*:[^\"]+\.[jpeg|jpg|png|gif]+)\"\s*>([^>]*)<\/a>/i"
-		,'i'=>"/<img.*src=\"http.*:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.-_]+jpg|png|gif+)([^\"]*+)\"[^<]+?>/i"//.*>/i"
-    ,'i2'=>"/http.*:\/\/[0-9a-zA-Z.\/]*\/image\/[0-9]+x[0-9]+\/[a-z]{4}\/.*([a-zA-Z0-9]{5})\/([0-9a-zA-Z.-_]+(jpeg|jpg|png|gif)$)/i"
-		,'c'=>"/<img src=\"http.*:\/\/[0-9a-zA-Z.\/]*\/data\/cache\/[0-9a-zA-Z-]*\/([0-9a-zA-Z]*)-[a-zA-Z0-9-_]*\/([^\"]*+)\"[^<]+?>/i"
-		,'d'=>"/<\s*a\s*href=\"[^\"]+\/data\/cache\/[^\"]+\/([a-zA-Z0-9]{5})-[^\"]+\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
-		,'e'=>"/<\s*a\s*href=\"[^\"]+\/obr\/[^\"]+([a-zA-Z0-9]{5})\/([0-9a-zA-Z.]*\.jpg)\"\s*>[^>]*<\/a>/i"
-		,'f'=>"#(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|>|\<|$|\.\s)((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#i"
-		,'g'=>"/<\s*a\s*href=\"http.*:[^\"]+[&?|]i=([0-9]*)[^\"]*\"\s*>[^>]*<\/a>/i"
-		,'h'=>"/<\s*a\s*href=\"http.*:[^\"]+[&?|]k=([a-zA-Z0-9]{5})[^\"]*\"\s*>[^>]*<\/a>/i"
-		);
-			
-		foreach($regList as $r=>$regex) {
-			if(preg_match_all($regex , $text, $matches, PREG_OFFSET_CAPTURE)) {
-				$offset = 0;
-				$matchNum = count($matches[0]);
-				for($x=0;$x<$matchNum;$x++) {
-					switch($r) {
-						case 'c':
-						case 'd':
-						case 'e':
-							$fi = new FItems();
-							$fi->setWhere("sys_pages_items.pageId='".$matches[1][$x][0]."' and sys_pages_items.enclosure='".$matches[2][$x][0]."'");
-							$arr = $fi->getList();
-							if(!empty($arr)) {
-								$replaceText = $arr[0]->render();
-								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-							}
+    $linkSeen=array();
+    foreach($nodes as $node) {
+      $nodeText = $node->nodeValue;
 
-							break;
-						case 'g':
-							$item = new ItemVO((int)$matches[1][$x][0],true);
-							if($item->itemId > 0) {
-								$replaceText = $item->render();
-								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-							}
-							break;
-						case 'h':
-							//page link
-							$userId = FUser::logon();
-							$fPages = new FPages('', $userId);
-							$fPages->setWhere("sys_pages.pageId='".$matches[1][$x][0]."'");
-							$arr = $fPages->getContent();
-							if(!empty($arr)) {
-								$replaceText = FPages::printPagelinkList($arr,array('inline'=>1,'noitem'=>1));
-								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-							}
-							break;
-						case 'f':
-							$pos = strpos($text,$matches[1][$x]);
-							if($matches[1][$x][0]!='"' && $matches[1][$x][0]!="'") {
-								//check extension
-								$ext = FFile::fileExt($matches[2][$x][0]);
-								$imageExtList = array('png','gif','jpeg','jpg');
-								if(in_array($ext,$imageExtList)) {
-									//do image
-									$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
-									$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox-page"><img src="'.FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
-								} else {
-									//do link
-									$replaceText = '<a href="'.$matches[2][$x][0].'">'.trim($matches[2][$x][0]).'</a>';
-								}
-								$text = FSystem::strReplace($text,$matches[2][$x][1]+$offset,strlen($matches[2][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[2][$x][0]);
-							}
-							break;
-						case 'a':
-						case 'b':
-							$pos = false;
-							if(!empty($matches[3][$x][0])) $pos = strpos($matches[2][$x][0],$matches[3][$x][0]);
-							if($r==7 || $pos!==false) { //only if text of link is link itself
-								$urlEncoded = base64_encode(str_replace("\n","",$matches[2][$x][0]));
-								$replaceText = '<a href="'.$matches[2][$x][0].'" rel="lightbox-page"><img src="'.FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded.'" /></a>';
-								$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-								$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-							}
-							break;
-						case 'i':
-            case 'i2':
-							if(strpos($matches[0][$x][0],"#norender")===false){
-								$fi = new FItems();
-								$fi->setWhere("pageId = '".$matches[1][$x][0]."' and sys_pages_items.enclosure='".$matches[2][$x][0]."'");
-								$arr = $fi->getList();
-								if(!empty($arr)) {
-									$replaceText = $arr[0]->render();
-									$text = FSystem::strReplace($text,$matches[0][$x][1]+$offset,strlen($matches[0][$x][0]),$replaceText);
-									$offset += strlen($replaceText) - strlen($matches[0][$x][0]);
-								}
-							}
-							break;
-					}
-				}
-			}
+      if(preg_match_all("#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#i",$nodeText,$matches, PREG_OFFSET_CAPTURE)) {
+        //remove old node
+        $lastPos=0;
+        foreach($matches[0] as $url) {
+          if(!isset($linkSeen[$url[0]])) {
+            if($url[1]>$lastPos) {
+              $pretext = $dom->createTextNode(mb_substr($nodeText,$lastPos,$url[1]-$lastPos));
+              $node->parentNode->insertBefore($pretext, $node);
+            }
+            $a = $dom->createElement("a");
+            $a->nodeValue = $url[0];
+            $a->setAttribute('href',$url[0]);
+            $node->parentNode->insertBefore($a, $node);
+            $lastPos = $url[1]+mb_strlen($url[0]);
+            $linkSeen[$url[0]]=1;
+          }
+        }
+        if($lastPos<mb_strlen($nodeText)) {
+          $aftertext = $dom->createTextNode(mb_substr($nodeText,$lastPos));
+          $node->parentNode->insertBefore($aftertext, $node);
+        }
+        $node->parentNode->removeChild($node);
+      }
+    }
 
-		}
+    $tags=array();
+    $results = $dom->getElementsByTagName('img');
+    foreach ($results as $result) $tags[]=$result;
+    $results = $dom->getElementsByTagName('a');
+    foreach ($results as $result) $tags[]=$result;
     
+    if(!empty($tags))
+    foreach($tags as $tag) {
+      $try=false;
+      if($tag->tagName=='img') {
+        $url = $tag->getAttribute('src');
+        if($tag->parentNode->tagName!='a') $try=true;
+      } else {
+        $url = $tag->getAttribute('href');
+        if($tag->nodeValue==$url) $try=true;
+      }
+      if($try) {
+        $local=false;
+        //check if url is internal or external
+        //page
+        if(preg_match("/.*[&?|]k=([a-zA-Z0-9]{5}).*/i", $url, $matches)) {
+          $local=true;
+          //it's local page
+          $pageVO = new PageVO($matches[1]);
+          $tag->nodeValue = $pageVO->get('name');
+        } else {
+          if(preg_match("/.*[&?|]i=([0-9]{1,7}).*/i", $url, $matches)) {
+            //we have itemId
+            $itemVO=new ItemVO($matches[1]);
+            if($itemVO->load()) {
+              $local=true;
+              if($itemVO->typeId=='galery') {
+                while($tag->firstChild) $tag->removeChild($tag->firstChild);
+                $img = $dom->createElement("img");
+                $tag->appendChild($img);
+                $img->setAttribute('src',$itemVO->thumbUrl);
+              } else {
+                $tag->nodeValue = $itemVO->get('addon');
+              }
+            }
+          } else {
+            //item
+            $regItemList=array(
+              "/.*_([a-zA-Z0-9]{5})\/([0-9a-zA-Z._-]+\.[jpeg|jpg|png|gif]+)$/i" //http://fotobiotic.net/image/170x170/crop/dany/20120303_pangaimotu-island_zAV4q/dsc07869.jpg
+              ,"/.*obr\/.+([a-zA-Z0-9]{5})\/([0-9a-zA-Z._-]+\.[jpeg|jpg|png|gif]+)/i"
+              ,"/.*data\/cache\/img\/([a-zA-Z0-9]{5})-.*\/([0-9a-zA-Z-_.]+\.[jpeg|jpg|png|gif]+)/i"); //sample http://fundekave.net/data/cache/img/cKFbk-awake-work-in-progress/img_0111.jpg
+            $i=0;
+            foreach($regItemList as $regex) {
+              if(preg_match($regex, $url, $matches)) {
+                //we have pageId and enclosure
+                $itemVO=new ItemVO();
+                $itemVO->pageId=$matches[1];
+                $itemVO->enclosure=$matches[2];
+                if($itemVO->load()) {
+                  $local=true;
+                  //item load suceess
+                  $img = $dom->createElement("img");
+                  $img->setAttribute('src',$i==0?$url:$itemVO->thumbUrl);
+                  $img->setAttribute('class','hentryimage');
+                  if($tag->tagName=='a') {
+                    $tag->setAttribute('rel','lightbox-page');
+                    $tag->setAttribute('title',$itemVO->pageVO->get('name'));
+                    $tag->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop',true));
+                    while($tag->firstChild) $tag->removeChild($tag->firstChild);
+                    $tag->appendChild($img);
+                  } else {
+                    //img
+                    $a = $dom->createElement("a");
+                    $tag->parentNode->replaceChild($a,$tag);
+                    $a->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop',true));
+                    $a->setAttribute('title',$itemVO->pageVO->get('name'));
+                    $a->setAttribute('rel','lightbox-page');
+                    $a->appendChild($img);
+                  }
+                }
+                $i++;
+                break;
+              }
+            }
+          }
+        }
+        if(!$local) {
+          //external images with thumb
+          //if image make thumb
+          if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png|gif)$/i", $url, $matches)) {
+            $urlEncoded = base64_encode($url);
+            $img = $dom->createElement("img");
+            $img->setAttribute('src',FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded);
+            //$img->setAttribute('class','hentryimage');
+            if($tag->tagName=='img') {
+              $a = $dom->createElement("a");
+              $tag->parentNode->replaceChild($a,$tag);
+              $a->setAttribute('href',$url);
+              $a->setAttribute('rel','lightbox-page');
+              $a->appendChild($img);
+            } else {
+              $tag->setAttribute('rel','lightbox-page');
+              while($tag->firstChild) $tag->removeChild($tag->firstChild);
+              $tag->appendChild($img);
+            }
+          } else {
+            //try get title
+            $youtubeId=false;
+            $vimeoId=false;
+            if(preg_match("/http.*www.youtube.com.*v=([A-Za-z0-9-]+)/i",$url,$matches)) $youtubeId=$matches[1];
+            if(preg_match("/.*youtu.be\/([A-Za-z0-9-]+)/i",$url,$matches)) $youtubeId=$matches[1];
+            if(preg_match("/.*vimeo.com\/([0-9]+)$/i",$url,$matches)) $vimeoId=$matches[1];
+            if($youtubeId || $vimeoId) {
+              $iframe = $dom->createElement("iframe");
+              $iframe->setAttribute('allowfullscreen','allowfullscreen');
+              $iframe->setAttribute('frameborder','0');
+              $iframe->setAttribute('width','560');
+              $iframe->setAttribute('height','315');
+              $iframe->setAttribute('src',$vimeoId?'http://player.vimeo.com/video/'.$vimeoId.'?title=0&amp;byline=0&amp;portrait=0':'http://www.youtube.com/embed/'.$youtubeId);
+              $tag->parentNode->replaceChild($iframe,$tag);
+            } else {
+              $pageContent = FSystem::curl_get_file_contents($url);
+              if($pageContent!==false) {
+                if(preg_match("/\<title\>(.*)\<\/title\>/i",$pageContent,$matches)) {
+                  $title = trim($matches[1]);
+                  if(!preg_match("/^[0-9]{3} .*/i",$title))
+                    $tag->nodeValue=$matches[1];
+                }
+              }
+            } 
+          }
+        }
+      }
+    }
+     
+  $textElement = $dom->getElementById('posttextprocessing');
+  $text = $dom->saveXML($textElement);
+  $text = substr($text,29,strlen($text)-35);
+
+  
     //add line breaks
     $textArr = explode("\n",$text);
     $textArrLen = count($textArr);
     
     for($i=0;$i<$textArrLen;$i++) {
       $thisWord = trim($textArr[$i]);
-       
       $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : false;
       $addBr = true;
       $regexBegin = "/^(<p|<div|<img)/i";
@@ -569,8 +636,20 @@ class FSystem {
     }
     
     $text = implode("\n",$textArr);
-		return trim($text);
-	}
+    
+    return trim($text);
+  }
+  
+  
+    
+  static function curl_get_file_contents($URL) {
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_URL, $URL);
+        $contents = curl_exec($c);
+        curl_close($c);
+        return $contents ? $contents : false;
+  }
 
 	static function strReplace($textSource, $offset, $length, $textReplace) {
 		return substr($textSource,0,$offset) . $textReplace . substr($textSource,$offset+$length);
@@ -642,3 +721,5 @@ return false;
 
 
 }
+
+

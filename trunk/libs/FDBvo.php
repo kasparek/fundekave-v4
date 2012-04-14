@@ -20,10 +20,27 @@ class FDBvo extends FDBTool {
 			write_log('FDBvo::load:20 missing primaryCol');
 		}
 		$primCol = explode(',',$this->primaryCol);
+    $missingPrimValue = false;
+    $anyValue = false;
 		foreach($primCol as $col) {
-			$keys[] =  $this->vo->{$col};
+      $v = $this->vo->{$col};
+      if(empty($v)) $missingPrimValue=true; 
+			$keys[] =  $v;
 		}
-		$arr = $this->get( implode(',',$keys) );
+    if(!$missingPrimValue) {
+  		$arr = $this->get( implode(',',$keys) );
+    } else {
+      foreach($this->columns as $col) {
+        $v = $this->vo->{$col};
+        if(!empty($v)) {
+          $this->addWhere($col."='".$v."'");
+          $anyValue=true;
+        }
+      }
+      if(!$anyValue) return false;
+      $arr = $this->get();
+    }
+    
 		if(!empty($arr)) {
 			foreach($arr as $k=>$v) {
 				$this->vo->{$k} = $v;

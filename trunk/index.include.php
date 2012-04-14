@@ -96,11 +96,9 @@ if(!empty($_GET['fuupconfig'])) {
 	exit;
 }
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
-	FError::write_log('index::fileManagement START');
 	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if( $user->idkontrol ) {
 		if(isset($_GET['f'])) $f = FSystem::safeText($_GET['f']); else $f='';
-		FError::write_log('index::fileManagement OPERATION: '.$f);
 		//PARAMS
 		$isMultipart = false;
 		if(!empty($_FILES)) {
@@ -112,10 +110,12 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		}
 		if(empty($file)) {
 			echo '0';
+      FError::write_log('index::fileManagement: MISSING FILE');
 			FSystem::fin();
 		}
 		if(empty($_POST['crc'])) {
 			echo '0';
+      FError::write_log('index::fileManagement: MISSING CRC');
 			FSystem::fin();
 		}
 		$crcReceived = $_POST['crc'];
@@ -127,6 +127,7 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		$crcStored = $ffile->storeChunk($file,$seq);
 		if($crcStored!=$crcReceived) {
 			$ffile->deleteChunk($file,$seq);
+      FError::write_log('index::fileManagement: CRC DOES NOT MATCH');
 			echo '0';
 			FSystem::fin();
 		}

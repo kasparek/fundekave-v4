@@ -384,7 +384,7 @@ class FDBTool {
 		} else {
 			$ret = $this->getContent();
 			if(!empty($ret)) {
-				return $ret;
+				return $ret[0];
 			}
 		}
 		return false;

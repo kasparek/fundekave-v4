@@ -170,7 +170,7 @@ class UserVO extends Fvob {
 		$vo->VO = 'UserVO';
 		$vo->setWhere("sys_users.userId in (".implode(',',$arr).")");
 		$vo->setOrder('sys_users.name');
-		return $vo->get();
+		return $vo->getContent();
 	}
 	
 	function loadOnlineFriends() {
@@ -184,7 +184,7 @@ class UserVO extends Fvob {
 		$vo->addWhere("subdate(NOW(),interval ".USERVIEWONLINE." second) < l.dateUpdated"); 
 		$vo->setOrder('sys_users.dateLastVisit');
 		$vo->autojoinSet(true);
-		return $vo->get();
+		return $vo->getContent();
 	}
 	
 	function loadRequests() {
@@ -195,6 +195,6 @@ class UserVO extends Fvob {
 		$vo->VO = 'UserVO';
 		$vo->setWhere("i.typeId = 'request' and i.addon = '".$this->userId."'");
 		$vo->setOrder('sys_users.name');
-		return $vo->get();
+		return $vo->getContent();
 	}
 }
