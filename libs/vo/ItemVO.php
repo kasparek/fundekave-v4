@@ -26,7 +26,7 @@ class ItemVO extends Fvob {
 	'public' => 'public'
 	); }
 
-	protected $propertiesList = array('position','distance','forumSet','reminder','reminderEveryday','repeat');
+	protected $propertiesList = array('position','distance','forumSet','reminder','reminderEveryday','repeat','picasaPhoto');
 	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);
 	
 	//rendering options
@@ -287,9 +287,6 @@ class ItemVO extends Fvob {
 			//thumbnail URL
 			$this->thumbUrl = $this->getImageUrl(null,$thumbCut);
 			//detail image URL
-			//get optional sizes list
-			$sideOptionList = explode(',',FConf::get('image_conf','sideOptions'));
-
       //picasa
       if($this->pageVO->typeId=='galery') {
         $picasaAlbumId = $this->pageVO->getProperty('picasaAlbum',false,true);
@@ -299,37 +296,16 @@ class ItemVO extends Fvob {
           $picasaAlbumId = $fgapps->createAlbum($this->pageVO->name,$this->pageVO->description);
           $this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
         }
+        $picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
+        if(!$picasaPhotoUrl) $this->setProperty('picasaPhoto','TODO');
       }
       
 			//get closest lower
 			$maxWidth = $user->userVO->clientWidth;
 			if(empty($maxWidth)) $maxWidth = FConf::get('image_conf','sideDefault');
-			else {
-				$maxWidth = $maxWidth - $confGalery['clientSpace'];
-				//get closest valid width
-				foreach ($sideOptionList as $fib) {
-					if($maxWidth - $fib >= 0) {
-						$diff[$fib] = (int) $maxWidth - $fib;
-					}
-				}
-				$fibs = array_flip($diff);
-				$maxWidth = $fibs[min($diff)];
-			}
-      
-      if(!empty($picasaAlbumId)){
-        $picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
-        if(!$picasaPhotoUrl) {
-          $this->setProperty('picasaPhoto','TODO');
-        } elseif($picasaPhotoUrl != 'TODO' && $picasaPhotoUrl != 'INPROGRESS') {
-          //get google side equialent
-          $gsizeList = array(300=>288,400=>400,500=>512,600=>640,800=>800,1000=>1024,1200=>1280);
-          $gsize = $gsizeList[$maxWidth];
-          if($gsize!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$gsize.'/',$picasaPhotoUrl);
-          $this->detailUrl = str_replace('https://','http://',$picasaPhotoUrl);;
-        }
-      }
-      
-      if(!$this->detailUrl) $this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop');
+			else $maxWidth = $maxWidth - $confGalery['clientSpace'];
+      //set detail url
+      $this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop',true);
 		}
 
 		//check if is editable
@@ -469,12 +445,43 @@ class ItemVO extends Fvob {
 	 *
 	 * @return string url
 	 */
-	function getImageUrl($root=null,$thumbCut=null) {
+	function getImageUrl($root=null,$thumbCut=null,$usePicasa=false) {
 		$confGalery = FConf::get('galery');
 		if($root===null) $root = $confGalery['targetUrlBase'];
-		if($thumbCut===null) $sideSize = $confGalery['thumbCut'];
+		if($thumbCut===null) $thumbCut = $confGalery['thumbCut'];
+    
+    list($size,$cropStyle) = explode("/",$thumbCut);
+    $arr = explode("x",$size);
+    $width = $arr[0];
+    $height=0;
+    if(isset($arr[1])) $height=$arr[1];
+    
+    if($usePicasa) {
+      $picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
+      if($picasaPhotoUrl != 'TODO' && $picasaPhotoUrl != 'INPROGRESS') {
+        $usePicasa=true;
+      }
+    }
+    $sideOptionList = $usePicasa ? array(160,288,400,512,640,800,1024,1280) : explode(',',FConf::get('image_conf','sideOptions'));
+    $width=$this->normalizeSize($width,$sideOptionList);
+    if($usePicasa==true) {
+      if($width!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$width.'/',$picasaPhotoUrl);
+      return str_replace('https://','http://',$picasaPhotoUrl);;
+    }
+		$thumbCut = $width; 
+    if($height>0) $thumbCut .= 'x'.$this->normalizeSize($height,$sideOptionList);
+    $thumbCut .= '/'.$cropStyle;
 		return $root . $thumbCut .'/'. $this->pageVO->get('galeryDir') . '/'. $this->enclosure;
 	}
+  
+  //get closest valid width
+  function normalizeSize($value,$options) {
+    if(empty($value)) return $options[0];
+    if(isset($options[$value])) return $options[$value];
+    foreach ($options as $fib) if($value - $fib >= 0) $diff[$fib] = (int) $value - $fib;
+		$fibs = array_flip($diff);
+		return $fibs[min($diff)];
+  }
 
 	/**
 	 * delete all cached images
@@ -483,7 +490,7 @@ class ItemVO extends Fvob {
 	function flush( $resolution=0 ) {
 		if(!is_array($resolution)) $resolution = array($resolution);
 		foreach($resolution as $side) {
-			$url = $this->getImageUrl(null,$side,'flush');
+			$url = $this->getImageUrl(null,$side.'/flush');
 			//request url to do action
 			file_get_contents( $url );
 		}

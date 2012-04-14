@@ -202,7 +202,7 @@ class FItemsForm {
 					if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1));
 				}
         //anti spam
-        /*
+        
          if(!$user->idkontrol && $itemVO->typeId=='forum') {
           if(FSystem::isSpam(array('author-name' => $data['name'], 'content' => $data['text'].' '.$data['location']))) {
             //store data
@@ -213,7 +213,7 @@ class FItemsForm {
             FError::add(FLang::$ERROR_ANTISPAM);
           }
         }
-        */
+        
 				/**
 				 *save item
 				 */

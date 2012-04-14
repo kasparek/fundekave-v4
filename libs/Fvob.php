@@ -89,7 +89,19 @@ class Fvob {
 	}
 
 	function load() {
-		if(empty($this->{$this->getPrimaryCol()})) return false;
+		if(empty($this->{$this->getPrimaryCol()})) {
+      //check column values
+      $colList = $this->getColumns();
+      $r=false;
+      
+      foreach($colList as $col) {
+        $colValue = $this->$col;
+        if(!empty($colValue)) {
+          $r=true;
+        }
+      }
+      if(!$r) return $r;
+    }
 		$this->loadCached();
 		if($this->loaded===false) {
 			$vo = new FDBvo( $this );
