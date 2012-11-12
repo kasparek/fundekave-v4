@@ -456,12 +456,17 @@ class ItemVO extends Fvob {
     $height=0;
     if(isset($arr[1])) $height=$arr[1];
     
+    //temporary override
+    //$usePicasa = false;
+    
     if($usePicasa) {
-      $picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
-      if($picasaPhotoUrl != 'TODO' && $picasaPhotoUrl != 'INPROGRESS') {
-        $usePicasa=true;
+      $picasaPhotoUrl = trim($this->getProperty('picasaPhoto',false,true));
+      if($picasaPhotoUrl == 'TODO' || $picasaPhotoUrl == 'INPROGRESS') {
+        $usePicasa=false;
       }
+      if(empty($picasaPhotoUrl)) $usePicasa=false;
     }
+    
     $sideOptionList = $usePicasa ? array(160,288,400,512,640,800,1024,1280) : explode(',',FConf::get('image_conf','sideOptions'));
     $width=$this->normalizeSize($width,$sideOptionList);
     if($usePicasa==true) {

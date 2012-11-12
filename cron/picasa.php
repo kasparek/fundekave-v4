@@ -27,14 +27,21 @@ $itemIdList = FDBTool::getCol($q);
 foreach($itemIdList as $itemId) {
   echo $itemId.'<br>';
   $confGalery = FConf::get('galery');
-  $itemVO = new ItemVO($itemId,true);
-  $itemVO->setProperty('picasaPhoto','INPROGRESS');
-  $picasaAlbumId = $itemVO->pageVO->getProperty('picasaAlbum',false,true);
-  $fgapps = FGApps::getInstance();
-  $picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$confGalery['sourceServerBase'] . $itemVO->pageVO->get('galeryDir') . '/' . $itemVO->enclosure,$itemVO->text,$itemVO->enclosure);
-  $itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
-  
-  $done++;
+  $itemVO = new ItemVO($itemId);
+  if(!$itemVO->load()) {
+    //delete from TODO
+    $q = "delete from sys_pages_items_properties where itemId='".$itemId."' and value='TODO'";
+    FDBTool::query($q);
+    echo 'DELETED: '.$itemId.'<br>';    
+  } else {
+    $itemVO->setProperty('picasaPhoto','INPROGRESS');
+    $picasaAlbumId = $itemVO->pageVO->getProperty('picasaAlbum',false,true);
+    $fgapps = FGApps::getInstance();
+    $picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$confGalery['sourceServerBase'] . $itemVO->pageVO->get('galeryDir') . '/' . $itemVO->enclosure,$itemVO->text,$itemVO->enclosure);
+    $itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
+    
+    $done++;
+  }
 }
 
 echo 'JOB DONE<br><br>';
