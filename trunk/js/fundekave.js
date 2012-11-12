@@ -115,6 +115,7 @@ function boot() {
 
 function galeriaInit(){if($('.galeria').length>0){
 if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
+$(".galeria").height(600);
 Galleria.loadTheme('/js6/galleria.theme/galleria.classic.min.js');
 Galleria.run('.galeria');
 }
