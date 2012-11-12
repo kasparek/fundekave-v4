@@ -107,7 +107,19 @@ function boot() {
 		if(parseInt(Sett.msgTi)>0)Msg.check();
 		var perm=$("#accessSel");if(perm.length>0)perm.change(function(){var v=$(this).val();if(v==0)$("#rule1").show();else $("#rule1").hide();}).change();
 	}
+  
+   galeriaInit();
+  
+  
 };
+
+function galeriaInit(){if($('.galeria').length>0){
+if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
+Galleria.loadTheme(Sett.jsUrl+'galleria.theme/galleria.classic.min.js');
+Galleria.run('#galleria');
+}
+}
+
 /**INIT jQuery UI and everything possibly needed for ajax forms and items*/
 function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;buttonInit();tabsInit();datePickerInit();Richta.map();fajaxInit();fconfirmInit();GooMapi.init();fuupInit();slimboxInit();$(".expand").autogrow();};
 function juilater(){ $(".expand").change(); }
