@@ -194,7 +194,7 @@ div.galleryList div.thumbnail {float: left;margin-right: 15px;padding-top: 0;mar
 div.galleryList div.hentry {clear: both;min-height: 140px;padding: 0;margin-bottom: 1em;}
 div.galleryList div.hentry h3.entry-title {padding: 0.5em 0;}
 div.galleryList div.hentry span.abbr {line-height: 2em;}
-div#mainbar div.galeryThumb {float: left;clear: none !important;margin: 0 0.5em 1em 0.5em !important;padding: 0;}
+div#mainbar div.galeryThumb {float: left;clear: none !important;margin: 0 0.4em 0em !important;padding:0;border:0;}
 div.entry-content div.galeryThumb {margin: 1em 0.5em 1em 0.5em !important;}
 div.entry-content div.alignCenter div.galeryThumb {float:none;width: 170px;margin: auto;}
 div.galeryThumb div.entry-content {padding: 0 !important;}
