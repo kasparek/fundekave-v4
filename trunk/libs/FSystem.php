@@ -589,7 +589,8 @@ class FSystem {
               $iframe->setAttribute('src',$vimeoId?'http://player.vimeo.com/video/'.$vimeoId.'?title=0&amp;byline=0&amp;portrait=0':'http://www.youtube.com/embed/'.$youtubeId);
               $tag->parentNode->replaceChild($iframe,$tag);
             } else {
-              $pageContent = FSystem::curl_get_file_contents($url);
+              //$pageContent = FSystem::curl_get_file_contents($url);
+              $pageContent=false;
               if($pageContent!==false) {
                 if(preg_match("/\<title\>(.*)\<\/title\>/i",$pageContent,$matches)) {
                   $title = trim($matches[1]);
@@ -597,6 +598,7 @@ class FSystem {
                     $tag->nodeValue=$matches[1];
                 }
               }
+              
             } 
           }
         }

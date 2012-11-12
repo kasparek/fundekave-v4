@@ -29,6 +29,7 @@ class page_UserPost implements iPage {
 		}
 		if(!isset($data['action'])) $data['action'] = false;
 		if(isset($data["send"])) $data['action']='send';
+    
 		//---SEND MESSAGE
 		if($data['action']=='send') {
 			$data["text"] = FSystem::textins($data["text"]);
@@ -86,6 +87,8 @@ class page_UserPost implements iPage {
 					break;
 			}
 		}
+
+    
 		//---redirect
 		if(empty($data['__ajaxResponse'])) {
 			if($redirect) FHTTP::redirect(FSystem::getUri($redirParam));
@@ -99,7 +102,7 @@ class page_UserPost implements iPage {
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('s');
-			
+		
 		$msgs = new FMessages($user->userVO->userId);
 		//load from filter
 		$filter = $cache->getData($user->pageVO->pageId,'filter');
@@ -141,6 +144,7 @@ class page_UserPost implements iPage {
 				$recipientId = $arrpost[0]['userIdTo'];
 			}
 		}
+    
 		//override recipient if from parameter
 		if(!empty($user->whoIs)) {
 			if($recipients = FUser::getgidname($user->whoIs)) $recipientId = $user->whoIs;
@@ -179,6 +183,8 @@ class page_UserPost implements iPage {
 			}
 		}
 
+    FProfiler::write('UserPost::build - STEP 3');
+
 		//---data printing
 		if(!empty($arrpost)) {
 			$cache = FCache::getInstance('s');
@@ -190,6 +196,7 @@ class page_UserPost implements iPage {
 					$tpl->touchBlock("unread");
 					$tpl->setVariable("UNRID",$post['postId']);
 				}
+        FProfiler::write('UserPost::build - POST 1');
 				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
@@ -205,6 +212,7 @@ class page_UserPost implements iPage {
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdFrom"]);
 				}
+        FProfiler::write('UserPost::build - POST 2');
 				$tpl->setVariable("MULINK", $mulink);
 				$tpl->setVariable("MUNAME", $muname);
 				$tpl->setVariable("TEXT", FSystem::postText($post["text"]));
@@ -212,10 +220,13 @@ class page_UserPost implements iPage {
 
 				/*prectena*/
 				if ($post["userIdFrom"]!=$user->userVO->userId && $post["readed"]==0) {
-					FDBTool::query("update sys_users_post set readed='1' where postId='".$post["postId"]."' || postIdFrom='".$post["postId"]."'");
+					FDBTool::query("update sys_users_post set readed='1' where postId='".$post["postId"]."' or postIdFrom='".$post["postId"]."'");
 				}
+        FProfiler::write('UserPost::build - POST 3');
 			}
 		}
+
+    FProfiler::write('UserPost::build - DONE');
 
 		if(!empty($data['__ajaxResponse'])) {
 			if(isset($data['refreshPage'])) {
