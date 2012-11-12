@@ -115,7 +115,7 @@ function boot() {
 
 function galeriaInit(){if($('.galeria').length>0){
 if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
-//Galleria.loadTheme(Sett.jsUrl+'galleria.theme/galleria.classic.min.js');
+Galleria.loadTheme('/js6/galleria.theme/galleria.classic.min.js');
 Galleria.run('.galeria');
 }
 }
