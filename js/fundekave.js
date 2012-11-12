@@ -114,7 +114,6 @@ function boot() {
 };
 
 function galeriaInit(){
-return;
 if($('.galeria').length>0){
 if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
 $(".galeria").height(600);
