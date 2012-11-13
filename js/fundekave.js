@@ -121,7 +121,15 @@ var offset=$(".galeria").offset(),galeriaHeight = $(window).height() - 50 - offs
 if(galeriaHeight > $(".galeria").width()) galeriaHeight = $(".galeria").width();   
 $(".galeria").height(galeriaHeight);
 Galleria.loadTheme('/js6/galleria.theme/galleria.classic.min.js');
-Galleria.run('.galeria');
+
+Galleria.run('.galeria', {
+    dataConfig: function(img) {
+        return {
+            image: $(img).attr('data-image');
+        }
+    }
+});
+
 }
 }
 
