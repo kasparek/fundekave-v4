@@ -120,7 +120,7 @@ if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
 var offset=$(".galeria").offset(),galeriaHeight = $(window).height() - 50 - offset.top;
 if(galeriaHeight > $(".galeria").width()) galeriaHeight = $(".galeria").width();   
 $(".galeria").height(galeriaHeight);
-Galleria.loadTheme('/js6/galleria.theme/theme.js');
+Galleria.loadTheme('/js6/galleria.theme/galleria.classic.js');
 
 Galleria.run('.galeria', {
     dataConfig: function(img) {
