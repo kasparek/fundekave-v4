@@ -125,7 +125,7 @@ Galleria.loadTheme('/js6/galleria.theme/galleria.classic.min.js');
 Galleria.run('.galeria', {
     dataConfig: function(img) {
         return {
-            image: $(img).attr('data-image');
+            image: $(img).attr('data-image')
         }
     }
 });
