@@ -108,7 +108,7 @@ function boot() {
 		var perm=$("#accessSel");if(perm.length>0)perm.change(function(){var v=$(this).val();if(v==0)$("#rule1").show();else $("#rule1").hide();}).change();
 	}
   
-   galeriaInit();
+   //galeriaInit();
   
   
 };
