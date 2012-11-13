@@ -108,7 +108,7 @@ function boot() {
 		var perm=$("#accessSel");if(perm.length>0)perm.change(function(){var v=$(this).val();if(v==0)$("#rule1").show();else $("#rule1").hide();}).change();
 	}
   
-   //galeriaInit();
+   galeriaInit();
   
   
 };
@@ -116,7 +116,10 @@ function boot() {
 function galeriaInit(){
 if($('.galeria').length>0){
 if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
-$(".galeria").height(600);
+//calculate vertical size, win-height - position-y - save-margin
+var galeriaHeight = $(window).height() - 50 - $(".galeria").y;
+if(galeriaHeight > $(".galeria").width()) galeriaHeight = $(".galeria").width();   
+$(".galeria").height(galeriaHeight);
 Galleria.loadTheme('/js6/galleria.theme/galleria.classic.min.js');
 Galleria.run('.galeria');
 }
