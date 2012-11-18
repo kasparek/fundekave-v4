@@ -1,5 +1,6 @@
 package net.fundekave.fuup.controller
 {
+	import net.fundekave.fuup.ApplicationFacade;
 	import net.fundekave.fuup.model.FileProxy;
 	
 	import org.puremvc.as3.multicore.interfaces.ICommand;
@@ -11,6 +12,7 @@ package net.fundekave.fuup.controller
 		override public function execute(notification:INotification):void {
 			var proxy:FileProxy = facade.retrieveProxy(  FileProxy.NAME ) as FileProxy;
 			proxy.cancel();
+			sendNotification(ApplicationFacade.ACTION_SELECT);
 		}
 	}
 }

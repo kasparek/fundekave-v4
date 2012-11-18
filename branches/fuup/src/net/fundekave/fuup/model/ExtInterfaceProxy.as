@@ -2,49 +2,61 @@ package net.fundekave.fuup.model
 {
 	import flash.external.ExternalInterface;
 	
+	import net.fundekave.fuup.ApplicationFacade;
 	import org.puremvc.as3.multicore.interfaces.IProxy;
 	import org.puremvc.as3.multicore.patterns.proxy.Proxy;
-
+	
 	public class ExtInterfaceProxy extends Proxy implements IProxy
 	{
 		public static const NAME:String = 'ExtInterfaceProxy';
 		
-		public static const LOADED:String = 'loaded';
-		public static const UPLOAD_ONE_COMPLETE:String = 'uploadOneComplete';
-		public static const UPLOAD_COMPLETE:String = 'uploadComplete';
+		public static const IMAGE_LOADED:String = 'imageLoaded';
+		public static const IMAGE_REMOVED:String = 'imageRemoved';
+		public static const IMAGE_UPLOADED:String = 'imageUploaded';
+		public static const IMAGE_NUM:String = 'imageNum';
 		
-		public var callbackLoaded:String;
-		public var callbackUploadOneComplete:String;
-		public var callbackUploadComplete:String;
+		public static const PROGRESS:String = 'progress';
+		
+		public static const COMPLETE:String = 'complete';
+		
+		public static const ERROR:String = 'error';
+		public static const ERROR_UPLOAD:String = 'errorUpload';
+		public static const ERROR_FILE_NUM_LIMIT:String = 'errorFileNumLimit';
+		
+		public static const STATUS:String = 'status';
+		public static const STATUS_BUSY:String = 'statusBusy';
+		public static const STATUS_READY:String = 'statusReady';
+		
+		public var callback:String;
 		
 		public function ExtInterfaceProxy()
 		{
-			super( NAME );
+			super(NAME);
+			if (ExternalInterface.available)
+				ExternalInterface.addCallback("fuupGateIn", jsReceived);
 		}
 		
-		public function call(key:String):void {
-			var functionName:String;
-			
-			switch(key) {
-				case LOADED:
-					functionName = callbackLoaded;
-				break;
-				case UPLOAD_ONE_COMPLETE:
-					functionName = callbackUploadOneComplete;
-				break;
-				case UPLOAD_COMPLETE:
-					functionName = callbackUploadComplete;
-				break;
+		public function call(key:String,value:String):void
+		{
+			if (ExternalInterface.available)
+			{
+				ExternalInterface.call(callback, key, value);
 			}
-			
-			if(functionName) {
-				if(functionName.length>0) {
-					if(ExternalInterface.available) {
-						ExternalInterface.call( functionName );
-					}
-				}
+		}
+		
+		private function jsReceived(value:String):void {
+			trace("ExtInterfaceProxy::jsReceived - " + value);
+			switch (value) {
+				case 'upload':
+					sendNotification(ApplicationFacade.ACTION_UPLOAD);
+					break;
+				case 'cancel':
+					sendNotification(ApplicationFacade.ACTION_CANCEL);
+					break;
+				case 'removeAll':
+					sendNotification(ApplicationFacade.ACTION_REMOVEALL);
+					break;
 			}
-			
 		}
 	}
 }

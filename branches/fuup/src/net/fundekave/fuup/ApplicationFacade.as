@@ -1,97 +1,82 @@
 package net.fundekave.fuup
 {
 	import net.fundekave.fuup.controller.*;
-	import net.fundekave.fuup.model.ExtInterfaceProxy;
 	
 	import org.puremvc.as3.multicore.patterns.facade.Facade;
-
+	
 	public class ApplicationFacade extends Facade
 	{
-		public static const SERVICE_CONFIG_URL:String = 'xml/config.xml';
-
 		public static const STARTUP:String = 'startup';
-		
-		public static const CANCEL:String = 'cancel';
-				
-		// State constants	
-		public static const INJECTED:String 	    = 'injected';		
+		public static const PROGRESS:String = 'progress';
 		
 		//---http service
 		public static const SERVICE_ERROR:String = 'serviceError';
-		public static const FILESIZE_ERROR:String = 'filesizeError';
+		//---js service
+		public static const CALLBACK:String = 'callback';
 		
 		//---resources
-		public static const CONFIG_LOAD:String			= 'loadResources';
-		public static const CONFIG_LOADING:String 	    = 'congifDataLoading';
-		public static const CONFIG_LOADED:String 	    = 'configDataLoaded';
-		public static const CONFIG_FAILED:String 	    = 'configDataFailed';
-		
-		//---logion
-		public static const LOGIN:String 	    = 'login';
-		public static const LOGIN_SUCCESS:String 	    = 'loginSuccess';
-		public static const LOGIN_FAILED:String 	    = 'loginFailed';
-		
-		//---global progress
-		public static const CALLBACK:String		= 'callback';
-		public static const GLOBAL_PROGRESS_INIT:String = 'globalProgressInit';
+		public static const CONFIG_LOAD:String = 'loadResources';
+		public static const CONFIG_LOADED:String = 'configDataLoaded';
 		
 		//---file management
-		public static const FILE_CHECK_EXISTS:String		= 'fileCheckExists';
-		public static const FILE_CHECK_FAIL:String		= 'fileCheckFail';
-		public static const FILE_CHECK_OK:String		= 'fileCheckOk';
-		public static const FILE_DELETE:String			= 'fileDelete';
+		public static const FILE_CHECK_EXISTS:String = 'fileCheckExists';
+		public static const FILE_CHECK_FAIL:String = 'fileCheckFail';
+		public static const FILE_CHECK_OK:String = 'fileCheckOk';
+		public static const FILE_DELETE:String = 'fileDelete';
 		
-		//---processing
-		public static const PROCESS_PROGRESS:String		= 'processProgress';
+		//application states
+		public static const STATE:String = 'state';
 		
-		public static const IMAGES_CHECK_FOR_PROCESSING:String = 'imagesCheckForProcessing';
-		public static const IMAGES_PROCESSED:String = 'imagesProcessed';
-		public static const IMAGES_PROCESS:String		= 'imagesProcess';
+		public static const STATE_INITING:String = Fuup.NAME + '/states/initing';
+		public static const STATE_SELECTING:String = Fuup.NAME + '/states/selecting';
+		public static const STATE_LOADING:String = Fuup.NAME + '/states/loading';
+		public static const STATE_UPLOADING:String = Fuup.NAME + '/states/uploading';
 		
-		public static const IMAGES_CHECK_FOR_UPLOADING:String = 'imagesCheckForUploading';
-		public static const IMAGES_UPLOAD:String		= 'imagesUpload';
+		public static const ACTION_SELECT:String = Fuup.NAME + "/actions/select";
+		public static const ACTION_LOAD:String = Fuup.NAME + "/actions/load";
+		public static const ACTION_UPLOAD:String = Fuup.NAME + "/actions/upload";
+		public static const ACTION_CANCEL:String = Fuup.NAME + "/actions/cancel";
+		public static const ACTION_REMOVEALL:String = Fuup.NAME + "/actions/removeAll";
 		
-		 
-	 	public function ApplicationFacade( key:String )
-	 	{
-	 		super(key);	
-	 	}
-	 	
-        public static function getInstance( key:String ) : ApplicationFacade 
-        {
-            if ( instanceMap[ key ] == null ) instanceMap[ key ]  = new ApplicationFacade( key );
-            return instanceMap[ key ] as ApplicationFacade;
-        }
-	
-		public function startup ( app:Fuup ) : void
+		public var state:String;
+		
+		public function ApplicationFacade(key:String)
 		{
-			sendNotification( STARTUP, app );
+			super(key);
+		}
+		
+		public static function getInstance(key:String):ApplicationFacade
+		{
+			if (instanceMap[key] == null)
+				instanceMap[key] = new ApplicationFacade(key);
+			return instanceMap[key] as ApplicationFacade;
+		}
+		
+		public function startup(app:Fuup):void
+		{
+			sendNotification(STARTUP, app);
 		}
 		
 		/**
 		 * register application commands
 		 * */
-		override protected function initializeController () : void
+		override protected function initializeController():void
 		{
 			super.initializeController();
-			registerCommand( STARTUP, StartupCommand );
-			registerCommand( CALLBACK, CallbackCommand );
+			registerCommand(STARTUP, StartupCommand);
+			registerCommand(CALLBACK, CallbackCommand);
 			
-			registerCommand( CONFIG_LOAD, LoadConfigCommand );
-			registerCommand( CONFIG_LOADED, LoadedConfigCommand );
+			registerCommand(CONFIG_LOAD, LoadConfigCommand);
+			registerCommand(CONFIG_LOADED, LoadedConfigCommand);
 			
-			registerCommand( LOGIN, LoginCommand);
+			registerCommand(FILE_CHECK_EXISTS, FileCheckExists);
+			registerCommand(FILE_DELETE, FileDelete);
 			
-			registerCommand( FILE_CHECK_EXISTS, FileCheckExists );
-			registerCommand( FILE_DELETE, FileDelete );
-			
-			registerCommand( IMAGES_CHECK_FOR_PROCESSING, ImagesCheckForProcessingCommand );
-			registerCommand( IMAGES_PROCESS, ImagesProcessFilesCommand );
-			
-			registerCommand( IMAGES_CHECK_FOR_UPLOADING, ImagesCheckForUploading );
-			registerCommand( IMAGES_UPLOAD, UploadFilesCommand );
-			
-			registerCommand( CANCEL, CancelCommand);
+			registerCommand(ACTION_SELECT, SelectFilesCommand);
+			registerCommand(ACTION_LOAD, LoadFilesCommand);
+			registerCommand(ACTION_UPLOAD, UploadFilesCommand);
+			registerCommand(ACTION_CANCEL, CancelCommand);
+			registerCommand(ACTION_REMOVEALL, FileDelete);
 		}
 	}
 }
