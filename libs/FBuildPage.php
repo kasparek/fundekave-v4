@@ -351,7 +351,9 @@ class FBuildPage {
 			$fsidebar->load();
 			$fsidebar->show();
 			FProfiler::write('FBuildPage--FSidebar');
-		}
+		} else {
+      $tpl->touchBlock('bodySidebarOff');
+    }
 		$tpl->setVariable("USER",$user->idkontrol?'1':'0');
 		//post messages
 		if($user->userVO->hasNewMessages()) {

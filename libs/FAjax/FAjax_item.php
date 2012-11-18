@@ -107,6 +107,20 @@ class FAjax_item extends FAjaxPluginBase {
 			FAjax::addResponse('i'.$data['i'], 'replaceWith', page_ItemDetail::build($data));
 		}
 	}
+  
+  static function stats($data) {
+  
+  }
+  
+  static function comments($data) {
+	$itemId = $data['id'] * 1;
+	if(empty($itemId)) return;
+
+//	$output = page_ItemsList::build(array('itemId'=>$itemId,'onlyComments'=>true));
+//	FAjax::addResponse('afterFeed', '$html', $output);
+//	FAjax::addResponse('call','GooMapi.init');
+
+  }
 	
 	static function tempStoreFlush($data) {
 	  FFile::flushTemplFile();

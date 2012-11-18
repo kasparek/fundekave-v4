@@ -115,20 +115,27 @@ function boot() {
 
 function galeriaInit(){
 if($('.galeria').length>0){
-if(!Lazy.load(Sett.ll.galeria,galeriaInit))return;
+if(!Lazy.load(Sett.ll.galeria,galeriaInit)) return;
+if(!Lazy.load(['/js6/galleria.theme/theme.css'],galeriaInit)) return;
 var offset=$(".galeria").offset(),galeriaHeight = $(window).height() - 50 - offset.top;
 if(galeriaHeight > $(".galeria").width()) galeriaHeight = $(".galeria").width();   
 $(".galeria").height(galeriaHeight);
-Galleria.loadTheme('/js6/galleria.theme/galleria.classic.js');
-Galleria.configure({
-    transition: 'fade',
-    imageCrop: false,
-    trueFullscreen:true
+Galleria.loadTheme('/js6/galleria.theme/theme.js');
+//Galleria.configure({    transition: 'fade',    imageCrop: false,    trueFullscreen:true,    thumbnails: 'lazy'});
+Galleria.on('image', function(e) {
+  var id=e.galleriaData.id;
+    //palce
+    //Fajax.add('id',id);
+    //Fajax.send('item-stats',Sett.page);
+    //komentare
+    Fajax.add('id',id);
+    Fajax.send('item-comments',Sett.page);
 });
 Galleria.run('.galeria', {
     dataConfig: function(img) {
         return {
-            image: $(img).attr('data-image')
+            image: $(img).attr('data-image'),
+            id: $(img).attr('id')
         }
     }
 });

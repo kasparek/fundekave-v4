@@ -159,6 +159,7 @@ class ItemVO extends Fvob {
 	public $thumbInSysRes = false;
 	public $thumbUrl;
 	public $detailUrl;
+  public $bigUrl;
 
 	//---changed
 	public $htmlName;
@@ -306,6 +307,9 @@ class ItemVO extends Fvob {
 			else $maxWidth = $maxWidth - $confGalery['clientSpace'];
       //set detail url
       $this->detailUrl = $this->getImageUrl(null,$maxWidth.'x'.$maxWidth.'/prop',true);
+      //set large url for fullscreen
+      $totalMaxSize = FConf::get('image_conf','maxSize');
+      $this->bigUrl = $this->getImageUrl(null,$totalMaxSize.'x'.$totalMaxSize.'/prop',true);
 		}
 
 		//check if is editable
@@ -453,7 +457,7 @@ class ItemVO extends Fvob {
     list($size,$cropStyle) = explode("/",$thumbCut);
     $arr = explode("x",$size);
     $width = $arr[0];
-    $height=0;
+    $height = 0;
     if(isset($arr[1])) $height=$arr[1];
     
     //temporary override
@@ -467,8 +471,8 @@ class ItemVO extends Fvob {
       if(empty($picasaPhotoUrl)) $usePicasa=false;
     }
     
-    $sideOptionList = $usePicasa ? array(160,288,400,512,640,800,1024,1280) : explode(',',FConf::get('image_conf','sideOptions'));
-    $width=$this->normalizeSize($width,$sideOptionList);
+    $sideOptionList = $usePicasa ? array(160,288,400,512,640,800,1024,1280,2048) : explode(',',FConf::get('image_conf','sideOptions'));
+    $width = $this->normalizeSize($width,$sideOptionList);
     if($usePicasa==true) {
       if($width!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$width.'/',$picasaPhotoUrl);
       return str_replace('https://','http://',$picasaPhotoUrl);;

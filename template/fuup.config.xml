@@ -2,16 +2,9 @@
 <Fuup>
 <Config>
 <Settings>
-<Item name="resizeVisible">{RESIZEVISIBLE}</Item>
-<Item name="resize">{RESIZE}</Item>
-<Item name="settingsEnabled">{SETTINGSENABLED}</Item>
-<Item name="settingsOn">{SETTINGSON}</Item>
-<Item name="autoProcess">{AUTOPROCESS}</Item>
 <Item name="autoUpload">{AUTOUPLOAD}</Item>
 <Item name="displayContent">{DISPLAYCONTENT}</Item>
-<Item name="crop">{CROP}</Item>
 <Item name="multi">{MULTI}</Item>
-<Item name="permissions">0</Item>
 <Item name="maxSize">{MAXSIZE}</Item>
 <Item name="chunkSize">{CHUNKSIZE}</Item>
 <Item name="chunkLimit">4</Item>
@@ -30,9 +23,6 @@
 <Service name="auth">{AUTH}</Service>
 </Services>
 </Config>
-<Filters>
-<Filter id="sharpen" enabled="1" visible="0"><name>Sharpen</name></Filter>
-</Filters>
 <Lang>
 <Item name="cancel"><![CDATA[STOP]]></Item>
 <Item name="selectfiles"><![CDATA[Vybrat]]></Item>

@@ -155,10 +155,9 @@ class FItemsRenderer {
 		}
 
 		if(!empty($itemVO->enclosure)) {
-			$vars['IMGALT'] = $itemVO->enclosure;
-			$vars['IMGTITLE'] = $itemVO->addon.' '.$itemVO->pageVO->get('name').' '.$itemVO->enclosure;
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
+      $vars['IMGURLBIG'] = $itemVO->bigUrl;
 		} else {
 			if($itemVO->typeId=='event') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 		}
@@ -195,7 +194,7 @@ class FItemsRenderer {
 		$showCommentNum=true;
 		if($itemVO->typeId=='forum') {
 			$pageType = $itemVO->pageVO->get('typeId');
-			if($pageType=='galery' || $pageType=='forum') $showCommentNum=false; 
+			$showCommentNum=false; 
 		}
 		if($showCommentNum) {
 			$vars['COMMENTLINK'] = $link;
