@@ -8,81 +8,42 @@ package net.fundekave.fuup.model
 	import net.fundekave.Application;
 	import net.fundekave.fuup.ApplicationFacade;
 	
+	import com.adobe.serialization.json.JSON;
+	
 	import org.puremvc.as3.multicore.interfaces.IProxy;
 	import org.puremvc.as3.multicore.patterns.proxy.Proxy;
-
+	
 	public class ConfigProxy extends Proxy implements IProxy
 	{
 		public static const NAME:String = 'ConfigDataProxy';
 		
-		private var dataXML:XML;
+		private var configDefault:String = '{"settings":{"autoUpload":"0","showControls":"1","showImages":"1","multi":"1","maxSize":"2097152","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{}}}';
 		
-		public var filters:XMLList
-		public var lang:Object;
+		public var config:Object;
 		
 		public function ConfigProxy()
 		{
-			super( NAME );
+			super(NAME);
 		}
 		
-		//---
-		public function getService(ident:String):XML {
-			return XML( dataXML..Service.(@name==ident) );
-		}
-		
-		public function getValue(ident:String):XML {
-			var itemList:XMLList = dataXML..Item.(@name==ident);
-			if(itemList.length() > 0) {
-				return itemList[0];
-			} else {
-				return null;
-			}
-		}
-
-		public function load() :void {
-			//---try to get confug url
+		public function load():void
+		{
 			var params:Object = Application.application.loaderInfo.parameters;
-			var configUrl:String; 
-			if(params.hasOwnProperty('config')) {
-				configUrl = params.config;
-			}
 			
-			sendNotification( ApplicationFacade.CONFIG_LOADING );
-			var request:URLRequest = new URLRequest(((configUrl!==null)?(configUrl):(ApplicationFacade.SERVICE_CONFIG_URL)) + ((configUrl.indexOf('?')>-1)?('&'):('?')) + 'r='+Math.random());
-			var loader:URLLoader = new URLLoader();
-			loader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler,false,0,true );
-			loader.addEventListener(Event.COMPLETE, loaderCompleteHandler,false,0,true );
-			loader.load(request);
-		}
-		
-		private function loaderCompleteHandler(event:Event):void {
-			try {
-				dataXML = new XML( event.target.data );
-				
-				filters = dataXML..Filter.(@enabled==1);
-				
-				lang = {};
-				for each(var l:XML in dataXML..Lang.Item) {
-					lang[l.@name] = String(l);
+			if (params.hasOwnProperty('config'))
+			{
+				if (String(params.config).length > 0)
+				{
+					config = JSON.decode(params.config);
+					if (config)
+					{
+						sendNotification(ApplicationFacade.CONFIG_LOADED);
+						return;
+					}
 				}
-				
-			} catch (e:Error) {
-				trace(e.toString());
-				sendNotification( ApplicationFacade.CONFIG_FAILED );
-				return;
 			}
-			if(!dataXML) {
-				sendNotification( ApplicationFacade.CONFIG_FAILED );
-				return;
-			}
-			
-			dataXML.ignoreWhitespace = true;
-			sendNotification( ApplicationFacade.CONFIG_LOADED );
+			config = JSON.decode(configDefault);
+			sendNotification(ApplicationFacade.CONFIG_LOADED);
 		}
-
-		private function errorHandler(e:IOErrorEvent):void {
-			sendNotification( ApplicationFacade.CONFIG_FAILED );
-		}
-		
 	}
 }

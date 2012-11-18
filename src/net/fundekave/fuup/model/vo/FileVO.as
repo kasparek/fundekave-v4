@@ -12,9 +12,8 @@ package net.fundekave.fuup.model.vo
 		public var processedBitmapData:BitmapData;
 		
 		public var renderer:FileView;
-		public var encodedJPG:ByteArray;
 		
-		public var useFiltersPrev:Boolean=false;
+		public var encodedJPG:ByteArray;
 		
 		private var _filename:String;
 		
@@ -41,7 +40,6 @@ package net.fundekave.fuup.model.vo
 		
 		public var outputQuality:Number = 100;
 		
-		public var crop:Boolean = false;
 		public var showThumb:Boolean = true;
 		
 		function FileVO(filename:String=null):void {

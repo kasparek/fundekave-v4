@@ -11,7 +11,7 @@ package net.fundekave.fuup.controller
 		override public function execute ( note:INotification ) : void
 		{
 			var proxy:ExtInterfaceProxy = facade.retrieveProxy(ExtInterfaceProxy.NAME) as ExtInterfaceProxy;
-			proxy.call( note.getBody() as String );
+			proxy.call( note.getBody() as String, note.getType() as String );
 		}
 	}
 }

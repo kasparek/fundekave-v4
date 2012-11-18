@@ -1,8 +1,9 @@
 package net.fundekave.fuup.controller
 {
 	import net.fundekave.fuup.ApplicationFacade;
-	import net.fundekave.fuup.common.constants.StateConstants;
 	import net.fundekave.fuup.model.FileProxy;
+	import net.fundekave.fuup.model.ExtInterfaceProxy;
+	import net.fundekave.fuup.view.ApplicationMediator;
 	
 	import org.puremvc.as3.multicore.interfaces.ICommand;
 	import org.puremvc.as3.multicore.interfaces.INotification;
@@ -14,12 +15,13 @@ package net.fundekave.fuup.controller
 		
 		override public function execute(notification:INotification):void
 		{
-			
-			//---send notification to - processing start
-			sendNotification( ApplicationFacade.GLOBAL_PROGRESS_INIT, StateConstants.STATE_UPLOADING );
-			
+			var appMed:ApplicationMediator = facade.retrieveMediator(ApplicationMediator.NAME) as ApplicationMediator;
+			if (appMed.state != ApplicationFacade.STATE_SELECTING) return;
+				
 			var proxy:FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
-			if(proxy.fileList.length > 0) {
+			if (proxy.fileList.length > 0) {
+				sendNotification(ApplicationFacade.STATE, null, ApplicationFacade.STATE_UPLOADING);
+				sendNotification(ApplicationFacade.CALLBACK, ExtInterfaceProxy.STATUS, ExtInterfaceProxy.STATUS_BUSY);
 				proxy.uploadFiles();
 			}
 		}

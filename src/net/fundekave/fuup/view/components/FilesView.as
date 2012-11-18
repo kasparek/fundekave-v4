@@ -2,6 +2,8 @@ package net.fundekave.fuup.view.components
 {
 	import com.bit101.components.*;
 	import com.greensock.TweenLite;
+	import flash.filters.GlowFilter;
+	import flash.filters.GradientGlowFilter;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -13,115 +15,140 @@ package net.fundekave.fuup.view.components
 	import flash.text.TextFormat;
 	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
+	import flash.filters.DropShadowFilter;
+	import flash.events.MouseEvent;
 	
 	import net.fundekave.Application;
 	import net.fundekave.Container;
+	import net.fundekave.fuup.model.vo.FileVO;
 	
 	public class FilesView extends Container
 	{
-		public function FilesView(parent:DisplayObjectContainer=null, xpos:Number=0, ypos:Number=0,lang:Object=null)
+		public function FilesView(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
 		{
 			super(parent, xpos, ypos);
-			this.lang = lang;
 		}
 		
-		import net.fundekave.fuup.model.vo.FileVO;
+		[Embed(source="/assets/browse.png")]
+		private var BROWSEIMG:Class;
+		[Embed(source="/assets/upload.png")]
+		private var UPLOADIMG:Class;
+		[Embed(source="/assets/cancel.png")]
+		private var CANCELIMG:Class;
 		
 		public static const RESIZE:String = 'resize';
 		
-		public static const ACTION_PROCESS:String = 'actionProcess';
+		public static const PROGRESS:String = 'progress';
+		
+		public static const ACTION_LOAD:String = 'actionLoad';
 		public static const ACTION_UPLOAD:String = 'actionUpload';
 		public static const ACTION_CANCEL:String = 'actionCancel';
 		public static const FILE_CHECK_EXITS:String = 'fileCheckExits';
+		public static const FILE_ERROR_NUMLIMIT:String = 'fileErrorNumLimit';
 		
 		public static const GAP_HORIZONTAL:int = 5;
 		public static const GAP_VERTICAL:int = 5;
 		
-		public var lang:Object;
-		
 		public var filesNumMax:int;
+		public var fileTypes:String = 'jpg,gif,png';
 		public var multiFiles:Boolean = true;
-				
 		public var embedWidth:Number;
 		
-		private var _settingsVisible:Boolean = true;
-		public function get settingsVisible():Boolean {
-			return _settingsVisible;
-		}
-		public function set settingsVisible(v:Boolean):void {
-			_settingsVisible = v;
-			if(correctionsCheckboxHolder) {
-				correctionsCheckboxHolder.visible = _settingsVisible;
-			}
-		}
-		
-		public var settingsOn:Boolean = false;
-		public var _processVisible:Boolean = true;
-		public function set processVisible(v:Boolean):void {
-			_processVisible = v;
-			if(processButt)processButt.visible = v; 
-		}
-		public function get processVisible():Boolean { return _autoUpload; }
-		
-		public var _processOn:Boolean = true;
-		public function set processOn(v:Boolean):void {
-			_processOn = v;
-			if(processButt)processButt.selected = v; 
-		}
-		public function get processOn():Boolean { return _autoUpload; }
-		
-		private var _autoProcess:Boolean = false;
-		public function set autoProcess(v:Boolean):void { 
-			_autoProcess = v;
-			if(processButt)processButt.visible = !v && processVisible; 
-		}
-		public function get autoProcess():Boolean { return _autoProcess; }
-		
 		private var _autoUpload:Boolean = false;
-		public function set autoUpload(v:Boolean):void {
-			_autoUpload = v; 
-			if(processButt)processButt.visible = !v && processVisible;
-			if(uploadButt)uploadButt.visible = !v; 
-		}
-		public function get autoUpload():Boolean { return _autoUpload; }
 		
-		private var _displayContent:Boolean = true;
-		public function set displayContent(v:Boolean):void { 
-			_displayContent = v; 
-			if(filesBox)filesBox.visible = v;
+		public function set autoUpload(v:Boolean):void
+		{
+			_autoUpload = v;
+			if (showControls)
+				if (uploadButt)
+					uploadButt.visible = !v;
 		}
-		public function get displayContent():Boolean { return _displayContent; }
-				
+		
+		public function get autoUpload():Boolean
+		{
+			return _autoUpload;
+		}
+		
+		private var _showControls:Boolean = true;
+		
+		public function set showControls(v:Boolean):void
+		{
+			if (uploadButt)
+				uploadButt.visible = false;
+			if (cancelButt)
+				cancelButt.visible = false;
+			_showControls = v;
+		}
+		
+		public function get showControls():Boolean
+		{
+			return _showControls;
+		}
+		
+		private var _showImages:Boolean = true;
+		
+		public function set showImages(v:Boolean):void
+		{
+			_showImages = v;
+			if (filesBox)
+				filesBox.visible = v;
+		}
+		
+		public function get showImages():Boolean
+		{
+			return _showImages;
+		}
+		
+		private var filesLoadingNum:int = 0;
 		private var fileRefList:FileReferenceList
-		private function browseFiles(e:Event):void {
-			globalMessagesBox.visible = false;
-			
-			if(multiFiles===true) {
+		
+		private function browseFiles(e:Event):void
+		{
+			var fileFilter:String = "*." + fileTypes.replace(/,/gi, ";*.");
+			if (multiFiles === true)
+			{
 				fileRefList = new FileReferenceList();
-				fileRefList.addEventListener(Event.SELECT, onFilesSelect );
-				fileRefList.browse([new FileFilter(String(lang.filetypes), "*.jpg;*.gif;*.png")]);
-			} else {
+				fileRefList.addEventListener(Event.SELECT, onFilesSelect);
+				fileRefList.browse([new FileFilter(fileTypes.toUpperCase(), fileFilter)]);
+			}
+			else
+			{
 				var fileRef:FileReference = new FileReference();
-				fileRef.addEventListener(Event.SELECT, onFileSelect );
-				fileRef.browse([new FileFilter(String(lang.filetypes), "*.jpg;*.gif;*.png")]);
+				fileRef.addEventListener(Event.SELECT, onFileSelect);
+				fileRef.browse([new FileFilter(fileTypes.toUpperCase(), fileFilter)]);
 			}
 		}
 		
-		public function initProgress(state:String,max:uint):void {
+		public var progress:Number = 0;
+		
+		public function initProgress():void
+		{
 			//---init global progress bar
+			selectFilesButt.visible = false;
+			uploadButt.visible = false;
 			globalProgressBar.visible = true;
 			globalProgresslabel.visible = true;
-			cancelButt.visible = true;
-			globalProgressBar.value = 0;
-			globalProgressBar.maximum = max*100;
-			TweenLite.to(globalProgressBar,0.3,{value:globalProgressBar.maximum*0.1});
-			globalProgresslabel.text = lang[state];
-			this.addEventListener(ACTION_CANCEL, onCancel);
+			if (showControls)
+				cancelButt.visible = true;
+			progress = globalProgressBar.value = 0;
+			globalProgressBar.maximum = 100;
+			TweenLite.to(globalProgressBar, 0.3, {value: globalProgressBar.maximum * 0.1});
+			globalProgresslabel.text = '';
 		}
-		public function toProgress(value:Number):void {
-			TweenLite.to(globalProgressBar,0.1,{value:value*100});
+		
+		public function toProgress(value:Number):void
+		{
+			progress = value;
+			TweenLite.to(globalProgressBar, 0.1, {value: value});
 		}
-		public function closeProgress():void {
+		
+		public function closeProgress():void
+		{
+			selectFilesButt.visible = true;
+			if (showControls)
+				if (!autoUpload)
+					uploadButt.visible = true;
+			
 			globalProgressBar.visible = false;
 			globalProgresslabel.visible = false;
 			cancelButt.visible = false;
@@ -129,73 +156,79 @@ package net.fundekave.fuup.view.components
 		
 		private var filesArr:Array;
 		private var populateFilesTimeout:uint;
-		private function onFilesSelect(e:Event):void {
+		
+		private function onFilesSelect(e:Event):void
+		{
 			filesArr = (e.target as FileReferenceList).fileList;
-			if(filesArr.length>0) {
-				initProgress('loading',filesArr.length+filesBox.numChildren);
-				setTimeout(populateFiles,300);
+			if (filesArr.length > 0)
+			{
+				doAction(ACTION_LOAD);
+				filesLoadingNum = filesBox.numChildren + filesArr.length;
+				initProgress();
+				setTimeout(populateFiles, 1);
 			}
 		}
-
-		private function onCancel(e:Event):void
+		
+		public function cancel():void
 		{
-			this.removeEventListener(ACTION_CANCEL, onCancel);
-			if(populateFilesTimeout) clearTimeout(populateFilesTimeout);
+			if (populateFilesTimeout)
+				clearTimeout(populateFilesTimeout);
 			closeProgress();
 			currFile = null;
 			filesArr = [];
 		}
 		
-		private function onFileSelect(e:Event):void {
+		private function onFileSelect(e:Event):void
+		{
 			
 			var fileRef:FileReference = e.target as FileReference;
-			if( fileRef.name ) {
+			if (fileRef.name)
+			{
 				filesArr = [];
 				currFile = fileRef;
-				initProgress('loading',1);
-				setTimeout(fileCheckLater,300);
+				initProgress();
+				setTimeout(fileCheckLater, 300);
 			}
 		}
-		private function fileCheckLater():void {
-			dispatchEvent( new Event( FILE_CHECK_EXITS ));
+		
+		private function fileCheckLater():void
+		{
+			dispatchEvent(new Event(FILE_CHECK_EXITS));
 		}
 		
 		private var currFileView:FileView;
 		public var currFile:FileReference;
 		
-		private function populateFiles():void {
-			if(populateFilesTimeout) populateFilesTimeout=0;
-			if(filesArr.length > 0) {
+		private function populateFiles():void
+		{
+			if (populateFilesTimeout)
+				populateFilesTimeout = 0;
+			if (filesArr.length > 0)
+			{
 				currFile = filesArr.shift();
 				//---check if file is not already in list
-				dispatchEvent( new Event( FILE_CHECK_EXITS ));
+				dispatchEvent(new Event(FILE_CHECK_EXITS));
 				return;
-			} else if(autoUpload === true) {
+			}
+			else if (autoUpload === true)
+			{
 				doAction(ACTION_UPLOAD);
 			}
 		}
 		
-		public function failFile():void {
-			//---set progress
-			
-			//---show message
+		public function failFile():void
+		{
 			progressInc();
-			//---populate next file
 			populateFiles();
 		}
 		
-		public function addFile():void {
+		public function addFile():void
+		{
 			//---check for limit
-			if(filesBox.numChildren >= filesNumMax) {
+			if (filesBox.numChildren >= filesNumMax)
+			{
 				//---show error
-				var errWin:CloseWindow = new CloseWindow(this,200,5,"ERROR");
-				errWin.color = 0xff8888;
-				errWin.closeTween = {alpha:0,delay:5};
-				errWin.height = 50;
-				errWin.width = 200;
-				errWin.close();
-				errWin.content.addChild( new Label(null,0,5,lang.filelimiterror) );
-				
+				dispatchEvent(new Event(FILE_ERROR_NUMLIMIT));
 				closeProgress();
 				currFile = null;
 				filesArr = null;
@@ -204,180 +237,215 @@ package net.fundekave.fuup.view.components
 			
 			currFileView = new FileView();
 			currFileView.fileVO = new FileVO();
-			currFileView.fileVO.showThumb = this.displayContent;
-			currFileView.lang = this.lang;
+			currFileView.fileVO.showThumb = this.showImages;
 			//---set filesbox size and child position
 			var pos:Object = this.getNextPos();
 			currFileView.x = pos.x;
-			currFileView.y = pos.y; 
+			currFileView.y = pos.y;
 			//---wait till filesBox is resized with new element
-			currFileView.addEventListener(Event.ADDED_TO_STAGE, onFileViewFrame );
-			filesBox.addChild( currFileView );
-			//setTimeout( onFileViewFrame, 100, null);
-		}
-				
-		private function getNextPos(index:int=-1):Object {
-			var total:Number = index>-1 ? index : filesBox.numChildren;
-			var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH+GAP_HORIZONTAL));
-			var rowsDone:Number = Math.floor(total / cols);
-			var rest:Number = total - (cols*rowsDone);
-			return {x:rest * (FileView.WIDTH+GAP_HORIZONTAL),y:rowsDone * (FileView.HEIGHT+GAP_VERTICAL)};
+			currFileView.addEventListener(Event.ADDED_TO_STAGE, onFileViewFrame);
+			filesBox.addChild(currFileView);
 		}
 		
-		private function resetLayout():void {
-			if(filesBox.numChildren>0) {
+		private function getNextPos(index:int = -1):Object
+		{
+			var total:Number = index > -1 ? index : filesBox.numChildren;
+			var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH + GAP_HORIZONTAL));
+			var rowsDone:Number = Math.floor(total / cols);
+			var rest:Number = total - (cols * rowsDone);
+			return {x: rest * (FileView.WIDTH + GAP_HORIZONTAL), y: rowsDone * (FileView.HEIGHT + GAP_VERTICAL)};
+		}
+		
+		private function resetLayout():void
+		{
+			if (filesBox.numChildren > 0)
+			{
 				var delay:Number = 0;
-				for(var i:int=0; i<filesBox.numChildren; i++) {
-					var child:DisplayObject = filesBox.getChildAt(i) as DisplayObject; 
+				for (var i:int = 0; i < filesBox.numChildren; i++)
+				{
+					var child:DisplayObject = filesBox.getChildAt(i) as DisplayObject;
 					var pos:Object = this.getNextPos(i);
-					if(child.x != pos.x || child.y != pos.y) {
+					if (child.x != pos.x || child.y != pos.y)
+					{
 						child.x = pos.x;
 						child.y = pos.y;
-						trace('LAYOUT::SETTINGNEWPOSITION');  
+						trace('LAYOUT::SETTINGNEWPOSITION');
 					}
 				}
-				var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH+GAP_HORIZONTAL));
-				var rows:Number = Math.ceil( filesBox.numChildren / cols );
+				var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH + GAP_HORIZONTAL));
+				var rows:Number = Math.ceil(filesBox.numChildren / cols);
 				filesBox.height = rows * currFileView.height;
 			}
 		}
 		
-		private function onFileViewFrame(e:Event):void {
-			(e.target as FileView).removeEventListener(Event.ADDED_TO_STAGE, onFileViewFrame );
-			fileLater( currFileView, currFile );
+		private function onFileViewFrame(e:Event):void
+		{
+			(e.target as FileView).removeEventListener(Event.ADDED_TO_STAGE, onFileViewFrame);
+			fileLater(currFileView, currFile);
 		}
 		
-		private function fileLater(fileView:FileView, file:FileReference):void {
-			fileView.addEventListener( FileView.FILE_UPDATED, onFileCreated );
+		private function fileLater(fileView:FileView, file:FileReference):void
+		{
+			fileView.addEventListener(FileView.FILE_UPDATED, onFileCreated);
 			fileView.file = file;
 		}
 		
-		private function onFileCreated(e:Event):void {
+		private function onFileCreated(e:Event):void
+		{
 			var fileView:FileView = e.target as FileView;
-			fileView.removeEventListener( FileView.FILE_UPDATED, onFileCreated );
+			fileView.removeEventListener(FileView.FILE_UPDATED, onFileCreated);
 			//---set progress
 			progressInc();
-			setTimeout(populateFiles,100);
+			setTimeout(populateFiles, 100);
 		}
 		
-		private function progressInc():void {
-			toProgress(filesBox.numChildren);
-			if(filesArr.length == 0) {
-				//---hide progress bar
-				closeProgress();
+		private function progressInc():void
+		{
+			var p:Number = Math.round((filesBox.numChildren / filesLoadingNum) * 100);
+			toProgress(p);
+			dispatchEvent(new Event(PROGRESS));
+			if (filesArr.length == 0)
+			{
+				doAction(ACTION_CANCEL);
 			}
 		}
 		
 		private var fileBoxHeight:int = 0;
 		private var fileBoxNumChildred:int = 0;
-		private var oldStageWidth:int=0;
-		private function onResize(e:Event):void {
-			if(displayContent===true) {
-				if(Application.application.stage.stageWidth != oldStageWidth) {
+		private var oldStageWidth:int = 0;
+		
+		private function onResize(e:Event):void
+		{
+			if (showImages === true)
+			{
+				if (Application.application.stage.stageWidth != oldStageWidth)
+				{
 					var stage:Stage = Application.application.stage;
 					oldStageWidth = stage.stageWidth;
-					filesBox.width = stage.stageWidth-20;
-					trace("STAGERESIZE::NEWFILESBOXSIZE::"+filesBox.width);
+					filesBox.width = stage.stageWidth - 20;
+					trace("STAGERESIZE::NEWFILESBOXSIZE::" + filesBox.width);
 					//---set new positions for children
 					resetLayout();
 				}
-				if( filesBox.height != fileBoxHeight || fileBoxNumChildred != filesBox.numChildren) {
+				if (filesBox.height != fileBoxHeight || fileBoxNumChildred != filesBox.numChildren)
+				{
 					
-					if( fileBoxNumChildred != filesBox.numChildren ) {
+					if (fileBoxNumChildred != filesBox.numChildren)
+					{
 						resetLayout();
-						fileBoxNumChildred = filesBox.numChildren;	
+						fileBoxNumChildred = filesBox.numChildren;
 					}
 					
-					if(filesBox.numChildren > 0) {
+					if (filesBox.numChildren > 0)
+					{
 						
-						if( filesBox.height != fileBoxHeight ) {
+						if (filesBox.height != fileBoxHeight)
+						{
 							fileBoxHeight = filesBox.height;
 							Application.application.height = filesBox.height + Fuup.HEIGHT + 300;
 						}
 						
-					} else if(Application.application.height != Fuup.HEIGHT) {
+					}
+					else if (Application.application.height != Fuup.HEIGHT)
+					{
 						fileBoxHeight = 0;
 						Application.application.height = Fuup.HEIGHT;
 					}
-					dispatchEvent( new Event(RESIZE) );
+					dispatchEvent(new Event(RESIZE));
 				}
 			}
 		}
 		
-		private function doAction(actionStr:String):void {
-			dispatchEvent( new Event( actionStr ));
+		private function doAction(actionStr:String):void
+		{
+			dispatchEvent(new Event(actionStr));
 		}
-				
-		private var selectFilesButt:PushButton;
-		private var correctionsCheckboxHolder:Container;
-		public var correctionsCheckbox:CheckBox;
-		public var processButt:CheckBox;
-		private var uploadButt:PushButton;
-		public var cancelButt:PushButton;
+		
+		public var selectFilesButt:Component;
+		private var uploadButt:Component;
+		public var cancelButt:Component;
 		public var globalProgressBar:ProgressBar;
 		public var globalProgresslabel:Label;
-		public var globalMessagesBox:Container;
-		public var globalMessages:Label;
 		private var filesBox:Container;
-		public function setup():void {
-			selectFilesButt = new PushButton(this,5,5,lang.selectfiles,browseFiles);
-			selectFilesButt.width = 60;
+		
+		public function setup():void
+		{
+			selectFilesButt = new Component(this);
+			selectFilesButt.x = 5;
+			selectFilesButt.y = 4;
+			selectFilesButt.useHandCursor = true;
+			selectFilesButt.buttonMode = true;
+			selectFilesButt.width = 32;
+			selectFilesButt.height = 32;
+			selectFilesButt.addChild(new BROWSEIMG());
+			selectFilesButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
+			selectFilesButt.addEventListener(MouseEvent.CLICK, browseFiles, false, 0, true);
+			selectFilesButt.addEventListener(MouseEvent.ROLL_OVER, onButtOver, false, 0, true);
+			selectFilesButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
 			
-			correctionsCheckboxHolder = new Container(this,70,5);
-			correctionsCheckboxHolder.width = 60;
-			correctionsCheckboxHolder.height = 20;
-			correctionsCheckboxHolder.visible = _settingsVisible;
-			correctionsCheckbox = new CheckBox(correctionsCheckboxHolder,5,5,lang.corections);
-			correctionsCheckbox.selected = settingsOn;
+			uploadButt = new Component(this);
+			uploadButt.useHandCursor = true;
+			uploadButt.buttonMode = true;
+			uploadButt.x = 47;
+			uploadButt.y = 4;
+			uploadButt.width = 32;
+			uploadButt.height = 32;
+			uploadButt.addChild(new UPLOADIMG());
+			uploadButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
+			uploadButt.addEventListener(MouseEvent.CLICK, onUploadClick, false, 0, true);
+			uploadButt.addEventListener(MouseEvent.ROLL_OVER, onButtOver, false, 0, true);
+			uploadButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
+			uploadButt.visible = showControls ? !_autoUpload : false;
 			
-			processButt = new CheckBox(this,135-(_settingsVisible?65:0)+5,10,lang.process,onProcessClick);
-			processButt.selected=_processOn;
-			processButt.width = 60;
-			processButt.visible = !_autoUpload && _processVisible;
-			
-			uploadButt = new PushButton(this,200-(!_settingsVisible?65:0)-(!processButt.visible?65:0),5,lang.upload,onUploadClick);
-			uploadButt.width = 60;
-			uploadButt.visible = !_autoUpload;
-			
-			cancelButt = new PushButton(this,200,5,lang.cancel,onCancelClick);
-			cancelButt.width = 60;
+			cancelButt = new Component(this);
+			cancelButt.useHandCursor = true;
+			cancelButt.buttonMode = true;
+			cancelButt.x = 200;
+			cancelButt.y = 4;
+			cancelButt.width = 32;
+			cancelButt.height = 32;
+			cancelButt.addChild(new CANCELIMG());
+			cancelButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
+			cancelButt.addEventListener(MouseEvent.CLICK, onCancelClick, false, 0, true);
+			cancelButt.addEventListener(MouseEvent.ROLL_OVER, onButtOver, false, 0, true);
+			cancelButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
 			cancelButt.visible = false;
 			
-			if (embedWidth == -1) embedWidth = 200;
-			globalProgressBar = new ProgressBar(this,5,5);
-			globalProgressBar.width = embedWidth < 190 ? embedWidth-10 : 190;
+			if (embedWidth == -1)
+				embedWidth = 200;
+			globalProgressBar = new ProgressBar(this, 5, 6);
+			globalProgressBar.width = embedWidth < 190 ? embedWidth - 10 : 190;
 			globalProgressBar.height = 20;
 			globalProgressBar.maximum = 100;
 			globalProgressBar.visible = false;
 			
-			globalProgresslabel = new Label(this,10,5);
+			globalProgresslabel = new Label(this, 10, 6);
 			globalProgresslabel.visible = false;
 			
-			globalMessagesBox = new Container(this,270,5);
-			globalMessagesBox.visible = false;
-			globalMessagesBox.width = 200;
-			globalMessagesBox.height = 20;
-			globalMessagesBox.backgroundColor = 0xaa3333;
-			
-			globalMessages = new Label(globalMessagesBox,5,0);
-			var format:TextFormat = globalMessages.textField.defaultTextFormat;
-			format.color = 0xffffff;
-			globalMessages.textField.defaultTextFormat = format;
-			
-			filesBox = new Container(this,5,30);
+			filesBox = new Container(this, 5, 37);
 			filesBox.mouseChildren = true;
-			filesBox.visible = displayContent;
+			filesBox.visible = showImages;
 			
 			filesBox.addEventListener(Event.ENTER_FRAME, onResize);
 		}
 		
-		private function onProcessClick(e:Event):void {
-			doAction(ACTION_PROCESS);
+		private function onButtOver(e:Event):void
+		{
+			(e.target as Component).filters = [new GlowFilter(0)];
 		}
-		private function onUploadClick(e:Event):void {
+		
+		private function onButtOut(e:Event):void
+		{
+			(e.target as Component).filters = [];
+		}
+		
+		private function onUploadClick(e:Event):void
+		{
 			doAction(ACTION_UPLOAD);
 		}
-		private function onCancelClick(e:Event):void {
+		
+		private function onCancelClick(e:Event):void
+		{
 			doAction(ACTION_CANCEL);
 		}
 	}

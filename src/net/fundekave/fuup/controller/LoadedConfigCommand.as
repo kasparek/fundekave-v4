@@ -21,29 +21,22 @@ package net.fundekave.fuup.controller
 			var fileProxy: FileProxy = facade.retrieveProxy( FileProxy.NAME ) as FileProxy;
 			var extProxy:ExtInterfaceProxy = facade.retrieveProxy(ExtInterfaceProxy.NAME) as ExtInterfaceProxy;
 			
-			fileProxy.widthMax = Number( configProxy.getValue( 'imageWidthMax' ) );
-			fileProxy.heightMax = Number( configProxy.getValue( 'imageHeightMax' ) );
-			fileProxy.outputQuality = Number( configProxy.getValue( 'imageQuality' ) );
-			fileProxy.crop = Number( configProxy.getValue( 'crop' ) ) === 1 ? true : false;
-			fileProxy.displayContent = Number( configProxy.getValue("displayContent") )==1 ? true : false;
-			fileProxy.filtersList = configProxy.filters;
+			fileProxy.widthMax = Number( configProxy.config.settings.image.width );
+			fileProxy.heightMax = Number( configProxy.config.settings.image.height );
+			fileProxy.outputQuality = Number( configProxy.config.settings.image.quality );
 			
-			fileProxy.serviceURL = String( configProxy.getService('files') );
-			fileProxy.authToken = String( configProxy.getService('auth') );
-			fileProxy.maxSize = Number( configProxy.getValue('maxSize') );
-	        fileProxy.chunkSize = Number( configProxy.getValue('chunkSize') );
-	        fileProxy.uploadLimit = Number( configProxy.getValue('chunkLimit') );
+			fileProxy.showImages = Number( configProxy.config.settings.showImages ) == 1 ? true : false;
 			
-			extProxy.callbackLoaded = String( configProxy.getValue( 'onLoaded' ) );
-			extProxy.callbackUploadOneComplete = String( configProxy.getValue( 'onUploadOneComplete' ) );
-			extProxy.callbackUploadComplete = String( configProxy.getValue( 'onUploadComplete' ) );
+			fileProxy.serviceURL = String( configProxy.config.service.url );
+			fileProxy.serviceVars = configProxy.config.service.vars;
+	        
+			fileProxy.chunkSize = Number( configProxy.config.settings.chunkSize );
+	        fileProxy.uploadLimit = Number( configProxy.config.settings.chunkLimit );
 			
-			Application.application.width = Number( configProxy.getValue('embedWidth') );
-			Application.application.height = Number( configProxy.getValue('embedHeight') );
+			extProxy.callback = String( configProxy.config.settings.callback );
 			
-			sendNotification( ApplicationFacade.CALLBACK, ExtInterfaceProxy.LOADED );
+			Application.application.width = Number( configProxy.config.settings.appSize.width );
+			Application.application.height = Number( configProxy.config.settings.appSize.height );
 		}
-		
-		
 	}
 }
