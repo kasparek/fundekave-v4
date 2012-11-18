@@ -17,7 +17,7 @@ package net.fundekave.fuup.model
 	{
 		public static const NAME:String = 'ConfigDataProxy';
 		
-		private var configDefault:String = '{"settings":{"autoUpload":"0","showControls":"1","showImages":"1","multi":"1","maxSize":"2097152","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{}}}';
+		private var configDefault:String = '{"settings":{"autoUpload":"0","showControls":"1","showImages":"1","multi":"1","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{}}}';
 		
 		public var config:Object;
 		
