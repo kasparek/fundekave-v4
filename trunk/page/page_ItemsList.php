@@ -27,6 +27,7 @@ class page_ItemsList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
+		if(!isset($data['onlyComments'])) $data['onlyComments']=false;
     
 		if(!empty($data['__get']['abot'])) {
 			$abotUid = $data['__get']['abot'];
@@ -57,28 +58,39 @@ class page_ItemsList implements iPage {
 		//var setup
 		$user = FUser::getInstance();
 		if($user->itemVO) {
-			if($user->itemVO->itemId>0) $itemVO = $user->itemVO;
+			if($user->itemVO->itemId > 0) $itemVO = $user->itemVO;
 		}
 		if(!empty($data['itemId'])) {
 			$itemVO = new ItemVO($data['itemId']);
 			if(!$itemVO->load()) $itemVO = null;
 		}
+		$isDetail = false;
+		if(!empty($itemVO)) $isDetail = true;
 
 		$pageVO = $user->pageVO;
-		if(!empty($itemVO)) {
+		if($isDetail) {
 			$pageVO = $itemVO->pageVO;
 		}
-
-		if(FRules::getCurrent(2)) {
-			if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
-				if(FRules::getCurrent(FConf::get('settings','perm_add_shortblog')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId), FLang::$LABEL_FORUM_NEW,array('class'=>'fajaxa'));
-				if(FRules::getCurrent(FConf::get('settings','perm_add_event')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+		if(!$data['onlyComments']) {
+			if(FRules::getCurrent(2)) {
+				if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+					if(FRules::getCurrent(FConf::get('settings','perm_add_shortblog')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId), FLang::$LABEL_FORUM_NEW,array('class'=>'fajaxa'));
+					if(FRules::getCurrent(FConf::get('settings','perm_add_event')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+				}
 			}
-		}
-		if($user->pageVO->pageId=='event' && $user->userVO->userId>0){
-			FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
-		}
+			if($user->pageVO->pageId=='event' && $user->userVO->userId>0){
+				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+			}
+
+			//---DEEPLINKING for forum pages
+			$manualCurrentPage = 0;
+			if($isDetail) {
+				if($itemVO->typeId=='forum' && $itemVO->pageVO->get('typeId')=='forum') {
+					$manualCurrentPage = $itemVO->onPageNum();
+				}
+			}
+		} //only comments
 
 		//perpage based on unreaded items
 		$diff=0;
@@ -99,17 +111,13 @@ class page_ItemsList implements iPage {
 			}
 		}
 
-		//---DEEPLINKING for forum pages
-		$manualCurrentPage = 0;
-		if(!empty($itemVO)) {
-			if($itemVO->typeId=='forum' && $itemVO->pageVO->get('typeId')=='forum') {
-				$manualCurrentPage = $itemVO->onPageNum();
-			}
-		}
-
 		$output = '';
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
+    if($pageVO->typeId=='galery' && !$isDetail) {
+      $touchedBlocks[]='galleryfeed';
+      $user->pageVO->showSidebar = false;
+    }
 		$vars = array();
 		if($diff>0) {
 			$max = FConf::get('perpage','max');
@@ -131,7 +139,7 @@ class page_ItemsList implements iPage {
 		if(!isset($_REQUEST['k'])) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
 		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
 		$pagerOptions = array('manualCurrentPage'=>$manualCurrentPage);
-		if(!empty($itemVO) && $pageVO->typeId!='forum') {
+		if($isDetail && $pageVO->typeId!='forum') {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;
 			$arrPagerExtraVars['i'] = $itemId;
 		} else {
@@ -145,7 +153,7 @@ class page_ItemsList implements iPage {
 		 *if in edit mode - param u or forum display form
 		 **/
 		$vars['EDITFORM']='';
-		if($user->pageParam=='u' && !empty($itemVO)) {
+		if($user->pageParam=='u' && $isDetail) {
 			if(FRules::getCurrent(2) || $user->userVO->userId==$itemVO->userId) {
 				$vars['EDITFORM'] = FItemsForm::show($itemVO);
 			}
@@ -154,18 +162,19 @@ class page_ItemsList implements iPage {
 		/**
 		 *ITEM DETAIL
 		 **/
-		$detail = false;
-		if(!empty($itemVO)) {
+		if($isDetail) {
 			if($itemVO->pageVO->get('typeId')!='forum') {
 				//show item detail
-				$vars['DETAIL'] = page_ItemDetail::build($data);
-				$detail = true;
+				if(!$data['onlyComments']) {
+					$vars['DETAIL'] = page_ItemDetail::build($data);
+				}
 			} else {
 				$itemVO = null;
+				$isDetail = false;
 			}
 		}
 		
-		if($detail==false) {
+		if(!$isDetail) {
 			//TAG FILTERING
 			$cache = FCache::getInstance('f');
 			$tagGroups = $cache->getData('tagGrouped'.(!empty($typeRequest)?'-'.$typeRequest:''),'page/'.$user->pageVO->pageId.'/tag');
@@ -208,7 +217,7 @@ class page_ItemsList implements iPage {
 			if($pageVO->typeId == 'forum' && $pageVO->locked>0) $writePerm=0;
 			if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
 				$writePerm = $pageVO->prop('forumSet');
-				if(!empty($itemVO)) {
+				if($isDetail) {
 					if($writePerm==1) $writePerm = $itemVO->prop('forumSet');
 					$data['simple'] = true;
 				} else {
@@ -216,7 +225,7 @@ class page_ItemsList implements iPage {
 				}
 			}
       //global override from config
-      if(($pageVO->typeId == 'forum' || $detail===true) && !FConf::get('settings','perm_forum_unsigned')) $writePerm = 2;
+      if(($pageVO->typeId == 'forum' || $isDetail) && !FConf::get('settings','perm_forum_unsigned')) $writePerm = 2;
 
 			if($writePerm==1 || ($writePerm==2 && $user->idkontrol)) {
 				$formItemVO = new ItemVO();
@@ -232,11 +241,11 @@ class page_ItemsList implements iPage {
 		}
 
 		//HEADER
-		if(empty($itemVO) && !empty($pageVO->content)) {
+		if(!$isDetail && !empty($pageVO->content)) {
 			$vars['CONTENT'] = FSystem::postText($pageVO->content);
 		}
 
-		if(empty($itemVO) || $writePerm>0) {
+		if(!$isDetail || $writePerm>0) {
 
 			//LIST ITEMS
 			$fItems = new FItems('',$user->userVO->userId);
@@ -251,7 +260,7 @@ class page_ItemsList implements iPage {
 			//$fItems->debug=1;
 			if($pageVO->typeId!='top') {
 				if($pageVO->pageId!='event') $fItems->setPage($pageVO->pageId);
-				$fItems->hasReactions($pageVO->typeId!='forum' && empty($itemVO) ? false : true);
+				$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
 			}
 			if($categoryId > 0) {
 				$fItems->addWhere("categoryId='". $categoryId ."'");
@@ -259,7 +268,7 @@ class page_ItemsList implements iPage {
 			if(!empty($searchStr)) {
 				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
 			}
-			if(!empty($itemVO)) {
+			if($isDetail) {
 				$itemId = $itemVO->itemId;
 				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 			}
@@ -276,7 +285,7 @@ class page_ItemsList implements iPage {
 				$fItems->setOrder('dateStart desc');
 			} else {
 				//ORDER
-				if($pageVO->pageId=='event' && empty($itemVO)) {
+				if($pageVO->pageId=='event' && !$isDetail) {
 					$fItems->addWhere("typeId='event'");
 					if($user->pageParam=='o') {
 						//---archiv
@@ -290,7 +299,7 @@ class page_ItemsList implements iPage {
 						$fItems->setOrder('dateStart');
 					}
 				} else {
-					if(!empty($itemVO) || $pageVO->typeId=='top') {
+					if($isDetail || $pageVO->typeId=='top') {
 						//reactions
 						$fItems->setOrder('dateCreated desc');
 					} else {
@@ -299,7 +308,7 @@ class page_ItemsList implements iPage {
 				}
 			}
 
-			if(!empty($itemVO)) {
+			if($isDetail) {
 				$itemVO->updateReaded($user->userVO->userId);
 			} else {
 				$pageVO->updateReaded($user->userVO->userId);
@@ -311,7 +320,7 @@ class page_ItemsList implements iPage {
 
 		}
 		}
-		if(!empty($itemVO)) {
+		if($isDetail) {
 			$touchedBlocks[]='comm';
 		}
 		if(!empty($data['__ajaxResponse'])) {
@@ -330,6 +339,7 @@ class page_ItemsList implements iPage {
 			$output .= $tpl->get();
 			//output
 			FBuildPage::addTab(array("MAINDATA"=>$output));
+			return $output;
 		}
 	}
 

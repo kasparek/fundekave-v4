@@ -2,10 +2,11 @@
 <div id="editForm">{EDITFORM}</div>
 <!-- BEGIN detail --><div id="itemDetail">{DETAIL}</div><!-- END detail -->
 <!-- BEGIN comm --><h2>Komentare</h2><!-- END comm -->
-<div id="messageForm">{MESSAGEFORM}</div>
+<!-- BEGIN messageForm --><div id="messageForm">{MESSAGEFORM}</div><!-- END messageForm -->
 <!-- BEGIN message --><p>{MESSAGE}</p><!-- END message -->
 <!-- BEGIN newnum --><div class="fullsize righttext"><strong>Nepřečtených: {UNREADNUM}</strong></div><!-- END newnum -->
 <!-- BEGIN tagfilter --><div class="rightbox pagination">Palců {TAGFILTERLINKS}</div><div class="clearreal"></div><!-- END tagfilter -->
-<!-- BEGIN itemlist --><div id="itemFeed" class="hfeed<!-- BEGIN vcalendar --> vcalendar<!-- END vcalendar -->">{ITEMS}</div>
-<div id="bottomPager">{BOTTOMPAGER}</div><!-- END itemlist -->
+<!-- BEGIN itemlist --><div id="itemFeed" class="hfeed<!-- BEGIN fcalendar --> vcalendar<!-- END fcalendar -->">{ITEMS}</div>
+<!-- BEGIN bottomPager --><div id="bottomPager">{BOTTOMPAGER}</div><!-- END bottomPager --><!-- END itemlist -->
 <!-- BEGIN feedempty --><p>V diskuzi nejsou žádné příspěvky</p><!-- END feedempty -->
+<div id="afterFeed"></div>

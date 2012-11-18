@@ -9,8 +9,11 @@ class page_Map implements iPage {
 		  FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
     }
 
+
+
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
+		$user->pageVO->showSidebar = false;
 
 		$type='';
 		$category=0;
