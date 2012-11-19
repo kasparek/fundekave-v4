@@ -27,6 +27,8 @@ package net.fundekave.fuup.model
 		public static const STATUS_BUSY:String = 'statusBusy';
 		public static const STATUS_READY:String = 'statusReady';
 		
+		public static const TRACE:String = 'trace';
+		
 		public var callback:String;
 		
 		public function ExtInterfaceProxy()

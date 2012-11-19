@@ -7,7 +7,8 @@
 	
 	<script src="js/swfobject.js"></script>
 	<script>
-		var flashvars = {config:'{"settings":{"autoUpload":"0","showControls":"0","showImages":"1","multi":"1","maxSize":"2097152","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{"auth":"authkey"}}}'
+var cnf = '{"settings":{"browseImg":"browse_big.png","autoUpload":"0","showControls":"0","showImages":"1","multi":"1","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{}}}'
+		var flashvars = {file:'Fuup.swf',containerId:'FuupUploader',config:cnf
 		};
 		var params = {menu: "false",scale: "noScale",allowFullscreen: "true",allowScriptAccess: "always",bgcolor: "",wmode: "direct"};
 		var attributes = {id:"FuupUploader"};
@@ -23,7 +24,8 @@
          return navigator.appName.indexOf("Microsoft") != -1 ? window[swfId] :  document[swfId];
 	    }
 		function fuupCall(value) {
-			 thisSWF("FuupUploader").fuupGateIn(value);
+			var swf = thisSWF("FuupUploader");
+			 swf.fuupGateIn(value);
 		}
 	</script>
 	<style>

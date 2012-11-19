@@ -7,12 +7,17 @@ package
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 	import flash.net.URLRequest;
+	import flash.system.LoaderContext;
+	import flash.system.Security;
+	import flash.system.ApplicationDomain;
+	import flash.system.SecurityDomain;
 	
 	public class PreloaderBar extends Sprite
 	{
 		
 		private var loader:Loader;
 		private var barHolder:Sprite;
+		private var barHolderWidth:Number;
 		private var bar:Sprite;
 		
 		public function PreloaderBar()
@@ -22,6 +27,8 @@ package
 			
 			this.addEventListener( Event.ADDED_TO_STAGE, onStage );
 			this.addEventListener( Event.RESIZE, onResize );
+			
+			Security.allowDomain("*");
 		}
 		
 		private function onStage(e:Event):void {
@@ -29,16 +36,19 @@ package
 			
 			bar = new Sprite();
 			barHolder = new Sprite();
+			barHolder.x = 0;
+			barHolder.y = 0;
+			barHolderWidth = (stage.stageWidth?stage.stageWidth:100) - 20;
+			if (barHolderWidth > 200) barHolderWidth = 200;
 			barHolder.graphics.lineStyle(1,0x666666);
 			barHolder.graphics.beginFill(0xeeeeee);
-			barHolder.graphics.drawRect(0,0,104,12);
+			barHolder.graphics.drawRect(2,2,barHolderWidth,12);
 			barHolder.graphics.endFill();
-			bar.x = 2;
-			bar.y = 2;
+			bar.x = 4;
+			bar.y = 4;
 			barHolder.addChild( bar );
 			this.addChild( barHolder );
 			onResize( null );
-			
 			
 			var url:String = this.loaderInfo.parameters.file + '?';
 			var params:Object = this.loaderInfo.parameters;
@@ -48,18 +58,19 @@ package
 			}
 			url += arr.join('&');
 			
-			
 			loader = new Loader();
 			loader.visible = false;
 			this.addChild(loader);
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete );
 			loader.contentLoaderInfo.addEventListener( ProgressEvent.PROGRESS, onProgress );
-			loader.load( new URLRequest( url ));
 			
+			//var context:LoaderContext = new LoaderContext(true, ApplicationDomain.currentDomain, (Security.sandboxType == Security.REMOTE) ? SecurityDomain.currentDomain : null);
+			//loader.load( new URLRequest( url ), context);
+			loader.load( new URLRequest( url ));
 		}
 		
 		private function onProgress(e:ProgressEvent):void {
-			var percent:int = Math.round( 100 * (e.bytesLoaded/e.bytesTotal));
+			var percent:int = Math.round( (barHolderWidth-4) * (e.bytesLoaded/e.bytesTotal));
 			bar.graphics.clear();
 			bar.graphics.beginFill(0x000000,1);
 			bar.graphics.drawRect(0,0,percent,8);
@@ -73,8 +84,8 @@ package
 		}
 		
 		private function onResize(e:Event):void {
-			barHolder.x = (this.stage.stageWidth - 110)/2;
-			barHolder.y = (this.stage.stageHeight - 20)/2;
+			barHolder.x = (stage.stageWidth - barHolderWidth)/2;
+			barHolder.y = (stage.stageHeight - 20)/2;
 		}
 	}
 }

@@ -33,6 +33,8 @@ package net.fundekave.fuup.controller
 			fileProxy.chunkSize = Number( configProxy.config.settings.chunkSize );
 	        fileProxy.uploadLimit = Number( configProxy.config.settings.chunkLimit );
 			
+			fileProxy.sendFlushRequest = Number( configProxy.config.service.sendFlushRequest ? configProxy.config.service.sendFlushRequest : 1 ) == 1 ? true : false;
+			
 			extProxy.callback = String( configProxy.config.settings.callback );
 			
 			Application.application.width = Number( configProxy.config.settings.appSize.width );

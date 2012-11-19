@@ -33,6 +33,7 @@ package net.fundekave.fuup.view
 			filesView.addEventListener(FilesView.ACTION_CANCEL, onCancel, false, 0, true);
 			filesView.addEventListener(FilesView.FILE_ERROR_NUMLIMIT, onFileErrorNumLimit, false, 0, true);
 			filesView.addEventListener(FilesView.PROGRESS, onProgress, false, 0, true);
+			filesView.addEventListener(FilesView.BROWSEIMGERROR, onBrowseImgError, false, 0, true);
 			
 			var configProxy:ConfigProxy = facade.retrieveProxy(ConfigProxy.NAME) as ConfigProxy;
 			filesView.filesNumMax = Number(configProxy.config.settings.fileLimit);
@@ -41,8 +42,14 @@ package net.fundekave.fuup.view
 			filesView.showControls = Number(configProxy.config.settings.showControls) == 1 ? true : false;
 			filesView.showImages  = Number(configProxy.config.settings.showImages) == 1 ? true : false;
 			filesView.embedWidth = Number(configProxy.config.settings.appSize.width);
+			filesView.embedHeight = Number(configProxy.config.settings.appSize.height);
 			filesView.fileTypes = configProxy.config.settings.image.type;
+			if(configProxy.config.settings.browseImg) filesView.browseImgUrl = configProxy.config.settings.browseImg;
 			filesView.setup();
+		}
+		
+		private function onBrowseImgError(e:Event):void {
+			sendNotification(ApplicationFacade.CALLBACK, ExtInterfaceProxy.TRACE, 'BrowseImg not loaded');
 		}
 		
 		private function onProgress(e:Event):void 

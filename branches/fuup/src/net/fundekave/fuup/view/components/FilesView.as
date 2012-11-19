@@ -2,8 +2,13 @@ package net.fundekave.fuup.view.components
 {
 	import com.bit101.components.*;
 	import com.greensock.TweenLite;
+	import flash.display.Bitmap;
+	import flash.display.Loader;
+	import flash.display.LoaderInfo;
+	import flash.events.IOErrorEvent;
 	import flash.filters.GlowFilter;
 	import flash.filters.GradientGlowFilter;
+	import flash.net.URLRequest;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -31,6 +36,10 @@ package net.fundekave.fuup.view.components
 		
 		[Embed(source="/assets/browse.png")]
 		private var BROWSEIMG:Class;
+		
+		public var browseImgUrl:String;
+		private var browseImg:Bitmap;
+		
 		[Embed(source="/assets/upload.png")]
 		private var UPLOADIMG:Class;
 		[Embed(source="/assets/cancel.png")]
@@ -45,6 +54,7 @@ package net.fundekave.fuup.view.components
 		public static const ACTION_CANCEL:String = 'actionCancel';
 		public static const FILE_CHECK_EXITS:String = 'fileCheckExits';
 		public static const FILE_ERROR_NUMLIMIT:String = 'fileErrorNumLimit';
+		public static const BROWSEIMGERROR:String = 'browseImgError';
 		
 		public static const GAP_HORIZONTAL:int = 5;
 		public static const GAP_VERTICAL:int = 5;
@@ -53,6 +63,7 @@ package net.fundekave.fuup.view.components
 		public var fileTypes:String = 'jpg,gif,png';
 		public var multiFiles:Boolean = true;
 		public var embedWidth:Number;
+		public var embedHeight:Number;
 		
 		private var _autoUpload:Boolean = false;
 		
@@ -127,13 +138,11 @@ package net.fundekave.fuup.view.components
 			selectFilesButt.visible = false;
 			uploadButt.visible = false;
 			globalProgressBar.visible = true;
-			globalProgresslabel.visible = true;
 			if (showControls)
 				cancelButt.visible = true;
 			progress = globalProgressBar.value = 0;
 			globalProgressBar.maximum = 100;
 			TweenLite.to(globalProgressBar, 0.3, {value: globalProgressBar.maximum * 0.1});
-			globalProgresslabel.text = '';
 		}
 		
 		public function toProgress(value:Number):void
@@ -150,7 +159,6 @@ package net.fundekave.fuup.view.components
 					uploadButt.visible = true;
 			
 			globalProgressBar.visible = false;
-			globalProgresslabel.visible = false;
 			cancelButt.visible = false;
 		}
 		
@@ -269,7 +277,6 @@ package net.fundekave.fuup.view.components
 					{
 						child.x = pos.x;
 						child.y = pos.y;
-						trace('LAYOUT::SETTINGNEWPOSITION');
 					}
 				}
 				var cols:Number = Math.floor(filesBox.width / (FileView.WIDTH + GAP_HORIZONTAL));
@@ -310,50 +317,31 @@ package net.fundekave.fuup.view.components
 			}
 		}
 		
-		private var fileBoxHeight:int = 0;
-		private var fileBoxNumChildred:int = 0;
 		private var oldStageWidth:int = 0;
+		private var oldFilesBoxNum:int = 0;
 		
-		private function onResize(e:Event):void
+		private function onFrame(e:Event):void
 		{
-			if (showImages === true)
+			var needResetLayout:Boolean = false;
+			if (!showImages) return;
+			
+			if (stage.stageWidth != oldStageWidth)
 			{
-				if (Application.application.stage.stageWidth != oldStageWidth)
-				{
-					var stage:Stage = Application.application.stage;
-					oldStageWidth = stage.stageWidth;
-					filesBox.width = stage.stageWidth - 20;
-					trace("STAGERESIZE::NEWFILESBOXSIZE::" + filesBox.width);
-					//---set new positions for children
-					resetLayout();
-				}
-				if (filesBox.height != fileBoxHeight || fileBoxNumChildred != filesBox.numChildren)
-				{
-					
-					if (fileBoxNumChildred != filesBox.numChildren)
-					{
-						resetLayout();
-						fileBoxNumChildred = filesBox.numChildren;
-					}
-					
-					if (filesBox.numChildren > 0)
-					{
-						
-						if (filesBox.height != fileBoxHeight)
-						{
-							fileBoxHeight = filesBox.height;
-							Application.application.height = filesBox.height + Fuup.HEIGHT + 300;
-						}
-						
-					}
-					else if (Application.application.height != Fuup.HEIGHT)
-					{
-						fileBoxHeight = 0;
-						Application.application.height = Fuup.HEIGHT;
-					}
-					dispatchEvent(new Event(RESIZE));
-				}
+				oldStageWidth = stage.stageWidth;
+				filesBox.width = stage.stageWidth - 20;
+				needResetLayout = true;
 			}
+			
+			if (oldFilesBoxNum != filesBox.numChildren) {
+				oldFilesBoxNum = filesBox.numChildren;
+				needResetLayout = true;
+			}
+
+			var newH:Number = filesBox.numChildren > 0 ? filesBox.height + filesBox.y + (FileView.HEIGHT*2) : controlBox.height + controlBox.y;
+			if (newH >= embedHeight) 
+				Application.application.height = newH;
+			
+			if(needResetLayout) resetLayout();
 		}
 		
 		private function doAction(actionStr:String):void
@@ -361,35 +349,65 @@ package net.fundekave.fuup.view.components
 			dispatchEvent(new Event(actionStr));
 		}
 		
+		private var controlBox:Container;
 		public var selectFilesButt:Component;
 		private var uploadButt:Component;
 		public var cancelButt:Component;
 		public var globalProgressBar:ProgressBar;
-		public var globalProgresslabel:Label;
 		private var filesBox:Container;
+		
+		private function onBrowseImgLoaderError(e:Event):void {
+			var browseImgLoader:Loader = (e.currentTarget as LoaderInfo).loader;
+			browseImgLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onBrowseImgLoader);
+			browseImgLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onBrowseImgLoaderError);
+			doAction(BROWSEIMGERROR);
+			updateControlsLayout();
+			controlBox.visible = true;
+		}
+		
+		private function onBrowseImgLoader(e:Event):void {
+			var browseImgLoader:Loader = (e.currentTarget as LoaderInfo).loader;
+			browseImgLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onBrowseImgLoader);
+			browseImgLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onBrowseImgLoaderError);
+			browseImg = browseImgLoader.content as Bitmap;
+			selectFilesButt.removeChildAt(0);
+			selectFilesButt.addChild(browseImg);
+			selectFilesButt.width = browseImg.width;
+			selectFilesButt.height = browseImg.height;
+			updateControlsLayout();
+			controlBox.visible = true;
+		}
+		
+		private function updateControlsLayout():void {
+			uploadButt.x = selectFilesButt.width + 5;
+			uploadButt.y = (selectFilesButt.height - uploadButt.height) / 2;
+			globalProgressBar.y = (selectFilesButt.height - globalProgressBar.height) / 2;
+			cancelButt.x = globalProgressBar.x + globalProgressBar.width + 5;
+			controlBox.height = selectFilesButt.y + selectFilesButt.height + 5;
+			filesBox.y = controlBox.height;
+		}
 		
 		public function setup():void
 		{
-			selectFilesButt = new Component(this);
-			selectFilesButt.x = 5;
-			selectFilesButt.y = 4;
+			controlBox = new Container(this, 5, 2);
+						
+			selectFilesButt = new Component(controlBox);
 			selectFilesButt.useHandCursor = true;
 			selectFilesButt.buttonMode = true;
-			selectFilesButt.width = 32;
-			selectFilesButt.height = 32;
+			selectFilesButt.width = 24;
+			selectFilesButt.height = 24;
 			selectFilesButt.addChild(new BROWSEIMG());
 			selectFilesButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
 			selectFilesButt.addEventListener(MouseEvent.CLICK, browseFiles, false, 0, true);
 			selectFilesButt.addEventListener(MouseEvent.ROLL_OVER, onButtOver, false, 0, true);
 			selectFilesButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
 			
-			uploadButt = new Component(this);
+			uploadButt = new Component(controlBox);
 			uploadButt.useHandCursor = true;
 			uploadButt.buttonMode = true;
-			uploadButt.x = 47;
-			uploadButt.y = 4;
-			uploadButt.width = 32;
-			uploadButt.height = 32;
+			uploadButt.x = selectFilesButt.width+5;
+			uploadButt.width = 24;
+			uploadButt.height = 24;
 			uploadButt.addChild(new UPLOADIMG());
 			uploadButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
 			uploadButt.addEventListener(MouseEvent.CLICK, onUploadClick, false, 0, true);
@@ -397,36 +415,40 @@ package net.fundekave.fuup.view.components
 			uploadButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
 			uploadButt.visible = showControls ? !_autoUpload : false;
 			
-			cancelButt = new Component(this);
+			if (embedWidth == -1)
+				embedWidth = 200;
+			globalProgressBar = new ProgressBar(controlBox);
+			globalProgressBar.width = embedWidth < 190 ? embedWidth - 10 : 190;
+			globalProgressBar.height = 20;
+			globalProgressBar.maximum = 100;
+			globalProgressBar.visible = false;
+			
+			cancelButt = new Component(controlBox);
 			cancelButt.useHandCursor = true;
 			cancelButt.buttonMode = true;
-			cancelButt.x = 200;
-			cancelButt.y = 4;
-			cancelButt.width = 32;
-			cancelButt.height = 32;
+			cancelButt.width = 24;
+			cancelButt.height = 24;
 			cancelButt.addChild(new CANCELIMG());
 			cancelButt.filters = [new DropShadowFilter(2, 45, 0, 0.5, 2, 2)];
 			cancelButt.addEventListener(MouseEvent.CLICK, onCancelClick, false, 0, true);
 			cancelButt.addEventListener(MouseEvent.ROLL_OVER, onButtOver, false, 0, true);
 			cancelButt.addEventListener(MouseEvent.ROLL_OUT, onButtOut, false, 0, true);
 			cancelButt.visible = false;
-			
-			if (embedWidth == -1)
-				embedWidth = 200;
-			globalProgressBar = new ProgressBar(this, 5, 6);
-			globalProgressBar.width = embedWidth < 190 ? embedWidth - 10 : 190;
-			globalProgressBar.height = 20;
-			globalProgressBar.maximum = 100;
-			globalProgressBar.visible = false;
-			
-			globalProgresslabel = new Label(this, 10, 6);
-			globalProgresslabel.visible = false;
-			
-			filesBox = new Container(this, 5, 37);
+						
+			filesBox = new Container(this, 5);
 			filesBox.mouseChildren = true;
 			filesBox.visible = showImages;
+			if(showImages) filesBox.addEventListener(Event.ENTER_FRAME, onFrame);
 			
-			filesBox.addEventListener(Event.ENTER_FRAME, onResize);
+			if(browseImgUrl) {
+				var browseImgLoader:Loader = new Loader();
+				browseImgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onBrowseImgLoader);
+				browseImgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onBrowseImgLoaderError);
+				controlBox.visible = false;
+				browseImgLoader.load(new URLRequest(browseImgUrl));
+			} else {
+				updateControlsLayout();
+			}
 		}
 		
 		private function onButtOver(e:Event):void
