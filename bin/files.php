@@ -12,6 +12,18 @@ $seq = (int)  $_POST['seq'];
 $total = (int)  $_POST['total'];
 $filename = $_POST['Filename'];
 
+if(isset($_POST['flush'])) {
+	$filename = $_POST['flush'];
+	for($i=0;$i<$total;$i++) {
+		$chunkFilename = 'chunks/chunk-'.$filename.'-'.$i.'.txt';
+		if(file_exists($chunkFilename))  {
+			unlink($chunkFilename);
+		}
+	}
+	echo 'flushed';
+	exit;
+}
+
 //save chunk
 if(!empty($_FILES)) {
 	$file = $_FILES['Filedata'];
@@ -20,7 +32,7 @@ if(!empty($_FILES)) {
 	//validating chunk with CRC32
 	$crcReceived = $_POST['crc'] * 1;
 	//validate file with CRC32
-	if (!CRC32Validate($_POST['crc'] * 1, $chunkFilename, 2) {
+	if (!CRC32Validate($_POST['crc'] * 1, $chunkFilename, 2)) {
 		echo 'Chunk file CRC32 not matching';
 		exit;
 	}
@@ -51,7 +63,7 @@ if($allExists === true) {
 	fclose($handleW);
 	
 	//validate file with CRC32
-	if (!CRC32Validate($_POST['crcTotal'] * 1, $targetFile) {
+	if (!CRC32Validate($_POST['crcTotal'] * 1, $targetFile)) {
 		echo 'Target file CRC32 not matching';
 		exit;
 	}

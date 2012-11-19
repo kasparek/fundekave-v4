@@ -47,6 +47,7 @@ package net.fundekave
 		
 		private var _prevHeight:Number;
 		override public function set height(h:Number):void {
+			if (_height == h) return;
 			_prevHeight = this.height;
 			var resizeCanvas:BrowserCanvas = BrowserCanvas.getInstance();
 			resizeCanvas.height = String( (h==-1)?('100%'):(h) );
@@ -55,7 +56,6 @@ package net.fundekave
 			} else {
 				super.height = h;
 			}
-			trace("HEIGHT::"+this.height);
 		}
 		
 		public function restoreHeight():void {

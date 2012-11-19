@@ -13,6 +13,8 @@ package
 	import net.fundekave.fuup.view.components.FilesView;
 	import net.fundekave.fuup.view.RondaFont;
 	
+	import flash.system.Security;
+	
 	public class Fuup extends Application
 	{
 		public static const NAME:String = "fudeup";
@@ -26,10 +28,13 @@ package
 		public function Fuup()
 		{
 			this.addEventListener(Event.ADDED_TO_STAGE, onStage );
+			
+			Security.allowDomain("*");
 		}
-		
+
 		private function onStage(e:Event):void {
 			this.removeEventListener(Event.ADDED_TO_STAGE, onStage );
+			stage.scaleMode = "noScale";
 			facade.startup(this);
 		}
 	}

@@ -3,8 +3,14 @@ package net.fundekave.fuup.model
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.net.URLVariables;
+	import flash.net.URLRequestMethod;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 	
@@ -34,6 +40,7 @@ package net.fundekave.fuup.model
 		public var serviceVars:Object;
 		public var chunkSize:int = 5000;
 		public var uploadLimit:int = 3;
+		public var sendFlushRequest:Boolean = true;
 		
 		public var fileList:Array = new Array();
 		private var fileVO:FileVO;
@@ -165,6 +172,30 @@ package net.fundekave.fuup.model
 		private function uploadStart():void
 		{
 			fileVO = fileList[0] as FileVO;
+			if(sendFlushRequest) {
+				var flushRequest:URLRequest = new URLRequest(serviceURL);
+				flushRequest.data = new URLVariables();
+				for (var name:String in serviceVars) flushRequest.data[name] = serviceVars[name];
+				flushRequest.data['flush'] = fileVO.filename;
+				flushRequest.data['total'] = Math.ceil((fileVO.encodedJPG?fileVO.encodedJPG.length:fileVO.file.size)/chunkSize);
+				flushRequest.method = URLRequestMethod.POST;
+				var service:URLLoader = new URLLoader();
+				service.addEventListener(Event.COMPLETE, flushRequestComplete);
+				service.addEventListener(IOErrorEvent.IO_ERROR, onUploadError, false, 0, true);
+				service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError, false, 0, true);
+				service.load(flushRequest);
+			} else {
+				flushRequestComplete(null);
+			}
+		}
+		
+		private function flushRequestComplete(e:Event):void {
+			if (e) {
+				var service:URLLoader = e.target as URLLoader;
+				service.removeEventListener(Event.COMPLETE, flushRequestComplete);
+				service.removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+			}
 			var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
 			fileUploadList.push(fileUpload);
 			fileUpload.extraVars = serviceVars;
