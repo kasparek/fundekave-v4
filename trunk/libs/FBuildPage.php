@@ -268,8 +268,8 @@ class FBuildPage {
 		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
 		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
   
-	  if($user->pageVO) {
-	    $tpl->setVariable('PAGEID', $user->pageVO->pageId);
+		if($user->pageVO) {
+			$tpl->setVariable('PAGEID', $user->pageVO->pageId);
 			$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
 			//searchform
 			if(!$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
@@ -354,7 +354,8 @@ class FBuildPage {
 		} else {
       $tpl->touchBlock('bodySidebarOff');
     }
-		$tpl->setVariable("USER",$user->idkontrol?'1':'0');
+		$tpl->setVariable("USER", $user->idkontrol?'1':'0');
+		$tpl->setVariable("AUTH", $user->getRemoteAuthToken());
 		//post messages
 		if($user->userVO->hasNewMessages()) {
 			$tpl->setVariable('NEWPOST',$user->userVO->newPost);

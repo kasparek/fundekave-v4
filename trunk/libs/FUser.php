@@ -44,6 +44,7 @@ class FUser {
 	}
 	
 	function getRemoteAuthToken() {
+		if (!$this->idkontrol) return '';
 		return $this->userVO->idlogin;
 	}
 
