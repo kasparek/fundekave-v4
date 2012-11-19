@@ -90,11 +90,6 @@ if($user->userVO->userId==1 && isset($_GET['mod'])) {
  * FILES UPLOAD PROCESSING
  *
  **/
-if(!empty($_GET['fuupconfig'])) {
-	$user->kde(); //---check user / load info / load page content / chechk page exist
-	FFile::printConfigFile( $_GET['fuupconfig'] );
-	exit;
-}
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
 	$user->kde(); //---check user / load info / load page content / chechk page exist
 	if( $user->idkontrol ) {
@@ -107,40 +102,49 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 		} else if(isset($_POST['filename'])) {
 			$file['name'] = $_POST['filename'];
 			$data['data'] = $_POST['data'];
+		} else if(isset($_POST['flush'])) {
+			$file['name'] = $_POST['flush'];
 		}
+
 		if(empty($file)) {
 			echo '0';
-      FError::write_log('index::fileManagement: MISSING FILE');
+			FError::write_log('index::fileManagement: MISSING FILE');
 			FSystem::fin();
 		}
-		if(empty($_POST['crc'])) {
-			echo '0';
-      FError::write_log('index::fileManagement: MISSING CRC');
-			FSystem::fin();
-		}
-		$crcReceived = $_POST['crc'];
+		$file['name'] = FSystem::safeFilename($file['name']);
 
 		$seq = (int) $_POST['seq'];
 		$total = (int) $_POST['total'];
-		$filename = $file['name'];
 		$ffile = new FFile(FConf::get("galery","ftpServer"));
+		if(isset($_POST['flush'])) {
+			$file = array('name'=>FSystem::safeFilename($_POST['flush']));
+			for($i=0;$i<$total;$i++) $ffile->deleteChunk($file,$seq);
+			echo 'FuupUploader::chunks flushed';
+			FSystem::fin();
+		}
+		//chunk crc check
+		if(empty($_POST['crc'])) {
+			echo '0';
+			FError::write_log('index::fileManagement: MISSING CRC');
+			FSystem::fin();
+		}
+		$crcReceived = $_POST['crc'] * 1;
 		$crcStored = $ffile->storeChunk($file,$seq);
 		if($crcStored!=$crcReceived) {
 			$ffile->deleteChunk($file,$seq);
-      FError::write_log('index::fileManagement: CRC DOES NOT MATCH');
+			FError::write_log('index::fileManagement: CRC DOES NOT MATCH');
 			echo '0';
 			FSystem::fin();
 		}
 		
 		//---file complete
-		if($ffile->hasAllChunks($filename,$total) === true) {
-			$filename = FSystem::safeFilename($filename);
-			FError::write_log('index::fileManagement ALL CHUNKS READY: '.$filename);
+		if($ffile->hasAllChunks($file['name'],$total) === true) {
+			FError::write_log('index::fileManagement ALL CHUNKS READY: '.$file['name']);
 			//--concat all files
 			switch($f) {
 				case 'tempstore':
 					//---upload in tmp folder in user folder and save filename in db cache
-					$imagePath = FFile::setTempFilename($filename);
+					$imagePath = FFile::setTempFilename($file['name']);
 					$imagePath = FConf::get("galery","sourceServerBase") . $imagePath;
 					$dirArr=explode('/',$imagePath);
 					array_pop($dirArr);
@@ -148,10 +152,10 @@ if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI
 					break;
 				default:
 					$dir = FConf::get("galery","sourceServerBase").$user->pageVO->get('galeryDir');
-					$imagePath = $dir.'/'.FFile::safeFilename($filename);
+					$imagePath = $dir.'/'.FFile::safeFilename($file['name']);
 			}
 			if(!empty($dir)) $ffile->makeDir($dir);
-			$ffile->mergeChunks($imagePath, $filename, $total, $isMultipart);
+			$ffile->mergeChunks($imagePath, $file['name'], $total, $isMultipart);
 			FError::write_log('index::fileManagement ALL CHUNKS MERGED');
 		}
 		echo 1;
