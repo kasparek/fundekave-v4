@@ -222,62 +222,6 @@ class FFile {
 	}
 
 	/**
-	 * print config file for uploader
-	 *
-	 **/
-	static function printConfigFile($c) {
-		if(empty($c)) return;
-		$c = FSystem::safeText($c);
-		$user = FUser::getInstance();
-		if(!$user->idkontrol) return;
-		if(empty($user->pageVO)) return;
-		$pageVO = $user->pageVO;
-		$imgConf = FConf::get('image_conf');
-		$sizeOptList = explode(',',$imgConf['sideOptions']);
-		$maxSize = array_pop($sizeOptList);
-		//defaults
-		$vars = array(
-		'RESIZE'=>1
-		,'RESIZEVISIBLE'=>0
-		,'SETTINGSENABLED'=>0
-		,'SETTINGSON'=>0
-		,'AUTOPROCESS'=>0
-		,'AUTOUPLOAD'=>0
-		,'DISPLAYCONTENT'=>1
-		,'CROP'=>0
-		,'MULTI'=>1
-		,'QUALITY'=>90
-		,'WIDTHMAX'=>$maxSize
-		,'HEIGHTMAX'=>$maxSize
-    ,'MAXSIZE'=>2048000
-    ,'CHUNKSIZE'=>1024000
-		,'APPWIDTH'=>-1
-		,'APPHEIGHT'=>200
-		,'ONLOADED'=>''
-		,'ONONEUPLOADED'=>'GaleryEdit.check'
-		,'ONUPLOADED'=>''
-		,'URL'=>'files.php?k='.$pageVO->pageId.(($c)?('&f='.$c):(''))
-		,'AUTH'=>$user->getRemoteAuthToken()
-		);
-		switch($c) {
-			case 'tempstore':
-				$vars['AUTOPROCESS']=1;
-				$vars['AUTOUPLOAD']=1;
-				$vars['DISPLAYCONTENT']=0;
-				$vars['MULTI']=0;
-				$vars['APPHEIGHT']=25;
-				$vars['APPWIDTH']=100;
-				$vars['ONONEUPLOADED']='';
-				$vars['ONUPLOADED']='fuupUploadComplete';
-				break;
-		}
-		$tpl = FSystem::tpl('fuup.config.xml');
-		$tpl->setVariable($vars);
-		$tpl->show();
-	}
-
-
-	/**
 	 * plain file upload handler
 	 *
 	 **/

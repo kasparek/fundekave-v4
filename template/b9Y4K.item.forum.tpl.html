@@ -1,0 +1,13 @@
+<div id="{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread -->">
+<a name="{ITEMIDHTML}"></a><div class="header">
+<span class="author vcard"><!-- BEGIN aa --><a href="{AUTHORLINK}" class="author url"><!-- END aa --><span class="fn">{AUTHOR}</span><!-- BEGIN aaclose --></a><!-- END aaclose --></span>
+<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
+<!-- BEGIN postdeletecheckbox --><span class="delete"><a href="{DELETEURL}" class="confirm fajaxa" title="Opravdu chcete smazat prispevek?"><img src="[[URL_SKIN]]/img/comment_delete.png" title="Smazat prispevek" /></a></span><!-- END postdeletecheckbox -->
+</div>
+<div class="avatar">{AVATAR}</div>
+<!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page"><img class="hentryimage" src="{IMGURLTHUMB}" title="{IMGTITLE}" alt="{IMGALT}" /></a><!-- END image -->
+<!-- BEGIN smap --><div class="rightbox"><a id="mapThumb{SMAPITEMID}" href="#" title="Map detail: {SMAPTITLE}" class="mapThumbLink"><img width="100" height="100" src="http://maps.google.com/maps/api/staticmap?size=100x100&markers={SMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN stwp -->&path={SWPLIST}<!-- END stwp -->" title="{SMAPTITLE}" alt="Google Maps" /></a></div><!-- END smap -->
+<div class="entry-content">{TEXT}</div>
+<!-- BEGIN map --><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h3>{MAPTITLE}</h3><p>{MAPINFO}<!--BEGIN mapdist --><br /><strong>Vzdalenost: {DISTANCE}NM</strong><!--END mapdist --></p></div></div><!-- END mapdata --></div><!-- END map -->
+</div>
+<div class="clearbox"></div>
