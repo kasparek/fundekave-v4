@@ -90,7 +90,7 @@ class page_UserPost implements iPage {
 
     
 		//---redirect
-		if(empty($data['__ajaxResponse'])) {
+		if(!$data['__ajaxResponse']) {
 			if($redirect) FHTTP::redirect(FSystem::getUri($redirParam));
 		} else {
 			return $data;
@@ -228,7 +228,7 @@ class page_UserPost implements iPage {
 
     FProfiler::write('UserPost::build - DONE');
 
-		if(!empty($data['__ajaxResponse'])) {
+		if(!$data['__ajaxResponse']) {
 			if(isset($data['refreshPage'])) {
 				FAjax::addResponse('messagesBox','$html',$tpl->get());
 			} else {

@@ -1,6 +1,23 @@
 <?php
 class FItemsForm {
 
+	static function canComment($pageVO=null,$itemVO=null) {
+		$user = FUser::getInstance();
+		if(!$pageVO) $pageVO = $user->pageVO;
+		if(!$itemVO && $itemVO!==false) $itemVO = $user->itemVO;
+		if($pageVO->typeId=='top') return false;
+		if($pageVO->typeId == 'forum' && $pageVO->locked > 0) return false;
+		if(($pageVO->typeId == 'forum' || $itemVO) && !FConf::get('settings','perm_forum_unsigned')) if(!$user->idkontrol) return false;
+		if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
+			if(!$itemVO) return false;
+			$writePerm = $pageVO->prop('forumSet');
+			if($writePerm==0) return false;
+			$writePerm = $itemVO->prop('forumSet');
+			if($writePerm==0 || ($writePerm==2 && !$user->idkontrol)) return false;
+		}
+		return true;
+	}
+
 	static function moveImage($data,$itemVO=null) {
 		if($itemVO==null) {
 			if(empty($data['i'])) return;
@@ -56,52 +73,22 @@ class FItemsForm {
 		$itemVO = new ItemVO();
 		
 		$redirectParam = '';
-		$newItem=false;
-		if(empty($itemVO->itemId)) $newItem=true;
+		$newItem = true;
 		$redirect = false;
 		
 		$user = FUser::getInstance();
+		
 		$captchaCheck = true;
-    if($user->idkontrol !== true) {
-      if(isset($data['math_q'])) {
-				$mathP = new FMathProtect();
-				if(!$mathP->validate($data['math_q'],$data['math_a'])) $captchaCheck = false;
-			}
-    }
-    
-    /*
-		if($user->idkontrol !== true) {
-			//store data and redirect to confirm page
-			$storedData=false;
-			$abotUid = false;
-			if(!empty($data['abot'])) $abotUid=$data['abot'];
-			if(!empty($data['__get']['abot'])) $abotUid=$data['__get']['abot'];
-			if(!empty($abotUid)) {
-				$cache = FCache::getInstance('d');
-				$storedData = $cache->getData($abotUid,'antibot');
-				$cache->invalidateData($abotUid,'antibot');
-				if(!$storedData) {
-					FError::add('Invalid submit data');
-					FHTTP::redirect(FSystem::getUri());
+		if(!$data['__ajaxResponse']) {
+			if($user->idkontrol !== true) {
+				$captchaCheck = FSystem::recaptchaCheck();
+				if($captchaCheck!==true) {
+					if($captchaCheck!==false) $data['recaptchaError'] = $captchaCheck;
+					$captchaCheck = false;
 				}
-			} 
-			if(!$storedData) {
-				$cache = FCache::getInstance('d');
-				$dataUid = uniqid('abot');
-				$cache->setData($data,$dataUid,'antibot');
-				FAjax::redirect(FSystem::getUri('abot='.$dataUid));
-				return;
-			} else {
-				$data = $storedData;
-			}
-			
-			if(isset($data['captchaimage'])) {
-				$captcha = new FCaptcha();
-				if(!$captcha->validateSubmit($data['captchaimage'],$data['pcaptcha'])) $captchaCheck = false;
 			}
 		}
-    */
-		
+    		
 		if(false===$itemVO->set('typeId',$data['t'])) {
 			FError::add(FLang::$ERROR_FORM_TYPE);
 			FError::write_log('FItemsForm::process - unset type - type:'.$data['t'].(isset($data['i'])?'item:'.$data['i']:''));
@@ -113,14 +100,7 @@ class FItemsForm {
 			$itemVO->itemIdTop = $user->itemVO->itemId;
 		}
 		//no reactions to forum items
-		if($itemVO->itemIdTop > 0) {
-			$itemVOTop = new ItemVO($itemVO->itemIdTop);
-			if($itemVOTop->load()) {
-				if($itemVOTop->pageVO->get('typeId')=='forum') $itemVO->itemIdTop=null;
-				else $itemVO->pageIdTop = $itemVOTop->pageVO->pageIdTop;
-			}
-		}
-
+		if($user->itemVO && $user->itemVO->typeId == 'forum') $itemVO->itemIdTop=null;
 		if(empty($itemVO->pageIdTop)) $itemVO->pageIdTop = $user->pageVO->pageIdTop;
 
 		if($captchaCheck===false) {
@@ -148,7 +128,7 @@ class FItemsForm {
 			if(isset($data['filtr'])) $data['action']='search';
 		}
 
-		if (isset($data["perpage"])) $user->pageVO->perPage( $data["perpage"] );
+		//if (isset($data["perpage"])) $user->pageVO->perPage( $data["perpage"] );
     
 		switch($data['action']) {
 			case 'search':
@@ -201,18 +181,6 @@ class FItemsForm {
 					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
 					if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1));
 				}
-        //anti spam
-        
-         if(!$user->idkontrol && $itemVO->typeId=='forum') {
-          if(FSystem::isSpam(array('author-name' => $data['name'], 'content' => $data['text'].' '.$data['location']))) {
-            //store data
-            $cache = FCache::getInstance('d');
-				    $dataUid = uniqid('abot');
-				    $cache->setData($data,$dataUid,'antibot');
-            //set error
-            FError::add(FLang::$ERROR_ANTISPAM);
-          }
-        }
         
 				/**
 				 *save item
@@ -345,9 +313,10 @@ class FItemsForm {
 		 
 		if($redirect==true) {
 			if($itemVO) FCommand::run(ITEM_UPDATED,$itemVO);
-			if($data['__ajaxResponse']==true) {
+			if($data['__ajaxResponse']) {
 				if($itemVO) {
 					//new item
+					if($itemVO->typeId == 'forum') $newItem = false;
 					if($newItem) FAjax::redirect(FSystem::getUri($redirectParam,$user->pageVO->pageId,'u',array('short'=>1)));
 				} else {
 					//deleted item
@@ -358,8 +327,7 @@ class FItemsForm {
 			}
 		}
 	}
-
-
+	
 	static function show($itemVO,$data=null) {
 		$user = FUser::getInstance();
 		if(!isset($data['simple'])) $data['simple']=false;
@@ -393,7 +361,9 @@ class FItemsForm {
 		$tpl->setVariable('FORMACTION',FSystem::getUri('','',false,array('short'=>1)));
 		$tpl->setVariable('M','item-submit');
 		$tpl->setVariable('T',$itemVO->typeId);
-		
+		if(isset($data['fajaxform'])) {
+			$tpl->touchBlock('fajaxform');
+		}
 		$tpl->touchBlock('geo');
 		
 		if(!empty($itemVO->itemId)) {
@@ -403,6 +373,10 @@ class FItemsForm {
 			if(!empty($position)) {
 				$tpl->setVariable('POSITION',str_replace(';',"\n",$position));
 			}
+		}
+		
+		if($itemVO->typeId=='forum' && $user->itemVO) {
+			$tpl->setVariable('ITEMID',$user->itemVO->itemId);
 		}
 
 		$tpl->setVariable('TITLE',$itemVO->addon);
@@ -420,26 +394,18 @@ class FItemsForm {
 		$tpl->setVariable('TIMEEND',$itemVO->dateEndTime);
 
 		//TYPE DEPEND
-		if($itemVO->typeId==='forum') {
-
-			if ($user->idkontrol) {
-				if($data['simple']===false) {
-					$tpl->touchBlock('p'.$user->pageVO->perPage());
-				}
-			} else {
+		if($itemVO->typeId=='forum') {
+			if(!$user->idkontrol) {
 				$tpl->setVariable('USERNAME','');
 				if(!empty($itemVO->name)) {
 					if($itemVO->typeId!='forum' || !$user->idkontrol) {
 						$tpl->setVariable('USERNAME',$itemVO->name);
 					}
 				}
-				//$captcha = new FCaptcha();
-				//$tpl->setVariable('CAPTCHASRC',$captcha->getImageUrl());
-        $mathP = new FMathProtect();
-        $tpl->setVariable('MATH_Q',$mathP->getQuestion());
-        $tpl->setVariable('MATH_Q_HIDE',$mathP->getQuestionHide());
+				if(!$data['__ajaxResponse']) $tpl->setVariable('RECAPTCHA',FSystem::recaptchaGet($tempData['recaptchaError']));
+			} else {
+				$tpl->touchBlock('usersigned');
 			}
-      
 		} else {
 			if($opt = FCategory::getOptions($itemVO->pageId,$itemVO->categoryId,true,'')) $tpl->setVariable('CATEGORYOPTIONS',$opt);
 			$tpl->setVariable('LOCATION',$itemVO->location);
@@ -471,7 +437,6 @@ class FItemsForm {
 			if(!empty($itemVO->enclosure)) {
 				$tpl->setVariable('IMAGEURL', $itemVO->detailUrl );
 				$tpl->setVariable('IMAGETHUMBURL', $itemVO->thumbUrl );
-				$tpl->touchBlock('confirm');
 			}
 		}
 		return $tpl->get();

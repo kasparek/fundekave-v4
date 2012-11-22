@@ -63,7 +63,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$ret = FLang::$LABEL_FRIEND_REMOVE;
 			}
 			//---create response
-			if($data['__ajaxResponse']==true) {
+			if($data['__ajaxResponse']) {
 				FAjax::addResponse($data['result'],$data['resultProperty'],$ret);
 			}
 		}
@@ -151,7 +151,7 @@ class FAjax_user extends FAjaxPluginBase {
 				$ret = FLang::$LABEL_UNBOOK;
 			}
 			FDBTool::query("update sys_pages_favorites set book='".$book."' where pageId='".$data['page']."' AND userId='" . $userId."'");
-			if($data['__ajaxResponse']==true) {
+			if($data['__ajaxResponse']) {
 				//---create response
 				FAjax::addResponse($data['result'], $data['resultProperty'], $ret);
 			}
@@ -171,7 +171,7 @@ class FAjax_user extends FAjaxPluginBase {
 				if($data['a']=='r') FItemTags::removeTag($itemId,$userId);
 				else FItemTags::tag($itemId,$userId);
 				//---create response
-				if($data['__ajaxResponse']==true) {
+				if($data['__ajaxResponse']) {
 					FAjax::addResponse('tag'.$itemId,'$html',FItemTags::getTag($itemId,$userId));
 					FAjax::addResponse('call','fajaxInit');
 				}
@@ -179,7 +179,7 @@ class FAjax_user extends FAjaxPluginBase {
 		} else {
 			FError::add(FLang::$MESSAGE_TAG_REGISTEREDONLY);
 		}
-		if($data['__ajaxResponse']==false) {
+		if(!$data['__ajaxResponse']) {
 			FHTTP::redirect(FSystem::getUri('i='.$itemId,'',''));
 		}
 	}

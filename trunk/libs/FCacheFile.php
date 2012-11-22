@@ -142,7 +142,7 @@ class FCacheFile
 	 * @param string $msg error message
 	 * @param int $code error code
 	 */
-	public function raiseError($msg, $code) {
+	public function raiseError($msg, $code=0) {
 		FError::write_log($msg);
 		return false;
 	}
@@ -210,9 +210,24 @@ class FCacheFile
 	 * Delete a file or recursively delete a directory
 	 * @param string $str Path to file or directory
 	 */
-	static function rrmdir($path) {
-		return is_file($path)?@unlink($path):array_map(array('FCacheFile','rrmdir'),glob($path.'/*'))==@rmdir($path);
-	}
+	static function rrmdir($directory) {
+		if(substr($directory,-1) == '/') $directory = substr($directory,0,-1);
+		if(!file_exists($directory) || !is_dir($directory)) return false;
+		if(!is_readable($directory)) return false;
+		if(!is_dir($directory)) return unlink($directory);
+		$handle = opendir($directory);
+		while (false !== ($item = readdir($handle))) {
+			if($item != '.' && $item != '..') {
+				$path = $directory.'/'.$item;
+				if(is_dir($path)) FCacheFile::rrmdir($path); else unlink($path);
+				
+			}
+		}
+		closedir($handle);
+		if(!rmdir($directory)) return false;
+		return true;
+	} 
+	
 	/**
 	 * Add some date in the memory caching array
 	 * @param string $data data to cache

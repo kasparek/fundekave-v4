@@ -1,4 +1,7 @@
 TODO:
--timehandling - we are now in GMT for now in DB
+-registrace
+-zakladani galerii se spravnym site pageid
+-error handler u tempstore upload
+-english blog iyobosa
 
 

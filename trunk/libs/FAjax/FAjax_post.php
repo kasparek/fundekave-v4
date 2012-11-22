@@ -3,7 +3,7 @@ class FAjax_post extends FAjaxPluginBase {
 	
 	static function page($data) {
 		if(isset($data['p'])) $data['p'] = $data['p']*1; else $data['p']=1;
-		if($data['__ajaxResponse']===true) {
+		if($data['__ajaxResponse']) {
 			$data['refreshPager']=true;
 			page_UserPost::build($data);
 			FAjax::addResponse('call','shiftTo','0');
@@ -15,7 +15,7 @@ class FAjax_post extends FAjaxPluginBase {
 
 	static function submit($data) {
 		$data = page_UserPost::process($data);
-		if($data['__ajaxResponse']===true) {
+		if($data['__ajaxResponse']) {
 			page_UserPost::build($data);
 			FAjax::addResponse('postText','value','');
 			FAjax::addResponse('call','fajaxInit','');

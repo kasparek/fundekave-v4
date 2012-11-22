@@ -1,42 +1,21 @@
 <?php
 class FSystem {
-  //defension implementation
-  static function isSpam($docData) {
-    require_once('defensio-php/Defensio.php');
-    $defensio = new Defensio(FConf::get("settings","defensio_api_key"));
-    $server = array();
-    foreach($_SERVER as $k=>$v) $server[] = $k.':'.$v;
-    $docBase = array('type'=>'comment'
-      ,'platform'=>'php'
-      ,'http-headers'=>implode("\n",$server)
-      ,'author-ip'=>$_SERVER['REMOTE_ADDR']);
-    
-    $document = array_merge($docBase,$docData);
-        
-    $allow = false;
-    $tryAgain = false;
-    for($i=0;i<3;$i++) {
-      try { 
-        $post_result = $defensio->postDocument($document);
-        $xml = $post_result[1];
-        $allow = $xml->allow;
-        if($xml->profanity_match) {
-          $allow = false;
-          FError::write_log("DEFENSIO::profanity : ".$document['content']);
-        }
-        if($xml->spaminess > 0.8) {
-          $allow = false;
-          FError::write_log("DEFENSIO::spaminess=".$xml->spaminess." : ".$document['content']);
-        } 
-      }
-      // Silently rescue connection errors, not much the plugin can do in these cases
-      catch(DefensioConnectionTimeout $ex){ $tryAgain=true;FError::add('Antispam protection timeout'); }
-      catch(DefensioUnexpectedHTTPStatus $ex){ $tryAgain=true;FError::add('Antispam protection timeout'); }
-      if(!$tryAgain) break;
-    }
-    return $allow?false:true;
-  }
-
+	
+	static function recaptchaGet($error) {
+		require_once(ROOT."libs/recaptchalib.php");
+		return recaptcha_get_html("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm", $error);
+		return '';
+	}
+	
+	static function recaptchaCheck() {
+		if ($_POST["recaptcha_response_field"]) {
+			require_once(ROOT."libs/recaptchalib.php");
+			$resp = recaptcha_check_answer ("6LexXNkSAAAAAHke6ktw0hSwYha8x4N4Bn9M2vFm",$_SERVER["REMOTE_ADDR"],$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
+			return $resp->is_valid ? true : $resp->error;
+		}
+		return false;
+	}
+  
 	//---close resources
 	static function fin() {
 		FSystem::superInvalidateFlush();
@@ -84,7 +63,7 @@ class FSystem {
 		$grps = implode(";",$grpList);
 		self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net','sail.awake33.com');
-		//$domains[]='test.fundekave.net';
+		$domains[]='test.fundekave.net';
 		$mh = curl_multi_init();
 		$curlys=array();
 		//prepare curl

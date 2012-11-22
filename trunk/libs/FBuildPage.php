@@ -226,7 +226,7 @@ class FBuildPage {
 
 	static function show( $data ) {
 		$user = FUser::getInstance();
-			  
+
 		FBuildPage::baseContent( $data );
 
 		$tpl = FBuildPage::getInstance();
@@ -250,7 +250,7 @@ class FBuildPage {
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) $errmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
 			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
-      FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
+			FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
 			FError::reset();
 		}
 		
@@ -364,24 +364,18 @@ class FBuildPage {
 			$tpl->touchBlock('msgHidden');
 		}
     
-    //---custom code
-    
-    $cClassname = 'page_'.HOME_PAGE;
-    try {
-      if( class_exists($cClassname) ) {
-  		  call_user_func(array($cClassname, 'show'),$tpl);
-  		}
-    } catch(Exception $e){;}
-    
+		//---custom code
+		$cClassname = 'page_'.HOME_PAGE;
+		try {
+		  if(class_exists($cClassname)) call_user_func(array($cClassname, 'show'),$tpl);
+		} catch(Exception $e){;}
     
 		//---GET PAGE DATA
 		$data = $tpl->get();
-		//replace super variables
 		$data = FSystem::superVars($data);
-		//strip whitespace
-		//$data = preg_replace('/\s\s+/', ' ', $data);
+		//$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
 		
-    FProfiler::write('FBuildPage--complete');
+		FProfiler::write('FBuildPage--complete');
 		
 		return $data;
 	}
