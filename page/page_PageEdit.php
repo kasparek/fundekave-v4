@@ -29,19 +29,6 @@ class page_PageEdit implements iPage {
 			return;
 		}
 
-		/*if(strpos($action,'-')) list($action,$actionValue) = explode('-',$action);
-		 if($action == 'delfoto') {
-			$deleteItemId = (int) $actionValue;
-			$itemVO = new ItemVO($deleteItemId);
-			if($itemVO->load()) {
-			$itemVO->delete();
-			if($data['__ajaxResponse']) {
-			FAjax::addResponse('call', 'remove', 'foto-'.$deleteItemId);
-			}
-			}
-			return;
-			}*/
-
 		if($action == "save") {
 			FError::reset();
 
@@ -382,7 +369,6 @@ class page_PageEdit implements iPage {
 	}
 
 	static function build($data=array()) {
-
 		$user = FUser::getInstance();
 
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
@@ -461,8 +447,6 @@ class page_PageEdit implements iPage {
 			}
 		}
 
-
-
 		if($user->pageParam != 'a') {
 			if($pageVO->typeId == 'forum') {
 				//FORUM
@@ -499,7 +483,7 @@ class page_PageEdit implements iPage {
 				$tpl->touchBlock('fforum'.($user->pageVO->prop('forumSet')*1));
 			}
       
-      $thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
+			$thumbPropList = explode('/',$pageVO->getProperty('thumbCut',FConf::get('galery','thumbCut'),true));
 			$thumbSizeList = explode('x',$thumbPropList[0]);
 			$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
 			$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
@@ -538,13 +522,12 @@ class page_PageEdit implements iPage {
 		}
 
 		//---left panels configure
-
 		if($user->pageParam != 'a') {
 			$tpl->touchBlock('leftpaneltab');
 			$tpl->setVariable('SIDEBARID','sidebar');
 		}
 			
-		if(!empty($data['__ajaxResponse'])) {
+		if($data['__ajaxResponse']) {
 			FAjax::addResponse('pageedit','$html',$tpl->get());
 			FAjax::addResponse('call','jUIInit');
 			if($pageVO->typeId=='galery')FAjax::addResponse('call','GaleryEdit.init');

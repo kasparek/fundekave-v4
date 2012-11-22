@@ -8,19 +8,23 @@ class page_ItemDetail implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		if(isset($data['item'])) $data['i']=$data['item'];
-		if(isset($data['i'])) {
-			$id = (int) $data['i'];
-			$itemVO = new ItemVO($id);
+		if(!empty($data['item'])) $data['i']=$data['item'];
+		if(!empty($data['i'])) {
+			$itemVO = new ItemVO($data['i'] * 1);
 			if(!$itemVO->load()) $itemVO=null;
 		}
 		if(empty($itemVO)) {
 			if(empty($user->itemVO)) return false;
 			$itemVO = $user->itemVO;
 		}
-		if($itemVO->public!=1) {
-			if(!FRules::getCurrent(2)) return;
+		
+		if($itemVO->public>1) {
+			if(!FRules::getCurrent(2)) {
+				//user does not have access to given item
+				return;
+			}
 		}
+		
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
 		if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$itemVO->pageId);
@@ -36,27 +40,25 @@ class page_ItemDetail implements iPage {
 			$user->pageVO->htmlTitle = $itemVO->addon.' - '.$user->pageVO->name;
 			$user->pageVO->showHeading=false;
 			$itemRender = $itemVO->render();
-			if(!empty($data['__ajaxResponse'])) {
-			  FAjax::addResponse('itemDetail','$html',$itemRender);
-			  FAjax::addResponse('backButt','href',$backUri);
+			if($data['__ajaxResponse']) {
+				FAjax::addResponse('itemDetail','$html',$itemRender);
+				FAjax::addResponse('backButt','href',$backUri);
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 			} else {
 				$output = $itemRender;
 			}
-		} 		 		
-		
+		} else {
 		/**
 		 *GALERY ITEM
-		 **/		 		
-		if($itemVO->typeId=='galery') {
+		 **/
 			$arrVars = array(
 				"TEXT"=>$itemVO->text,
 				"IMGALT"=>$itemVO->enclosure,
 				"IMGTITLE"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
-				"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
+				//"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
 				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
 			);
@@ -66,7 +68,7 @@ class page_ItemDetail implements iPage {
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
 			$user->pageVO->htmlTitle = $user->itemVO->htmlName .' - '.$user->pageVO->name; 
 			$user->pageVO->showHeading=false;
-			if(!empty($data['__ajaxResponse'])) {
+			if($data['__ajaxResponse']) {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
 				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->detailUrl.','.$nextVO->detailUrl);

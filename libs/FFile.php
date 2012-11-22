@@ -457,10 +457,9 @@ class FFile {
 	 */
 	static function getTemplFilename() {
 		$user = FUser::getInstance();
-		if($user->userVO->userId==0) return false;
+		if(!$user->idkontrol) return false;
 		$cache = FCache::getInstance('d');
-		$ret = $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
-		return $ret;
+		return $cache->getData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 	}
 
 	static function flushTemplFile() {

@@ -123,7 +123,8 @@ class FItemsRenderer {
 		if(!empty($itemVO->addon)) $vars['TITLE'] = $itemVO->addon;
 		$vars['PAGEID'] = $pageId;
 		//---thumb tag link
-		$vars['TAG'] = FItemTags::getTag($itemId,$this->signedUserId,$typeId,$itemVO->tag_weight);
+		if($typeId!='galery')
+			$vars['TAG'] = FItemTags::getTag($itemId,$this->signedUserId,$typeId,$itemVO->tag_weight);
 
 		if($typeId=='forum' || $typeId=='event') {
 			$vars['DATELOCAL'] = $itemVO->dateCreatedLocal;

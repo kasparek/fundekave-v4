@@ -3,7 +3,7 @@ class FAjax_item extends FAjaxPluginBase {
 
 	static function show($data) {
 		$itemId = isset($data['item']) ? $data['item'] : $data['i'];
-		if($data['__ajaxResponse']===true) {
+		if($data['__ajaxResponse']) {
 			$user = FUser::getInstance();
 			$user->itemVO = new ItemVO($itemId,true);
 			page_ItemsList::build($data);
@@ -35,7 +35,7 @@ class FAjax_item extends FAjaxPluginBase {
 		}
 		if(empty($itemVO->typeId) && isset($data['t'])) $itemVO->set('typeId', $data['t']);
 		$ret = FItemsForm::show($itemVO);
-		if($data['__ajaxResponse']===true) {
+		if($data['__ajaxResponse']) {
 			FAjax::addResponse('editForm', '$html', $ret);
 			FAjax::addResponse('call','jUIInit','');
 		} else {
@@ -44,16 +44,34 @@ class FAjax_item extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
-	  //save item
-		FItemsForm::process($data);
+		//save item
+		$user = FUser::getInstance();
+		if(!empty($data['ti'])) {
+			$user->itemVO = new ItemVO($data['ti']*1);
+			if(!$user->itemVO->load())
+				return; //ERROR invalid top id
+		}
 		
-		if($data['__ajaxResponse']===true) {
+		FItemsForm::process($data);
+
+		if($data['__ajaxResponse']) {
 			if(FAjax::isRedirecting()===false) {
-				Fajax_item::edit($data);
-				if(!empty($data['i'])) { 
-					$itemVO = new ItemVO((int) $data['i']);
-					if($itemVO->load()) {
-						page_ItemDetail::build($data);
+				if($data['t']=='forum') {
+					//return list of items
+					$tpl = page_ItemsList::buildPrep(array('__ajaxResponse'=>true,'itemId'=>$itemId,'onlyComments'=>true,'fajaxform'=>true));
+					$tpl->parse('messageForm');
+					$tpl->parse('itemlist');
+					FAjax::addResponse('messageForm','$replaceWith', $tpl->get('messageForm'));
+					FAjax::addResponse('forumFeed','$replaceWith', $tpl->get('itemlist'));
+					FAjax::addResponse('call','GooMapi.init');
+					FAjax::addResponse('call','fajaxInit');
+				} else {
+					Fajax_item::edit($data);
+					if(!empty($data['i'])) { 
+						$itemVO = new ItemVO((int) $data['i']);
+						if($itemVO->load()) {
+							page_ItemDetail::build($data);
+						}
 					}
 				}
 			}
@@ -80,50 +98,77 @@ class FAjax_item extends FAjaxPluginBase {
 		$user = FUser::getInstance();
 		if($user->pageVO->pageId=='fedit') {
 			FAjax_user::avatar($data);
-			return true;
+			return;
 		}
 		
 		if(empty($data['i'])) {
 			//only temporary thumbnail
 			$filename = FFile::getTemplFilename();
-			if($filename===false) return;
-			$tpl = FSystem::tpl('form.event.tpl.html');
-			$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$filename);
-			$tpl->setVariable('IMAGETHUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
+			$tpl = FSystem::tpl('image.tempStore.tpl.html');
+			$tpl->setVariable('URL',FConf::get('galery','sourceUrlBase').$filename);
+			$tpl->setVariable('THUMBURL',FConf::get('galery','targetUrlBase').'170x0/prop/'.$filename);
+			FAjax::addResponse('imageHolder', '$html', $tpl->get());
+			FAjax::addResponse('call','tempStoreDeleteInit');
+		} else if($itemVO=FItemsForm::moveImage($data)) {
+			$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
+			$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->get('galeryDir').'/'.$itemVO->enclosure);
+			$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
 			$tpl->parse('image');
 			FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
-			FAjax::addResponse('call','tempStoreDeleteInit');
-		} else {
-			if($itemVO=FItemsForm::moveImage($data)) {
-				$tpl = FSystem::tpl('form.'.$itemVO->typeId.'.tpl.html');
-				$tpl->setVariable('IMAGEURL',FConf::get('galery','sourceUrlBase').$itemVO->pageVO->get('galeryDir').'/'.$itemVO->enclosure);
-				$tpl->setVariable('IMAGETHUMBURL',$itemVO->getImageUrl(null,'170x0/prop'));
-				$tpl->touchBlock('confirm');
-				$tpl->parse('image');
-				FAjax::addResponse('imageHolder', '$html', $tpl->get('image'));
-			}
-		}
-		if(!empty($data['i'])) {
 			FAjax::addResponse('i'.$data['i'], 'replaceWith', page_ItemDetail::build($data));
 		}
 	}
   
-  static function stats($data) {
+	static function commentsForm($data) {
+		
+		if(!empty($data['ti'])) {
+			$user = FUser::getInstance();
+			$user->itemVO = new ItemVO($data['ti']*1);
+			if(!$user->itemVO->load())
+				return; //ERROR invalid top id
+		}
+		
+		if(FItemsForm::canComment()) {
+			$formItemVO = new ItemVO();
+			$formItemVO->typeId = 'forum';
+			$formItemVO->pageId = $user->pageVO->pageId;
+			$data['fajaxform']=true;
+			$output = FItemsForm::show($formItemVO,$data);
+		} else {
+			$output = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
+		}
+		
+		FAjax::addResponse('messageForm', '$html', $output);
+		FAjax::addResponse('call','GooMapi.init');
+		FAjax::addResponse('call','fajaxInit');
+	}
   
-  }
-  
-  static function comments($data) {
-	$itemId = $data['id'] * 1;
-	if(empty($itemId)) return;
+	static function comments($data) {
+		$itemIdTop = $data['id'] * 1;
+		if(empty($itemIdTop)) return;
 
-//	$output = page_ItemsList::build(array('itemId'=>$itemId,'onlyComments'=>true));
-//	FAjax::addResponse('afterFeed', '$html', $output);
-//	FAjax::addResponse('call','GooMapi.init');
+		$user = FUser::getInstance();
+		$user->itemVO = new ItemVO($itemIdTop);
+		if(!$user->itemVO->load()) return; //ERROR invalid TOP item id
+		
+		if(isset($data['stats'])) {
+			//return thumb and seen
+		}
 
-  }
+		$tpl = page_ItemsList::buildPrep(array('__ajaxResponse'=>true,'itemIdTop'=>$itemIdTop,'onlyComments'=>true,'fajaxform'=>true));
+		$output = '';
+		$tpl->parse('comm');
+		$output .= $tpl->get('comm');
+		$tpl->parse('messageForm');
+		$output .= $tpl->get('messageForm');
+		$tpl->parse('itemlist');
+		$output .= $tpl->get('itemlist');
+
+		FAjax::addResponse('afterFeed', '$html', $output);
+		FAjax::addResponse('call','fajaxInit');
+	}
 	
 	static function tempStoreFlush($data) {
 	  FFile::flushTemplFile();
 	}
-
 }

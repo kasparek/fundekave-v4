@@ -48,6 +48,7 @@ class FAjax {
 		
 		//---process
 		$dataProcessed = array();
+		$dataProcessed['__ajaxResponse'] = false;
 		if($ajax == true) {
 			if(is_array($data)) $dataProcessed = $data;
 			else {
@@ -79,7 +80,6 @@ class FAjax {
 					$dataProcessed[$k] = $v;
 				}
 			}
-			$dataProcessed['__ajaxResponse'] = false;
 		}
 
 		$dataProcessed = FAjax::preprocessPost($dataProcessed);

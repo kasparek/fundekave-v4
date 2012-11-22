@@ -13,16 +13,7 @@ class FAjax_sail extends FAjaxPluginBase {
     require_once('Zend/Validate/EmailAddress.php');
 		$validator = new Zend_Validate_EmailAddress();
 		if(true!==$validator->isValid($data['email']))  FError::add(FLang::$ERROR_INVALID_EMAIL);
-    
-    if(FSystem::isSpam(array('author-name' => $name, 'author-email' => $email, 'content' => $text))) { 
-      //store data
-      $cache = FCache::getInstance('d');
-	    $dataUid = uniqid('abot');
-	    $cache->setData($data,$dataUid,'antibot');
-      //set error
-      FError::add(FLang::$ERROR_ANTISPAM);
-    }
-    
+        
     if(!FError::is()) {
     
       $message = $name . "\n\n" . $email . "\n\n" . $text;
