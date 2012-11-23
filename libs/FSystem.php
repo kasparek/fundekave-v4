@@ -2,14 +2,14 @@
 class FSystem {
 	
 	static function recaptchaGet($error) {
-		require_once(ROOT."libs/recaptchalib.php");
+		require_once(ROOT."ext/recaptchalib.php");
 		return recaptcha_get_html("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm", $error);
 		return '';
 	}
 	
 	static function recaptchaCheck() {
 		if ($_POST["recaptcha_response_field"]) {
-			require_once(ROOT."libs/recaptchalib.php");
+			require_once(ROOT."ext/recaptchalib.php");
 			$resp = recaptcha_check_answer ("6LexXNkSAAAAAHke6ktw0hSwYha8x4N4Bn9M2vFm",$_SERVER["REMOTE_ADDR"],$_POST["recaptcha_challenge_field"],$_POST["recaptcha_response_field"]);
 			return $resp->is_valid ? true : $resp->error;
 		}
@@ -263,7 +263,7 @@ class FSystem {
 		}
 			
 		if($paramsArr['formatOption'] < 2) {
-			require_once(ROOT.'pear/HTML/Safe.php');
+			require_once('pear/HTML/Safe.php');
 			$safe = new HTML_Safe();
 			if($user->idkontrol && $paramsArr['formatOption']>0) {
 				$safe->deleteTags = array(
@@ -514,14 +514,14 @@ class FSystem {
                   if($tag->tagName=='a') {
                     $tag->setAttribute('rel','lightbox-page');
                     $tag->setAttribute('title',$itemVO->pageVO->get('name'));
-                    $tag->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop',true));
+                    $tag->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop'));
                     while($tag->firstChild) $tag->removeChild($tag->firstChild);
                     $tag->appendChild($img);
                   } else {
                     //img
                     $a = $dom->createElement("a");
                     $tag->parentNode->replaceChild($a,$tag);
-                    $a->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop',true));
+                    $a->setAttribute('href',$itemVO->getImageUrl(null,'800x800/prop'));
                     $a->setAttribute('title',$itemVO->pageVO->get('name'));
                     $a->setAttribute('rel','lightbox-page');
                     $a->appendChild($img);
@@ -539,7 +539,7 @@ class FSystem {
           if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png|gif)$/i", $url, $matches)) {
             $urlEncoded = base64_encode($url);
             $img = $dom->createElement("img");
-            $img->setAttribute('src',FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(FConf::get('image_conf','salt').$urlEncoded).'/'.$urlEncoded);
+			$img->setAttribute('src',FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(ImageConfig::$salt.$urlEncoded).'/'.$urlEncoded);
             //$img->setAttribute('class','hentryimage');
             if($tag->tagName=='img') {
               $a = $dom->createElement("a");
@@ -620,9 +620,7 @@ class FSystem {
     
     return trim($text);
   }
-  
-  
-    
+      
   static function curl_get_file_contents($URL) {
         $c = curl_init();
         curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);

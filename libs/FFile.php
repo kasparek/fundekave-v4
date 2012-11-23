@@ -159,7 +159,7 @@ class FFile {
 		$handle = fopen($filename, "rb");
 		$data = fread($handle, $fsize-2);
 		fclose($handle);
-    FError::write_log('FFile::storeChunk - CHUNK SAVED: '.$filename.'('.$fsize.')');
+		//FError::write_log('FFile::storeChunk - CHUNK SAVED: '.$filename.'('.$fsize.')');
 		return crc32($data);
 	}
 	
@@ -190,7 +190,7 @@ class FFile {
 				fwrite($handleW, fread($handle, filesize($fileChunk)-($isMultipart===true?2:0)));
 				fclose($handle);
 				unlink($fileChunk);
-				FError::write_log('FFile::mergeChunks - writing image to:'.$imagePath.' deleting chunk '.$fileChunk);
+				//FError::write_log('FFile::mergeChunks - writing image to:'.$imagePath.' deleting chunk '.$fileChunk);
 			}
 			//---BASE64 DECODE IF NOT TRANSFERED VIE FILES / MULTIPART
 			if($isMultipart===false) {
@@ -204,11 +204,11 @@ class FFile {
 			}
 			if($this->ftpConnect()) {
 				ftp_put($this->ftpConn,$imagePath,$tmpFilename,FTP_BINARY);
-        FError::write_log('FFile::mergeChunks - ftp upload complete: '.$tmpFilename.'('.filesize($tmpFilename).')');
+				//FError::write_log('FFile::mergeChunks - ftp upload complete: '.$tmpFilename.'('.filesize($tmpFilename).')');
 				unlink($tmpFilename);
 			}
 			fclose($handleW);
-      FError::write_log('FFile::mergeChunks - merge complete');
+			//FError::write_log('FFile::mergeChunks - merge complete');
 		}
 	}
 

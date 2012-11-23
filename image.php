@@ -46,7 +46,7 @@ if(isset($_GET['side'])) {
 $cutParam = isset($_GET['cut']) ? $_GET['cut'] : '';
 
 //CONFIGURATION
-require('image.conf.php');
+require('config/image.conf.php');
 $c = new image_conf();
 $contentType = $c->contentType;
 
@@ -241,7 +241,7 @@ if($c->output===true) {
 	$fp = fopen($targetImage, 'rb');
 	header('Content-Type: '.$contentType);
 	header("Content-Length: ".filesize($targetImage));
-  header('Content-Transfer-Encoding: binary');
+	header('Content-Transfer-Encoding: binary');
 	header("Cache-control: max-age=290304000, public");
 	header("Last-Modified: " . date(DATE_ATOM,filemtime($remote===true?$targetImage:$sourceImage)));
 	header("Expires: ".gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+31536000));
