@@ -3,5 +3,7 @@ TODO:
 -zakladani galerii se spravnym site pageid
 -error handler u tempstore upload
 -english blog iyobosa
+-random slideshow
+-galerie - posledni komentare
 
 

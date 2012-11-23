@@ -15,7 +15,7 @@ class page_PageEdit implements iPage {
 
 		$redirectAdd=false; //keep current value
 		if($user->pageParam == 'a') $redirectAdd = 'e';
-
+		
 		$textareaIdDescription = 'desc'.$user->pageVO->pageId;
 		$textareaIdContent =  'cont'.$user->pageVO->pageId;
 		$textareaIdForumHome = 'home'.$user->pageVO->pageId;
@@ -30,6 +30,7 @@ class page_PageEdit implements iPage {
 		}
 
 		if($action == "save") {
+			FProfiler::write('page_PageEdit::process - SAVING');
 			FError::reset();
 
 			if($user->pageParam == 'a') {
@@ -43,11 +44,12 @@ class page_PageEdit implements iPage {
 				if(empty($pageVO->typeId)) {
 					FError::add('missing page type');
 				}
-				$pageVO->pageIdTop = HOME_PAGE;
+				$top = SITE_STRICT;
+				$pageVO->pageIdTop = empty($top) ? HOME_PAGE : $top;
 			} else {
 				$pageVO = FactoryVO::get('PageVO',$data['pageId'],true);
 			}
-
+			FProfiler::write('page_PageEdit::process - DATA READY');
 
 			//---categories
 			if($pageVO->typeId=='blog' && $user->pageParam!='a') {
@@ -67,6 +69,7 @@ class page_PageEdit implements iPage {
 				*/
 
 			$pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
+			
 			if(empty($pageVO->name)) {
 				FError::add(FLang::$ERROR_PAGE_ADD_NONAME);
 			}
@@ -75,9 +78,7 @@ class page_PageEdit implements iPage {
 					FError::add(FLang::$ERROR_PAGE_NAMEEXISTS);
 				}
 			}
-
-
-
+			
 			if($user->pageParam=='sa') {
 				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
@@ -112,7 +113,7 @@ class page_PageEdit implements iPage {
 					}
 				}
 			}
-
+			FProfiler::write('page_PageEdit::process - CHECKING FOR INPUT ERRORS');
 			if(!FError::is()) {
 
 				if($user->pageParam == 'a') {
@@ -152,6 +153,7 @@ class page_PageEdit implements iPage {
 					$pageVO->pageIco = FPages::avatarDelete( $pageVO->pageId );
 				}
 
+				FProfiler::write('page_PageEdit::process - starting galery settings');
 				/* GALERY SETTINGS */
 				if($pageVO->typeId == 'galery') {
 					//---create folder string if not set
@@ -316,7 +318,7 @@ class page_PageEdit implements iPage {
 
 				}
 
-        FProfiler::write('page_PageEdit::process - page save complete');
+				FProfiler::write('page_PageEdit::process - page save complete');
 
 				/* redirect */
 				if($pageCreated === true) {

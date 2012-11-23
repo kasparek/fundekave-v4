@@ -112,7 +112,7 @@ class FAjax {
 		$className = 'FAjax_'.$mod;
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($fajax->data,array('function'=>$action)))) {
-				FProfiler::write('FAJAX MODULE VALIDATED');
+				FProfiler::write('FAJAX MODULE VALIDATED '.$className.'::'.$action);
 				call_user_func(array($className,$action), $fajax->data);
 				FProfiler::write('FAJAX MODULE COMPLETE');
 				FSystem::superInvalidateFlush();

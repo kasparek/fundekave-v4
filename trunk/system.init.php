@@ -12,20 +12,20 @@ if($host=='localhost') $host='fundekave';
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
-	elseif(strpos($c,'FAjax_')!==false) $c = ROOT . 'libs/FAjax/' . $c;
-	elseif(strpos($c,'VO')!==false) $c = ROOT . 'libs/vo/'.$c;
+	elseif(strpos($c,'FAjax_')!==false) $c = ROOT . 'fajax/' . $c;
+	elseif(strpos($c,'VO')!==false) $c = ROOT . 'model/'.$c;
 	else $c = ROOT . 'libs/' . $c ;
-  try {
-	include_once( $c . '.php' );
-  } catch (Exception $e) {
-  ;
-  }
+	try {
+		include_once( $c . '.php' );
+	} catch (Exception $e) {;}
 }
 spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
 FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
+require_once(WEBROOT.'config/image.conf.php');
+
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
 setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));
