@@ -28,7 +28,6 @@ package
 		public function Fuup()
 		{
 			this.addEventListener(Event.ADDED_TO_STAGE, onStage );
-			
 			Security.allowDomain("*");
 		}
 

@@ -1,6 +1,6 @@
 package net.fundekave.lib
 {
-	import com.dynamicflash.util.Base64;
+	import net.fundekave.lib.Base64;
 	
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -61,7 +61,7 @@ package net.fundekave.lib
 		
 		private function stringChunks(bytes:ByteArray):void
 		{
-			var encodedStr:String = Base64.encodeByteArray(bytes);
+			var encodedStr:String = Base64.encode(bytes);
 			if (chunkSize > 0)
 			{
 				numChunks = Math.ceil(encodedStr.length / chunkSize);
