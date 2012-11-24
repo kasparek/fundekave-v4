@@ -260,7 +260,12 @@ class FFile {
 			}
 		} else {
 			//ftp
+			try {
 			if(!ftp_chdir($this->ftpConn, $dir)) return array(); 
+			} catch (Exception $e) {
+			FError::write_log('FFile::fileList - FTP chdir fail - directory does not exists ');
+			return array();
+			}
 			$list = ftp_rawlist($this->ftpConn, "-A");
 			ftp_chdir($this->ftpConn, '/');
 			if($dir{strlen($dir)-1}!='/') $dir.='/';

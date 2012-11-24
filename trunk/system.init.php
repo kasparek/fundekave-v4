@@ -23,8 +23,8 @@ spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
-FConf::getInstance(WEBROOT.'config/'.$host.'.conf.ini');
-require_once(WEBROOT.'config/image.conf.php');
+FConf::getInstance(WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini');
+require_once(WEBROOT.'conf_'.VERSION.'/image.conf.php');
 
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));

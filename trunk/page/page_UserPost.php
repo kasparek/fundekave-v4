@@ -102,7 +102,7 @@ class page_UserPost implements iPage {
 		$user = FUser::getInstance();
 		$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('s');
-		
+
 		$msgs = new FMessages($user->userVO->userId);
 		//load from filter
 		$filter = $cache->getData($user->pageVO->pageId,'filter');
@@ -228,7 +228,7 @@ class page_UserPost implements iPage {
 
     FProfiler::write('UserPost::build - DONE');
 
-		if(!$data['__ajaxResponse']) {
+		if($data['__ajaxResponse']) {
 			if(isset($data['refreshPage'])) {
 				FAjax::addResponse('messagesBox','$html',$tpl->get());
 			} else {
@@ -236,9 +236,7 @@ class page_UserPost implements iPage {
 				if(!empty($data['refreshPager'])) FAjax::addResponse('pager','$html',$pager->links);
 			}
 		} else {
-				
 			FBuildPage::addTab(array("MAINDATA"=>$tpl->get(),"MAINID"=>'messagesBox'));
-
 		}
 	}
 }

@@ -332,6 +332,12 @@ class FUser {
 	 * @return void
 	 */
 	static function register( $data ) {
+		//check captcha
+		$captchaCheck = FSystem::recaptchaCheck();
+		if($captchaCheck!==true) {
+			$data['recaptchaError'] = $captchaCheck;
+			FError::add(FLang::$ERROR_CAPTCHA);
+		}
 		$reservedUsernames = array('default','admin','administrator','test','aaa','fuvatar','config','profile','page','event','forum','blog','galery');
 		$data["jmenoreg"] = FSystem::textins($data["jmenoreg"],array("plaintext"=>'1'));
 		$data["pwdreg1"] = FSystem::textins($data["pwdreg1"],array("plaintext"=>'1'));
