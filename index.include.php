@@ -1,5 +1,5 @@
 <?php
-require(INIT_FILENAME);
+require(ROOT.'system.init.php');
 /*** CRON JOBS **/
 if(isset($_GET['cron'])) {
 	require_once(ROOT.'cron/'.$_GET['cron'].'.php');
