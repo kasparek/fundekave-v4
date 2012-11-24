@@ -37,7 +37,7 @@ function boot() {
 
 
 function getGaleriaHeight() {var offset=$(".galeria").offset(),galeriaHeight = $(".galeria").width() * 0.75,galeriaHeightMax = Math.round($(window).height() - 75 - offset.top);if(galeriaHeight > galeriaHeightMax) return galeriaHeightMax;return galeriaHeight;}
-function galeriaStart(event){if($(".galeria").length==0)return;window.location.hash = '/'+$('.galeria .galeryThumb').index($("#i"+gup('i',this.href))[0]);galeriaInit();event.preventDefault();return false;}
+function galeriaStart(event){if($(".galeria").length==0)return;$.scrollTo(0,0);window.location.hash = '/'+$('.galeria .galeryThumb').index($("#i"+gup('i',this.href))[0]);galeriaInit();event.preventDefault();return false;}
 function galeriaInit(){
 $(".galeryThumb a").unbind('click',galeriaStart);
 if($('.galeria').length==0)return;

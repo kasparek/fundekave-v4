@@ -33,16 +33,17 @@ class page_fotoMashup implements iPage {
 			}
 			$itemIdList = array_reverse($itemIdList);
 			
-			$data='';
+			$data='<div class="galeria">';
 	
 			while($itemIdList) {
 				$itemId = array_pop($itemIdList);
 				if($itemId) {
 					$itemVO = new ItemVO($itemId,true);
-					$data .= '<a href="'.$itemVO->detailUrl.'" rel="lightbox-mashup" title="'.htmlspecialchars('<a href="'.FSystem::getUri('k='.$itemVO->pageId,'','').'">'.$itemVO->pageVO->get('name').'</a>').'"><img src="'.$itemVO->thumbUrl.'" class="leftbox" /></a>';
+					$data .= $itemVO->render();
+					//$data .= '<div class="galeryThumb"><a href="'.$itemVO->detailUrl.'" rel="lightbox-mashup" title="'.htmlspecialchars('<a href="'.FSystem::getUri('k='.$itemVO->pageId,'','').'">'.$itemVO->pageVO->get('name').'</a>').'"><img src="'.$itemVO->thumbUrl.'" class="leftbox" /></a></div>';
 				}
 			}
-			
+			$data.='</div>';
 			$cache->setData($data,'fotomashup');
 		}
 
