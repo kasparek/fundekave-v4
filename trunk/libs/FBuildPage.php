@@ -152,6 +152,7 @@ class FBuildPage {
 		FProfiler::write('FBuildPage::baseContent--START');
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
+		
 		if($user->pageAccess == true) {
 			switch($user->pageParam) {
 				case 'sa':
@@ -182,15 +183,19 @@ class FBuildPage {
 					if(empty($template) && $user->pageVO->typeId!='culture') $template='page_ItemsList';
 					break;
 			}
+			
 			if($template != '') {
+			
 				//DYNAMIC TEMPLATE
 				FProfiler::write('FBuildPage::baseContent--TPL LOADED');
 				if( class_exists($template)) call_user_func(array($template, 'build'),$data);
 				FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 			} else {
+			
 				//NOT TEMPLATE AT ALL
 				FBuildPage::addTab(array("MAINDATA"=>FSystem::postText($user->pageVO->content).'<div class="clearbox"></div>'));
 			}
+			
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
@@ -231,6 +236,7 @@ class FBuildPage {
 
 		$tpl = FBuildPage::getInstance();
 		$tabsArr = FBuildPage::getTabs();
+		
 		if($tabsArr) {
 			foreach($tabsArr as $tab) {
 				$tpl->setCurrentBlock('content');

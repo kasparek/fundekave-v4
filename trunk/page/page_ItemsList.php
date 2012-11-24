@@ -25,7 +25,9 @@ class page_ItemsList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
+	
 		$tpl = page_ItemsList::buildPrep($data);
+		
 		if($data['__ajaxResponse']) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			$tpl->parse('itemlist');
@@ -46,6 +48,7 @@ class page_ItemsList implements iPage {
 		if(isset($data['__get']['date'])) {
 			$date = FSystem::checkDate($data['__get']['date']);
 		}
+		
 		//var setup
 		$user = FUser::getInstance();
 		if($user->itemVO) {
@@ -119,7 +122,7 @@ class page_ItemsList implements iPage {
 			$typeRequest = $data['__get']['type'];
 			if(!isset(FLang::$TYPEID[$typeRequest])) $typeRequest='';
 		}
-		
+
 		$categoryId=0;
 		if($user->categoryVO) {
 			$categoryId = $user->categoryVO->categoryId; //for category filtering
@@ -163,7 +166,7 @@ class page_ItemsList implements iPage {
 				$isDetail = false;
 			}
 		}
-		
+
 		if(!$isDetail && $pageVO->typeId!='galery') {
 			//TAG FILTERING
 			$cache = FCache::getInstance('f');
@@ -260,6 +263,7 @@ class page_ItemsList implements iPage {
 		if(SITE_STRICT && $pageVO->typeId=='top') {
 			$fItems->addWhere("pageIdTop = '".SITE_STRICT."'");
 		}
+		
 
 		if(!empty($date)) {
 			//used for sorting
@@ -300,6 +304,7 @@ class page_ItemsList implements iPage {
 		}
 
 		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
+		
 		$vars = array_merge($vars,$listArr['vars']);
 		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 		
@@ -341,6 +346,7 @@ class page_ItemsList implements iPage {
 			}
 			$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data);
 			if($from > 0) $pager->totalItems += $from;
+			
 			if($pager->totalItems > 0) {
 				$pager->getPager();
 				if ($pager->totalItems > $perPage) {
@@ -351,6 +357,7 @@ class page_ItemsList implements iPage {
 				$typeIdPrev=null;
 				$itemIdTopPrev=null;
 				$pageIdPrev=null;
+				
 				if($pageVO->typeId=='top') {
 					//sort by page
 					$newArr=array();
@@ -394,6 +401,7 @@ class page_ItemsList implements iPage {
 					$fItems->data=$newArr;
 					/**/
 				}
+				
 				while ($itemVO = array_shift($fItems->data)) {
 					if($pageVO->pageId != $itemVO->pageId) {
 						$fItems->fItemsRenderer->showPage=false;
@@ -419,13 +427,16 @@ class page_ItemsList implements iPage {
 							}
 						}
 					}
+					
 					$fItems->parse($itemVO);
+					
 					if($itemVO->itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
 						$last = $fItems->fItemsRenderer->getLast();
 						$last = str_replace('class="hentry','class="hentry reaction',$last);
 						$fItems->fItemsRenderer->setLast($last);
 					}
-
+					
+					
 					$itemPrev = $itemVO;
 					$typeIdPrev = $itemVO->typeId;
 					$itemIdTopPrev = $itemVO->itemIdTop;
@@ -436,10 +447,12 @@ class page_ItemsList implements iPage {
 
 					if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 				}
+				
 				$vars['ITEMS'] = $fItems->show();
 			} else {
 				$touchedBlocks[]='feedempty';
 			}
+			
 			$data = array('vars'=>$vars,'blocks'=>$touchedBlocks);
 			if(!empty($readed)) {
 				FCommand::run(ITEM_READED,$readed);
