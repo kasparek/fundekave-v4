@@ -1,4 +1,6 @@
 <?php
+return false;
+
 $uid = $_GET['abot'];
 if(empty($uid)) {
 	echo 'missing parameter';

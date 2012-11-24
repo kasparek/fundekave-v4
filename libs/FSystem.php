@@ -41,7 +41,7 @@ class FSystem {
 	}
 
 	static function superInvalidateFlush() {
-		FProfiler::write('FSystem::superInvalidateFlush start');
+		FProfiler::write('FSystem::superInvalidateFlush start 1');
 		if(empty(self::$invalidate)) return;
 		$grpList = self::$invalidate;
 
@@ -59,14 +59,15 @@ class FSystem {
 		$grpListNew = array();
 		foreach($grpList as $grp) if(!in_array($grp,$grpListNew)) $grpListNew[]=$grp;
 		$grpList=$grpListNew;
-			
+		FProfiler::write('FSystem::superInvalidateFlush start 2');	
 		$grps = implode(";",$grpList);
 		self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net','sail.awake33.com');
-		$domains[]='test.fundekave.net';
+		//$domains[]='test.fundekave.net';
 		$mh = curl_multi_init();
 		$curlys=array();
 		//prepare curl
+		FProfiler::write('FSystem::superInvalidateFlush start 3');
 		foreach($domains as $dom) {
 			FProfiler::write('FSystem::superInvalidateFlush curl prepare');
 			$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
@@ -261,9 +262,9 @@ class FSystem {
 		if($paramsArr['formatOption']==0 || $user->idkontrol==false) {
 			$text = strip_tags($text);
 		}
-			
+		
 		if($paramsArr['formatOption'] < 2) {
-			require_once('pear/HTML/Safe.php');
+			require_once('HTML/Safe.php');
 			$safe = new HTML_Safe();
 			if($user->idkontrol && $paramsArr['formatOption']>0) {
 				$safe->deleteTags = array(

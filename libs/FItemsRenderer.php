@@ -71,6 +71,7 @@ class FItemsRenderer {
 	}
 
 	function render( $itemVO ) {
+		
 		if(!$itemVO->itemId) {
 			FError::write_log('RENDERER - empty item');
 			return;
@@ -158,7 +159,7 @@ class FItemsRenderer {
 		if(!empty($itemVO->enclosure)) {
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
-      $vars['IMGURLBIG'] = $itemVO->bigUrl;
+			$vars['IMGURLBIG'] = $itemVO->bigUrl;
 		} else {
 			if($itemVO->typeId=='event') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 		}
@@ -197,13 +198,14 @@ class FItemsRenderer {
 			$pageType = $itemVO->pageVO->get('typeId');
 			$showCommentNum=false; 
 		}
+		
 		if($showCommentNum) {
 			$vars['COMMENTLINK'] = $link;
 			$vars['CNTCOMMENTS'] = $itemVO->cnt;
 			if($itemVO->unreaded > 0) $vars['ALLNEWCNT'] = $itemVO->unreaded;
 		}
 
-		/* google maps */
+		//---google maps
 		if($itemVO->prop('position')) {
 			$vars = array_merge($vars,FItemsRenderer::gmaps($itemVO));
 			$touchedBlocks['map']=true; //to display map icon
@@ -225,6 +227,7 @@ class FItemsRenderer {
 	
 	static function gmaps($itemVO) {
 		$vars = array();
+		
 		$position = $itemVO->prop('position');
 		$distance = $itemVO->prop('distance');
 		if(empty($position)) return $vars;
@@ -234,6 +237,8 @@ class FItemsRenderer {
 		$vars['SMAPTITLE'] = $vars['MAPTITLE'] = $itemVO->addon;
 		$vars['SMAPINFO'] = $vars['MAPINFO'] = FSystem::textins($itemVO->text,array('plaintext'=>1));
 		$vars['SMARKERPOS'] = $journey[count($journey)-1];
+		
+		
 		if($distance>0) $vars['DISTANCE'] = $distance;
 		if(count($journey)>1) {
 			$geoEncode = new GooEncodePoly();
