@@ -63,7 +63,9 @@ function jUIInit(){if(!Lazy.load(Sett.ll.ui,jUIInit))return;buttonInit();tabsIni
 function juilater(){ $(".expand").change(); }
 function datePickerInit(){if($(".datepicker").length>0){if(!Lazy.load(Sett.ll.ui,datePickerInit))return;$.datepicker.setDefaults($.extend({showMonthAfterYear:false},$.datepicker.regional['cs']));$(".datepicker").datepicker();}};
 function slimboxInit(){if(!/android|iphone|ipod|series60|symbian|windows ce|blackberry/i.test(navigator.userAgent)){if($("a[rel^='lightbox']").length>0){if(!Lazy.load(Sett.ll.slim,slimboxInit))return;$("a[rel^='lightbox']").slimbox({overlayFadeDuration:100,resizeDuration:100,imageFadeDuration:100,captionAnimationDuration:100},null,function(el){return(this==el)||((this.rel.length > 8)&&(this.rel==el.rel));});}}};
-function fuupInit(){if($(".fuup").length>0){if(!Lazy.load(Sett.ll.swf,fuupInit))return;$(".fuup").each(function(i){var id=$(this).attr('id'),fuupConf=JSON.stringify(FuupConfig[id]);swfobject.embedSWF(Sett.assUrl+"load.swf",id,"100","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:fuupConf,containerId:id},{menu:"false",scale:"noScale",allowFullscreen:"true",allowScriptAccess:"always",bgcolor:"",wmode:"transparent"});});$("#uploadTip").removeClass('hidden');}}
+function fuupInit(){if($(".fuup").length>0){if(!Lazy.load(Sett.ll.swf,fuupInit))return;$(".fuup").each(function(i){
+	var id=$(this).attr('id'),fuupConf=JSON.stringify(FuupConfig[id]);
+	swfobject.embedSWF(Sett.assUrl+"load.swf",id,"100","25","10.0.12",Sett.assUrl+"expressInstall.swf",{file:Sett.assUrl+"Fuup.swf",config:fuupConf,containerId:id},{menu:"false",scale:"noScale",allowFullscreen:"true",allowScriptAccess:"always",bgcolor:"",wmode:"transparent"});});$("#uploadTip").removeClass('hidden');}}
 function tabsInit(){if($("#tabs").length>0){if(!Lazy.load(Sett.ll.ui,tabsInit))return;$("#tabs").tabs({select:function(event, ui){window.location.hash = '';}});juilater();}};
 function buttonInit(){if($('.uibutton').length>0){if(!Lazy.load(Sett.ll.ui,buttonInit))return;$('.uibutton').button();}}
 /**request init*/
