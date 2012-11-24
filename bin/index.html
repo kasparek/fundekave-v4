@@ -4,11 +4,20 @@
 	<meta charset="utf-8"/>
 	<title>Fundekave image uploader</title>
 	<meta name="description" content="" />
-	
-	<script src="js/swfobject.js"></script>
 	<script>
-var cnf = '{"settings":{"browseImg":"browse_big.png","autoUpload":"0","showControls":"0","showImages":"1","multi":"1","chunkSize":"32768","chunkLimit":"8","fileLimit":"40","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"fuupGateOut"},"service":{"url":"files.php","vars":{}}}'
-		var flashvars = {file:'Fuup.swf',containerId:'FuupUploader',config:cnf
+		var Sett={};
+		Sett.page = 'pageid';
+		Sett.auth = 'authstring';
+	</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+	<script src="js/fuupConfig.js"></script>
+	<script src="js/swfobject.js"></script>
+	<script src="js/base64.min.js"></script>
+	<script src="js/json3.min.js"></script>
+	<script>
+		var cnfEncoded = JSON.stringify(FuupConfig['fuga']);
+		cnfEncoded = $.base64.encode(cnfEncoded);
+		var flashvars = {file:'Fuup.swf',containerId:'FuupUploader',config:cnfEncoded
 		};
 		var params = {menu: "false",scale: "noScale",allowFullscreen: "true",allowScriptAccess: "always",bgcolor: "",wmode: "direct"};
 		var attributes = {id:"FuupUploader"};

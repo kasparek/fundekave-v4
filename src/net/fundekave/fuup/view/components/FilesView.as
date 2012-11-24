@@ -27,6 +27,11 @@ package net.fundekave.fuup.view.components
 	import net.fundekave.Container;
 	import net.fundekave.fuup.model.vo.FileVO;
 	
+	import flash.system.LoaderContext;
+	import flash.system.Security;
+	import flash.system.ApplicationDomain;
+	import flash.system.SecurityDomain;
+	
 	public class FilesView extends Container
 	{
 		public function FilesView(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
@@ -237,9 +242,6 @@ package net.fundekave.fuup.view.components
 			{
 				//---show error
 				dispatchEvent(new Event(FILE_ERROR_NUMLIMIT));
-				closeProgress();
-				currFile = null;
-				filesArr = null;
 				return;
 			}
 			
@@ -445,7 +447,7 @@ package net.fundekave.fuup.view.components
 				browseImgLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onBrowseImgLoader);
 				browseImgLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onBrowseImgLoaderError);
 				controlBox.visible = false;
-				browseImgLoader.load(new URLRequest(browseImgUrl));
+				browseImgLoader.load(new URLRequest(browseImgUrl),new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain));
 			} else {
 				updateControlsLayout();
 			}

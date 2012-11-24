@@ -89,6 +89,7 @@ package net.fundekave.fuup.view
 		
 		protected function onFileErrorNumLimit(e:Event):void {
 			sendNotification(ApplicationFacade.CALLBACK, ExtInterfaceProxy.ERROR, ExtInterfaceProxy.ERROR_FILE_NUM_LIMIT);
+			sendNotification(ApplicationFacade.ACTION_SELECT);
 		}
 		
 		protected function onLoad(e:Event):void 

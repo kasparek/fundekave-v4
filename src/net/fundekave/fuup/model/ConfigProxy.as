@@ -4,11 +4,14 @@ package net.fundekave.fuup.model
 	import flash.events.IOErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.utils.ByteArray;
 	
 	import net.fundekave.Application;
 	import net.fundekave.fuup.ApplicationFacade;
+	import net.fundekave.lib.Base64;
 	
 	import com.adobe.serialization.json.JSON;
+	
 	
 	import org.puremvc.as3.multicore.interfaces.IProxy;
 	import org.puremvc.as3.multicore.patterns.proxy.Proxy;
@@ -34,7 +37,9 @@ package net.fundekave.fuup.model
 			{
 				if (String(params.config).length > 0)
 				{
-					config = JSON.decode(params.config);
+					var decodedBytes:ByteArray = Base64.decode(params.config);
+					decodedBytes.position = 0;
+					config = JSON.decode(decodedBytes.readUTFBytes(decodedBytes.bytesAvailable));
 					if (config)
 					{
 						sendNotification(ApplicationFacade.CONFIG_LOADED);

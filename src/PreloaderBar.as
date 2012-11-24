@@ -64,9 +64,11 @@ package
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete );
 			loader.contentLoaderInfo.addEventListener( ProgressEvent.PROGRESS, onProgress );
 			
-			//var context:LoaderContext = new LoaderContext(true, ApplicationDomain.currentDomain, (Security.sandboxType == Security.REMOTE) ? SecurityDomain.currentDomain : null);
-			//loader.load( new URLRequest( url ), context);
-			loader.load( new URLRequest( url ));
+			
+			var context:LoaderContext; 
+			context = new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain);
+			loader.load( new URLRequest( url ), context);
+			
 		}
 		
 		private function onProgress(e:ProgressEvent):void {
