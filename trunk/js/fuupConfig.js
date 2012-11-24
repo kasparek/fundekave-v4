@@ -1,6 +1,6 @@
 var FuupConfig = {"fuga":
 {"settings":
-	{"autoUpload":"0","showControls":"0","showImages":"1","multi":"1","chunkSize":"131072","chunkLimit":"8","fileLimit":"80"
+	{"autoUpload":"0","showControls":"0","showImages":"1","multi":"1","chunkSize":"131072","chunkLimit":"2","fileLimit":"80"
 ,"image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"}
 ,"appSize":{"width":"-1","height":"200"},"callback":"GaleryEdit.check"}
 ,"service":{"url":"files.php","vars":{"k":Sett.page,"f":"fuga","auth":Sett.auth}}}
