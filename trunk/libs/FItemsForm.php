@@ -79,13 +79,11 @@ class FItemsForm {
 		$user = FUser::getInstance();
 		
 		$captchaCheck = true;
-		if(!$data['__ajaxResponse']) {
-			if($user->idkontrol !== true) {
-				$captchaCheck = FSystem::recaptchaCheck();
-				if($captchaCheck!==true) {
-					if($captchaCheck!==false) $data['recaptchaError'] = $captchaCheck;
-					$captchaCheck = false;
-				}
+		if($user->idkontrol !== true) {
+			$captchaCheck = FSystem::recaptchaCheck();
+			if($captchaCheck!==true) {
+				if($captchaCheck!==false) $data['recaptchaError'] = $captchaCheck;
+				$captchaCheck = false;
 			}
 		}
     		
