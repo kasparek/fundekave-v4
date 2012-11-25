@@ -38,7 +38,7 @@ function boot() {
 var recaptchaElementId='';
 function recaptchaStart(id){
 	if(id)recaptchaElementId=id;
-	if(!Lazy.load('http://www.google.com/recaptcha/api/js/recaptcha_ajax.js',recaptchaStart)) return;
+	if(!Lazy.load(['http://www.google.com/recaptcha/api/js/recaptcha_ajax.js'],recaptchaStart)) return;
 	Recaptcha.create("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm",recaptchaElementId,{tabindex: 3});
 }
 
