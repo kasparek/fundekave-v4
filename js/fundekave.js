@@ -48,7 +48,7 @@ if(!Lazy.load([Sett.jsUrl+'galleria.theme/theme.css'],galeriaInit)) return;
 Galleria.loadTheme(Sett.jsUrl+'galleria.theme/theme.js');
 Galleria.on('loadstart', function(e) {$("#afterFeed").html("");});
 Galleria.on('image', function(e) {Fajax.add('id',e.galleriaData.id);Fajax.send('item-comments',Sett.page);});
-Galleria.run('.galeria', {height:getGaleriaHeight(),width:$('.galeria').width(),fullscreenTransition:'slide',
+Galleria.run('.galeria', {height:getGaleriaHeight(),width:$('.galeria').width(),
     dataConfig: function(img) {
         return {
             image: $(img).attr('data-image'),
