@@ -1,0 +1,20 @@
+<?php
+class FactoryVO {
+
+	private static $anonymous;
+	private static $data;
+	
+	public static function &get($class,$id=0,$autoload=false) {
+		if(empty($id)) {
+			$uid = uniqid();
+			self::$data[$class][$uid] = new $class();
+			$vo = &self::$data[$class][$uid];
+		} else {
+			if(!isset(self::$data[$class][$id])) self::$data[$class][$id] = new $class($id); 
+			$vo = &self::$data[$class][$id];
+			if(!$vo->loaded && $autoload) $vo->load();
+		}
+		return $vo;
+	}
+
+}
