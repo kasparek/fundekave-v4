@@ -540,7 +540,7 @@ class FSystem {
           if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png|gif)$/i", $url, $matches)) {
             $urlEncoded = base64_encode($url);
             $img = $dom->createElement("img");
-			$img->setAttribute('src',FConf::get("galery","targetUrlBase").'300/prop/remote/'.md5(ImageConfig::$salt.$urlEncoded).'/'.$urlEncoded);
+			$img->setAttribute('src',FConf::get("galery","targetUrlBase").'300x300/prop/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded);
             //$img->setAttribute('class','hentryimage');
             if($tag->tagName=='img') {
               $a = $dom->createElement("a");

@@ -30,7 +30,7 @@ class page_Registration implements iPage {
 			$tpl->setVariable('PWD1',$data['pwdreg1']);
 			$tpl->setVariable('PWD2',$data['pwdreg2']);
 			$tpl->setVariable('EMAIL',$data['email']);
-			$tpl->setVariable('CAPTCHA',FSystem::recaptchaGet($data['recaptchaError']));
+			$tpl->setVariable('CAPTCHA',FSystem::recaptchaGet(isset($data['recaptchaError'])?$data['recaptchaError']:''));
 		} else {
 			$tpl->setVariable('DUMMYNO','');
 		}

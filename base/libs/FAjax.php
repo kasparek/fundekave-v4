@@ -35,7 +35,7 @@ class FAjax {
 		return $data;
 	}
 
-	static function prepare($actionStr,$data, $options=array()) {
+	static function prepare($actionStr,$data,$options=array()) {
 		$arr = explode('-',$actionStr);
 		$mod = $arr[0];
 		$action = $arr[1];
@@ -54,7 +54,6 @@ class FAjax {
 			else {
 				$dataXML = stripslashes( $data );
 				$xml = new SimpleXMLElement($dataXML);
-
 				foreach($xml->Request->Item as $item) {
 					$k = (String)$item['name'];
 					$v = (String)$item;

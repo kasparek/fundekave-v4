@@ -92,7 +92,7 @@ class page_UserInfo implements iPage {
 			if(!empty($fileList)) {
 				sort($fileList);
 				while($file = array_pop($fileList)) {
-					$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($userVO->name).'/profile/'.$file);
+					$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800x800/prop/'.strtolower($userVO->name).'/profile/'.$file);
 					$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($userVO->name).'/profile/'.$file);
 					$tpl->parse("foto");	
 				}
