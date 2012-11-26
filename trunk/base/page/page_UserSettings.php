@@ -42,7 +42,7 @@ class page_UserSettings implements iPage {
 			case 'del':
 				$cache = FCache::getInstance('d');
 				$fileList = $cache->getData($userVO->userId,'profileFiles');
-        $ffile = new FFile(FConf::get("galery","ftpServer"));
+				$ffile = new FFile(FConf::get("galery","ftpServer"));
 				if($fileList===false) {
 					$fileList=$ffile->fileList(FAvatar::profileBasePath());
 					$cache->setData($fileList);
@@ -133,7 +133,7 @@ class page_UserSettings implements iPage {
 		if(!empty($fileList)) {
 			sort($fileList);
 			while($file = array_pop($fileList)) {
-				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
+				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800x800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
 				$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($userVO->name).'/profile/'.$file);
 				$tpl->setVariable('USEAVATARIMGID','-'.FSystem::safetext($file));
 				$tpl->setVariable('IMGID','-'.FSystem::safetext($file));

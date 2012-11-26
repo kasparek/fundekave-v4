@@ -28,7 +28,7 @@ class FAjax_user extends FAjaxPluginBase {
 		if(!empty($fileList)) {
 			sort($fileList);
 			while($file = array_pop($fileList)) {
-				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
+				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800x800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
 				$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($user->userVO->name).'/profile/'.$file);
 				$tpl->setVariable('USEAVATARIMGID','-'.FSystem::safetext($file));
 				$tpl->setVariable('IMGID','-'.FSystem::safetext($file));

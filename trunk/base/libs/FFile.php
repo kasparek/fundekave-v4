@@ -50,12 +50,12 @@ class FFile {
 
 	function file_exists($filename) {
 		if(!$this->ftpConnect()) return file_exists($filename);
-    return file_exists('ftp://'.$this->ftpLogin.$filename);
+		return file_exists('ftp://'.$this->ftpLogin.$filename);
 	}
 
 	function is_file($filename) {
 		if(!$this->ftpConnect()) return is_file($filename);
-    return is_file('ftp://'.$this->ftpLogin.$filename);
+		return is_file('ftp://'.$this->ftpLogin.$filename);
 	}
 
 	function filesize($filename) {
@@ -73,6 +73,17 @@ class FFile {
 		return false;
 	}
 
+	function copy($source, $target) {
+		if(!$this->file_exists($source)) return false;
+		if($this->is_dir($source)) return false;
+		if($this->file_exists($target)) return false;
+		$targetArr = explode("/",$target);
+		array_pop($targetArr);
+		$targetFolder = implode("/",$targetArr);
+		$this->mkdir($targetFolder);
+		copy($source,$target);
+	}
+	
 	function unlink($filename) {
 		if(!$this->ftpConnect()) return unlink($filename);
 		return ftp_delete($this->ftpConn, $filename);
@@ -80,7 +91,6 @@ class FFile {
 
 	function mkdir($filename, $mode=0777, $recursive=true) {
 		if(!$this->ftpConnect()) return mkdir($filename, $mode, $recursive);
-		
 		$dir=explode("/", $filename);
 		if(empty($dir[0])) array_shift($dir);
 		$path = "";
@@ -101,6 +111,7 @@ class FFile {
 	}
 
 	function rmdir($filename) {
+		if(!$this->file_exists($filename)) return false;
 		if(!$this->ftpConnect()) return rmdir($filename);
 		return ftp_rmdir($this->ftpConn, $filename);
 	}
@@ -365,26 +376,26 @@ class FFile {
 			}
 		}
 	}
-
+	
 	/**
 	 * recursive folder delete
 	 **/
 	function rm_recursive($filepath) {
-		if($this->is_dir($filepath) && !$this->is_link($filepath)) {
-			$list = $this->fileList($filepath);
-			if(!empty($list)) {
-				while($sf=array_pop($list)) {
-					$f=$filepath.'/'.$sf;
-					if(!$this->rm_recursive($f)) FError::write_log($f.' could not be deleted');
-				}
-			}
-			if($ret = $this->rmdir($filepath)) $this->numModified++;
-			return $ret;
+		if(substr($filepath,-1) == '/') $filepath = substr($filepath,0,-1);
+		if(!$this->file_exists($filepath)) return false;
+		if($this->is_link($filepath)) return false;
+		if(!is_dir($filepath)) {
+			$this->numModified++;
+			unlink($filepath);
 		}
-		if($this->file_exists($filepath)) {
-			if($ret = $this->unlink($filepath)) $this->numModified++;
-			return $ret;
+		$list = $this->fileList($filepath);
+		if(!empty($list))
+		while($sf=array_pop($list)) {
+			$f=$filepath.'/'.$sf;
+			if(!$this->rm_recursive($f)) FError::write_log($f.' could not be deleted');
 		}
+		if($ret = $this->rmdir($filepath)) $this->numModified++;
+		return $ret;
 	}
 
 	/**
