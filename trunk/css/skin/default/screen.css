@@ -2,8 +2,8 @@
 /* BASIC ELEMENTS */
 /*@media screen,projection {*/
 a {color: #320;}
-h1 {font: 1.5em Verdana,Georgia,Times,serif; padding: 0 10px 0 10px;}
-h2 {font: 1.3em Verdana,Georgia,Times,serif;}
+h1 {font: 1.3em Verdana,Georgia,sans-serif; font-weight:bold; padding: 0 10px 0 10px;}
+h2 {font: 1.2em Verdana,Georgia,sans-serif; font-weight:bold;}
 div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
@@ -41,9 +41,9 @@ div#mainbar ul#menu-secondary li.opposite {float:right;}
 div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;padding: 0 1em;}
 
 /* BREADCRUMBS */
-div#breadcrumbs {margin:0;padding:1.2em 0 1em 10px;}
+div#breadcrumbs {margin:0;padding:1em 0 1em 10px;}
 div#breadcrumbs ul {margin: 0; padding: 0;}
-div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;font:0.9em Verdana,sans-serif;color: #9D400D;}
+div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;font:0.75em Verdana,sans-serif;color: #9D400D;}
 
 /* SEARCH BAR */
 div#search-holder {float: right;padding-top: 10px;padding-right: 10px;margin-bottom: -10px;}
