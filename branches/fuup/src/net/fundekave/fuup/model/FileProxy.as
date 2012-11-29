@@ -40,6 +40,7 @@ package net.fundekave.fuup.model
 		public var serviceVars:Object;
 		public var chunkSize:int = 5000;
 		public var uploadLimit:int = 3;
+		public var timeout:Number = 0;
 		public var sendFlushRequest:Boolean = true;
 		
 		public var fileList:Array = new Array();
@@ -196,7 +197,7 @@ package net.fundekave.fuup.model
 				service.removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
 				service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
 			}
-			var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit);
+			var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit, timeout);
 			fileUploadList.push(fileUpload);
 			fileUpload.extraVars = serviceVars;
 			fileUpload.addEventListener(FileUpload.COMPLETE, onUploadComplete, false, 0, true);

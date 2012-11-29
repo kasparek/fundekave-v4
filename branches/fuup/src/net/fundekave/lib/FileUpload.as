@@ -12,8 +12,8 @@ package net.fundekave.lib
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 	
-	import nochump.util.zip.CRC32;
-	
+	import com.adobe.crypto.MD5;
+		
 	public class FileUpload extends EventDispatcher
 	{
 		public static const COMPLETE:String = 'complete';
@@ -26,6 +26,7 @@ package net.fundekave.lib
 		public var filename:String;
 		public var chunkSize:int = 0;
 		public var uploadLimit:int = 1;
+		private var timeout:uint = 0
 		
 		private var chunks:Array;
 		private var numChunks:int = 0;
@@ -37,13 +38,14 @@ package net.fundekave.lib
 		private var isStoped:Boolean = false;
 		private var serviceList:Vector.<Service>;
 		
-		public function FileUpload(url:String, filename:String, chunkSize:int = 0, uploadLimit:int = 1)
+		public function FileUpload(url:String, filename:String, chunkSize:int = 0, uploadLimit:int = 1, timeout:uint=0)
 		{
 			serviceList = new Vector.<Service>;
 			this.serviceURL = url;
 			this.filename = filename;
 			this.chunkSize = chunkSize;
 			this.uploadLimit = uploadLimit;
+			this.timeout = timeout;
 		}
 		
 		public function uploadReference(ref:FileReference):void
@@ -96,18 +98,14 @@ package net.fundekave.lib
 				var chunk:ByteArray = new ByteArray();
 				var length:Number = bytes.length < (i * chunkSize) + chunkSize ? bytes.length - i * chunkSize : chunkSize;
 				chunk.writeBytes(bytes, i * chunkSize, length);
-				chunks.push({filename: filename, seq: i, total: numChunks, data: chunk});
+				chunks.push({filename: filename, seq: i, total: numChunks, crc:MD5.hashBinary(chunk), data: chunk});
 			}
 		}
 		
 		public function uploadBytes(bytes:ByteArray):void
 		{
 			isStoped = false;
-			
-			var crc32:CRC32 = new CRC32();
-			crc32.update(bytes);
-			extraVars['crcTotal'] = crc32.getValue();
-			
+			extraVars['crcTotal'] = MD5.hashBinary(bytes);
 			if (isMultipart === true)
 			{
 				byteChunks(bytes);
@@ -121,7 +119,7 @@ package net.fundekave.lib
 		
 		public function stop():void {
 			isStoped = true;
-			for each(var service:Service in serviceList) service.stop();
+			for each(var service:Service in serviceList) service.close();
 			serviceList = new Vector.<Service>;
 		}
 		
@@ -133,6 +131,7 @@ package net.fundekave.lib
 			{
 				//---prepare service
 				var service:Service = new Service();
+				service.timeout = timeout;
 				serviceList.push(service);
 				service.addEventListener(Event.COMPLETE, onServiceComplete);
 				service.addEventListener(IOErrorEvent.IO_ERROR, onServiceError, false, 0, true);
@@ -142,10 +141,7 @@ package net.fundekave.lib
 				service.url = serviceURL;
 				service.variables = chunks.shift();
 				trace('FileUpload::upload - data size: '+(service.variables.data as ByteArray).length);
-				for (var name:String in extraVars)
-				{
-					service.variables[name] = extraVars[name];
-				}
+				for (var name:String in extraVars) service.variables[name] = extraVars[name];
 				service.send();
 				
 				chunksUploading++;
