@@ -1,8 +1,11 @@
 TODO:
--english blog iyobosa
--random slideshow
+-iyobosa
+	-english flag
 -galerie - posledni komentare
 -fuup - timeout
--nahledy - http://fotobiotic.net/image/170x170/crop/kasparek/20121111_fiumicino-italy_001eb/img_7864.jpg
+-ajax error 
+	- disable
+	- retry?
+	- show only at specific methods
 
 

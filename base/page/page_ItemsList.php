@@ -25,7 +25,17 @@ class page_ItemsList implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
-	
+		$user = FUser::getInstance();
+		if($user->pageVO->typeId=='galery' && empty($user->itemVO) && !$data['__ajaxResponse']) {
+			$grpid = 'page/'.$user->pageVO->pageId.'/list';
+			$cache = FCache::getInstance('f');
+			$data = $cache->getData('complete',$grpid);
+			if($data) {
+				FBuildPage::addTab(array("MAINDATA"=>$data));
+				return;
+			}
+		}
+		
 		$tpl = page_ItemsList::buildPrep($data);
 		
 		if($data['__ajaxResponse']) {
@@ -37,7 +47,12 @@ class page_ItemsList implements iPage {
 			FAjax::addResponse('call','fajaxInit');
 			FAjax::addResponse('call','GooMapi.init');
 		} else {
-			FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
+			$data = $tpl->get();
+			FBuildPage::addTab(array("MAINDATA"=>$data));
+			
+			if(isset($grpid) && $user->pageVO->typeId=='galery' && empty($user->itemVO)) {
+				$cache->setData($data,'complete',$grpid);
+			}
 		}
 	}	
 	 

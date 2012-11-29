@@ -17,11 +17,12 @@ class FSystem {
 	}
   
 	//---close resources
-	static function fin() {
+	static function fin($msg='',$log=false) {
 		FSystem::superInvalidateFlush();
 		$db = FDBConn::getInstance();
 		$db->kill();
-		exit;
+		if($log) FError::write_log($log);
+		die($msg);
 	}
 
 	static function strlenSort($a,$b){
@@ -698,8 +699,4 @@ $lowerAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
 foreach ($bot_list as $bot)	if(strpos($lowerAgent,$bot)!==false) return true;
 return false;
 	}
-
-
 }
-
-

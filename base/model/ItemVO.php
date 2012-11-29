@@ -285,7 +285,7 @@ class ItemVO extends Fvob {
 				$thumbCut = $this->pageVO->getProperty('thumbCut',$thumbCut,true);
 			}
 			//thumbnail URL
-			$this->thumbUrl = $this->getImageUrl(null,$thumbCut,false);
+			$this->thumbUrl = $this->getImageUrl(null,$thumbCut,true);
 			//detail image URL
 			//picasa
 			if($this->pageVO->typeId=='galery') {
@@ -453,7 +453,7 @@ class ItemVO extends Fvob {
 		if($thumbCut===null) $thumbCut = $confGalery['thumbCut'];
     
 		list($size,$cropStyle) = explode("/",$thumbCut);
-		if($cropStyle=='crop') $usePicasa = false;
+		//if($cropStyle=='crop') $usePicasa = false;
 		$arr = explode("x",$size);
 		$width = $arr[0];
 		$height = 0;
@@ -469,7 +469,7 @@ class ItemVO extends Fvob {
 		$sideOptionList = explode(",",ImageConfig::$sideOptions);
 		$width = $this->normalizeSize($width,$sideOptionList);
 		if($usePicasa==true) {
-			if($width!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$width.'/',$picasaPhotoUrl);
+			if($width!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$width.($cropStyle=='crop'?'-c':'').'/',$picasaPhotoUrl);
 			return str_replace('https://','http://',$picasaPhotoUrl);;
 		}
 		$thumbCut = $width; 
