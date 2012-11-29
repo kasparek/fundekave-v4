@@ -1,5 +1,8 @@
 RewriteEngine on
 
+RewriteCond %{HTTP_HOST} noiz.cz$
+RewriteRule (.*) http://noiz.fundekave.net/$1 [R=301,QSA,L]
+
 RewriteCond %{HTTP_HOST} ^www.awake33.com$
 RewriteRule (.*) http://awake33.com/$1 [R=301,QSA,L]
 
@@ -17,12 +20,12 @@ RewriteRule ^page-([a-zA-Z0-9]{5,6}).*.html$ index.php?k=$1 [QSA,L]
 RewriteRule ^item-([0-9]{1,8})(.*).html$ index.php?i=$1 [QSA,L]
 RewriteRule ^cron-(.*)$ index.php?cron=$1 [QSA,L]
 
-RewriteRule (.*\.css)$ index.php?nonInit=1&header_handler=css&c=$1 [L]
-RewriteRule (.*\.js)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
-RewriteRule (.*\.gif)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
-RewriteRule (.*\.jpg)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
-RewriteRule (.*\.png)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
-RewriteRule (.*\.ico)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
+#RewriteRule (.*\.css)$ index.php?nonInit=1&header_handler=css&c=$1 [L]
+#RewriteRule (.*\.js)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
+#RewriteRule (.*\.gif)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
+#RewriteRule (.*\.jpg)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
+#RewriteRule (.*\.png)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
+#RewriteRule (.*\.ico)$ index.php?nonInit=1&header_handler=1&c=$1 [L]
 
 RewriteRule ^pic/|pic.php.* index.php [QSA,L]
 RewriteRule ^files/|files.php.* index.php [QSA,L]
