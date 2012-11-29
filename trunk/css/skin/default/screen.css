@@ -35,7 +35,7 @@ ul#menu li a:hover,a.active {background: #E2E595;}
 
 /* SECONDARY MENU */
 div#menu-secondary-holder {padding: 0 10px 10px 10px;}
-div#mainbar ul#menu-secondary {margin: 0;padding: 0;width: 100%;display: table;border-bottom: 1px solid #999;}
+div#mainbar ul#menu-secondary {font-size:85%; clear:both; font-weight:bold; margin: 0;padding: 0;width: 100%;display: table;border-bottom: 1px solid #999;}
 div#mainbar ul#menu-secondary li {position: relative;padding-left: 0;list-style: none;display: block;margin-right: 5px;float: left;line-height: 2em;border: 1px solid #999;border-bottom: none;background: whitesmoke;}
 div#mainbar ul#menu-secondary li.opposite {float:right;}
 div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;padding: 0 1em;}
