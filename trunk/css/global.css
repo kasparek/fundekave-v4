@@ -93,7 +93,7 @@
 #fullscreenHint {width:100%;position: absolute;left:0;z-index: 10007;text-align:center;font-size:1.66em;background: #fff;padding:2em 0;margin:0;opacity:0.8;}
 
 /* PAGER */
-div.pagination {clear: left;margin: 0.3em 0;padding: 1em 0;text-align:right;}
+div.pagination {clear: left;margin: 0.3em 0;padding: 0.3em 0;text-align:right;}
 div.pagination a {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #425d21;text-decoration: none;color: #425d21;}
 div.pagination a:hover, div.pagination a:active {border: 1px solid #425d21;color: #425d21;}
 div.pagination span.current {padding: 2px 5px 2px 5px;margin: 2px;border: 1px solid #425d21;font-weight: bold;background-color: #425d21;color: #FFF;}
