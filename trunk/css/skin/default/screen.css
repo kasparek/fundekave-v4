@@ -2,13 +2,13 @@
 /* BASIC ELEMENTS */
 /*@media screen,projection {*/
 a {color: #320;}
-h1 {font: 1.66em Verdana,Georgia,Times,serif; padding: 0 10px 0 10px;}
-h2 {font: 2em Verdana,Georgia,Times,serif;}
+h1 {font: 1.5em Verdana,Georgia,Times,serif; padding: 0 10px 0 10px;}
+h2 {font: 1.3em Verdana,Georgia,Times,serif;}
 div#mainbar h2 {padding-top: 0.3em;line-height: 1.6em;padding-right:0.5em;}
 div#mainbar ul {padding: 0;margin: 0;}
 
 /* BASE FRAMEWORK */
-body {text-align: center;color: black;font:0.68em/1 Verdana,sans-serif;
+body {text-align: center;color: black;font:0.875em/1.5 Arial,Verdana,sans-serif;
 margin:0;margin-left:20px;padding-right:240px;margin-right:0;
 background: #eae6da url(img/page-bg.png) repeat-x right top;}
 .bodySidebarOff {padding-right:0;margin-right:20px;}
@@ -16,7 +16,7 @@ div#sidebarOff {display:none;}
 div#pageholder {position: relative;left: 0px;}
 div#header {position: relative;z-index: 1;}
 div#pagebar {float:left;width:100%;min-width: 610px;display:inline; background-color: white;padding: 0;}
-div#sidebar {position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
+div#sidebar {font-size:85%;position:relative;float:right;width:200px;margin-right:-220px;text-align: left;line-height: 1.3em;}
 div#header, div#footer{clear:both;margin-left: 0px;min-width: 400px;}
 div#footer{padding: 5px 0;text-align: right;}
 div#footer span {float: left;}
@@ -29,12 +29,8 @@ width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
 
 /* PRIMARY MENU */
 ul#menu {margin: 1em 0 0 0;text-transform:uppercase;}
-ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
-background: #F8FBDB;
-}
-ul#menu li a {padding: 0 0.8em;display: block;font: 1.2em/29px Verdana,Georgia,Times,serif;text-decoration: none;
-font-weight: bold;
-color: #223d01;}
+ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;background: #F8FBDB;}
+ul#menu li a {padding: 0 0.8em;display: block;font-size: 1.1em; line-height: 29px; text-decoration: none; font-weight: bold; color: #223d01;}
 ul#menu li a:hover,a.active {background: #E2E595;}
 
 /* SECONDARY MENU */
@@ -47,10 +43,7 @@ div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;paddi
 /* BREADCRUMBS */
 div#breadcrumbs {margin:0;padding:1.2em 0 1em 10px;}
 div#breadcrumbs ul {margin: 0; padding: 0;}
-div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;
-font:0.9em Verdana,sans-serif;
-color: #9D400D;
-}
+div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;font:0.9em Verdana,sans-serif;color: #9D400D;}
 
 /* SEARCH BAR */
 div#search-holder {float: right;padding-top: 10px;padding-right: 10px;margin-bottom: -10px;}
@@ -115,7 +108,7 @@ div.mainpanel-content div.galery span.abbr abbr {border: none;}
 div.mainpanel-content h3.summary, div.mainpanel-content h3.entry-title {border: none;}
 
 /* LINK LIST */
-a.linkItem {font: 1.3em/25px Verdana,Georgia,Times,serif;clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
+a.linkItem {font-size: 1.1em; line-height:25px; font-weight:bold; clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
 a.linkItem:hover {background: #E2E595;text-decoration:underline;}
 div#sidebar a.linkItem { line-height: 20px;height:20px;overflow:hidden; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
@@ -137,7 +130,7 @@ div.mainpanel-content div.hentry div.completelink {clear: both;}
 
 /* HENTRY HEADER */
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
-div.mainpanel-content div.hentry h2 {padding: 0;margin: 0;font-size:1.66em;}
+div.mainpanel-content div.hentry h2 {padding: 0;margin: 0;}
 div.mainpanel-content div.blog h2.entry-title {margin-top: -1em;}
 div.mainpanel-content div.hentry h2.entry-title a {color: black;text-decoration: none;}
 div.mainpanel-content div.hentry h2.entry-title a:hover {color: black;text-decoration: underline;}
