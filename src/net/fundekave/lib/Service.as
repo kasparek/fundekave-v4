@@ -4,6 +4,7 @@ package net.fundekave.lib
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.ProgressEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
@@ -11,21 +12,31 @@ package net.fundekave.lib
 	import flash.net.URLRequestMethod;
 	import flash.net.URLVariables;
 	import flash.utils.ByteArray;
-	import nochump.util.zip.CRC32;
-	import flash.utils.setTimeout;
-	import flash.utils.clearTimeout;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
 	
 	public class Service extends URLLoader
 	{
 		public static const ATTEMPTS_ERROR:String = 'attemptsError';
+		public static const TIMEOUT:String = 'loaderTimeout';
 		
 		public var isMultipart:Boolean = false;
 		
 		public var attemptsLimit:int = 5;
 		public var attempts:int = 0;
-		public var timeout:int = 0;
-		private var timeoutId:uint;
 		
+		private var _timeoutTimer:Timer;
+		private var _timeout:Number = 0;
+        public function set timeout(v:Number):void {
+			if (_timeout == v) return;
+			_timeout = v * 1000;
+			if (_timeoutTimer) killTimer();
+			if (_timeout > 0) _timeoutTimer = new Timer(_timeout,1);	
+		}
+		public function get timeout():Number {
+			return _timeout;
+		}
+        		
 		public var url:String;
 		public var variables:Object;
 		public var request:URLRequest;
@@ -40,33 +51,16 @@ package net.fundekave.lib
 			
 			super(request);
 		}
-		
-		public function stop():void {
-			isStoped = true;
-		}
-		
+				
 		public function retry():void
 		{
-			if (isStoped) return;
-			this.send();
+			load(request);
 		}
 		
-		public function send(request:URLRequest = null):void
-		{
-			if (isStoped) return;
-			if (request)
-				this.request = request;
-			else
-			{
-				this.request = new URLRequest(this.url);
-				this.request.method = URLRequestMethod.POST;
-			}
-			
-			if (!isListeners) {
-				isListeners = true;
-				this.addEventListener(Event.COMPLETE, cancelTimeout, false, 0, true);
-				this.addEventListener(IOErrorEvent.IO_ERROR, cancelTimeout, false, 0, true);
-				this.addEventListener(SecurityErrorEvent.SECURITY_ERROR, cancelTimeout, false, 0, true);
+		public function send():void {
+			if(!request) {
+				request = new URLRequest(url);
+				request.method = URLRequestMethod.POST;
 			}
 			
 			if (isMultipart === true)
@@ -82,9 +76,6 @@ package net.fundekave.lib
 				if ((variables.data as ByteArray).length == 0) {
 					trace('Zero size data, attempt num:' + attempts);
 				}
-				var crc32:CRC32 = new CRC32();
-				crc32.update(variables.data);
-				strippedVars['crc'] = crc32.getValue();
 				this.request.data = UploadPostHelper.getPostData(variables.filename, variables.data, strippedVars);
 				this.request.requestHeaders.push(new URLRequestHeader('Cache-Control', 'no-cache'));
 				this.request.requestHeaders.push(new URLRequestHeader('Content-type', 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary()));
@@ -100,33 +91,72 @@ package net.fundekave.lib
 				this.request.data = vars;
 				this.dataFormat = URLLoaderDataFormat.TEXT;
 			}
-			if(timeoutId) clearTimeout(timeoutId);
-			if(timeout) timeoutId = setTimeout(onTimeout, timeout);
-			super.load(this.request);
+			
+			load(request);
 		}
 		
-		private function onTimeout():void {
-			failed();
+		override public function load(request:URLRequest):void
+		{
+			if (isStoped) return;
+			if(timeout > 0) {	
+				addEventListener(IOErrorEvent.IO_ERROR, handleLoadActivity,false,0,true);
+				addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleLoadActivity,false,0,true);
+				addEventListener(Event.COMPLETE, handleLoadActivity,false,0,true);
+				addEventListener(ProgressEvent.PROGRESS, handleLoadActivity,false,0,true);
+				addEventListener(Event.OPEN, handleLoadActivity, false, 0, true);
+				_timeoutTimer.addEventListener(TimerEvent.TIMER, handleTimeout);
+				_timeoutTimer.start();
+			}
+			super.load(request);
 		}
-		
-		private function cancelTimeout(e:Event):void {
-			if(timeoutId) clearTimeout(timeoutId);
-		}
-		
+				
 		public function failed():void
 		{
-			if(timeoutId) clearTimeout(timeoutId);
-			if (isStoped) return;
-			if (this.attempts < this.attemptsLimit)
+			killTimer();
+			if(isStoped) return;
+			if(this.attempts < this.attemptsLimit)
 			{
-				if(timeout) timeoutId = setTimeout(onTimeout, timeout);
-				super.load(this.request);
+				load(request);
 			}
 			else
 			{
 				dispatchEvent(new ErrorEvent(ATTEMPTS_ERROR));
 			}
 			this.attempts++;
+		}
+		
+		override public function close():void
+		{
+			isStoped = true;
+			killTimer();
+			super.close();
+		}
+		
+		private function handleLoadActivity(event:Event):void
+		{
+			killTimer();
+		}
+		
+		private function handleTimeout(event:TimerEvent):void
+		{
+			trace("Service::handleTimeout");
+			super.dispatchEvent(new Event(TIMEOUT, true));
+			failed();
+		}
+		
+		private function killTimer(event:Event = null):void
+		{
+			if (!_timeoutTimer) return;
+			
+			removeEventListener(IOErrorEvent.IO_ERROR, handleLoadActivity);
+			removeEventListener(SecurityErrorEvent.SECURITY_ERROR, handleLoadActivity);
+			removeEventListener(Event.COMPLETE, handleLoadActivity);
+			removeEventListener(ProgressEvent.PROGRESS, handleLoadActivity);
+			removeEventListener(Event.OPEN, handleLoadActivity);
+
+			_timeoutTimer.reset();
+			_timeoutTimer.stop();
+			_timeoutTimer.removeEventListener(TimerEvent.TIMER, handleTimeout);
 		}
 	}
 }
