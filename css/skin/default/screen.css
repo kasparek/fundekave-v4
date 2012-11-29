@@ -41,7 +41,7 @@ div#mainbar ul#menu-secondary li.opposite {float:right;}
 div#mainbar ul#menu-secondary li a {font-size: 1.1em;text-decoration: none;padding: 0 1em;}
 
 /* BREADCRUMBS */
-div#breadcrumbs {margin:0;padding:1em 0 1em 10px;}
+div#breadcrumbs {margin:0;padding:10px;float:left;}
 div#breadcrumbs ul {margin: 0; padding: 0;}
 div#breadcrumbs ul li {display: inline;padding-left: 10px;margin-right: 1em;list-style: none;background: url(img/arrow.png) no-repeat left center;font:0.75em Verdana,sans-serif;color: #9D400D;}
 
@@ -108,7 +108,7 @@ div.mainpanel-content div.galery span.abbr abbr {border: none;}
 div.mainpanel-content h3.summary, div.mainpanel-content h3.entry-title {border: none;}
 
 /* LINK LIST */
-a.linkItem {font-size: 1.1em; line-height:25px; font-weight:bold; clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
+a.linkItem {font-size: 1.1em; line-height:25px; clear: both;min-height: 25px;display: block;background: #F8FBDB;text-decoration: none;margin-top: 2px;padding: 0 1em;}
 a.linkItem:hover {background: #E2E595;text-decoration:underline;}
 div#sidebar a.linkItem { line-height: 20px;height:20px;overflow:hidden; margin:5px 2px;min-height: 20px; font-size: 1.1em;padding: 0 3px;}
 div#mainbar div.entry-content a.linkItem {display: inline;padding: 0.6em 0.5em;}
