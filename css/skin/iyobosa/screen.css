@@ -38,7 +38,7 @@ text-align:center;margin:-100px -220px 0 0;height:100px;
 .bodySidebarOff div#logo {margin-right:0px;}
 
 /* PRIMARY MENU */
-ul#menu {margin: 100px 0 0 0;text-transform:uppercase;}
+ul#menu {margin: 0;text-transform:uppercase;}
 ul#menu li {display: block;float: left;margin-right: 5px;list-style: none;
 background: #ffc;
 }
