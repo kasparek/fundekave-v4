@@ -318,6 +318,11 @@ class page_ItemsList implements iPage {
 			$pageVO->updateReaded($user->userVO->userId);
 		}
 
+		if($pageVO->typeId=='top') {
+			$fItems->userIdForPageAccess=true;
+			$fItems->setTypeLimit('galery',3);
+		}
+		
 		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
 		
 		$vars = array_merge($vars,$listArr['vars']);
