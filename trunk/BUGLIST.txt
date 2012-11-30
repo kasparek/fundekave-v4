@@ -7,5 +7,6 @@ TODO:
 	- disable
 	- retry?
 	- show only at specific methods
+-navod u nahravani do galerie, opravit
 
 

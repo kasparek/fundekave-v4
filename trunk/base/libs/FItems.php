@@ -13,7 +13,7 @@ class FItems extends FDBTool {
 	public $fItemsRenderer;
 
 	//---using user permissions
-	private $userIdForPageAccess = false;
+	public $userIdForPageAccess = false;
 	private $access = true;
 
 	//---items removed because no access
@@ -135,6 +135,12 @@ class FItems extends FDBTool {
 		return count($this->data);
 	}
 
+	var $typeLimit;
+	var $typeLimitCount;
+	function setTypeLimit($typeId,$num) {
+		$this->typeLimit[$typeId] = $num;
+	}
+	
 	function getList($from=0, $count=0) {
 		$this->data = array();
 
@@ -146,19 +152,32 @@ class FItems extends FDBTool {
 			$itemsCount = 0;
 			$page = 0;
 			$arr = array();
-
+			$prevItems = 0;
 			while(count($arr) < $count || $count==0) {
-				$arrTmp = $this->getContent($from + ($page*$count), $count);
+				$arrTmp = $this->getContent($page*$count, $count);
 				$page++;
 				if(empty($arrTmp)) break; //---no records
 				else {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
 						//---check premissions
-						if(FRules::get($this->userIdForPageAccess,$row->pageId,1)) {
-							$arr[] = $row;
-							$itemsCount++;
-							if($itemsCount == $count && $count!=0) break;
+						$includeItem = true;
+						if(isset($this->typeLimit[$row->typeId])) {
+							if(!isset($this->typeLimitCount[$row->pageId])) $this->typeLimitCount[$row->pageId]=0;
+							if(empty($row->itemIdTop)) {
+								if($this->typeLimitCount[$row->pageId] > $this->typeLimit[$row->typeId]) $includeItem = false;
+								else $this->typeLimitCount[$row->pageId]++;
+							}
+						}
+							
+						if($includeItem && FRules::get($this->userIdForPageAccess,$row->pageId,1)) {
+							if($prevItems > $from) {
+								$arr[] = $row;
+								$itemsCount++;
+								if($itemsCount == $count && $count!=0) break;
+							} else {
+								$prevItems++;
+							}
 						} else {
 							//not permission for post
 							$this->itemsRemoved++;
