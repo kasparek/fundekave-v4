@@ -141,6 +141,29 @@ class FItems extends FDBTool {
 		$this->typeLimit[$typeId] = $num;
 	}
 	
+	/**
+	prepare and cache complete list of itemId
+		- accessible for anonym
+		- ordered as it should be - pagelist = dateStart desc
+		
+		select itemId,pageId from sys_pages_items where public=1 order by dateStart desc
+	*/
+	function globalPrepare($userId) {
+		$q = "select itemId,pageId from sys_pages_items order by dateStart";
+		$list = $this->getAll($q);
+		foreach($list as $item) {
+			$includeItem = true;
+		}
+		if(isset($this->typeLimit[$row->typeId])) {
+			if(!isset($this->typeLimitCount[$row->pageId])) $this->typeLimitCount[$row->pageId]=0;
+			if(empty($row->itemIdTop)) {
+				if($this->typeLimitCount[$row->pageId] > $this->typeLimit[$row->typeId]) $includeItem = false;
+				else $this->typeLimitCount[$row->pageId]++;
+			}
+		}
+		
+	}
+	
 	function getList($from=0, $count=0) {
 		$this->data = array();
 
