@@ -60,7 +60,7 @@ class FItemsRenderer {
 				$homeUrl = ' - '.$pVOTop->prop('homesite');
 			}
 			$vars['URL'] = FSystem::getUri('',$itemVO->pageId,'',array('name'=>$pageVO->get('name')));
-			$vars['PAGENAME'] = $pageVO->get('name') . ($pageVO->typeId=='galery' && $pageVO->cnt>4?' <span class="boldtext">[Fotografii: '.$pageVO->cnt.']</strong>':'');// . $homeUrl;
+			$vars['PAGENAME'] = $pageVO->get('name') . ($pageVO->typeId=='galery' && $pageVO->cnt>4?' <span class="rf"><img src="[[URL_SKIN]]/img/camera.png" title="Fotografii"> '.$pageVO->cnt.'</span>':'');// . $homeUrl;
 			$vars['ITEM'] = '[[ITEM]]';
 			$tpl->setVariable($vars);
 			$page = $tpl->get();

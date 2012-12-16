@@ -38,7 +38,7 @@ class page_ItemsList implements iPage {
 		
 		$tpl = page_ItemsList::buildPrep($data);
 		
-		if($data['__ajaxResponse']) {
+		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			$tpl->parse('itemlist');
 			FAjax::addResponse('itemFeed','$html',$tpl->get('itemlist'));
@@ -223,7 +223,7 @@ class page_ItemsList implements iPage {
 		 */
 		if($pageVO->typeId!='top') { //no show for live, main etc.
 			if(FItemsForm::canComment()) {
-				if(!$data['__ajaxResponse']) {
+				if(empty($data['__ajaxResponse'])) {
 					if($isDetail) $data['simple'] = true;
 					$formItemVO = new ItemVO();
 					$formItemVO->typeId = 'forum';
