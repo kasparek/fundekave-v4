@@ -400,7 +400,7 @@ class FItemsForm {
 						$tpl->setVariable('USERNAME',$itemVO->name);
 					}
 				}
-				if(!$data['__ajaxResponse']) $tpl->setVariable('RECAPTCHA',FSystem::recaptchaGet($tempData['recaptchaError']));
+				if(empty($data['__ajaxResponse'])) $tpl->setVariable('RECAPTCHA',FSystem::recaptchaGet($tempData['recaptchaError']));
 			} else {
 				$tpl->touchBlock('usersigned');
 			}
