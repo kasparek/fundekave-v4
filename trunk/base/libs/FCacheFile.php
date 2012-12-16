@@ -159,7 +159,9 @@ class FCacheFile
 	 * @return boolean true if no problem
 	 */
 	private function _unlink($file) {
-		if (!unlink($file)) return $this->raiseError('Cache_Lite : Unable to remove cache !', -3);
+		if (!unlink($file)) {
+			return $this->raiseError('Cache_Lite : Unable to remove cache !', -3);
+		}
 		return true;
 	}
 	/**

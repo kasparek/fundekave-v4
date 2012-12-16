@@ -333,7 +333,7 @@ class FUser {
 	 */
 	static function register( $data ) {
 		//check captcha
-		$captchaCheck = FSystem::recaptchaCheck();
+		$captchaCheck = FSystem::recaptchaCheck($data);
 		if($captchaCheck!==true) {
 			$data['recaptchaError'] = $captchaCheck;
 			FError::add(FLang::$ERROR_CAPTCHA);

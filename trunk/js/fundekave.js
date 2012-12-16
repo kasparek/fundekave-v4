@@ -35,10 +35,7 @@ function boot() {
    $(".galeryThumb a").bind('click',galeriaStart);
 };
 
-function recaptchaStart(){
-	if(!Lazy.load(['http://www.google.com/recaptcha/api/js/recaptcha_ajax.js'],recaptchaStart)) return;
-	Recaptcha.create("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm",'recaptchaBox',{tabindex:3});
-}
+function recaptchaStart(){if(!Lazy.load(['http://www.google.com/recaptcha/api/js/recaptcha_ajax.js'],recaptchaStart)) return;Recaptcha.create("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm",'recaptchaBox',{tabindex:3});}
 
 function getGaleriaHeight() {var offset=$(".galeria").offset(),galeriaHeight = $(".galeria").width() * 0.75,galeriaHeightMax = Math.round($(window).height() - 75 - offset.top);if(galeriaHeight > galeriaHeightMax) return galeriaHeightMax;return galeriaHeight;}
 function galeriaStart(event){if($(".galeria").length==0)return;

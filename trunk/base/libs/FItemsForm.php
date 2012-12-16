@@ -311,7 +311,7 @@ class FItemsForm {
 		 
 		if($redirect==true) {
 			if($itemVO) FCommand::run(ITEM_UPDATED,$itemVO);
-			if($data['__ajaxResponse']) {
+			if(!empty($data['__ajaxResponse'])) {
 				if($itemVO) {
 					//new item
 					if($itemVO->typeId == 'forum') $newItem = false;

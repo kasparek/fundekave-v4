@@ -64,7 +64,7 @@ class FSystem {
 		$grps = implode(";",$grpList);
 		self::$invalidate = array();
 		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net','sail.awake33.com');
-		//$domains[]='test.fundekave.net';
+		$domains[]='test.fundekave.net';
 		$mh = curl_multi_init();
 		$curlys=array();
 		//prepare curl
