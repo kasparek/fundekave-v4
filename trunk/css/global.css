@@ -51,6 +51,7 @@
 	.rightPadded { margin-right:1em;}
 	.margined { margin:1em;}
 	.bottomPadded { margin-bottom: 1em; }
+	span.rf {display:block;float:right;}
 }
 /* END BASIC ELEMENTS */
 /* BASIC PRINT ELEMENTS */
