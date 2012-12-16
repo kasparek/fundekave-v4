@@ -90,7 +90,7 @@ class FFile {
 	}
 
 	function mkdir($filename, $mode=0777, $recursive=true) {
-		if(!$this->ftpConnect()) return mkdir($filename, $mode, $recursive);
+		if(!$this->ftpConnect()) return !file_exists($filename) ? mkdir($filename, $mode, $recursive) : true;
 		$dir=explode("/", $filename);
 		if(empty($dir[0])) array_shift($dir);
 		$path = "";
@@ -295,13 +295,12 @@ class FFile {
 		if($this->is_link($filepath)) return false;
 		if(!is_dir($filepath)) {
 			$this->numModified++;
-			unlink($filepath);
+			$this->unlink($filepath);
 		}
 		$list = $this->fileList($filepath);
 		if(!empty($list))
 		while($sf=array_pop($list)) {
-			$f=$filepath.'/'.$sf;
-			if(!$this->rm_recursive($f)) FError::write_log($f.' could not be deleted');
+			$this->rm_recursive($filepath.'/'.$sf);
 		}
 		if($ret = $this->rmdir($filepath)) $this->numModified++;
 		return $ret;
@@ -397,6 +396,21 @@ class FFile {
 			}
 			$cache->invalidateData($user->pageVO->pageId.'-'.$user->userVO->userId,'tempStore');
 		}
+	}
+	
+	static function remoteFileExists($url) {
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_NOBODY, true);
+		$result = curl_exec($curl);
+		$ret = false;
+		if ($result !== false) {
+			$statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);  
+			if ($statusCode == 200) {
+				$ret = true;   
+			}
+		}
+		curl_close($curl);
+		return $ret;
 	}
 
 }

@@ -58,7 +58,7 @@ class FAjax_item extends FAjaxPluginBase {
 		
 		FItemsForm::process($data);
 
-		if($data['__ajaxResponse']) {
+		if(!empty($data['__ajaxResponse'])) {
 			if(FAjax::isRedirecting()===false) {
 				if($data['t']=='forum') {
 					//return list of items

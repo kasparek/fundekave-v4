@@ -1,6 +1,7 @@
 <?php
 class FPager {
     var $totalItems = 0;
+	var $hasMidButtons = true;
     var $maybeMore = false;
     var $currentPage = 1;
     var $manualCurrentPage = 0;
@@ -97,6 +98,7 @@ class FPager {
             else
                 $pagination .= '<span class="disabled">'.$this->previousText.'</span>';
 
+			if($this->hasMidButtons) {
             //pages
             if ($lastpage < 7 + ($adjacents * 2))	//not enough pages to bother breaking it up
             {
@@ -148,10 +150,10 @@ class FPager {
                     }
                 }
             }
-
+			}
             //next button
             if($this->maybeMore==true) $pagination .= ' ... ';
-            if ($page < $counter - 1) $pagination .= $linkStart . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
+            if($page < $lastpage) $pagination .= $linkStart . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
             else $pagination .= '<span class="disabled">'.$this->nextText.'</span>';
             $pagination .= "</div>\n";
         }

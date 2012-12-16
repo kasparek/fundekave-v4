@@ -182,7 +182,7 @@ class page_ItemsList implements iPage {
 			}
 		}
 
-		if(!$isDetail && $pageVO->typeId!='galery') {
+		if($user->idkontrol && !$isDetail && $pageVO->typeId!='galery') {
 			//TAG FILTERING
 			$cache = FCache::getInstance('f');
 			$tagGroups = $cache->getData('tagGrouped'.(!empty($typeRequest)?'-'.$typeRequest:''),'page/'.$user->pageVO->pageId.'/tag');
@@ -321,6 +321,7 @@ class page_ItemsList implements iPage {
 		if($pageVO->typeId=='top') {
 			$fItems->userIdForPageAccess=true;
 			$fItems->setTypeLimit('galery',3);
+			$fItems->cacheResults = 'f';
 		}
 		
 		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
@@ -350,6 +351,7 @@ class page_ItemsList implements iPage {
 		$pagerOptions['noAutoparse']=1;
 		$perPage = $pageVO->perPage();
 		$pager = new FPager(0,$perPage,$pagerOptions);
+		
 		$from = ($pager->getCurrentPageID()-1) * $perPage;
 
 		$uid = $fItems->getUID($from, $perPage+1);

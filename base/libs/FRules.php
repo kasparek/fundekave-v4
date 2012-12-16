@@ -12,13 +12,27 @@ class FRules {
 	var $public = 1;
 	var $page = '';
 	var $owner = 0;
+	
+	static $INITIALIZED = false;
+	static $PRELOADED = false;
+	static $PERMS = array();
+	static $CACHE;
 
 	function __construct($page=0,$owner=0) {
 		$this->page = $page;
 		$this->_pubTypes = FLang::$ARRPUBLIC;
 		$this->ruleNames = FLang::$ARRPERMISSIONS;
 		$this->owner = $owner;
+		
+		self::staticInit();
 	}
+	
+	static function staticInit() {
+		if(self::$INITIALIZED) return;
+		$cache = FCache::getInstance('s');
+		self::$CACHE = &$cache->getPointer('perm', 'FRules');
+	}
+	
 	function setPageId($page) {
 		$this->page = $page;
 	}
@@ -37,44 +51,51 @@ class FRules {
 		FDBTool::query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
 	}
 
-
 	static function invalidate() {
-	 $cache = FCache::getInstance('s');
-	 $cache->invalidateGroup('fRules');
+		$cache = FCache::getInstance('s');
+		$cache->invalidate('perm','FRules');
 	}
 
 	//---END---functions from user class
 	static function getCurrent($type=1) {
 		if($type==0)return false;
 		$user = FUser::getInstance();
-		return FRules::get($user->userVO->userId,$user->pageVO->pageId,$type);
+		return self::get($user->userVO->userId,$user->pageVO->pageId,$type);
+	}
+	
+	static function preload($userId) {
+		if(self::$PRELOADED) return;
+		self::staticInit();
+		$arr = FDBTool::getAll("select s.pageId,r.userId,r.rules,s.public,s.userIdOwner from sys_pages as s left join sys_users_perm as r on r.pageId=s.pageId and r.userId='".$userId."' where s.locked<3");
+		foreach($arr as $row) {
+			$pageId = array_shift($row);
+			self::$PERMS[$pageId] = $row;
+		}
 	}
 
 	static function get($usr,$page,$type=1) {
-		if($type==0)return false;
-		$ret = false;
+		if($type==0) return false;
 		$key = $usr.'-'.$page.'-'.$type;
-		$cache = FCache::getInstance('s');
-		if(false === ($retVal = &$cache->getPointer($key, 'fRules'))) {
-			//---if is rules = 0 is ban
-			$dot = "select r.userId,r.rules,s.public,s.userIdOwner 
-			from sys_pages as s 
-			left join sys_users_perm as r 
-			on r.pageId=s.pageId and r.userId='".$usr."'
-			where s.locked<3 and s.pageId='".$page."'";
-			$arr = FDBTool::getRow($dot);
-			if(empty($arr)) $ret = false;			
-			elseif ($arr[3] == $usr) $ret = true;
-			elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
-			elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher
-			elseif ($arr[2] < 3 && $type<2) { // not an admin page, just reading
-				//not an owner
-				if($arr[2] == 1) $ret = true; //public page
-				if($arr[2] == 2 && $usr > 0) $ret = true; //for registrated page
-			}
-			$retVal = ($ret===true)?(1):(2);
+		self::staticInit();
+		if(isset(self::$CACHE[$key])) return self::$CACHE[$key];
+		//---if is rules = 0 is ban
+		if(!empty(self::$PERMS)) {
+			if(!empty(self::$PERMS[$page])) $arr = self::$PERMS[$page];
+		} else {
+			$arr = FDBTool::getRow("select r.userId,r.rules,s.public,s.userIdOwner from sys_pages as s left join sys_users_perm as r on r.pageId=s.pageId and r.userId='".$usr."' where s.locked<3 and s.pageId='".$page."'");
 		}
-    	return ($retVal===1)?(true):(false);
+		$ret = false;
+		if(empty($arr)) $ret = false;			
+		elseif ($arr[3] == $usr) $ret = true;
+		elseif ($arr[0]>0 && $arr[1]==0) $ret=false;//banned from page at any time
+		elseif ($arr[0]>0 && $arr[1]>=$type) $ret=true; //if rulez for user are set and as type or higher
+		elseif ($arr[2] < 3 && $type<2) { // not an admin page, just reading
+			//not an owner
+			if($arr[2] == 1) $ret = true; //public page
+			if($arr[2] == 2 && $usr > 0) $ret = true; //for registrated page
+		}
+		self::$CACHE[$key] = $ret;
+    	return $ret;
 	}
 	
 	function getList($listPublic=true,$idstr=0) {

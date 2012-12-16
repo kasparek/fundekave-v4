@@ -325,8 +325,7 @@ class FDBTool {
 	function getContent($from=0,$perPage=0, $cacheId=false) {
 		$dot = $this->buildQuery($from,$perPage);
 		if($this->debug == 1) echo "GETCONTENT RUN: ".$dot." <br />\n"; ;
-		$cacheId = null;
-		if($this->cacheResults) $cacheId = (($cacheId!==false)?($cacheId):(md5($dot)));
+		$cacheId = (($cacheId!==false)?($cacheId):(md5($dot)));
 		$arr = FDBTool::getAll($dot,$cacheId,$this->cacheGroup, $this->cacheResults,$this->lifeTime,$this->fetchmode);
 		if(!empty($arr)) {
 			if(!empty($this->VO)) {
@@ -542,10 +541,11 @@ class FDBTool {
 
 	//---simple query
 	static function getAll($query, $key=null, $grp='default', $driver='l', $lifeTime=-1, $fetchmode=0) {
-		if($key !== null && $driver != 0) {
+		if(!empty($key) && $driver != '0') {
 			//---cache results
 			$cache = FCache::getInstance( $driver, $lifeTime);
-			if(false === ($ret = $cache->getData($key,$grp))) {
+			$ret = $cache->getData($key,$grp);
+			if(false === $ret) {
 				$ret = FDBTool::getData('getAll',$query,$fetchmode);
 				$cache->setData( $ret );
 			}
@@ -557,7 +557,7 @@ class FDBTool {
 	}
 
 	static function getRow($query, $key=null, $grp='default', $driver='l', $lifeTime=-1, $fetchmode=0) {
-		if($key !== null && $driver != 0) {
+		if(!empty($key) && $driver != '0') {
 			//---cache results
 			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
@@ -572,7 +572,7 @@ class FDBTool {
 	}
 
 	static function getCol($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-		if($key!==null) {
+		if(!empty($key) && $driver != '0') {
 			//---cache results
 			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {
@@ -587,7 +587,7 @@ class FDBTool {
 	}
 
 	static function getOne($query, $key=null, $grp='default', $driver='l', $lifeTime=-1) {
-		if($key!==null) {
+		if(!empty($key) && $driver != '0') {
 			//---cache results
 			$cache = FCache::getInstance($driver, $lifeTime);
 			if( ($ret = $cache->getData($key,$grp)) === false ) {

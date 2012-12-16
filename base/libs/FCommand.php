@@ -140,6 +140,7 @@ class FCommand {
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/rss');
 		FSystem::superInvalidate('pages/'.$data->get('typeId'));
 		FSystem::superInvalidate('pages/all');
+		FSystem::superInvalidate('fdb');
 	}
 	
 	public static function positionUpdated($data) {
