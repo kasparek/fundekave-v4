@@ -6,9 +6,7 @@ class page_fotoMashup implements iPage {
 	/**
 	 *  PROCESS FUNCTION
 	 */
-	static function process($data) {
-
-	}
+	static function process($data) {}
 
 	/**
 	 * VIEW FUNCTION
@@ -16,39 +14,24 @@ class page_fotoMashup implements iPage {
 	static function build($data=array()) {
 		$cache = FCache::getInstance('f');
 		$cache->setConf(180);
-		
 		$data = $cache->getData('fotomashup');
-		
 		if(!$data) {
-			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId desc");
-				
+			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId");
 			$num = 100;
-			$len = count($allList);
-			if($num > $len) $num = $len;
-			$steps = ceil($len/$num);
-			for($i=0;$i<$num;$i++){
-				$from = $i*$steps;
-				$rand = rand($from, $from+$steps > $len ? $len-1 : $from+$steps-1);
-				$itemIdList[] = $allList[$rand];
+			if(count($allList) <= $num) $itemIdList = $allList;
+			else {
+				$keyList = array_rand($allList,$num);
+				foreach($keyList as $k) $itemIdList[] = $allList[$k];
 			}
-			$itemIdList = array_reverse($itemIdList);
-			
 			$data='<div class="galeria">';
-	
 			while($itemIdList) {
 				$itemId = array_pop($itemIdList);
-				if($itemId) {
-					$itemVO = new ItemVO($itemId,true);
-					$data .= $itemVO->render();
-					//$data .= '<div class="galeryThumb"><a href="'.$itemVO->detailUrl.'" rel="lightbox-mashup" title="'.htmlspecialchars('<a href="'.FSystem::getUri('k='.$itemVO->pageId,'','').'">'.$itemVO->pageVO->get('name').'</a>').'"><img src="'.$itemVO->thumbUrl.'" class="leftbox" /></a></div>';
-				}
+				$itemVO = new ItemVO($itemId,true);
+				$data .= $itemVO->render();
 			}
 			$data.='</div>';
 			$cache->setData($data,'fotomashup');
 		}
-
 		FBuildPage::addTab(array("MAINDATA"=>$data,"MAINID"=>'fotoMashup'));
-
-
 	}
 }

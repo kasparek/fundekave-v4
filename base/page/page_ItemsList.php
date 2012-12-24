@@ -26,22 +26,28 @@ class page_ItemsList implements iPage {
 	 */
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		if($user->pageVO->typeId=='galery' && empty($user->itemVO) && !$data['__ajaxResponse']) {
+		//parameters to handle
+		//GET type - TODO: validate
+		//GET p (page)
+		//GET c (category) - TODO:validate
+		//parameters - category, search string, $data['__get'][tag,type,date,p], 
+		/*if(!$user->itemVO && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='galery') && !$data['__ajaxResponse']) {
 			$grpid = 'page/'.$user->pageVO->pageId.'/list';
+			$dataid = 'part-'.$user->userVO->userId.'-'.(isset($_GET['p'])?$_GET['p']*1:'1');
 			$cache = FCache::getInstance('f');
-			$data = $cache->getData('complete',$grpid);
+			$data = $cache->getData($dataid,$grpid);
 			if($data) {
 				FBuildPage::addTab(array("MAINDATA"=>$data));
 				return;
 			}
-		}
+		}*/
 		
 		$tpl = page_ItemsList::buildPrep($data);
 		
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			$tpl->parse('itemlist');
-			FAjax::addResponse('itemFeed','$html',$tpl->get('itemlist'));
+			FAjax::addResponse('forumFeed','$replaceWith',$tpl->get('itemlist'));
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
 			FAjax::addResponse('call','fajaxInit');
@@ -49,14 +55,14 @@ class page_ItemsList implements iPage {
 		} else {
 			$data = $tpl->get();
 			FBuildPage::addTab(array("MAINDATA"=>$data));
-			
-			if(isset($grpid) && $user->pageVO->typeId=='galery' && empty($user->itemVO)) {
-				$cache->setData($data,'complete',$grpid);
-			}
+			if(isset($grpid)) $cache->setData($data,$dataid,$grpid);
 		}
 	}	
 	 
 	static function buildPrep($data=array()) {
+		//validate input parameters
+		
+				
 		$manualCurrentPage = 0;
 		if(!isset($data['onlyComments'])) $data['onlyComments']=false;
         	
@@ -124,7 +130,7 @@ class page_ItemsList implements iPage {
 		$touchedBlocks = array();
     if($pageVO->typeId=='galery' && !$isDetail) {
       $touchedBlocks[]='galleryfeed';
-      $user->pageVO->showSidebar = false;
+      //$user->pageVO->showSidebar = false;
     }
 		$vars = array();
 		if($diff>0) {

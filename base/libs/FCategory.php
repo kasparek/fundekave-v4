@@ -74,8 +74,7 @@ class FCategory extends FDBTool {
 
 	//STATIC FUNCTIONS
 	static function getCategory($categoryId) {
-		$q = "select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'";
-		return FDBTool::getRow($q,$categoryId,'categories','f');
+		return FDBTool::getRow("select categoryId,typeId,name,ord,public from sys_pages_category where categoryId='".$categoryId."'");
 	}
 
 	function parseComboBox($blockname,$selectname,$arr,$selected=0){
