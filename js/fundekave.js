@@ -44,6 +44,7 @@ window.location.hash = '/'+$('.galeria .galeryThumb').index($("#i"+gup('i',this.
 function galeriaInit(){
 $(".galeryThumb a").unbind('click',galeriaStart);
 if($('.galeria').length==0)return;
+$("body").addClass("bodySidebarOff");
 if(!Lazy.load(Sett.ll.galeria,galeriaInit)) return;
 if(!Lazy.load([Sett.jsUrl+'galleria.theme/theme.css'],galeriaInit)) return;
 Galleria.loadTheme(Sett.jsUrl+'galleria.theme/theme.js');
