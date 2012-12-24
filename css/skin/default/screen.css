@@ -131,11 +131,12 @@ div.mainpanel-content div.hentry div.completelink {clear: both;}
 .simplecomment {
 	padding-bottom: 5px;
 	text-align: left;
-	
+	max-height: 50px;
+	overflow: hidden;
 }
 .simplecomment a {
 	text-decoration: none;
-	
+	display: block;
 }
 
 .simplecomment a:hover {
