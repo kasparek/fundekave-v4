@@ -131,9 +131,10 @@ div.mainpanel-content div.hentry div.completelink {clear: both;}
 .simplecomment {
 	margin-bottom: 5px;
 	text-align: left !important;
-	max-height: 50px;
+	max-height: 55px;
 	overflow: hidden;
 }
+.simplecomment .author { float:right; }
 .simplecomment div.header { font-size:80%;}
 .simplecomment a {
 	text-decoration: none;
