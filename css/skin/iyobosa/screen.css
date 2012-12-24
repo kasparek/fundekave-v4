@@ -145,6 +145,12 @@ div.mainpanel-content div.reaction {margin-left: 3em;}
 div.mainpanel-content div.hentry div.completelink {clear: both;}
 /*div.mainpanel-content div.hentry div.completelink a {text-decoration:underline;}*/
 
+.simplecomment {	margin-bottom: 5px;text-align: left !important;max-height: 55px;overflow: hidden;}
+.simplecomment .author { float:right; }
+.simplecomment div.header { font-size:80%;}
+.simplecomment a {text-decoration: none;display: block;}
+.simplecomment a:hover {background-color: #E2E595;}
+
 /* HENTRY HEADER */
 div.mainpanel-content div.hentry div.header {line-height: 2em;border: none;height: 2em;}
 div.mainpanel-content div.hentry h2 {padding: 0;margin: 0;font-size:1.66em;}
