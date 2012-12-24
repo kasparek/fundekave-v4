@@ -278,7 +278,7 @@ class FBuildPage {
 			$tpl->setVariable('PAGEID', $user->pageVO->pageId);
 			$tpl->setVariable("MSGPOLLTIME", (int) FConf::get('settings','msg_polling_time'.($user->pageVO->pageId=='fpost'?'_boosted':'')));
 			//searchform
-			if(!$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
+			if($user->idkontrol && !$user->pageVO->prop('hideSearchbox')) $tpl->setVariable("SEARCHACTION", FSystem::getUri('','searc','',array('short'=>true)));
 			$tpl->setVariable("TITLE", FBuildPage::getTitle());
 			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
 			$pageVOTop = FactoryVO::get('PageVO',$pageIdTop);

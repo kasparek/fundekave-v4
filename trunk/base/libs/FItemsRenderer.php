@@ -123,6 +123,8 @@ class FItemsRenderer {
 		$vars['TITLEURL'] = $vars['ITEMLINK'] = $link;
 		if(!empty($itemVO->addon)) $vars['TITLE'] = $itemVO->addon;
 		$vars['PAGEID'] = $pageId;
+		//---top item link
+		if(!empty($itemVO->itemIdTop)) $vars['TOPITEMLINK'] = FSystem::getUri('i='.$itemVO->itemIdTop,$itemVO->pageId);
 		//---thumb tag link
 		if($typeId!='galery')
 			$vars['TAG'] = FItemTags::getTag($itemId,$this->signedUserId,$typeId,$itemVO->tag_weight);

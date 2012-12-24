@@ -135,8 +135,12 @@ class FCommand {
 	}
 	
 	public static function flushCache($data) {
-		FSystem::superInvalidate('page/top');
+		//invalidate local immediatelly for ajax loading
 		FSystem::superInvalidateHandle('page/'.$data->get('pageId').'/list');
+		//invalidate local and remote
+		FSystem::superInvalidate('sidebar/lastComments');
+		FSystem::superInvalidate('page/top');
+		FSystem::superInvalidate('page/'.$data->get('pageId').'/list');
 		FSystem::superInvalidate('page/'.$data->get('pageId').'/rss');
 		FSystem::superInvalidate('pages/'.$data->get('typeId'));
 		FSystem::superInvalidate('pages/all');
