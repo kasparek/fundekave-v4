@@ -76,7 +76,7 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
-				FAjax::addResponse('tag','$html',$arrVars['TAG']);
+				if(!empty($arrVars['TAG'])) FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
 				$tpl = FSystem::tpl('galery.detail.tpl.html');

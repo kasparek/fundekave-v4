@@ -47,12 +47,7 @@ class FProfiler {
 			ftruncate($fh,0);
 			self::$truncateList[$handle]=false;
 		}
-		$data = date(DATE_ATOM)
-		.';runtime='.( round($now-self::$starttimeList[$handle],4) )
-		.';timelast='.( round($now-self::$lasttimeList[$handle],4) )
-		.';mem='.round(memory_get_usage()/1024)
-		.'/'.round(memory_get_peak_usage()/1024)
-		."\n".$comment."\n\n";
+		$data = date('Y-m-d H:i:s').';'.(round($now-self::$lasttimeList[$handle],4)).'/'.(round($now-self::$starttimeList[$handle],4)).';'.round(memory_get_usage()/1024).'/'.round(memory_get_peak_usage()/1024)."\n".$comment."\n\n";
 		fwrite($fh,$data);
 		fclose($fh);
 		self::$lasttimeList[$handle] = $now;

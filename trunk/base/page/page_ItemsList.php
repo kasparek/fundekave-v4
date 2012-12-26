@@ -325,7 +325,7 @@ class page_ItemsList implements iPage {
 		}
 
 		if($pageVO->typeId=='top') {
-			$fItems->userIdForPageAccess=true;
+			$fItems->userIdForPageAccess=$user->userVO->userId;
 			$fItems->setTypeLimit('galery',3);
 			$fItems->cacheResults = 'f';
 		}

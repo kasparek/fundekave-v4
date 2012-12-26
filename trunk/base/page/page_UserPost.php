@@ -100,7 +100,7 @@ class page_UserPost implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		$user->pageVO->showHeading = false;
+		//$user->pageVO->showHeading = false;
 		$cache = FCache::getInstance('s');
 
 		$msgs = new FMessages($user->userVO->userId);
