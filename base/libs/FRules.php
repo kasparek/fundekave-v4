@@ -52,8 +52,7 @@ class FRules {
 	}
 
 	static function invalidate() {
-		$cache = FCache::getInstance('s');
-		$cache->invalidate('perm','FRules');
+		while(self::$CACHE) array_pop(self::$CACHE);
 	}
 
 	//---END---functions from user class
@@ -77,12 +76,15 @@ class FRules {
 		if($type==0) return false;
 		$key = $usr.'-'.$page.'-'.$type;
 		self::staticInit();
+		
 		if(isset(self::$CACHE[$key])) return self::$CACHE[$key];
 		//---if is rules = 0 is ban
+		
 		if(!empty(self::$PERMS)) {
 			if(!empty(self::$PERMS[$page])) $arr = self::$PERMS[$page];
 		} else {
-			$arr = FDBTool::getRow("select r.userId,r.rules,s.public,s.userIdOwner from sys_pages as s left join sys_users_perm as r on r.pageId=s.pageId and r.userId='".$usr."' where s.locked<3 and s.pageId='".$page."'");
+			$q = "select r.userId,r.rules,s.public,s.userIdOwner from sys_pages as s left join sys_users_perm as r on r.pageId=s.pageId and r.userId='".$usr."' where s.locked<3 and s.pageId='".$page."'";
+			$arr = FDBTool::getRow($q);
 		}
 		$ret = false;
 		if(empty($arr)) $ret = false;			

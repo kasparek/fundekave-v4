@@ -49,7 +49,7 @@ class FError {
 	
 	static function write_log($errText) {
 		$handle = fopen(self::$phplog, "a");
-		fwrite($handle,'date='.date(DATE_ATOM).';runtime='.( round(FError::getmicrotime()-self::$starttime,4) ).';memory='.round(memory_get_usage()/1024).';peak='.round(memory_get_peak_usage()/1024)."\n".$errText."\n\n");
+		fwrite($handle,date('Y-m-d H:i:s').';'.( round(FError::getmicrotime()-self::$starttime,4) ).';'.round(memory_get_usage()/1024).'/'.round(memory_get_peak_usage()/1024)."\n".$errText."\n\n");
 		fclose($handle);
 	}
 	

@@ -166,8 +166,8 @@ class FItems extends FDBTool {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
 						if($prevItemPageId != $row->pageId) $typeLimitCount=0;
-						$includeItem = true;
-						if(!FRules::get($this->userIdForPageAccess,$row->pageId,1)) $includeItem = false;
+						$includeItem = false;
+						if(FRules::get($this->userIdForPageAccess,$row->pageId)) $includeItem = true;
 						
 						if($includeItem) {
 							//check limits for types

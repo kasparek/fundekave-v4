@@ -23,8 +23,7 @@ div#footer span {float: left;}
 div#mainbar {float:left;width:100%;margin-right:-100%;text-align: left;padding-bottom:1em;}
 
 /* HEADER CONTENT */
-div#logo {float:right;position:relative;top:0;
-width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
+div#logo {float:right;position:relative;top:0;width: 200px;text-align:center;margin:-13px -220px 0 0;height:40px;}
 .bodySidebarOff div#logo {margin-right:0px;}
 
 /* PRIMARY MENU */

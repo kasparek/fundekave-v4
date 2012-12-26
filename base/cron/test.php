@@ -1,5 +1,4 @@
 <?php
-//
 if(isset($_GET['both'])) {
 	$_GET['mod'] = $_GET['both'];
 	$_GET['delete'] = $_GET['both'];

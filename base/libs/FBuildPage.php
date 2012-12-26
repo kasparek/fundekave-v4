@@ -256,7 +256,7 @@ class FBuildPage {
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) $errmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
 			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
-			FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
+			//FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
 			FError::reset();
 		}
 		
