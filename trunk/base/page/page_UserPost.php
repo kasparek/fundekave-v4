@@ -32,8 +32,8 @@ class page_UserPost implements iPage {
     
 		//---SEND MESSAGE
 		if($data['action']=='send') {
-			$data["text"] = FSystem::textins($data["text"]);
-			$data["recipient"] = FSystem::textins($data["recipient"],array('plainText'=>1));
+			$data["text"] = FText::preProcess($data["text"]);
+			$data["recipient"] = FText::preProcess($data["recipient"],array('plainText'=>1));
 			if(empty($data["text"])) FError::add(FLang::$MESSAGE_EMPTY);
 			if(!empty($data["recipient"])) {
 				$recipientList=explode(",",$data["recipient"]);
@@ -64,7 +64,7 @@ class page_UserPost implements iPage {
 					$user->pageVO->perPage($data["perpage"]);
 					break;
 				case 'search':
-					$searchData = array(FSystem::textins($data["recipient"],array('plainText'=>1)),FSystem::textins($data["text"],array('plainText'=>1)));
+					$searchData = array(FText::preProcess($data["recipient"],array('plainText'=>1)),FText::preProcess($data["text"],array('plainText'=>1)));
 					$cache->setData($searchData, $user->pageVO->pageId, 'filter');
 					$data['refreshPage'] = true;
 					break;
@@ -215,7 +215,7 @@ class page_UserPost implements iPage {
         FProfiler::write('UserPost::build - POST 2');
 				$tpl->setVariable("MULINK", $mulink);
 				$tpl->setVariable("MUNAME", $muname);
-				$tpl->setVariable("TEXT", FSystem::postText($post["text"]));
+				$tpl->setVariable("TEXT", FText::postProcess($post["text"]));
 				$tpl->parse("message");
 
 				/*prectena*/

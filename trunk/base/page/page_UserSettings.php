@@ -29,7 +29,7 @@ class page_UserSettings implements iPage {
 				}
 				if(empty($fileList)) return;
 				while($file = array_pop($fileList)) {
-					if(FSystem::safetext($file)==$foto) $avatarFile=$file;
+					if(FText::safetext($file)==$foto) $avatarFile=$file;
 				}
 				if(empty($avatarFile)) return;
 				
@@ -49,7 +49,7 @@ class page_UserSettings implements iPage {
 				}
 				if(empty($fileList)) return;
 				while($file = array_pop($fileList)) {
-					if(FSystem::safetext($file)==$foto) $delFile=$file;
+					if(FText::safetext($file)==$foto) $delFile=$file;
 				}
 				if(empty($delFile)) return;
 				$ffile->unlink(FAvatar::profileBasePath().'/'.$delFile);
@@ -68,15 +68,15 @@ class page_UserSettings implements iPage {
 			case 'save':
 				$userVO = & $user->userVO;
 				//--setxml elements
-				$userVO->icq = str_replace("-","",FSystem::textins($data['infoicq'],array('plainText'=>1)));
-				$userVO->email = FSystem::textins($data['infoemajl'],array('plainText'=>1));
+				$userVO->icq = str_replace("-","",FText::preProcess($data['infoicq'],array('plainText'=>1)));
+				$userVO->email = FText::preProcess($data['infoemajl'],array('plainText'=>1));
 				$userVO->setXMLVal('settings','bookedorder', $data['bookedorder']*1);
-				$userVO->setXMLVal('personal','www',FSystem::textins($data['infowww'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','motto',FSystem::textins($data['infomotto'],array('plainText'=>1)));
-				$userVO->setXMLVal('personal','about',FSystem::textins($data['infoabout']));
+				$userVO->setXMLVal('personal','www',FText::preProcess($data['infowww'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','motto',FText::preProcess($data['infomotto'],array('plainText'=>1)));
+				$userVO->setXMLVal('personal','about',FText::preProcess($data['infoabout']));
 				//password
-				$pass1 = FSystem::textins($data["pwdreg1"],array('plainText'=>1));
-				$pass2 = FSystem::textins($data["pwdreg2"],array('plainText'=>1));
+				$pass1 = FText::preProcess($data["pwdreg1"],array('plainText'=>1));
+				$pass2 = FText::preProcess($data["pwdreg2"],array('plainText'=>1));
 				if(!empty($pass1) && !empty($pass2)){
 					if(strlen($pass1)<3) FError::add(FLang::$ERROR_REGISTER_PASSWORDTOSHORT);
 					if($pass1!=$pass2) FError::add(FLang::$ERROR_REGISTER_PASSWORDDONTMATCH);
@@ -118,7 +118,7 @@ class page_UserSettings implements iPage {
 		$tpl->setVariable("USEREMAIL",$userVO->email);
 		$tpl->setVariable("USERWWW",$userVO->getXMLVal('personal','www'));
 		$tpl->setVariable("USERMOTTO",$userVO->getXMLVal('personal','motto'));
-		$tpl->setVariable("USERABOUT",FSystem::textToTextarea($userVO->getXMLVal('personal','about')));
+		$tpl->setVariable("USERABOUT",FText::textToTextarea($userVO->getXMLVal('personal','about')));
 
 		if($userVO->getXMLVal('settings','bookedorder') == 1) $tpl->touchBlock('bookedorder');
 
@@ -135,8 +135,8 @@ class page_UserSettings implements iPage {
 			while($file = array_pop($fileList)) {
 				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800x800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
 				$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($userVO->name).'/profile/'.$file);
-				$tpl->setVariable('USEAVATARIMGID','-'.FSystem::safetext($file));
-				$tpl->setVariable('IMGID','-'.FSystem::safetext($file));
+				$tpl->setVariable('USEAVATARIMGID','-'.FText::safetext($file));
+				$tpl->setVariable('IMGID','-'.FText::safetext($file));
 				$tpl->parse("foto");
 			}
 		}

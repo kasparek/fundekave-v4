@@ -45,7 +45,7 @@ class page_SailMap implements iPage {
 			$tpl->parse('mapdata');
 		}
 
-    $tpl->setVariable('CONTENT',FSystem::postText($user->pageVO->content));
+    $tpl->setVariable('CONTENT',FText::postProcess($user->pageVO->content));
 		
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 	}

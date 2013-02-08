@@ -41,7 +41,7 @@ class page_Sail implements iPage {
     
 
 		//HEADER
-		$vars['CONTENT'] = FSystem::postText($user->pageVO->content);
+		$vars['CONTENT'] = FText::postProcess($user->pageVO->content);
 		$vars['PLANITEMS'] = $planRender;
 		$vars['POSITIONITEMS'] = $posRender;
 

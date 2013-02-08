@@ -293,7 +293,7 @@ class FItems extends FDBTool {
 
 
 	/**
-	 * chechk if item exists
+	 * check if item exists
 	 */
 	static function itemExists($itemId) {
 		$q = "select count(1) from sys_pages_items where itemId='".$itemId."'";

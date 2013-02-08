@@ -210,6 +210,11 @@ class FUser {
 				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
 		}
+		//---page not accessible because not correct host
+		if(SITE_STRICT && $userId==0) {
+			if($this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) 
+				$pageAccess = $this->pageAccess = false;
+		}
 		//---if page not exists redirect to error
 		if($pageAccess === true) {
 			//---check if user sent data to login
@@ -339,13 +344,13 @@ class FUser {
 			FError::add(FLang::$ERROR_CAPTCHA);
 		}
 		$reservedUsernames = array('default','admin','administrator','test','aaa','fuvatar','config','profile','page','event','forum','blog','galery');
-		$data["jmenoreg"] = FSystem::textins($data["jmenoreg"],array("plaintext"=>'1'));
-		$data["pwdreg1"] = FSystem::textins($data["pwdreg1"],array("plaintext"=>'1'));
-		$data["pwdreg2"] = FSystem::textins($data["pwdreg2"],array("plaintext"=>'1'));
-		$data["email"] = FSystem::textins($data["email"],array("plaintext"=>'1'));
+		$data["jmenoreg"] = FText::preProcess($data["jmenoreg"],array("plaintext"=>'1'));
+		$data["pwdreg1"] = FText::preProcess($data["pwdreg1"],array("plaintext"=>'1'));
+		$data["pwdreg2"] = FText::preProcess($data["pwdreg2"],array("plaintext"=>'1'));
+		$data["email"] = FText::preProcess($data["email"],array("plaintext"=>'1'));
 		$cache = FCache::getInstance('s');
 		$cache->setData($data,'reg','form');
-		$safeJmenoreg = FSystem::safeText($data["jmenoreg"]);
+		$safeJmenoreg = FText::safeText($data["jmenoreg"]);
 		if(strlen($data["jmenoreg"])<2) FError::add(FLang::$ERROR_REGISTER_TOSHORTNAME);
 		elseif(strlen($data["jmenoreg"])>10) FError::add(FLang::$ERROR_REGISTER_TOLONGNAME);
 		elseif(!FUser::checkUsername($data["jmenoreg"])) FError::add(FLang::$ERROR_REGISTER_NOTALLOWEDNAME);

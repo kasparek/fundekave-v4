@@ -14,7 +14,7 @@ class page_Search implements iPage {
 		if(isset($_REQUEST['f'])) $data['filtr'] = $_REQUEST['f'];
 		if(!empty($data['filtr'])) {
 				
-			$str = FSystem::textins($data['filtr'],array('plainText'=>1));
+			$str = FText::preProcess($data['filtr'],array('plainText'=>1));
 			$setPages=true;$setItems=true;$setUsers=true;
 				
 			if(isset($data['t'])) {
