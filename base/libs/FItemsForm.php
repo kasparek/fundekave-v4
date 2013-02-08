@@ -26,7 +26,7 @@ class FItemsForm {
 		}
 		$dir = $itemVO->pageVO->get('galeryDir');
 		if(empty($dir)) {
-			$itemVO->pageVO->set('galeryDir','page/'.$itemVO->pageId.'-'.FSystem::safeText($itemVO->pageVO->get('name')));
+			$itemVO->pageVO->set('galeryDir','page/'.$itemVO->pageId.'-'.FText::safeText($itemVO->pageVO->get('name')));
 			$itemVO->pageVO->save();
 		}
 		$filename = FFile::getTemplFilename();
@@ -54,7 +54,7 @@ class FItemsForm {
 			$itemVO->deleteImage();
 			$pageVO = $itemVO->pageVO;
 			$filenameArr = explode('/',$filename);
-			$enclosure = FSystem::safeFilename(array_pop($filenameArr));
+			$enclosure = FFile::safeFilename(array_pop($filenameArr));
 			$enclosure = $itemVO->itemId.'-'.$enclosure;
 			$target = FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir').'/'.$enclosure;
 			$ffile->makeDir(FConf::get('galery','sourceServerBase') . $pageVO->get('galeryDir'));
@@ -79,7 +79,7 @@ class FItemsForm {
 		$user = FUser::getInstance();
 		
 		$captchaCheck = true;
-		if($user->idkontrol !== true) {
+		if(!$user->idkontrol) {
 			$captchaCheck = FSystem::recaptchaCheck($data);
 			if($captchaCheck!==true) {
 				if($captchaCheck!==false) $data['recaptchaError'] = $captchaCheck;
@@ -131,7 +131,7 @@ class FItemsForm {
 		switch($data['action']) {
 			case 'search':
 				$cache = FCache::getInstance('s',0);
-				$cache->setData(FSystem::textins($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
+				$cache->setData(FText::preProcess($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
 				break;
 			case 'deleteImage':
 				$itemVO = new ItemVO((int) $data['i']);
@@ -160,12 +160,12 @@ class FItemsForm {
 				 *process data
 				 **/
 				if(!FError::is()) {
-					if(isset($data['addon'])) $data['addon'] = FSystem::textins($data['addon'],array('plainText'=>1)); //title for blog,event
+					if(isset($data['addon'])) $data['addon'] = FText::preProcess($data['addon'],array('plainText'=>1)); //title for blog,event
 					if(empty($data['addon']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_NAME_EMPTY);
-					if(isset($data['name'])) $data['name'] =  FSystem::textins($data['name'],array('plainText'=>1));
+					if(isset($data['name'])) $data['name'] =  FText::preProcess($data['name'],array('plainText'=>1));
 					if(empty($data['name'])) $data['name'] = $user->userVO->name;
-					$data['text'] = FSystem::textins($data['text'],$user->idkontrol ? array() : array('plainText'=>1));
-					if(isset($data['textLong'])) $data['textLong'] = FSystem::textins($data['textLong']);
+					$data['text'] = FText::preProcess($data['text'],$user->idkontrol ? array() : array('plainText'=>1));
+					if(isset($data['textLong'])) $data['textLong'] = FText::preProcess($data['textLong']);
 					if(empty($data['text']) && $itemVO->typeId=='forum') FError::add(FLang::$MESSAGE_EMPTY);
 					if(empty($data['name'])) FError::add(FLang::$MESSAGE_NAME_EMPTY);
 					elseif($user->idkontrol==false) {
@@ -177,7 +177,7 @@ class FItemsForm {
 					if(isset($data['dateStartLocal'])) $data['dateStart'] = FSystem::checkDate($data['dateStartLocal'].(isset($data['dateStartTime'])?' '.$data['dateStartTime']:''));
 					if(isset($data['dateEndLocal'])) $data['dateEnd'] = FSystem::checkDate($data['dateEndLocal'].(isset($data['dateEndTime'])?' '.$data['dateEndTime']:''));
 					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
-					if(isset($data['location'])) $data['location'] = FSystem::textins($data['location'],array('plainText'=>1));
+					if(isset($data['location'])) $data['location'] = FText::preProcess($data['location'],array('plainText'=>1));
 				}
         
 				/**
@@ -221,7 +221,7 @@ class FItemsForm {
 
 						if(!empty($data['imageUrl'])) {
 							$itemVO->deleteImage();
-							$filename = FSystem::safeFilename($data['imageUrl']);
+							$filename = FFile::safeFilename($data['imageUrl']);
 							if($file = file_get_contents($data['imageUrl'])) {
 								$temp_file = tempnam(sys_get_temp_dir(), 'imageUrl');
 								file_put_contents($temp_file,$file);
@@ -234,7 +234,7 @@ class FItemsForm {
 								if(!empty($size)) if($size[0]>0) $processFile=true;
 								if($processFile) {
 									$itemVO->deleteImage();
-									$filename = FSystem::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
+									$filename = FFile::safeFilename( str_replace(array('http://','/'),'',$data['imageUrl']) );
 									$ffile = new FFile(FConf::get("galery","ftpServer"));
 									$ffile->makeDir(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir);
 									$ffile->file_put_contents(FConf::get("galery","sourceServerBase").$itemVO->pageVO->galeryDir.'/'.$filename,$file);
@@ -245,7 +245,7 @@ class FItemsForm {
 							}
 						} elseif(isset($data['__files'])) {
 							if($data['__files']['imageFile']['error'] == 0) {
-								$data['__files']['imageFile']['name'] = FSystem::safeFilename($data['__files']['imageFile']['name']);
+								$data['__files']['imageFile']['name'] = FFile::safeFilename($data['__files']['imageFile']['name']);
 								$processFile=false;
 								try{
 									$size=getimagesize($data['__files']['imageFile']);
@@ -382,8 +382,8 @@ class FItemsForm {
 		$tpl->setVariable('TEXTID',$itemVO->typeId.$itemVO->pageId.'text');
 		$tpl->setVariable('TEXTLONGID',$itemVO->typeId.$itemVO->pageId.'textLong');
 
-		$tpl->setVariable('TEXT',FSystem::textToTextarea($itemVO->text));
-		$tpl->setVariable('TEXTLONG',FSystem::textToTextarea($itemVO->textLong));
+		$tpl->setVariable('TEXT',FText::textToTextarea($itemVO->text));
+		$tpl->setVariable('TEXTLONG',FText::textToTextarea($itemVO->textLong));
 
 		$tpl->setVariable('DATESTART',$itemVO->dateStartLocal);
 		$tpl->setVariable('TIMESTART',$itemVO->dateStartTime);

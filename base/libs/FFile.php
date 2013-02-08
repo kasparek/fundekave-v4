@@ -348,7 +348,7 @@ class FFile {
 		$ext = array_pop($arr);
 		return FSystem::safeText(implode('',$arr)) .'.'. FSystem::safeText($ext);
 	}
-
+	
 	/**
 	 *  get file extension
 	 **/

@@ -1,5 +1,5 @@
 <?php
-$auth = FSystem::safeText($_POST['auth']);
+$auth = FText::safeText($_POST['auth']);
 //TODO: instead of using session use auth to verify / might speed up response
 
 $user->kde(); //---check user / load info / load page content / chechk page exist
@@ -26,13 +26,13 @@ if(empty($file)) FSystem::fin('missing file data');
 
 //delete old chunks
 if(isset($_REQUEST['flush'])) {
-	$fileList = glob(FConf::get("settings","fuup_chunks_path").base64_encode(FSystem::safeFilename($_REQUEST['flush'])).'-*.chunk');
+	$fileList = glob(FConf::get("settings","fuup_chunks_path").base64_encode(FFile::safeFilename($_REQUEST['flush'])).'-*.chunk');
 	if(!empty($fileList)) foreach($fileList as $filename) if(file_exists($filename)) unlink($filename);
 	FSystem::fin('FuupUploader::chunks flushed');
 }
 
 //upload file inputs
-$file['name'] = FSystem::safeFilename($file['name']);
+$file['name'] = FFile::safeFilename($file['name']);
 $total = (int) $_POST['total'];
 $seq = (int) $_POST['seq'];
 
@@ -86,7 +86,7 @@ foreach($fileList as $chunkFilename) {
 
 //function parameters
 $f='';
-if(isset($_POST['f'])) $f = FSystem::safeText($_POST['f']);
+if(isset($_POST['f'])) $f = FText::safeText($_POST['f']);
 switch($f) {
 	case 'tempstore':
 		$targetFile = FConf::get("galery","sourceServerBase") . FFile::setTempFilename($file['name']);

@@ -226,6 +226,10 @@ class ItemVO extends Fvob {
 		$this->memFlush();
 		if( empty($this->itemIdTop) && !empty($this->pageId) ) $this->updateItemIdLast();
 		FCommand::run(ITEM_UPDATED,$this);
+		
+		//---file log to trace spammers
+		FError::write_log('ItemVO::save - '.$this->itemId.' - '.$_SERVER['HTTP_HOST']);
+		
 		return $this->itemId;
 	}
 

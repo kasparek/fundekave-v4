@@ -119,7 +119,7 @@ class FItemsRenderer {
 		$touchedBlocks['hentry']=true;
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
-		$link = FSystem::getUri('i='.$itemId.((!empty($itemVO->addon))?('-'.FSystem::safeText($itemVO->addon)):('')),$pageId);;
+		$link = FSystem::getUri('i='.$itemId.((!empty($itemVO->addon))?('-'.FText::safeText($itemVO->addon)):('')),$pageId);;
 		$vars['TITLEURL'] = $vars['ITEMLINK'] = $link;
 		if(!empty($itemVO->addon)) $vars['TITLE'] = $itemVO->addon;
 		$vars['PAGEID'] = $pageId;
@@ -213,7 +213,7 @@ class FItemsRenderer {
 			$touchedBlocks['map']=true; //to display map icon
 		}
 		
-		$vars['TEXT'] = FSystem::postText( $vars['TEXT'] );
+		$vars['TEXT'] = FText::postProcess( $vars['TEXT'] );
 		//---FINAL PARSE
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;
 		$tpl->setVariable($vars);
@@ -237,7 +237,7 @@ class FItemsRenderer {
 		$vars['SMAPITEMID'] = $vars['MAPITEMID'] = $itemVO->itemId;
 		$vars['MAPPOSITION'] = implode("\n",$journey);
 		$vars['SMAPTITLE'] = $vars['MAPTITLE'] = $itemVO->addon;
-		$vars['SMAPINFO'] = $vars['MAPINFO'] = FSystem::textins($itemVO->text,array('plaintext'=>1));
+		$vars['SMAPINFO'] = $vars['MAPINFO'] = FText::preProcess($itemVO->text,array('plaintext'=>1));
 		$vars['SMARKERPOS'] = $journey[count($journey)-1];
 		
 		

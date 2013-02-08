@@ -23,8 +23,8 @@ class FRSS {
 						$params['name']=$paramsArr[0];
 						$params['text']=$paramsArr[1];
 					}
-					$params['name'] = FSystem::textins($params['name'],array('plainText'=>1));
-					$params['text'] = FSystem::textins($params['text'],array('plainText'=>1));
+					$params['name'] = FText::preProcess($params['name'],array('plainText'=>1));
+					$params['text'] = FText::preProcess($params['text'],array('plainText'=>1));
 					if(empty($params['name'])) FError::add('E:nameEmpty');
 					if(empty($params['text'])) FError::add('E:textEmpty');
 					if(!FError::is()) {
@@ -140,7 +140,7 @@ class FRSS {
 							break;
 						case 'forum':
 							$tpl->setVariable('TITLE',$item->name);
-							$tpl->setVariable('DESCRIPTION',FSystem::postText($item->text . (!empty($item->enclosure) ? '<br /><br />' . "\n" . $item->enclosure : '')));
+							$tpl->setVariable('DESCRIPTION',FText::postProcess($item->text . (!empty($item->enclosure) ? '<br /><br />' . "\n" . $item->enclosure : '')));
 							break;
 						default:
 							$tpl->setVariable('TITLE',$item->addon);

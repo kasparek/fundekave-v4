@@ -4,9 +4,9 @@ class FAjax_sail extends FAjaxPluginBase {
     $user = FUser::getInstance();
     
     $to = 'erika@awake33.com';
-    $name = FSystem::textins($data['name'],array('plainText'=>1));
-    $email = FSystem::textins($data['email'],array('plainText'=>1));
-    $text = FSystem::textins($data['text'],array('plainText'=>1));
+    $name = FText::preProcess($data['name'],array('plainText'=>1));
+    $email = FText::preProcess($data['email'],array('plainText'=>1));
+    $text = FText::preProcess($data['text'],array('plainText'=>1));
     
     if(empty($text)) FError::add(FLang::$MESSAGE_EMPTY);
     
@@ -17,7 +17,7 @@ class FAjax_sail extends FAjaxPluginBase {
     if(!FError::is()) {
     
       $message = $name . "\n\n" . $email . "\n\n" . $text;
-      $message = wordwrap($message, 70);
+      $message = FText::wrap($message, 70);
       $headers = 'From: contact@awake33.com' . "\r\n" .
       'Reply-To: ' . $email . "\r\n" .
       'X-Mailer: PHP/' . phpversion();

@@ -430,7 +430,7 @@ class page_PageEdit implements iPage {
 		if(isset($pageVO->content)) $pageCont = $pageVO->content;
 
 		$tpl->setVariable('PAGECONTENTID',$textareaIdContent);
-		$tpl->setVariable('PAGECONTENT',FSystem::textToTextarea($pageCont));
+		$tpl->setVariable('PAGECONTENT',FText::textToTextarea($pageCont));
 
 		if($user->pageParam!='a') {
 			$tpl->touchBlock('permissionstab');
@@ -455,8 +455,7 @@ class page_PageEdit implements iPage {
 				//enable avatar
 				$tpl->touchBlock('forumspecifictab');
 				//FORUM HOME
-				$home = FSystem::textToTextarea($pageVO->prop('home'));
-				$tpl->setVariable('CONTENT',$home);
+				$tpl->setVariable('CONTENT',FText::textToTextarea($pageVO->prop('home')));
 				$tpl->setVariable('HOMEID',$textareaIdForumHome);
 			} elseif($pageVO->typeId == 'galery') {
 				//GALERY
@@ -491,7 +490,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
 			if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
 				
-			$tpl->setVariable('SIDEBAR',FSystem::textToTextarea($pageVO->prop('sidebar')));
+			$tpl->setVariable('SIDEBAR',FText::textToTextarea($pageVO->prop('sidebar')));
 				
 		}
 
@@ -507,7 +506,7 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('PAGEIDTOP',$pageVO->pageIdTop);
 			//seo plain text description
 			$tpl->setVariable('PAGEDESCRIPTIONID',$textareaIdDescription);
-			$tpl->setVariable('PAGEDESCRIPTION',FSystem::textToTextarea($pageDesc));
+			$tpl->setVariable('PAGEDESCRIPTION',FText::textToTextarea($pageDesc));
 		}
 
 		if($user->pageParam=='sa' || $pageVO->typeId=='galery') {

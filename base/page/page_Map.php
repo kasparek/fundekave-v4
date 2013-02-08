@@ -57,7 +57,7 @@ class page_Map implements iPage {
 					$title = $pageName.' - '.$itemVO->name;
 					$info .= '<strong><a href="'.FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'').'">'.$pageName.'</a></strong><br />';
 					$info .= '<a href="'.FSystem::getUri('who='.$itemVO->userId,'finfo','').'">'.$itemVO->name.'</a> '.$itemVO->dateCreatedLocal.'<br/>';
-					$info .= FSystem::textIns($itemVO->text,array('plainText'=>1));
+					$info .= FText::preProcess($itemVO->text,array('plainText'=>1));
 					$tpl->setVariable('MAPICO',FAvatar::getAvatarUrl($itemVO->userId));
 					break;
 				case 'event':

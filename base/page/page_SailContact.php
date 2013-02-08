@@ -27,7 +27,7 @@ class page_SailContact implements iPage {
       $cache->invalidateData( $user->pageVO->pageId, 'form');
     }
         
-    $tpl->setVariable('CONTENT',FSystem::postText($user->pageVO->content));
+    $tpl->setVariable('CONTENT',FText::postProcess($user->pageVO->content));
     
     FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
   }

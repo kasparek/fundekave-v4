@@ -89,7 +89,7 @@ class FAjax_user extends FAjaxPluginBase {
 
 		$itemVO = new ItemVO();
 		$itemVO->typeId = 'request';
-		$itemVO->text = FSystem::textins($data['message']);
+		$itemVO->text = FText::preProcess($data['message']);
 		$itemVO->pageId = 'finfo';
 		$itemVO->userId = $user->userVO->userId;
 		$itemVO->name = $user->userVO->name;

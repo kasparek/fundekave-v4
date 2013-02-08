@@ -171,7 +171,7 @@ class FBuildPage {
 				case 'h':
 					$template='';
 					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
-					$user->pageVO->content = FSystem::postText($user->pageVO->prop('home'));
+					$user->pageVO->content = FText::postProcess($user->pageVO->prop('home'));
 					if(empty($user->pageVO->content)) $user->pageVO->content = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					break;
 					/* GOOgle mapi */
@@ -193,7 +193,7 @@ class FBuildPage {
 			} else {
 			
 				//NOT TEMPLATE AT ALL
-				FBuildPage::addTab(array("MAINDATA"=>FSystem::postText($user->pageVO->content).'<div class="clearbox"></div>'));
+				FBuildPage::addTab(array("MAINDATA"=>FText::postProcess($user->pageVO->content).'<div class="clearbox"></div>'));
 			}
 			
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');

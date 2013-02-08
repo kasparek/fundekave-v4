@@ -16,7 +16,7 @@ class FItemTags {
 		if(0 == FDBTool::getOne("select count(1) from sys_pages_items_tag where itemId='".$itemId."' and userId='".$userId."'")) {
 			FItemTags::invalidateCache();
 			FDBTool::query('update sys_pages_items set tag_weight=tag_weight+1 where itemId="'.$itemId.'"');
-			FDBTool::query("insert into sys_pages_items_tag values ('".$itemId."','".$userId."',".(($tag!='')?("'".FSystem::textins($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
+			FDBTool::query("insert into sys_pages_items_tag values ('".$itemId."','".$userId."',".(($tag!='')?("'".FText::preProcess($tag,array('plainText'=>1))."'"):('null')).",'".($weight*1)."',now())");
 			FCommand::run(ITEM_UPDATED,new ItemVO($itemId));
 		}
 	}

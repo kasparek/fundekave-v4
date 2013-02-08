@@ -248,7 +248,7 @@ class page_ItemsList implements iPage {
 
 		//HEADER
 		if(!$isDetail && !empty($pageVO->content)) {
-			$vars['CONTENT'] = FSystem::postText($pageVO->content);
+			$vars['CONTENT'] = FText::postProcess($pageVO->content);
 		}
 
 		//LIST ITEMS

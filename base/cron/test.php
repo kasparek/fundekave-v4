@@ -1,4 +1,18 @@
 <?php
+//fix image
+// 179286,178495
+$item = new ItemVO('179286',true);
+
+echo $item->text;
+echo '
+<hr>
+';
+echo FText::postProcess($item->text);
+
+
+
+die();
+
 if(isset($_GET['both'])) {
 	$_GET['mod'] = $_GET['both'];
 	$_GET['delete'] = $_GET['both'];
