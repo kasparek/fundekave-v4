@@ -26,21 +26,7 @@ class page_ItemsList implements iPage {
 	 */
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		//parameters to handle
-		//GET type - TODO: validate
-		//GET p (page)
-		//GET c (category) - TODO:validate
-		//parameters - category, search string, $data['__get'][tag,type,date,p], 
-		/*if(!$user->itemVO && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='galery') && !$data['__ajaxResponse']) {
-			$grpid = 'page/'.$user->pageVO->pageId.'/list';
-			$dataid = 'part-'.$user->userVO->userId.'-'.(isset($_GET['p'])?$_GET['p']*1:'1');
-			$cache = FCache::getInstance('f');
-			$data = $cache->getData($dataid,$grpid);
-			if($data) {
-				FBuildPage::addTab(array("MAINDATA"=>$data));
-				return;
-			}
-		}*/
+		
 		
 		$tpl = page_ItemsList::buildPrep($data);
 		
@@ -51,7 +37,7 @@ class page_ItemsList implements iPage {
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
 			FAjax::addResponse('call','fajaxInit');
-			FAjax::addResponse('call','GooMapi.init');
+			FAjax::addResponse('call','gooMapiInit');
 		} else {
 			$data = $tpl->get();
 			FBuildPage::addTab(array("MAINDATA"=>$data));

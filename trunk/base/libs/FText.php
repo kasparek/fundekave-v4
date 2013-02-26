@@ -1,5 +1,9 @@
 <?php
 class FText {
+		
+	static function options($value, $text, $compare=0) {
+		return '<option value="'.$value.'"'.(($value==$compare)?(' selected="selected"'):('')).'>'.(empty($text) ? $value : $text).'</option>'
+	}
 	
 	/**
 	 * transliterate czech diacritic to ascii

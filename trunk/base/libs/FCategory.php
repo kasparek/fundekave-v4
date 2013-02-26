@@ -59,15 +59,11 @@ class FCategory extends FDBTool {
 		if(!empty($arr)) {
 			$arrkeys = array_keys($arr);
 			if(is_array($arr[$arrkeys[0]])) {
-				foreach ($arr as $row) {
-					$newArr[$row[0]] = $row[1];
-				}
+				foreach ($arr as $row) $newArr[$row[0]] = $row[1];
 				$arr = $newArr;
 			}
-			if($firstEmpty==true) $options .= '<option value="">'.$firstText.'</option>';
-			foreach ($arr as $k=>$v) {
-				$options .= '<option value="'.$k.'"'.(($k==$selected)?(' selected="selected"'):('')).'>'.((!empty($v))?($v):($k)).'</option>';
-			}
+			if($firstEmpty==true) $options .= FText::options("",$firstText);
+			foreach ($arr as $k=>$v) $options .= FText::options($k,$v,$selected);
 		}
 		return $options;
 	}

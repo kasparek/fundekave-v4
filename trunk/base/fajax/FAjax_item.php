@@ -67,7 +67,7 @@ class FAjax_item extends FAjaxPluginBase {
 					$tpl->parse('itemlist');
 					FAjax::addResponse('messageForm','$replaceWith', $tpl->get('messageForm'));
 					FAjax::addResponse('forumFeed','$replaceWith', $tpl->get('itemlist'));
-					FAjax::addResponse('call','GooMapi.init');
+					FAjax::addResponse('call','gooMapiInit');
 					FAjax::addResponse('call','fajaxInit');
 				} else {
 					Fajax_item::edit($data);
@@ -142,7 +142,7 @@ class FAjax_item extends FAjaxPluginBase {
 		}
 		
 		FAjax::addResponse('messageForm', '$html', $output);
-		FAjax::addResponse('call','GooMapi.init');
+		FAjax::addResponse('call','gooMapiInit');
 		FAjax::addResponse('call','fajaxInit');
 		if(!$user->idkontrol) FAjax::addResponse('call','recaptchaStart');
 	}

@@ -76,6 +76,7 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
 				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
+				FAjax::addResponse('ti','value',(int) $user->itemVO->itemId);
 				if(!empty($arrVars['TAG'])) FAjax::addResponse('tag','$html',$arrVars['TAG']);
 				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
@@ -98,7 +99,7 @@ class page_ItemDetail implements iPage {
 				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_NEWER ,array('id'=>'prevButt','parentClass'=>'opposite'));
 			} else {
 				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri, FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>'hash keepscroll galerynext','parentClass'=>'opposite'));
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'fajaxa progress hash keepscroll','parentClass'=>'opposite'));
+				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'hash keepscroll galerynext','parentClass'=>'opposite'));
 			}
 			return $output;
 		} 	
