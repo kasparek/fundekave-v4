@@ -35,20 +35,31 @@ class FQueue {
 		$data = $this->cache->get('queue');
 		if($data===false) return;
 		$data = unserialize($data);
-		if(!empty($data)) {
-			foreach($data as $q) {
-				switch($q['type']) {
-					case 'query':
-						$db = FDBConn::getInstance();
-						$db->query($q['data']);
-						break;
-					case 'invalidate':
-						FSystem::superInvalidateHandle($q['data']);
-						break;
-				}
-				FError::write_log("FQueue::Process - ".$q['data']);
+		if(empty($data)) return;
+		$limit = 100;
+		$i = 0;
+		$length = count($data);
+		while(count($data)>0) {
+			$q = array_shift($data);
+			switch($q['type']) {
+				case 'query':
+					$db = FDBConn::getInstance();
+					$db->query($q['data']);
+					break;
+				case 'invalidate':
+					FSystem::superInvalidateHandle($q['data']);
+					break;
 			}
+			$i++;
+			if($i>$limit) break;
 		}
-		$this->cache->remove('queue');
+		
+		FError::write_log("FQueue::Process - ".$i."/".$length);
+		
+		if(!empty($data)) {
+			$this->cache->save(serialize($data));
+		} else {
+			$this->cache->remove('queue');
+		}
 	}
 }

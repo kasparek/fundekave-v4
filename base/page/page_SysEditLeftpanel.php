@@ -39,7 +39,7 @@ class page_SysEditLeftpanel implements iPage {
 		$category->arrOption['leftpanelGroup'] = $arr;
 
 		$tmptext= '<p><label for="typefilter">Skupina</label><select id="typefilter" onchange="location = \'?k='.$user->currentPageId.'&rh=\' + this.options[this.selectedIndex].value;">';
-		foreach ($arr as $k=>$v) $tmptext.='<option value="'.$v.'"'.(($v==$sidebarGroup)?(' selected="selected" '):('')).'>'.$v.'</option>';
+		foreach ($arr as $k=>$v) $tmptext.=FText::options($v,$v,$sidebarGroup);
 		$tmptext.='</select></p><form method="post" action="">';
 
 		$tmptext .= $category->getEdit();

@@ -79,31 +79,28 @@ class page_SysEditPages implements iPage {
 		$tpl->setVariable('CURRENTPAGEID',$user->pageVO->pageId);
 
 		$options='';
-		foreach ($arrType as $k=>$v) {
-			$options .= '<option value="'.$k.'"'.(($k==$arrParams['type'])?(' selected="selected"'):('')).'>'.$v.'</option>';
-		}
+		foreach ($arrType as $k=>$v) $options .= FText::options($k,$v,$arrParams['type']);
 		$tpl->setVariable('TYPEOPTIONS',$options);
+		
 		$tpl->setVariable('LISTFORMACTION',FSystem::getUri());
 		if($arrParams['order']==1) $tpl->touchBlock('sortabc');
 
 		$options='';
-		foreach ($arrKat as $kateg) {
-			$options .= '<option value="'.$kateg[0].'"'.(($kateg[0]==$arrParams['cate'])?(' selected="selected"'):('')).'>'.$kateg[1].'</option>';
-		}
+		foreach ($arrKat as $kateg) $options .= FText::options($kateg[0],$kateg[1],$arrParams['cate']);
 		$tpl->setVariable('FILTROPTIONS',$options);
+
 		$options='';
-		foreach ($ARRLOCKED as $k=>$v) {
-			$options .= '<option value="'.$k.'"'.(($k==$arrParams['lock'])?(' selected="selected"'):('')).'>'.$v.'</option>';
-		}
+		foreach ($ARRLOCKED as $k=>$v) $options .= FText::options($k,$v,$arrParams['lock']);
 		$tpl->setVariable('LOCKOPTIONS',$options);
+		
 		$tpl->setVariable('SEARCH',$arrParams['sear']);
 
 		while($arr) {
 			$row = array_shift($arr);
+			
 			$options='';
-			foreach ($arrKat as $kat) {
-				$options .= '<option value="'.$kat[0].'"'.(($kat[0]==$row[1])?(' selected="selected"'):('')).'>'.$kat[1].'</option>';
-			}
+			foreach ($arrKat as $kat) $options .= FText::options($kat[0],$kat[1],$row[1]);
+			
 			$tpl->setCurrentBlock('result');
 			$tpl->setVariable('LPAGEID',$row[0]);
 			$tpl->setVariable('LEDITLINK',$row[0].'sa');

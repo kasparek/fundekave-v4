@@ -139,7 +139,7 @@ class FRules {
 		$tpl->setVariable('HELPTEXT',FLang::$LABEL_RULES_HELP_TEXT);
 
 		$selectOptions = '';
-		foreach($this->_pubTypes as $k=>$v) $selectOptions.='<option value="'.$k.'"'.(($k==$this->public)?(' selected="selected"'):('')).'>'.$v.'</option>';
+		foreach($this->_pubTypes as $k=>$v) $selectOptions.=FText::options($k,$v,$this->public);
 		$tpl->setVariable('SELECTOPTIONS',$selectOptions);
 		$tpl->setVariable('SELECTNAME','public');
 

@@ -1,5 +1,13 @@
 <div class="fotoDetailBox">
-<div id="fullscreenBox"><a href="{NEXTLINK}" id="detailNext" class="galeryFullSwitch" title="Zobrazit pres celou obrazovku"><div class="showProgress lbLoading"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" title="{IMGTITLE}" /></div></a></div>
+<div id="fullscreenBox" class="showProgress lbLoading">
+<div id="fullscreenToolbar" class="hidden">
+<a href="#" id="fullscreenPrevious">Předchozí</a>
+<a href="#" id="fullscreenLeave">Zpět</a>
+<a href="#" id="fullscreenSlideshow">Přehrávání</a>
+<a href="#" id="fullscreenNext">Další</a>
+</div>
+<div id="fullscreenHint" class="hidden">ESC - Zpět<br />Mezerník - Další</div>
+<a href="{NEXTLINK}" id="detailNext" class="galeryFullSwitch" title="Zobrazit pres celou obrazovku"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" title="{IMGTITLE}" /></a></div>
 <p id="description">{TEXT}</p>
 <div class="stats">
 <span class="tagGalery" id="tag">{TAG}</span> 
@@ -12,10 +20,3 @@
 </div>
 </div>
 <div class="clearreal"></div>
-<div id="fullscreenToolbar" class="hidden">
-<a href="#" id="fullscreenPrevious">Předchozí</a>
-<a href="#" id="fullscreenLeave">Zpět</a>
-<a href="#" id="fullscreenSlideshow">Přehrávání</a>
-<a href="#" id="fullscreenNext">Další</a>
-</div>
-<div id="fullscreenHint" class="hidden">ESC - Zpět<br />Mezerník - Další</div>
