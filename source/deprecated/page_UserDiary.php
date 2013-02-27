@@ -11,8 +11,8 @@ class page_UserDiary implements iPage {
 			$user = FUser::getInstance();
 				
 			$arrd['recurrence'] = $data['drepeat'] * 1;
-			$arrd['name'] = FSystem::textins($data['dzkratka'],array('plainText'=>1));
-			$arrd['text'] = FSystem::textins($data['dtext']);
+			$arrd['name'] = FText::preProcess($data['dzkratka'],array('plainText'=>1));
+			$arrd['text'] = FText::preProcess($data['dtext']);
 
 			list($nden,$nmesic,$nrok)=explode(".",$data['addfdate']);
 			if(checkdate($nmesic,$nden,$nrok)) $arrd['dateEvent'] = sprintf("%04d-%02d-%02d",$nrok,$nmesic,$nden); else FError::add(ERROR_DATA_FORMAT);
