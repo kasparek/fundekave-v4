@@ -3,7 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 <head>
 <script type="text/javascript">
-var _fdk = {};
 if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0];if(h.length>1 && m.indexOf('-')>-1){window.location.hash='';var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
 </script>
 <title>{TITLE}</title>
@@ -57,29 +56,8 @@ if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m
 </div>
 <span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
 <script type="text/javascript">
-_fdk.cfg = {page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',skinUrl:'[[URL_SKIN]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'};
-
-_fdk.lng = {
-ajax:{error:'Doslo k chybe pri spojeni, zkuste odeslat znovu'},
-goomapi:{title:'Vyberte více bodů pro zobrazení trasy',distance:'Vzdálenost: ',search:'Hledat',clearTitle:'Vymazat všechny souřadnice',clear:'Smazat',saveTitle:'Ulož souřadnice do formuláře',save:'Uložit',unitTitle:'Jednotky vzdálenosti - vzdálenost se počítá mezi dvěma a více souřadnicemi na mapě, zobrazena v horní liště okna s mapou',markerTitle:'Dvojklikem smazat, tažením změnit polohu',close:'Zavřít'},
-galery:{selectFiles:'Vyberte fotografie',errorUpload:'Doslo k chybe pri nahravani, zkuste to znovu',errorFileNumLimit:'Vlozili jste priliz mnoho obrazku'}
-};
-
-_fdk.load = {
-'boot':['http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js','[[URL_JS]]fundekave.js']
-,'galeryedit':['[[URL_JS]]galeryEdit.min.js']
-,'goomapi':['[[URL_JS]]gooMapi.min.js','[[URL_JS]]markerclusterer/cluster.js']
-,'slim':['[[URL_JS]]slimbox.js']
-,'form':['[[URL_JS]]form.js']
-,'swf':['http://cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min.js','[[URL_JS]]fuupConfig.js','http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']
-,'ui':['http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js','[[URL_JS]]i18n/ui.datepicker-cs.js','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/ui-lightness/jquery-ui.css']
-,'galeria':['http://cdnjs.cloudflare.com/ajax/libs/galleria/1.2.8/galleria.min.js','[[URL_JS]]galleria.history.min.js']
-,'richta':['http://cachedcommons.org/cache/markitup/1.1.8/javascripts/markitup-min.js','[[URL_JS]]markitup/sets/default/style.css','[[URL_JS]]markitup/skins/simple/style.css','[[URL_JS]]markitup/sets/default/set.js']};
-
-var Sett={
-,locale:
-,ll:
-};
+var _fdk = {cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',skinUrl:'[[URL_SKIN]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
+<!-- BEGIN jscfgvar -->_fdk.cfg.{JSVAR}='{JSVALUE}';<!-- END jscfgvar -->
 var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
 </script>
 <script type="text/javascript" src="[[URL_JS]]boot.js"></script>
