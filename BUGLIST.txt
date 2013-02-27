@@ -1,12 +1,15 @@
 TODO:
 -iyobosa
 	-english flag
--galerie - posledni komentare
--fuup - timeout
+
 -ajax error 
 	- disable
 	- retry?
 	- show only at specific methods
+	
 -navod u nahravani do galerie, opravit
 
+-galerie detail - BACK - se nevrati k prvni fotce
+
+- 151261 - fotku smazat z google
 
