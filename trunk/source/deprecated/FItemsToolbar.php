@@ -132,10 +132,10 @@ class FItemsToolbar {
 		else {
 			if(isset($_POST['searchText'])) {
 				//---add for fullsearch
-				$toolbarData['searchStr'] = FSystem::textins($_POST['searchText'],array('plainText'=>1));
+				$toolbarData['searchStr'] = FText::preProcess($_POST['searchText'],array('plainText'=>1));
 			}
 			if(isset($_POST['searchUser'])) {
-				$toolbarData['usersWho'] = FSystem::textins($_POST['searchUser'],array('plainText'=>1));
+				$toolbarData['usersWho'] = FText::preProcess($_POST['searchUser'],array('plainText'=>1));
 			}
 			if(isset($_POST['tuorder'])) $toolbarData['order'] = (int) $_POST['tuorder'];
 			if(isset($toolbarData['interval'])) $oldInterval = $toolbarData['interval']; else $oldInterval = -1;

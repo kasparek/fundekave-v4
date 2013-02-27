@@ -12,7 +12,7 @@ class page_ItemsTaggingRandom implements iPage {
 						$arrV = explode(",",$v);
 						$arrTestedTags = array();
 						foreach ($arrV as $tag) {
-							$tag = FSystem::textins($tag,array('plainText'=>1));
+							$tag = FText::preProcess($tag,array('plainText'=>1));
 							if(!empty($tag)) $arrTestedTags[] = $tag;
 						}
 						if(!empty($arrTestedTags)) { $v = implode(",",$arrTestedTags);
