@@ -1,5 +1,5 @@
 <?php
-class Sidebar_page {
+class sidebar_page {
 	static function show() {
 		$user = FUser::getInstance();
     if(!$user->pageVO) return false;

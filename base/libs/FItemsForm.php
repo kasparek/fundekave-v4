@@ -120,6 +120,13 @@ class FItemsForm {
 		if($itemVO->itemId>0) if($itemVO->load()) $newItem=false;
 
 		$itemVO->pageId = $user->pageVO->pageId;
+		
+		//check if site has strict limitations
+		if(SITE_STRICT && !$userId->idkontrol) {
+			if($itemVO->pageIdTop != SITE_STRICT) {
+				FError::add(FLang::$ERROR_RULES_CREATE);
+			}
+		}
 
 		if(empty($data['action'])) {
 			$data['action']='';
@@ -134,25 +141,29 @@ class FItemsForm {
 				$cache->setData(FText::preProcess($data["text"],array('plainText'=>1)), $user->pageVO->pageId, 'filter');
 				break;
 			case 'deleteImage':
-				$itemVO = new ItemVO((int) $data['i']);
-				if($itemVO->load()) {
-					$itemVO->deleteImage();
-					$itemVO->setSaveOnlyChanged(true);
-					$itemVO->save();
+				if(!FError::is()) {
+					$itemVO = new ItemVO((int) $data['i']);
+					if($itemVO->load()) {
+						$itemVO->deleteImage();
+						$itemVO->setSaveOnlyChanged(true);
+						$itemVO->save();
+					}
+					FFile::flushTemplFile();
 				}
-				FFile::flushTemplFile();
 				break;
 			case 'del':
 			case 'delete':
-				$itemVO = new ItemVO((int) $data['i']);
-				if($itemVO->load()) {
-					$itemVO->delete();
+				if(!FError::is()) {
+					$itemVO = new ItemVO((int) $data['i']);
+					if($itemVO->load()) {
+						$itemVO->delete();
+					}
+					FCommand::run(ITEM_UPDATED,$itemVO);
+					$itemVO=null;
+					$user->itemVO=null;
+					FError::add(FLang::$LABEL_DELETED_OK,1);
+					$redirect = true;
 				}
-				FCommand::run(ITEM_UPDATED,$itemVO);
-				$itemVO=null;
-				$user->itemVO=null;
-				FError::add(FLang::$LABEL_DELETED_OK,1);
-				$redirect = true;
 				break;
 			case 'save':
 			default:

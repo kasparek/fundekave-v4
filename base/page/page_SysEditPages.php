@@ -90,7 +90,7 @@ class page_SysEditPages implements iPage {
 		$tpl->setVariable('FILTROPTIONS',$options);
 
 		$options='';
-		foreach ($ARRLOCKED as $k=>$v) $options .= FText::options($k,$v,$arrParams['lock']);
+		foreach (FLang::$ARRLOCKED as $k=>$v) $options .= FText::options($k,$v,$arrParams['lock']);
 		$tpl->setVariable('LOCKOPTIONS',$options);
 		
 		$tpl->setVariable('SEARCH',$arrParams['sear']);

@@ -1,5 +1,5 @@
 <?php
-class Sidebar_map {
+class sidebar_map {
 	static function show() {
 		$user = FUser::getInstance();
 		

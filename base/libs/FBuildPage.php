@@ -138,11 +138,9 @@ class FBuildPage {
 			if($user->pageParam=='sa' || $user->pageParam == 'e') $template = 'page_PageEdit';
 			else $template = $user->pageVO->template;
 			if(empty($template)) $template='page_ItemsList';
-			if($template != '') {
-				if (!preg_match("/(.html)$/",$template)) {
-					if( class_exists($template) ) {
-						call_user_func(array($template, 'process'),$data);
-					}
+			if(!preg_match("/(.html)$/",$template)) {
+				if( class_exists($template) ) {
+					call_user_func(array($template, 'process'),$data);
 				}
 			}
 		}
@@ -183,20 +181,19 @@ class FBuildPage {
 					if(empty($template) && $user->pageVO->typeId!='culture') $template='page_ItemsList';
 					break;
 			}
-			
+						
 			if($template != '') {
-			
 				//DYNAMIC TEMPLATE
 				FProfiler::write('FBuildPage::baseContent--TPL LOADED');
-				if( class_exists($template)) call_user_func(array($template, 'build'),$data);
+				if(class_exists($template)) call_user_func(array($template, 'build'),$data);
 				FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 			} else {
-			
 				//NOT TEMPLATE AT ALL
 				FBuildPage::addTab(array("MAINDATA"=>FText::postProcess($user->pageVO->content).'<div class="clearbox"></div>'));
 			}
 			
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
+			
 			//DEFAULT TLACITKA - pro typy - galery, blog, forum
 			$pageId = $user->pageVO->pageId;
 			if($user->pageVO->typeId == 'forum' && $user->pageParam!='h') {

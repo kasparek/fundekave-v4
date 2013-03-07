@@ -108,7 +108,7 @@ class FAjax {
 		}
 		
 		//---dealing with ajax requests
-		$className = 'FAjax_'.$mod;
+		$className = 'fajax_'.$mod;
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($fajax->data,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED '.$className.'::'.$action);

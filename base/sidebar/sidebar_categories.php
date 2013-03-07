@@ -1,5 +1,5 @@
 <?php
-class Sidebar_categories {
+class sidebar_categories {
 	static function show() {
 		$user = FUser::getInstance();
 		$multiType=false;

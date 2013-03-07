@@ -148,7 +148,7 @@ class FText {
 			if($tag->parentNode->tagName!='a') $try=true;
 		  } else {
 			$url = $tag->getAttribute('href');
-			if(strpos($url,$tag->nodeValue)!==false) $try=true;
+			if((bool) $tag->nodeValue && strpos($url,$tag->nodeValue)!==false) $try=true;
 		  }
 		  
 		  if($try) {

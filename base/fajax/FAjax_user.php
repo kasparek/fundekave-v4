@@ -1,5 +1,5 @@
 <?php
-class FAjax_user extends FAjaxPluginBase {
+class fajax_user extends FAjaxPluginBase {
 
 	static function avatar($data) {
 		$user = FUser::getInstance();
