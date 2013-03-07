@@ -12,7 +12,8 @@ if($host=='localhost') $host='fundekave';
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
-	elseif(strpos($c,'FAjax_')!==false) $c = ROOT . 'fajax/' . $c;
+	elseif(strpos($c,'fajax_')!==false) $c = ROOT . 'fajax/' . $c;
+	elseif(strpos($c,'sidebar_')!==false) $c = ROOT . 'sidebar/'.$c;
 	elseif(strpos($c,'VO')!==false) $c = ROOT . 'model/'.$c;
 	else $c = ROOT . 'libs/' . $c ;
 	try {

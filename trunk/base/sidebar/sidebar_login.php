@@ -1,5 +1,5 @@
 <?php
-class Sidebar_login {
+class sidebar_login {
 	static function show() {
 		$user = FUser::getInstance();
 		if($user->idkontrol === true) {

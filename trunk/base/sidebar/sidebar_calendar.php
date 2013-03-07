@@ -1,5 +1,5 @@
 <?php
-class Sidebar_calendar {
+class sidebar_calendar {
 	//TODO: refactor links - fajax
 	static function show($year='',$month='') {
 		return '';

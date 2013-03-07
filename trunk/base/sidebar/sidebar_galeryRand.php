@@ -1,5 +1,5 @@
 <?php
-class Sidebar_galeryRand {
+class sidebar_galeryRand {
 	static function show() {
 		$cache = FCache::getInstance('f');
 		$itemIdList = $cache->getData('fotorand','sidebar/galeryRand');

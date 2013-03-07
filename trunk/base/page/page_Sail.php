@@ -6,9 +6,7 @@ class page_Sail implements iPage {
 	/**
 	 *  PROCESS FUNCTION
 	 */
-	static function process($data) {
-		//form is processed in FAjax_item::submit
-	}
+	static function process($data) {}
 
 	/**
 	 * VIEW FUNCTION

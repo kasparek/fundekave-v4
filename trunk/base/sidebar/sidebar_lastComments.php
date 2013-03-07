@@ -1,5 +1,5 @@
 <?php
-class Sidebar_lastComments {
+class sidebar_lastComments {
 	static function show() {
 	
 	
