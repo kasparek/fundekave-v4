@@ -88,7 +88,6 @@ class FAjax {
 		FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
-		
 		//---process k - set pageparam on user if needed
 		if(isset($fajax->data['k'])) {
 			FSystem::processK($fajax->data['k']);
@@ -108,7 +107,7 @@ class FAjax {
 		}
 		
 		//---dealing with ajax requests
-		$className = 'fajax_'.$mod;
+		$className = 'fajax_'.ucfirst($mod);
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($fajax->data,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED '.$className.'::'.$action);

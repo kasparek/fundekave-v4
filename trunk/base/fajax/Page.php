@@ -1,5 +1,5 @@
 <?php
-class fajax_page extends FAjaxPluginBase {
+class fajax_Page extends FAjaxPluginBase {
 
 	static function fuup($data) {
 		$user = FUser::getInstance();
@@ -28,5 +28,4 @@ class fajax_page extends FAjaxPluginBase {
 			page_PageEdit::build($data);
 		}
 	}
-
 }

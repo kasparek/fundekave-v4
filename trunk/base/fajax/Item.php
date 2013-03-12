@@ -1,5 +1,5 @@
 <?php
-class fajax_item extends FAjaxPluginBase {
+class fajax_Item extends FAjaxPluginBase {
 
 	static function show($data) {
 		$itemId = isset($data['item']) ? $data['item'] : $data['i'];

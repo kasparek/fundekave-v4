@@ -37,7 +37,7 @@ class page_PageEdit implements iPage {
 				$pageVO = FactoryVO::get('PageVO');
 				//---new page
 				if(isset(FLang::$TYPEID[$data['t']])) {
-					$pageVO->typeId = FSystem::safeText($data['t']);
+					$pageVO->typeId = FText::safeText($data['t']);
 				} else {
 					$pageVO->typeId = $user->pageVO->typeIdChild;
 				}
@@ -68,7 +68,7 @@ class page_PageEdit implements iPage {
 				}
 				*/
 
-			$pageVO->set('name', FSystem::textins($data['name'],array('plainText'=>1)));
+			$pageVO->set('name', FText::preProcess($data['name'],array('plainText'=>1)));
 			
 			if(empty($pageVO->name)) {
 				FError::add(FLang::$ERROR_PAGE_ADD_NONAME);
@@ -80,22 +80,22 @@ class page_PageEdit implements iPage {
 			}
 			
 			if($user->pageParam=='sa') {
-				$pageVO->template = FSystem::textins($data['template'],array('plainText'=>1));
+				$pageVO->template = FText::preProcess($data['template'],array('plainText'=>1));
 				if(isset($data['locked'])) {
 					$pageVO->locked = (int) $data['locked'];
 				}
 				if(empty($data['description'])) $data['description']='';
-				$pageVO->description = FSystem::textins($data['description'],array('plainText'=>1));
+				$pageVO->description = FText::preProcess($data['description'],array('plainText'=>1));
 				if(isset($data['pageIdTop'])) $pageVO->pageIdTop = $data['pageIdTop'];
 			} else {
-				if($pageVO->description==FSystem::textins($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
+				if($pageVO->description==FText::preProcess($pageVO->content,array('plainText'=>1))) $pageVO->description=null;
 			}
 
 			if(empty($data['content'])) $data['content']='';
-			$pageVO->content = FSystem::textins($data['content']);
+			$pageVO->content = FText::preProcess($data['content']);
 
 			if($user->pageParam!='sa' && empty($pageVO->description) && !empty($pageVO->content)) {
-				$pageVO->description=FSystem::textins($pageVO->content,array('plainText'=>1));
+				$pageVO->description=FText::preProcess($pageVO->content,array('plainText'=>1));
 			}
 
 			if(isset($data['datecontent'])) {
@@ -128,12 +128,12 @@ class page_PageEdit implements iPage {
 				}
 
 				if(isset($data['forumhome'])) {
-					$homeStr = FSystem::textins($data['forumhome']);
+					$homeStr = FText::preProcess($data['forumhome']);
 					$pageVO->setProperty('home', $homeStr);
 				}
 					
 				if(isset($data['sidebar'])) {
-					$pageVO->prop('sidebar', FSystem::textins($data['sidebar']));
+					$pageVO->prop('sidebar', FText::preProcess($data['sidebar']));
 				}
 
 				if(!empty($data['categoryNew'])) {
@@ -158,7 +158,7 @@ class page_PageEdit implements iPage {
 				if($pageVO->typeId == 'galery') {
 					//---create folder string if not set
 					if(empty($pageVO->galeryDir)) {
-						$pageVO->galeryDir = FSystem::safeText(FUser::getgidname($pageVO->userIdOwner)) . '/' . date("Ymd") .'_'.FSystem::safeText($pageVO->name).'_'. $pageVO->pageId;
+						$pageVO->galeryDir = FText::safeText(FUser::getgidname($pageVO->userIdOwner)) . '/' . date("Ymd") .'_'.FText::safeText($pageVO->name).'_'. $pageVO->pageId;
 						//---create folder if not exits
 						$file = new FFile(FConf::get("galery","ftpServer"));
 						$file->makeDir(FConf::get("galery","sourceServerBase") .$pageVO->galeryDir);
@@ -228,7 +228,7 @@ class page_PageEdit implements iPage {
 					}
 				}
 				if(isset($data['homesite'])) {
-					$pageVO->prop('homesite', FSystem::textins($data['homesite'],array('plainText'=>1)));
+					$pageVO->prop('homesite', FText::preProcess($data['homesite'],array('plainText'=>1)));
 				}
 				if(isset($data['position'])) {
 					$posData = FSystem::positionProcess($data['position']);
@@ -293,7 +293,7 @@ class page_PageEdit implements iPage {
 							
 							FProfiler::write('page_PageEdit::process - foto loaded');
 							
-							$itemVO->set('text',FSystem::textins($v['desc'],array('plainText'=>1)));
+							$itemVO->set('text',FText::preProcess($v['desc'],array('plainText'=>1)));
 
 							if(isset($v['position'])){
 								$v['position'] = FSystem::positionProcess($v['position']);

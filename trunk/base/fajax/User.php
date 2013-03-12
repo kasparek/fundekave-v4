@@ -1,5 +1,5 @@
 <?php
-class fajax_user extends FAjaxPluginBase {
+class fajax_User extends FAjaxPluginBase {
 
 	static function avatar($data) {
 		$user = FUser::getInstance();
@@ -30,8 +30,8 @@ class fajax_user extends FAjaxPluginBase {
 			while($file = array_pop($fileList)) {
 				$tpl->setVariable("IMGURL",FConf::get('galery','targetUrlBase').'800x800/prop/'.strtolower($user->userVO->name).'/profile/'.$file);
 				$tpl->setVariable("THUMBURL",FConf::get('galery','targetUrlBase').FConf::get('galery','horiz_thumbCut').'/'.strtolower($user->userVO->name).'/profile/'.$file);
-				$tpl->setVariable('USEAVATARIMGID','-'.FSystem::safetext($file));
-				$tpl->setVariable('IMGID','-'.FSystem::safetext($file));
+				$tpl->setVariable('USEAVATARIMGID','-'.FText::safetext($file));
+				$tpl->setVariable('IMGID','-'.FText::safetext($file));
 				$tpl->parse("foto");
 			}
 		}

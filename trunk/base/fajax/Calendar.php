@@ -1,5 +1,5 @@
 <?php
-class fajax_calendar extends FAjaxPluginBase {
+class fajax_Calendar extends FAjaxPluginBase {
   static function walk($data) {
 		$ret = FLeftPanelPlugins::rh_diar_kalendar($data['year'],$data['month']);
 		//---create response

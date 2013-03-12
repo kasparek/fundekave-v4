@@ -1,5 +1,9 @@
 /** INITIALIZATION ON DOM */
 function boot(){
+	//load language
+	var defaultLang = 'cs';
+	Lazy.load([_fdk.cfg.jsUrl+'i18n/_fdk.lng.'+(_fdk.cfg.lang ? _fdk.cfg.lang : defaultLang)+'.js'],boot);
+	
 	gaLoad();
 	buttonInit();
 	if($("#errormsgJS").is(':empty'))
