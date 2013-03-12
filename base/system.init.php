@@ -12,7 +12,7 @@ if($host=='localhost') $host='fundekave';
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
-	elseif(strpos($c,'fajax_')!==false) $c = ROOT . 'fajax/' . $c;
+	elseif(strpos($c,'fajax_')!==false) $c = ROOT . 'fajax/' . ucfirst(str_replace('fajax_','',$c));
 	elseif(strpos($c,'sidebar_')!==false) $c = ROOT . 'sidebar/'.$c;
 	elseif(strpos($c,'VO')!==false) $c = ROOT . 'model/'.$c;
 	else $c = ROOT . 'libs/' . $c ;
@@ -46,7 +46,7 @@ FProfiler::write('START - session started');
 $user = FUser::getInstance();
 $user->init();
 FProfiler::write('USER - initialized - "'.($user->userVO?$user->userVO->userId:'anonym').'"');
-if(isset($_GET['auth'])) $user->setRemoteAuthToken( FSystem::safeText($_GET['auth']) );
+if(isset($_GET['auth'])) $user->setRemoteAuthToken( FText::safeText($_GET['auth']) );
 //initial pageid retrieve
 if(isset($_REQUEST['k'])) $pageId = $_REQUEST['k'];
 //---backward compatibility

@@ -1,5 +1,5 @@
 <?php
-class fajax_sail extends FAjaxPluginBase {
+class fajax_Sail extends FAjaxPluginBase {
 	static function contact($data) {
     $user = FUser::getInstance();
     

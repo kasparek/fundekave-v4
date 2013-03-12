@@ -1,5 +1,5 @@
 <?php
-class fajax_post extends FAjaxPluginBase {
+class fajax_Post extends FAjaxPluginBase {
 	
 	static function page($data) {
 		if(isset($data['p'])) $data['p'] = $data['p']*1; else $data['p']=1;

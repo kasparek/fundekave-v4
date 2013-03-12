@@ -346,7 +346,7 @@ class FFile {
 	static function safeFilename($filename) {
 		$arr = explode('.',strtolower($filename));
 		$ext = array_pop($arr);
-		return FSystem::safeText(implode('',$arr)) .'.'. FSystem::safeText($ext);
+		return FText::safeText(implode('',$arr)) .'.'. FText::safeText($ext);
 	}
 	
 	/**

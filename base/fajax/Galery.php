@@ -1,5 +1,5 @@
 <?php
-class fajax_galery extends FAjaxPluginBase {
+class fajax_Galery extends FAjaxPluginBase {
 	static function editThumb($data) {
 		if(empty($data['result'])) $data['result'] = 'fotoList';
 		if(empty($data['resultProperty'])) $data['resultProperty'] = '$append';
