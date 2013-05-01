@@ -22,7 +22,7 @@ class page_Sail implements iPage {
 
 		$planItems = new FItems('blog',false,$planRenderer);
 		$planItems->addWhere("sys_pages_items.pageId='".$planPageId."' and sys_pages_items.public=1");
-		$planItems->setOrder('itemId');
+		$planItems->setOrder('dateStart');
 		//get all plan items
 		$planRender = $planItems->render();
     
