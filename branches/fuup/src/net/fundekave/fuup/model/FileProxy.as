@@ -1,3 +1,9 @@
+/**
+ * Filename: FileProxy.as
+ * Remote service to handle multi file chunk upload
+ * Version 0.95.4
+ * Author: Frantisek Kaspar
+ */
 package net.fundekave.fuup.model
 {
 	
@@ -30,27 +36,41 @@ package net.fundekave.fuup.model
 		public static const NAME:String = 'fileProxy';
 		
 		//---global settings
+		//image settings - overriden from config file
 		public var widthMax:Number = 500;
 		public var heightMax:Number = 500;
 		public var outputQuality:Number = 80;
 		public var showImages:Boolean = true;
 		
 		//uploading
+		//service settings
 		public var serviceURL:String;
 		public var serviceVars:Object;
+		//chunk size in bytes
 		public var chunkSize:int = 5000;
+		//number of chunks limit
 		public var uploadLimit:int = 3;
+		//timeout for each chunk after which another attempt of upload is made, 0=no timeout
 		public var timeout:Number = 0;
+		//flush request to server to delete any old chunks of failed upload attempt
 		public var sendFlushRequest:Boolean = true;
 		
+		//list of all files to be processed
 		public var fileList:Array = new Array();
+		//file data object
 		private var fileVO:FileVO;
+		//progess file indexes
 		private var currentFile:int = 0;
 		private var progressFile:int = 0;
 		private var progressFileTotal:int = 0;
 		
+		//user interaction flag
 		private var isCancel:Boolean = false;
+		
+		//image processing class instance
 		private var imageResize:ImageResize;
+		
+		//list of files for upload
 		private var fileUploadList:Vector.<FileUpload>;
 		
 		public function FileProxy()
@@ -59,6 +79,9 @@ package net.fundekave.fuup.model
 			fileUploadList = new Vector.<FileUpload>;
 		}
 		
+		/**
+		 * Update all files in dataProvider
+		 */
 		public function updateFiles():void
 		{
 			var i:int, len:int = fileList.length;
@@ -71,6 +94,10 @@ package net.fundekave.fuup.model
 			}
 		}
 		
+		/**
+		 * update file with fresh user manipulated settings
+		 * @param	fileVO - file data object from UI
+		 */
 		public function updateFile(fileVO:FileVO):void
 		{
 			fileVO.widthMax = widthMax
@@ -79,6 +106,10 @@ package net.fundekave.fuup.model
 			fileVO.showThumb = showImages;
 		}
 		
+		/**
+		 * user interaction handler
+		 * cancel operation in progress
+		 */
 		public function cancel():void
 		{
 			isCancel = true;
@@ -92,6 +123,10 @@ package net.fundekave.fuup.model
 			}
 		}
 		
+		/**
+		 * process file
+		 * on first step all files are checked for dimension size, filesize and resized if needed
+		 */
 		private function processFile():void
 		{
 			if (isCancel)
@@ -101,9 +136,12 @@ package net.fundekave.fuup.model
 			
 			var fileVO:FileVO = fileList[currentFile] as FileVO;
 			fileVO.renderer.setLocalState(FileView.BUSY);
+			
 			var compareW:int = 0;
 			var compareH:int = 0;
 			var fileSize:uint = fileVO.file.size;
+			
+			//check if file is not already resized
 			if (fileVO.encodedJPG)
 			{
 				fileSize = fileVO.encodedJPG.length;
@@ -115,6 +153,8 @@ package net.fundekave.fuup.model
 				compareW = fileVO.widthOriginal
 				compareH = fileVO.heightOriginal
 			}
+			
+			//check if file need to be resized - size is bigger or image is rotated by user
 			if (compareW > fileVO.widthMax || compareH > fileVO.heightMax || fileVO.rotation != fileVO.rotationCurrent)
 			{
 				var rot:Number = fileVO.rotation + fileVO.rotationFromOriginal;
@@ -125,6 +165,8 @@ package net.fundekave.fuup.model
 				fileVO.rotationFromOriginal = rot;
 				fileVO.rotation = 0;
 				fileVO.rotationCurrent = fileVO.rotation;
+				
+				//create new instance of image processing library for image scale
 				imageResize = new ImageResize(fileVO.widthMax, fileVO.heightMax, rot, fileVO.outputQuality);
 				imageResize.addEventListener(ImageResize.RESIZED, onResizeFinished, false, 0, true);
 				if (fileVO.file.data && fileVO.file.data.length > 0)
@@ -135,10 +177,16 @@ package net.fundekave.fuup.model
 			}
 			else
 			{
+				//start file upload if no resize is needed
 				uploadStart();
 			}
 		}
 		
+		/**
+		 * Source image resize handler
+		 * After image is resize to requested size it is encoded to JPEG
+		 * @param	e - Event
+		 */
 		private function onResizeFinished(e:Event):void
 		{
 			imageResize.removeEventListener(ImageResize.RESIZED, onResizeFinished);
@@ -149,13 +197,21 @@ package net.fundekave.fuup.model
 				return;
 			}
 			imageResize.addEventListener(ImageResize.ENCODED, onEncodeFinished);
+			//encode to JPG
 			imageResize.encode();
 		}
 		
+		/**
+		 * JPG encoded handler
+		 * Bytearray data with encoded image are ready
+		 * 
+		 * @param	e - Event
+		 */
 		private function onEncodeFinished(e:Event):void
 		{
 			imageResize.removeEventListener(ImageResize.ENCODED, onEncodeFinished);
 			
+			//file data are updated with new encoded data
 			var fileVO:FileVO = fileList[currentFile] as FileVO;
 			fileVO.encodedJPG = new ByteArray();
 			fileVO.encodedJPG.writeBytes(imageResize.resultBytes);
@@ -167,13 +223,19 @@ package net.fundekave.fuup.model
 			
 			fileVO.renderer.updateStatus('');
 			
+			//start upload after short pause to let interface update progress bar
 			setTimeout(uploadStart, 100);
 		}
 		
+		/**
+		 * Start upload of one file
+		 * Alway first file from fileList is processed, when uploaded it is remove from list and function can be called again in cycle.
+		 */
 		private function uploadStart():void
 		{
 			fileVO = fileList[0] as FileVO;
-			if(sendFlushRequest) {
+			if (sendFlushRequest) {
+				//send flush request to server for clean up after failed upload
 				var flushRequest:URLRequest = new URLRequest(serviceURL);
 				flushRequest.data = new URLVariables();
 				for (var name:String in serviceVars) flushRequest.data[name] = serviceVars[name];
@@ -186,10 +248,15 @@ package net.fundekave.fuup.model
 				service.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError, false, 0, true);
 				service.load(flushRequest);
 			} else {
+				//skip flush server request
 				flushRequestComplete(null);
 			}
 		}
 		
+		/**
+		 * Server side flush request service handler
+		 * @param	e - Event
+		 */
 		private function flushRequestComplete(e:Event):void {
 			if (e) {
 				var service:URLLoader = e.target as URLLoader;
@@ -197,6 +264,7 @@ package net.fundekave.fuup.model
 				service.removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
 				service.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
 			}
+			//Start file upload
 			var fileUpload:FileUpload = new FileUpload(serviceURL, fileVO.filename, chunkSize, uploadLimit, timeout);
 			fileUploadList.push(fileUpload);
 			fileUpload.extraVars = serviceVars;
@@ -209,6 +277,10 @@ package net.fundekave.fuup.model
 				fileUpload.uploadBytes(fileVO.encodedJPG);
 		}
 		
+		/**
+		 * User interaction handler
+		 * Upload all files
+		 */
 		public function uploadFiles():void
 		{
 			progressFileTotal = fileList.length;
@@ -218,6 +290,9 @@ package net.fundekave.fuup.model
 			uploadFile();
 		}
 		
+		/**
+		 * Upload  one file from file list
+		 */
 		private function uploadFile():void
 		{
 			if (fileList.length > 0 && isCancel === false)
@@ -232,18 +307,34 @@ package net.fundekave.fuup.model
 			}
 		}
 		
+		
+		/**
+		 * Server side upload successfull handler function
+		 * 
+		 * @param	e
+		 */
 		private function onUploadComplete(e:Event):void
 		{
 			var fileUpload:FileUpload = e.target as FileUpload;
+			//remove finished file from upload queue
 			fileUploadList.splice(fileUploadList.indexOf(fileUpload), 1);
 			
+			//update UI progress
 			progressFile++;
+			
 			sendNotification(ApplicationFacade.FILE_DELETE, fileVO);
 			sendNotification(ApplicationFacade.CALLBACK, ExtInterfaceProxy.IMAGE_UPLOADED, fileVO.filename);
+			
+			//proceed with next file with delay to let UI update
 			setTimeout(uploadFile, 500);
 			trace('FILEPROXY::UPLOAD COMPLETE EVENT');
 		}
 		
+		/**
+		 * Track upload progress
+		 * Monitors number of chunks successfuly uploaded
+		 * @param	e
+		 */
 		private function onUploadProgress(e:ProgressEvent):void
 		{
 			var p:Number = 0;
@@ -254,6 +345,10 @@ package net.fundekave.fuup.model
 			trace('FILEPROXY::UPLOAD PROGRESS::' + p);
 		}
 		
+		/**
+		 * Upload error handler
+		 * @param	e
+		 */
 		private function onUploadError(e:ErrorEvent):void
 		{
 			var configProxy:ConfigProxy = facade.retrieveProxy(ConfigProxy.NAME) as ConfigProxy;
