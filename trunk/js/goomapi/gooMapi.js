@@ -3,7 +3,7 @@
 var GooMapi = new function(){
 	var o = this;
 	o.icons = {
-		'sail' : 'http://fotobiotic.net/css/skin/sail/img/sailing.png',
+		'sail' : 'http://fundekave.net/css/skin/sail/img/sailing.png',
 		'blue' : 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
 		'red' : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
 	};

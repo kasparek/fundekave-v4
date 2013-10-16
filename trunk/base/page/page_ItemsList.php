@@ -416,6 +416,24 @@ class page_ItemsList implements iPage {
 					/**/
 				}
 				
+				//TODO: list photos between blog posts - four pictures from each gallery
+				//list galleries between blog posts
+				$galeryList = array();
+				if($pageVO->typeId=='blog' && !empty($pageVO->pageIdTop)) {
+					$firstDate = $fItems->data[0]->dateStart;
+					$lastDate = $fItems->data[count($fItems->data)-1]->dateStart;
+					$fPages = new FPages('galery',0);
+					$fPages->addWhere("sys_pages.pageIdTop = '".$pageVO->pageIdTop."'");
+					$fPages->addWhere("sys_pages.dateContent <= '".$firstDate."'");
+					$fPages->addWhere("sys_pages.dateContent > '".$lastDate."'");
+					$fPages->setOrder("dateContent desc");
+					
+					$user = FUser::getInstance();
+					if($user->userVO->userId==1) {
+						$galeryList = $fPages->getContent();
+					}
+				}
+				
 				while ($itemVO = array_shift($fItems->data)) {
 					if($pageVO->pageId != $itemVO->pageId) {
 						$fItems->fItemsRenderer->showPage=false;
@@ -460,6 +478,20 @@ class page_ItemsList implements iPage {
 					}
 
 					if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
+					
+					if(!empty($galeryList)) {
+						$timeAfter = strtotime($itemVO->dateStart);
+						$timeBefore = 0;
+						if(!empty($fItems->data)) {
+							$timeBefore = strtotime($fItems->data[0]->dateStart);
+						}
+						foreach($galeryList as $page) {
+							$pageTime = strtotime($page->dateContent);
+							if($pageTime <= $timeAfter && $pageTime > $timeBefore) {
+								$fItems->fItemsRenderer->addContent($page->name);
+							}
+						}
+					}
 				}
 				
 				$vars['ITEMS'] = $fItems->show();
