@@ -8,4 +8,4 @@ tmp.settings.appSize.height = "26";
 tmp.settings.callback = "fuupUploadComplete";
 tmp.service.vars.f = "tempStore";
 _fdk.fuup.tempStore = tmp;
-_fdk.fuup.fuga.settings.browseImg = "http://fotobiotic.net/assets/browse_big.png";
+_fdk.fuup.fuga.settings.browseImg = "http://fundekave.net/assets/browse_big.png";

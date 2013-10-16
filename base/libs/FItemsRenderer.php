@@ -255,6 +255,10 @@ class FItemsRenderer {
 	function setLast($rendered) {
 		$this->tplParsed[count($this->tplParsed)-1] = $rendered;
 	}
+
+	function addContent($content) {
+		$this->tplParsed[] = $content;
+	}
 	
 	function show() {
 		return implode($this->tplParsed);
