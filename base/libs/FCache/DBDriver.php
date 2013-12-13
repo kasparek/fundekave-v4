@@ -70,7 +70,7 @@ class DBDriver
 
 	function getGroup($grp) {
 		$grp = $this->db->escape($grp);
-		$q = "select value from ".$this->tableName." where groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)";
+		$q = "select value from ".$this->tableName." where groupId='".$grp."' and (now()-dateUpdated < lifeTime or lifeTime=0)";
 		$arr = FDBTool::getCol($q);
 		if(!empty($arr)) {
 			while($row = array_shift($arr)) {
@@ -93,7 +93,7 @@ class DBDriver
 			if(empty($this->data[$grp][$key])) return false;
 			return $this->father->unserialize($this->data[$grp][$key]); 
 		} else {
-			$this->data[$grp][$key] = $v = FDBTool::getOne("select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (datediff(now(),dateUpdated) > lifeTime or lifeTime=0)");
+			$this->data[$grp][$key] = $v = FDBTool::getOne("select value from ".$this->tableName." where nameId='".$key."' and groupId='".$grp."' and (now()-dateUpdated < lifeTime or lifeTime=0)");
 			if(!empty($v)) $v = $this->father->unserialize($v);
 			return $v;
 		}

@@ -298,14 +298,14 @@ class ItemVO extends Fvob {
 					//create album
 					$fgapps = FGApps::getInstance();
 					$picasaAlbumId = $fgapps->createAlbum($this->pageVO->name,$this->pageVO->description);
-					$this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
+					if($picasaAlbumId) $this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
 				}
 				$picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
 				if(!$picasaPhotoUrl) $this->setProperty('picasaPhoto','TODO');
 			}
 
 			//get closest lower
-			$maxWidth = $user->userVO->clientWidth;
+			//$maxWidth = $user->userVO->clientWidth;
 			if(empty($maxWidth)) $maxWidth = ImageConfig::$sideDefault;
 			else $maxWidth = $maxWidth - $confGalery['clientSpace'];
 			//set detail url
@@ -471,9 +471,21 @@ class ItemVO extends Fvob {
 		}
 
 		$sideOptionList = explode(",",ImageConfig::$sideOptions);
-		$width = $this->normalizeSize($width,$sideOptionList);
+		
+		if($width>0) $width = $this->normalizeSize($width,$sideOptionList);
+		if($height>0) $height = $this->normalizeSize($height,$sideOptionList);
 		if($usePicasa==true) {
-			if($width!=1024) $picasaPhotoUrl = str_replace('/s1024/','/s'.$width.($cropStyle=='crop'?'-c':'').'/',$picasaPhotoUrl);
+			$gParams = array();
+			if($width==$height) {
+				$gParams[] = 's'.$width;
+			} else {
+				if($width>0) $gParams[] = 'w'.$width;
+				if($height>0) $gParams[] = 'h'.$height;
+			}
+			if($cropStyle=='crop') $gParams[] = 'c';
+			$width==$height?'s':($width==0?'h':'w');
+			$gString = implode('-',$gParams);
+			$picasaPhotoUrl = str_replace('/s1024/','/'.$gString.'/',$picasaPhotoUrl);
 			return str_replace('https://','http://',$picasaPhotoUrl);;
 		}
 		$thumbCut = $width; 

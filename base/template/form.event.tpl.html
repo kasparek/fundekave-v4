@@ -1,76 +1,164 @@
-<form action="{FORMACTION}" method="POST" enctype="multipart/form-data" class="fajaxform">
-<input type="hidden" name="m" value="{M}"/>
-<input type="hidden" name="t" value="{T}"/>
-<!-- BEGIN edit --><input id="i" name="i" value="{ITEMID}" type="hidden"><!-- END edit -->
-<fieldset class="buttonBar">
-<input type="submit" name="nav" value="Uložit" class="button uibutton submit draftdrop" /> 
-<!-- BEGIN delete --><input type="submit" name="del" value="Smazat tip" title="Opravdu chcete smazat tip?" class="button uibutton confirm" /><!-- END delete -->    
-</fieldset>
-<div id="tabs">
-<ul>
-<li><a href="#tabs-1">Nastaveni</a></li>
-<li><a href="#tabs-2">Specialni</a></li>
-</ul>
-<div id="tabs-1">
+<div class="well">
+<form role="form" action="{FORMACTION}" method="post" name="itemForm" id="itemForm" class="form-horizontal fajaxform<!-- BEGIN classnotpublic --> notpublished<!-- END classnotpublic -->">
+	<input type="hidden" name="m" value="{M}"/>
+	<input type="hidden" name="t" value="{T}"/>
+	<!-- BEGIN edit --><input id="i" name="i" value="{ITEMID}" type="hidden"><!-- END edit -->
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" id="submitButtonSave" name="save" class="btn btn-success submit">Uložit</button>
+			<!-- BEGIN delete --><button type="submit" id="submitButtonDelete" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tento článek?">Smazat</button><!-- END delete -->
+		</div>
+	</div>
+	
+
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#tabs-1" data-toggle="tab">Nastaveni</a></li>
+		<li><a href="#tabs-2" data-toggle="tab">Specialni</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane fade in active" id="tabs-1">
 <fieldset>
-<legend>Akce</legend>
-<label for="categoryId">Druh</label><select id="categoryId" name="categoryId"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
-<label for="addon">Název</label><input type="text" id="addon" name="addon" value="{TITLE}" /><br />
-<label for="place">Místo</label> <input type="text" name="location" value="{LOCATION}" /><br />
-<label for="datestart">Datum Cas Od</label><input type="text" name="dateStartLocal" id="datestart" value="{DATESTART}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateStartTime" value="{TIMESTART}" class="xShort" /><br />
-<label for="dateend">Datum Cas Do</label><input type="text" name="dateEndLocal" id="dateend" value="{DATEEND}" class="short datepicker" />&nbsp;-&nbsp;<input type="text" name="dateEntTime" value="{TIMEEND}" class="xShort" /><br />
-<label>Upload letáku</label>
-<div id="tempStore" class="fuup">
-<input type="file" name="imageFile"/></div><br />
-<label> - nebo URL</label><input type="text" name="imageUrl" /><br />
-<div id="imageHolder" class="row">
-<!-- BEGIN image -->
-<label>Obrázek</label><a rel="lightbox" href="{IMAGEURL}"><img class="rightPadded leftbox" src="{IMAGETHUMBURL}" /></a>
-<input id="tempStoreButt" type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrázek?" class="leftbox button uibutton<!-- BEGIN confirm --> confirm<!-- END confirm -->" />
-<!-- END image -->
-</div><div class="clearbox"></div>
-<label for="eventDesc">Popis</label><textarea id="eventDesc" name="text" class="markitup expand draftable">{TEXT}</textarea><br />
+<legend>Událost<!-- BEGIN headernotpublic --> - nepublikovany<!-- END headernotpublic --></legend>
+
+	<div class="form-group">
+		<label for="public" class="col-sm-2 control-label">Přístup</label>
+		<div class="col-sm-10">
+			<select name="public" id="public" class="form-control">
+			<option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Nepublikovany</option>
+			<option value="1"<!-- BEGIN public1 --> selected="selected"<!-- END public1 -->>Verejny - vidi vsichni</option>
+			<option value="2"<!-- BEGIN public2 --> selected="selected"<!-- END public2 -->>Poloverejny - vidi pouze registrovani</option>
+			<option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group">
+	<label for="repeat" class="col-sm-2 control-label">Opakování</label>
+	<div class="col-sm-10">
+		<select name="repeat" id="repeat" class="form-control">
+		<option value="none">Neopakovat</option>
+		<option value="month"<!-- BEGIN repeatmonth --> selected="selected"<!-- END repeatmonth -->>Každý měsíc</option>
+		<option value="year"<!-- BEGIN repeatyear --> selected="selected"<!-- END repeatyear -->>Každý rok</option>
+		</select>
+	</div>
+	</div>
+	
+	<div class="form-group">
+	<label for="categoryId" class="col-sm-2 control-label">Kategorie</label>
+	<div class="col-sm-4">
+		<select id="categoryId" name="category" class="form-control"><option value="0"></option>{CATEGORYOPTIONS}</select> 
+	</div>
+	<label for="categoryId" class="col-sm-2 control-label">nová</label>
+	<div class="col-sm-4">
+		<input type="text"  class="form-control" name="categoryNew" class="short" />
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="formHeader" class="col-sm-2 control-label">Nadpis</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="formHeader" name="addon" value="{TITLE}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="formLocation" class="col-sm-2 control-label">Místo</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="formLocation" name="location" value="{LOCATION}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="datestart" class="col-sm-2 control-label">Datum</label>
+	<div class="col-sm-5">
+		<input id="datestart" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date">
+	</div>
+	<label for="timestart" class="col-sm-2 control-label">Čas</label>
+	<div class="col-sm-3">
+		<input id="timestart" name="dateStartTime" value="{TIMESTART}" type="text" class="form-control timepicker">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="dateend" class="col-sm-2 control-label">Datum do</label>
+	<div class="col-sm-5">
+		<input id="dateend" name="dateEndLocal" value="{DATEEND}" type="text" class="form-control date">
+	</div>
+	<label for="formDate" class="col-sm-2 control-label">Čas do</label>
+	<div class="col-sm-3">
+		<input id="formDate" name="dateEntTime" value="{TIMEEND}" type="text" class="form-control timepicker">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="{TEXTID}" class="col-sm-2 control-label">Popis</label>
+	<div class="col-sm-10">
+		<textarea name="text" id="{TEXTID}" class="form-control markitup" rows="3">{TEXT}</textarea>
+	</div>
+</div>
+
 </fieldset>
 </div>
-<div id="tabs-2">
+
+<div class="tab-pane fade" id="tabs-2">
+<fieldset>
+<legend>Obrázek</legend>
+<div class="form-group">
+	<label for="fileurlinput" class="col-sm-2 control-label">Vlož URL</label>
+	<div class="col-sm-10">
+		<input id="fileurlinput" type="text" name="imageUrl" class="form-control"/>
+	</div>
+</div>
+<div class="form-group">
+	<label for="fileuploadinput" class="col-sm-2 control-label">Nahraj</label>
+	<div class="col-sm-10">
+		<div id="tempStore" class="fuup">
+			<input id="fileuploadinput" type="file" name="imageFile" class="form-control"/>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+<div id="imageHolder"  class="col-md-offset-2 col-sm-10">
+<!-- BEGIN image -->
+<a rel="lightbox" href="{IMAGEURL}"><img class="img-thumbnail pull-left" src="{IMAGETHUMBURL}" /></a>
+<button id="tempStoreButt" type="submit" name="deleteImage" title="Opravdu chcete smazat obrázek?" class="btn btn-danger  confirm">Smazat</button>
+<!-- END image -->
+</div>
+</div>
+</fieldset>
+
 <fieldset>
 <legend>Mapy</legend>
-<label>Ukaz na mape</label><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea>
-</fieldset>
-<fieldset>
-<legend>Komentare</legend>
-<label for="forumSet">Nastaveni</label><select id="forumSet" name="forumset">
-<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
-<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>
-<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Vypnuta</option>
-</select>
-</fieldset>
-<!-- BEGIN extEvent --><fieldset>
-<legend>Specialni</legend>
-<label for="reminder">Upozornění</label><select name="reminder" id="reminder">
-<option value="0">Nepripominat</option>
-<option value="1"<!-- BEGIN remindbefore1 --> selected="selected"<!-- END remindbefore1 -->>Den akce</option>
-<option value="2"<!-- BEGIN remindbefore2 --> selected="selected"<!-- END remindbefore2 -->>Den predem</option>
-<option value="3"<!-- BEGIN remindbefore3 --> selected="selected"<!-- END remindbefore3 -->>2 dny predem</option>
-<option value="4"<!-- BEGIN remindbefore4 --> selected="selected"<!-- END remindbefore4 -->>3 dny predem</option>
-<option value="5"<!-- BEGIN remindbefore5 --> selected="selected"<!-- END remindbefore5 -->>4 dny predem</option>
-</select>  
-<select name="reminderEveryday">
-<option value="0">Jen jednou</option>
-<option value="1"<!-- BEGIN remindrepeat1 --> selected="selected"<!-- END remindrepeat1 -->>Kazdy den</option>
-</select><br />
-<label for="repeat">Opakování</label><select name="repeat" id="repeat">
-<option value="0">Neopakovat</option>
-<option value="1"<!-- BEGIN repeat1 --> selected="selected"<!-- END repeat1 -->>Každý rok</option>
-<option value="2"<!-- BEGIN repeat2 --> selected="selected"<!-- END repeat2 -->>Každý mesíc</option>
-</select><br />
-<label for="public">Pristup:</label><select name="public" id="public">
-<option value="1"<!-- BEGIN public1 --> selected="selected"<!-- END public1 -->>Verejny - vidi vsichni</option>
-<option value="2"<!-- BEGIN public2 --> selected="selected"<!-- END public2 -->>Poloverejny - vidi pouze registrovani</option>
-<option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
-<option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Osobni - vidim jen ja</option>
-</select><br />
-</fieldset><!-- END extEvent -->
+
+<div class="form-group">
+	<label for="position" class="col-sm-2 control-label">Ukaz na mape</label>
+	<div class="col-sm-10">
+		<textarea id="position" class="form-control geoInput" name="position" row="3" title="Zadejte polohu">{POSITION}</textarea>
+	</div>
 </div>
+</fieldset>
+
+<fieldset>
+<legend>Nastavení</legend>
+
+<div class="form-group">
+	<label for="forumSet" class="col-sm-2 control-label">Komentáře</label>
+	<div class="col-sm-10">
+		<select id="forumSet" name="forumset"  class="form-control">
+		<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Veřejná diskuze</option>
+		<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pouze pro registrovane</option>
+		<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Diskuze zakázaná</option>
+		</select>
+	</div>
+</div>
+
+</fieldset>
+
+
+</div>  
 </div>
 </form>
+</div>

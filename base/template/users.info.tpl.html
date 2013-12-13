@@ -1,38 +1,61 @@
-<div id="tabs">
-<ul>
-<!-- BEGIN tabfriends --><li><a href="#tabs-3">Pratele</a></li><!-- END tabfriends -->
-<li><a href="#tabs-profil">Profil</a></li>
-<!-- BEGIN tabforums --><li><a href="#tabs-4">Kluby</a></li><!-- END tabforums -->
-<!-- BEGIN tabblogs --><li><a href="#tabs-5">Blogy</a></li><!-- END tabblogs -->
-<!-- BEGIN tabgaleries --><li><a href="#tabs-6">Galerie</a></li><!-- END tabgaleries -->
-<!-- BEGIN tabfavorites --><li><a href="#tabs-7">Oblibene</a></li><!-- END tabfavorites -->
+<div class="well">
+
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#tabs-profil" class="active" data-toggle="tab">Profil</a></li>
+	<li><a href="{FORUMTABURL}" data-target="#tab-forum" data-toggle="tab">Kluby</a></li>
+	<li><a href="{BLOGTABURL}" data-target="#tab-blog" data-toggle="tab">Blogy</a></li>
+	<li><a href="{GALERYTABURL}" data-target="#tab-galery" data-toggle="tab">Galerie</a></li>
+	<li><a href="{BOOKEDTABURL}" data-target="#tab-booked" data-toggle="tab">Oblíbené</a></li>
 </ul>
-<!-- BEGIN friends --><div id="tabs-3">{FRIENDS}<!-- BEGIN nofriends -->Zatim nemate zadne pratele, zkuste pouzit vyhledavani, odkazy na autory v klubech a poslat jim pozadavek z jejich profilu.<!-- END nofriends --><div class="clearbox"></div></div><!-- END friends -->
-<div id="tabs-profil"><div clas="user-info">
-<div class="leftbox col2">
-<label>&nbsp;</label><span>{AVATAR}</span><br />
-<label>Nick</label><span>{NAME}</span><br />
-<!-- BEGIN email --><label>E-mail</label><a href="mailto:{EMAIL}">{EMAIL}</a><br /><!-- END email -->
-<!-- BEGIN www --><label>Homepage</label><a href="{WWW}">{WWW}</a><br /><!-- END www -->
-<!-- BEGIN icq --><label>ICQ</label>{ICQ} <img src="http://status.icq.com/online.gif?icq={ICQ}&amp;img=21"><br /><!-- END icq -->
-<!-- BEGIN motto --><label>Motto</label><div class="rowcontent">{MOTTO}</div><!-- END motto -->
-<!-- BEGIN about --><label>O všem</label><div class="rowcontent">{ABOUT}</div><!-- END about -->
-<label>Registrace</label><span>{DATECREATED}</span><br />
-<label>Poslední přístup</label><span>{DATEUPDATED}</span><br />
-</div>
-<!-- BEGIN friendactions --><div class="leftbox">
-<a id="{FRIENDLINKID}" href="{FRIENDLINKURL}" class="fajaxa uibutton margined{FRIENDLINKCLASS}" title="{FRIENDLINKTITLE}">{FRIENDLINKLABEL}</a><br />
-<a href="{SENDMSGURL}" class="uibutton margined">{SENDMSGLABEL}</a>
+
+<div class="tab-content">
+
+<div class="tab-pane fade in active user-info" id="tabs-profil">
+<h3>Profil</h3>
+<div class="row">
+<!-- BEGIN friendactions --><div class="col-sm-offset-3 col-sm-9">
+<a id="{FRIENDLINKID}" href="{FRIENDLINKURL}" class="fajaxa btn btn-default{FRIENDLINKCLASS}" title="{FRIENDLINKTITLE}">{FRIENDLINKLABEL}</a>
+<a href="{SENDMSGURL}" class="btn btn-primary">{SENDMSGLABEL}</a>
 </div><!-- END friendactions -->
-<div class="clearreal"></div>
-<!-- BEGIN profilfoto --><h2>Profil foto</h2>
-<div class="clearbox centertext">
-<!-- BEGIN foto --><a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" class="leftbox" /></a><!-- END foto -->
+</div>
+
+<div class="row">
+<div class="col-sm-offset-3 col-sm-9">{AVATAR}</div>
+</div>
+<div class="row">
+<div class="col-sm-3">Přezdívka</div><div class="col-sm-9"><strong>{NAME}</strong></div>
+</div>
+<!-- BEGIN email --><div class="row">
+<div class="col-sm-3">E-mail</div><div class="col-sm-9"><a href="mailto:{EMAIL}">{EMAIL}</a></div></div><!-- END email -->
+<!-- BEGIN www --><div class="row">
+<div class="col-sm-3">Homepage</div><div class="col-sm-9"><a href="{WWW}">{WWW}</a></div></div><!-- END www -->
+<!-- BEGIN icq --><div class="row">
+<div class="col-sm-3">ICQ</div><div class="col-sm-9">{ICQ} <img src="http://status.icq.com/online.gif?icq={ICQ}&amp;img=21"></div></div><!-- END icq -->
+<!-- BEGIN motto --><div class="row">
+<div class="col-sm-3">Motto</div><div class="col-sm-9">{MOTTO}</div></div><!-- END motto -->
+<!-- BEGIN about --><div class="row">
+<div class="col-sm-3">O všem</div><div class="col-sm-9">{ABOUT}</div></div><!-- END about -->
+<div class="row">
+<div class="col-sm-3">Registrace</div><div class="col-sm-9">{DATECREATED}</div></div>
+<div class="row">
+<div class="col-sm-3">Poslední přístup</div><div class="col-sm-9">{DATEUPDATED}</div>
+</div>
+<!-- BEGIN profilfoto --><h3>Osobní foto</h3>
+<div class="row">
+<div id="galeryFeed" class="col-sm-12">
+<!-- BEGIN foto --><div class="fitem thumb-box">
+<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" class="img-thumbnail" /></a>
+</div><!-- END foto -->
+</div>
 </div><!-- END profilfoto -->
+<div class="row">
+{FRIENDS}
 </div>
 </div>
-<!-- BEGIN forums --><div id="tabs-4"><h3>Kluby</h3>{FORUMS}</div><!-- END forums -->
-<!-- BEGIN blogs --><div id="tabs-5"><h3>Blogy</h3>{BLOGS}</div><!-- END blogs -->
-<!-- BEGIN galeries --><div id="tabs-6"><h3>Galerie</h3>{GALERYS}</div><!-- END galeries -->
-<!-- BEGIN favorites --><div id="tabs-7"><h3>Oblibene</h3>{FAVORITES}</div><!-- END favorites -->
+<div class="tab-pane fade" id="tab-forum">{FORUMS}</div>
+<div class="tab-pane fade" id="tab-blog">{BLOGS}</div>
+<div class="tab-pane fade" id="tab-galery">{GALERYS}</div>
+<div class="tab-pane fade" id="tab-booked">{BOOKED}</div>
+</div>
+
 </div>

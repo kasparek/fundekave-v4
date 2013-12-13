@@ -122,7 +122,7 @@ class page_UserPost implements iPage {
 		$from = 0;
 
 		if($totalItems > $perPage) {
-			$options = array('extraVars'=>$pagerExtraVars,'bannvars'=>array('m','d'),'class'=>'fajaxpager hash');
+			$options = array('extraVars'=>$pagerExtraVars,'bannvars'=>array('m','d'),'class'=>''); //TODO: implement history for ajax paging
 			if(!empty($data['p'])) $options['manualCurrentPage'] = $data['p'];
 			$pager = new FPager($totalItems,$perPage,$options);
 			$from=($pager->getCurrentPageID()-1) * $perPage;
@@ -194,21 +194,19 @@ class page_UserPost implements iPage {
 				$displayedMsgs[] = $post['postId'];
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
-					$tpl->setVariable("UNRID",$post['postId']);
 				}
         FProfiler::write('UserPost::build - POST 1');
 				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
 				$tpl->setVariable("DATEISO", $post["datum"]);
+				$tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["userIdFrom"]==$user->userVO->userId) {
 					$tpl->touchBlock('sent');
-					$tpl->touchBlock("sentclass");
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdTo"]);
 				} else {
 					$tpl->touchBlock('received');
-					$tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdFrom"]);
 				}

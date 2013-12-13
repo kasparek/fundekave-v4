@@ -22,8 +22,10 @@ class sidebar_galeryRand {
 
 		$cache->setData($itemIdList,'fotorand','sidebar/galeryRand');
 				
-		$itemVO = new ItemVO($itemId,false);
+		$itemVO = new ItemVO($itemId,true);
 		$itemVO->options=array('showPage'=>true);
-		return '<h2><a href="?k=gamas-foto-mix">Foto mix</a></h2>'.$itemVO->render().'<div style="clear:both;"></div>';
+		$itemVO->prepare();
+		$itemVO->editable = false;
+		return '<h3><a href="?k=gamas-foto-mix">Foto mix</a></h3>'.$itemVO->render().'';
 	}
 }

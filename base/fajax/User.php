@@ -1,6 +1,14 @@
 <?php
 class fajax_User extends FAjaxPluginBase {
-
+	static function setskin($data) {
+		$user = FUser::getInstance();
+		if(!$user->idkontrol) {
+			$cache = FCache::getInstance('s');
+			$cache->setData($data['name'],'bsskin');
+		} else {
+			$user->userVO->prop('skin',FText::safeText($data['name']));
+		}
+	}
 	static function avatar($data) {
 		$user = FUser::getInstance();
 		//create filename
@@ -89,6 +97,7 @@ class fajax_User extends FAjaxPluginBase {
 
 		$itemVO = new ItemVO();
 		$itemVO->typeId = 'request';
+		$itemVO->public = '0';
 		$itemVO->text = FText::preProcess($data['message']);
 		$itemVO->pageId = 'finfo';
 		$itemVO->userId = $user->userVO->userId;
@@ -100,17 +109,14 @@ class fajax_User extends FAjaxPluginBase {
 		sleep(2);
 		FAjax::addResponse('call','remove','friendButt');
 		FAjax::addResponse('call','remove','friendrequest');
-		FAjax::addResponse('okmsgJS','$html','Request sent');
+		FAjax::addResponse('msg','success','Request sent');
 	}
 
 	static function requestaccept($data) {
 		$action = $data['action'];
 		switch($action) {
 			case 'requestaccept':
-				$itemVO = new ItemVO();
-				$itemVO->itemId = $data['request'];
-				$itemVO->load();
-
+				$itemVO = new ItemVO($data['request'],true);
 				$user = FUser::getInstance();
 				$user->userVO->addFriend( (int) $itemVO->userId );
 				FError::add(FLang::$MSG_FRIEND_ADDED,1);
@@ -122,13 +128,9 @@ class fajax_User extends FAjaxPluginBase {
 				FMessages::send((int) $itemVO->userId,FLang::$MSG_FRIEND_REQUEST_ACCEPTED,$user->userVO->userId);
 				break;
 			case 'requestcancel':
-				$itemVO = new ItemVO();
-				$itemVO->itemId = $data['request'];
-				$itemVO->load();
-
+				$itemVO = new ItemVO($data['request'],true);
 				FError::add(FLang::$MSG_FRIEND_CANCEL,1);
 				FAjax::addResponse('call','remove','request'.$itemVO->userId);
-
 				$itemVO->delete();
 				break;
 		}

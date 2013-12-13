@@ -51,6 +51,12 @@ class FPager {
         $begin = ($this->currentPage-1)*$this->perPage;
         return array_slice($this->itemData,$begin,$this->perPage);
     }
+	function getLinkStart($classnames='') {
+		$c = array();
+		if(!empty($classnames)) $c[]=$classnames;
+		if(!empty($this->class)) $c[]=$this->class;
+		return '<li'.((!empty($c))?' class="'.implode(" ",$c).'"':'').'><a href="';
+	}
     //function to return the pagination string
     function getPager()
     {
@@ -87,25 +93,21 @@ class FPager {
         We're actually saving the code to a variable in case we want to draw it more than once.
         */
         $pagination = "";
-        $linkStart = '<a'.((!empty($this->class))?(' class="'.$this->class.'"'):('')).' href="';
         if($lastpage > 1)
         {
-            $pagination .= '<div class="pagination">';
+            $pagination .= '<ul class="pagination">';
 
             //previous button
-            if ($page > 1)
-                $pagination .= $linkStart.$targetpage.$pagestring.$prev.$hash.'">'.$this->previousText.'</a>';
-            else
-                $pagination .= '<span class="disabled">'.$this->previousText.'</span>';
-
+            
+            $pagination .= $this->getLinkStart($page > 1 ? '' : 'disabled').$targetpage.$pagestring.$prev.$hash.'">'.$this->previousText.'</a></li>';
+            
 			if($this->hasMidButtons) {
             //pages
             if ($lastpage < 7 + ($adjacents * 2))	//not enough pages to bother breaking it up
             {
                 for ($counter = 1; $counter <= $lastpage; $counter++)
                 {
-                    if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                    else $pagination .= $linkStart . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a>';
+					$pagination .= $this->getLinkStart($counter == $page ? 'active' : '') . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a></li>';
                 }
             }
             elseif($lastpage >= 7 + ($adjacents * 2))	//enough pages to hide some
@@ -115,48 +117,46 @@ class FPager {
                 {
                     for ($counter = 1; $counter < 4 + ($adjacents * 2); $counter++)
                     {
-                        if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter . $hash . '">'.$counter.'</a>';
+						$pagination .= $this->getLinkStart($counter == $page ? 'active' : '') . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a></li>';
                     }
-                    $pagination .= '...'
-                    . $linkStart . $targetpage . $pagestring . $lpm1 . $hash . '">'.$lpm1.'</a>'
-                    . $linkStart . $targetpage . $pagestring . $lastpage . $hash . '">'.$lastpage.'</a>';
+                    $pagination .= '<li class="disabled"><a>...</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . $lpm1 . $hash . '">'.$lpm1.'</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . $lastpage . $hash . '">'.$lastpage.'</a></li>';
                 }
                 //in middle; hide some front and some back
                 elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2))
                 {
-                    $pagination .= $linkStart . $targetpage . $pagestring . '1'.$hash.'">1</a>'
-                    . $linkStart . $targetpage . $pagestring . '2'.$hash.'">2</a>'
-                    . "...";
+                    $pagination .= $this->getLinkStart() . $targetpage . $pagestring . '1'.$hash.'">1</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . '2'.$hash.'">2</a></li>'
+                    . '<li class="disabled"><a>...</a></li>';
                     for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++)
                     {
-                        if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
+                        $pagination .= $this->getLinkStart($counter == $page ? 'active' : '') . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a></li>';
                     }
-                    $pagination .= "..."
-                    . $linkStart . $targetpage . $pagestring . $lpm1 .$hash. '">'.$lpm1.'</a>'
-                    . $linkStart . $targetpage . $pagestring . $lastpage .$hash. '">'.$lastpage.'</a>';
+                    $pagination .= '<li class="disabled"><a>...</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . $lpm1 .$hash. '">'.$lpm1.'</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . $lastpage .$hash. '">'.$lastpage.'</a></li>';
                 }
                 //close to end; only hide early pages
                 else
                 {
-                    $pagination .= $linkStart . $targetpage . $pagestring . '1'.$hash.'">1</a>'
-                    . $linkStart . $targetpage . $pagestring . '2'.$hash.'">2</a>'
-                    . "...";
+                    $pagination .= $this->getLinkStart() . $targetpage . $pagestring . '1'.$hash.'">1</a></li>'
+                    . $this->getLinkStart() . $targetpage . $pagestring . '2'.$hash.'">2</a></li>'
+                    . '<li class="disabled"><a>...</a></li>';
                     for ($counter = $lastpage - (1 + ($adjacents * 2)); $counter <= $lastpage; $counter++)
                     {
-                        if ($counter == $page) $pagination .= '<span class="current">'.$counter.'</span>';
-                        else $pagination .= $linkStart . $targetpage . $pagestring . $counter .$hash. '">'.$counter.'</a>';
+                        $pagination .= $this->getLinkStart($counter == $page ? 'active' : '') . $targetpage . $pagestring . $counter . $hash .'">'.$counter.'</a></li>';
                     }
                 }
             }
 			}
             //next button
-            if($this->maybeMore==true) $pagination .= ' ... ';
-            if($page < $lastpage) $pagination .= $linkStart . $targetpage . $pagestring . $next .$hash. '">'.$this->nextText.'</a>';
-            else $pagination .= '<span class="disabled">'.$this->nextText.'</span>';
-            $pagination .= "</div>\n";
+            if($this->maybeMore==true) $pagination .= '<li class="disabled"><a>...</a></li>';
+			
+			$pagination .= $this->getLinkStart($page < $lastpage ? '' : 'disabled').$targetpage.$pagestring.$next.$hash.'">'.$this->nextText.'</a></li>';
+            $pagination .= "</ul>\n";
         }
+//		var_dump($pagination);die();
         return $this->links = $pagination;
     }
 }

@@ -44,6 +44,8 @@ class FItems extends FDBTool {
 				$this->typeId = $typeId;
 				$this->addWhere("typeId='".$typeId."'");
 			}
+		} else {
+			$this->addWhere("typeId!='request'");
 		}
 
 		//---check permissions for given user
@@ -107,7 +109,7 @@ class FItems extends FDBTool {
 	}
 
 	static function isTypeValid($type) {
-		$types = array('forum','galery','blog','event');
+		$types = array('forum','galery','blog','event','request');
 		return in_array($type, $types);
 	}
 
@@ -153,26 +155,32 @@ class FItems extends FDBTool {
 			$page = 0;
 			$arr = array();
 			$prevItems = 0;
-			$typeLimitCount = 0;
-			$prevItemPageId = '';
+			$typeLimitCount = array();
 			
 			$this->cacheResults='f';
 			
 			while(count($arr) < $count || $count==0) {
 				$arrTmp = $this->getContent($page*($count*10), $count*10);
+				
 				$page++;
 				if(empty($arrTmp)) break; //---no records
 				else {
 					$this->itemsRemoved = 0;
 					foreach($arrTmp as $row) {
-						if($prevItemPageId != $row->pageId) $typeLimitCount=0;
+						if(!isset($typeLimitCount[$row->pageId])) {
+							$typeLimitCount[$row->pageId]=0;
+						}
 						$includeItem = false;
 						if(FRules::get($this->userIdForPageAccess,$row->pageId)) $includeItem = true;
 						
 						if($includeItem) {
 							//check limits for types
-							if(isset($this->typeLimit[$row->typeId]) && empty($item->itemIdTop)) {
-								if($typeLimitCount > $this->typeLimit[$row->typeId]) $includeItem = false; else $typeLimitCount++;
+							if(isset($this->typeLimit[$row->typeId]) && empty($row->itemIdTop)) {
+								if($typeLimitCount[$row->pageId] > $this->typeLimit[$row->typeId]) {
+									$includeItem = false; 
+								} else {
+									$typeLimitCount[$row->pageId]++;
+								}
 							}
 						}
 						
@@ -188,7 +196,6 @@ class FItems extends FDBTool {
 							//not permission for post
 							$this->itemsRemoved++;
 						}
-						$prevItemPageId = $row->pageId;
 					}
 				}
 				//---we have got all in once

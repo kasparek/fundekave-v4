@@ -70,7 +70,7 @@ class page_PageEdit implements iPage {
 
 			$pageVO->set('name', FText::preProcess($data['name'],array('plainText'=>1)));
 			
-			if(empty($pageVO->name)) {
+			if($user->pageParam!='sa' && empty($pageVO->name)) {
 				FError::add(FLang::$ERROR_PAGE_ADD_NONAME);
 			}
 			if($pageVO->changed) {
@@ -134,6 +134,10 @@ class page_PageEdit implements iPage {
 					
 				if(isset($data['sidebar'])) {
 					$pageVO->prop('sidebar', FText::preProcess($data['sidebar']));
+				}
+				
+				if(isset($data['topbanner'])) {
+					$pageVO->prop('topbanner', FText::preProcess($data['topbanner'],array('plainText'=>1)));
 				}
 
 				if(!empty($data['categoryNew'])) {
@@ -328,7 +332,7 @@ class page_PageEdit implements iPage {
 					if($pageCreated === true) {
 						//if new page redirect
 						FAjax::errorsLater();
-						FAjax::addResponse('call','redirect',FSystem::getUri($pageVO->typeId=='galery'?'#tabs-upload':'',$pageVO->pageId,$redirectAdd));
+						FAjax::addResponse('call','redirect',FSystem::getUri('',$pageVO->pageId,$pageVO->typeId=='galery'?'u':$redirectAdd));
 					} else {
 						//if updating just message
 						FError::add(FLang::$MESSAGE_SUCCESS_SAVED,1);
@@ -443,10 +447,12 @@ class page_PageEdit implements iPage {
 			 $tpl->setVariable('RELATIONSFORM',$fRelations->getForm($pageVO->pageId));
 			 */
 
+			/*
 			if(FConf::get('settings','pageAvatars')==1) {
 				if(!empty($pageVO->pageIco)) $tpl->setVariable('PAGEICOLINK',URL_PAGE_AVATAR.$pageVO->pageIco);
 				$tpl->touchBlock('pageavatarupload');
 			}
+			*/
 		}
 
 		if($user->pageParam != 'a') {
@@ -472,7 +478,7 @@ class page_PageEdit implements iPage {
 				$tpl->setVariable('FOTOTOTAL',$fotoCnt);
 
 				/* UPLOAD INPUTS */
-				$numInputs=7;
+				$numInputs=3;
 				for ($x=1;$x<$numInputs;$x++) {
 					$tpl->setCurrentBlock('uploadinput');
 					$tpl->setVariable('UPLOADINPUTLABEL','Foto '.$x.'.');
@@ -491,6 +497,7 @@ class page_PageEdit implements iPage {
 			if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
 				
 			$tpl->setVariable('SIDEBAR',FText::textToTextarea($pageVO->prop('sidebar')));
+			$tpl->setVariable('TOPBANNER',FText::textToTextarea($pageVO->prop('topbanner')));
 				
 		}
 
@@ -533,7 +540,6 @@ class page_PageEdit implements iPage {
 			FAjax::addResponse('call','jUIInit');
 			if($pageVO->typeId=='galery')FAjax::addResponse('call','galeryEditInit');
 		} else {
-			FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
 		}
 	}

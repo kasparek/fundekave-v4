@@ -23,8 +23,13 @@ class fajax_Post extends FAjaxPluginBase {
 	}
 
 	static function avatarFromInput($data) {
-		$recipientId = FUser::getUserIdByName($data['username']) * 1;
-		FAjax::addResponse('recipientavatar','$html',FAvatar::showAvatar($recipientId).'<br/>'.FUser::getgidname($recipientId));
+		$nameList = explode(",",$data['username']);
+		$ret = '';
+		foreach($nameList as $uname) {
+			$uid = FUser::getUserIdByName($uname);
+			$ret .= FAvatar::showAvatar($uid);
+		}
+		FAjax::addResponse('recipientavatar','$html',$ret);
 	}
 
 	static function hasNewMessage($data) {

@@ -22,7 +22,7 @@ if(isset($_GET['authCheck'])) {
 }
 
 /*** BUILD RSS **/
-if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_URI'],"/frss.php")!==false) {
+if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_URI'],"/frss.php")!==false || !empty($_GET['rss'])) {
 	$user->kde();
 	FRSS::process($_GET);
 	FRSS::build($_GET);
@@ -32,11 +32,9 @@ if(strpos($_SERVER['REQUEST_URI'],"/rss")!==false || strpos($_SERVER['REQUEST_UR
 //---process ajax requests - or alternative POST requests
 if(isset($_REQUEST['m'])) {
 	if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
-	if(strpos($_REQUEST['m'],'-x')!==false) {
-		if(empty($data)) {
-			if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
-			else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
-		} elseif(strpos($data,'<')===false) $data = urldecode(base64_decode($data));
+	else if(strpos($_REQUEST['m'],'-x')!==false) {
+		if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
+		else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
 	}
 	if(empty($data)) $data = $_POST; //handling post if not ajax
 	$options = array();

@@ -1,23 +1,34 @@
-<div class="friends">
+﻿<div class="col-sm-6">
 <!-- BEGIN h3 --><h3>{LABEL}</h3><!-- END h3 -->
-<!-- BEGIN friends --><ul>
-<!-- BEGIN friendsrow --><li<!-- BEGIN boxid --> id="{BOXID}"<!-- END boxid -->>
-<div>{AVATAR}</div>
-<ul>
-<li><strong>{NAME}</strong></li>
+
+<!-- BEGIN friendsrow --><div class="fitem" id="{BOXID}">
+<div class="avatar pull-left">{AVATAR}</div>
+<div class="panel-primary">
+<div class="header panel-heading">
+	<strong><a href="{PROFILURL}" class="author url">{NAME}</a></strong>
+	<span class="pull-right" title="Poslední aktivita">{ACTIVITY}</span>
+</div>
+</div>
+
+<div class="entry-content">
+<ul class="list-unstyled">
 <li><a href="{PROFILURL}">Profil</a></li>
-<!-- BEGIN offline --><li>Posledni aktivita: {ACTIVITY}</li><!-- END offline -->
 <!-- BEGIN online --><li>Aktivni: <a href="{ACTIVITYURL}" title="{ACTIVITYPAGENAME}">{ACTIVITYPAGENAMESHORT}</a></li><!-- END online -->
 </ul>
-<!-- BEGIN req --><form action="{REQUESTACTION}" class="fajaxform">
+</div>
+
+<!-- BEGIN req --><form action="{REQUESTACTION}" class="fajaxform" role="form" class="form-horizontal">
+<div class="form-group">
+<div class="col-sm-offset-1 col-sm-11">
 <input type="hidden" name="request" value="{REQUESTID}" />
-<div style="width: 100%;">
-<fieldset>
 <!-- BEGIN reqmess --><p>{REQUESTMESSAGE}</p><!-- END reqmess -->
-<input type="submit" name="requestaccept" value="Pridat do pratel" class="button" /> <input type="submit" name="requestcancel" value="Zrusit" title="Opravdu chcete zrusit tento pozadavek?" class="button confirm" />
-</fieldset>
+<button type="submit" name="requestaccept" class="btn btn-success submit">Přidat do přátel</button>
+<button type="submit" name="requestcancel" class="btn btn-warning submit confirm" title="Opravdu chcete zrušit tento požadavek?">Zrušit</button>
+</div>
 </div>
 </form><!-- END req -->
-</li><!-- END friendsrow -->
-</ul><!-- END friends -->
+
+</div>
+<!-- END friendsrow -->
+
 </div>

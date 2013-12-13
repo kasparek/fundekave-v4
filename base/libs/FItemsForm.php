@@ -9,10 +9,10 @@ class FItemsForm {
 		if($pageVO->typeId == 'forum' && $pageVO->locked > 0) return false;
 		if(($pageVO->typeId == 'forum' || $itemVO) && !FConf::get('settings','perm_forum_unsigned')) if(!$user->idkontrol) return false;
 		if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
-			if(!$itemVO) return false;
 			$writePerm = $pageVO->prop('forumSet');
 			if($writePerm==0) return false;
-			$writePerm = $itemVO->prop('forumSet');
+			if(!$itemVO && $pageVO->typeId != 'galery') return false;
+			if($itemVO) $writePerm = $itemVO->prop('forumSet');
 			if($writePerm==0 || ($writePerm==2 && !$user->idkontrol)) return false;
 		}
 		return true;
@@ -120,6 +120,7 @@ class FItemsForm {
 		if($itemVO->itemId>0) if($itemVO->load()) $newItem=false;
 
 		$itemVO->pageId = $user->pageVO->pageId;
+		$itemVO->pageIdTop = $user->pageVO->pageIdTop;
 		
 		//check if site has strict limitations
 		if(SITE_STRICT && !$userId->idkontrol) {
@@ -172,7 +173,7 @@ class FItemsForm {
 				 **/
 				if(!FError::is()) {
 					if(isset($data['addon'])) $data['addon'] = FText::preProcess($data['addon'],array('plainText'=>1)); //title for blog,event
-					if(empty($data['addon']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_NAME_EMPTY);
+					if($itemVO->typeId!='galery' && empty($data['addon']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_NAME_EMPTY);
 					if(isset($data['name'])) $data['name'] =  FText::preProcess($data['name'],array('plainText'=>1));
 					if(empty($data['name'])) $data['name'] = $user->userVO->name;
 					$data['text'] = FText::preProcess($data['text'],$user->idkontrol ? array() : array('plainText'=>1));
@@ -190,7 +191,7 @@ class FItemsForm {
 					if(empty($data['dateStart']) && $itemVO->typeId!='forum') FError::add(FLang::$ERROR_DATE_FORMAT);
 					if(isset($data['location'])) $data['location'] = FText::preProcess($data['location'],array('plainText'=>1));
 				}
-        
+
 				/**
 				 *save item
 				 */
@@ -288,9 +289,7 @@ class FItemsForm {
 							}
 						}
 						if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
-						if(isset($data['reminder'])) $itemVO->prop('reminder',$data['reminder']*1);
-						if(isset($data['reminderEveryday'])) $itemVO->prop('reminderEveryday',$data['reminderEveryday']*1);
-						if(isset($data['repeat'])) $itemVO->prop('repeat',$data['repeat']*1);
+						if(isset($data['repeat'])) $itemVO->set('textLong',FText::safeText($data['repeat']));
 
 						//clean up stored data
 						$cache = FCache::getInstance('s',0);
@@ -422,7 +421,7 @@ class FItemsForm {
 			//comments settings
 			$tpl->touchBlock('comments'.$itemVO->getProperty('forumSet',$user->pageVO->prop('forumSet'),true));
 			//public settings
-			if($itemVO->typeId=='blog') {
+			if($itemVO->typeId=='blog' || $itemVO->typeId=='event') {
 				if($itemVO->public == 0) {
 					$tpl->touchBlock('classnotpublic');
 					$tpl->touchBlock('headernotpublic');
@@ -436,11 +435,8 @@ class FItemsForm {
 			}
 
 			//event specials
-			$extEvents=false;
-			if($extEvents) {
-				$tpl->touchBlock('remindrepeat'.$itemVO->prop('reminderEveryday'));
-				$tpl->touchBlock('remindbefore'.$itemVO->prop('reminder'));
-				$tpl->touchBlock('repeat'.$itemVO->prop('repeat'));
+			if($itemVO->typeId=='event') {
+				$tpl->touchBlock('repeat'.$itemVO->textLong);
 			}
 
 			if(!empty($itemVO->enclosure)) {

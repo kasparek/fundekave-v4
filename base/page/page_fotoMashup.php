@@ -23,10 +23,11 @@ class page_fotoMashup implements iPage {
 				$keyList = array_rand($allList,$num);
 				foreach($keyList as $k) $itemIdList[] = $allList[$k];
 			}
-			$data='<div class="galeria">';
+			$data='<div class="fotomashup">';
 			while($itemIdList) {
 				$itemId = array_pop($itemIdList);
 				$itemVO = new ItemVO($itemId,true);
+				$itemVO->editable = false;
 				$data .= $itemVO->render();
 			}
 			$data.='</div>';

@@ -183,7 +183,7 @@ class FFile {
 			try {
 			if(!ftp_chdir($this->ftpConn, $dir)) return array(); 
 			} catch (Exception $e) {
-			FError::write_log('FFile::fileList - FTP chdir fail - directory does not exists ');
+			FError::write_log('FFile::fileList - FTP chdir fail - directory does not exists '.$dir);
 			return array();
 			}
 			$list = ftp_rawlist($this->ftpConn, "-A");

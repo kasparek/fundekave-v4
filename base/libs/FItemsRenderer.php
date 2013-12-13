@@ -60,8 +60,9 @@ class FItemsRenderer {
 				$homeUrl = ' - '.$pVOTop->prop('homesite');
 			}
 			$vars['URL'] = FSystem::getUri('',$itemVO->pageId,'',array('name'=>$pageVO->get('name')));
-			$vars['PAGENAME'] = $pageVO->get('name') . ($pageVO->typeId=='galery' && $pageVO->cnt>4?' <span class="rf"><img src="[[URL_SKIN]]/img/camera.png" title="Fotografii"> '.$pageVO->cnt.'</span>':'');// . $homeUrl;
-			$vars['ITEM'] = '[[ITEM]]';
+			$vars['TEXT'] = $pageVO->get('name');
+			if($pageVO->typeId=='galery') $vars['BADGE'] = $pageVO->cnt;
+			$vars['DATA'] = '[[ITEM]]';
 			$tpl->setVariable($vars);
 			$page = $tpl->get();
 			$cache->setData($page,$cacheId,$cacheGroup);
@@ -86,7 +87,7 @@ class FItemsRenderer {
 			$cache = FCache::getInstance('f');
 			$cached = $cache->getData($cacheId.(($this->showDetail)?('detail'):('')),$cacheGroup);
 			if($cached!==false) {
-				if($this->showPage) $cached = $this->addPageName($cached,$itemVO);
+				//if($this->showPage) $cached = $this->addPageName($cached,$itemVO);
 				$this->tplParsed[] = $cached;
 				return;
 			}
@@ -110,16 +111,27 @@ class FItemsRenderer {
 			if(empty($typeId)) {
 				FError::write_log('FItemsRenderer::render - missing typeId for template itemId:'.$itemId.' pageId:'.$pageId);
 			}
+			
 			$this->tpl = FSystem::tpl($this->getTemplateName($typeId));
 			$this->tplType = $typeId;
 		}
 		$tpl = $this->tpl;
 
 		//---common for all items
-		$touchedBlocks['hentry']=true;
+		if($itemVO->typeId!='galery' && $this->showDetail) {
+			$nextUri = '#'; 
+			$prevUri = '#';
+			if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('i='.$itemNext,$itemVO->pageId);
+			if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('i='.$itemPrev,$itemVO->pageId);
+			if(!$itemNext) $touchedBlocks['prevbtndis']=true;
+			if(!$itemPrev) $touchedBlocks['nextbtndis']=true;
+			$vars['PREVURL'] = $nextUri;
+			$vars['NEXTURL'] = $prevUri;		
+		}
+		
 		$vars['ITEMIDHTML'] = 'i'.$itemId;
 		$vars['ITEMID'] = $itemId;
-		$link = FSystem::getUri('i='.$itemId.((!empty($itemVO->addon))?('-'.FText::safeText($itemVO->addon)):('')),$pageId);;
+		$link = FSystem::getUri('i='.$itemId.((!empty($itemVO->addon))?('-'.FText::safeText($itemVO->addon)):('')),$pageId);
 		$vars['TITLEURL'] = $vars['ITEMLINK'] = $link;
 		if(!empty($itemVO->addon)) $vars['TITLE'] = $itemVO->addon;
 		$vars['PAGEID'] = $pageId;
@@ -162,8 +174,6 @@ class FItemsRenderer {
 			$vars['IMGURLTHUMB'] = $itemVO->thumbUrl;
 			$vars['IMGURL'] = $itemVO->detailUrl;
 			$vars['IMGURLBIG'] = $itemVO->bigUrl;
-		} else {
-			if($itemVO->typeId=='event') $vars['FLYERTHUMBURLDEFAULT'] = '/img/flyer_default.png';
 		}
 
 		//modifiers to standart
@@ -172,13 +182,16 @@ class FItemsRenderer {
 		}
 
 		if($itemVO->editable === true) {
-			$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
-			$vars['DELETEURL']=FSystem::getUri('m=item-delete&d=item:'.$itemId,'','');
+			$user = FUser::getInstance();
+			if($itemVO->typeId=='forum' || $user->pageVO->pageId == $pageId) {
+				$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
+				$vars['DELETEURL']=FSystem::getUri('m=item-delete&d=item:'.$itemId,'','');
+			}
 		}
 
-		if(!empty($itemVO->textLong)  ) {
+		if($itemVO->typeId!='event' && !empty($itemVO->textLong)) {
 			if($this->showDetail===true) {
-				$vars['TEXT'] .= '<br /><br />'."\n". $itemVO->textLong;
+				$vars['TEXT'] .= (strpos($itemVO->text,'<p>')===false?'<br><br>':'') . $itemVO->textLong;
 			} else {
 				$vars['LONGTITLE'] = $itemVO->addon;
 				$vars['LONGURL'] = $vars['ITEMLINK'];
@@ -209,8 +222,8 @@ class FItemsRenderer {
 
 		//---google maps
 		if($itemVO->prop('position')) {
-			$vars = array_merge($vars,FItemsRenderer::gmaps($itemVO));
-			$touchedBlocks['map']=true; //to display map icon
+			$vars['GOOMAPTHUMB'] = FItemsRenderer::gmaps($itemVO,true);
+			$vars['GOOMAP'] = FItemsRenderer::gmaps($itemVO);
 		}
 		
 		$vars['TEXT'] = FText::postProcess( $vars['TEXT'] );
@@ -218,7 +231,7 @@ class FItemsRenderer {
 		if(isset($touchedBlocks)) $tpl->touchedBlocks = $touchedBlocks;
 		$tpl->setVariable($vars);
 		$ret = $cached = $tpl->get();
-		if($this->showPage) $ret = $this->addPageName($ret,$itemVO);
+		//if($this->showPage) $ret = $this->addPageName($ret,$itemVO);
 		$this->tplParsed []= $ret;
 		$tpl->init();
 		
@@ -227,26 +240,34 @@ class FItemsRenderer {
 		}
 	}
 	
-	static function gmaps($itemVO) {
+	static function gmaps($itemVO,$thumb=false) {
+	
 		$vars = array();
-		
+		$smarker = '';
+		$journey = array();
 		$position = $itemVO->prop('position');
-		$distance = $itemVO->prop('distance');
-		if(empty($position)) return $vars;
+		if(empty($position)) return '';
+		$distance = (int) $itemVO->prop('distance');
 		$journey = explode(';',$position);
-		$vars['SMAPITEMID'] = $vars['MAPITEMID'] = $itemVO->itemId;
-		$vars['MAPPOSITION'] = implode("\n",$journey);
-		$vars['SMAPTITLE'] = $vars['MAPTITLE'] = $itemVO->addon;
-		$vars['SMAPINFO'] = $vars['MAPINFO'] = FText::preProcess($itemVO->text,array('plaintext'=>1));
-		$vars['SMARKERPOS'] = $journey[count($journey)-1];
-		
-		
-		if($distance>0) $vars['DISTANCE'] = $distance;
-		if(count($journey)>1) {
+		$journeyLen = count($journey);
+		$smarker = $journey[$journeyLen-1];
+		if($journeyLen>1) {
 			$geoEncode = new GooEncodePoly();
-			$vars['SWPLIST'] = 'enc:'.$geoEncode->encode($journey);
+			$swpList = $geoEncode->encode($journey);
 		}
-		return $vars;
+		if($thumb) {
+			return '<div class="pull-right">'
+			.'<a id="mapThumb'.$itemVO->itemId.'" href="#map-large-'.$itemVO->itemId.'" title="Map detail: '.$itemVO->addon.'" class="mapThumbLink">'
+			.'<img width="100" height="100" '
+			.'src="http://maps.google.com/maps/api/staticmap?size=100x100&markers='.$smarker.'&maptype=terrain&sensor=false'.(!empty($swpList)?'&path=enc:'.$swpList:'').'" '
+			.'title="'.$itemVO->addon.'" alt="Google Maps" /></a></div>';
+		} else {
+			return '<a id="map-large-'.$itemVO->itemId.'"></a><div id="map'.$itemVO->itemId.'" class="mapLarge hidden">'
+			.'<div class="mapsData"><input type="hidden" class="geoData" title="'.$itemVO->addon.'" value="'.implode("\n",$journey).'" />'
+			.'<div class="geoInfo"><h3>'.$itemVO->addon.'</h3><p>'.FText::preProcess($itemVO->text,array('plaintext'=>1))
+			.($distance>0?'<p><strong>Vzdalenost: '.$distance.'NM</strong></p>':'')
+			.'</p></div></div></div>';
+		}
 	} 
 	
 	function getLast() {
@@ -261,6 +282,8 @@ class FItemsRenderer {
 	}
 	
 	function show() {
-		return implode($this->tplParsed);
+		$ret = implode($this->tplParsed);
+		$this->tplParsed = array();
+		return $ret;
 	}
 }

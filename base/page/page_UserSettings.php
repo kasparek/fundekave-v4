@@ -124,6 +124,7 @@ class page_UserSettings implements iPage {
 
 		$cache = FCache::getInstance('d');
 		$fileList = $cache->getData($userVO->userId,'profileFiles');
+		$fileList = false;
 		if($fileList===false) {
 			$ffile = new FFile(FConf::get("galery","ftpServer"));
 			$fileList=$ffile->fileList(FAvatar::profileBasePath());
@@ -140,6 +141,19 @@ class page_UserSettings implements iPage {
 				$tpl->parse("foto");
 			}
 		}
+		
+		$bssskins = FConf::get('settings','bsskins');
+		if(!empty($bssskins)) {
+			$bssskins = explode(',',$bssskins);
+			$bssskinsNames = explode(',',FConf::get('settings','bsskins_names'));
+			for($i=0;$i<count($bssskins);$i++) {
+				$tpl->setVariable('BSSKIN_IMG',$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS).'skin-thumbs/'.$bssskins[$i].'bs.png');
+				$tpl->setVariable('BSSKIN_NAME',$bssskinsNames[$i]);
+				$tpl->setVariable('BSSKIN_URL',FSystem::getUri('m=user-setskin&d=name:'.$bssskins[$i]));
+				$tpl->parse('bsskin');
+			}
+		}
+		
 
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 	}

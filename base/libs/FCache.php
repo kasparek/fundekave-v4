@@ -71,6 +71,11 @@ class FCache {
 		require_once('FCache/FileDriver.php');
 		return FileDriver::getInstance($this);
 	}
+	
+	function voidConnection() {
+		require_once('FCache/VoidDriver.php');
+		return VoidDriver::getInstance($this);
+	}
 
 	/**
 	 * 
@@ -84,8 +89,7 @@ class FCache {
 				case 'v':
 				case 'void':
 				case 'debug':
-					require_once('FCache/VoidDriver.php');
-					$this->driver = VoidDriver::getInstance($this);
+					$this->driver = $this->voidConnection();
 					break;
 				//---in session
 				case 's':
@@ -102,7 +106,11 @@ class FCache {
 				//---cache lite
 				case 'f':
 				case 'file':
-					$this->driver = $this->fileConnection();
+					if(FConf::get('settings','cache')==0) {
+						$this->driver = $this->voidConnection();
+					} else {
+						$this->driver = $this->fileConnection();
+					}
 					break;
 				//---per load
 				case 'load':
@@ -112,6 +120,7 @@ class FCache {
 					break;
 			}
 		}
+		
 		if(null === $this->driver) {
 			FError::write_log( 'FCache::invalid driver::('.$driverIdent.')' );
 			return false;

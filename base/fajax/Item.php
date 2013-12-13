@@ -29,7 +29,20 @@ class fajax_Item extends FAjaxPluginBase {
 		}
 	}
 
+	static function showupload($data) {
+		if($data['__ajaxResponse']) {
+			$user = FUser::getInstance();
+			if(FRules::getCurrent(2)) {
+				$utpl = FSystem::tpl('form.fuup.tpl.html');
+				$utpl->touchBlock('__global__');
+			}
+			FAjax::addResponse('editForm', '$html', $utpl->get());
+			FAjax::addResponse('call','jUIInit','');
+		}
+	}
+	
 	static function edit($data,$itemVO=null) {
+		if(!$data['__ajaxResponse']) return;
 		if(empty($itemVO) && !empty($data['i'])) $itemVO = new ItemVO($data['i'],true);
 		if(empty($itemVO)) {
 			$user = FUser::getInstance();
@@ -39,12 +52,8 @@ class fajax_Item extends FAjaxPluginBase {
 		}
 		if(empty($itemVO->typeId) && isset($data['t'])) $itemVO->set('typeId', $data['t']);
 		$ret = FItemsForm::show($itemVO);
-		if($data['__ajaxResponse']) {
-			FAjax::addResponse('editForm', '$html', $ret);
-			FAjax::addResponse('call','jUIInit','');
-		} else {
-			FBuildPage::addTab(array("MAINID"=>'editForm',"MAINDATA"=>$ret));
-		}
+		FAjax::addResponse('editForm', '$html', $ret);
+		FAjax::addResponse('call','jUIInit','');
 	}
 
 	static function submit($data) {

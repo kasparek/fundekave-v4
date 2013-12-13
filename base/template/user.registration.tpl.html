@@ -1,16 +1,55 @@
 <!-- BEGIN registration -->
-<form action="{FORMACTION}" method="post" name="reg">
+<div class="panel panel-default">
+<div class="panel-body">
+<form action="{FORMACTION}" method="post" name="reg" role="form" class="form-horizontal">
 <fieldset>
 <legend>Nový uživatel</legend>
-<label for="jmenoreg">Přezdívka</label><input type="text" id="jmenoreg" name="jmenoreg" value="{NAME}" /><br />
-<label for="pwdreg1">Heslo</label><input type="password" id="pwdreg1" name="pwdreg1" value="{PWD1}" /><br />
-<label for="pwdreg2">Ověření hesla</label><input type="password" id="pwdreg2" name="pwdreg2" value="{PWD2}" /><br />
-<label for="email">Email</label><input id="email" name="email" value="{EMAIL}" /><br />
-<label for="email">Ansti-spam</label>{CAPTCHA}<br />
-<input type="submit" name="addusr" value="Odeslat" class="button submit"><br />
+
+<div class="form-group">
+	<label for="jmenoreg" class="col-sm-2 control-label">Přezdívka</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="jmenoreg" name="jmenoreg" value="{NAME}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="pwdreg1" class="col-sm-2 control-label">Heslo</label>
+	<div class="col-sm-10">
+		<input type="password" class="form-control" id="pwdreg1" name="pwdreg1" value="{PWD1}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="pwdreg2" class="col-sm-2 control-label">Ověření hesla</label>
+	<div class="col-sm-10">
+		<input type="password" class="form-control" id="pwdreg2" name="pwdreg2" value="{PWD2}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="email" class="col-sm-2 control-label">Email</label>
+	<div class="col-sm-10">
+		<input type="email" class="form-control" id="email" name="email" value="{EMAIL}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label class="col-sm-2 control-label">Ansti-spam</label>
+	<div class="col-sm-10">
+		{CAPTCHA}
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" id="submitButtonSave" name="addusr" class="btn btn-success submit">Odeslat</button>
+	</div>
+</div>
 </fieldset>
 </form>
 <!-- END registration -->
 <!-- BEGIN noregistration -->
 <p><strong>Uživatel je již přihlášen</strong></p>{DUMMYNO}
 <!-- END noregistration -->
+</div>
+</div>

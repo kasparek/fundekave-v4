@@ -71,6 +71,8 @@ class PageVO extends Fvob {
 	public $htmlKeywords;
 	public $showSidebar = true;
 	
+	public $tplVars = array();
+	
 	function __construct($primaryId=0, $autoLoad = false) {
 		parent::__construct($primaryId,$autoLoad);
 		$this->propLoadAtOnce = true;
@@ -80,8 +82,8 @@ class PageVO extends Fvob {
 	 * type specific perpage / galery has in xml
 	 * @return number
 	 */
-	function perPage($perPage=0) {
-		$typeId = $this->get('typeId');
+	function perPage($perPage=0,$typeId=false) {
+		if($typeId===false) $typeId = $this->get('typeId');
 		if($typeId=='galery') return $this->get('cnt');
 		$cache = FCache::getInstance('s');
 		$SperPage = &$cache->getPointer($this->pageId,'pp');
@@ -193,6 +195,7 @@ class PageVO extends Fvob {
 			foreach ($arrNotInDB as $file) {
 				$this->itemVO = new ItemVO();
 				$this->itemVO->pageId = $this->pageId;
+				$this->itemVO->pageIdTop = $this->pageIdTop;
 				$this->itemVO->typeId = $this->typeId;
 				$this->itemVO->enclosure = $file;
 				$this->itemVO->filesize = $ffile->filesize($galdir.($galdir{strlen($galdir)-1}!='/'?'/':'').$file);

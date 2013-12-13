@@ -182,33 +182,28 @@ class FPages extends FDBTool {
 	static function printPagelinkList($arrLinks=array(),$options=array()) {
 		$user = FUser::getInstance();
 		//---template init
-		$tpl = FSystem::tpl('item.pagelink.tpl.html');
+		if(!isset($options['noitem'])) {
+			$tpl = FSystem::tpl('item.pagelink.tpl.html');
+		} else {
+			$tpl = FSystem::tpl('sidebar.list.tpl.html');
+		}
+		
 		//vypis jednotlivych klubu
 		if(!empty($arrLinks)) {
 			foreach ($arrLinks as $page) {
-				 /*if(FConf::get('settings','pageAvatars')==1) {
-						if(isset(FLang::$TYPEID[$page->typeId])) {
-							if(!empty($page->pageIco)) {
-								$tpl->setVariable("AVATARURL", $page->pageIco);
-							} else if(!empty($page->typeId)) {
-								$tpl->setVariable("AVATARURL", FConf::get('pageavatar',$page->typeId,''));
-							}
-							$tpl->setVariable("AVATARNAME", $page->name);
-							$tpl->setVariable("AVATARALT", FLang::$TYPEID[$page->typeId]);
-					  }
-				}*/
-				$tpl->setVariable("PAGENAME", $page->name);
+				$tpl->setVariable("TEXT", $page->name);
 				$tpl->setVariable("URL", FSystem::getUri('',$page->pageId,'',array('name'=>$page->name)));
 				if($user->idkontrol===true) {
 					if($page->unreaded>0) {
-						$tpl->setVariable("PAGEPOSTSNEW", $page->unreaded);
+						$tpl->setVariable("BADGE", $page->unreaded);
 					}
 				}
 				if(!isset($options['noitem'])) {
 					$itemVO = new ItemVO($page->prop('itemIdLast'));
-					$tpl->setVariable('ITEM',$itemVO->render());
+					$out = $itemVO->render();
+					$tpl->setVariable('DATA',$out);
 				}
-				$tpl->parse();
+				$tpl->parse('item');
 			}
 		}
 		return $tpl->get();

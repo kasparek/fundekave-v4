@@ -1,65 +1,179 @@
-<?xml version="1.0" encoding="{CHARSET}"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
-<head>
-<script type="text/javascript">
-if(window.location.hash){var h=window.location.hash.replace('#','').split('/'),m=h[0];if(h.length>1 && m.indexOf('-')>-1){window.location.hash='';var r='?m='+m+'&d='+h[1]+(h[2]?'&k='+h[2]:'');window.location.replace(r);}};
-</script>
-<title>{TITLE}</title>
-<meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
-<meta http-equiv="Content-language" content="cs" />
-<!-- BEGIN description --><meta name="description" content="{DESCRIPTION}" /><!-- END description -->
-<link rel="shortcut icon" href="[[URL_SKIN]]/img/favicon.ico" type="image/x-icon" />
-<link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
-<link rel="stylesheet" type="text/css" href="[[URL_CSS]]global.css" media="all" title="fundekave" />
-<style type="text/css">@import url("[[URL_SKIN]]/screen.css");</style> 
-</head>
-<body<!-- BEGIN bodySidebarOff --> class="bodySidebarOff"<!-- END bodySidebarOff -->>
-<div id="pageholder">
-<div id="header">
-<div id="logo"><a href="{HOME_PAGE}"><img src="[[URL_SKIN]]/img/fundekave-logo.png" title="fundekave.net" alt="FUNDEKAVE" /></a></div>
-{CACHEDMENU}<!-- BEGIN menu --><ul id="menu"><!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem --></ul><!-- END menu -->
+﻿<?xml version="1.0" encoding="{CHARSET}"?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{DESCRIPTION}">
+    <meta name="author" content="Frantisek Kaspar">
+    <link rel="shortcut icon" href="{URL_FAVICON}">
+    <title>{TITLE}</title>
+    <link href="[[URL_CSS]]bootstrap{BOOTSTRAP_SKIN}.css" rel="stylesheet">
+    <link href="[[URL_CSS]]global.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+	<link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
+	<!-- BEGIN skincss --><style type="text/css">@import url("{URL_SKIN}/screen.css");</style><!-- END skincss -->
+  </head>
+  <body>
+    <!-- Static navbar -->
+	<!-- BEGIN topbanner -->
+	<div class="top-image" data-margin="{TOPBANMARGIN}" data-valign="{TOPBANVALIGN}" style="height:{TOPBANHEIGHT}px;">
+      <div class="top-container">
+		<a id="head-banner" href="{TOPBANURL}" title="{TOPBANTITLE}">
+		<img src="{TOPBANIMG}" />
+		</a>
+	  </div>
+	 </div>
+	 <!-- END topbanner -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+	<!-- BEGIN brand-logo --><div class="container"><a class="navbar-brand" href="{BRAND_LOGO_URL}"><img src="{BRAND_LOGO}" /></a></div><!-- END brand-logo -->
+      <div class="container">
+		
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <!-- BEGIN navbar-brand --><a class="navbar-brand" href="{BRAND_URL}">{BRAND_LABEL}</a><!-- END navbar-brand -->
+        </div>
+        <div class="navbar-collapse collapse">
+			  {CACHEDMENU}<!-- BEGIN menu -->
+			  <ul class="nav navbar-nav">
+			  <!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem -->
+<!-- BEGIN secondarymenu -->
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">Menu <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<!-- BEGIN smitem -->
+<li class="{LISTCLASS}"><a href="{LOLINK}" id="{LOID}" class="{CLASS}">{LOTEXT}</a></li>
+<!-- END smitem -->
+</ul>
+</li>
+<!-- END secondarymenu -->
+</ul><!-- END menu -->
+			  
+<ul class="nav navbar-nav navbar-right">
+<!-- BEGIN loginform -->
+<li>
+<form class="navbar-form form-inline login-form" role="form" action="{FORMACTION}" method="post">
+  <div class="form-group">
+    <label class="sr-only" for="inputUsername">Username</label>
+    <input type="text" class="form-control" name="fna" id="inputUsername" placeholder="Username">
+  </div>
+  <div class="form-group">
+    <label class="sr-only" for="inputPassword">Password</label>
+    <input type="password" class="form-control" name="fpa" id="inputPassword" placeholder="Password">
+  </div>
+  <button type="submit" name="lgn" class="btn btn-info btn-sm">Login</button>
+</form>
+</li>
+<li>
+	<a href="?k=roger">Registrace</a>
+</li>
+<!-- END loginform -->
+<!-- BEGIN usersonline -->
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Online <span class="label label-info">{NUMFRIENDSONLINE}</span><b class="caret"></b></a>
+  <ul class="dropdown-menu">
+	<!-- BEGIN onlineuser -->
+	<li><a href="?k=finfo&who={FRIENDID}"><img src="{FRIENDAVATAR}" /> {FRIENDNAME}</a></li>
+	<!-- END onlineuser -->
+  </ul>
+</li>
+<!-- END usersonline -->
+<!-- BEGIN signed -->
+	<li class="dropdown">
+	  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                    class="glyphicon glyphicon-user"></span>{SIGNED_NAME} <span class="label label-info">{ACTIONSNUM}</span><b class="caret"></b></a>
+	  <ul class="dropdown-menu">
+		<!-- BEGIN requests --><li>
+		<a href="?k=finfo" title="Ceka na potvrzeni">Přidat přátele <span class="label label-info">{REQUESTSNUM}</span></a></li><!-- END requests -->
+		<li><a href="?k=fpost">Pošta<!-- BEGIN newmsgbadge --> <span class="label label-info">{MESSAGENUM}</span><!-- END newmsgbadge --></a></li>
+		<li><a href="?k=finfo">Přátelé</a></li>
+		<li><a href="?k=fedit">Upravit profil</a></li>
+		<li class="divider"></li>
+		<li><a href="?logout=1">Odhlásit se</a></li>
+	  </ul>
+	</li>
+	<li id="avatarBox" class="avatar">
+	{SIGNED_AVATAR}
+	</li>
+<!-- END signed -->
+                  </ul>
+<!-- BEGIN searchForm -->
+<div class="pull-right col-sm-3">
+<form class="navbar-form navbar-right search-form" action="{SEARCHACTION}" method="post">
+	<div class="input-group">
+		<input type="text" name="f" class="form-control" placeholder="Search">
+		<span class="input-group-btn">
+			<button class="btn btn-sm btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+		</span>
+	</div>
+</form>			  			  
 </div>
-<div id="pagebar">
-<div id="mainbar">
-<!-- BEGIN search --><form action="{SEARCHACTION}" method="post"><div id="search-holder"><div id="search"><input title="Zadejte text pro vyhledávání v článcích, klubech, událostech, uživatelích, stránkách" type="text" name="f" class="short" /> <input type="image" src="[[URL_SKIN]]/img/magnifier.png" title="Hledat" alt="Hledat" name="search" class="searchButton" /></div></div></form><!-- END search -->
-<!-- BEGIN breadcrumbs --><div id="breadcrumbs">
-<!-- BEGIN breadcrumbslist --><ul><!-- BEGIN bread --><li><!-- BEGIN breadlink --><a href="{BREADURL}"><!-- END breadlink -->{BREADNAME}<!-- BEGIN breadlinkend --></a><!-- END breadlinkend --></li><!-- END bread --></ul><!-- END breadcrumbslist -->
-</div><!-- END breadcrumbs -->
-<!-- BEGIN secondary-menu --><div id="menu-secondary-holder"><ul id="menu-secondary">
-<!-- BEGIN smitem --><li<!-- BEGIN smlicl --> class="{LISTCLASS}"<!-- END smlicl -->><a href="{LOLINK}"<!-- BEGIN smtitle --> title="{LOTITLE}"<!-- END smtitle --><!-- BEGIN smcl --> class="{CLASS}"<!-- END smcl --><!-- BEGIN smid --> id="{LOID}"<!-- END smid -->>{LOTEXT}</a></li><!-- END smitem -->
-</ul></div><!-- END secondary-menu -->
-<div id="errormsgJS" class="errormsg">{ERRORMSG}</div>
-<div id="okmsgJS" class="okmsg">{OKMSG}</div>
+<!-- END searchForm -->				  
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+	
+    <div class="container">
+	  <div class="row" id="top-row">
+		<div class="col-md-{NUMCOLMAIN}">
+			<ol class="breadcrumb">
+				<!-- BEGIN breadcrumb --><li><a href="{BREADURL}">{BREADNAME}</a></li><!-- END breadcrumb -->
+				<li class="active">{BREADHARD}</li>
+			</ol>
+
 <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
-<!-- BEGIN content --><div class="mainpanel-content"<!-- BEGIN contentid --> id="{MAINID}"<!-- END contentid -->>
-<!-- BEGIN contentheading --><h2>{MAINHEAD}</h2><!-- END contentheading -->
-{MAINDATA}
-</div><!-- END content -->
+
+<div id="sysmsgBox">
+	<div id="message-new" class="alert alert-danger alert-dismissable <!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<a href="?k=fpost"><strong>Nové zprávy:</strong></a><br />
+	<span id="numMsg" class="badge">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a>
+	</div>
+<!-- BEGIN sysmsg -->
+<div class="alert alert-{MSGPRIORITY} alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  {MSGTEXT}
 </div>
-<!-- BEGIN sidebar --><div id="sidebar">
-<!-- BEGIN sidebar-block --><div class="sidebarBlock">
-<!-- BEGIN sidebar-heading --><h2>{SIDEBARHEAD}</h2><!-- END sidebar-heading -->
-<div id="{SIDEBARBLOCKID}" class="sidebarBlockContent">
-{SIDEBARDATA}
+<!-- END sysmsg -->
 </div>
-</div><!-- END sidebar-block -->
-</div><!-- END sidebar -->
-</div>
-<div id="footer">
-<a href="http://awake33.com" title="kdo chce na more, ten tam je">Awake33</a>
-<a href="http://eboinnaija.fundekave.net" title="nigerie ocima evropanky">EboInNaija</a>
-<a href="http://upsidedown.fundekave.net" title="Hondzik a Dany hlavou dolu">UpsideDown</a>
-<a href="http://iyobosahelpinghand.com/" title="Občanské sdružení IYOBOSA Helping Hand">IYOBOSA Helping Hand</a>
-<a href="http://fundekave.net">fundekave.net</a>
-</div>
-</div>
-<span id="messageNew" class="<!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->"><a href="?k=fpost">Nove zpravy:</a><br /><span id="numMsg">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a></span>
-<script type="text/javascript">
-var _fdk = {cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',skinUrl:'[[URL_SKIN]]',cw:'{CLIENT_WIDTH}',ch:'{CLIENT_HEIGHT}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
+
+<!-- BEGIN content -->{MAINDATA}<!-- END content -->
+
+		</div>
+		
+		<!-- BEGIN midcol -->
+		<div class="midcol col-md-2">
+		{MIDCOL}
+		</div>
+		<!-- END midcol -->
+
+		<div class="col-md-3">
+			<!-- BEGIN sidebar --><div id="sidebar">
+			<!-- BEGIN sidebar-block --><div class="well">
+			<!-- BEGIN sidebar-heading --><h3>{SIDEBARHEAD}</h3><!-- END sidebar-heading -->
+			<div id="{SIDEBARBLOCKID}">{SIDEBARDATA}</div>
+			</div><!-- END sidebar-block -->
+			</div><!-- END sidebar -->
+		</div>
+	  </div>
+	  
+    </div> <!-- /container -->
+	
+	<script type="text/javascript">
+var _fdk = {cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',cssUrl:'[[URL_CSS]]',skinUrl:'{URL_SKIN}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
 <!-- BEGIN jscfgvar -->_fdk.cfg.{JSVAR}='{JSVALUE}';<!-- END jscfgvar -->
 var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
 </script>
-<script type="text/javascript" src="[[URL_JS]]boot.js"></script>
-</body>
+	<script type="text/javascript" src="[[URL_JS]]boot.js"></script>
+    
+  </body>
 </html>
