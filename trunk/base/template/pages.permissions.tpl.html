@@ -1,5 +1,24 @@
 <fieldset><legend>{HEADERLABEL}</legend>
-<label>{SELECTLABEL}</label><select id="accessSel" name="{SELECTNAME}">{SELECTOPTIONS}</select><br />
-<!-- BEGIN rules --><div id="rule{RULESNUM}"><label for="permArea{RULESNUM}">{RULESNAME}</label><textarea id="permArea{RULESNUM}" name="{INPUTNAME}">{RULESCONTENT}</textarea></div><!-- END rules -->
-<label>{HELPLABEL}</label>{HELPTEXT}<br />
+<div class="form-group">
+	<label for="accessSel" class="col-sm-2 control-label">{SELECTLABEL}</label>
+	<div class="col-sm-10">
+		<select id="accessSel" name="{SELECTNAME}" class="form-control">{SELECTOPTIONS}</select>
+	</div>
+</div>
+<!-- BEGIN rules --><div id="rule{RULESNUM}">
+	<div class="form-group">
+		<label for="permArea{RULESNUM}" class="col-sm-2 control-label">{RULESNAME}</label>
+		<div class="col-sm-10">
+			<textarea id="permArea{RULESNUM}" name="permArea{RULESNUM}" class="form-control expand" row="3">{RULESCONTENT}</textarea>
+		</div>
+	</div>
+</div><!-- END rules -->
+<div class="form-group">
+	<div class="col-sm-2">
+		<label class="col-sm-2 control-label">{HELPLABEL}</label>
+	</div>
+	<div class="col-sm-10">
+		{HELPTEXT}
+	</div>
+</div>
 </fieldset>

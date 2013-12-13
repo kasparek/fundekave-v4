@@ -32,7 +32,7 @@ class FCategory extends FDBTool {
 		//---defaults for galery,culture,linx,audit,akce
 		$this->arrHead=array(FLang::$LABEL_CATEGORY_NAME,FLang::$LABEL_CATEGORY_ORDER,FLang::$LABEL_CATEGORY_PUBLIC);
 		$this->arrInputType=array("text","text",'public');
-		$this->arrClass=array('','xShort','');
+		$this->arrClass=array('form-control','form-control','form-control');
 		$this->arrDbUsedCols=array('name','ord','public');
 		$this->arrDefaults=array('','0','1');
 		

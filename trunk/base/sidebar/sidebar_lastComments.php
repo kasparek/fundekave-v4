@@ -13,7 +13,9 @@ class sidebar_lastComments {
 		if(SITE_STRICT) $fItems->addWhere("pageIdTop='".SITE_STRICT."'");
 		$fItems->addWhere('itemIdTop is not null');
 		
-		return $fItems->render(0,10);
+		$out = $fItems->render(0,10);
+		if(!$out) return '';
+		return '<div class="list-group">'.$out.'</div>';
 		
 	}
 }

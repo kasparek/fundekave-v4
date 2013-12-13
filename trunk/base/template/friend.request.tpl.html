@@ -1,11 +1,20 @@
-<div id="friendrequest" class="hidden">
-<form action="{ACTION}" method="post" class="fajaxform">
+﻿<div id="friendrequest" class="hidden well">
+<form action="{ACTION}" method="post" class="fajaxform form-horizontal">
 <input type="hidden" name="user" value="{USER}">
 <fieldset>
-<legend>Friend request</legend>
-<label>Zprava</label><textarea name="message" class="short"></textarea><br />
-<input type="submit" class="submit button" name="send" value="Poslat" />
-<input id="cancel-request" type="button" class="button" name="send" value="Zrusit" />
+<legend>Přidat do přátel</legend>
+<div class="form-group">
+	<label for="message" class="col-sm-2 control-label">Zpráva</label>
+	<div class="col-sm-10">
+		<textarea name="message" id="message" class="form-control markitup" rows="3"></textarea>
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" name="send" class="btn btn-success submit">Poslat</button>
+		<button type="submit" id="cancel-request" class="btn btn-danger">Zrušit</button>
+	</div>
+</div>
 </fieldset>
 </form>
 </div>

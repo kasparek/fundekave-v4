@@ -1,58 +1,137 @@
-<form action="{FORMACTION}" method="post" name="itemForm" id="itemForm" class="fajaxform<!-- BEGIN classnotpublic --> notpublished<!-- END classnotpublic -->">
-<input type="hidden" name="m" value="{M}"/>
-<input type="hidden" name="t" value="{T}"/>
-<!-- BEGIN edit --><input id="i" name="i" value="{ITEMID}" type="hidden"><!-- END edit -->
-<fieldset class="buttonBar">
-<input name="save" id="submitButtonSave" value="Uložit" class="button uibutton submit draftdrop" type="submit">  
-<!-- BEGIN delete --><input name="delete" id="submitButtonDelete" value="Smazat" class="button uibutton confirm" title="Opravdu chcete vymazat tento clánek ?" type="submit" /><!-- END delete -->
-</fieldset>
-<div id="tabs">
-<ul>
-<li><a href="#tabs-1">Nastaveni</a></li>
-<li><a href="#tabs-2">Specialni</a></li>
-</ul>
-<div id="tabs-1">
+<div class="well">
+<form role="form" action="{FORMACTION}" method="post" name="itemForm" id="itemForm" class="form-horizontal fajaxform<!-- BEGIN classnotpublic --> notpublished<!-- END classnotpublic -->">
+	<input type="hidden" name="m" value="{M}"/>
+	<input type="hidden" name="t" value="{T}"/>
+	<!-- BEGIN edit --><input id="i" name="i" value="{ITEMID}" type="hidden"><!-- END edit -->
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" id="submitButtonSave" name="save" class="btn btn-success submit">Uložit</button>
+			<!-- BEGIN delete --><button type="submit" id="submitButtonDelete" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tento článek?">Smazat</button><!-- END delete -->
+		</div>
+	</div>
+	
+
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#tabs-1" data-toggle="tab">Nastaveni</a></li>
+		<li><a href="#tabs-2" data-toggle="tab">Specialni</a></li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane fade in active" id="tabs-1">
 <fieldset>
-<legend>Clanek<!-- BEGIN headernotpublic --> - nepublikovany<!-- END headernotpublic --></legend>
-<label for="public">Pristup:</label><select name="public" id="public">
-<option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Nepublikovany</option>
-<option value="1"<!-- BEGIN public1 --> selected="selected"<!-- END public1 -->>Verejny - vidi vsichni</option>
-<option value="2"<!-- BEGIN public2 --> selected="selected"<!-- END public2 -->>Poloverejny - vidi pouze registrovani</option>
-<option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
-</select><br />
-<label for="categoryId">Druh</label><select id="categoryId" name="category"><option value="0"></option>{CATEGORYOPTIONS}</select> Nova kategorie: <input type="text" name="categoryNew" class="short" /><br />
-<label for="formHeader">Nadpis</label><input id="formHeader" name="addon" value="{TITLE}" type="text"><br />  
-<label for="formDate">Datum</label><input id="formDate" name="dateStartLocal" value="{DATESTART}" type="text" class="short datepicker"><br />
-<label for="formText">Uvod</label><textarea name="text" id="{TEXTID}" class="large markitup draftable expand">{TEXT}</textarea><br />
-<label for="formText">Text</label><textarea name="textLong" id="{TEXTLONGID}" class="large markitup draftable expand">{TEXTLONG}</textarea><br />
+<legend>Článek<!-- BEGIN headernotpublic --> - nepublikovaný<!-- END headernotpublic --></legend>
+
+	<div class="form-group">
+		<label for="public" class="col-sm-2 control-label">Přístup</label>
+		<div class="col-sm-10">
+			<select name="public" id="public" class="form-control">
+			<option value="0"<!-- BEGIN public0 --> selected="selected"<!-- END public0 -->>Nepublikovany</option>
+			<option value="1"<!-- BEGIN public1 --> selected="selected"<!-- END public1 -->>Verejny - vidi vsichni</option>
+			<option value="2"<!-- BEGIN public2 --> selected="selected"<!-- END public2 -->>Poloverejny - vidi pouze registrovani</option>
+			<option value="3"<!-- BEGIN public3 --> selected="selected"<!-- END public3 -->>Soukromy - vidi pratele</option>
+			</select>
+		</div>
+	</div>
+
+<div class="form-group">
+	<label for="categoryId" class="col-sm-2 control-label">Kategorie</label>
+	<div class="col-sm-4">
+		<select id="categoryId" name="category" class="form-control"><option value="0"></option>{CATEGORYOPTIONS}</select> 
+	</div>
+	<label for="categoryNew" class="col-sm-2 control-label">nová</label>
+	<div class="col-sm-4">
+		<input type="text" class="form-control" id="categoryNew" name="categoryNew" class="form-control" />
+	</div>
+</div>
+
+
+<div class="form-group">
+	<label for="formHeader" class="col-sm-2 control-label">Nadpis</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="formHeader" name="addon" value="{TITLE}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="formDate" class="col-sm-2 control-label">Datum</label>
+	<div class="col-sm-10">
+		<input id="formDate" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="{TEXTID}" class="col-sm-2 control-label">Úvod</label>
+	<div class="col-sm-10">
+		<textarea name="text" id="{TEXTID}" class="form-control markitup">{TEXT}</textarea>
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="{TEXTLONGID}" class="col-sm-2 control-label">Text</label>
+	<div class="col-sm-10">
+		<textarea name="textLong" id="{TEXTLONGID}" class="form-control markitup" row="3">{TEXTLONG}</textarea>
+	</div>
+</div>
+
 </fieldset>
 </div>
-<div id="tabs-2">
+
+<div class="tab-pane fade" id="tabs-2">
 <fieldset>
-<legend>Obrazek</legend>
-<label>Upload obrazku</label>
-<div id="tempStore" class="fuup">
-<input type="file" name="imageFile"/></div><br />
-<label> - nebo URL</label><input type="text" name="imageUrl" /><br />
-<div id="imageHolder" class="row">
+<legend>Obrázek</legend>
+<div class="form-group">
+	<label for="fileurlinput" class="col-sm-2 control-label">Vlož URL</label>
+	<div class="col-sm-10">
+		<input id="fileurlinput" type="text" name="imageUrl" class="form-control"/>
+	</div>
+</div>
+<div class="form-group">
+	<label for="fileuploadinput" class="col-sm-2 control-label">Nahraj</label>
+	<div class="col-sm-10">
+		<div id="tempStore" class="fuup">
+			<input id="fileuploadinput" type="file" name="imageFile" class="form-control"/>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+<div id="imageHolder"  class="col-md-offset-2 col-sm-10">
 <!-- BEGIN image -->
-<label>Obrázek</label><a rel="lightbox" href="{IMAGEURL}"><img class="rightPadded leftbox" src="{IMAGETHUMBURL}" /></a>
-<input id="tempStoreButt" type="submit" name="deleteImage" value="Smazat" title="Opravdu chcete smazat obrázek?" class="leftbox button uibutton confirm" />
+<a rel="lightbox" href="{IMAGEURL}"><img class="img-thumbnail pull-left" src="{IMAGETHUMBURL}" /></a>
+<button id="tempStoreButt" type="submit" name="deleteImage" title="Opravdu chcete smazat obrázek?" class="btn btn-danger  confirm">Smazat</button>
 <!-- END image -->
 </div>
+</div>
 </fieldset>
+
 <fieldset>
 <legend>Mapy</legend>
-<label>Ukaz na mape</label><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea>
+
+<div class="form-group">
+	<label for="position" class="col-sm-2 control-label">Ukaz na mape</label>
+	<div class="col-sm-10">
+		<textarea id="position" class="form-control geoInput" name="position" row="3" title="Zadejte polohu">{POSITION}</textarea>
+	</div>
+</div>
 </fieldset>
+
 <fieldset>
-<legend>Komentare</legend>
-<label for="forumSet">Nastaveni</label><select id="forumSet" name="forumset">
-<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Verejna</option>
-<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pro registrovane</option>
-<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Vypnuta</option>
-</select>
+<legend>Komentáře</legend>
+
+<div class="form-group">
+	<label for="forumSet" class="col-sm-2 control-label">Nastavení</label>
+	<div class="col-sm-10">
+		<select id="forumSet" name="forumset"  class="form-control">
+		<option value="1"<!-- BEGIN comments1 --> selected="selected"<!-- END comments1 -->>Veřejná diskuze</option>
+		<option value="2"<!-- BEGIN comments2 --> selected="selected"<!-- END comments2 -->>Pouze pro registrovane</option>
+		<option value="0"<!-- BEGIN comments0 --> selected="selected"<!-- END comments0 -->>Diskuze zakázaná</option>
+		</select>
+	</div>
+</div>
+
 </fieldset>
 </div>  
 </div>
 </form>
+</div>

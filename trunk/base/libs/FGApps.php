@@ -21,8 +21,12 @@ class FGApps {
 	
 	function __construct() {
 		if(self::$allowInstantiation==true) {
-      $client = Zend_Gdata_ClientLogin::getHttpClient($this->user, $this->pass, $this->serviceName);
-      $this->gp = new Zend_Gdata_Photos($client, "fundekave-galery-0.1");			
+			try {
+				$client = Zend_Gdata_ClientLogin::getHttpClient($this->user, $this->pass, $this->serviceName);
+			} catch (Exception $e) {
+				$client = false;
+			}
+			if($client) $this->gp = new Zend_Gdata_Photos($client, "fundekave-galery-0.1");			
 		} else {
 			throw new Exception('Instantioation denied - SINGLETON - use getinstance.');
 		}
@@ -39,6 +43,7 @@ class FGApps {
   
   function createAlbum($title,$description) {
     $gp = $this->gp;
+	if(!$gp) return;
     $entry = new Zend_Gdata_Photos_AlbumEntry();
     $entry->setTitle($gp->newTitle($title));
     $entry->setSummary($gp->newSummary($description));
@@ -49,6 +54,7 @@ class FGApps {
   
   function getAlbum($id) {
     $gp = $this->gp;
+	if(!$gp) return;
     $query = $gp->newAlbumQuery();
     $query->setUser("default");
     $albumIdArr = explode('/',$id);
@@ -64,6 +70,7 @@ class FGApps {
   
   function createPhoto($albumId,$source,$desc,$title="") {
     $gp = $this->gp;
+	if(!$gp) return;
     $query = $gp->newAlbumQuery();
     $query->setUser("default");
     $albumIdArr = explode('/',$albumId);

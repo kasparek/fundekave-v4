@@ -100,6 +100,7 @@ class FSidebar extends FDBTool {
 		$this->panelsUsed = $arrSidebar['arrUsed'];
 	}
 	function show() {
+		$hasData = false;
 		if(!empty($this->panels)) {
 			foreach( $this->panels as $panel ) {
 				if($panel['visible'] == 1) {
@@ -173,9 +174,11 @@ class FSidebar extends FDBTool {
 						$TOPTPL->setVariable('SIDEBARBLOCKID', $fnc);
 						$TOPTPL->setVariable('SIDEBARDATA', $letext);
 						$TOPTPL->parse('sidebar-block');
+						$hasData = true;
 					}
 				}
 			}
 		}
+		return $hasData;
 	}
 }

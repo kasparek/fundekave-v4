@@ -27,7 +27,7 @@ class FAvatar {
 	 * @param array $paramsArr
 	 * @return html formated avatar
 	 */
-	static function showAvatar($userId=-1){
+	static function showAvatar($userId=-1,$linkTo='finfo'){
 			
 		$avatarUserId = $userId;
 		if( $avatarUserId == -1) {
@@ -43,20 +43,14 @@ class FAvatar {
 
 		//set cache
 		if(!isset($user)) $user = FUser::getInstance();
-		$tpl = FSystem::tpl(FLang::$TPL_USER_AVATAR);
 
-		if($userId == -1 ) $avatarUserName=$user->userVO->name;
-		elseif($userId > 0) $avatarUserName=FUser::getgidname($avatarUserId);
+		if($userId == -1 ) $avatarUserName = $user->userVO->name;
+		elseif($userId > 0) $avatarUserName = FUser::getgidname($avatarUserId);
 		else $avatarUserName = '';
-
-		$tpl->setVariable('USERNAME',$avatarUserName);
-		$tpl->setVariable('AVATARURL',FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)));
-		if($userId>0) {
-			$tpl->setVariable('AVATARLINK',FSystem::getUri('who='.$userId.'#tabs-profil','finfo'));
-			$ret = $tpl->get();
-		} else {
-			$tpl->parse('img');
-		  $ret = $tpl->get('img');
+		
+		$ret = '<img src="'.FAvatar::getAvatarUrl(($userId==-1)?(-1):($avatarUserId)).'" alt="'.$avatarUserName.'" class="userAvatar" />';
+		if($userId > 0) {
+			$ret = '<a href="'.FSystem::getUri('who='.$userId.'#tabs-profil',$linkTo).'">'.$ret.'</a>';
 		}
 		$cache->setData($ret, $cacheId, $cacheGrp);
 		return $ret;

@@ -27,6 +27,7 @@ class FDBConn extends mysqli
 			self::$instance = new FDBConn();
 			self::$allowInstantiation = false;
 		}
+		self::$instance->assoc = false;
 		return self::$instance;
 	}
 	
@@ -81,9 +82,5 @@ class FDBConn extends mysqli
 			$result->free();
 		}
 		return $ret;
-	}
-
-	function kill() {
-		$this->close();
 	}
 }

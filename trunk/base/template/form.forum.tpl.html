@@ -1,16 +1,52 @@
-<form id="commentForm" action="{FORMACTION}" method="post" name="audit"<!-- BEGIN fajaxform --> class="fajaxform"<!-- END fajaxform -->>
+<a class="btn btn-primary" data-toggle="collapse" href="#collapseCommentForm">Přidat komentář</a>
+<div id="collapseCommentForm" class="collapse">
+<form id="commentForm" class="form-horizontal<!-- BEGIN fajaxform --> fajaxform<!-- END fajaxform -->" role="form" action="{FORMACTION}" method="post" name="audit">
 <input type="hidden" name="m" value="{M}"/>
 <input type="hidden" name="t" value="{T}"/>
 <!-- BEGIN edit --><input id="ti" name="ti" value="{ITEMID}" type="hidden"/><!-- END edit -->
 <fieldset>
-<!-- BEGIN usernotlogged --><label>Jméno</label><input type="text" name="name" value="{USERNAME}" class="short" tabindex="1" /><br /><!-- END usernotlogged -->
-<div class="clearbox">
-<label for="{TEXTID}">Text</label><textarea id="{TEXTID}" class="leftbox markitup draftable expand" name="text" tabindex="2">{TEXT}</textarea>
-<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div>
+
+<!-- BEGIN usernotlogged --><div class="form-group">
+	<label for="inputName" class="col-sm-2 control-label">Jméno</label>
+	<div class="col-sm-10">
+	  <input type="text" name="name" class="form-control" id="inputName" value="{USERNAME} placeholder="jmeno">
+	</div>
+</div><!-- END usernotlogged -->
+
+<div class="form-group">
+	<label for="{TEXTID}" class="col-sm-2 control-label">Text</label>
+	<div class="col-sm-8">
+		<textarea id="{TEXTID}" class="form-control expand" name="text" rows="3">{TEXT}</textarea>
+	</div>
 </div>
-<div id="recaptchaBox" style="float:right;">{RECAPTCHA}</div>
-<input type="submit" name="send" value="Odeslat" class="button submit" tabindex="4">
-<!-- BEGIN usersigned --><span id="tempStore" class="fuup"></span>
-<div id="imageHolder" class="row"></div><!-- END usersigned -->
+<div class="form-group">
+	<label for="position" class="col-sm-2 control-label">Na mapě</label>
+	<div class="col-sm-8">
+		<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div>
+	</div>
+</div>
+<!-- BEGIN usersigned -->
+<div class="form-group">
+	<label class="col-sm-2 control-label">Přidat obrázek</label>
+	<div class="col-sm-8">
+		<span id="tempStore" class="fuup"></span><div id="imageHolder" class="row"></div>
+	</div>
+</div>
+<!-- END usersigned -->
+<!-- BEGIN recap -->
+<div class="form-group">
+	<label class="col-sm-2 control-label">Anti-spam</label>
+	<div class="col-sm-8">
+		<div id="recaptchaBox">{RECAPTCHA}</div>
+	</div>
+</div>
+<!-- END recap -->
+<div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" name="send" class="btn btn-default">Odeslat</button>
+	</div>
+</div>
+
 </fieldset>
 </form>
+</div>

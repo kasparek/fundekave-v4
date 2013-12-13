@@ -1,127 +1,201 @@
-<form action="{FORMACTION}" method="post" enctype="multipart/form-data" class="fajaxform">
+<form action="{FORMACTION}" role="form" method="post" enctype="multipart/form-data" class="fajaxform form-horizontal">
 <!-- BEGIN pageid --><input type="hidden" name="pageId" value="{PAGEID}" /><!-- END pageid -->
 <!-- BEGIN t --><input type="hidden" name="t" value="{T}"/><!-- END t -->
-<fieldset class="buttonBar">
-<input type="submit" name="save" value="Uložit" class="button uibutton submit draftdrop" />
-<!-- BEGIN delpage --><input type="submit" name="del" value="Smazat stránku" title="Opravdu chcete smazat tuto stranku?" class="button uibutton confirm" /><!-- END delpage -->    
-</fieldset>
-<div id="tabs">
-<!-- BEGIN tabul --><ul>
-<!-- BEGIN settingstab --><li><a href="#tabs-1">Nastaveni</a></li><!-- END settingstab -->
-<!-- BEGIN extendedtab --><li><a href="#tabs-9">Specialni</a></li><!-- END extendedtab -->
-<!-- BEGIN galeryspecifictabs --><li><a href="#tabs-5">Fotografie</a></li>
-<li><a href="#tabs-upload">Nahrat</a></li><!-- END galeryspecifictabs -->
-<!-- BEGIN permissionstab --><li><a href="#tabs-2">Pristup</a></li><!-- END permissionstab -->
-<!-- BEGIN relatedtab --><li><a href="#tabs-3">Spratelene stranky</a></li><!-- END relatedtab -->
-<!-- BEGIN forumspecifictab --><li><a href="#tabs-4">Nastenka</a></li><!-- END forumspecifictab -->
-<!-- BEGIN categorytab --><li><a href="#tabs-7">Kategorie</a></li><!-- END categorytab -->
-<!-- BEGIN leftpaneltab --><li><a href="#tabs-8">Postranní panel</a></li><!-- END leftpaneltab -->
+
+<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" name="save" class="btn btn-success submit">Uložit</button>
+			<!-- BEGIN delpage --><button type="submit" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tuto stránku?">Smazat</button><!-- END delpage -->
+		</div>
+	</div>
+
+<!-- BEGIN tabul --><ul class="nav nav-tabs">
+<!-- BEGIN settingstab --><li class="active"><a href="#tabs-1" data-toggle="tab">Nastaveni</a></li><!-- END settingstab -->
+<!-- BEGIN extendedtab --><li><a href="#tabs-9" data-toggle="tab">Specialni</a></li><!-- END extendedtab -->
+<!-- BEGIN permissionstab --><li><a href="#tabs-2" data-toggle="tab">Pristup</a></li><!-- END permissionstab -->
+<!-- BEGIN relatedtab --><li><a href="#tabs-3" data-toggle="tab">Spratelene stranky</a></li><!-- END relatedtab -->
+<!-- BEGIN forumspecifictab --><li><a href="#tabs-4" data-toggle="tab">Nastenka</a></li><!-- END forumspecifictab -->
+<!-- BEGIN categorytab --><li><a href="#tabs-7" data-toggle="tab">Kategorie</a></li><!-- END categorytab -->
+<!-- BEGIN leftpaneltab --><li><a href="#tabs-8" data-toggle="tab">Postranní panel</a></li><!-- END leftpaneltab -->
 </ul><!-- END tabul -->
-<div id="tabs-1">
+
+<div class="tab-content">
+		<div class="tab-pane fade in active" id="tabs-1">
 <fieldset>
-<legend>Nastaveni</legend>
-<!-- BEGIN pageowner --><label>Majitel</label><span><a href="{OWNERLINK}">{OWNERNAME}</a></span><br /><!-- END pageowner -->
-<label>Název</label>
-<input type="text" name="name" value="{PAGENAME}" class="long"><br />
-<!-- BEGIN date --><label>Datum</label><input type="text" name="datecontent" value="{DATECONTENT}" class="short datepicker" /><br /><!-- END date -->
-<!-- BEGIN sadmi --><label>Zamceni stranky</label><select name="locked">{LOCKEDOPTIONS}</select><br />
-<label>Sablona</label><input type="text" name="template" value="{PAGETEMPLATE}" class="short"><br />
-<label>Top page</label><input type="text" name="pageIdTop" value="{PAGEIDTOP}" class="short"><br />
-<label>SEO Popis</label>
-<textarea id="{PAGEDESCRIPTIONID}" class="draftable" name="description">{PAGEDESCRIPTION}</textarea><br />
+<legend>Nastavení</legend>
+<!-- BEGIN pageowner -->
+<div class="form-group">
+	<label class="col-sm-2 control-label">Majitel</label>
+	<div class="col-sm-10"><a href="{OWNERLINK}">{OWNERNAME}</a></div>
+</div><!-- END pageowner -->
+
+<div class="form-group">
+	<label for="pagename" class="col-sm-2 control-label">Název</label>
+	<div class="col-sm-10">
+		<input type="text" id="pagename" name="name" value="{PAGENAME}" class="form-control"/>
+	</div>
+</div>
+<!-- BEGIN date -->
+<div class="form-group">
+	<label for="formDate" class="col-sm-2 control-label">Datum</label>
+	<div class="col-sm-10">
+		<input id="formDate" name="datecontent" value="{DATECONTENT}" type="text" class="form-control date">
+	</div>
+</div><!-- END date -->
+<!-- BEGIN sadmi -->
+<div class="form-group">
+	<label for="locked" class="col-sm-2 control-label">Zamceni stranky</label>
+	<div class="col-sm-10">
+		<select id="locked" name="locked" class="form-control">{LOCKEDOPTIONS}</select>
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="template" class="col-sm-2 control-label">Sablona</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="template" name="template" value="{PAGETEMPLATE}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="pageIdTop" class="col-sm-2 control-label">Top page</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="pageIdTop" name="pageIdTop" value="{PAGEIDTOP}">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="{PAGEDESCRIPTIONID}" class="col-sm-2 control-label">SEO Popis</label>
+	<div class="col-sm-10">
+		<textarea id="{PAGEDESCRIPTIONID}" name="description" class="form-control" row="3">{PAGEDESCRIPTION}</textarea>
+	</div>
+</div>
 <!-- END sadmi -->
-<!-- BEGIN categories --><label>Kategorie</label><select name="category"><option value="0"></option>{CATOPTIONS}</select> Nova: <input type="text" name="categoryNew" class="short" /><br /><!-- END categories -->
-<!-- BEGIN content --><label>Popis</label>
-<textarea id="{PAGECONTENTID}" class="markitup draftable expand" name="content">{PAGECONTENT}</textarea>{PAGECONTENTTOOLBOX}<br /><!-- END content -->  
+
+<!-- BEGIN categories -->
+<div class="form-group">
+	<label for="categoryId" class="col-sm-2 control-label">Kategorie</label>
+	<div class="col-sm-4">
+		<select id="categoryId" name="category" class="form-control"><option value="0"></option>{CATOPTIONS}</select> 
+	</div>
+	<label for="categoryNew" class="col-sm-2 control-label">nová</label>
+	<div class="col-sm-4">
+		<input type="text" class="form-control" id="categoryNew" name="categoryNew" class="form-control" />
+	</div>
+</div><!-- END categories -->
+
+<!-- BEGIN content --><div class="form-group">
+	<label for="{PAGECONTENTID}" class="col-sm-2 control-label">Popis</label>
+	<div class="col-sm-10">
+		<textarea id="{PAGECONTENTID}" name="content" class="form-control markitup" row="3">{PAGECONTENT}</textarea>
+	</div>
+</div><!-- END content -->  
 </fieldset>
 </div>
-<!-- BEGIN extended --><div id="tabs-9">
-<!-- BEGIN pageavatarhandler -->
+
+
+
+<!-- BEGIN extended --><div class="tab-pane fade" id="tabs-9">
 <fieldset>
-<legend>Avatar</legend>      
-<!-- BEGIN pageavatarupload -->
-<label>Ikona (60x25px)</label>
-<div id="pava" class="fuup">
-<input type="file" name="audico" /></div><br />
-<label> - nebo URL </label><input type="text" value="" name="audicourl" /><br />
-<div id="pageavatarBox"><!-- BEGIN pageavatar -->
-<label>&nbsp;</label><img src="{PAGEICOLINK}" /> <input value="Smazat" title="Opravdu chcete smazat avatar stranky?" type="submit" name="delpageavatar" class="button confirm" /><br />
-<!-- END pageavatar --></div>
-<!-- END pageavatarupload -->
-</fieldset>
-<!-- END pageavatarhandler -->
-<fieldset>
-<legend>Obrazky</legend>
-<label>Velikos náhledu</label><input type="text" name="xwidthpx" value="{GTHUMBWIDTH}" class="xShort" /> x 
-<input type="text" name="xheightpx" value="{GTHUMBHEIGHT}" class="xShort" /> - Šířka px x vyska px<br />
-<label>Styl nahledu</label><select name="xthumbstyle">
-<option value="1">Bez orezu</option>
-<option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
-</select><br />
-</fieldset>
-<fieldset>
-<legend>Mapy</legend>
-<label>Ukaz na mape</label><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea>
-</fieldset>
+<legend>Další nastavení</legend>
+<div class="form-group">
+	<label for="xwidthpx" class="col-sm-4 control-label">Velikost náhledu Šířka px</label>
+	<div class="col-sm-2">
+		<input type="text" id="xwidthpx" name="xwidthpx" value="{GTHUMBWIDTH}" class="form-control" />
+	</div>
+	<label for="xheightpx" class="col-sm-2 control-label">Výška px</label>
+	<div class="col-sm-2">
+		<input type="text" id="xheightpx" name="xheightpx" value="{GTHUMBHEIGHT}" class="form-control" />
+	</div>
+</div>
+
+<div class="form-group">
+	<label class="col-sm-2 control-label">Styl náhledu</label>
+	<div class="col-sm-10">
+		<select id="xthumbstyle" name="xthumbstyle" class="form-control">
+		<option value="1">Bez orezu</option>
+		<option value="2"<!-- BEGIN galerythumbstyle2 --> selected="selected"<!-- END galerythumbstyle2 -->>Orez na format</option>
+		</select>
+	</div>
+</div>
+
+<!-- BEGIN galeryspecificcontent -->
+<div class="form-group">
+	<label for="galeryorder" class="col-sm-2 control-label">Foto. řadit</label>
+	<div class="col-sm-10">
+		<select id="galeryorder" name="galeryorder" class="form-control">
+		<option value="0">Podle jména</option>
+		<option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
+		</select>
+	</div>
+</div>
+<!-- BEGIN uploadinput --><div class="form-group">
+	<label for="upfoto{UPLOADINPUTID}" class="col-sm-2 control-label">{UPLOADINPUTLABEL}</label>
+	<div class="col-sm-10">
+		<input type="file" id="upfoto{UPLOADINPUTID}" name="upfoto{UPLOADINPUTID}" class="form-control" />
+	</div>
+</div><!-- END uploadinput -->
+
+<!-- END galeryspecificcontent -->
+<div class="form-group">
+	<label for="position" class="col-sm-2 control-label">Ukaz na mape</label>
+	<div class="col-sm-10">
+		<textarea id="position" class="form-control geoInput" name="position" row="3" title="Zadejte polohu">{POSITION}</textarea>
+	</div>
+</div>
 <!-- BEGIN forumreaction -->
-<fieldset>
-<legend>Komentare</legend>
-<label>Komentare:</label><select name="forumReact">
+<div class="form-group">
+	<label for="forumReact" class="col-sm-2 control-label">Komentáře</label>
+	<div class="col-sm-10">
+<select name="forumReact" id="forumReact" class="form-control">
 <option value="1"<!-- BEGIN fforum1 --> selected="selected"<!-- END fforum1 -->>Povolit reakce</option>
 <option value="2"<!-- BEGIN fforum2 --> selected="selected"<!-- END fforum2 -->>Pouze pro registrovane</option>
 <option value="0"<!-- BEGIN fforum0 --> selected="selected"<!-- END fforum0 -->>Zakazat diskuzi</option>
 </select>
-</fieldset>
+</div>
+</div>
 <!-- END forumreaction -->
-<!-- BEGIN site --><fieldset>
-<legend>Website</legend>
-<label>Homesite:</label> <input type="text" name="homesite" value="{HOMESITE}" /> <br />
-</fieldset><!-- END site -->
+<!-- BEGIN site -->
+<div class="form-group">
+	<label for="homesite" class="col-sm-2 control-label">Homesite</label>
+	<div class="col-sm-10">
+		<input type="text" id="homesite" name="homesite" class="form-control" value="{HOMESITE}"/>
+	</div>
+</div>
+<!-- END site -->
+
+<div class="form-group">
+	<label for="topbanner" class="col-sm-2 control-label">Top banner</label>
+	<div class="col-sm-10">
+		<textarea id="topbanner" name="topbanner" class="form-control expand" row="3">{TOPBANNER}</textarea>
+	</div>
+	<div class="col-sm-offset-2 col-sm-10">ItemId;Banner Height;Vertical align;Vertical push;Time to change seconds</div>
+</div>
+
+
+</fieldset>
 </div><!-- END extended -->
 
-<!-- BEGIN forumspecific --><div id="tabs-4"><fieldset><legend>Nastenka klubu</legend>
-<textarea id="{HOMEID}" name="forumhome" class="markitup draftable largeTextarea expand">{CONTENT}</textarea>
-</fieldset>
+<!-- BEGIN forumspecific --><div class="tab-pane fade" id="tabs-4">
+<fieldset>
+<legend>Nástěnka klubu</legend>
+<div class="form-group">
+	<div class="col-sm-12">
+		<textarea id="HOMEID" name="forumhome" class="form-control markitup" row="3">{CONTENT}</textarea>
+	</div>
+</div>
 </div><!-- END forumspecific -->
-<!-- BEGIN galeryspecificcontent --><div id="tabs-5">
+<!-- BEGIN perm --><div class="tab-pane fade" id="tabs-2">{PAGEPERMISIONSFORM}</div><!-- END perm -->
+<!-- BEGIN relations --><div class="tab-pane fade" id="tabs-3">{RELATIONSFORM}</div><!-- END relations -->
+<!-- BEGIN categoryedit --><div class="tab-pane fade" id="tabs-7">{PAGECATEGORYEDIT}</div><!-- END categoryedit -->
+<!-- BEGIN leftpaneledit --><div class="tab-pane fade" id="tabs-8">
 <fieldset>
-<legend>Seznam fotografii</legend>
-<label>Celkem v galerii:</label><span id="fotoTotal">{FOTOTOTAL}</span><br />
-<label>Řadit:</label><select name="galeryorder">
-<option value="0">Podle jména</option>
-<option value="1"<!-- BEGIN gorddate --> selected="selected"<!-- END gorddate -->>Podle data fotky (od nejnovějších)</option>
-</select><br />
-<div id="fotoList"><!-- BEGIN gfoto -->{FOTOLIST}<!-- END gfoto --></div>
-</fieldset>
+<legend>Postranní panel</legend>
+<div class="form-group">
+	<div class="col-sm-12">
+		<textarea id="sidebar" name="sidebar" class="form-control markitup" row="3">{SIDEBAR}</textarea>
+	</div>
 </div>
-<div id="tabs-upload">
-<fieldset>
-<legend>Nahrát fotografie</legend>
-<div id="uploadControls">
-<input type="button" id="uploadButt" disabled="disabled" value="Nahrat do galerie" class="button uibutton" />
-<input type="button" id="cancelButt" disabled="disabled" value="Zastavit" class="button uibutton" />
-<input type="button" id="removeAllButt" disabled="disabled" value="Zrusit frontu" class="button uibutton" />
-</div>
-<div class="fuup" id="fuga">
-<a href="http://www.adobe.com/go/getflashplayer"><img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" /></a><br />
-<!-- BEGIN uploadinput --><label>{UPLOADINPUTLABEL}</label><input type="file" name="upfoto{UPLOADINPUTID}" /><br /><!-- END uploadinput -->
-</div>
-<div id="uploadTip" class="hidden">
-<img src="[[ASSETS_URL]]uploadtip.png" class="leftbox rightPadded" />Tlačítkem "VYBRAT" vyberte fotky které chcete umístit do alba.<br />
-Tlačítkem "NAHRÁT" se fotografie automaticky zmenší a uloží na server.<br />
-Před uložením můžete vybrané fotografie pootočit.<br />
-<strong>Tip při výběru fotografií</strong><br />
-Při výběru fotografií mMůžete vybrat více najednou držením klávesy CTRL při klikání myší.
-</div>
-</fieldset>
-</div><!-- END galeryspecificcontent -->
-
-<!-- BEGIN perm --><div id="tabs-2">{PAGEPERMISIONSFORM}</div><!-- END perm -->
-<!-- BEGIN relations --><div id="tabs-3">{RELATIONSFORM}</div><!-- END relations -->
-<!-- BEGIN categoryedit --><div id="tabs-7">{PAGECATEGORYEDIT}</div><!-- END categoryedit -->
-<!-- BEGIN leftpaneledit --><div id="tabs-8">
-<fieldset>
-<textarea id="sidebar" name="sidebar" class="markitup draftable largeTextarea expand">{SIDEBAR}</textarea>
 </fieldset>
 </div><!-- END leftpaneledit -->
 </div>

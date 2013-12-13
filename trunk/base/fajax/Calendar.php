@@ -1,9 +1,9 @@
 <?php
 class fajax_Calendar extends FAjaxPluginBase {
-  static function walk($data) {
-		$ret = FLeftPanelPlugins::rh_diar_kalendar($data['year'],$data['month']);
+  static function show($data) {
+		$ret = sidebar_calendar::show($data['year'],$data['month'],true);
 		//---create response
-		FAjax::addResponse('rh_diar_kalendar', '$html', $ret);
+		FAjax::addResponse('call', 'calendarUpdate', $ret);
 	}
 	
 }

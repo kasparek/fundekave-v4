@@ -110,12 +110,31 @@ class FBuildPage {
 					$itemName = $user->itemVO->addon;
 					if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
 					if(!empty($itemName)) {
-						$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId));
+						$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId,'',''));
 					}
 				}
 		
 				if($user->whoIs>0) {
 					$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
+				}
+				
+				if(!empty($user->pageParam)) {
+					switch($user->pageParam) {
+						case 'e':
+						case 'sa':
+							$breadcrumbs[] = array('name'=>'Nastaveni');
+							break;
+						case 'u':
+							$breadcrumbs[] = array('name'=>'Upravit');
+							break;
+						case 'h':
+							$breadcrumbs[] = array('name'=>'Nastenka');
+							break;
+						case 'm':
+							$breadcrumbs[] = array('name'=>'Mapa');
+							break;
+						//TODO: use localization file
+					}
 				}
 			}
 			unset($breadcrumbs[count($breadcrumbs)-1]['url']);
@@ -151,24 +170,26 @@ class FBuildPage {
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		
+		if(FRules::getCurrent(FConf::get('settings','perm_add_forum')))
+			FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','foall','a'), FLang::$LABEL_PAGE_FORUM_NEW);
+		if(FRules::getCurrent(FConf::get('settings','perm_add_blog')))
+			FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','foall','a'), FLang::$LABEL_PAGE_BLOG_NEW);
+		if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))
+			FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','foall','a'), FLang::$LABEL_PAGE_GALERY_NEW);
+		
 		if($user->pageAccess == true) {
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
 					$template = 'page_PageEdit';
 					break;
-					/* poll */
-				case 'p':
-					$template = 'page_PagePoll';
-					break;
 					/* stats */
-				case 's':
+				/*case 's':
 					$template = 'page_PageStat';
-					break;
+					break;*/
 					/* home */
 				case 'h':
 					$template='';
-					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
 					$user->pageVO->content = FText::postProcess($user->pageVO->prop('home'));
 					if(empty($user->pageVO->content)) $user->pageVO->content = FLang::$MESSAGE_FORUM_HOME_EMPTY;
 					break;
@@ -181,7 +202,7 @@ class FBuildPage {
 					if(empty($template) && $user->pageVO->typeId!='culture') $template='page_ItemsList';
 					break;
 			}
-						
+			
 			if($template != '') {
 				//DYNAMIC TEMPLATE
 				FProfiler::write('FBuildPage::baseContent--TPL LOADED');
@@ -189,7 +210,7 @@ class FBuildPage {
 				FProfiler::write('FBuildPage::baseContent--TPL PROCESSED');
 			} else {
 				//NOT TEMPLATE AT ALL
-				FBuildPage::addTab(array("MAINDATA"=>FText::postProcess($user->pageVO->content).'<div class="clearbox"></div>'));
+				FBuildPage::addTab(array("MAINDATA"=>FText::postProcess($user->pageVO->content).'<div class="clearfix"></div>'));
 			}
 			
 			FProfiler::write('FBuildPage::baseContent--CONTENT COMPLETE');
@@ -214,19 +235,18 @@ class FBuildPage {
 						FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'e'),FLang::$LABEL_SETTINGS);
 					}
 				}
-				//TODO:refactor classes and use again
-				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'p'), FLang::$LABEL_POLL);
-				//FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'s'), FLang::$LABEL_STATS);
+				
 			}
 			//SUPERADMIN access - tlacitka na nastaveni stranek
 			if(FRules::get($user->userVO->userId,'sadmi',2)) {
-				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS,array('parentClass'=>'opposite'));
+				FMenu::secondaryMenuAddItem(FSystem::getUri('',$pageId,'sa'),FLang::$BUTTON_PAGE_SETTINGS);
 			}
 			FProfiler::write('FBuildPage::baseContent--BUTTONS ADDED');
 		}
 	}
 
 	static function show( $data ) {
+		$actionNum=0;
 		$user = FUser::getInstance();
 
 		FBuildPage::baseContent( $data );
@@ -243,33 +263,89 @@ class FBuildPage {
 				$tpl->parseCurrentBlock();
 			}
 		}
-		
+		if($user->pageVO) {
+			if(empty($user->pageVO->tplVars['NUMCOLMAIN'])) $user->pageVO->tplVars['NUMCOLMAIN'] = 9;
+			
+			if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
+				$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
+				//var_dump($pageListOut);die();
+				
+				if(!empty($pageListOut)) {
+					$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
+					$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
+				}
+			}
+		}
+				
 		if(empty($user->pageVO)) {
 			FError::write_log("FBuildPage::show - missing page - pageid'".$user->pageId."'");
 		}
 
 		//---ERROR MESSAGES
+		//priority bootstrap - success, info, warning, danger
 		$arrMsg = FError::get();
+		$outmsg = array();
 		if(!empty($arrMsg)){
-			foreach ($arrMsg as $k=>$v) $errmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
-			$tpl->setVariable("ERRORMSG",implode('<br />',$errmsg));
-			//FError::write_log("FBuildPage::ERRORS:: ".implode(',',$errmsg));
+			foreach ($arrMsg as $k=>$v) $outmsg[] = $k . (($v>1)?(' ['.$v.']'):(''));
+			foreach ($outmsg as $v) {
+				$tpl->setVariable("MSGPRIORITY",'danger');
+				$tpl->setVariable("MSGTEXT",$v);
+				$tpl->parse('sysmsg');
+			}
 			FError::reset();
 		}
 		
 		$arrMsg = FError::get(1);
+		$outmsg = array();
 		if(!empty($arrMsg)){
 			foreach ($arrMsg as $k=>$v) $okmsg[]=$k . (($v>1)?(' ['.$v.']'):(''));
-			$tpl->setVariable("OKMSG",implode('<br />',$okmsg));
+			foreach ($outmsg as $v) {
+				$tpl->setVariable("MSGPRIORITY",'info');
+				$tpl->setVariable("MSGTEXT",$v);
+				$tpl->parse('sysmsg');
+			}
 			FError::reset(1);
 		}
 		
 		//---HEADER
+		$homeUrl = FSystem::getUri('',HOME_PAGE,'');
+		$brandLabel = FConf::get('settings','brand_label');
+		if(!empty($brandLabel)) {
+			$tpl->setVariable('BRAND_URL', $homeUrl);
+			$tpl->setVariable('BRAND_LABEL', $brandLabel);
+		}
 		$tpl->setVariable('HOME_PAGE', FSystem::getUri('',HOME_PAGE,''));
 		$tpl->setVariable("CHARSET", FConf::get('internationalization','charset'));
 		$tpl->setVariable("GOOGLEID", GOOGLE_ANAL_ID);
-		$tpl->setVariable("CLIENT_WIDTH", $user->userVO->clientWidth*1);
-		$tpl->setVariable("CLIENT_HEIGHT", $user->userVO->clientHeight*1);
+		
+		if($user->idkontrol) {
+			$tpl->setVariable('SIGNED_AVATAR',FAvatar::showAvatar(-1));
+			$tpl->setVariable('SIGNED_NAME',$user->userVO->name);
+						
+			$q = "select count(1) from sys_pages_items where typeId='request' and addon='".$user->userVO->userId."'";
+			$reqNum = FDBTool::getOne($q);//,'friendrequest','default','s',120);
+			if($reqNum>0) {
+				$tpl->setVariable('REQUESTSNUM',$reqNum);
+				$actionNum += $reqNum;
+			}
+			
+			$q = "SELECT l.userId,u.name FROM sys_users_logged as l join sys_users as u on u.userId=l.userId "
+			."WHERE subdate(NOW(),interval ".USERVIEWONLINE." second)<l.dateUpdated and l.userId!='".$user->userVO->userId."' "
+			."ORDER BY l.dateUpdated desc";
+			if (false !== ($arrpra = FDBTool::getAll($q))) {
+				if(!empty($arrpra)) {
+					$tpl->setVariable('NUMFRIENDSONLINE',count($arrpra));
+					foreach ($arrpra as $pra){
+						$tpl->setVariable('FRIENDID',$pra[0]);
+						$tpl->setVariable('FRIENDNAME',$pra[1]);
+						$tpl->setVariable('FRIENDAVATAR',FAvatar::getAvatarUrl($pra[0]));
+						$tpl->parse('onlineuser');
+					}
+				}
+			}
+		} else {
+			$tpl->touchBlock('loginform');
+		}
   
 		if($user->pageVO) {
 			$tpl->setVariable('PAGEID', $user->pageVO->pageId);
@@ -283,6 +359,48 @@ class FBuildPage {
 			if($user->pageVO->pageIdTop!=$user->pageVO->pageId) $tpl->setVariable('RSSPAGEID',$user->pageVO->pageId);
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 			if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
+			
+			$topbanner = $pageVOTop->prop('topbanner');
+			if(!empty($topbanner)) {
+				$topbannerData = array();
+				$topbanner = explode("\n",$topbanner);
+				if(strpos($topbanner[0],';')!==false) $firstBanner = explode(';',$topbanner[0]);
+				else $firstBanner = explode(',',$topbanner[0]);
+				if($firstBanner[4]>0) {
+					$cache = FCache::getInstance('d',$firstBanner[4]);
+					$topbannerCache = $cache->getData($pageVOTop->pageId,'topbanner');
+					if($topbannerCache!==false) $topbannerData = $topbannerCache;
+				}
+				if(empty($topbannerData)) {
+					$topbannerRow = array_shift($topbanner);
+					array_push($topbanner,$topbannerRow);
+					$pageVOTop->prop('topbanner',implode("\n",$topbanner));
+					$topbannerData['h'] = $firstBanner[1];
+					$topbannerData['v'] = $firstBanner[2];
+					$topbannerData['m'] = $firstBanner[3];
+					
+					if(strpos($firstBanner[0],'http')===0) $topbannerData['i'] = $firstBanner[0];
+					else {
+						$itemVO = new ItemVO($firstBanner[0],true);
+						if($itemVO->itemId) {
+							$topbannerData['i'] = $itemVO->getImageUrl(null,'1600x1600/prop',true);
+							$pageBanner = FactoryVO::get('PageVO',$itemVO->pageId);
+							$topbannerData['t'] = $pageBanner->get('name');
+							$topbannerData['u'] = FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'');
+						}
+					}
+					$cache->setData($topbannerData);
+				}
+
+				if($topbannerData) {
+					$tpl->setVariable('TOPBANHEIGHT',$topbannerData['h']);
+					$tpl->setVariable('TOPBANMARGIN',$topbannerData['m']);
+					$tpl->setVariable('TOPBANVALIGN',$topbannerData['v']);
+					if(!empty($topbannerData['u'])) $tpl->setVariable('TOPBANURL',$topbannerData['u']);
+					if(!empty($topbannerData['t'])) $tpl->setVariable('TOPBANTITLE',$topbannerData['t']);
+					$tpl->setVariable('TOPBANIMG',$topbannerData['i']);
+				}
+			}
 		}
 		
 		//---BODY PARTS
@@ -290,6 +408,8 @@ class FBuildPage {
 		//---MAIN MENU
 		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
 		$menu = $cache->getData('mainmenu');
+		//TODO:remove
+		$menu = false;
 		if($menu===false) {
 			$arrMenuItems = FMenu::topMenu();
 			while($arrMenuItems) {
@@ -305,7 +425,7 @@ class FBuildPage {
 			$tpl->setVariable("CACHEDMENU", $menu);
 		}
 		FProfiler::write('FBuildPage--FSystem::topMenu');
-
+		
     //---BREADCRUMBS & SECONDARY MENU
 		if($user->pageAccess === true) {
       if($user->pageVO) {
@@ -313,12 +433,15 @@ class FBuildPage {
 				if(!FConf::get('settings','breadcrumbs_hide')) {
 				$breadcrumbs = FBuildPage::getBreadcrumbs();
 				foreach($breadcrumbs as $crumb) {
-					$tpl->setVariable('BREADNAME',$crumb['name']);
+					
 					if(isset($crumb['url'])) {
+						$tpl->setVariable('BREADNAME',$crumb['name']);
 						$tpl->setVariable('BREADURL',$crumb['url']);
-						$tpl->touchBlock('breadlinkend');
+						$tpl->parse('breadcrumb');
+					} else {
+						$tpl->setVariable('BREADHARD',$crumb['name']);
 					}
-					$tpl->parse('bread');
+					
 				}
         }
 				
@@ -334,6 +457,7 @@ class FBuildPage {
 						if(isset($options['title'])) $tpl->setVariable('LOTITLE',$options['title']);
 						if(isset($options['parentClass'])) $tpl->setVariable('LISTCLASS',$options['parentClass']);
 						$tpl->parse('smitem');
+						
 					}
 				}
 			}
@@ -341,6 +465,7 @@ class FBuildPage {
 		FProfiler::write('FBuildPage--FSystem::secondaryMenu');
 
 		//---LEFT PANEL POPULATING
+		$hasSidebarData = false;
 		$showSidebar = true;
     if(FConf::get('settings','sidebar_off')) {
       $showSidebar = false;
@@ -352,27 +477,67 @@ class FBuildPage {
 		if($showSidebar) {
 			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 			$fsidebar->load();
-			$fsidebar->show();
+			$hasSidebarData = $fsidebar->show();
 			FProfiler::write('FBuildPage--FSidebar');
-		} else {
-      $tpl->touchBlock('bodySidebarOff');
-    }
+		}
 		$tpl->setVariable("USER", $user->idkontrol?'1':'0');
 		$tpl->setVariable("AUTH", $user->getRemoteAuthToken());
 		//post messages
 		if($user->userVO->hasNewMessages()) {
 			$tpl->setVariable('NEWPOST',$user->userVO->newPost);
 			$tpl->setVariable('NEWPOSTFROMNAME',$user->userVO->newPostFrom);
+			$tpl->setVariable('MESSAGENUM',$user->userVO->newPost);
+			$actionNum += $user->userVO->newPost;
 		} else {
 			$tpl->touchBlock('msgHidden');
 		}
-    
+		$skinName = SKIN;
+		$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS);
+		$skinRestUrl = '';
+		if(!empty($skinName)) {
+			$skinRestUrl = 'skin/'.$skinName;
+			$tpl->setVariable('URL_SKIN',$cssUrl.$skinRestUrl);
+			$tpl->parse('skincss');
+			$tpl->setVariable('URL_SKIN',$cssUrl.$skinRestUrl);
+		}
+		$tpl->setVariable('URL_FAVICON',$cssUrl.$skinRestUrl.'/images/favicon.ico');
+		
+		$brandLogo = FConf::get('settings','brand_logo');
+		if(!empty($brandLogo)) {
+			$tpl->setVariable('BRAND_LOGO',$cssUrl.$skinRestUrl.'/images/'.$brandLogo);
+			$tpl->setVariable('BRAND_LOGO_URL',$homeUrl);
+		}
+		
+		if($actionNum>0) {
+			$tpl->setVariable('ACTIONSNUM',$actionNum);
+		}
+		
+		$bsskin = FConf::get('settings','bssskin_default');
+		
+		if($user->idkontrol) {
+			$bsskin = $user->userVO->prop('skin');
+		} else {
+			$cache = FCache::getInstance('s');
+			$bsskinCached = $cache->getData('bsskin');
+			if($bsskinCached!==false) $bsskin = $bsskinCached;
+		}
+		if(!empty($bsskin)) {
+			$tpl->setVariable('BOOTSTRAP_SKIN','.'.$bsskin);
+		}
+		
 		//---custom code
 		$cClassname = 'page_'.HOME_PAGE;
 		try {
 		  if(class_exists($cClassname)) call_user_func(array($cClassname, 'show'),$tpl);
 		} catch(Exception $e){;}
     
+		if(!$hasSidebarData) {
+			$user->pageVO->tplVars['NUMCOLMAIN'] += 3;
+		}
+		if(!empty($user->pageVO->tplVars)) {
+			$tpl->setVariable($user->pageVO->tplVars);
+		}
+	
 		//---GET PAGE DATA
 		$data = $tpl->get();
 		$data = FSystem::superVars($data);

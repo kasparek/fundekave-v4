@@ -1,102 +1,139 @@
-<form enctype="multipart/form-data" action="{FORMACTION}" method="post" class="fajaxform">
-<fieldset class="buttonBar">
-<input type="submit" name="save" value="Uložit" class="button uibutton submit draftdrop" />
-</fieldset>
-<div id="tabs">
-<ul>
-<li><a href="#tabs-1">Profil</a></li>
-<li><a href="#tabs-5">Osobni foto</a></li>
-<li><a href="#tabs-2">Nastaveni</a></li>
-<li><a href="#tabs-3">Heslo</a></li>
-<!-- BEGIN webcamButton --><li><a href="#tabs-4">Webcam</a></li><!-- END webcamButton -->
+<div class="well">
+
+<form enctype="multipart/form-data" action="{FORMACTION}" method="post" class="fajaxform form-horizontal" role="form">
+
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" name="save" class="btn btn-success submit">Uložit</button>
+	</div>
+</div>
+
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#tabs-1" data-toggle="tab">Profil</a></li>
+	<li><a href="#tabs-5" data-toggle="tab">Osobní fotografie</a></li>
+	<li><a href="#tabs-2" data-toggle="tab">Nastavení</a></li>
+	<li><a href="#tabs-3" data-toggle="tab">Heslo</a></li>
 </ul>
 
-<div id="tabs-1">
+<div class="tab-content">
+
+<div id="tabs-1" class="tab-pane fade in active">
 <fieldset>
-<legend>Osobni udaje</legend>
-<label>Icq</label>
-<input type="text" name="infoicq" value="{USERICQ}" /><br />
-<label>E-mail</label>
-<input type="text" name="infoemajl" value="{USEREMAIL}" class="long" /><br />
-<label>WWW</label>
-<input type="text" name="infowww" value="{USERWWW}" class="long" /><br />
-<label>Motto</label>
-<input type="text" name="infomotto" value="{USERMOTTO}" class="long" /><br />
-<label>Neco o me</label>
-<textarea name="infoabout" id="userabout" class="draftable" />{USERABOUT}</textarea><br />
+<legend>Osobní</legend>
+<div class="form-group">
+	<label for="infoicq" class="col-sm-2 control-label">ICQ</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="infoicq" name="infoicq" value="{USERICQ}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="infoemajl" class="col-sm-2 control-label">Email</label>
+	<div class="col-sm-10">
+		<input type="email" class="form-control" id="infoemajl" name="infoemajl" value="{USEREMAIL}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="infowww" class="col-sm-2 control-label">Website</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="infowww" name="infowww" value="{USERWWW}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="infomotto" class="col-sm-2 control-label">Motto</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="infomotto" name="infomotto" value="{USERMOTTO}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="infoabout" class="col-sm-2 control-label">Neco o mě</label>
+	<div class="col-sm-10">
+		<textarea class="form-control expand" col="3" id="infoabout" name="infoabout">{USERABOUT}</textarea>
+	</div>
+</div>
+
 </fieldset>
 </div>
 
-<div id="tabs-5">
+<div id="tabs-5" class="tab-pane fade">
 <fieldset>
-<legend>Osobni foto</legend>
-<label>Upload</label>
-<div id="tempStore" class="fuup"><input type="file" name="idfoto" /></div>
-<div id="personalfoto"><!-- BEGIN foto --><div id="foto{IMGID}" class="clearbox">
-<div class="leftbox col2">
-<a href="{IMGURL}" rel="lightbox-personal"><img src="{THUMBURL}" /></a>
+<div class="form-group">
+	<label for="infoabout" class="col-sm-12 control-label">Nahrajte si svoje profilové fotografie</label>
+	<label for="infoabout" class="col-sm-2 control-label">Vybrat</label>
+	<div class="col-sm-10"><div id="tempStore" class="fuup"><input type="file" name="idfoto" class="form-control" /></div></div>
+
+	
+<div id="personalfoto" class="col-sm-12">
+
+<!-- BEGIN foto --><div id="foto{IMGID}" class="row">
+<div class="col-sm-4">
+<a href="{IMGURL}" rel="lightbox-personal"><img class="img-thumbnail" src="{THUMBURL}" /></a>
 </div>
-<div class="leftbox">
-<!-- BEGIN likeavatar --><input type="submit" class="confirm button uibutton margined" name="avatar{USEAVATARIMGID}" value="Pouzit jako avatar" title="Opravdu toto foto pouzit jako avatar?" /><br /><!-- END likeavatar --> 
-<input type="submit" class="confirm button uibutton margined" name="del{IMGID}" value="Smazat" title="Opravdu chcete toto foto smazat?" />
+<div class="col-sm-8">
+<!-- BEGIN likeavatar --><button type="submit" class="confirm btn btn-primary" name="avatar{USEAVATARIMGID}" title="Opravdu použít jako avatar?">Použít jako avatar</button><!-- END likeavatar --> 
+<button type="submit" class="confirm btn btn-danger" name="del{IMGID}" title="Opravdu chcete toto foto smazat?">Smazat</button>
 </div>
 </div><!-- END foto -->
+
 </div>
+
+
 </fieldset>
 </div>
 
-<div id="tabs-2">
+<div id="tabs-2" class="tab-pane fade">
 <fieldset>
-<legend>Osobni nastaveni</legend>
-<label>Radit oblibene</label>
-<select name="bookedorder">
-<option value="0">Podle novych prispevku</option>
-<option value="1"<!-- BEGIN bookedorder --> selected="selected"<!-- END bookedorder -->>Podle abecedy</option>
-</select><br />
+<legend>Osobní nastavení</legend>
+<div class="form-group">
+	<label for="sett1" class="col-sm-2 control-label">Řadit oblíbené</label>
+	<div class="col-sm-10">
+		<select name="bookedorder" class="form-control" id="sett1">
+		<option value="0">Podle nových prispěvků</option>
+		<option value="1"<!-- BEGIN bookedorder --> selected="selected"<!-- END bookedorder -->>Podle abecedy</option>
+		</select>
+	</div>
+</div>	
+	</fieldset>
+	<fieldset>
+<legend>Vzhled</legend>
+	
+		<div class="row">
+		<!-- BEGIN bsskin -->
+		  <div class="col-md-4">
+			<div class="thumbnail">
+			  <img src="{BSSKIN_IMG}">
+			  <div class="caption">
+				<h3>{BSSKIN_NAME}</h3>
+				<p><a href="{BSSKIN_URL}" class="btn btn-primary noFajax">Vybrat</a></p>
+			  </div>
+			</div>
+		  </div>
+		  <!-- END bsskin -->
+		</div>
+	
+	
 </fieldset>
-
 </div>
-<div id="tabs-3">
+
+<div id="tabs-3" class="tab-pane fade">
 <fieldset>
 <legend>Heslo</legend>
-<label for="pwdreg1">Nové heslo</label><input type="password" name="pwdreg1" value="" /><br />
-<label for="pwdreg2">Potvrzeni hesla</label><input type="password" name="pwdreg2" value="" /><br />
+<div class="form-group">
+	<label for="pwdreg1" class="col-sm-2 control-label">Nové heslo</label>
+	<div class="col-sm-10">
+		<input type="password" class="form-control" id="pwdreg1" name="pwdreg1" value="">
+	</div>
+</div>
+<div class="form-group">
+	<label for="pwdreg2" class="col-sm-2 control-label">Potvrzení hesla</label>
+	<div class="col-sm-10">
+		<input type="password" class="form-control" id="pwdreg2" name="pwdreg2" value="{TITLE}">
+	</div>
+</div>
 </fieldset>
 </div>
 
-<!-- BEGIN webcamTab -->
-<div id="tabs-4">
-<fieldset>
-<legend>Webcam nastaveni</legend>
-<label for="campublic">Webcam vidi</label><select id="campublic" name="campublic">
-<option value="0">Vsichni</option>
-<option value="1"<!-- BEGIN campublicregistered --> selected="selected"<!-- END campublicregistered -->>Jen registrovani</option>
-<option value="2"<!-- BEGIN campublicfriends --> selected="selected"<!-- END campublicfriends -->>Jen pratele</option>
-<option value="3"<!-- BEGIN campublicchosen --> selected="selected"<!-- END campublicchosen -->>Jen vybrani</option>
-</select><br />
-<div id="camChosenBox">
-<label for="camchosen">Vybrani</label><input type="text" id="camchosen" name="camchosen" value="{CAMCHOSEN}" />
-</div> 
-<label for="camavatar">Jako avatar</label>
-<select id="camavatar" name="camavatar">
-<option value="0">Nepouzivat</option>
-<option value="1"<!-- BEGIN camavatar --> selected="selected"<!-- END camavatar -->>Pouzivat automaticky</option>
-</select>
-<br />
-<label for="camresolution">Velikost</label>
-<select id="camresolution" name="camresolution">
-<option value="0">160 x 120 px</option>
-<option value="1"<!-- BEGIN camresolution1 --> selected="selected"<!-- END camresolution1 -->>320 x 240 px</option>
-</select>
-<br />
-<label for="caminterval">Interval [3-60]</label><input type="text" id="caminterval" name="caminterval" value="{CAMINTERVAL}" class="xShort" /> vterin<br />
-<label for="camquality">Kvalita [0-100]</label><input type="text" id="camquality" name="camquality" value="{CAMQUALITY}" class="xShort" /> %<br />
-<label for="cammotion">Reaguje na pohyb</label><select id="cammotion" name="cammotion">
-<option value="1">Zapnuto</option>
-<option value="0"<!-- BEGIN cammotion --> selected="selected"<!-- END cammotion -->>Vypnuto</option>
-</select><br />
-</fieldset>
-</div>
-<!-- END webcamTab -->
+
 </div>
 </form>
+
+</div>

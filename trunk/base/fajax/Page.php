@@ -4,12 +4,14 @@ class fajax_Page extends FAjaxPluginBase {
 	static function fuup($data) {
 		$user = FUser::getInstance();
 		//---call galery refresh
-		$items = $user->pageVO->refreshImages();
-		$newStr = '';
-		$updatedStr = '';
-		if(isset($items['new'])) $newStr = implode(';',$items['new']);
-		if(isset($items['updated'])) $updatedStr = implode(';',$items['updated']);
-		FAjax::addResponse('call','GaleryEdit.refresh',$newStr.','.$updatedStr.','.$items['total']);
+		$user->pageVO->refreshImages();
+		//---get galery item list
+		$fItems = new FItems('galery',$user->userVO->userId);
+		$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
+		$fItems->setOrder($user->pageVO->itemsOrder());
+		$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('nopager'=>true));
+		FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
+		FAjax::addResponse('call','GaleryEdit.init','');
 	}
 
 	static function avatar($data) {

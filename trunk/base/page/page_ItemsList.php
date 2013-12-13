@@ -33,7 +33,7 @@ class page_ItemsList implements iPage {
 		if(!empty($data['__ajaxResponse'])) {
 			FAjax::addResponse('commentForm','action',FSystem::getUri('','',false,array('short'=>1)));
 			$tpl->parse('itemlist');
-			FAjax::addResponse('forumFeed','$replaceWith',$tpl->get('itemlist'));
+			FAjax::addResponse('forumFeed','$html',$tpl->get('itemlist'));
 			FAjax::addResponse('pageHead','$html',FBuildPage::getHeading());
 			FAjax::addResponse('document','title',FBuildPage::getTitle());
 			FAjax::addResponse('call','fajaxInit');
@@ -46,9 +46,8 @@ class page_ItemsList implements iPage {
 	}	
 	 
 	static function buildPrep($data=array()) {
+		if(!is_array($data)) $data = array();
 		//validate input parameters
-		
-				
 		$manualCurrentPage = 0;
 		if(!isset($data['onlyComments'])) $data['onlyComments']=false;
         	
@@ -74,10 +73,16 @@ class page_ItemsList implements iPage {
 		}
 		if(!$data['onlyComments']) {
 			if(FRules::getCurrent(2)) {
+				if($pageVO->typeId=='galery') {
+					if(!$isDetail) {
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-showupload',$user->pageVO->pageId,'u'), FLang::$LABEL_UPLOAD,array('class'=>'fajaxa'));
+					} else {
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:'.$user->itemVO->itemId,$user->pageVO->pageId,'u'), FLang::$LABEL_EDIT_PHOTO,array('class'=>'fajaxa'));
+					}
+				}
 				if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
-					if(FRules::getCurrent(FConf::get('settings','perm_add_shortblog')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:forum',$user->pageVO->pageId), FLang::$LABEL_FORUM_NEW,array('class'=>'fajaxa'));
-					if(FRules::getCurrent(FConf::get('settings','perm_add_event')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+					if(FRules::getCurrent(FConf::get('settings','perm_add_event')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 				}
 			}
 			if($user->pageVO->pageId=='event' && $user->userVO->userId>0){
@@ -114,10 +119,7 @@ class page_ItemsList implements iPage {
 		$output = '';
 		$template = 'page.items.list.tpl.html';
 		$touchedBlocks = array();
-    if($pageVO->typeId=='galery' && !$isDetail) {
-      $touchedBlocks[]='galleryfeed';
-      //$user->pageVO->showSidebar = false;
-    }
+    
 		$vars = array();
 		if($diff>0) {
 			$max = FConf::get('perpage','max');
@@ -158,6 +160,16 @@ class page_ItemsList implements iPage {
 				$vars['EDITFORM'] = FItemsForm::show($itemVO);
 			}
 		}
+		
+		//show upload widget
+		if($user->pageVO->typeId=='galery' && $user->pageParam=='u' && !$isDetail) {
+			if(FRules::getCurrent(2)) {
+				$utpl = FSystem::tpl('form.fuup.tpl.html');
+				$utpl->touchBlock('__global__');
+				$vars['EDITFORM'] = $utpl->get();
+			}
+		}
+		
 
 		/**
 		 *ITEM DETAIL
@@ -174,37 +186,20 @@ class page_ItemsList implements iPage {
 			}
 		}
 
-		if($user->idkontrol && !$isDetail && $pageVO->typeId!='galery') {
-			//TAG FILTERING
-			$cache = FCache::getInstance('f');
-			$tagGroups = $cache->getData('tagGrouped'.(!empty($typeRequest)?'-'.$typeRequest:''),'page/'.$user->pageVO->pageId.'/tag');
-			if($tagGroups===false) {
-				$tagGroups = FDBTool::getCol("SELECT tag_weight FROM `sys_pages_items` where tag_weight>0 ".(!empty($typeRequest)?" and typeId='".$typeRequest."' ":'').($user->pageVO->typeId!='top'?" and pageId='".$user->pageVO->pageId."' ":'')." group by tag_weight");
-				$cache->setData($tagGroups);
-			}
-			$len = count($tagGroups);
-			if($len>0) {
-				$steps = ceil($len/5);
-				if($steps<1) $steps = 1;
-				for($i=0;$i<($len/$steps);$i++) if($i*$steps<$len) $tagGroupsFiltered[] = $tagGroups[$i*$steps];	
-				$currentTag = 0;
-				if(!empty($data['__get']['tag'])) $currentTag = (int) $data['__get']['tag'];
-				if($currentTag>0) $tagsHtmlList[] = '<a href="'.FSystem::getUri("").'" title="'.FLang::$LABEL_TAG_ALL.'">0</a> ';
-				else $tagsHtmlList[] = '<span class="current" title="'.FLang::$LABEL_TAG_ALL.'">0</span> ';
-				foreach($tagGroupsFiltered as $tag) {
-					if($tag==$currentTag) $tagsHtmlList[] = '<span class="current">'.$tag.'</span>';
-					else $tagsHtmlList[] = '<a href="'.FSystem::getUri((!empty($typeRequest)?'type='.$typeRequest.'&':'')."tag=".$tag).'" title="'.FLang::$LABEL_TAG_FILTER.$tag.'">'.$tag.'</a> ';
-				}
-				if($user->pageVO->typeId=='top') {
-					if($typeRequest=='galery') $tagsHtmlList[] = '<span class="current">Jen foto</span>';
-					else $tagsHtmlList[] = '<a href="'.FSystem::getUri("type=galery&tag=".$currentTag).'">Jen foto</a>';
-				}
-				$tagsHtml = implode("\n",$tagsHtmlList);
-				$vars['TAGFILTERLINKS'] = $tagsHtml;
-			}
+		//TOPLIST ITEMS
+		if($pageVO->typeId=='galery') {
+			$vars['TOPFEEDID'] = 'galeryFeed';
+			if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
+			$fItems = new FItems('galery',$user->userVO->userId);
+			$fItems->addWhere("pageId = '". $pageVO->pageId ."'");
+			$fItems->setOrder($pageVO->itemsOrder());
+			$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
+			$listArr['vars']['TOPITEMS'] = $listArr['vars']['ITEMS'];
+			unset($listArr['vars']['ITEMS']);
+			$vars = array_merge($vars,$listArr['vars']);
+			if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 		}
 		
-
 		//continue only if empty $user->pageParam
 		if(empty($user->pageParam) || $user->pageParam=='o') { //TODO: not great implementation
 		//filter-search
@@ -214,6 +209,7 @@ class page_ItemsList implements iPage {
 		 *FORUM FORM
 		 */
 		if($pageVO->typeId!='top') { //no show for live, main etc.
+			$forumFormTypeId = $pageVO->typeId=='galery'?'forum':$pageVO->typeId=='galery';
 			if(FItemsForm::canComment()) {
 				if(empty($data['__ajaxResponse'])) {
 					if($isDetail) $data['simple'] = true;
@@ -225,9 +221,9 @@ class page_ItemsList implements iPage {
 					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 				} else {
 					//TODO: set Lang
-					$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti:'.$itemVO->itemId).'" class="fajaxa">Vloz komentar</a>';
+					$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti:'.$itemVO->itemId).'" class="fajaxa">Vlož komentář</a>';
 				}
-			} else if($isDetail && $pageVO->typeId=='forum') {
+			} else if($isDetail || $forumFormTypeId=='forum') {
 				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
 			}
 		}
@@ -236,9 +232,9 @@ class page_ItemsList implements iPage {
 		if(!$isDetail && !empty($pageVO->content)) {
 			$vars['CONTENT'] = FText::postProcess($pageVO->content);
 		}
-
+		
 		//LIST ITEMS
-		$fItems = new FItems('',$user->userVO->userId);
+		$fItems = new FItems($pageVO->typeId=='galery'?'forum':'',$user->userVO->userId);
 		if(!empty($data['__get']['tag'])) {
 			$tag = (int) $data['__get']['tag'];
 			$fItems->addWhere("tag_weight >= '". $tag ."'");
@@ -249,40 +245,69 @@ class page_ItemsList implements iPage {
 			$type = $data['__get']['type'];
 			$fItems->addWhere("typeId = '". $type ."'");
 		} else {
-			$type = $pageVO->typeId;
+			$type = $pageVO->typeId=='blog'?'top':$pageVO->typeId;
 		}
 
+		//TODO: update `sys_pages_items` as i join sys_pages as p on p.pageId=i.pageId set i.pageIdTop=p.pageIdTop WHERE length(p.pageIdTop)>0 and i.pageIdTop is null and i.typeId='galery'
+		//if(SITE_STRICT && $pageVO->typeId=='top') {
+		//	$fItems->addWhere("pageIdTop = '".SITE_STRICT."'");
+		//}
+		if($pageVO->pageIdTop && $pageVO->typeId=='top') {
+			$fItems->addWhere("pageIdTop = '".$pageVO->pageIdTop."'");
+		}
+		
+		if($pageVO->typeId=='blog') {
+		
+			if($pageVO->pageIdTop) {
+				$fItems->addWhere("(sys_pages_items.pageId='".$pageVO->pageId."' or (sys_pages_items.typeId='galery' and sys_pages_items.pageIdTop='".$pageVO->pageIdTop."'))");
+			} else {
+				$fItems->setPage($pageVO->pageId);
+			}
+		}
+		
 		if($pageVO->typeId!='top') {
-			if($pageVO->pageId!='event') $fItems->setPage($pageVO->pageId);
+			if($pageVO->pageId!='event' && $pageVO->typeId!='blog') {
+				$fItems->setPage($pageVO->pageId);
+			}
 			$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
 		}
+		
 		if($categoryId > 0) {
 			$fItems->addWhere("categoryId='". $categoryId ."'");
 		}
 		if(!empty($searchStr)) {
 			$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
 		}
+		if($isDetail || $pageVO->typeId=='galery') {
+			$type = 'forum';
+		}
 		if($isDetail) {
 			$itemId = $itemVO->itemId;
 			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
-			$type = 'forum';
 		}
-		if(SITE_STRICT && $pageVO->typeId=='top') {
-			$fItems->addWhere("pageIdTop = '".SITE_STRICT."'");
+				
+		$include = $pageVO->prop('include');
+		if(!empty($include)) {
+			$includeList = explode(',',$include);
+			//$fItems->addWhere("(sys_pages_items.typeId = '".implode("' or sys_pages_items.typeId = '",$includeList)."')");
+			$fItems->addWhere("sys_pages_items.typeId in ('".implode("','",$includeList)."')");
 		}
 		
-
 		if(!empty($date)) {
 			//used for sorting
-			$fItems->addWhere("(sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
+			$fItems->addWhere("(0=1)"
+			."or (sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
 			."or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y-%m-%d')) "
-			."or (sys_pages_items.typeId='event' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
+			."or (sys_pages_items.textLong='year' and date_format(sys_pages_items.dateStart, '%m-%d')='".substr($date,5)."') "
+			."or (sys_pages_items.typeId='event' and sys_pages_items.textLong!='year' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
+			.""
 			);
 			$fItems->setOrder('dateStart desc');
 		} else {
 			//ORDER
 			if($pageVO->pageId=='event' && !$isDetail) {
 				$fItems->addWhere("typeId='event'");
+				//add where for repetitive
 				if($user->pageParam=='o') {
 					//---archiv
 					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
@@ -291,7 +316,7 @@ class page_ItemsList implements iPage {
 				} else {
 					//---future
 					FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
-					$fItems->addWhere("(dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d')))");
+					$fItems->addWhere("((textLong='year' and date_format(dateStart,'%m') >= date_format(NOW(),'%m')) or (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))))");
 					$fItems->setOrder('dateStart');
 				}
 			} else {
@@ -310,14 +335,13 @@ class page_ItemsList implements iPage {
 			$pageVO->updateReaded($user->userVO->userId);
 		}
 
-		if($pageVO->typeId=='top') {
+		if($pageVO->typeId=='top' || $pageVO->typeId=='blog') {
 			$fItems->userIdForPageAccess=$user->userVO->userId;
-			$fItems->setTypeLimit('galery',3);
 			$fItems->cacheResults = 'f';
+			$fItems->setTypeLimit('galery',3);
 		}
 		
-		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
-		
+		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions,$pageVO->typeId=='galery'?'forum':false);
 		$vars = array_merge($vars,$listArr['vars']);
 		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 		
@@ -326,7 +350,8 @@ class page_ItemsList implements iPage {
 
 		
 		}
-		if($isDetail) {
+		
+		if(!$user->pageParam && ($isDetail || $pageVO->typeId=='galery')) {
 			$touchedBlocks[]='comm';
 		}
 		
@@ -337,42 +362,55 @@ class page_ItemsList implements iPage {
 		return $tpl;
 	}
 
-	static function buildList($fItems,$pageVO,$pagerOptions=array()) {
+	static function buildList($fItems,$pageVO,$pagerOptions=array(),$overrideTypeId=false) {
 		$touchedBlocks = array();
 		$vars = array();
 		$pagerOptions['noAutoparse']=1;
-		$perPage = $pageVO->perPage();
-		$pager = new FPager(0,$perPage,$pagerOptions);
 		
-		$from = ($pager->getCurrentPageID()-1) * $perPage;
+		$typeId = $pageVO->typeId;
+		if($overrideTypeId!==false) $typeId=$overrideTypeId;
+		
+		$perPage = $pageVO->perPage(0,$typeId);
+		$from = 0;
+		$pager = null;
+		if(empty($pagerOptions['nopager'])) {
+			$pager = new FPager(0,$perPage,$pagerOptions);
+			$from = ($pager->getCurrentPageID()-1) * $perPage;
+		}
 
 		$uid = $fItems->getUID($from, $perPage+1);
-		$grpid = 'page/'.($pageVO->typeId!='top'?$pageVO->pageId:'top').'/list';
+		$grpid = 'page/'.($typeId!='top'?$pageVO->pageId:'top').'/list';
 		$cache = FCache::getInstance('f');
 		$data = $cache->getData($uid,$grpid);
 		
 		if($data===false) {
 			$fItems->getList($from, $perPage+1);
-			$pager->totalItems = count($fItems->data);
-			if($pager->totalItems > $perPage) {
-				$pager->maybeMore = true;
-				array_pop($fItems->data);
-			}
-			$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data);
-			if($from > 0) $pager->totalItems += $from;
 			
-			if($pager->totalItems > 0) {
-				$pager->getPager();
-				if ($pager->totalItems > $perPage) {
-					$vars['BOTTOMPAGER'] = $pager->links;
+			$numItems = count($fItems->data);
+			if($pager) {
+				$pager->totalItems = $numItems;
+				if($pager->totalItems > $perPage) {
+					$pager->maybeMore = true;
+					array_pop($fItems->data);
+				}
+				$vars['TOTALITEMS'] = $pager->maybeMore ? $perPage.'+' : count($fItems->data);
+				if($from > 0) $pager->totalItems += $from;
+				$numItems = $pager->totalItems;
+			}
+			
+			if($numItems > 0) {
+				if($pager) {
+					$pager->getPager();
+					if ($pager->totalItems > $perPage) {
+						$vars['BOTTOMPAGER'] = $pager->links;
+					}
 				}
 				if(!$fItems->fItemsRenderer) $fItems->fItemsRenderer = new FItemsRenderer();
 				$itemPrev=null;
-				$typeIdPrev=null;
 				$itemIdTopPrev=null;
 				$pageIdPrev=null;
 				
-				if($pageVO->typeId=='top') {
+				if($typeId=='top' || $typeId=='blog') {
 					//sort by page
 					$newArr=array();
 					$fItems->data = array_reverse($fItems->data);
@@ -415,63 +453,47 @@ class page_ItemsList implements iPage {
 					$fItems->data=$newArr;
 					/**/
 				}
-				
-				//TODO: list photos between blog posts - four pictures from each gallery
-				//list galleries between blog posts
-				$galeryList = array();
-				if($pageVO->typeId=='blog' && !empty($pageVO->pageIdTop)) {
-					$firstDate = $fItems->data[0]->dateStart;
-					$lastDate = $fItems->data[count($fItems->data)-1]->dateStart;
-					$fPages = new FPages('galery',0);
-					$fPages->addWhere("sys_pages.pageIdTop = '".$pageVO->pageIdTop."'");
-					$fPages->addWhere("sys_pages.dateContent <= '".$firstDate."'");
-					$fPages->addWhere("sys_pages.dateContent > '".$lastDate."'");
-					$fPages->setOrder("dateContent desc");
-					
-					$user = FUser::getInstance();
-					if($user->userVO->userId==1) {
-						$galeryList = $fPages->getContent();
-					}
-				}
+								
+				$timeBefore = time();
+				$group = array();
+				$output = '';
 				
 				while ($itemVO = array_shift($fItems->data)) {
+				
+					$itemIdTop = $itemVO->itemIdTop;
+					$itemIdPrev = $itemPrev ? $itemPrev->itemId : 0;
+					
 					if($pageVO->pageId != $itemVO->pageId) {
-						$fItems->fItemsRenderer->showPage=false;
-						if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev!=$itemVO->itemIdTop) {
-							//setup renderer if needed
-							$itemIdTop=0;
-							$itemIdPrev=0;
-							if($itemVO)$itemIdTop=$itemVO->itemIdTop;
-							if($itemPrev)$itemIdPrev=$itemPrev->itemId;
+						if(!$itemPrev || $pageIdPrev != $itemVO->pageId || $itemIdTopPrev != $itemIdTop) {
 							if($itemIdTop > 0 && $itemIdPrev!=$itemIdTop) {
 								//show top item
-								$itemTop = new ItemVO($itemVO->itemIdTop);
-								//figure out how to display showPage for galery items
-								if($itemTop->get('typeId')=='galery') $fItems->fItemsRenderer->showPage=true;
-								$itemTop->render($fItems->fItemsRenderer);
-								$last = $fItems->fItemsRenderer->getLast();
-								$last = str_replace($itemVO->itemIdTop.'" class="hentry',$itemVO->itemIdTop.'" class="hentry opacity',$last);
-								$last = str_replace($itemVO->itemIdTop.'" class="vevent',$itemVO->itemIdTop.'" class="vevent opacity',$last);
-								$fItems->fItemsRenderer->setLast($last);
-								$fItems->fItemsRenderer->showPage=false;
-							} elseif(($itemVO->typeId=='forum' || $itemVO->typeId=='galery') && empty($itemVO->itemIdTop)) {
-								$fItems->fItemsRenderer->showPage=true;
-							}
+								$itemIdPrev = $itemIdTop;
+								$itemTop = new ItemVO($itemIdTop,true);
+								$itemTop->render($fItems->fItemsRenderer, false);
+								$group[] = $fItems->show();
+							} 
 						}
 					}
 					
-					$fItems->parse($itemVO);
+					if($itemIdTop > 0 && $itemIdPrev == $itemIdTop && $pageVO->pageId != $itemVO->pageId) {
+						$group[count($group)-1] = str_replace('fitem','fitem opacity',$group[count($group)-1]);
+					}
 					
-					if($itemVO->itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
+					//render new item
+					if($itemVO->typeId=='top') {
+					} else {
+						$fItems->parse($itemVO);
+					}
+					
+					if($itemIdTop > 0 && $pageVO->pageId != $itemVO->pageId) {
 						$last = $fItems->fItemsRenderer->getLast();
-						$last = str_replace('class="hentry','class="hentry reaction',$last);
+						$last = str_replace('fitem','fitem reaction',$last);
 						$fItems->fItemsRenderer->setLast($last);
 					}
 					
 					
 					$itemPrev = $itemVO;
-					$typeIdPrev = $itemVO->typeId;
-					$itemIdTopPrev = $itemVO->itemIdTop;
+					$itemIdTopPrev = $itemIdTop;
 					$pageIdPrev = $itemVO->pageId;
 					if($itemVO->isUnreaded) {
 						$readed[] = $itemVO->itemId;
@@ -479,22 +501,34 @@ class page_ItemsList implements iPage {
 
 					if($itemVO->typeId=='event') if(!in_array('fcalendar',$touchedBlocks)) $touchedBlocks[]='fcalendar';
 					
-					if(!empty($galeryList)) {
-						$timeAfter = strtotime($itemVO->dateStart);
-						$timeBefore = 0;
-						if(!empty($fItems->data)) {
-							$timeBefore = strtotime($fItems->data[0]->dateStart);
-						}
-						foreach($galeryList as $page) {
-							$pageTime = strtotime($page->dateContent);
-							if($pageTime <= $timeAfter && $pageTime > $timeBefore) {
-								$fItems->fItemsRenderer->addContent($page->name);
+					$group[] = $fItems->show();
+					
+					$nextPageId = false;
+					$nextTypeId = false;
+					$nextItemIdTop = false;
+					$nextVO = $fItems->data ? $fItems->data[0] : null;
+					if($nextVO) {
+						$nextPageId = $nextVO->pageId;
+						$nextTypeId = $nextVO->typeId;
+						$nextItemIdTop = $nextVO->itemIdTop;
+					}
+					if($nextPageId != $itemVO->pageId || ($nextTypeId == 'blog' || $nextTypeId != $itemVO->typeId && $nextItemIdTop != $itemVO->itemId)) {
+						if(!empty($group)) {
+							if($pageVO->pageId != $itemVO->pageId) {
+								$output .= $fItems->fItemsRenderer->addPageName( implode("\n",$group), $itemVO);
+							} else {
+								if($typeId=='galery') {
+									$output .= ''.implode("\n",$group).''."\n";
+								} else {
+									$output .= '<div class="panel panel-default"><div class="panel-body">'.implode("\n",$group).'</div></div>'."\n";
+								}
 							}
+							$group = array();
 						}
 					}
 				}
 				
-				$vars['ITEMS'] = $fItems->show();
+				$vars['ITEMS'] = $output;
 			} else {
 				$touchedBlocks[]='feedempty';
 			}

@@ -1,27 +1,29 @@
-<div id="{ITEMIDHTML}" class="vevent hentry">
-<div class="clearbox">
-<!-- BEGIN flyer --><a href="{IMGURL}" rel="lightbox-events"><img class="hentryimage" src="{IMGURLTHUMB}" title="Leták {IMGTITLE}" alt="{IMGALT}" /></a><!-- END flyer -->
-<!-- BEGIN flyerdefault --><img class="eventFlyerThumb" src="[[URL_SKIN]]{FLYERTHUMBURLDEFAULT}" /><!-- END flyerdefault -->
-<div class="description nextToFlyer">
-<div class="header">
-<span class="abbr hidden" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-<span class="vcard"><a href="{AUTHORLINK}" class="author url" title="Vložil uživatel {AUTHOR} dne {DATELOCAL}"><span class="fn">{AUTHOR}</span></a></span>
-<span class="stats">
-<span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><!-- BEGIN new --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END new -->{CNTCOMMENTS} <img src="[[URL_SKIN]]/img/comments.png" alt="Komentare"></a></span> 
-{TAG}
-</span>
-<!-- BEGIN edit --><span class="edit"><a href="{EDITURL}">Upravit</a></span><!-- END edit -->
-</div>
-<div class="category">{CATEGORYNAME}</div>
-<h2 class="entry-title summary"><a class="url" href="{TITLEURL}">{TITLE}</a></h2>
-<!-- BEGIN smallmap --><div class="rightbox"><a id="mapThumb{SMAPITEMID}" href="#" title="Map detail: {SMAPTITLE}" class="mapThumbLink"><img width="100" height="100" src="http://maps.google.com/maps/api/staticmap?size=100x100&markers={SMARKERPOS}&maptype=terrain&sensor=false<!-- BEGIN stwp -->&path={SWPLIST}<!-- END stwp -->" title="{SMAPTITLE}" alt="Google Maps" /></a></div><!-- END smallmap -->
-<div class="date">Kdy <span class="abbr" title="{STARTDATETIMEISO}"><abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr></span>
-<!-- BEGIN eventend -->- <span class="abbr" title="{ENDDATETIMEISO}"><abbr class="dtend" title="{ENDDATETIMEISO}">{ENDDATETIMELOCAL}</abbr></span><!-- END eventend -->
-</div>
-<div class="location">Kde <strong>{LOCATION}</strong></div>
-<div class="description">{TEXT}</div>
-</div>
-</div>
-<!-- BEGIN map --><div id="map{MAPITEMID}" class="mapLarge hidden"><!-- BEGIN mapdata --><div class="mapsData"><input type="hidden" class="geoData" title="{MAPTITLE}" value="{MAPPOSITION}" /><div class="geoInfo"><h2>{MAPTITLE}</h2><p>{MAPINFO}<!-- BEGIN mapdist --><br /><strong>Vzdalenost: {DISTANCE}NM</strong><!-- END mapdist --></p></div></div><!-- END mapdata --></div>
-<div class="clearbox"></div><!-- END map -->
+<div id="{ITEMIDHTML}" class="fitem media">
+	<!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page" class="pull-left">
+		<img class="media-object" src="{IMGURLTHUMB}" title="{IMGTITLE}" alt="{IMGALT}" />
+	</a><!-- END image -->
+
+	<div class="media-body">
+		<!-- BEGIN edit --><a href="{EDITURL}" class="btn btn-primary active pull-right" role="button">Upravit</a><!-- END edit -->
+		<h2 class="media-heading"><a href="{TITLEURL}">{TITLE}</a></h2>
+		<!-- BEGIN category --><h4><a href="{CATEGORYURL}">{CATEGORYNAME}</a></h4><!-- END category -->
+		<div class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
+		<div>Kdy <abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr>
+		<!-- BEGIN eventend -->- <abbr class="dtend" title="{ENDDATETIMEISO}">{ENDDATETIMELOCAL}</abbr><!-- END eventend --></div>
+		<div class="location">Kde <strong>{LOCATION}</strong></div>
+		<div class="entry-content">
+		{TEXT}
+		</div>
+		<div class="goomap">{GOOMAP}</div>
+		<!-- BEGIN detailLink --><div><strong><a href="{LONGURL}" title="{LONGTITLE}">Celý článek</a></strong></div><!-- END detailLink -->
+		<div class="well well-sm">
+			<span class="author vcard"><a href="{AUTHORLINK}" class="author url">{AUTHOR}</a></span>
+			<abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr>
+			<span class="stats pull-right">
+				<span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><span class="glyphicon glyphicon-comment"></span><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}</a></span> 
+				<span class="viewedTimes"><span class="glyphicon glyphicon-eye-open"></span>{HITS}</span> 
+			</span>
+		</div>
+			
+  </div>
 </div>

@@ -49,42 +49,36 @@ class FAjax {
 		//---process
 		$dataProcessed = array();
 		$dataProcessed['__ajaxResponse'] = false;
-		if($ajax == true) {
-			if(is_array($data)) $dataProcessed = $data;
-			else {
-				$dataXML = stripslashes( $data );
-				$xml = new SimpleXMLElement($dataXML);
-				foreach($xml->Request->Item as $item) {
-					$k = (String)$item['name'];
-					$v = (String)$item;
-					if(isset($dataProcessed[ $k ])) {
-						if(is_array($dataProcessed[ $k ])) {
-							$dataProcessed[ $k ][] = $v;
-						} else {
-							$dataProcessed[ $k ] = array( $dataProcessed[ $k ], $v);
-						}
+		
+		if(is_array($data)) {
+			$dataProcessed = $data;
+		} else if(strpos($data,'<FXajax>')===0) {
+			$dataXML = stripslashes( $data );
+			$xml = new SimpleXMLElement($dataXML);
+			foreach($xml->Request->Item as $item) {
+				$k = (String)$item['name'];
+				$v = (String)$item;
+				if(isset($dataProcessed[ $k ])) {
+					if(is_array($dataProcessed[ $k ])) {
+						$dataProcessed[ $k ][] = $v;
 					} else {
-						$dataProcessed[ $k ] = $v;
+						$dataProcessed[ $k ] = array( $dataProcessed[ $k ], $v);
 					}
+				} else {
+					$dataProcessed[ $k ] = $v;
 				}
 			}
-			$dataProcessed['__ajaxResponse'] = true;
 		} else {
-			if(is_array($data)) {
-				$dataProcessed = $data;
-			} else {
-				$arr = explode(';',$data);
-				foreach($arr as $row) {
-					list($k,$v) = explode(':',$row);
-					$dataProcessed[$k] = $v;
-				}
+			$arr = explode(';',$data);
+			foreach($arr as $row) {
+				list($k,$v) = explode(':',$row);
+				$dataProcessed[$k] = $v;
 			}
 		}
-
-		$dataProcessed = FAjax::preprocessPost($dataProcessed);
+		if($ajax == true) $dataProcessed['__ajaxResponse'] = true;
 		
+		$dataProcessed = FAjax::preprocessPost($dataProcessed);
 		if(isset($options['data'])) $dataProcessed = array_merge($dataProcessed,$options['data']);
-				
 		FProfiler::write('FAJAX XML INPUT PROCESSING COMPLETE');
 		$fajax = FAjax::getInstance();
 		$fajax->data = $dataProcessed;
@@ -120,14 +114,14 @@ class FAjax {
 						if(!empty($arrMsg)){
 							$arr = array();
 							foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-							FAjax::addResponse('call','msg','error,'.implode('<br />',$arr));
+							foreach ($arr as $v) FAjax::addResponse('call','msg','danger,'.$v);
 							FError::reset();
 						}
 						$arrMsg = FError::get(1);
 						if(!empty($arrMsg)){
 							$arr = array();
 							foreach ($arrMsg as $k=>$v) $arr[] = $k . (($v>1)?(' ['.$v.']'):(''));
-							FAjax::addResponse('call','msg','ok,'.implode('<br />',$arr));
+							foreach ($arr as $v) FAjax::addResponse('call','msg','success,'.$v);
 							FError::reset(1);
 						}
 					}

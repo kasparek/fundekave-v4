@@ -1,0 +1,45 @@
+<form role="form" action="{FORMACTION}" method="post" name="itemForm" id="itemForm" class="form-horizontal fajaxform<!-- BEGIN classnotpublic --> notpublished<!-- END classnotpublic -->">
+	<input type="hidden" name="m" value="{M}"/>
+	<input type="hidden" name="t" value="{T}"/>
+	<!-- BEGIN edit --><input id="i" name="i" value="{ITEMID}" type="hidden"><!-- END edit -->
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" id="submitButtonSave" name="save" class="btn btn-success submit">Uložit</button>
+			<!-- BEGIN delete --><button type="submit" id="submitButtonDelete" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tento článek?">Smazat</button><!-- END delete -->
+		</div>
+	</div>
+	
+	<div class="tab-content">
+		<div class="tab-pane fade in active" id="tabs-1">
+<fieldset>
+
+
+
+<div class="form-group">
+	<label for="formDate" class="col-sm-2 control-label">Datum</label>
+	<div class="col-sm-10">
+		<input id="formDate" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date">
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="{TEXTID}" class="col-sm-2 control-label">Popis</label>
+	<div class="col-sm-10">
+		<textarea name="text" id="{TEXTID}" class="form-control expand" rows="3">{TEXT}</textarea>
+	</div>
+</div>
+
+<div class="form-group">
+	<label for="positiongalery" class="col-sm-2 control-label">Ukaz na mape</label>
+	<div class="col-sm-10">
+		<textarea id="positiongalery" class="form-control geoInput" name="position" row="4" title="Zadejte polohu">{POSITION}</textarea>
+	</div>
+</div>
+
+</fieldset>
+</div>
+
+
+</div>
+</form>

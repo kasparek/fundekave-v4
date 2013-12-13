@@ -15,7 +15,7 @@ class FMenu {
 	}
 	
 	/**
-	 *  before ,$opposite='0',$buttonId='',$buttonClass='',$listItemClass='',$title='') {
+	 *  before ,$buttonId='',$buttonClass='',$listItemClass='',$title='') {
 	 *  options [ id, class, parentClass, title ]	 
 	 **/	 	
 	static function secondaryMenuAddItem($link,$text,$options=array()) {

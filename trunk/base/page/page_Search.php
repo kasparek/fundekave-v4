@@ -115,6 +115,7 @@ class page_Search implements iPage {
 					$pager->getPager();
 					//---results
 					$vars['PAGES'] = FPages::printPagelinkList($arr);
+					
 					//---pager
 					if($totalItems > $perPage) {
 						$vars['PAGESPAGER'] = $pager->links;
@@ -215,7 +216,7 @@ class page_Search implements iPage {
 				}
 				$vars['TOTALUSERS'] = ($maybeMore===true)?($perPage.'+'):($totalItems);
 				$vars['FILTRUSERS'] = $pageSearchCache['filtrUsers'];
-					
+				
 				$USERS['vars'] = $vars;
 				$USERS['touchedblocks'] = $touchedBlocks;
 				$mainCache->setData($USERS,$cacheKey,$cacheGrp);

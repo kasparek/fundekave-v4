@@ -1,18 +1,17 @@
 <?php
 class FLang {
 
-static $TPL_SIDEBAR_PAGE_CATEGORIES = 'sidebar.page.categories.tpl.html';
 static $TPL_SIDEBAR_POLL = 'sidebar.poll.tpl.html';
 static $TPL_SIDEBAR_CALENDAR = 'sidebar.calendar.tpl.html';
 static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
 static $TPL_SIDEBAR_USER_LOGIN = 'sidebar.user.login.tpl.html';
-static $TPL_USER_AVATAR = 'user.avatar.tpl.html';
 
 static $LABEL_PAGES_LIVE = 'Živě';
 static $LABEL_WEEK = 'Tyden';
 static $LABEL_TOP = 'Nej';
 static $LABEL_FORUMS = 'Kluby';
 static $LABEL_BLOGS = 'Blogy';
+static $LABEL_BOOKED = 'Oblíbené';
 static $LABEL_GALERIES = 'Galerie';
 static $LABEL_THUMBS = 'Palce';
 static $LABEL_CALENDAR = 'Kalendar';
@@ -75,6 +74,8 @@ static $LABEL_PAGE_FORUM_NEW = 'Založit diskuzi';
 static $LABEL_PAGE_BLOG_NEW = 'Založit blog';
 static $LABEL_PAGE_GALERY_NEW = 'Založit galerii';
 static $LABEL_ADD = 'Novy clanek';
+static $LABEL_UPLOAD = 'Nahrát fotografie';
+static $LABEL_EDIT_PHOTO = 'Upravit popis';
 static $LABEL_EVENT_NEW = 'Nova udalost';
 static $LABEL_FORUM_NEW = 'Novy kratky komentar';
 static $LABEL_SETTINGS = 'Nastaveni';

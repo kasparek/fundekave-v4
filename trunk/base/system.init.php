@@ -5,10 +5,12 @@ if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false) {
 	header('Content-Encoding: gzip');
 }
 //---host name
-$host = $_SERVER['HTTP_HOST'];
-$hostArr = explode('.',$host);
-$host = $hostArr[0]=='www' ? $hostArr[1] : $hostArr[0];  
-if($host=='localhost') $host='fundekave';
+if(empty($host)) {
+	$host = $_SERVER['HTTP_HOST'];
+	$hostArr = explode('.',$host);
+	$host = $hostArr[0]=='www' ? $hostArr[1] : $hostArr[0];  
+	if($host=='localhost') $host='fundekave';
+}
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
 	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
@@ -24,7 +26,7 @@ spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
-FConf::getInstance(WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini');
+FConf::getInstance(array(WEBROOT.'conf_'.VERSION.'/global.conf.ini',WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini',WEBROOT.'conf_'.VERSION.'/localhost.conf.ini'));
 require_once(WEBROOT.'conf_'.VERSION.'/image.conf.php');
 
 date_default_timezone_set(FConf::get('internationalization','timezone'));

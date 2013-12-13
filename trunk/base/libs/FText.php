@@ -67,13 +67,14 @@ class FText {
 		if($paramsArr['formatOption']==0 || !$user->idkontrol) {
 			$text = strip_tags($text);
 		}
-		
+
 		if($paramsArr['formatOption'] < 2) {
 			require_once('HTML/Safe.php');
 			$safe = new HTML_Safe();
 			if($user->idkontrol && $paramsArr['formatOption']>0) {
 				$safe->deleteTags = array('applet', 'base', 'basefont', 'bgsound', 'blink', 'body', 'frame', 'frameset', 'head', 'html', 'ilayer', 'layer', 'link', 'meta', 'style', 'title', 'script');
-				$safe->attributes = array('dynsrc', 'id');
+				$safe->attributes = array('dynsrc');
+				$safe->protocolFiltering = 'black';
 			}
 			$text = $safe->parse($text);
 		}
@@ -178,7 +179,7 @@ class FText {
 			  } else {
 				//item
 				$regItemList=array(
-				  "/.*_([a-zA-Z0-9]{5})\/([0-9a-zA-Z._-]+\.[jpeg|jpg|png|gif]+)$/i" //http://fotobiotic.net/image/170x170/crop/dany/20120303_pangaimotu-island_zAV4q/dsc07869.jpg
+				  "/.*_([a-zA-Z0-9]{5})\/([0-9a-zA-Z._-]+\.[jpeg|jpg|png|gif]+)$/i" //http://fundekave.net/image/170x170/crop/dany/20120303_pangaimotu-island_zAV4q/dsc07869.jpg
 				  ,"/.*obr\/.+([a-zA-Z0-9]{5})\/([0-9a-zA-Z._-]+\.[jpeg|jpg|png|gif]+)/i"
 				  ,"/.*data\/cache\/img\/([a-zA-Z0-9]{5})-.*\/([0-9a-zA-Z-_.]+\.[jpeg|jpg|png|gif]+)/i"); //sample http://fundekave.net/data/cache/img/cKFbk-awake-work-in-progress/img_0111.jpg
 				$i=0;
@@ -228,7 +229,7 @@ class FText {
 			  if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png|gif)$/i", $url, $matches)) {
 				$urlEncoded = base64_encode($url);
 				$img = $dom->createElement("img");
-				$img->setAttribute('src',FConf::get("galery","targetUrlBase").'300x300/prop/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded);
+				$img->setAttribute('src',FConf::get("galery","targetUrlBase").FConf::get("galery","forum_thumbCut").'/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded);
 				//$img->setAttribute('class','hentryimage');
 				if($tag->tagName=='img') {
 				  $a = $dom->createElement("a");
@@ -279,33 +280,34 @@ class FText {
 
 
 		//add line breaks
-		$textArr = explode("\n",$text);
-		$textArrLen = count($textArr);
-
-		for($i=0;$i<$textArrLen;$i++) {
-		  $thisWord = trim($textArr[$i]);
-		  $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : false;
-		  $addBr = true;
-		  $regexBegin = "/^(<p|<div|<img)/i";
-		  $regexEnd = "/(\/p>|div>|<br>|<br \/>)$/i";
-		  if($nextWord!==false) {
-			if(preg_match($regexBegin,$nextWord)) {
-			  $addBr=false;
+		if(strpos($text,'<p>')===false) {
+			$textArr = explode("\n",$text);
+			$textArrLen = count($textArr);
+			
+			for($i=0;$i<$textArrLen;$i++) {
+			  $thisWord = trim($textArr[$i]);
+			  $nextWord = $i+1<$textArrLen ? trim($textArr[$i+1]) : false;
+			  $addBr = true;
+			  $regexBegin = "/^(<p|<div|<img)/i";
+			  $regexEnd = "/(\/p>|div>|<br>|<br \/>)$/i";
+			  if($nextWord!==false) {
+				if(preg_match($regexBegin,$nextWord)) {
+				  $addBr=false;
+				}
+					   
+				if($addBr) {
+				  if(preg_match($regexEnd,$thisWord)) {
+					$addBr=false;
+				  }
+				}
+				  
+				if($addBr){
+				  $textArr[$i] .= "<br />";
+				}
+			  } 
 			}
-				   
-			if($addBr) {
-			  if(preg_match($regexEnd,$thisWord)) {
-				$addBr=false;
-			  }
-			}
-			  
-			if($addBr){
-			  $textArr[$i] .= "<br />";
-			}
-		  } 
+			$text = implode("\n",$textArr);
 		}
-
-		$text = implode("\n",$textArr);
 
 		return trim($text);
 	}

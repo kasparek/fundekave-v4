@@ -5,6 +5,7 @@ class page_SysEditPages implements iPage {
 	static function process($data) {
 		$cache = FCache::getInstance('s');
 		$arrParams = $cache->getData('Epages','filtr');
+		$arrType = array('forum'=>'Klub','galery'=>'Galerie','blog'=>'Blog');
 		if(isset($data['type'])) if(array_key_exists($data['type'],$arrType)) $arrParams['type'] = $data['type']; else $arrParams['type'] = '';
 		if(isset($data['cate'])) $arrParams['cate'] = $data['cate']*1;
 		if(isset($data['orde'])) $arrParams['orde'] = $data['orde']*1;

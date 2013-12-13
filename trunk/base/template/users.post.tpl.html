@@ -1,38 +1,64 @@
-<form action="{FORMACTION}" method="post" class="fajaxform">
+<div id="messagesBox">
+<form role="form" action="{FORMACTION}" method="post" class="form-horizontal fajaxform">
 <input type="hidden" name="m" value="{M}"/>
-<fieldset>
-<div id="recipientcombo">
-<!-- BEGIN friendscombo --><select id="recipientList" name="recipientList">
-<option value="">-- Adresát --</option>
-<!-- BEGIN friendscombovalue --><option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option><!-- END friendscombovalue -->
-</select><!-- END friendscombo -->
-</div>
-<input type="text" id="recipient" name="recipient" value="{RECIPIENTS}" class="long"><br />
-<!-- BEGIN selectedfriend --><div id="recipientavatar">{SELECTEDFRIENDAVATAR}<br />{SELECTEDFRIENDNAME}</div><!-- END selectedfriend -->
-<textarea name="text" id="postText" class="draftable expand">{MESSAGE}</textarea><br />
-<input type="submit" name="send" value="Odeslat" class="button">
-<select name="saction" id="saction">
-<option value="delete">Smazat oznacene</option>
-<option value="deletebetween">Smazat mezi oznacenymi vcetne</option>
-<option value="search">Hledat</option>
-<option value="setpp">Pocet zprav na stranku</option>
-</select> 
-<input id="ppinput" type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="xShort" />
-<input type="submit" name="special" value="Proved" class="button">
-</fieldset>
+
+	<div class="form-group">
+		<div id="recipientcombo" class="col-sm-3">
+			<!-- BEGIN friendscombo --><select id="recipientList" name="recipientList" class="form-control" multiple>
+			<option value="">-- Adresát --</option>
+			<!-- BEGIN friendscombovalue --><option value="{FRIENDCOMBOID}">{FRIENDCOMBONAME}</option><!-- END friendscombovalue -->
+			</select><!-- END friendscombo -->
+		</div>
+		<div class="col-sm-9">
+			<input type="text" id="recipient" name="recipient" value="{RECIPIENTS}" class="form-control" placeholder="Komu, nebo stačí vybrat vlevo">
+			<textarea name="text" id="postText" class="form-control expand" row="3" placeholder="Zpráva">{MESSAGE}</textarea>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3">
+		<!-- BEGIN selectedfriend --><div id="recipientavatar">{SELECTEDFRIENDAVATAR}</div><!-- END selectedfriend -->
+		</div>
+		<div class="pull-left" style="margin-left:15px;">
+			<button type="submit" name="send" class="btn btn-primary submit">Odeslat</button>
+			<button type="submit" name="special" class="btn btn-warning submit">Provést</button>
+		</div>
+		<div class="col-sm-3">
+			<select name="saction" id="saction" class="form-control">
+			<option value="delete">Smazat oznacene</option>
+			<option value="deletebetween">Smazat mezi oznacenymi vcetne</option>
+			<option value="search">Hledat</option>
+			<option value="setpp">Pocet zprav na stranku</option>
+			</select> 
+		</div>
+		<div id="ppinput" class="col-sm-2">
+			<input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="form-control" />
+		</div>
+	</div>
+
+
+
+
 <!-- BEGIN searchfilters --><h2>Výsledky hledání: {FILTERUSERNAME} {FILTERTEXT}</h2>
 <h3><a href="{FILTRCANCELLINK}">Zrušit filtr</a></h3><!-- END searchfilters -->
-<div id="itemlist">
-<!-- BEGIN message --><div id="mess{ITEMIDHTML}" class="hentry<!-- BEGIN unread --> unread<!-- END unread --><!-- BEGIN sentclass --> sent<!-- END sentclass -->">
-<div class="header">
-<span class="author vcard"><!-- BEGIN sent -->Odeslaná: <!-- END sent --><!-- BEGIN received -->Přijatá: <!-- END received --><a href="{MULINK}" class="url"><span class="fn">{MUNAME}</span></a></span>
-<span class="abbr" title="{DATEISO}"><abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-<span class="stats">Oznacit: <input type="checkbox" name="del-{EDITID}" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" /></span>
-<!-- BEGIN unreadmess --><span id="unreadedLabel{UNRID}" class="stats"><strong>Nepřečtená</strong></span><!-- END unreadmess -->
+<div class="row">
+<div id="itemlist" class="col-md-12">
+<!-- BEGIN message -->
+<div id="mess{ITEMIDHTML}" class="fitem<!-- BEGIN unread --> unread<!-- END unread -->">
+<div class="avatar pull-left">{AVATAR}</div>
+<div class="panel-primary">
+<div class="header panel-heading">
+	<input type="checkbox" name="del-{EDITID}" value="{EDITID}" class="deleteCheckbox" title="Oznacit pro smazani" />
+	<!-- BEGIN sent -->Odeslaná<!-- END sent --><!-- BEGIN received -->Přijatá<!-- END received -->: 
+	<strong><span class="author"><a href="{MULINK}" class="url">{MUNAME}</a></span></strong>
+	<abbr class="updated published pull-right" title="{DATEISO}">{DATELOCAL}</abbr>
 </div>
-<!-- BEGIN ava --><div class="avatar">{AVATAR}</div><!-- END ava -->
+</div>
 <div class="entry-content">{TEXT}</div>
-</div><div class="clearbox"></div><!-- END message -->
 </div>
-<div id="pager" class="pager cleaner">{BOTTOMPAGER}</div>
+<!-- END message -->
+</div>
+</div>
 </form>
+<div id="pager" class="pager-box">{BOTTOMPAGER}</div>
+</div>

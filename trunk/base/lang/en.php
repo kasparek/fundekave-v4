@@ -6,7 +6,6 @@ static $TPL_SIDEBAR_POLL = 'sidebar.poll.tpl.html';
 static $TPL_SIDEBAR_CALENDAR = 'sidebar.calendar.tpl.html';
 static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
 static $TPL_SIDEBAR_USER_LOGIN = 'sidebar.user.login.tpl.html';
-static $TPL_USER_AVATAR = 'user.avatar.tpl.html';
 
 static $LABEL_PAGES_LIVE = 'Živě';
 static $LABEL_WEEK = 'Tyden';

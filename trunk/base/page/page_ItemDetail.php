@@ -27,11 +27,10 @@ class page_ItemDetail implements iPage {
 		
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
-		if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('m=item-show&d=item:'.$itemNext,$itemVO->pageId);
-		if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('m=item-show&d=item:'.$itemPrev,$itemVO->pageId);
+		if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('i='.$itemNext,$itemVO->pageId);
+		if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('i='.$itemPrev,$itemVO->pageId);
 		
 		//generic vars for all item details
-		
 		/**
 		 *BLOG ITEM and EVENT ITEM
 		 **/
@@ -42,9 +41,8 @@ class page_ItemDetail implements iPage {
 			$itemRender = $itemVO->render();
 			if($data['__ajaxResponse']) {
 				FAjax::addResponse('itemDetail','$html',$itemRender);
-				FAjax::addResponse('backButt','href',$backUri);
-				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
-				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
+				//TODO: fixFAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
+				//TODO: fixFAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 			} else {
 				$output = $itemRender;
 			}
@@ -52,38 +50,41 @@ class page_ItemDetail implements iPage {
 		/**
 		 *GALERY ITEM
 		 **/
+			$goomapThumb = FItemsRenderer::gmaps($itemVO,true);
+			$goomap = FItemsRenderer::gmaps($itemVO);
 			$arrVars = array(
+				"PAGEDESCRIPTION"=>$user->pageVO->content,
 				"TEXT"=>$itemVO->text,
 				"IMGALT"=>$itemVO->enclosure,
 				"IMGTITLE"=>$itemVO->pageVO->name.' '.$itemVO->enclosure,
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
-				//"TAG"=>FItemTags::getTag($itemVO->itemId,$user->userVO->userId,'galery'),
+				"ALBUMURL"=>$backUri,
+				"PREVBUTT"=>$nextUri,
+				"NEXTBUTT"=>$prevUri,
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
 				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
+				"GOOMAPTHUMB"=>$goomapThumb,
+				"GOOMAP"=>$goomap,
 			);
-			$arrVars = array_merge($arrVars,FItemsRenderer::gmaps($itemVO));
 			//no sidebar	
+			$user->pageVO->tplVars['NUMCOLMAIN'] = 12;
 			$user->pageVO->showSidebar = false;
 			$user->itemVO->htmlName = ($itemVO->getPos()+1) . '/' . $itemVO->getTotal();
 			$user->pageVO->htmlTitle = $user->itemVO->htmlName .' - '.$user->pageVO->name; 
-			$user->pageVO->showHeading=false;
+			//$user->pageVO->showHeading=false;
 			if($data['__ajaxResponse']) {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
-				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->detailUrl.','.$nextVO->detailUrl);
+				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->itemId.','.$nextVO->itemId.','.$itemPrev.','.$itemVO->detailUrl.','.$nextVO->detailUrl);
 				FAjax::addResponse('backButt','href',$backUri);
-				FAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
-				FAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
+				FAjax::addResponse('prevButt','href',$nextUri);
+				FAjax::addResponse('nextButt','href',$prevUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('ti','value',(int) $user->itemVO->itemId);
-				if(!empty($arrVars['TAG'])) FAjax::addResponse('tag','$html',$arrVars['TAG']);
-				FAjax::addResponse('hit','$html',$itemVO->hit);
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
-				$tpl = FSystem::tpl('galery.detail.tpl.html');
-				$tpl->setVariable($arrVars);
-				$tpl->parse('map');
-				FAjax::addResponse('map','$html',$tpl->get('map'));
+				FAjax::addResponse('mapThumb','$html',$arrVars['GOOMAPTHUMB']);
+				FAjax::addResponse('map','$html',$arrVars['GOOMAP']);
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
@@ -91,16 +92,8 @@ class page_ItemDetail implements iPage {
 			}
 		}
 		//---GALERY END
-				
+		
 		if(!empty($output)) {
-			FMenu::secondaryMenuAddItem($backUri,FLang::$BUTTON_PAGE_BACK,0,array('id'=>'backButt'));
-			if($itemVO->typeId!='galery') {
-				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri, FLang::$BUTTON_PAGE_OLDER ,array('id'=>'nextButt','parentClass'=>'opposite'));
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_NEWER ,array('id'=>'prevButt','parentClass'=>'opposite'));
-			} else {
-				if($itemNext!==false) FMenu::secondaryMenuAddItem($nextUri, FLang::$BUTTON_PAGE_NEXT,array('id'=>'nextButt','class'=>'hash keepscroll galerynext','parentClass'=>'opposite'));
-				if($itemPrev!==false) FMenu::secondaryMenuAddItem($prevUri, FLang::$BUTTON_PAGE_PREV,array('id'=>'prevButt','class'=>'hash keepscroll galerynext','parentClass'=>'opposite'));
-			}
 			return $output;
 		} 	
 	}

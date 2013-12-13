@@ -20,7 +20,7 @@ class FSystem {
 	static function fin($msg='',$log=false) {
 		FSystem::superInvalidateFlush();
 		$db = FDBConn::getInstance();
-		$db->kill();
+		$db->close();
 		if($log) FError::write_log($log);
 		die($msg);
 	}
@@ -113,8 +113,7 @@ class FSystem {
 		$superVars = array(
 		'SKIN'=>SKIN,
 		'STATIC_DOMAIN'=>STATIC_DOMAIN,
-    'URL_CSS'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
-		'URL_SKIN'=>((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS).'skin/'.SKIN,
+		'URL_CSS'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
 		'URL_JS'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
 		'ASSETS_URL'=>(strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS
 		);

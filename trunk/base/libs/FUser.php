@@ -277,11 +277,9 @@ class FUser {
 			//---update total items public number
 			$fpages = new FPages('',$this->userVO->userId);
 			$fpages->VO = null;
-			$fpages->fetchmode=0;
-			$fpages->setSelect("sum(sys_pages.cnt)");
-			//TODO:cache this query result?
+			$fpages->setSelect("sum(sys_pages.cnt) as sum");
 			$res = $fpages->getContent();
-			$totalNum = $res[0][0];
+			$totalNum = $res[0]['sum'];
 			if($this->userVO->prop('itemsNum') != $totalNum) 
 				$this->userVO->prop('itemsNum',$totalNum);
 			if($updateMy) $this->userVO->itemsLastNum = $totalNum;
@@ -296,7 +294,7 @@ class FUser {
 			$tpl = FSystem::tpl('users.list.tpl.html');
 			if($label!='') $tpl->setVariable('LABEL',$label);
 			foreach($arr as $userVO) {
-				if(!empty($ident)) $tpl->setVariable('BOXID',$ident.$userVO->userId);
+				$tpl->setVariable('BOXID',($ident?$ident:'userlist').$userVO->userId);
 				$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 				$tpl->setVariable('NAME',$userVO->name);
 				$tpl->setVariable('PROFILURL',FSystem::getUri('who='.$userVO->userId.'#tabs-profil','finfo',''));

@@ -1,14 +1,12 @@
-<div class="hfeed galleryList">
 <!-- BEGIN item -->
-<div id="p{PAGEID}" class="hentry">
-<span class="abbr" title="{DATEISO}"><abbr class="published" title="{DATEISO}">{DATELOCAL}</abbr></span>
-<span class="stats">
-<span class="fotoNum"><!-- BEGIN new --><span class="postsNew">{FOTONEW}</span>/<!-- END new -->{FOTONUM} <img src="[[URL_SKIN]]/img/camera.png" title="Pocet fotografii" alt="Pocet fotografii"></a></span>
-</span>
-<!-- BEGIN thumb --><div class="thumbnail"><a href="{IMGURL}"><img src="{IMGURLTHUMB}"/></a></div><!-- END thumb -->
-<h2 class="entry-title"><a href="{PAGELINK}" class="bookmark url">{PAGENAME}</a></h2>
-<p class="entry-content">{GALERYTEXT}</p>
-<div class="clearbox"></div>
+<div id="p{PAGEID}" class="galeryPage">
+<div class="thumbnail">
+<a href="{IMGURL}"><img src="{IMGURLTHUMB}" /></a>
+<div class="caption">
+<h2><a href="{PAGELINK}" class="bookmark url">{PAGENAME}</a></h2>
+<abbr class="published" title="{DATEISO}">{DATELOCAL}</abbr>
+<span class="label label-info"><span class="glyphicon glyphicon-camera"></span><!-- BEGIN new --><span class="postsNew">{FOTONEW}</span>/<!-- END new -->{FOTONUM}</a></span>
+</div>
+</div>
 </div>
 <!-- END item -->
-</div>

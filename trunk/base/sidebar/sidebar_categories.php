@@ -41,21 +41,21 @@ class sidebar_categories {
 		$arr = $tool->getContent();
 
 		if(!empty($arr)) {
-			$tpl = FSystem::tpl('item.pagelink.tpl.html');
+			$tpl = FSystem::tpl('sidebar.list.tpl.html');
 			if($multiType){
 				foreach(FLang::$TYPEID as $k=>$v) {
 					if(FConf::get('settings','perm_add_'.$k)>0) {
 						$tpl->setVariable('URL', FSystem::getUri('',$multiType?'foall':$user->pageId,$k));
-						$tpl->setVariable('PAGENAME', $v);
-						$tpl->parse();
+						$tpl->setVariable('TEXT', $v);
+						$tpl->parse('item');
 					}
 				}
 			}
 			foreach ($arr as $category) {
 				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId,''));
-				$tpl->setVariable('PAGENAME', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
-				if($category[2]>0) $tpl->setVariable('SUM', $category[2]);
-				$tpl->parse();
+				$tpl->setVariable('TEXT', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
+				if($category[2]>0) $tpl->setVariable('BADGE', $category[2]);
+				$tpl->parse('item');
 			}
 			return $tpl->get();
 		}

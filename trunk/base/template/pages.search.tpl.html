@@ -1,46 +1,60 @@
-<div id="tabs">
-<ul>
-<li><a href="#items">Prispevky [{TOTALITEMS}]</a></li>
-<li><a href="#pages">Stranky [{TOTALPAGES}]</a></li>
-<li><a href="#users">Uzivatele [{TOTALUSERS}]</a></li>
+<ul class="nav nav-tabs">
+<li class="active"><a href="#tabs-1" data-toggle="tab">Komentáře, Články <span class="badge">{TOTALITEMS}</span></a></li>
+<li><a href="#tabs-2" data-toggle="tab">Kluby, Blogy, Galerie <span class="badge">{TOTALPAGES}</span></a></li>
+<li><a href="#tabs-3" data-toggle="tab">Uživatelé <span class="badge">{TOTALUSERS}</span></a></li>
 </ul>
-<div id="items">
-<form action="{SEARCHACTION}#items" method="post">
-<input type="hidden" name="t" value="items" />
-<fieldset>
-<legend>Nalezeno prispevku</legend>
-<input type="text" name="f" value="{FILTRITEMS}" class="short" /> <input type="submit" name="search" value="Hledat" class="button" /><br />
-</fieldset>
-</form>
-<!-- BEGIN items -->{ITEMS}
-{TOPPAGER}
-<div class="clearbox"></div><!-- END items -->
-<!-- BEGIN noitems --><p align="center">Nenalezeny žádná prizpevky vyhovující podmínkám vyhledavani</p><!-- END noitems -->
+
+<div class="tab-content">
+
+<div class="tab-pane fade in active" id="tabs-1">
+	<form action="{SEARCHACTION}#items" method="post" role="form" class="form-horizontal">
+		<div class="form-group">
+		<input type="hidden" name="t" value="items" />
+		</div>
+		<div class="form-group">
+			<div class="col-sm-5">
+				<input type="text" class="form-control"  name="f" value="{FILTRITEMS}">
+			</div>
+			<button type="submit" name="search" class="btn btn-success submit">Hledat</button>
+		</div>
+	</form>
+	<!-- BEGIN items -->{ITEMS}
+	<div class="pagination">{TOPPAGER}</div><!-- END items -->
+	<!-- BEGIN noitems --><p align="text-center">Nenalezeny žádná prispevky vyhovující podmínkám vyhledavani</p><!-- END noitems -->
 </div>
-<div id="pages">
-<form action="{SEARCHACTION}#pages" method="post">
-<input type="hidden" name="t" value="pages" />
-<fieldset>
-<legend>Nalezeno stranek</legend>
-<input type="text" name="f" value="{FILTRPAGES}" class="short" /> <input type="submit" name="search" value="Hledat" class="button" /><br />
-</fieldset>
-</form>
+
+<div class="tab-pane fade" id="tabs-2">
+	<form action="{SEARCHACTION}#pages" method="post" role="form" class="form-horizontal">
+		<div class="form-group">
+		<input type="hidden" name="t" value="pages" />
+		</div>
+		<div class="form-group">
+			<div class="col-sm-5">
+				<input type="text" class="form-control"  name="f" value="{FILTRITEMS}">
+			</div>
+			<button type="submit" name="search" class="btn btn-success submit">Hledat</button>
+		</div>
+	</form>
 <!-- BEGIN pages -->{PAGES}
-{PAGESPAGER}
-<div class="clearbox"></div><!-- END pages -->
-<!-- BEGIN nopages --><p align="center">Nenalezena žádná stranka vyhovující podmínkám</p><!-- END nopages -->
+<div class="pagination">{PAGESPAGER}</div><!-- END pages -->
+<!-- BEGIN nopages --><p align="text-center">Nenalezena žádná stranka vyhovující podmínkám</p><!-- END nopages -->
 </div>
-<div id="users">
-<form action="{SEARCHACTION}#users" method="post">
-<input type="hidden" name="t" value="users" />
-<fieldset>
-<legend>Nalezeno uzivatelu</legend>
-<input type="text" name="f" value="{FILTRUSERS}" class="short" /> <input type="submit" name="search" value="Hledat" class="button" /><br />
-</fieldset>
-</form>
+
+<div class="tab-pane fade" id="tabs-3">
+	<form action="{SEARCHACTION}#users" method="post" role="form" class="form-horizontal">
+		<div class="form-group">
+		<input type="hidden" name="t" value="users" />
+		</div>
+		<div class="form-group">
+			<div class="col-sm-5">
+				<input type="text" class="form-control"  name="f" value="{FILTRUSERS}">
+			</div>
+			<button type="submit" name="search" class="btn btn-success submit">Hledat</button>
+		</div>
+	</form>
 <!-- BEGIN users -->{USERS}
-{USERSPAGER}
-<div class="clearbox"></div><!-- END users -->
-<!-- BEGIN nousers --><p align="center">Nenalezena žádná stranka vyhovující podmínkám</p><!-- END nousers -->
+<div class="pagination">{USERSPAGER}</div><!-- END users -->
+<!-- BEGIN nousers --><p align="text-center">Nenalezena žádná stranka vyhovující podmínkám</p><!-- END nousers -->
 </div>
+
 </div>
