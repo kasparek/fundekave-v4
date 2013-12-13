@@ -3,7 +3,7 @@
 var GooMapi = new function(){
 	var o = this;
 	o.icons = {
-		'sail' : 'http://fundekave.net/css/skin/sail/img/sailing.png',
+		'sail' : 'http://fundekave.net/css01/images/sailing.png',
 		'blue' : 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
 		'red' : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
 	};
@@ -132,8 +132,9 @@ var GooMapi = new function(){
 				$(this).attr('id', id);
 			}
 			if($(this).is("textarea")){
-				if($('.' + id + 'Thumb').length == 0){
-					$(this).change(o.staticSel).hide().after('<a href="#" class="' + id + 'ThumbA" title="Show route"><img class="' + id + 'Thumb" src="" width="' + w + '" height="' + h + '" alt="Google Maps" /></a><a href="#" class="' + id + 'Source" title="Source waypoints"><img src="' + o.cfg.skinUrl + '/img/source.png" alt="Waypoints source" /></a>');
+				$thumbs = $('.' + id + 'Thumb');
+				if($thumbs.length == 0){
+					$(this).change(o.staticSel).hide().after('<a href="#" class="' + id + 'ThumbA" title="Show route"><img class="' + id + 'Thumb" src="" width="' + w + '" height="' + h + '" alt="Google Maps" /></a><a href="#" class="' + id + 'Source" title="Source waypoints"><img src="' + o.cfg.cssUrl + '/images/source.png" alt="Waypoints source" /></a>');
 					$('.' + id + 'Source').click(function(){
 						clearTimeout(o.sourceTOut);
 						$('#' + $(this).attr('class').replace('Source', '')).toggle().change();
@@ -172,7 +173,6 @@ var GooMapi = new function(){
 		$(this).remove();
 		$('#' + id).removeClass('hidden');
 		o.show(id);
-		return false;
 	};
 	o.geoInputClick = function(e, id){
 		if(e)
@@ -197,8 +197,12 @@ var GooMapi = new function(){
 	};
 	o.staticSel = function(e){
 		var p = o.parsePos($(this).val()), id = $(this).attr('id'), w = $(this).width(), h = $(this).height();
+		if(!h || h<32) {
+			h=Math.round(w*0.75);
+			$(this).height(h);
+		}
 		var u = 'http://maps.google.com/maps/api/staticmap?size=' + w + 'x' + h + (p.length > 0 ? '&markers=' + p[p.length - 1] : '&zoom=3&center=51.477222,0&maptype=terrain') + '&sensor=false' + (p.length > 1 ? '&path=' + p.join('|') : '');
-		$('.' + id + 'Thumb').css("width", (p.length > 0 ? w : 64) + "px").css("height", (p.length > 0 ? h : (h / w) * 64) + "px").attr('src', u);
+		$('.' + id + 'Thumb').css("width", w + "px").css("height", h + "px").attr('src', u);
 		if(!$(this).is(':visible')){
 			$('.' + id + 'Thumb').show();
 		}else

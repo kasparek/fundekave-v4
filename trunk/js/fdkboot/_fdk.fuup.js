@@ -1,0 +1,11 @@
+_fdk.fuup = {"fuga":{"settings":{"autoUpload":"0","showControls":"0","timeout":"60","showImages":"1","multi":"1","chunkSize":"131072","chunkLimit":"6","fileLimit":"80","image":{"width":"2048","height":"2048","quality":"90","type":"jpg,jpeg,gif,png"},"appSize":{"width":"-1","height":"200"},"callback":"GaleryEdit.check"},"service":{"url":"files.php","vars":{"k":_fdk.cfg.page,"f":"fuga","auth":_fdk.cfg.auth}}}};
+var tmp = jQuery.extend(true, {}, _fdk.fuup.fuga);
+tmp.settings.autoUpload = "1";
+tmp.settings.showImages = "0";
+tmp.settings.multi = "0";
+tmp.settings.appSize.width = "100";
+tmp.settings.appSize.height = "26";
+tmp.settings.callback = "fuupUploadComplete";
+tmp.service.vars.f = "tempStore";
+_fdk.fuup.tempStore = tmp;
+_fdk.fuup.fuga.settings.browseImg = "http://fundekave.net/assets/browse_big.png";
