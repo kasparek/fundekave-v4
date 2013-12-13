@@ -358,7 +358,6 @@ class JSCompiler {
         if (strlen($line))
           $result .= "\r\nwindow.console.error('$line');";
       }
-
       error_log($js_cmd . "\n");
       error_log($stderr);
       return $this->_debug ? false : 'window.console.error(\'Unexpected error\');';

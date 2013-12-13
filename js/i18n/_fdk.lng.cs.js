@@ -1,5 +1,5 @@
-_fdk.lng = {
+Ôªø_fdk.lng = {
 ajax:{error:'Doslo k chybe pri spojeni, zkuste odeslat znovu'},
-goomapi:{title:'Vyberte vÌce bodu pro zobrazenÌ trasy',distance:'Vzd·lenost: ',search:'Hledat',clearTitle:'Vymazat vöechny souradnice',clear:'Smazat',saveTitle:'Uloû souradnice do formul·re',save:'Uloûit',unitTitle:'Jednotky vzd·lenosti - vzd·lenost se pocÌt· mezi dvema a vÌce souradnicemi na mape, zobrazena v hornÌ liöte okna s mapou',markerTitle:'Dvojklikem smazat, taûenÌm zmenit polohu',close:'ZavrÌt'},
+goomapi:{title:'Vyberte v√≠ce bodu pro zobrazen√≠ trasy',distance:'Vzd√°lenost: ',search:'Hledat',clearTitle:'Vymazat v≈°echny souradnice',clear:'Smazat',saveTitle:'Ulo≈æ souradnice do formul√°re',save:'Ulo≈æit',unitTitle:'Jednotky vzd√°lenosti - vzd√°lenost se poc√≠t√° mezi dvema a v√≠ce souradnicemi na mape, zobrazena v horn√≠ li≈°te okna s mapou',markerTitle:'Dvojklikem smazat, ta≈æen√≠m zmenit polohu',close:'Zavr√≠t'},
 galery:{selectFiles:'Vyberte fotografie',errorUpload:'Doslo k chybe pri nahravani, zkuste to znovu',errorFileNumLimit:'Vlozili jste priliz mnoho obrazku'}
 };
