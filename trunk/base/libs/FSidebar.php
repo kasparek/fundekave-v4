@@ -111,8 +111,6 @@ class FSidebar extends FDBTool {
 						$cacheId = 'cache';
 						$cacheGrp = 'sidebar/' . $fnc;
 						if(strpos($panel['options'], 'cache') !== false) {
-							// if(SITE_STRICT == 1) $cacheId .= '-'.SITE_STRICT.'site'; //each site has different cache folder
-							
 							// ---member/non-member dependant block
 							if($panel['public'] == 0 || strpos($panel['options'], 'member') !== false) {
 								$cacheId .= '-' . (($this->userId > 0) ? ('1') : ('0')) . '-member';

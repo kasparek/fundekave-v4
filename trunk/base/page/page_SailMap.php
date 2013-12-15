@@ -14,7 +14,7 @@ class page_SailMap implements iPage {
 		$fitems->addWhere('sys_pages_items.pageId in ("DTMTH","vd98H")');
 		$list = $fitems->getList();
     
-		$tpl = FSystem::tpl('sail.map.tpl.html');
+		$tpl = FSystem::tpl('map.tpl.html');
 
 		if(!empty($list))
 		while($itemVO = array_pop($list)) {
@@ -37,8 +37,6 @@ class page_SailMap implements iPage {
       } else {
         $tpl->setVariable('PATHCOLOR','#ee0000');
         $tpl->setVariable('STROKEWEIGHT','2');
-        
-        //$tpl->setVariable('MAPICO','red');
       }
 				
 			$tpl->setVariable(array('MAPTITLE'=>$title,'MAPINFO'=>$info,'MAPPOSITION'=>str_replace(";","\n",$itemVO->prop('position'))));

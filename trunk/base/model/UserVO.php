@@ -71,7 +71,11 @@ class UserVO extends Fvob {
 	}
 
 	function getXMLVal($branch,$node,$default='') {
-		$xml = new SimpleXMLElement($this->info);
+		try {
+			$xml = new SimpleXMLElement($this->info);
+		} catch(Exception $e){
+			return $default;
+		}
 		if(isset($xml->$branch)) {
 			if(isset($xml->$branch->$node)) {
 				return $xml->$branch->$node;

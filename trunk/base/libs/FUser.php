@@ -130,7 +130,8 @@ class FUser {
 			} else {
 			  $q = "select ul.userId";
 			}
-			if( $this->pageId ) {
+			$fajax = FAjax::getInstance();
+			if( $this->pageId && empty($fajax->data['__ajaxResponse']) ) {
 				$q .= ", ul.invalidatePerm, pf.book, pf.cnt FROM sys_users_logged as ul LEFT JOIN sys_pages_favorites as pf on pf.userId=ul.userId and pf.pageId = '".$this->pageId."' ";
 			} else {
 				$q .= ", ul.invalidatePerm FROM sys_users_logged as ul ";	
@@ -138,9 +139,10 @@ class FUser {
 			if($userVO->userId > 0) {
 				$q .= "where ul.userId = '".$userVO->userId."'";
 			} else {
-			  $q .= "where ul.loginId = '".$userVO->idlogin."'";
+				$q .= "where ul.loginId = '".$userVO->idlogin."'";
 			}
 			$vid = FDBTool::getRow($q);
+			
 			$idloginInDb = null;
 			if(!empty($vid)) {
 				if($userVO->userId > 0) {
@@ -154,9 +156,10 @@ class FUser {
 					}
 				}
 				if($vid[1] == 1) {
-					FRules::invalidate();	
+					FRules::invalidate();
+					FactoryVO::invalidate();
 				}
-				if( $this->pageVO ) {
+				if(isset($vid[2])) {
 					$this->pageVO->favorite = $vid[2]*1;
 					$this->pageVO->favoriteCnt = $vid[3]*1;
 				}
@@ -212,16 +215,17 @@ class FUser {
 		}
 		//---page not accessible because not correct host
 		if(SITE_STRICT && $userId==0) {
-			if($this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) 
+			if($this->pageVO && $this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) 
 				$pageAccess = $this->pageAccess = false;
 		}
+		
 		//---if page not exists redirect to error
 		if($pageAccess === true) {
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
 			if($userId>0 || !empty($this->userVO->idlogin)) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
-				
+			
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if( $this->pageParam ) {
@@ -229,6 +233,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
+			
 			if($pageAccess === true) {
 				$permPage = $pageId;
 				if($permissionNeeded === 3) {
@@ -265,24 +270,25 @@ class FUser {
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
 				}
-				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
-				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."'");
-				$this->updateTotalItemsNum();
+				
+				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."';"
+				."update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."';");
+				
 			}
 		}
 	}
 	
 	function updateTotalItemsNum($updateMy=false) {
 	   //check total items number
-			//---update total items public number
-			$fpages = new FPages('',$this->userVO->userId);
-			$fpages->VO = null;
-			$fpages->setSelect("sum(sys_pages.cnt) as sum");
-			$res = $fpages->getContent();
-			$totalNum = $res[0]['sum'];
-			if($this->userVO->prop('itemsNum') != $totalNum) 
-				$this->userVO->prop('itemsNum',$totalNum);
-			if($updateMy) $this->userVO->itemsLastNum = $totalNum;
+		//---update total items public number
+		$fpages = new FPages('',$this->userVO->userId);
+		$fpages->VO = null;
+		$fpages->setSelect("sum(sys_pages.cnt) as sum");
+		$res = $fpages->getContent();
+		$totalNum = $res[0]['sum'];
+		if($this->userVO->prop('itemsNum') != $totalNum) 
+			$this->userVO->prop('itemsNum',$totalNum);
+		if($updateMy) $this->userVO->itemsLastNum = $totalNum;
 	}
 
 	function setWhoIs($userId) {

@@ -1,13 +1,36 @@
 <p>{CONTENT}</p>
-<form id="contactForm" action="{FORMACTION}" method="post" name="contact">
+<form id="contactForm" action="{FORMACTION}" method="post" name="contact" role="form" class="form-horizontal">
 <input type="hidden" name="m" value="sail-contact"/>
 <fieldset>
-<label>Name</label><input type="text" name="name" value="{NAME}" class="short" tabindex="1" /><br />
-<label>E-mail</label><input type="text" name="email" value="{EMAIL}" class="short" tabindex="1" /><br />
-<label for="contactText">Message</label><textarea id="contactText" name="text" tabindex="3">{MESSAGE}</textarea><br />
+<div class="form-group">
+	<label for="formname" class="col-sm-2 control-label">Name</label>
+	<div class="col-sm-10">
+		<input type="text" class="form-control" id="formname" name="name" value="{NAME}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="formemail" class="col-sm-2 control-label">E-mail</label>
+	<div class="col-sm-10">
+		<input type="email" class="form-control" id="formemail" name="email" value="{EMAIL}">
+	</div>
+</div>
+<div class="form-group">
+	<label for="contactText" class="col-sm-2 control-label">Message</label>
+	<div class="col-sm-10">
+		<textarea name="text" id="contactText" class="form-control expand">{MESSAGE}</textarea>
+	</div>
+</div>
+
 <!-- a BEGIN captcha <label>antispam</label><img src="{CAPTCHASRC}" alt="captcha - prevent mass-access by robots." />
 <input type="hidden" name="captchaimage" value="{CAPTCHASRC}" />
 <input type="text" name="pcaptcha" value="" class="xShort" tabindex="3" /><br /> END captcha -->
-<input type="submit" name="send" value="Submit" class="button submit" tabindex="4">
+
+<div class="form-group">
+	<div class="col-sm-offset-2 col-sm-10">
+		<button type="submit" id="submitButtonSave" name="send" class="btn btn-success submit">Submit</button>
+		<!-- BEGIN delete --><button type="submit" id="submitButtonDelete" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tento èlánek?">Smazat</button><!-- END delete -->
+	</div>
+</div>
+
 </fieldset>
 </form>

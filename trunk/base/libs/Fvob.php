@@ -138,6 +138,7 @@ class Fvob {
 		}
 		if( $vo->save() ) {
 			//---update in cache
+			FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
 			$this->memFlush();
 			//---update primary value
 			$this->{$this->getPrimaryCol()} = $vo->vo->{$this->getPrimaryCol()};
