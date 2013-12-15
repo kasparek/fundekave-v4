@@ -64,8 +64,8 @@ $itemVO = null;
 if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
 elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
 if($itemId > 0) {
-	$itemVO = new ItemVO($itemId);
-	if($itemVO->load()) {
+	$itemVO = FactoryVO::get('ItemVO',$itemId,true);
+	if($itemVO->loaded) {
 		if(empty($pageId)) $pageId = $itemVO->pageId;
 		if($itemVO->itemIdTop > 0) $itemVO = new ItemVO( $itemVO->itemIdTop,true );
 	} else $itemVO = null;
@@ -74,8 +74,8 @@ if($itemId > 0) {
 if(isset($_REQUEST['c'])) {
 	$c = (int) $_REQUEST['c'];
 	if($c>0) {
-		$catVO = new CategoryVO($c);
-		if($catVO->load()) {
+		$catVO = FactoryVO::get('CategoryVO',$c,true);
+		if($catVO->loaded) {
 			$user->categoryVO = $catVO;
 		}
 	}

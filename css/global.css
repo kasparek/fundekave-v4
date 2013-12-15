@@ -1,3 +1,4 @@
+iframe { max-width: 100%; }
 .navbar-static-top {margin-bottom: 19px;}
 .label,.glyphicon { margin-right:5px; }
 .top-image {overflow: hidden;width: 100%;}

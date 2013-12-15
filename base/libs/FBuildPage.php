@@ -264,15 +264,16 @@ class FBuildPage {
 			}
 		}
 		if($user->pageVO) {
-			if(empty($user->pageVO->tplVars['NUMCOLMAIN'])) $user->pageVO->tplVars['NUMCOLMAIN'] = 9;
+			$user->pageVO->tplVars['NUMCOLMAIN'] = 9;
 			
-			if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
-				$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
-				//var_dump($pageListOut);die();
-				
-				if(!empty($pageListOut)) {
-					$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
-					$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
+			if(FConf::get('settings','mid_col')) {
+				if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
+					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
+					
+					if(!empty($pageListOut)) {
+						$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
+						$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
+					}
 				}
 			}
 		}
@@ -528,12 +529,15 @@ class FBuildPage {
 		//---custom code
 		$cClassname = 'page_'.HOME_PAGE;
 		try {
-		  if(class_exists($cClassname)) call_user_func(array($cClassname, 'show'),$tpl);
+		  if(class_exists($cClassname)) {
+			call_user_func(array($cClassname, 'show'),$tpl);
+		  }
 		} catch(Exception $e){;}
     
 		if(!$hasSidebarData) {
 			$user->pageVO->tplVars['NUMCOLMAIN'] += 3;
 		}
+		
 		if(!empty($user->pageVO->tplVars)) {
 			$tpl->setVariable($user->pageVO->tplVars);
 		}
@@ -544,7 +548,7 @@ class FBuildPage {
 		//$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
 		
 		FProfiler::write('FBuildPage--complete');
-		
+		$user->updateTotalItemsNum();
 		return $data;
 	}
 }

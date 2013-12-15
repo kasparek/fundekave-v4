@@ -17,21 +17,13 @@ class page_Sail implements iPage {
 
 		$user = FUser::getInstance();
 
-		$planRenderer = new FItemsRenderer();
-		$planRenderer->setCustomTemplate('sail.plan.item.tpl.html');
-
-		$planItems = new FItems('blog',false,$planRenderer);
+		$planItems = new FItems('blog',false);
 		$planItems->addWhere("sys_pages_items.pageId='".$planPageId."' and sys_pages_items.public=1");
 		$planItems->setOrder('dateStart');
 		//get all plan items
 		$planRender = $planItems->render();
-    
 
-
-		$positionRenderer = new FItemsRenderer();
-		$positionRenderer->setCustomTemplate('sail.position.item.tpl.html');
-
-		$posItems = new FItems('blog',false,$positionRenderer);
+		$posItems = new FItems('blog',false);
 		$posItems->addWhere("sys_pages_items.pageId='".$positionPageId."'");
 		$posItems->setOrder('itemId desc');
 		//get all plan items

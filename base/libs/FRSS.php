@@ -6,6 +6,7 @@ class FRSS {
 
 	static function process($data) {
 		$user = FUser::getInstance();
+		if(!$user->pageVO) return;
 		$pageId = $user->pageVO->pageId;
 		$typeId = $user->pageVO->typeId;
 		$salt = 'fdk35';
@@ -53,7 +54,8 @@ class FRSS {
 		//rest live feed
 		
 		$user = FUser::getInstance();
-
+		if(!$user->pageVO) return;
+		
 		$pageNumber = 1;
 		if(isset($_GET['p'])) {
 			$pageNumber = (int) $data['p'];

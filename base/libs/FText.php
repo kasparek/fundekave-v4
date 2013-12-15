@@ -159,13 +159,13 @@ class FText {
 			if(preg_match("/.*[&?|]k=([a-zA-Z0-9]{5}).*/i", $url, $matches)) {
 			  $local=true;
 			  //it's local page
-			  $pageVO = new PageVO($matches[1]);
+			  $pageVO = FactoryVO::get('PageVO',$matches[1],true);
 			  $tag->nodeValue = $pageVO->get('name');
 			} else {
 			  if(preg_match("/.*[&?|]i=([0-9]{1,7}).*/i", $url, $matches)) {
 				//we have itemId
-				$itemVO=new ItemVO($matches[1]);
-				if($itemVO->load()) {
+				$itemVO=FactoryVO::get('ItemVO',$matches[1],true);
+				if($itemVO->loaded) {
 				  $local=true;
 				  if($itemVO->typeId=='galery') {
 					while($tag->firstChild) $tag->removeChild($tag->firstChild);
@@ -225,22 +225,28 @@ class FText {
 			if(!$local) {
 			  //external images with thumb
 			  //if image make thumb
-			  
-			  if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png|gif)$/i", $url, $matches)) {
-				$urlEncoded = base64_encode($url);
-				$img = $dom->createElement("img");
-				$img->setAttribute('src',FConf::get("galery","targetUrlBase").FConf::get("galery","forum_thumbCut").'/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded);
-				//$img->setAttribute('class','hentryimage');
-				if($tag->tagName=='img') {
-				  $a = $dom->createElement("a");
-				  $tag->parentNode->replaceChild($a,$tag);
-				  $a->setAttribute('href',$url);
-				  $a->setAttribute('rel','lightbox-page');
-				  $a->appendChild($img);
+			  if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png)$/i", $url, $matches)) {
+				
+				if(strpos($url,'norender')===false && strpos($url,'http')===0) {
+					$urlEncoded = base64_encode($url);
+					$imgSrc = FConf::get("galery","targetUrlBase").FConf::get("galery","forum_thumbCut").'/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded;
+				
+					$img = $dom->createElement("img");
+					$img->setAttribute('src',$imgSrc);
+					//$img->setAttribute('class','hentryimage');
+					if($tag->tagName=='img') {
+					  $a = $dom->createElement("a");
+					  $tag->parentNode->replaceChild($a,$tag);
+					  $a->setAttribute('href',$url);
+					  $a->setAttribute('rel','lightbox-page');
+					  $a->appendChild($img);
+					} else {
+					  $tag->setAttribute('rel','lightbox-page');
+					  while($tag->firstChild) $tag->removeChild($tag->firstChild);
+					  $tag->appendChild($img);
+					}
 				} else {
-				  $tag->setAttribute('rel','lightbox-page');
-				  while($tag->firstChild) $tag->removeChild($tag->firstChild);
-				  $tag->appendChild($img);
+					//don't modify images from local server
 				}
 			  } else {
 				//try get title
@@ -277,7 +283,6 @@ class FText {
 		$textElement = $dom->getElementById('posttextprocessing');
 		$text = $dom->saveXML($textElement);
 		$text = substr($text,29,strlen($text)-35);
-
 
 		//add line breaks
 		if(strpos($text,'<p>')===false) {

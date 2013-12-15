@@ -108,19 +108,23 @@ class FSystem {
 			else $cache->invalidateGroup($inv[0]);
 		}
 	}
+	
+	private static $superVars = array();
 
+	static function addSuperVar($key,$val) {
+		self::$superVars['[['.$key.']]'] = $val;
+	}
+	
 	static function superVars($data) {
 		$superVars = array(
-		'SKIN'=>SKIN,
-		'STATIC_DOMAIN'=>STATIC_DOMAIN,
-		'URL_CSS'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
-		'URL_JS'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
-		'ASSETS_URL'=>(strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS
+		'[[SKIN]]'=>SKIN,
+		'[[STATIC_DOMAIN]]'=>STATIC_DOMAIN,
+		'[[URL_CSS]]'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
+		'[[URL_JS]]'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
+		'[[ASSETS_URL]]'=>(strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS
 		);
-		foreach($superVars as $k=>$v) {
-			$data = str_replace('[['.$k.']]',$v,$data);
-		}
-		return $data;
+		$superVars = array_merge($superVars,self::$superVars);
+		return str_replace(array_keys($superVars),$superVars,$data);
 	}
 
 	//TEMPLATE HELPER

@@ -35,10 +35,9 @@ class page_saila  {
 		$redStr="color:red|size:small|".implode('|',$markersRed);
 		$blueStr="color:blue|size:small|".implode('|',$markersBlue);
     
-		//$tpl->setVariable('STATICMARKERPOS',implode('|',$markers));
-		//if(!empty($paths)) $tpl->setVariable('SWPLIST',implode('&path=',$paths));
 		$url = 'http://maps.google.com/maps/api/staticmap?size=170x170&markers='.$redStr.'&markers='.$blueStr.'&sensor=false&path='.implode('&path=',$paths);
-		$tpl->setVariable('GMAPURL',$url);
+		
+		FSystem::addSuperVar('GMAPURL',$url);
 	}
   
 }
