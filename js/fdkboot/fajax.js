@@ -152,7 +152,7 @@ var Fajax = new function(){
 				}
 				if(s != 'success' && s != 'abort'){
 					if(!silent)
-						msg('error', _fdk.lng.ajaxErr);
+						msg('danger', _fdk.lng.ajax.error);
 					return;
 				}
 				$(a.responseXML).find("Item").each(function(){
