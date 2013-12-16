@@ -182,24 +182,23 @@ function ckedInit() {
 function calendarInit() {
 	if($("#calendar-inline").length == 0) return
 	if(!Lazy.load(_fdk.load.ui, calendarInit)) return;
+	var date = $('#calendar-inline').data('dateset');
 	$('#calendar-inline').datepicker({
+	date:date,
     language: "cs",
 	weekStart: 1,
     beforeShowDay: function (date){
-		var cal = $("#calendar-inline")[0], day = date.getDate(), month = date.getMonth()+1, year= date.getFullYear(),dayEvents = $(".event",cal),ret = {};
+		var cal = $("#calendar-inline")[0], day = date.getDate(), month = date.getMonth()+1, year= date.getFullYear(),dayEvents = $(".event",cal),ret = {tooltip:' '};
 		if(dayEvents.length > 0) {
-			var tooltip = '';
-			var cl = 'active';
 			dayEvents.each(function(){
 			$("span",this).remove();
 				var ed = $(this).data('date').split('-');
 				if(parseInt(ed[2]) == day && parseInt(ed[1]) == month && (parseInt(ed[0])==year || $(this).data('repeat')=='year')) {
-					tooltip += $(this).html() + "\n";
-					if($(this).data('repeat')=='year') cl='active';
+					ret.tooltip += $(this).html() + "\n";
+					//if($(this).data('repeat')=='year') cl='active';
 			}});
-			if(tooltip.length>0) {
-				ret.tooltip = tooltip;
-				ret.classes = cl;
+			if(ret.tooltip.length>1) {
+				ret.classes = 'active';
 			}
 		}
 		return ret;
@@ -210,6 +209,11 @@ function calendarInit() {
 		Fajax.add('year', e.date.getFullYear());
 		Fajax.send('calendar-show', '');
 	});
+	if(date) {
+		var d=date.split('-'),da=new Date(parseInt(d[0]), parseInt(d[1])-1, parseInt(d[2]));
+		$('#calendar-inline').datepicker('update', da);
+	}
+	$('.day').tooltip({container: 'body',placement: 'left'});
 }
 function datePickerInit(){
 	if($(".date").length == 0) return;

@@ -217,12 +217,16 @@ class page_PageEdit implements iPage {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->update( $data );
+					$rules->updateAdminByPages();
 
 					//---relations update
 					/*
 					 $fRelations = new FPagesRelations($pageVO->pageId);
 					 $fRelations->update();
 					 */
+				} else {
+					$rules = new FRules();
+					$rules->updateAdminByPages();
 				}
 
 				//---set special properties

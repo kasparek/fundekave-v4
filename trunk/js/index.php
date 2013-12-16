@@ -20,4 +20,4 @@ if(!is_dir($dir)) {
 //compiler 
 $c = new JSCompiler();
 $output = $c->addDir($dir)->simpleMode()->cacheDir($baseDir)->hideDebugInfo()->write();
-//$output = $c->addDir($dir)->prettyPrint()->cacheDir($baseDir)->hideDebugInfo()->write();
+//$output = $c->addDir($dir)->localCompile()->prettyPrint()->cacheDir($baseDir)->hideDebugInfo()->write();

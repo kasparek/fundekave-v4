@@ -46,6 +46,13 @@ class FRules {
 			$db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].")	values ('".$usr."','".$page."','".$type."')" ); 
 		}
 	}
+	
+	function updateAdminByPages() {
+		$db = FDBConn::getInstance();
+		$q="insert into sys_users_perm (userId,pageId,rules) (select userIdOwner, pageId, '2' from sys_pages) on duplicate key update rules='2';";
+		$db->query($q);
+	}
+	
 	function clear($page=0){
 		if(empty($page)) $page=$this->page;
 		FDBTool::query("delete from ".$this->_table." where ".$this->_arrCols[1]."='".$page."'");
