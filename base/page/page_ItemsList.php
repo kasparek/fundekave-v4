@@ -82,11 +82,12 @@ class page_ItemsList implements iPage {
 				}
 				if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
-					if(FRules::getCurrent(FConf::get('settings','perm_add_event')))FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 				}
 			}
-			if($user->pageVO->pageId=='event' && $user->userVO->userId>0){
-				FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+			if(FRules::getCurrent(FConf::get('settings','perm_add_event'))) {
+				if(($user->pageVO->pageId=='event' || $user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') && $user->userVO->userId>0 && empty($user->pageParam) && empty($user->itemVO)){
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+				}
 			}
 
 			//---DEEPLINKING for forum pages
@@ -257,7 +258,6 @@ class page_ItemsList implements iPage {
 		}
 		
 		if($pageVO->typeId=='blog') {
-		
 			if($pageVO->pageIdTop) {
 				$fItems->addWhere("(sys_pages_items.pageId='".$pageVO->pageId."' or (sys_pages_items.typeId='galery' and sys_pages_items.pageIdTop='".$pageVO->pageIdTop."'))");
 			} else {
@@ -295,12 +295,13 @@ class page_ItemsList implements iPage {
 		
 		if(!empty($date)) {
 			//used for sorting
-			$fItems->addWhere("(0=1)"
-			."or (sys_pages_items.typeId='forum' and '".$date."'=date_format(sys_pages_items.dateCreated,'%Y-%m-%d')) "
-			."or (sys_pages_items.typeId in ('blog','galery') and '".$date."'=date_format(sys_pages_items.dateStart,'%Y-%m-%d')) "
-			."or (sys_pages_items.textLong='year' and date_format(sys_pages_items.dateStart, '%m-%d')='".substr($date,5)."') "
-			."or (sys_pages_items.typeId='event' and sys_pages_items.textLong!='year' and '".$date."'>=date_format(sys_pages_items.dateStart,'%Y-%m-%d') and '".$date."'<=date_format(sys_pages_items.dateEnd,'%Y-%m-%d'))"
-			.""
+			$fItems->addWhere("("
+			."(sys_pages_items.dateStart <= '".$date."%' and sys_pages_items.dateEnd >= '".$date."%')
+			or (sys_pages_items.dateStart like '".$date."%' and sys_pages_items.dateEnd is null)
+			or (sys_pages_items.textLong='year' and date_format(sys_pages_items.dateStart, '%m-%d')='".substr($date,5)."')"
+			.") or ("
+			."sys_pages_items.typeId in ('blog','galery','forum') and sys_pages_items.dateCreated like '".$date."%'"
+			.")"
 			);
 			$fItems->setOrder('dateStart desc');
 		} else {
