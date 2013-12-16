@@ -20,6 +20,7 @@ class FCalendarPlugins {
     date_format(dateStart ,'%d.%m.%Y') as dateLocal 
     from sys_pages_items where typeId='event'" 
 	.(SITE_STRICT ? "and pageIdTop='".SITE_STRICT."' " : "")
+	."and (userId='".$userId."' or public=1) "
 	."and dateStart like '".$year."-".$month."%'";
     return $db->getAll($q);
   }
