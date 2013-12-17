@@ -381,7 +381,6 @@ class page_ItemsList implements iPage {
 		
 		if($data===false) {
 			$fItems->getList($from, $perPage+1);
-
 			$numItems = count($fItems->data);
 			if($pager) {
 				$pager->totalItems = $numItems;
