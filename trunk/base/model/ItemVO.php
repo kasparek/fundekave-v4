@@ -27,7 +27,7 @@ class ItemVO extends Fvob {
 	); }
 
 	protected $propertiesList = array('position','distance','forumSet','reminder','reminderEveryday','repeat','picasaPhoto');
-	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1);
+	protected $propDefaults = array('reminder'=>0,'reminderEveryday'=>0,'forumSet'=>1,'position'=>'','distance'=>'','repeat'=>'','picasaPhoto'=>null);
 	
 	//rendering options
 	public $options = array();
@@ -180,9 +180,9 @@ class ItemVO extends Fvob {
 				$this->{$k} = $v;
 			}
 		}
-		$this->prepare();
+		//$this->prepare();
 		//---save in cache
-		$this->memStore();
+		//$this->memStore();
 	}
 
 	function save() {

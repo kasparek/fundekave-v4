@@ -37,7 +37,7 @@ class page_UserSettings implements iPage {
 				$userVO->save();
 				FCommand::run(AVATAR_UPDATED,$userVO->userId);
 				FAjax::addResponse('avatarBox','$html',FAvatar::showAvatar());
-				FAjax::addResponse('call','msg','ok,'.FLang::$MESSAGE_SUCCESS_SAVED);
+				FAjax::addResponse('call','msg','success,'.FLang::$MESSAGE_SUCCESS_SAVED);
 				break;
 			case 'del':
 				$cache = FCache::getInstance('d');
@@ -60,7 +60,7 @@ class page_UserSettings implements iPage {
 				FCommand::run(AVATAR_UPDATED,$userVO->userId);
 				if(!$data['__ajaxResponse']) FHTTP::redirect(FSystem::getUri());
 				else {
-					FAjax::addResponse('call','msg','ok,'.FLang::$LABEL_DELETED_OK);
+					FAjax::addResponse('call','msg','success,'.FLang::$LABEL_DELETED_OK);
 					FAjax::addResponse('call','remove','foto-'.$foto);
 					FAjax::addResponse('avatarBox','$html',FAvatar::showAvatar());	
 				}
@@ -101,7 +101,7 @@ class page_UserSettings implements iPage {
 						FCommand::run(AVATAR_UPDATED,$userVO->userId);
 					}
 				}
-				if(!FError::is()) FAjax::addResponse('call','msg','ok,'.FLang::$MESSAGE_SUCCESS_SAVED);
+				if(!FError::is()) FAjax::addResponse('call','msg','success,'.FLang::$MESSAGE_SUCCESS_SAVED);
 				$userVO->save();
 				if(!$data['__ajaxResponse']) FHTTP::redirect(FSystem::getUri());
 		}
