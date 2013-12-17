@@ -230,6 +230,7 @@ function calendarUpdate(data) {
 		}
 	}
 	$("#calendar-inline").datepicker('update');
+	$('.day').tooltip({container: 'body',placement: 'left'});
 }
 function slimboxInit() {
 	if($("a[rel^='lightbox']").length == 0 && $(".fotomashup").length == 0) return;
