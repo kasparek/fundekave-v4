@@ -115,7 +115,7 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 		$("#recipientList").change(function(evt){
 			var rec = [];
 			$("#recipientList option:selected").each(function(){rec.push($(this).text());});
-			if(rec) $("#recipient").attr("value", rec.join(',')).change();
+			if(rec) $("#recipient").val(rec.join(',')).change();
 			avatarfrominput();
 		});
 		GaleryEdit.init(_fdk.cfg,_fdk.lng.galery);
@@ -329,7 +329,7 @@ function redirect(dir){
 
 /** AVATAR FROM input IN fpost */
 function avatarfrominput(evt){
-	Fajax.add('username', $("#recipient").attr("value"));
+	Fajax.add('username', $("#recipient").val());
 	Fajax.add('call', 'fajaxInit');
 	Fajax.send('post-avatarfrominput', '');
 }
@@ -398,7 +398,7 @@ var Msg = new function(){
 		this.filter('textarea').each(function(){
 			var $this = $(this), minHeight = $this.height(), u = function(){
 				var pt = parseInt($this.css('padding-top').replace('px','')),pb = parseInt($this.css('padding-bottom').replace('px','')),lh = parseInt($this.css("line-height").replace("px", "")),h = $this.height(), sh = $this.prop('scrollHeight')-(pt+pb);
-				if(sh > h)
+				if(sh > h) 
 					$this.css('height', sh + (lh*2));
 			};
 			$this.off('change', u).on('keydown', u).change(u).keydown(u).change();
