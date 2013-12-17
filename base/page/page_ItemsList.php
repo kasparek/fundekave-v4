@@ -235,20 +235,21 @@ class page_ItemsList implements iPage {
 		}
 		
 		//LIST ITEMS
-		$fItems = new FItems($pageVO->typeId=='galery'?'forum':'',$user->userVO->userId);
+		$type = 'item';
+		$typeWhere = $pageVO->prop('include');
+		if(!empty($data['__get']['type'])) {
+			$type = $data['__get']['type'];
+			$typeWhere = $type;
+		} else {
+			$type = $pageVO->typeId=='blog'?'top':$pageVO->typeId;
+		}
+		$typeWhere = $pageVO->typeId=='galery'?'forum':'';
+		$fItems = new FItems($typeWhere,$user->userVO->userId);
 		if(!empty($data['__get']['tag'])) {
 			$tag = (int) $data['__get']['tag'];
 			$fItems->addWhere("tag_weight >= '". $tag ."'");
 		}
 		
-		$type = 'item';
-		if(!empty($data['__get']['type'])) {
-			$type = $data['__get']['type'];
-			$fItems->addWhere("typeId = '". $type ."'");
-		} else {
-			$type = $pageVO->typeId=='blog'?'top':$pageVO->typeId;
-		}
-
 		//TODO: update `sys_pages_items` as i join sys_pages as p on p.pageId=i.pageId set i.pageIdTop=p.pageIdTop WHERE length(p.pageIdTop)>0 and i.pageIdTop is null and i.typeId='galery'
 		//if(SITE_STRICT && $pageVO->typeId=='top') {
 		//	$fItems->addWhere("pageIdTop = '".SITE_STRICT."'");
@@ -286,13 +287,6 @@ class page_ItemsList implements iPage {
 			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
 		}
 				
-		$include = $pageVO->prop('include');
-		if(!empty($include)) {
-			$includeList = explode(',',$include);
-			//$fItems->addWhere("(sys_pages_items.typeId = '".implode("' or sys_pages_items.typeId = '",$includeList)."')");
-			$fItems->addWhere("sys_pages_items.typeId in ('".implode("','",$includeList)."')");
-		}
-		
 		if(!empty($date)) {
 			//used for sorting
 			$fItems->addWhere("("
@@ -343,6 +337,7 @@ class page_ItemsList implements iPage {
 		}
 		
 		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions,$pageVO->typeId=='galery'?'forum':false);
+		
 		$vars = array_merge($vars,$listArr['vars']);
 		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 		
@@ -386,7 +381,7 @@ class page_ItemsList implements iPage {
 		
 		if($data===false) {
 			$fItems->getList($from, $perPage+1);
-			
+
 			$numItems = count($fItems->data);
 			if($pager) {
 				$pager->totalItems = $numItems;

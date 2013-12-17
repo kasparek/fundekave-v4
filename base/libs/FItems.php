@@ -3,9 +3,6 @@ class FItems extends FDBTool {
 
 	const TYPE_DEFAULT = 'forum';
 
-	//---current type
-	private $typeId;
-
 	//---list of ItemVOs
 	public $data;
 
@@ -39,67 +36,48 @@ class FItems extends FDBTool {
 		}
 		$this->setSelect( $columnsAsed );
 
-		if($typeId!='') {
-			if(FItems::isTypeValid($typeId)) {
-				$this->typeId = $typeId;
-				$this->addWhere("typeId='".$typeId."'");
+		if(!empty($typeId)) {
+			if(!is_array($typeId)) {
+				if(strpos($typeId,',')!==false) {
+					$typeId = explode(','); 
+				} else {
+					$typeId=array($typeId);
+				}
 			}
-		} else {
-			$this->addWhere("typeId!='request'");
-		}
-
-		//---check permissions for given user
-		if($userId===0) {
-			$this->addJoinAuto('sys_pages','pageId',array(),'join');
-			$this->addWhere('sys_pages_items.public=1 and sys_pages.public = 1 and sys_pages.locked<2');
-		} elseif($userId > 0) {
-			if(!FRules::getCurrent( 2 )) {
-				//TODO:public=3 - jen pro pratele - solve performance issues
-				//add sys_pages_items.public = 3 and sys_pages_items.userId in (friendsList)
-				//---only public item for non-admins
-				$this->addWhere('(sys_pages_items.public = 1 or sys_pages_items.public = 2)');
+			$tValid = array();
+			foreach($typeId as $t) {
+				if(FItems::isTypeValid($t)) {
+					$tValid[]=$t;
+				}
 			}
-			$this->userIdForPageAccess = $userId;
+			$typeId=implode("','",$tValid);
 		}
-
+		
+		$this->userIdForPageAccess = $userId;
 		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
 
-		//EXPERIMENTAL
-		$byPagePerm=false;
-		if($byPagePerm) {
-			if($this->permission == 1) {
-				if($this->sa === true) {
-					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-					." {JOIN} where 1 ";
-				} else if($this->userId == 0) {
-					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-					." {JOIN} where ".$this->table.".public=1 and ".$this->table.".locked<2";
+		if($this->userIdForPageAccess!==false) {
+			$this->autojoinSet(true);
+			$typeWhere='';
+			if(!empty($typeId)) {
+				if(strpos($typeId,',')===false) {
+					$typeWhere=" ".$this->table.".typeId='".$typeId."' and ";
 				} else {
-					$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-					." left join ".$this->pagesPermissionTableName." as up on "
-					.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
-					." and up.userId='".$this->userId."' {JOIN} "
-					."where (((".$this->table.".public in (0,3) and up.rules >= 1) "
-					."or ".$this->table.".userIdOwner='".$this->userId."' "
-					."or ".$this->table.".public in (1,2)) and (up.userId is null or up.rules!=0))";
+					$typeWhere=" ".$this->table.".typeId in ('".$typeId."') and ";
 				}
 			} else {
-				$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
-				." left join ".$this->pagesPermissionTableName." as up on "
-				.$this->table.".".$this->primaryCol."=up.".$this->primaryCol
-				." and up.userId='".$this->userId."' {JOIN} "
-				."where ( ".$this->table.".userIdOwner='".$this->userId."' "
-				."or (up.userId is not null and up.rules=".$this->permission.") )";
+				$typeWhere=" ".$this->table.".typeId!='request' and ";
 			}
-
-			if(!empty($this->type)) {
-				if(!is_array($this->type)) {
-					$queryBase.=" and ".$this->table.".typeId='".$this->type."'";
-				} else {
-					$queryBase.=" and ".$this->table.".typeId in ('".implode("','",$this->type)."')";
-				}
-			}
-			$queryBase .= ' and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+						." join sys_pages as p on p.pageId=".$this->table.".pageId "
+						.($userId>0?"left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=".$this->table.".pageId ":' ')
+			."{JOIN} where ("
+			.$typeWhere
+			.(SITE_STRICT ? "p.pageIdTop='".SITE_STRICT."' and " : " ")
+			.($userId>0?
+				"(".$this->table.".public>0 or (".$this->table.".public=0 and ".$this->table.".userId='".$userId."')) and (p.public>0 or up.rules>0) and p.locked<2 "
+				:"p.locked<2 and p.public=1 and ".$this->table.".public = 1 ")
+			.') and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
 			$this->setTemplate($queryBase);
 		}
 	}
@@ -161,7 +139,6 @@ class FItems extends FDBTool {
 			
 			while(count($arr) < $count || $count==0) {
 				$arrTmp = $this->getContent($page*($count*10), $count*10);
-				
 				$page++;
 				if(empty($arrTmp)) break; //---no records
 				else {
@@ -170,8 +147,8 @@ class FItems extends FDBTool {
 						if(!isset($typeLimitCount[$row->pageId])) {
 							$typeLimitCount[$row->pageId]=0;
 						}
-						$includeItem = false;
-						if(FRules::get($this->userIdForPageAccess,$row->pageId)) $includeItem = true;
+						$includeItem = true;
+						//if(FRules::get($this->userIdForPageAccess,$row->pageId)) $includeItem = true;
 						
 						if($includeItem) {
 							//check limits for types
@@ -209,7 +186,6 @@ class FItems extends FDBTool {
 
 			foreach($this->data as $itemVO) {
 				$itemVO->thumbInSysRes = $this->thumbInSysRes;
-				$itemVO->prepare();
 				$itemIdList[] = $itemVO->itemId;
 			}
 
@@ -233,15 +209,14 @@ class FItems extends FDBTool {
 					}
 				}
 				$propList = $itemVO->getPropertiesList();
+				
 				foreach($propList as $prop) {
 					if(!isset($itemVO->properties->$prop)) {
 						$itemVO->properties->$prop = false;
 						$invalidate = true;
 					}
 				}
-				if($invalidate===true) {
-					$itemVO->memStore();
-				}
+				$itemVO->prepare();
 				$this->data[$k] = $itemVO;
 			}
 		}

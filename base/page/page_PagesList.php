@@ -120,7 +120,6 @@ class page_PagesList implements iPage {
 						$itemList = $fItems->getList(0,1);
 						if(!empty($itemList)) {
 							$fotoItemVO = $itemList[0];
-							//$tplGal->setVariable("IMGURL",$fotoItemVO->detailUrl);
 							$tplGal->setVariable("IMGURL",FSystem::getUri('',$gal->pageId,''));
 							$tplGal->setVariable("IMGURLTHUMB",$fotoItemVO->thumbUrl);
 						}

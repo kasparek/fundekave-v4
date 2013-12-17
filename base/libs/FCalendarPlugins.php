@@ -6,11 +6,13 @@ class FCalendarPlugins {
 	}
 
 	static function whereBase($typeId,$userId,$pageId) {
-		return ($userId>0?' join sys_pages as p on p.pageId=i.pageId left join sys_users_perm as up on up.userId=i.userId and up.pageId=i.pageId ':' ')
+		return ' join sys_pages as p on p.pageId=i.pageId '.($userId>0?"left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=i.pageId ":' ')
 		."where i.typeId='".$typeId."'" 
 		.(SITE_STRICT ? "and p.pageIdTop='".SITE_STRICT."' " : " ")
 		.(!empty($pageId)?"and p.pageId='".$pageId."' ":" ")
-		.($userId>0?"and (i.public>0 or (i.public=0 and i.userId='".$userId."')) and (p.public>0 or up.rules>0) ":'and p.public=1 and i.public = 1 ');
+		.($userId>0?
+			"and (i.public>0 or (i.public=0 and i.userId='".$userId."')) and (p.public>0 or up.rules>0) and p.locked<2 "
+			:'and p.locked=0 and p.public=1 and i.public = 1 ');
 	}
 	
   static function diaryRecurrenceItems($year,$month,$userId,$pageId) {
