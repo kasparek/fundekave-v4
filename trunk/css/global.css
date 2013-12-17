@@ -3,6 +3,7 @@ iframe { max-width: 100%; }
 .label,.glyphicon { margin-right:5px; }
 .top-image {overflow: hidden;width: 100%;}
 .top-image img {width: 100%;}
+.panel-primary .panel-heading a {color: #fff;text-decoration: underline;}
 #topImageLink {
 	padding-right: 20px;
 	position: absolute;
