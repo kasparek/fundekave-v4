@@ -67,9 +67,11 @@ FProfiler::write('PAGE PROCESS DONE');
 if($user->itemVO && empty($user->pageParam) && (!$user->idkontrol || $itemVO->userId != $user->userVO->userId)) $itemVO->hit();
 	
 //---shows message that page is locked
-if($user->pageVO && ($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3) {
-	FError::add(FLang::$MESSAGE_PAGE_LOCKED);
-	if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+if($user->pageVO) {
+	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3) {
+		FError::add(FLang::$MESSAGE_PAGE_LOCKED);
+		if(!FRules::get($user->userVO->userId,'sadmi',1)) $user->pageAccess = false;
+	}
 }
 
 //---generate page

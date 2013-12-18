@@ -226,8 +226,13 @@ class FText {
 			  //external images with thumb
 			  //if image make thumb
 			  if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png)$/i", $url, $matches)) {
-				
-				if(strpos($url,'norender')===false && strpos($url,'http')===0) {
+			  $url = 'http://upsidedown.fundekave.net/images/obr.jpg';
+				$domain = parse_url($url, PHP_URL_HOST);
+				if($domain) {
+					$domain = explode('.',$domain);
+					$domain = $domain[count($domain)-2];
+				}
+				if(strpos($url,'norender')===false && !empty($domain) && strpos(DOMAINS_LOCAL,$domain)===false) {
 					$urlEncoded = base64_encode($url);
 					$imgSrc = FConf::get("galery","targetUrlBase").FConf::get("galery","forum_thumbCut").'/remote/'.md5(ImageConfig::$salt.$urlEncoded).$urlEncoded;
 				

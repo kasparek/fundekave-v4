@@ -470,16 +470,16 @@ class FBuildPage {
 		$showSidebar = true;
     if(FConf::get('settings','sidebar_off')) {
       $showSidebar = false;
-    } else if($user->pageVO){
+    } else if($user->pageVO) {
 			$showSidebar = $user->pageVO->showSidebar;
 			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
-		}
-    
-		if($showSidebar) {
-			$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
-			$fsidebar->load();
-			$hasSidebarData = $fsidebar->show();
-			FProfiler::write('FBuildPage--FSidebar');
+	
+			if($showSidebar) {
+				$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
+				$fsidebar->load();
+				$hasSidebarData = $fsidebar->show();
+				FProfiler::write('FBuildPage--FSidebar');
+			}
 		}
 		$tpl->setVariable("USER", $user->idkontrol?'1':'0');
 		$tpl->setVariable("AUTH", $user->getRemoteAuthToken());
@@ -534,12 +534,15 @@ class FBuildPage {
 		  }
 		} catch(Exception $e){;}
     
-		if(!$hasSidebarData) {
-			$user->pageVO->tplVars['NUMCOLMAIN'] += 3;
-		}
-		
-		if(!empty($user->pageVO->tplVars)) {
-			$tpl->setVariable($user->pageVO->tplVars);
+		if($user->pageVO) {
+			if(!$hasSidebarData) {
+				$user->pageVO->tplVars['NUMCOLMAIN'] += 3;
+			}
+			if(!empty($user->pageVO->tplVars)) {
+				$tpl->setVariable($user->pageVO->tplVars);
+			}
+		} else {
+			$tpl->setVariable('NUMCOLMAIN','12');
 		}
 	
 		//---GET PAGE DATA
