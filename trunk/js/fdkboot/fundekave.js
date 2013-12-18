@@ -47,21 +47,15 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 		$(window).resize(topBannerPosition).resize();
 		$(".top-image img").on('load',topBannerPosition);
 	}
-	
 	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		var h = $(e.target).attr("href"),t = $(e.target).data("target");
-		if(!t) return;
-		if ($(t).is(':empty')) {$.ajax({type: "GET",url: h.replace("show","show-x"),error: function(data){
-			alert("There was a problem loading tab content");
-		},success: function(data){$(t).html(data);}})};
+		var h = $(e.target).attr("href"),t = $(e.target).data("target");if(!t) return;
+		if ($(t).is(':empty')) {$.ajax({type: "GET",url: h.replace("show","show-x"),complete: function(a){if(a.responseText)$(t).html(a.responseText);}})};
 	});
-	
 	gaLoad();
 	calendarInit();
 	if($("#detailFoto").length>0) {
 		ImgNext.init();
 	}
-	
 	var w = $(window).width();
 	if($("#sidebar").length == 0)
 		$('body').addClass('bodySidebarOff');
