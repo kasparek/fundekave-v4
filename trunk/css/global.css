@@ -160,6 +160,9 @@ div.reaction {margin-left: 3em;padding-left:10px;border-left: 5px solid #eeeeee;
 	padding: 0 5px 5px 0;
 	float: left;
 }
+.fitem .entry-content img {
+	max-width:100%;
+}
 .fitem {
 clear: both;
 }
