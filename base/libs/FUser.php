@@ -270,9 +270,9 @@ class FUser {
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
 				}
-				
-				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."';"
-				."update low_priority sys_users set dateLastVisit = now(),hit=hit+1 where userId='".$userId."';");
+				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
+				$fajax = FAjax::getInstance();
+				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),".(empty($fajax->data['__ajaxResponse']) ? 'hit=hit+1' : '')." where userId='".$userId."'");
 				
 			}
 		}
