@@ -333,17 +333,21 @@ class FBuildPage {
 			$q = "SELECT l.userId,u.name FROM sys_users_logged as l join sys_users as u on u.userId=l.userId "
 			."WHERE subdate(NOW(),interval ".USERVIEWONLINE." second)<l.dateUpdated and l.userId!='".$user->userVO->userId."' "
 			."ORDER BY l.dateUpdated desc";
+			$userList = '';
 			if (false !== ($arrpra = FDBTool::getAll($q))) {
 				if(!empty($arrpra)) {
 					$tpl->setVariable('NUMFRIENDSONLINE',count($arrpra));
 					foreach ($arrpra as $pra){
-						$tpl->setVariable('FRIENDID',$pra[0]);
-						$tpl->setVariable('FRIENDNAME',$pra[1]);
-						$tpl->setVariable('FRIENDAVATAR',FAvatar::getAvatarUrl($pra[0]));
-						$tpl->parse('onlineuser');
+						$userList .= '<li><a href="?k=finfo&who='.$pra[0].'"><img src="'.FAvatar::getAvatarUrl($pra[0]).'" /> '.$pra[1].'</a></li>';
 					}
 				}
 			}
+			if(!empty($userList)) {
+				$tpl->setVariable('ONLINEUSERSLIST',$userList);
+			} else {
+				$tpl->setVariable('ONLINEUSERSLISTHIDDEN',' hidden');
+			}
+			
 		} else {
 			$tpl->touchBlock('loginform');
 		}
