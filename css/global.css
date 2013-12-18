@@ -224,9 +224,9 @@ img {max-width: none;max-height: none;}
 /* GALLERY */
 .showProgress{background:url(images/loading.gif) no-repeat center center;}
 #fullscreenBox {min-height:200px;text-align:center;overflow:hidden; }
-#photoToolbar { position: absolute;width:100%; }
+#photoToolbar { position: absolute;width:100%;z-index:10000; }
 .icon48bar {height:48px;opacity:0.7;text-align:left;}
-.icon48bar img { z-index: 9999;opacity:0.7; }
+.icon48bar img { opacity:0.7; }
 #photoToolbar #nextButt, #photoToolbar  #prevButt { min-height:150px;margin-top:48px;display: block;position: absolute;top: 0;width: 20%;outline: none; }
 #photoToolbar #nextButt {left: 0;background: transparent url(images/prev.png) no-repeat 0 40%;opacity:0.5;}
 #photoToolbar #nextButt:hover {opacity:1;}
