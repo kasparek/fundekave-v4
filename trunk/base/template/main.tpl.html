@@ -77,16 +77,14 @@
 	<a href="?k=roger">Registrace</a>
 </li>
 <!-- END loginform -->
-<!-- BEGIN usersonline -->
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Online <span class="label label-info">{NUMFRIENDSONLINE}</span><b class="caret"></b></a>
-  <ul class="dropdown-menu">
-	<!-- BEGIN onlineuser -->
-	<li><a href="?k=finfo&who={FRIENDID}"><img src="{FRIENDAVATAR}" /> {FRIENDNAME}</a></li>
-	<!-- END onlineuser -->
+
+<li class="dropdown{ONLINEUSERSLISTHIDDEN}" id="onlineUsersDropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Online <span id="onlineUsersNum" class="label label-info">{NUMFRIENDSONLINE}</span><b class="caret"></b></a>
+  <ul class="dropdown-menu" id="onlineUsersList">
+	{ONLINEUSERSLIST}
   </ul>
 </li>
-<!-- END usersonline -->
+
 <!-- BEGIN signed -->
 	<li class="dropdown">
 	  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span

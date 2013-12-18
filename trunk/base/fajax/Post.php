@@ -66,6 +66,28 @@ class fajax_Post extends FAjaxPluginBase {
 		} else {
 			FAjax::addResponse('message-new','$addClass','hidden');
 		}
+		
+		//online user list
+		$q = "SELECT l.userId,u.name FROM sys_users_logged as l join sys_users as u on u.userId=l.userId "
+			."WHERE subdate(NOW(),interval ".USERVIEWONLINE." second)<l.dateUpdated and l.userId!='".$user->userVO->userId."' "
+			."ORDER BY l.dateUpdated desc";
+		$userList = '';
+		if (false !== ($arrpra = FDBTool::getAll($q))) {
+			if(!empty($arrpra)) {
+				foreach ($arrpra as $pra){
+					$userList .= '<li><a href="?k=finfo&who='.$pra[0].'"><img src="'.FAvatar::getAvatarUrl($pra[0]).'" /> '.$pra[1].'</a></li>';
+				}
+			}
+		}
+		if(!empty($userList)) {
+			FAjax::addResponse('onlineUsersDropdown','$removeClass','hidden');
+			FAjax::addResponse('onlineUsersNum','$text',count($arrpra));
+			FAjax::addResponse('onlineUsersList','$html',$userList);
+		} else {
+			FAjax::addResponse('onlineUsersDropdown','$addClass','hidden');
+			FAjax::addResponse('onlineUsersNum','$text','');
+			FAjax::addResponse('onlineUsersList','$html','');
+		}
 	}
 
 }
