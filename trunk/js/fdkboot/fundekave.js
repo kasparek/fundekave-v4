@@ -22,7 +22,8 @@ function boot(){
 	if(window.location.pathname!='/') {
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;
 	}
-	
+	$("#head-banner").addClass('sent');
+	$("#head-banner").addClass('sent');
 	$("#head-banner").on('click',function(){
 		var imgh = $("#head-banner img").height();
 		if(topBannerHeight==0) { 
@@ -120,7 +121,7 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 		});
 		GaleryEdit.init(_fdk.cfg,_fdk.lng.galery);
 		if(parseInt(_fdk.cfg.msgTi) > 0)
-			Msg.check();
+			Msg.startPoll();
 		var perm = $("#accessSel");
 		if(perm.length > 0)
 			perm.change(function(){
@@ -359,37 +360,16 @@ function tempStoreDeleteInit(){
 /** MSG CHAT FUNCTIONS */
 var Msg = new function(){
 	var o = this;
-	o.t = 0;
-	o.check = function(){
-		var p = 0, l = [];
-		$(".hentry.unread.sent").each(function(){
-			l.push($(this).attr('id').replace('mess', ''));
-		});
-		if(l.length > 0)
-			Fajax.add('unreadedSent', l.join(','));
-		if(p)
-			Fajax.add('p', p);
-		Fajax.send('post-hasNewMessage', _fdk.cfg.page == 'fpost' ? 'fpost' : -1, true);
-	};
-	o.sentReaded = function(p){
-		var l = p.split(',');
-		for( var i in l){
-			$("#mess" + l[i]).removeClass('unread');
-		}
-	};
-	o.checkHandler = function(num, name){
-		var d = $("#message-new"), p = parseInt(_fdk.cfg.msgTi);
-		if(num > 0){
-			d.removeClass('hidden');
-			$("#numMsg").text(num);
-			$("#recentSender").text(name);
-		}else if(!d.hasClass('hidden'))
-			d.addClass('hidden');
-		if(p > 0){
-			clearTimeout(o.t);
-			o.t = setTimeout(o.check, p);
-		}
+	o.getData = function() {
+		var p = gup('p',window.location.href), l = [];
+		$(".fitem.unread.sent").each(function(){ l.push($(this).attr('id').replace('mess', '')); });
+		if(l.length > 0) Fajax.add('unreadedSent', l.join(','));
+		if(p>0) Fajax.add('p', p);
+		return Fajax.request.get();
 	}
+	o.startPoll = function(){
+		$.PeriodicalUpdater('?m=post-poll-x&k='+_fdk.cfg.page, {method: 'post',data: o.getData,minTimeout: _fdk.cfg.msgTi/2,maxTimeout: _fdk.cfg.msgTi,multiplier: 2}, function(remoteData, success, xhr, handle){Fajax.response.run(remoteData);});
+	};
 };
 
 /* autogrow */

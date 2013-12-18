@@ -203,6 +203,7 @@ class page_UserPost implements iPage {
 				$tpl->setVariable("AVATAR", FAvatar::showAvatar($post['userIdFrom']));
 				if($post["userIdFrom"]==$user->userVO->userId) {
 					$tpl->touchBlock('sent');
+					$tpl->touchBlock('sentclass');
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = FUser::getgidname($post["userIdTo"]);
 				} else {

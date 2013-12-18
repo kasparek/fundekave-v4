@@ -32,16 +32,20 @@ class fajax_Post extends FAjaxPluginBase {
 		FAjax::addResponse('recipientavatar','$html',$ret);
 	}
 
-	static function hasNewMessage($data) {
+	static function poll($data) {
 		$user = FUser::getInstance();
 		if(isset($data['unreadedSent'])) {
 			if($readed=FMessages::sentReaded($data['unreadedSent'])) {
-				FAjax::addResponse('call','Msg.sentReaded',$readed);
+				foreach($readed as $id) {
+					FAjax::addResponse('mess'.$id,'$removeClass','unread');
+				}
 			}
 		}
 		$check = $user->userVO->hasNewMessages();
 		if($check) {
-			FAjax::addResponse('call','Msg.checkHandler',$user->userVO->newPost.','.$user->userVO->newPostFrom);
+			FAjax::addResponse('numMsg','$text',$user->userVO->newPost);
+			FAjax::addResponse('recentSender','$text',$user->userVO->newPostFrom);
+			FAjax::addResponse('message-new','$removeClass','hidden');
 			if($user->pageVO) {
 			  if($user->pageVO->pageId=='fpost') {
 			  	//reset search
@@ -53,15 +57,14 @@ class fajax_Post extends FAjaxPluginBase {
 			  	//reset pager
 			  	if(isset($data['p'])) {
 			  		if($data['p'] > 1) {
-			  	  	$data['refreshPager']=true;
-			  	  	FAjax::addResponse('call','Hash.reset','');
+						$data['refreshPager']=true;
 			  		}
 			  	}
 			  	page_UserPost::build($data);
 			  }
 			}
 		} else {
-			FAjax::addResponse('call','Msg.checkHandler','0');
+			FAjax::addResponse('message-new','$addClass','hidden');
 		}
 	}
 

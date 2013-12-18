@@ -15,6 +15,14 @@ var Fajax = new function(){
 		if($(".fajaxpager").length > 0)
 			listen('fajaxpager', 'click', o.pager);
 		listen('fajaxa', 'click', o.a);
+		$.ajaxSetup({
+			scriptCharset : "utf-8",
+			contentType : "text/xml; charset=utf-8",
+			type : "POST",
+			dataType : 'xml',
+			processData : false,
+			cache : false
+		});
 	};
 	o.pager = function(){
 		//TODO: fix hash Hash.set('post-page/p:' + gup('p', this.href) + '/fpost');
@@ -103,12 +111,12 @@ var Fajax = new function(){
 		$('.btn').attr("disabled", "disabled");
 		return false;
 	};
-	o.XMLReq = new function(){
+	o.request = new function(){
 		var x = this;
 		x.a = [];
 		x.s = '<Item name="{KEY}"><![CDATA[{DATA}]]></Item>';
 		x.reset = function(){
-			o.XMLReq.a = [];
+			o.request.a = [];
 		};
 		x.add = function(k, v){
 			x.a.push(x.s.replace('{KEY}', k).replace('{DATA}', v));
@@ -120,29 +128,21 @@ var Fajax = new function(){
 		}
 	};
 	o.add = function(k, v){
-		o.XMLReq.add(k, v)
+		o.request.add(k, v)
 	};
 	o.cancel = function(action) {
 		Fajax.xhrList[action].abort();
 	};
 	o.send = function(action, k, silent){
-		var data = o.XMLReq.get();
+		var data = o.request.get();
 		if(k == 0)
 			k = null;
 		if(!k)
 			k = _fdk.cfg.page;
 		if(k == -1)
 			k = '';
-		$.ajaxSetup({
-			scriptCharset : "utf-8",
-			contentType : "text/xml; charset=utf-8"
-		});
 		o.xhrList[action] = $.ajax({
-			type : "POST",
 			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')),
-			dataType : 'xml',
-			processData : false,
-			cache : false,
 			data : data,
 			complete : function(a, s){
 				o.xhrList[action] = null;
@@ -155,32 +155,38 @@ var Fajax = new function(){
 						msg('danger', _fdk.lng.ajax.error);
 					return;
 				}
-				$(a.responseXML).find("Item").each(function(){
-					var item = $(this), c = '', target = item.attr('target'), prop = item.attr('property'), text = item.text();
-					switch(target) {
-					case 'document':
-						window[target][prop]=text;
-						break;
-					case 'call':
-						var l = prop.split('.'),ns = window;
-						while(l.length > 0) ns = ns[l.shift()];
-						ns.apply(this,text.split(','));
-						break;
-					default:
-						switch(prop) {
-						case 'void':
-							break;
-						default:
-							if(prop[0] == '$'){
-								$("#" + target)[prop.replace('$', '')](text);
-							}else{
-								if(prop=='value') $("#" + target).val(text);
-								else $("#" + target).attr(prop,text);
-							}
-						}
-					}
-				})
+				o.response.run(a.responseXML);
 			}
 		});
-	}
+	};
+	o.response = new function(){
+		var x = this;
+		x.run = function(xml){
+			$(xml).find("Item").each(function(){
+				var item = $(this), c = '', target = item.attr('target'), prop = item.attr('property'), text = item.text();
+				switch(target) {
+				case 'document':
+					window[target][prop]=text;
+					break;
+				case 'call':
+					var l = prop.split('.'),ns = window;
+					while(l.length > 0) ns = ns[l.shift()];
+					ns.apply(this,text.split(','));
+					break;
+				default:
+					switch(prop) {
+					case 'void':
+						break;
+					default:
+						if(prop[0] == '$'){
+							$("#" + target)[prop.replace('$', '')](text);
+						}else{
+							if(prop=='value') $("#" + target).val(text);
+							else $("#" + target).attr(prop,text);
+						}
+					}
+				}
+			});
+		};
+	};
 };
