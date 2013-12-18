@@ -226,7 +226,6 @@ class FText {
 			  //external images with thumb
 			  //if image make thumb
 			  if($tag->tagName=='img' || preg_match("/(?i)\.(jpeg|jpg|png)$/i", $url, $matches)) {
-			  $url = 'http://upsidedown.fundekave.net/images/obr.jpg';
 				$domain = parse_url($url, PHP_URL_HOST);
 				if($domain) {
 					$domain = explode('.',$domain);
