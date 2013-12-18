@@ -108,7 +108,7 @@ class FMessages {
 				where postIdFrom is not null 
 				and readed=1 
 				and postId in (".implode(',',$validatedList).")");
-			if(!empty($res)) return implode(',',$res);
+			if(!empty($res)) return $res;
 		}			
 	}
 }
