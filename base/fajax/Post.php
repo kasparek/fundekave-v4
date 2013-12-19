@@ -19,10 +19,11 @@ class fajax_Post extends FAjaxPluginBase {
 		if($data['msgType']=='xs') $xs = true;
 
 		$data = page_UserPost::process($data);
-		
+
 		if($xs) {
 			return;
 		}
+		
 		if($data['__ajaxResponse']) {
 			page_UserPost::build($data);
 			FAjax::addResponse('postText','value','');
@@ -103,18 +104,22 @@ class fajax_Post extends FAjaxPluginBase {
 		$msgsOut='';
 		$xsShow='';
 		if(!empty($data['xsShow'])) $xsShow = $data['xsShow'];
+		$lastRecipientName = null;
 		while($arrpost) {
 			$post = array_pop($arrpost);
-			if(strpos($data['xsShow'],$post['postId'])===false) {
+			if(empty($xsShow) || $user->userVO->userId != $post['userIdFrom'])
+			if(strpos($xsShow,$post['postId'])===false) {
 				$msgsOut.='<div class="msg-xs" id="messxs'.$post['postId'].'"><label class="label label-info">'.$post['fromName'].'</label>'.$post['text'].'</div>';
 			}
+			if($user->userVO->userId != $post['userIdFrom']) $lastRecipientName = $post['fromName'];
 		}
 		if(!empty($msgsOut)) {
-			FAjax::addResponse('msgRecipient','$val',$post['fromName']);
+			if($lastRecipientName) FAjax::addResponse('msgRecipient','$val',$lastRecipientName);
 			FAjax::addResponse('msgList','$append',$msgsOut);
 			FAjax::addResponse('call','scrollToBottom','msgList');
 			FAjax::addResponse('call','Msg.chatInit','');
 			FAjax::addResponse('call','Fajax.init','');
+			FAjax::addResponse('msgForm','$removeClass','hidden');
 		}
 	}
 

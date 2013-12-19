@@ -219,6 +219,7 @@ class FItemsForm {
 					if(!empty($data['dateStart'])) $itemVO->set('dateStart', $data['dateStart']);
 					if(!empty($data['dateEnd'])) $itemVO->set('dateEnd', $data['dateEnd']);
 					if(isset($data['public'])) $itemVO->set('public', (int) $data['public']);
+					if(isset($data['repeat'])) $itemVO->set('textLong',FText::safeText($data['repeat']));
 					//save items
 					if($itemVO->save() > 0){
 						if(!empty($categoryVO)) $categoryVO->updateNum();
@@ -289,7 +290,6 @@ class FItemsForm {
 							}
 						}
 						if(isset($data['forumset'])) $itemVO->setProperty('forumSet',(int) $data['forumset']);
-						if(isset($data['repeat'])) $itemVO->set('textLong',FText::safeText($data['repeat']));
 
 						//clean up stored data
 						$cache = FCache::getInstance('s',0);

@@ -60,12 +60,13 @@ if(isset($_REQUEST['m'])) {
 
 //---build page
 if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
+
 FBuildPage::process( $data );
 FProfiler::write('PAGE PROCESS DONE');
 
 //increment hit for items
 if($user->itemVO && empty($user->pageParam) && (!$user->idkontrol || $itemVO->userId != $user->userVO->userId)) $itemVO->hit();
-	
+
 //---shows message that page is locked
 if($user->pageVO) {
 	if(($user->pageVO->locked == 2 && $user->userVO->userId != $user->pageVO->userIdOwner) || $user->pageVO->locked == 3) {

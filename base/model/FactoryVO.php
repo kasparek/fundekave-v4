@@ -14,7 +14,7 @@ class FactoryVO {
 			if(!isset(self::$data[$class][$id])) self::$data[$class][$id] = new $class($id); 
 			$vo = &self::$data[$class][$id];
 			if(!$vo->loaded && $autoload) {
-				$vo->load();
+				if(!$vo->load()) return null;
 			}
 			//if(!isset($sessionFactory[$class][$id])) $sessionFactory[$class][$id] = new $class($id); 
 			//$vo = &$sessionFactory[$class][$id];

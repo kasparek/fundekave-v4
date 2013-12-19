@@ -209,6 +209,7 @@ class FUser {
 				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 			}
 		}
+		
 		//---page not accessible because not correct host
 		if(SITE_STRICT && $userId==0) {
 			if($this->pageVO && $this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) 
