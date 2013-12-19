@@ -52,31 +52,22 @@ class page_UserInfo implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-	
 		$fajax = FAjax::getInstance();
 		$includeTab = false;
 		if(!empty($fajax->data['tab'])) $includeTab = str_replace('tab-','',$fajax->data['tab']);
-		
 		if($fajax->data['__ajaxResponse']) {
 			$who = $user->whoIs;
-			if($data['who']) $who = (int) $data['who'];
+			if(!empty($data['who'])) $who = (int) $data['who'];
 			return self::tabPageList($who?$who:$user->userVO->userId,$includeTab);
 		}
-	
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fpost'), FLang::$LABEL_POST);
 		FMenu::secondaryMenuAddItem(FSystem::getUri('','fedit',''), FLang::$LABEL_PERSONALSETTINGS);
-
-		
-		
 		$tpl = FSystem::tpl('users.info.tpl.html');
-
 		$isFriend = false;
 		if($who = $user->whoIs) {
-
 			$userVO = new UserVO();
 			$userVO->userId = $who;
 			$userVO->load();
-
 			if($user->idkontrol) {
 				if($user->userVO->userId != $userVO->userId) {
 					if($userVO->isFriend($user->userVO->userId)) {
@@ -104,7 +95,6 @@ class page_UserInfo implements iPage {
 					$tpl->setVariable('SENDMSGLABEL',FLang::$SEND_MESSAGE);
 				}
 			}
-
 		} else {
 			if($user->idkontrol) {
 				$userVO = $user->userVO;
@@ -113,17 +103,11 @@ class page_UserInfo implements iPage {
 				FError::add(FLang::$ERROR_ACCESS_DENIED);
 				return;
 			}
-
 		}
-
-		
-
 		$tpl->setVariable('AVATAR',FAvatar::showAvatar($userVO->userId));
 		$tpl->setVariable('NAME',$userVO->name);
 		$tpl->setVariable("DATECREATED",$userVO->dateCreated);
 		$tpl->setVariable("DATEUPDATED",$userVO->dateLastVisit);
-
-		
 		if(!empty($userVO->email)) $tpl->setVariable('EMAIL',$userVO->email);
 		if(!empty($userVO->icq)) $tpl->setVariable('ICQ',$userVO->icq);
 		if(($www = $userVO->getXMLVal('personal','www')) !='' ) $tpl->setVariable("WWW",$www);

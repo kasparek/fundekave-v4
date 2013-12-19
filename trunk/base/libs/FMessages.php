@@ -17,25 +17,25 @@ class FMessages {
 	}
 	
 	//---get post
-	function load($from, $perpage, $count=false) {
-		$base = ' FROM sys_users_post WHERE userId='.$this->userId;
+	function load($from, $perpage, $count=false, $readed=false) {
+		$base = ' FROM sys_users_post p join sys_users as u1 on u1.userId=p.userIdFrom join sys_users as u2 on u2.userId=p.userIdTo WHERE p.userId='.$this->userId;
 		if(!empty($this->searchText)) $base.=" AND lower(text) LIKE '%".strtolower($this->searchText)."%'";
+		if($readed!==false)  $base.=" AND readed = '".$readed."'";
 		if(!empty($this->searchUser)) {
 			$searchUserId = FUser::getUserIdByName($this->searchUser);
 			if($searchUserId > 0) $base.=" AND (userIdTo='".$searchUserId."' OR userIdFrom='".$searchUserId."')";
 		}
-	 if($count==true) return FDBTool::getOne('select count(1) '.$base);
-	 else {
-	 	$q = "SELECT postId,userId,userIdTo,userIdFrom,date_format(dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(dateCreated,'%Y-%m-%dT%T')".$base." ORDER BY dateCreated DESC";
-	 	$arr = FDBTool::getAll($q.' limit '.$from.','.$perpage);
-	 	if(!empty($arr)) {
-	 		foreach ($arr as $row) {
-	 			$arrRet[] = array('postId'=>$row[0],'userId'=>$row[1],'userIdTo'=>$row[2],
-     		'userIdFrom'=>$row[3],'datumcz'=>$row[4],'text'=>$row[5],'readed'=>$row[6],'datum'=>$row[7]); 
-	 		}
-	 		return $arrRet;
-	 	}
-	 }
+		if($count==true) return FDBTool::getOne('select count(1) '.$base);
+		else {
+			$q = "SELECT postId,p.userId,userIdTo,userIdFrom,date_format(p.dateCreated,'%H:%i:%S %d.%m.%Y'),text,readed,date_format(p.dateCreated,'%Y-%m-%dT%T'),u1.name,u2.name".$base." ORDER BY p.dateCreated DESC";
+			$arr = FDBTool::getAll($q.($perpage>0?' limit '.$from.','.$perpage:''));
+			if(!empty($arr)) {
+				foreach ($arr as $row) {
+					$arrRet[] = array('postId'=>$row[0],'userId'=>$row[1],'userIdTo'=>$row[2],'userIdFrom'=>$row[3],'datumcz'=>$row[4],'text'=>$row[5],'readed'=>$row[6],'datum'=>$row[7],'fromName'=>$row[8],'toName'=>$row[9]); 
+				}
+				return $arrRet;
+			}
+		}
 	}
 
 	/**

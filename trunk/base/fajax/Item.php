@@ -110,7 +110,7 @@ class fajax_Item extends FAjaxPluginBase {
 	static function image($data) {
 		$user = FUser::getInstance();
 		if($user->pageVO->pageId=='fedit') {
-			FAjax_user::avatar($data);
+			fajax_User::avatar($data);
 			return;
 		}
 		if(empty($data['i'])) {

@@ -22,6 +22,7 @@ function boot(){
 	if(window.location.pathname!='/') {
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;
 	}
+	
 	$("#head-banner").addClass('sent');
 	$("#head-banner").addClass('sent');
 	$("#head-banner").on('click',function(){
@@ -290,6 +291,9 @@ function shiftTo(y){
 		y = 0;
 	$(window).scrollTop(y);
 }
+function scrollToBottom(id) {
+	$("#"+id).animate({ scrollTop: $('#'+id)[0].scrollHeight}, 1000);
+}
 function enable(id){
 	$('#' + id).removeAttr('disabled');
 };
@@ -355,9 +359,11 @@ function tempStoreDeleteInit(){
 var Msg = new function(){
 	var o = this;
 	o.getData = function() {
-		var p = gup('p',window.location.href), l = [];
+		var p = gup('p',window.location.href), l = [],xs=[];
 		$(".fitem.unread.sent").each(function(){ l.push($(this).attr('id').replace('mess', '')); });
+		$(".msg-xs").each(function(){ xs.push($(this).attr('id').replace('messxs', '')); });
 		if(l.length > 0) Fajax.add('unreadedSent', l.join(','));
+		if(xs.length > 0) Fajax.add('xsShow', xs.join(','));
 		if(p>0) Fajax.add('p', p);
 		return Fajax.request.get();
 	}

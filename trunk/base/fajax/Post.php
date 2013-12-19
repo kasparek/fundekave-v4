@@ -88,6 +88,23 @@ class fajax_Post extends FAjaxPluginBase {
 			FAjax::addResponse('onlineUsersNum','$text','');
 			FAjax::addResponse('onlineUsersList','$html','');
 		}
+		
+		//messages
+		$msgs = new FMessages($user->userVO->userId);
+		$arrpost = $msgs->load(0, 0, false, 0);
+		$msgsOut='';
+		$xsShow='';
+		if(!empty($data['xsShow'])) $xsShow = $data['xsShow'];
+		while($arrpost) {
+			$post = array_pop($arrpost);
+			if(strpos($data['xsShow'],$post['postId'])===false) {
+				$msgsOut.='<div class="msg-xs" id="messxs'.$post['postId'].'"><label class="label label-info">'.$post['fromName'].'</label>'.$post['text'].'</div>';
+			}
+		}
+		if(!empty($msgsOut)) {
+			FAjax::addResponse('msgList','$append',$msgsOut);
+			FAjax::addResponse('call','scrollToBottom','msgList');
+		}
 	}
 
 }
