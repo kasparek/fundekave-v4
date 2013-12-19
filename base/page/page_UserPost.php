@@ -183,8 +183,6 @@ class page_UserPost implements iPage {
 			}
 		}
 
-    FProfiler::write('UserPost::build - STEP 3');
-
 		//---data printing
 		if(!empty($arrpost)) {
 			$cache = FCache::getInstance('s');
@@ -195,7 +193,7 @@ class page_UserPost implements iPage {
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
 				}
-        FProfiler::write('UserPost::build - POST 1');
+    
 				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
@@ -205,13 +203,13 @@ class page_UserPost implements iPage {
 					$tpl->touchBlock('sent');
 					$tpl->touchBlock('sentclass');
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
-					$muname = FUser::getgidname($post["userIdTo"]);
+					$muname = $post['toName'];
 				} else {
 					$tpl->touchBlock('received');
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
-					$muname = FUser::getgidname($post["userIdFrom"]);
+					$muname = $post['fromName'];
 				}
-        FProfiler::write('UserPost::build - POST 2');
+    
 				$tpl->setVariable("MULINK", $mulink);
 				$tpl->setVariable("MUNAME", $muname);
 				$tpl->setVariable("TEXT", FText::postProcess($post["text"]));
@@ -221,7 +219,7 @@ class page_UserPost implements iPage {
 				if ($post["userIdFrom"]!=$user->userVO->userId && $post["readed"]==0) {
 					FDBTool::query("update sys_users_post set readed='1' where postId='".$post["postId"]."' or postIdFrom='".$post["postId"]."'");
 				}
-        FProfiler::write('UserPost::build - POST 3');
+    
 			}
 		}
 

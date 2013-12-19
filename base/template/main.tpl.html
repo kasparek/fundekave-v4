@@ -131,10 +131,13 @@
 <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
 
 <div id="sysmsgBox">
-	<div id="message-new" class="alert alert-danger alert-dismissable <!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->">
-	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	<a href="?k=fpost"><strong>Nové zprávy:</strong></a><br />
-	<span id="numMsg" class="badge">{NEWPOST}</span> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a>
+	<div id="message-new" class="panel panel-danger panel-dismissable <!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->">
+		<div class="panel-heading">
+			<a href="?k=fpost"><strong>Nové zprávy:</strong></a> <label id="numMsg" class="label label-warning">{NEWPOST}</label> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a>
+		</div>
+		<div class="panel-body">
+    		<div id="msgList"></div>
+		</div>
 	</div>
 <!-- BEGIN sysmsg -->
 <div class="alert alert-{MSGPRIORITY} alert-dismissable">

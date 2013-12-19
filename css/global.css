@@ -16,11 +16,26 @@ h2 {
 	font-size: 21px;
 	font-weight: bold;
 }
-div#message-new {position: fixed;z-index:10001;font: 1em Verdana,Georgia,Times,serif;right: 20px; top: 20px;width: 200px;text-align: center;}
+div#message-new {
+position: fixed;
+z-index:10001;
+right: 20px; top: 20px;
+width: 220px;
+}
+div#message-new .panel-body {
+padding: 0;
+}
 #recipient {margin-bottom: 15px;}
 #recipientavatar {text-align: center;width: 100%;}
 #recipientList {height: 110px;}
 
+#msgList { text-align: left;
+padding: 4px;
+max-height: 200px;
+overflow-x: hidden;
+font-size: 80%;
+}
+.msg-xs { margin-bottom: 3px; }
 .sidebarBlock .datepicker {padding: 0;width: 200px;margin: 0 auto;}
 
 div.unread {border-right: 0.4em solid red; padding-right: 0.4em;border-left: 0.4em solid red; padding-left: 0.4em;}
