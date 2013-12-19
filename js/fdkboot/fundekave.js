@@ -370,6 +370,15 @@ var Msg = new function(){
 	o.startPoll = function(){
 		$.PeriodicalUpdater('?m=post-poll-x&k='+_fdk.cfg.page, {method: 'post',data: o.getData,minTimeout: _fdk.cfg.msgTi/2,maxTimeout: _fdk.cfg.msgTi,multiplier: 2}, function(remoteData, success, xhr, handle){Fajax.response.run(remoteData);});
 	};
+	o.chatInit = function() {
+		$(".msg-text").off('keypress').on('keypress',function (e) {if (e.which == 13) {
+		$('#msgBtnSubmit').click();
+		e.preventDefault();
+		$('#msgList').append('<div class="msg-xs" id="messxs0">'+$("#msgText").val()+'</div>');
+		$("#msgText").val('');
+		scrollToBottom('msgList');
+		}});
+	};
 };
 
 /* autogrow */

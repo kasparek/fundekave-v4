@@ -77,13 +77,14 @@
 	<a href="?k=roger">Registrace</a>
 </li>
 <!-- END loginform -->
-
+<!-- BEGIN onlineuserslist -->
 <li class="dropdown{ONLINEUSERSLISTHIDDEN}" id="onlineUsersDropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Online <span id="onlineUsersNum" class="label label-info">{NUMFRIENDSONLINE}</span><b class="caret"></b></a>
   <ul class="dropdown-menu" id="onlineUsersList">
 	{ONLINEUSERSLIST}
   </ul>
 </li>
+<!-- END onlineuserslist -->
 
 <!-- BEGIN signed -->
 	<li class="dropdown">
@@ -133,10 +134,17 @@
 <div id="sysmsgBox">
 	<div id="message-new" class="panel panel-danger panel-dismissable <!-- BEGIN msgHidden -->hidden<!-- END msgHidden -->">
 		<div class="panel-heading">
+			<a href="#" class="pull-right" data-toggle="collapse" data-target="#msgBody"><span class="glyphicon glyphicon-collapse-up"></span></a>
 			<a href="?k=fpost"><strong>Nové zprávy:</strong></a> <label id="numMsg" class="label label-warning">{NEWPOST}</label> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a>
 		</div>
-		<div class="panel-body">
+		<div id="msgBody" class="panel-body">
     		<div id="msgList"></div>
+			<form action="?m=post-submit" id="msgForm" class="fajaxform" method="post">
+			<input type="hidden" id="msgRecipient" name="recipient" value="" />
+			<input type="hidden" name="msgType" value="xs" />
+			<textarea id="msgText" name="text" class="msg-text expand"></textarea>
+			<button id="msgBtnSubmit" type="submit" name="send" class="btn btn-xs btn-primary submit pull-right"><span class="glyphicon glyphicon-send"></span></button>
+			</form>
 		</div>
 	</div>
 <!-- BEGIN sysmsg -->

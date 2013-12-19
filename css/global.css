@@ -25,6 +25,11 @@ width: 220px;
 div#message-new .panel-body {
 padding: 0;
 }
+div#message-new .panel-body  textarea{
+	font-size: 80%;
+	width: 84%;
+	height: 30px;
+}
 #recipient {margin-bottom: 15px;}
 #recipientavatar {text-align: center;width: 100%;}
 #recipientList {height: 110px;}
