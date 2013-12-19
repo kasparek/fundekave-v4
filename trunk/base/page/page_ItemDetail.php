@@ -8,22 +8,11 @@ class page_ItemDetail implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
+		$itemVO = null;
 		if(!empty($data['item'])) $data['i']=$data['item'];
-		if(!empty($data['i'])) {
-			$itemVO = new ItemVO($data['i'] * 1);
-			if(!$itemVO->load()) $itemVO=null;
-		}
-		if(empty($itemVO)) {
-			if(empty($user->itemVO)) return false;
-			$itemVO = $user->itemVO;
-		}
-		
-		if($itemVO->public>1) {
-			if(!FRules::getCurrent(2)) {
-				//user does not have access to given item
-				return;
-			}
-		}
+		if(!empty($user->itemVO)) $itemVO = $user->itemVO;
+		if(!empty($data['i']) && $data['i']!=$itemVO->itemId) $itemVO = FactoryVO::get('ItemVO',(int) $data['i'],true);
+		if(empty($itemVO)) return false;
 		
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');

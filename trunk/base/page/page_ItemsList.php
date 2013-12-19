@@ -54,16 +54,22 @@ class page_ItemsList implements iPage {
 		if(isset($data['__get']['date'])) {
 			$date = FSystem::checkDate($data['__get']['date']);
 		}
-		
+
 		//var setup
 		$user = FUser::getInstance();
+		$selectedItemId = 0;
 		if($user->itemVO) {
-			if($user->itemVO->itemId > 0) $itemVO = $user->itemVO;
+			if($user->itemVO->itemId > 0) {
+				$itemVO = $user->itemVO;
+				$selectedItemId = $user->itemVO->itemId;
+			}
 		}
-		if(!empty($data['itemId'])) {
+		
+		if(!empty($data['itemId']) && $selectedItemId!=$data['itemId']) {
 			$itemVO = new ItemVO($data['itemId']);
 			if(!$itemVO->load()) $itemVO = null;
 		}
+				
 		$isDetail = false;
 		if(!empty($itemVO)) $isDetail = true;
 
@@ -71,6 +77,7 @@ class page_ItemsList implements iPage {
 		if($isDetail) {
 			$pageVO = $itemVO->pageVO;
 		}
+		
 		if(!$data['onlyComments']) {
 			if(FRules::getCurrent(2)) {
 				if($pageVO->typeId=='galery') {
@@ -171,7 +178,6 @@ class page_ItemsList implements iPage {
 			}
 		}
 		
-
 		/**
 		 *ITEM DETAIL
 		 **/
