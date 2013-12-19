@@ -170,14 +170,15 @@ class FBuildPage {
 		$tpl = FBuildPage::getInstance();
 		$user = FUser::getInstance();
 		
-		if(FRules::getCurrent(FConf::get('settings','perm_add_forum')))
-			FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','foall','a'), FLang::$LABEL_PAGE_FORUM_NEW);
-		if(FRules::getCurrent(FConf::get('settings','perm_add_blog')))
-			FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','foall','a'), FLang::$LABEL_PAGE_BLOG_NEW);
-		if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))
-			FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','foall','a'), FLang::$LABEL_PAGE_GALERY_NEW);
-		
 		if($user->pageAccess == true) {
+			if($user->userVO->userId>0) {
+				if(FRules::getCurrent(FConf::get('settings','perm_add_forum')))
+					FMenu::secondaryMenuAddItem(FSystem::getUri('t=forum','foall','a'), FLang::$LABEL_PAGE_FORUM_NEW);
+				if(FRules::getCurrent(FConf::get('settings','perm_add_blog')))
+					FMenu::secondaryMenuAddItem(FSystem::getUri('t=blog','foall','a'), FLang::$LABEL_PAGE_BLOG_NEW);
+				if(FRules::getCurrent(FConf::get('settings','perm_add_galery')))
+					FMenu::secondaryMenuAddItem(FSystem::getUri('t=galery','foall','a'), FLang::$LABEL_PAGE_GALERY_NEW);
+			}
 			switch($user->pageParam) {
 				case 'sa':
 				case 'e':
@@ -347,6 +348,7 @@ class FBuildPage {
 			} else {
 				$tpl->setVariable('ONLINEUSERSLISTHIDDEN',' hidden');
 			}
+			$tpl->touchBlock('onlineuserslist');
 			
 		} else {
 			$tpl->touchBlock('loginform');

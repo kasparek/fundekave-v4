@@ -78,6 +78,7 @@ var Fajax = new function(){
 	};
 	o.form = function(e){
 		var t = e.currentTarget, jt = $(t);
+		if(!$(t.form).hasClass('fajaxform')) return;
 		if(jt.hasClass('noFajax'))
 			return;
 		e.preventDefault();

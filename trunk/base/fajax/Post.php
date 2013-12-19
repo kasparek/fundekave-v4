@@ -14,7 +14,15 @@ class fajax_Post extends FAjaxPluginBase {
 	}
 
 	static function submit($data) {
+		$xs = false;
+		if(empty($data['msgType'])) $data['msgType'] = 'def';
+		if($data['msgType']=='xs') $xs = true;
+
 		$data = page_UserPost::process($data);
+		
+		if($xs) {
+			return;
+		}
 		if($data['__ajaxResponse']) {
 			page_UserPost::build($data);
 			FAjax::addResponse('postText','value','');
@@ -102,8 +110,11 @@ class fajax_Post extends FAjaxPluginBase {
 			}
 		}
 		if(!empty($msgsOut)) {
+			FAjax::addResponse('msgRecipient','$val',$post['fromName']);
 			FAjax::addResponse('msgList','$append',$msgsOut);
 			FAjax::addResponse('call','scrollToBottom','msgList');
+			FAjax::addResponse('call','Msg.chatInit','');
+			FAjax::addResponse('call','Fajax.init','');
 		}
 	}
 

@@ -24,9 +24,6 @@ class FUser {
 	var $pageParamNeededPermission = array(
 	'e'=>2, //edit (galery,forum,blog)
 	'u'=>4, //event,blog - podle majitele - nebo ten kdo ma dve pro stranku
-	'h'=>1, //home - u klubu - home z XML
-	's'=>1, //statistika - vestinou u klubu, muze byt kdekoliv
-	'p'=>1, //anketa nastaveni
 	'sa'=>3, //super admin - nastavovani prav a ostatniho nastaveni u kazdy stranky .. uzivatel musi mit prava 2 ke strance sadmi
 	);
 
@@ -200,13 +197,13 @@ class FUser {
 	 */
 	function kde() {
 		$userId = $this->userVO->userId;
-		$pageAccess = $this->pageAccess = true;
+		$pageAccess = true;
 		$pageId = $this->pageId;
 		if($pageId) {
 			//---try load current page
 			$this->pageVO = FactoryVO::get('PageVO',$pageId,true);
 			if( $this->pageVO->loaded !== true ) {
-				$pageAccess = $this->pageAccess = false;
+				$pageAccess = false;
 				$pageId = $this->pageId = null;
 				$this->pageVO = null;
 				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
@@ -215,15 +212,20 @@ class FUser {
 		//---page not accessible because not correct host
 		if(SITE_STRICT && $userId==0) {
 			if($this->pageVO && $this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) 
-				$pageAccess = $this->pageAccess = false;
+				$pageAccess = false;
 		}
+		$this->pageAccess = $pageAccess;
 		
-		//---if page not exists redirect to error
-		if($pageAccess === true) {
+		if($pageAccess === true) { //---if page exists continue to test permissions
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);
 			//---check if user is logged
-			if($userId>0 || !empty($this->userVO->idlogin)) $this->idkontrol = $this->check( $this->userVO ); else $this->idkontrol=false;
+			if($userId > 0 || !empty($this->userVO->idlogin)) 
+				$this->idkontrol = $this->check( $this->userVO ); 
+			else 
+				$this->idkontrol=false;
+				
+			
 			
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
@@ -233,38 +235,45 @@ class FUser {
 				}
 			}
 			
-			if($pageAccess === true) {
-				$permPage = $pageId;
-				if($permissionNeeded === 3) {
-					$permPage = 'sadmi';
-					$permissionNeeded = 1;
-				}
-				if($permissionNeeded === 4) {
-					///check for i owner - permneeded=1 or permneeded= 2
-					$permissionNeeded = 2;
-					if( $this->itemVO ) {
-						if($userId > 0 && $userId === $this->itemVO->userId) {
-							$permissionNeeded = 1;
-						}
-					}
-				}
-				//check if user have access to page with current permissions needed - else redirect to error
-				if(!FRules::get($userId,$permPage,$permissionNeeded)) {
-					$pageAccess = $this->pageAccess = false;
-					FError::add(FLang::$ERROR_ACCESS_DENIED);
-				} else {
-					$pageAccess = $this->pageAccess = true;
-					//check item if accessing item detail
-					if($this->itemVO) {
-						if($this->itemVO->public!=1 && !FRules::getCurrent(2)) {
-							$pageAccess = $this->pageAccess = false;
-							FError::add(FLang::$ERROR_ACCESS_DENIED);
-						}
+			$permPage = $pageId;
+			if($permissionNeeded === 3) { //exception - superadmin group
+				$permPage = 'sadmi';
+				$permissionNeeded = 1;
+			}
+			if($permissionNeeded === 4) {
+				///check for i owner - permneeded=1 or permneeded= 2
+				$permissionNeeded = 2;
+				if( $this->itemVO ) {
+					if($userId > 0 && $userId === $this->itemVO->userId) {
+						$permissionNeeded = 1;
 					}
 				}
 			}
+			
+			//check if user have access to page with current permissions needed - else redirect to error
+			if(!FRules::get($userId,$permPage,$permissionNeeded)) {
+				$pageAccess = false;
+				FError::add(FLang::$ERROR_ACCESS_DENIED);
+			} else {
+				$pageAccess = true;
+				//user has access to page, with current pageparam
+				//validate access to item
+				if($this->itemVO) {
+					$itemAccess = false;
+					if($this->itemVO->public==1) $itemAccess = true;
+					else if($this->itemVO->public==2 && $userId>0) $itemAccess = true;
+					else if($this->itemVO->public==0 && $userId==$this->itemVO->userId) $itemAccess = true;
+					else if($this->itemVO->public==3 && $this->userVO->isFriend($this->itemVO->userId)) $itemAccess = true;
+					if($itemAccess===false) {
+						$pageAccess = false;
+						FError::add(FLang::$ERROR_ACCESS_DENIED);
+					}
+				}
+			}
+			
+			$this->pageAccess = $pageAccess;
 			//logged user function
-			if($this->idkontrol === true) {
+			if($this->pageAccess && $this->idkontrol === true) {
 				//---update user information
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
@@ -272,7 +281,6 @@ class FUser {
 				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
 				$fajax = FAjax::getInstance();
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),".(empty($fajax->data['__ajaxResponse']) ? 'hit=hit+1' : '')." where userId='".$userId."'");
-				
 			}
 		}
 	}
