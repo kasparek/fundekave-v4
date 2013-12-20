@@ -19,7 +19,13 @@
 
 }
 .datepicker-inline {
-  width: 220px;
+  /*width: 220px;*/
+}
+.datepicker-inline table {
+  /*width: 220px;*/
+  width: 100%;
+border-collapse: separate;
+border-spacing: 4px;
 }
 .datepicker.datepicker-rtl {
   direction: rtl;
