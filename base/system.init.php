@@ -67,17 +67,16 @@ if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
 elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
 if($itemId > 0) {
 	$itemVO = FactoryVO::get('ItemVO',$itemId,true);
-	if($itemVO->loaded) {
+	if($itemVO) {
 		if(empty($pageId)) $pageId = $itemVO->pageId;
 		if($itemVO->itemIdTop > 0) $itemVO = new ItemVO( $itemVO->itemIdTop,true );
-	} else $itemVO = null;
+	}
 }
 //check category
 if(isset($_REQUEST['c'])) {
 	$c = (int) $_REQUEST['c'];
 	if($c>0) {
-		$catVO = FactoryVO::get('CategoryVO',$c,true);
-		if($catVO->loaded) {
+		if($catVO = FactoryVO::get('CategoryVO',$c,true)) {
 			$user->categoryVO = $catVO;
 		}
 	}

@@ -41,7 +41,12 @@ overflow-x: hidden;
 font-size: 80%;
 }
 .msg-xs { margin-bottom: 3px; }
-.sidebarBlock .datepicker {padding: 0;width: 200px;margin: 0 auto;}
+
+#sidebar .datepicker-inline {
+	padding: 0;
+	margin: 0 auto;
+
+}
 
 div.unread {border-right: 0.4em solid red; padding-right: 0.4em;border-left: 0.4em solid red; padding-left: 0.4em;}
 .unread .header {font-weight:bold;}
@@ -213,10 +218,6 @@ clear: both;
 	font-size: 18px;
 }
 
-#sidebar .datepicker-inline {
-	margin: 0 auto;
-	width: 200px;
-}
 .pager-box {
 	width: 100%;
 	text-align: center;

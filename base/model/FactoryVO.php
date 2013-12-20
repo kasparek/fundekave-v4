@@ -3,6 +3,8 @@ class FactoryVO {
 
 	private static $data;
 	
+	private static $void=null;
+	
 	public static function &get($class,$id=0,$autoload=false) {
 		$cache = FCache::getInstance( 's' );
 		$sessionFactory = &$cache->getPointer('factory');
@@ -14,7 +16,7 @@ class FactoryVO {
 			if(!isset(self::$data[$class][$id])) self::$data[$class][$id] = new $class($id); 
 			$vo = &self::$data[$class][$id];
 			if(!$vo->loaded && $autoload) {
-				if(!$vo->load()) return null;
+				if(!$vo->load()) return self::$void;
 			}
 			//if(!isset($sessionFactory[$class][$id])) $sessionFactory[$class][$id] = new $class($id); 
 			//$vo = &$sessionFactory[$class][$id];

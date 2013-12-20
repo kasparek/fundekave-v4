@@ -23,8 +23,6 @@ function boot(){
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;
 	}
 	
-	$("#head-banner").addClass('sent');
-	$("#head-banner").addClass('sent');
 	$("#head-banner").on('click',function(){
 		var imgh = $("#head-banner img").height();
 		if(topBannerHeight==0) { 
