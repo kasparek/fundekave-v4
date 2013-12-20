@@ -198,16 +198,11 @@ class FUser {
 	function kde() {
 		$userId = $this->userVO->userId;
 		$pageAccess = true;
-		$pageId = $this->pageId;
-		if($pageId) {
-			//---try load current page
-			$this->pageVO = FactoryVO::get('PageVO',$pageId,true);
-			if( $this->pageVO->loaded !== true ) {
-				$pageAccess = false;
-				$pageId = $this->pageId = null;
-				$this->pageVO = null;
-				FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
-			}
+		//---try load current page
+		if( !$this->pageVO = FactoryVO::get('PageVO',$this->pageId,true) ) {
+			$pageAccess = false;
+			$this->pageId = null;
+			FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 		}
 		
 		//---page not accessible because not correct host
@@ -236,7 +231,7 @@ class FUser {
 				}
 			}
 			
-			$permPage = $pageId;
+			$permPage = $this->pageId;
 			if($permissionNeeded === 3) { //exception - superadmin group
 				$permPage = 'sadmi';
 				$permissionNeeded = 1;
@@ -279,7 +274,7 @@ class FUser {
 				if($this->userVO->strictLogin === true) {
 					$this->userVO->idlogin = FUser::getToken($this->userVO->password);
 				}
-				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($pageId)?($pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
+				FDBTool::query("update sys_users_logged set invalidatePerm=0,dateUpdated=NOW(),location='".(($this->pageId)?($this->pageId):(''))."',params = '".$this->pageParam."' where loginId='".$this->userVO->idlogin."'");
 				$fajax = FAjax::getInstance();
 				FDBTool::query("update low_priority sys_users set dateLastVisit = now(),".(empty($fajax->data['__ajaxResponse']) ? 'hit=hit+1' : '')." where userId='".$userId."'");
 			}
