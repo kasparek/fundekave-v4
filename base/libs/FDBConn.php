@@ -18,6 +18,7 @@ class FDBConn extends mysqli
 			$this->query("set character_set_connection= ".$dbConf['charset']);
 			$this->query("set character_set_results = ".$dbConf['charset']);
 			$this->query("set character_name = ".$dbConf['charset']);
+			$this->query("SET time_zone = '".FConf::get('internationalization','timezone')."';");
 		}
 	}
 	
