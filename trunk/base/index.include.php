@@ -34,7 +34,7 @@ if(isset($_REQUEST['m'])) {
 	if(isset($_REQUEST['d'])) $data = $_REQUEST['d']; //simple link handling
 	else if(strpos($_REQUEST['m'],'-x')!==false) {
 		if(!empty($HTTP_RAW_POST_DATA)) $data = $HTTP_RAW_POST_DATA;
-		else FError::add("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
+		else FProfiler::write("NO RAW_POST DATA ".$_SERVER['REQUEST_URI']);
 	}
 	if(empty($data)) $data = $_POST; //handling post if not ajax
 	$options = array();
