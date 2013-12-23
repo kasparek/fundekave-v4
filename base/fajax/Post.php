@@ -3,7 +3,7 @@ class fajax_Post extends FAjaxPluginBase {
 	
 	static function page($data) {
 		if(isset($data['p'])) $data['p'] = $data['p']*1; else $data['p']=1;
-		if($data['__ajaxResponse']) {
+		if(!empty($data['__ajaxResponse'])) {
 			$data['refreshPager']=true;
 			page_UserPost::build($data);
 			FAjax::addResponse('call','shiftTo','0');

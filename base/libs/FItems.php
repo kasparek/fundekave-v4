@@ -73,7 +73,7 @@ class FItems extends FDBTool {
 						.($userId>0?"left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=".$this->table.".pageId ":' ')
 			."{JOIN} where ("
 			.$typeWhere
-			.(SITE_STRICT ? "p.pageIdTop='".SITE_STRICT."' and " : " ")
+			.(SITE_STRICT && (empty($userId) || $typeId=='top' || $typeId=='blog') ? "p.pageIdTop='".SITE_STRICT."' and " : " ")
 			.($userId>0?
 				"(".$this->table.".public>0 or (".$this->table.".public=0 and ".$this->table.".userId='".$userId."')) and (p.public>0 or up.rules>0) and p.locked<2 "
 				:"p.locked<2 and p.public=1 and ".$this->table.".public = 1 ")

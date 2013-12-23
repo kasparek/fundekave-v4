@@ -51,9 +51,9 @@ class Google_Config
         'Google_Auth_OAuth2' => array(
           // Keys for OAuth 2.0 access, see the API console at
           // https://developers.google.com/console
-          'client_id' => '503156228316-sut254u39vstk9vv2vfa22p528hiht1q.apps.googleusercontent.com',
+          'client_id' => '',
           'client_secret' => '4GdGpLTkxG-6CSb6K4Dd6gn0',
-          'redirect_uri' => 'http://localhost/gapime/user.php',
+          'redirect_uri' => '',
 
           // Simple API access key, also from the API console. Ensure you get
           // a Server key, and not a Browser key.

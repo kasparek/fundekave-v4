@@ -184,7 +184,7 @@ class FRules {
 					$usrname=trim($usrname);
 					if(!empty($usrname)) {
 						$usrid = FUser::getUserIdByName($usrname);
-						if($usrid != $this->owner) { // if not owner of page
+						if($usrid != $this->owner) {
 							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
 							else FError::add(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
 						}
@@ -193,6 +193,7 @@ class FRules {
 			}
 		}
 		
+		$this->set($this->owner,$this->page,2);
 		
 		if(count($this->ruleList['1']) != 0) $this->public = 0;
 

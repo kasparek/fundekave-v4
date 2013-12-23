@@ -136,6 +136,7 @@ static $ERROR_REGISTER_PASSWORDDONTMATCH = 'Hesla se neshodují';
 static $MESSAGE_PASSWORD_SET = 'Nove heslo nastaveno';
 static $ERROR_LOGIN_WRONGUSERORPASS = 'Zadali jste spatne jmeno nebo heslo';
 static $ERROR_PAGE_NOTEXISTS = 'Stranka neexistuje';
+static $ERROR_PAGE_HOST_NOTAVAILABLE = 'Stranka neni dostupna na teto domene.';
 static $ERROR_ACCESS_DENIED = 'Nemate prava pro pristup na tuto stranku';
 static $MESSAGE_LOGOUT_OK = 'Úspěšně ses odhlásil/a';
 static $ERROR_USER_KICKED = 'Z nejakeho duvodu jsi byl odhlasen.';

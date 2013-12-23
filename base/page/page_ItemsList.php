@@ -257,9 +257,6 @@ class page_ItemsList implements iPage {
 		}
 		
 		//TODO: update `sys_pages_items` as i join sys_pages as p on p.pageId=i.pageId set i.pageIdTop=p.pageIdTop WHERE length(p.pageIdTop)>0 and i.pageIdTop is null and i.typeId='galery'
-		//if(SITE_STRICT && $pageVO->typeId=='top') {
-		//	$fItems->addWhere("pageIdTop = '".SITE_STRICT."'");
-		//}
 		if($pageVO->pageIdTop && $pageVO->typeId=='top') {
 			$fItems->addWhere("pageIdTop = '".$pageVO->pageIdTop."'");
 		}
