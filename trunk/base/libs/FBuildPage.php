@@ -117,8 +117,9 @@ class FBuildPage {
 				if($user->whoIs>0) {
 					$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
 				}
-				
-				if(!empty($user->pageParam)) {
+			}
+			
+			if(!empty($user->pageParam)) {
 					switch($user->pageParam) {
 						case 'e':
 						case 'sa':
@@ -136,7 +137,7 @@ class FBuildPage {
 						//TODO: use localization file
 					}
 				}
-			}
+			
 			unset($breadcrumbs[count($breadcrumbs)-1]['url']);
 			//$cache->setData($breadcrumbs,$cacheid,$grpid);
 		}
