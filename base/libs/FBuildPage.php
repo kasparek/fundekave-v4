@@ -499,6 +499,7 @@ class FBuildPage {
 		} else {
 			$tpl->touchBlock('msgHidden');
 		}
+		
 		$skinName = SKIN;
 		$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS);
 		$skinRestUrl = '';
@@ -521,7 +522,6 @@ class FBuildPage {
 		}
 		
 		$bsskin = FConf::get('settings','bssskin_default');
-		
 		if($user->idkontrol) {
 			$bsskin = $user->userVO->prop('skin');
 		} else {
@@ -529,8 +529,18 @@ class FBuildPage {
 			$bsskinCached = $cache->getData('bsskin');
 			if($bsskinCached!==false) $bsskin = $bsskinCached;
 		}
+		
+		//http://netdna.bootstrapcdn.com/bootswatch/3.0.3/amelia/bootstrap.min.css
+		//[[URL_CSS]]bootstrap{BOOTSTRAP_SKIN}.css
+		if(empty($bsskin)) $bsskin = 'amelia';
+		else if($bsskin=='first') $bsskin = 'united';
+		
+		$bootswatch = FConf::get('settings','bootswatch');
+		if(strpos($bootswatch,$bsskin)!==false) $bsskin = '//netdna.bootstrapcdn.com/bootswatch/3.0.3/'.$bsskin.'/bootstrap.min.css';
+		elseif($bsskin=='default') $bsskin = FConf::get('settings','bootcsscdn');
+		else $bsskin = URL_CSS.'bootstrap.'.$bsskin.'.css';
 		if(!empty($bsskin)) {
-			$tpl->setVariable('BOOTSTRAP_SKIN','.'.$bsskin);
+			$tpl->setVariable('BOOTSTRAPSWATCH',$bsskin);
 		}
 		
 		//---custom code
