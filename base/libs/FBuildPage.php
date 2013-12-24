@@ -565,8 +565,12 @@ class FBuildPage {
 		//---GET PAGE DATA
 		$data = $tpl->get();
 		$data = FSystem::superVars($data);
-		//$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
+		$newSrc ='img src="'.URL_CSS.'images/bg.png" data-src';
 		
+		$data = str_replace('img src',$newSrc,$data);
+		//var_dump($data);die();
+		//$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
+		// src="[[URL_CSS]]images/bg.png"
 		FProfiler::write('FBuildPage--complete');
 		$user->updateTotalItemsNum();
 		return $data;

@@ -9,8 +9,8 @@
     <meta name="author" content="Frantisek Kaspar">
     <link rel="shortcut icon" href="{URL_FAVICON}">
     <title>{TITLE}</title>
-    <link href="{BOOTSTRAPSWATCH}" rel="stylesheet">
-    <link href="[[URL_CSS]]global.css" rel="stylesheet">
+    <!--<link href="{BOOTSTRAPSWATCH}" rel="stylesheet">
+    <link href="[[URL_CSS]]global.css" rel="stylesheet">-->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
@@ -184,7 +184,9 @@ var _fdk = {cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',cssU
 <!-- BEGIN jscfgvar -->_fdk.cfg.{JSVAR}='{JSVALUE}';<!-- END jscfgvar -->
 var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
 </script>
-	<script type="text/javascript" src="[[URL_JS]]boot.js"></script>
-    
+
+<script type="text/javascript" src="[[URL_JS]]boot.js"></script>
+<link href="{BOOTSTRAPSWATCH}" rel="stylesheet">
+<link href="[[URL_CSS]]global.css" rel="stylesheet">    
   </body>
 </html>

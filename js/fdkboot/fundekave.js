@@ -19,6 +19,9 @@ function boot(){
 	if(isInit) return;
 	isInit = true;
 	
+	$("img").unveil();
+	//$("img").each(function(){var dsrc = $(this).data('src');if(dsrc) $(this).attr('src',dsrc);});
+	
 	if(window.location.pathname!='/') {
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;
 	}
