@@ -1,5 +1,5 @@
 _fdk.load = {'boot':['//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
-'//cdnjs.cloudflare.com/ajax/libs/jquery-history/1.9/jquery.history.min.js',
+_fdk.cfg.jsUrl+'jquery.history.js',
 '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'
 ,_fdk.cfg.jsUrl+'i18n/_fdk.lng.cs.js'
 ,_fdk.cfg.jsUrl+'fdkboot.min.js']
