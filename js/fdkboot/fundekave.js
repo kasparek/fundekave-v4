@@ -11,6 +11,10 @@ function topBannerPosition() {
 	iy=iy>0?0:(iy+ih<bh?bh-ih:iy);
 	$(".top-image img").stop().animate({'margin-top':iy+'px'},100);
 }
+function loadSidebarPanel($panel) {
+	Fajax.add('panel', $panel.data('src'));
+	Fajax.send('sidebar-get', _fdk.cfg.page);
+}
 function boot(){
 	//load language
 	var defaultLang = 'cs';
@@ -21,6 +25,14 @@ function boot(){
 	
 	$("img").unveil();
 	//$("img").each(function(){var dsrc = $(this).data('src');if(dsrc) $(this).attr('src',dsrc);});
+	
+	$(".sidebar-content").each(function(){
+		var $panel = $(this);
+		var delay = parseInt($(this).data('delay'));
+		if(delay>0) setTimeout(function(){loadSidebarPanel($panel);},delay);
+		else loadSidebarPanel(this);
+		
+	});
 	
 	if(window.location.pathname!='/') {
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;

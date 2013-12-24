@@ -99,84 +99,104 @@ class FSidebar extends FDBTool {
 		$this->panels = $arrSidebar['arrFinal'];
 		$this->panelsUsed = $arrSidebar['arrUsed'];
 	}
+	function getDynamicBlockContent($panel) {
+		$fnc = $panel['functionName'];
+		$letext = false;
+		$showBlock = true;
+		$cacheId = 'cache';
+		$cacheGrp = 'sidebar/' . $fnc;
+		
+		if(strpos($panel['options'], 'cache') !== false) {
+			// ---member/non-member dependant block
+			if($panel['public'] == 0 || strpos($panel['options'], 'member') !== false) {
+				$cacheId .= '-' . (($this->userId > 0) ? ('1') : ('0')) . '-member';
+			}
+			// ---pageId dependant block
+			if(strpos($panel['options'], 'page') !== false) {
+				if(!isset($user)) $user = FUser::getInstance();
+				if($user->pageAccess === false) {
+					$showBlock = false; // ---do not display block
+				}
+				$cacheId .= '-' . ($user->pageId) . '-p';
+			}
+			// pageparam
+			if(strpos($panel['options'], 'pageparam') !== false) {
+				if(isset(FLang::$TYPEID[$user->pageParam])) $cacheId .= '-' . $user->pageParam . '-pp';
+			}
+			// ---userId dependant block
+			if(strpos($panel['options'], 'user') !== false) {
+				$cacheId .= '-' . ($this->userId * 1) . '-user';
+			}
+			// category
+			if(strpos($panel['options'], 'category') !== false) {
+				if(!isset($user)) $user = FUser::getInstance();
+				if($user->categoryVO) $cacheId .= '-' . $user->categoryVO->categoryId . '-cat';
+			}
+			// item
+			if(strpos($panel['options'], 'item') !== false) {
+				if(!empty($user->itemVO)) $cacheId .= '-' . $user->itemVO->itemId . '-i';
+			}
+			
+			$cache = FCache::getInstance('f');
+			// ---try cache
+			if($showBlock === true) {
+				$letext = $cache->getData($cacheId, $cacheGrp);
+			}
+		}
+		
+		if($showBlock === true) {
+			if($letext === false) {
+				$class = 'sidebar_' . $fnc;
+				if(class_exists($class)) {
+					$letext = call_user_func(array($class,'show'));
+				} else {
+					$letext = $panel['content'];
+				}
+				if(isset($cache)) {
+					$cache->setData($letext, $cacheId, $cacheGrp);
+					unset($cache);
+				}
+			}
+		}
+		return $letext;
+	}
 	function show() {
 		$hasData = false;
 		if(!empty($this->panels)) {
+			$delay = 1000;
 			foreach( $this->panels as $panel ) {
 				if($panel['visible'] == 1) {
 					$fnc = $panel['functionName'];
 					$letext = false;
 					if(!empty($fnc)) {
-						$showBlock = true;
-						$cacheId = 'cache';
-						$cacheGrp = 'sidebar/' . $fnc;
-						if(strpos($panel['options'], 'cache') !== false) {
-							// ---member/non-member dependant block
-							if($panel['public'] == 0 || strpos($panel['options'], 'member') !== false) {
-								$cacheId .= '-' . (($this->userId > 0) ? ('1') : ('0')) . '-member';
-							}
-							// ---pageId dependant block
-							if(strpos($panel['options'], 'page') !== false) {
-								if(!isset($user)) $user = FUser::getInstance();
-								if($user->pageAccess === false) {
-									$showBlock = false; // ---do not display block
-								}
-								$cacheId .= '-' . ($user->pageId) . '-p';
-							}
-							// pageparam
-							if(strpos($panel['options'], 'pageparam') !== false) {
-								if(isset(FLang::$TYPEID[$user->pageParam])) $cacheId .= '-' . $user->pageParam . '-pp';
-							}
-							// ---userId dependant block
-							if(strpos($panel['options'], 'user') !== false) {
-								$cacheId .= '-' . ($this->userId * 1) . '-user';
-							}
-							// category
-							if(strpos($panel['options'], 'category') !== false) {
-								if(!isset($user)) $user = FUser::getInstance();
-								if($user->categoryVO) $cacheId .= '-' . $user->categoryVO->categoryId . '-cat';
-							}
-							// item
-							if(strpos($panel['options'], 'item') !== false) {
-								if(!empty($user->itemVO)) $cacheId .= '-' . $user->itemVO->itemId . '-i';
-							}
-							
-							$cache = FCache::getInstance('f');
-							// ---try cache
-							if($showBlock === true) {
-								$letext = $cache->getData($cacheId, $cacheGrp);
-							}
-						}
-						
-						if($showBlock === true) {
-							if($letext === false) {
-								$class = 'sidebar_' . $fnc;
-								if(class_exists($class)) {
-									$letext = call_user_func(array($class,'show'));
-								} else {
-									$letext = $panel['content'];
-								}
-								if(isset($cache)) {
-									$cache->setData($letext, $cacheId, $cacheGrp);
-									unset($cache);
-								}
-							}
-						}
+						//$letext = $this->getDynamicBlockContent($panel);
 					} else {
 						$letext = $panel['content'];
 					}
 					
-					if(!empty($letext)) {
+					if(!empty($letext) || !empty($fnc)) {
 						$TOPTPL = FBuildPage::getInstance();
-						if(!empty($panel['name'])) $TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
-						$TOPTPL->setVariable('SIDEBARBLOCKID', $fnc);
-						$TOPTPL->setVariable('SIDEBARDATA', $letext);
+						
+						if(!empty($fnc)) {
+							$TOPTPL->setVariable('SIDEBARBLOCKIDBOX', $fnc);
+							//$TOPTPL->setVariable('SIDEBARBLOCKID', $fnc);
+						}
+						
+						$TOPTPL->setVariable('SIDEBARSOURCE',$fnc);
+						$TOPTPL->setVariable('SIDEBARDELAY',$delay);
+						$delay += 500;
+						
+						if(empty($fnc)) {
+							if(!empty($panel['name'])) $TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
+							$TOPTPL->setVariable('SIDEBARDATA', $letext);
+						}
 						$TOPTPL->parse('sidebar-block');
 						$hasData = true;
 					}
 				}
 			}
 		}
+		
 		return $hasData;
 	}
 }
