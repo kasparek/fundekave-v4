@@ -19,15 +19,17 @@ class fajax_Sidebar extends FAjaxPluginBase {
 			break;
 		}
 	}
-	if(!$targetConfirmed) return;
+	if(empty($targetConfirmed)) {
+		$targetConfirmed = array('functionName' => $targetPanel,'name' => '','public' => 1,'userIdOwner' => 1,'pageIdOrigin'=>'','content' =>'','options'=>'');
+	}
 	
 	$panelContent = $fsidebar->getDynamicBlockContent($targetConfirmed);
-	
+
 	if(!empty($panelContent)) {
-		$result = (!empty($panel['name'])?'<h3>'.$panel['name'].'</h3>':'')
-			.'<div id="'.$panel['functionName'].'" class="well">'.$panelContent.'</div>';
+		$result = (!empty($targetConfirmed['name'])?'<h3>'.$targetConfirmed['name'].'</h3>':'')
+			.'<div id="'.$targetConfirmed['functionName'].'"'.(strpos($panelContent,'well')===false?' class="well':'').'">'.$panelContent.'</div>';
 		
-		FAjax::addResponse('panel'.$panel['functionName'], '$html', $result);
+		FAjax::addResponse('panel'.$targetConfirmed['functionName'], '$html', $result);
 		
 		if($targetPanel=='calendar') {
 				FAjax::addResponse('call','calendarInit','');
