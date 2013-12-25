@@ -270,12 +270,14 @@ class FBuildPage {
 			
 			if(FConf::get('settings','mid_col')) {
 				if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
+					$tpl->touchBlock('midcol');
+					$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
+					/* loaded later by ajax call
 					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
-					
 					if(!empty($pageListOut)) {
 						$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
-						$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
 					}
+					*/
 				}
 			}
 		}

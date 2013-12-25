@@ -145,18 +145,18 @@ var Fajax = new function(){
 		o.xhrList[action] = $.ajax({
 			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')),
 			data : data,
+			error : function(a, s, e){
+				console.log('Fajax::error '+s+' '+e);
+				if(a.readyState == 0 || a.status == 0) return;  // it's not really an error
+				if(!silent) msg('danger', _fdk.lng.ajax.error + ' ' + s + ' ' + e);
+			},
 			complete : function(a, s){
 				o.xhrList[action] = null;
 				if(o.formSent){
 					$('.btn').removeAttr('disabled');
 					o.formSent = null;
 				}
-				if(s != 'success' && s != 'abort'){
-					if(!silent)
-						msg('danger', _fdk.lng.ajax.error + ' ' + s);
-					return;
-				}
-				o.response.run(a.responseXML);
+				if(s=='success') o.response.run(a.responseXML);
 			}
 		});
 	};
