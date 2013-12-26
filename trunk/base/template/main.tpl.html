@@ -178,21 +178,15 @@
 	  </div>
 	  
     </div> <!-- /container -->
-<!--<link href="{BOOTSTRAPSWATCH}" rel="stylesheet">
-<link href="[[URL_CSS]]global.css" rel="stylesheet">-->
 <script type="text/javascript">
-var _fdk = {cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',cssUrl:'[[URL_CSS]]',skinUrl:'{URL_SKIN}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
+var _fdk = {cssGlob:'[[URL_CSS]]global.css',cssBs:'{BOOTSTRAPSWATCH}',cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',cssUrl:'[[URL_CSS]]',skinUrl:'{URL_SKIN}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
 <!-- BEGIN jscfgvar -->_fdk.cfg.{JSVAR}='{JSVALUE}';<!-- END jscfgvar -->
 var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
-
 (function() {
-	var el = document.createElement('script'); el.type = 'text/javascript'; el.async = true;el.src = "[[URL_JS]]boot.js";
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(el, s);
-	
-	el = document.createElement('link'); el.rel = 'stylesheet'; el.async = true;el.href = "{BOOTSTRAPSWATCH}";
-	s.parentNode.insertBefore(el, s);
-	el = document.createElement('link'); el.rel = 'stylesheet'; el.async = true;el.href = "[[URL_CSS]]global.css";
-	s.parentNode.insertBefore(el, s);
+	var el,s = document.getElementsByTagName('script')[0];
+	el = document.createElement('script'); el.type = 'text/javascript';el.async=true;el.src="[[URL_JS]]boot.js"; s.parentNode.insertBefore(el,s);
+	el = document.createElement('link'); el.rel = 'stylesheet';el.href = _fdk.cssGlob;s.parentNode.insertBefore(el, s);
+	el = document.createElement('link'); el.rel = 'stylesheet';el.href = _fdk.cssBs;s.parentNode.insertBefore(el, s);
 })();
 </script>
   </body>
