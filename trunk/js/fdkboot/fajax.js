@@ -123,7 +123,8 @@ var Fajax = new function(){
 			x.a.push(x.s.replace('{KEY}', k).replace('{DATA}', v));
 		};
 		x.get = function(){
-			var s = '<FXajax><Request>' + x.a.join('') + '</Request></FXajax>';
+			var s = '';
+			if(x.a.length>0) s='<FXajax><Request>' + x.a.join('') + '</Request></FXajax>';
 			x.a = [];
 			return s;
 		}
@@ -144,6 +145,7 @@ var Fajax = new function(){
 			k = '';
 		o.xhrList[action] = $.ajax({
 			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')),
+			type : data.length>0 ? 'POST' : 'GET',
 			data : data,
 			error : function(a, s, e){
 				console.log('Fajax::error '+s+' '+e);
