@@ -18,7 +18,6 @@ var Fajax = new function(){
 		$.ajaxSetup({
 			scriptCharset : "utf-8",
 			contentType : "text/xml; charset=utf-8",
-			type : "POST",
 			dataType : 'xml',
 			processData : false,
 			cache : false
