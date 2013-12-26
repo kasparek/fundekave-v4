@@ -22,7 +22,8 @@
 			var settings = jQuery.extend(true, {
 					url: url,					// URL of ajax request
 					cache: false,			// By default, don't allow caching
-					method: 'GET',		// method; get or post
+					methodLight: 'GET',		// method; get or post
+					methodLoaded: 'POST',		// method; get or post
 					data: '',					// array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
 					minTimeout: 1000, // starting value for the timeout in milliseconds
 					maxTimeout:64000, // maximum length of time between requests
@@ -126,7 +127,6 @@
 				var ajaxSettings = jQuery.extend(true, {}, settings);
 				if (settings.type && !ajaxSettings.dataType) { ajaxSettings.dataType = settings.type; }
 				if (settings.sendData) { ajaxSettings.data = settings.sendData; }
-				ajaxSettings.type = settings.method; // 'type' is used internally for jQuery.  Who knew?
 				ajaxSettings.ifModified = true;
 
 
@@ -142,7 +142,7 @@
 								toSend.data = toSend.data.toString();
 							}
 						}
-
+						toSend.type = toSend.data ? settings.methodLoaded : settings.methodLight;
 						if (force || maxCalls === 0) {
 								pu_log("Sending data");
 								$(function() { $.ajax(toSend); });
