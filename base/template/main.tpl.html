@@ -189,8 +189,8 @@ else window.onload = onloadboot;
 function onloadboot(){
 	var el,s = document.getElementsByTagName('script')[0];
 	el = document.createElement('script'); el.type = 'text/javascript';el.async=true;el.src="[[URL_JS]]boot.js"; s.parentNode.insertBefore(el,s);
-	el = document.createElement('link'); el.rel = 'stylesheet';el.href = _fdk.cssGlob;s.parentNode.insertBefore(el, s);
 	el = document.createElement('link'); el.rel = 'stylesheet';el.href = _fdk.cssBs;s.parentNode.insertBefore(el, s);
+	el = document.createElement('link'); el.rel = 'stylesheet';el.href = _fdk.cssGlob;s.parentNode.insertBefore(el, s);
 };
 </script>
   </body>
