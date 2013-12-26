@@ -381,7 +381,7 @@ var Msg = new function(){
 		return Fajax.request.get();
 	}
 	o.startPoll = function(){
-		$.PeriodicalUpdater('?m=post-poll-x&k='+_fdk.cfg.page, {method: 'GET',data: o.getData,minTimeout: _fdk.cfg.msgTi/2,maxTimeout: _fdk.cfg.msgTi,multiplier: 2}, function(remoteData, success, xhr, handle){Fajax.response.run(remoteData);});
+		$.PeriodicalUpdater('?m=post-poll-x&k='+_fdk.cfg.page, {method: 'POST',data:o.getData,minTimeout: _fdk.cfg.msgTi/2,maxTimeout: _fdk.cfg.msgTi,multiplier: 2}, function(remoteData, success, xhr, handle){Fajax.response.run(remoteData);});
 	};
 	o.chatInit = function() {
 		$(".msg-text").off('keypress').on('keypress',function (e) {if (e.which == 13) {
