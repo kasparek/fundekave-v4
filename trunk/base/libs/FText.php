@@ -159,8 +159,9 @@ class FText {
 			if(preg_match("/.*[&?|]k=([a-zA-Z0-9]{5}).*/i", $url, $matches)) {
 			  $local=true;
 			  //it's local page
-			  $pageVO = FactoryVO::get('PageVO',$matches[1],true);
-			  $tag->nodeValue = $pageVO->get('name');
+			  if($pageVO = FactoryVO::get('PageVO',$matches[1],true)) {
+				$tag->nodeValue = $pageVO->get('name');
+			  }
 			} else {
 			  if(preg_match("/.*[&?|]i=([0-9]{1,7}).*/i", $url, $matches)) {
 				//we have itemId
