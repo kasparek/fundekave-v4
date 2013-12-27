@@ -114,12 +114,14 @@ class fajax_Post extends FAjaxPluginBase {
 			if($user->userVO->userId != $post['userIdFrom']) $lastRecipientName = $post['fromName'];
 		}
 		if(!empty($msgsOut)) {
-			if($lastRecipientName) FAjax::addResponse('msgRecipient','$val',$lastRecipientName);
-			FAjax::addResponse('msgList','$append',$msgsOut);
-			FAjax::addResponse('call','scrollToBottom','msgList');
-			FAjax::addResponse('call','Msg.chatInit','');
-			FAjax::addResponse('call','Fajax.init','');
-			FAjax::addResponse('msgForm','$removeClass','hidden');
+			if($lastRecipientName) {
+				FAjax::addResponse('msgRecipient','$val',$lastRecipientName);
+				FAjax::addResponse('msgList','$append',$msgsOut);
+				FAjax::addResponse('call','scrollToBottom','msgList');
+				FAjax::addResponse('call','Msg.chatInit','');
+				FAjax::addResponse('call','Fajax.init','');
+				FAjax::addResponse('msgForm','$removeClass','hidden');
+			}
 		}
 	}
 
