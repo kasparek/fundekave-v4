@@ -377,7 +377,7 @@ var Msg = new function(){
 		$(".msg-xs").each(function(){ xs.push($(this).attr('id').replace('messxs', '')); });
 		if(l.length > 0) Fajax.add('unreadedSent', l.join(','));
 		if(xs.length > 0) Fajax.add('xsShow', xs.join(','));
-		if(p>0) Fajax.add('p', p);
+		if(_fdk.cfg.page=='fpost' && p>0) Fajax.add('p', p);
 		return Fajax.request.get();
 	}
 	o.startPoll = function(){

@@ -229,6 +229,7 @@ clear: both;
 img {max-width: none;max-height: none;}
 #tempStore{margin-bottom:-10px;}
 /* GOOGLE MAPS styles */
+.goomap-thumb { padding: 0 0 5px 5px; }
 .geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}
 .geoInput {width:150px;height:70px;padding:0;margin:0;}
