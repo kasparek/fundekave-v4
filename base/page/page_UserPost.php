@@ -90,7 +90,7 @@ class page_UserPost implements iPage {
 
     
 		//---redirect
-		if(!$data['__ajaxResponse']) {
+		if(empty($data['__ajaxResponse'])) {
 			if($redirect) FHTTP::redirect(FSystem::getUri($redirParam));
 		} else {
 			return $data;
