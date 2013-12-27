@@ -27,8 +27,10 @@ $itemIdList = FDBTool::getCol($q);
 foreach($itemIdList as $itemId) {
   echo $itemId.'<br>';
   $confGalery = FConf::get('galery');
-  $itemVO = new ItemVO($itemId);
-  if(!$itemVO->load()) {
+  $itemVO = FactoryVO::get('ItemVO',(int) $itemId,true);
+  $pageVO = null;
+  if($itemVO) $pageVO = FactoryVO::get('PageVO',$itemVO->pageId,true);
+  if(empty($itemVO) || empty($pageVO)) {
     //delete from TODO
     $q = "delete from sys_pages_items_properties where itemId='".$itemId."' and value='TODO'";
     FDBTool::query($q);
@@ -39,7 +41,6 @@ foreach($itemIdList as $itemId) {
     $fgapps = FGApps::getInstance();
     $picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$confGalery['sourceServerBase'] . $itemVO->pageVO->get('galeryDir') . '/' . $itemVO->enclosure,$itemVO->text,$itemVO->enclosure);
     $itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
-    
     $done++;
   }
 }
