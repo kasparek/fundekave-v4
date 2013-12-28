@@ -58,7 +58,7 @@ var Fajax = new function(){
 		if(d){
 			l = d.split(';');
 			while(l.length > 0){
-				var row = l.shift().split(':');
+				var row = l.shift().split('=');
 				o.add(row[0], row[1]);
 				if(row[0] == 'result')
 					res = true;
@@ -142,8 +142,15 @@ var Fajax = new function(){
 			k = _fdk.cfg.page;
 		if(k == -1)
 			k = '';
+		var GET=[],l = decodeURIComponent(window.location.search.replace("?","" )).split('&');
+		while(l.length>0) {
+			var pair = l.pop(),key=pair.substr(0,pair.indexOf('='));
+			if(key!='k' && key!='i' && key!='p') {
+				GET.push(pair);
+			}
+		}
 		o.xhrList[action] = $.ajax({
-			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')),
+			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')) + (GET.length>0?'&':'') + GET.join('&'),
 			type : data.length>0 ? 'POST' : 'GET',
 			data : data,
 			error : function(a, s, e){

@@ -90,9 +90,16 @@ class FBuildPage {
 					}
 				}
 		
-				if(!empty($_REQUEST['date'])) $date = FSystem::checkDate($_REQUEST['date']);
-				if(!empty($date)) $breadcrumbs[] = array('name'=>date(FConf::get('internationalization','date'),strtotime($date)),'url'=>FSystem::getUri('date='.$date));
-		
+				
+				if(!empty($user->year)) {
+					if($user->month) {
+						$dateStr = date(FConf::get('internationalization','date'),strtotime($user->year.'-'.$user->month.($user->day?'-'.$user->day:'')));
+					} else {
+						$dateStr = $user->year;
+					}
+					$breadcrumbs[] = array('name'=>$dateStr,'url'=>FSystem::getUri('date='.$user->inDate()));
+				}
+				
 				if(isset(FLang::$TYPEID[$user->pageVO->typeId])) $pageCrumb=true;
 				//stranka
 				if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
@@ -230,7 +237,7 @@ class FBuildPage {
 				if(empty($user->pageParam) && empty($user->itemVO)) {
 					if(FRules::getCurrent(FConf::get('settings','perm_book'))){
 						if($user->pageVO->userIdOwner != $user->userVO->userId){
-							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page:'.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
+							FMenu::secondaryMenuAddItem(FSystem::getUri('m=user-book&d=page='.$pageId), ((0 == $user->pageVO->favorite)?(FLang::$LABEL_BOOK):(FLang::$LABEL_UNBOOK)), array('id'=>'bookButt','class'=>'fajaxa'));
 						}
 					}
 					if(FRules::getCurrent(2) && empty($user->itemVO)) {

@@ -1,39 +1,26 @@
 <?php
 class sidebar_calendar {
 
-	static function show($year='',$month='',$coreOnly=false) {
-		
-		$dden = 1;
-		$date = null;
-		if(!empty($_REQUEST['date'])) {
-			$date = FSystem::checkDate($_REQUEST['date']);
-			if($date) {
-				list($drok,$dmesic,$dden)=explode("-",$date);
-			}
-		}
-		
-		if($year!='' || $month!='')  {
-			$drok = $year;
-			$dmesic = $month;
-		} 
-			
-		if(empty($drok) || !checkdate($dmesic,$dden,$drok)) {
-			$dmesic = date("m");
-			$drok = date("Y");
-		}
-			
+	static function show($options=null) {
+		if($options===null) $options = new stdClass();
+		$user = FUser::getInstance();
+		$drok = $user->year;
+		$dmesic = $user->month;
+		if(empty($drok)) $drok = date("Y");
+		if(empty($dmesic)) $dmesic = date("m");
+				
 		//---cache by drok,dmesic
 		$cache = FCache::getInstance('f',3600);
-		$user = FUser::getInstance();
 		$data = $cache->getData($user->pageVO->pageId.'-page-'.($user->userVO->userId*1).'-user-'.$drok.$dmesic,'calendarlefthand');
 
 		if(false===$data) {
-			if($user->pageVO->typeId == 'top') {
+			$userPageId = false;
+			if($user->pageVO->typeIdChild == 'galery') {
+				$arrUsedPlugins = array('galeryPageCount');
+			} elseif($user->pageVO->typeId == 'top') {
 				$arrUsedPlugins = array('diaryRecurrenceItems','events','blogItems','galeryItems');
-				$userPageId = false;
 			} elseif($user->pageVO->typeId == 'event') {
 				$arrUsedPlugins = array('diaryRecurrenceItems','events');
-				$userPageId = false;
 			} else {
 				$userPageId = true;
 				//---just items for given page
@@ -42,6 +29,7 @@ class sidebar_calendar {
 				if($typeId=='galery') $arrUsedPlugins = array('galeryItems');
 				if($typeId=='forum') $arrUsedPlugins = array('diaryRecurrenceItems','events');
 			}
+		
 			$arrQ = array();
 			if(!empty($arrUsedPlugins)) {
 				foreach ($arrUsedPlugins as $pluginName) {
@@ -52,7 +40,7 @@ class sidebar_calendar {
 				$outList = array();
 				foreach($arrQ as $item) {
 					$outList[] = '<div class="event hidden" data-date="'.$item[2].'" data-repeat="'.(!empty($item[4])?$item[4]:'').'" data-id="'.$item[0].'">'
-					.($coreOnly ? '' : '<span class="date">'.$item[3].'</span>')
+					.(!empty($options->coreOnly) ? '' : '<span class="date">'.$item[3].'</span>')
 					.$item[1].'</div>';
 				}
 				
@@ -62,7 +50,12 @@ class sidebar_calendar {
 				$cache->setData( $data );
 			}
 		}
-		if($coreOnly===false && !empty($data)) $data = '<div id="calendar-inline" data-dateset="'.($date?$date:'').'">'.$data.'</div>';
+		
+		if($user->year && $options->minViewMode) {
+			$options->minViewMode=1;
+		}
+		if(empty($options->coreOnly) && !empty($data)) $data = ($user->categoryVO?'<div class="text-center">Kategorie <strong>'.$user->categoryVO->name.'</strong></div>':'').'<div id="calendar-inline" data-minviewmode="'.(!empty($options->minViewMode)?$options->minViewMode:'0').'" data-dateset="'.($date?$date:'').'">'.$data.'</div>';
+		
 		return $data;
 	}
 

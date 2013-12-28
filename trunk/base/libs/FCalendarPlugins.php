@@ -44,4 +44,28 @@ class FCalendarPlugins {
 	$result = $db->getAll($q);
 	return $result;
   } 
+  
+  static function galeryPageCount($year,$month,$userId,$pageId = '') {
+	$db = FDBConn::getInstance();
+	
+	$user = FUser::getInstance();
+	
+	$dateFormat = empty($user->year) ? '%Y':'%Y-%m';
+	$dateFormatLocal = empty($user->year) ? '%Y':'%m.%Y';
+	
+	$q = "select date_format(p.dateContent ,'".$dateFormat."') as id,count(1) as title,date_format(p.dateContent ,'".$dateFormat."') as date,date_format(p.dateContent ,'".$dateFormatLocal."') as dateLocal from sys_pages as p "
+	
+	.($userId>0?"left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=p.pageId ":' ')
+	."where typeId='galery' "
+	.($user->categoryVO ? "and p.categoryId='".$user->categoryVO->categoryId."' " : '')
+	
+		.(SITE_STRICT ? "and p.pageIdTop='".SITE_STRICT."' " : " ")
+		.(!empty($pageId)?"and p.pageId='".$pageId."' ":" ")
+		.($userId>0?"and (p.public>0 or up.rules>0) and p.locked<2 ":'and p.locked=0 and p.public=1 ')
+	
+	."group by id "
+	."";
+	$result = $db->getAll($q);
+	return $result;
+  }
 }

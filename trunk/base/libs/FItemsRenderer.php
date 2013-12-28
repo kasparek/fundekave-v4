@@ -185,7 +185,7 @@ class FItemsRenderer {
 			$user = FUser::getInstance();
 			if($itemVO->typeId=='forum' || $user->pageVO->pageId == $pageId) {
 				$vars['EDITURL'] = FSystem::getUri('i='.$itemId,$pageId,'u');
-				$vars['DELETEURL']=FSystem::getUri('m=item-delete&d=item:'.$itemId,'','');
+				$vars['DELETEURL']=FSystem::getUri('m=item-delete&d=item='.$itemId,'','');
 			}
 		}
 

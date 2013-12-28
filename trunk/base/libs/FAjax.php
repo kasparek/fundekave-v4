@@ -71,7 +71,7 @@ class FAjax {
 		} else {
 			$arr = explode(';',$data);
 			foreach($arr as $row) {
-				list($k,$v) = explode(':',$row);
+				list($k,$v) = explode('=',$row);
 				$dataProcessed[$k] = $v;
 			}
 		}

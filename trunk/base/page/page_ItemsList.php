@@ -84,16 +84,16 @@ class page_ItemsList implements iPage {
 					if(!$isDetail) {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-showupload',$user->pageVO->pageId,'u'), FLang::$LABEL_UPLOAD,array('class'=>'fajaxa'));
 					} else {
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:'.$user->itemVO->itemId,$user->pageVO->pageId,'u'), FLang::$LABEL_EDIT_PHOTO,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i='.$user->itemVO->itemId,$user->pageVO->pageId,'u'), FLang::$LABEL_EDIT_PHOTO,array('class'=>'fajaxa'));
 					}
 				}
 				if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i:0;t:blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i=0;t=blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
 				}
 			}
 			if(FRules::getCurrent(FConf::get('settings','perm_add_event'))) {
 				if(($user->pageVO->pageId=='event' || $user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') && $user->userVO->userId>0 && empty($user->pageParam) && empty($user->itemVO)){
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item:0;t:event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item=0;t=event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 				}
 			}
 
@@ -140,13 +140,9 @@ class page_ItemsList implements iPage {
 			if(!isset(FLang::$TYPEID[$typeRequest])) $typeRequest='';
 		}
 
-		$categoryId=0;
-		if($user->categoryVO) {
-			$categoryId = $user->categoryVO->categoryId; //for category filtering
-		}
 		$arrPagerExtraVars = array();
-		if($categoryId>0) $arrPagerExtraVars['c'] = $categoryId;
-		if(!isset($_REQUEST['k'])) $arrPagerExtraVars['k'] = $user->pageVO->pageId;
+		if($user->categoryVO) $arrPagerExtraVars['c'] = $user->categoryVO->categoryId;
+		$arrPagerExtraVars['k'] = $user->pageVO->pageId;
 		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
 		$pagerOptions = array('manualCurrentPage'=>$manualCurrentPage);
 		if($isDetail && $pageVO->typeId!='forum') {
@@ -228,7 +224,7 @@ class page_ItemsList implements iPage {
 					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
 				} else {
 					//TODO: set Lang
-					$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti:'.$itemVO->itemId).'" class="fajaxa">Vlož komentář</a>';
+					$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti='.$itemVO->itemId).'" class="fajaxa">Vlož komentář</a>';
 				}
 			} else if($isDetail || $forumFormTypeId=='forum') {
 				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
@@ -275,9 +271,9 @@ class page_ItemsList implements iPage {
 			}
 			$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
 		}
-		
-		if($categoryId > 0) {
-			$fItems->addWhere("categoryId='". $categoryId ."'");
+
+		if($user->categoryVO) {
+			$fItems->addWhere("categoryId='". $user->categoryVO->categoryId ."'");
 		}
 		if(!empty($searchStr)) {
 			$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');

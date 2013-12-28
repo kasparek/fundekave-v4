@@ -4,6 +4,7 @@ if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false) {
 	ob_start("ob_gzhandler");
 	header('Content-Encoding: gzip');
 }
+$_REQUEST = array_merge($_GET, $_POST);
 //---host name
 if(empty($host)) {
 	$host = $_SERVER['HTTP_HOST'];
@@ -62,32 +63,29 @@ if(isset($_GET['kam'])) {
 }
 //check for item
 $itemId = 0;
-$itemVO = null;
 if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
 elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
 if($itemId > 0) {
-	$itemVO = FactoryVO::get('ItemVO',$itemId,true);
-	if($itemVO) {
-		if(empty($pageId)) $pageId = $itemVO->pageId;
-		if($itemVO->itemIdTop > 0) $itemVO = new ItemVO( $itemVO->itemIdTop,true );
+	$user->itemVO = FactoryVO::get('ItemVO',$itemId,true);
+	if($user->itemVO) {
+		if(empty($pageId)) $pageId = $user->itemVO->pageId;
+		if($user->itemVO->itemIdTop > 0) $user->itemVO = FactoryVO::get('ItemVO', $user->itemVO->itemIdTop,true );
 	}
 }
 //check category
 if(isset($_REQUEST['c'])) {
-	$c = (int) $_REQUEST['c'];
-	if($c>0) {
-		if($catVO = FactoryVO::get('CategoryVO',$c,true)) {
-			$user->categoryVO = $catVO;
-		}
-	}
+	$user->categoryVO = FactoryVO::get('CategoryVO',(int) $_REQUEST['c'],true);
 }
+if(isset($_REQUEST['date'])) {
+	$user->inDate($_REQUEST['date']);
+}
+
 //recheck pageId
 if(empty($pageId)) $pageId = HOME_PAGE;
 $pageId = FSystem::processK($pageId);
 //setup userVO
-if($itemVO) $user->itemVO = $itemVO;
 $user->pageId = $pageId;
-FProfiler::write('SYSTEM INIT - page params - page='.$pageId.($itemVO?' item='.$itemVO->itemId:''));
+FProfiler::write('SYSTEM INIT - page params - page='.$pageId.($user->itemVO?' item='.$user->itemVO->itemId:''));
 if(isset($_REQUEST['who'])) $user->setWhoIs($_REQUEST['who']);
 //---logout action
 if(isset($_GET['logout']) && $user->userVO->userId>0) {
