@@ -250,7 +250,13 @@ class FSystem {
 			$date = $arr[2].'-'.$arr[1].'-'.$arr[0];
 		}
 		$date .= $time;
-		if(strtotime($date)===false) return null;
+		$dateList = explode('-',$date);
+		$dateListLen = count($dateList);
+		if($dateListLen>3) return null;
+		else if($dateListLen==3) $dateTest = $date;
+		else if($dateListLen==2) $dateTest = $data.'-01';
+		else if($dateListLen==1) $dateTest = $data.'-01-01';
+		if(strtotime($dateTest)===false) return null;
 		return $date;
 	}
 

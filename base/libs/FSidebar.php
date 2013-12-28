@@ -29,13 +29,13 @@ class FSidebar extends FDBTool {
 		$this->panelsUsed = array();
 		$cache = FCache::getInstance('f');
 		if(false === ($arrSidebar = $cache->getData($this->pageId . '-' . ($this->userId * 1), 'sidebar/set'))) {
-			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible");
+			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible,''");
 			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup in ('default','" . $this->pageType . "'))");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 			$arrTmp = $this->getContent();
 			
 			$this->queryReset();
-			$this->setSelect("f.functionName,if(fp.name is not null,fp.name,f.name) as name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible");
+			$this->setSelect("f.functionName,if(fp.name is not null,fp.name,f.name) as name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible,fp.options");
 			$this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='" . $this->pageId . "'");
 			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
 			$arr2 = $this->getContent();
@@ -48,8 +48,8 @@ class FSidebar extends FDBTool {
 				$setByUser = false;
 				$setByPage = false;
 				$setByDefault = false;
-				$newRow = array();
 				if(!isset($arrGrouped[$row[0]])) {
+					$newRow = array();
 					$newRow['functionName'] = $row[0];
 					$newRow['name'] = $row[1];
 					$newRow['public'] = $row[2];
@@ -57,12 +57,14 @@ class FSidebar extends FDBTool {
 					$newRow['pageIdOrigin'] = $row[4];
 					$newRow['content'] = $row[5];
 					$newRow['options'] = $row[6];
+					$newRow['data'] = $row[12];
 				} else {
 					$newRow = $arrGrouped[$row[0]];
 					$newRow['name'] = $row[1];
 					$setByUser = (!empty($newRow['userId'])) ? true : false;
 					$setByPage = (!empty($newRow['pageId'])) ? true : false;
 					$setByDefault = (!empty($newRow['group'])) ? true : false;
+					$newRow['data'] = $row[12];
 				}
 				if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[7];
 				if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[8];
@@ -148,7 +150,10 @@ class FSidebar extends FDBTool {
 			if($letext === false) {
 				$class = 'sidebar_' . $fnc;
 				if(class_exists($class)) {
-					$letext = call_user_func(array($class,'show'));
+					if(!empty($panel['data'])) {
+						$decData = json_decode($panel['data']);
+					}
+					$letext = call_user_func(array($class,'show'),$decData);
 				} else {
 					$letext = $panel['content'];
 				}

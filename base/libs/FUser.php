@@ -13,6 +13,10 @@ class FUser {
 	var $itemVO;
 	
 	var $categoryVO;
+	
+	var $year;
+	var $month;
+	var $day;
 
 	//---used when looking after someone informations
 	var $whoIs = 0; //---replace with whoIsUserVO
@@ -34,6 +38,21 @@ class FUser {
 			self::$instance = new FUser();
 		}
 		return self::$instance;
+	}
+	
+	function inDate($dateStr=null) {
+		if($dateStr!==null) {
+			if($date = FSystem::checkDate($dateStr)) {
+				$date = explode('-',$date);
+				$this->year = $date[0];
+				if(!empty($date[1])) $this->month = sprintf("%02d", $date[1]);
+				if(!empty($date[2])) $this->day = sprintf("%02d", $date[2]);
+			} else {
+				return null; //invalid date
+			}
+		}
+		if(!$this->year) return null;
+		return $this->year.($this->month?'-'.$this->month:'').($this->day?'-'.$this->day:'');
 	}
 	
 	function setRemoteAuthToken($v) {

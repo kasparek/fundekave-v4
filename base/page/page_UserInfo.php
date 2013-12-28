@@ -72,7 +72,7 @@ class page_UserInfo implements iPage {
 				if($user->userVO->userId != $userVO->userId) {
 					if($userVO->isFriend($user->userVO->userId)) {
 						//button remove friend
-						$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendremove&d=u:'.$userVO->userId));
+						$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendremove&d=u='.$userVO->userId));
 						$tpl->setVariable('FRIENDLINKLABEL',FLang::$LABEL_FRIEND_REMOVE);
 						$tpl->setVariable('FRIENDLINKID','removeFriendButt');
 						$tpl->setVariable('FRIENDLINKCLASS',' confirm');
@@ -81,7 +81,7 @@ class page_UserInfo implements iPage {
 					} else {
 						if(!$userVO->isRequest($user->userVO->userId)) {
 							//button send frien request
-							$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendrequest&d=u:'.$userVO->userId));
+							$tpl->setVariable('FRIENDLINKURL',FSystem::getUri('m=user-friendrequest&d=u='.$userVO->userId));
 							$tpl->setVariable('FRIENDLINKLABEL',FLang::$LABEL_FRIEND_ADD);
 							$tpl->setVariable('FRIENDLINKID','friendButt');
 							$tpl->setVariable('FRIENDLINKCLASS','');
@@ -149,10 +149,10 @@ class page_UserInfo implements iPage {
 			$tpl->setVariable('BOOKED',self::tabPageList($userVO->userId,'booked'));
 		}
 		
-		$tpl->setVariable('GALERYTABURL',FSystem::getUri('m=tab-show&d=tab:tab-galery'.($user->whoIs?';who:'.$user->whoIs:'')));
-		$tpl->setVariable('FORUMTABURL',FSystem::getUri('m=tab-show&d=tab:tab-forum'.($user->whoIs?';who:'.$user->whoIs:'')));
-		$tpl->setVariable('BLOGTABURL',FSystem::getUri('m=tab-show&d=tab:tab-blog'.($user->whoIs?';who:'.$user->whoIs:'')));
-		$tpl->setVariable('BOOKEDTABURL',FSystem::getUri('m=tab-show&d=tab:tab-booked'.($user->whoIs?';who:'.$user->whoIs:'')));
+		$tpl->setVariable('GALERYTABURL',FSystem::getUri('m=tab-show&d=tab=tab-galery'.($user->whoIs?';who='.$user->whoIs:'')));
+		$tpl->setVariable('FORUMTABURL',FSystem::getUri('m=tab-show&d=tab=tab-forum'.($user->whoIs?';who='.$user->whoIs:'')));
+		$tpl->setVariable('BLOGTABURL',FSystem::getUri('m=tab-show&d=tab=tab-blog'.($user->whoIs?';who='.$user->whoIs:'')));
+		$tpl->setVariable('BOOKEDTABURL',FSystem::getUri('m=tab-show&d=tab=tab-booked'.($user->whoIs?';who='.$user->whoIs:'')));
 
 		/**
 		 * pratele

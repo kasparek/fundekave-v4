@@ -192,29 +192,53 @@ function calendarInit() {
 	if($("#calendar-inline").length == 0) return
 	if(!Lazy.load(_fdk.load.ui, calendarInit)) return;
 	var date = $('#calendar-inline').data('dateset');
-	$('#calendar-inline').datepicker({
+	var minViewMode = $('#calendar-inline').data('minviewmode');
+	var getDate = gup('date',window.location.href);
+	if(getDate) {
+		if(getDate.length==4) getDate += '-01-01';
+		else if(getDate.length==7) getDate += '-01';
+		date = getDate;
+	}
+	$('#calendar-inline').on('show',calendarInlineInvalidate).datepicker({
 	date:date,
     language: "cs",
+	minViewMode: minViewMode ? minViewMode : 'day',
 	weekStart: 1,
     beforeShowDay: function (date){
+		var minViewMode = parseInt($('#calendar-inline').data('minviewmode'));
+		if(minViewMode>0) {
+			calendarInlineInvalidate();
+			return;
+		}
 		var cal = $("#calendar-inline")[0], day = date.getDate(), month = date.getMonth()+1, year= date.getFullYear(),dayEvents = $(".event",cal),ret = {tooltip:' '};
 		if(dayEvents.length > 0) {
 			dayEvents.each(function(){
 			$("span",this).remove();
-				var ed = $(this).data('date').split('-');
+				var ed = String($(this).data('date')).split('-');
+				if(!ed[1]) ed[1]=month;
+				if(!ed[2]) ed[2]=day;
 				if(parseInt(ed[2]) == day && parseInt(ed[1]) == month && (parseInt(ed[0])==year || $(this).data('repeat')=='year')) {
 					ret.tooltip += $(this).html() + "\n";
-					//if($(this).data('repeat')=='year') cl='active';
 			}});
 			if(ret.tooltip.length>1) {
 				ret.classes = 'active';
 			}
 		}
 		return ret;
-    }}).on('changeDate', function(e){
-		window.location.replace("?k="+_fdk.cfg.page+"&date="+e.date.getFullYear() + '-' + ('0' + (e.date.getMonth()+1)).slice(-2) + '-' + ('0' + e.date.getDate()).slice(-2));
+    }})
+	.on('changeYear',calendarInlineInvalidate)
+	.on('changeDate', function(e){
+		var minViewMode = parseInt($('#calendar-inline').data('minviewmode'));
+		var cat = gup('c',window.location.href);
+		var uri = "?k="+_fdk.cfg.page+(cat?'&c='+cat:'')+"&date="+e.date.getFullYear() 
+		+ (minViewMode < 2 ? '-' + ('0' + (e.date.getMonth()+1)).slice(-2) : '' )
+		+ (minViewMode < 1 ? '-' + ('0' + e.date.getDate()).slice(-2) : '' );
+		window.location.replace(uri);
 	}).on('changeMonth', function(e){
-		Fajax.add('month', ('0' + (e.date.getMonth()+1)).slice(-2));
+		var minViewMode = parseInt($('#calendar-inline').data('minviewmode'));
+		if(minViewMode==2) return;
+		if(minViewMode) Fajax.add('minviewmode', minViewMode);
+		if(minViewMode<2)Fajax.add('month', ('0' + (e.date.getMonth()+1)).slice(-2));
 		Fajax.add('year', e.date.getFullYear());
 		Fajax.send('calendar-show', '');
 	});
@@ -223,6 +247,48 @@ function calendarInit() {
 		$('#calendar-inline').datepicker('update', da);
 	}
 	$('.day').tooltip({container: 'body',placement: 'left'});
+}
+function calendarInlineInvalidate(e){
+	if(calendarInlineUpdateTimeout>0) clearTimeout(calendarInlineUpdateTimeout);
+	calendarInlineUpdateTimeout=setTimeout(function(){calendarInlineUpdate(null);},100);
+}
+var calendarInlineUpdateTimeout=0;
+function calendarInlineUpdate(e) {
+	var $cal = $("#calendar-inline"),date=new Date(), day = date.getDate(), month = date.getMonth()+1, year= date.getFullYear(),dayEvents = $(".event",$cal[0]);
+	var minViewMode = parseInt($cal.data('minviewmode'));
+	if(minViewMode!=2 && minViewMode!=1) return;
+	$("span.month",$cal[0]).each(function(){$(this).removeClass('active');});
+	$("span.year",$cal[0]).each(function(){$(this).removeClass('active');});
+	dayEvents.each(function(){
+		$("span",this).remove();
+		var ed = String($(this).data('date'));
+		var tooltip = ' '+$(this).html()+' ';
+		if(minViewMode==2) {
+			$("span.year",$cal[0]).each(function(){
+				$(this).removeClass('old');
+				$(this).removeClass('new');
+				if($(this).html()==ed) {
+					$(this).addClass('active');
+					$(this).attr('title',tooltip);
+				}
+			});
+		} else {
+			var thisYear = $(".datepicker-switch",$cal[0]).html().substr(-4);
+			if(ed.indexOf(thisYear)==0) {
+				var edMonth = parseInt(ed.substr(5));
+				var monthIndex=1;
+				$("span.month",$cal[0]).each(function(){
+					if(monthIndex==edMonth) {
+						$(this).addClass('active');
+						$(this).attr('title',tooltip);
+					}
+					monthIndex++;
+				});
+			}
+		}
+	});
+	$('.year').tooltip({container: 'body',placement: 'left'});
+	$('.month').tooltip({container: 'body',placement: 'left'});
 }
 function datePickerInit(){
 	if($(".date").length == 0) return;

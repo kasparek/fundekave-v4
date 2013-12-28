@@ -149,7 +149,7 @@ class page_UserSettings implements iPage {
 			for($i=0;$i<count($bssskins);$i++) {
 				$tpl->setVariable('BSSKIN_IMG',$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS).'skin-thumbs/'.$bssskins[$i].'bs.png');
 				$tpl->setVariable('BSSKIN_NAME',$bssskinsNames[$i]);
-				$tpl->setVariable('BSSKIN_URL',FSystem::getUri('m=user-setskin&d=name:'.$bssskins[$i]));
+				$tpl->setVariable('BSSKIN_URL',FSystem::getUri('m=user-setskin&d=name='.$bssskins[$i]));
 				$tpl->parse('bsskin');
 			}
 		}

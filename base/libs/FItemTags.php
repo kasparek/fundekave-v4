@@ -64,9 +64,9 @@ class FItemTags {
 		$tpl = file_get_contents(ROOT.ROOT_TEMPLATES.$template);
 		
 		if($isTagged !== true) {
-			$tpl = str_replace('{URLACCEPT}',FSystem::getUri('m=user-tag&d=item:'.$itemId.';a:a'),$tpl);
+			$tpl = str_replace('{URLACCEPT}',FSystem::getUri('m=user-tag&d=item='.$itemId.';a:a'),$tpl);
 		} else {
-			$tpl = str_replace('{URLREMOVE}',FSystem::getUri('m=user-tag&d=item:'.$itemId.';a:r'),$tpl);
+			$tpl = str_replace('{URLREMOVE}',FSystem::getUri('m=user-tag&d=item='.$itemId.';a:r'),$tpl);
 		}
 		
 		$tpl = str_replace('{ITEMID}',$itemId,$tpl);

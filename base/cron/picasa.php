@@ -30,18 +30,38 @@ foreach($itemIdList as $itemId) {
   $itemVO = FactoryVO::get('ItemVO',(int) $itemId,true);
   $pageVO = null;
   if($itemVO) $pageVO = FactoryVO::get('PageVO',$itemVO->pageId,true);
-  if(empty($itemVO) || empty($pageVO)) {
+  $itemId = (int) $itemId;
+  if(empty($itemId) || empty($itemVO) || empty($pageVO)) {
     //delete from TODO
     $q = "delete from sys_pages_items_properties where itemId='".$itemId."' and value='TODO'";
     FDBTool::query($q);
     echo 'DELETED: '.$itemId.'<br>';    
   } else {
-    $itemVO->setProperty('picasaPhoto','INPROGRESS');
     $picasaAlbumId = $itemVO->pageVO->getProperty('picasaAlbum',false,true);
     $fgapps = FGApps::getInstance();
-    $picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$confGalery['sourceServerBase'] . $itemVO->pageVO->get('galeryDir') . '/' . $itemVO->enclosure,$itemVO->text,$itemVO->enclosure);
-    $itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
-    $done++;
+	$sourceUrl = getcwd() . '/obr/' . $itemVO->pageVO->get('galeryDir') . '/' . $itemVO->enclosure;
+	$itemVO->setProperty('picasaPhoto','INPROGRESS');
+	
+	if(file_exists($sourceUrl)) {
+		//check if album exists
+		if($picasaAlbumId) {
+			$album = $fgapps->getAlbum($picasaAlbumId);
+			if(!$album) $picasaAlbumId = null;
+		}
+	
+		if(!$picasaAlbumId) {
+			//create album
+			$picasaAlbumId = $fgapps->createAlbum($pageVO->name,$pageVO->description);
+			if($picasaAlbumId) $pageVO->setProperty('picasaAlbum',$picasaAlbumId);
+		}
+		if($picasaAlbumId) {
+			$picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$sourceUrl,$itemVO->text,$itemVO->enclosure);
+			$itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
+		} else {
+			echo 'Missing AlbumID';
+		}
+		$done++;
+	}
   }
 }
 
