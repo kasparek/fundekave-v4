@@ -11,7 +11,7 @@ class sidebar_calendar {
 				
 		//---cache by drok,dmesic
 		$cache = FCache::getInstance('f',3600);
-		$data = $cache->getData($user->pageVO->pageId.'-page-'.($user->userVO->userId*1).'-user-'.$drok.$dmesic,'calendarlefthand');
+		$data = $cache->getData($user->pageVO->pageId.'-page-'.($user->categoryVO?$user->categoryVO->categoryId:'0').'-cat-'.($user->userVO->userId*1).'-user-'.$drok.$dmesic,'calendarlefthand');
 
 		if(false===$data) {
 			$userPageId = false;
