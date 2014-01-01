@@ -123,7 +123,7 @@ class FItemsForm {
 		$itemVO->pageIdTop = $user->pageVO->pageIdTop;
 		
 		//check if site has strict limitations
-		if(SITE_STRICT && !$userId->idkontrol) {
+		if(SITE_STRICT && !$user->idkontrol) {
 			if($itemVO->pageIdTop != SITE_STRICT) {
 				FError::add(FLang::$ERROR_RULES_CREATE);
 			}
