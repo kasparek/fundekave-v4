@@ -2,7 +2,7 @@
 class fajax_Item extends FAjaxPluginBase {
 
 	static function show($data) {
-		if(isset($data['i'])) $itemId = (int)  ? $data['i'];
+		if(isset($data['i'])) $itemId = (int) $data['i'];
 		if(isset($data['item'])) $itemId = (int) $data['item'];
 		if(empty($itemId)) {
 			FError::write_log("FAjax_item::show - EMPTY ITEMID");
