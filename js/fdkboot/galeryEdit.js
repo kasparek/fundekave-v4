@@ -58,7 +58,7 @@ var GaleryEdit = new function(){
 		}
 	};
 	o.del = function(e){
-		var f = Fajax, i = gup('d',$(this).attr("href")).split(':').pop();
+		var f = Fajax, i = gup('d',$(this).attr("href")).split('=').pop();
 		if(confirm($(this).attr("title"))){
 			f.add('item', i);
 			f.send('item-delete');
