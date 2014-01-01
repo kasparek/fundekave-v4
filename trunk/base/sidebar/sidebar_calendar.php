@@ -54,7 +54,9 @@ class sidebar_calendar {
 		if($user->year && $options->minViewMode) {
 			$options->minViewMode=1;
 		}
-		if(empty($options->coreOnly) && !empty($data)) $data = ($user->categoryVO?'<div class="text-center">Kategorie <strong>'.$user->categoryVO->name.'</strong></div>':'').'<div id="calendar-inline" data-minviewmode="'.(!empty($options->minViewMode)?$options->minViewMode:'0').'" data-dateset="'.($date?$date:'').'">'.$data.'</div>';
+		if(empty($options->coreOnly) && !empty($data)) 
+			$date = $user->inDate();
+			$data = ($user->categoryVO?'<div class="text-center">Kategorie <strong>'.$user->categoryVO->name.'</strong></div>':'').'<div id="calendar-inline" data-minviewmode="'.(!empty($options->minViewMode)?$options->minViewMode:'0').'" data-dateset="'.($date?$date:'').'">'.$data.'</div>';
 		
 		return $data;
 	}

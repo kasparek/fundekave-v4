@@ -28,10 +28,8 @@ class page_ItemDetail implements iPage {
 			$user->pageVO->htmlTitle = $itemVO->addon.' - '.$user->pageVO->name;
 			$user->pageVO->showHeading=false;
 			$itemRender = $itemVO->render();
-			if($data['__ajaxResponse']) {
+			if(!empty($data['__ajaxResponse'])) {
 				FAjax::addResponse('itemDetail','$html',$itemRender);
-				//TODO: fixFAjax::addResponse('prevButt','href',isset($prevUri) ? $prevUri : $backUri);
-				//TODO: fixFAjax::addResponse('nextButt','href',isset($nextUri) ? $nextUri : $backUri);
 			} else {
 				$output = $itemRender;
 			}
