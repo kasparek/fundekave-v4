@@ -1,4 +1,8 @@
 <?php
+
+//unblock system
+session_write_close();
+
 $truncate = array( WEBROOT.'tmp/fuup_chunks' ,WEBROOT.'tmp' );
 $recursive = array( FConf::get('settings','cache_path') );
 
@@ -20,9 +24,3 @@ $ff->makeDir($dir);
 echo "recursive flushed: ".$dir."<br>\n";
 }
 echo "deleted files: ".$ff->numModified."<br>\n";
-
-/*
-if(isset($_GET['dir'])) {
-	$ff->rm_recursive('tmp/'.$_GET['dir']);
-}
-*/
