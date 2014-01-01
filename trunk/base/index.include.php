@@ -43,11 +43,10 @@ if(isset($_REQUEST['m'])) {
 	FAjax::prepare($_REQUEST['m'], $data, $options);
 	$fajax = FAjax::getInstance();
 	if(!empty($fajax->data['i'])) {
-		$itemVO = new ItemVO($fajax->data['i'],false);
-		if($itemVO->load()) $user->itemVO = $itemVO; else $itemVO=null;
+		$user->itemVO = FactoryVO::get('ItemVO',$fajax->data['i'],true);
 	}
 	$user->kde(); //---check user / load info / load page content / chechk page exist
-	if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
+	if($user->itemVO) $user->itemVO->prepare(); //need to be done after user initialization
 	FAjax::process($_REQUEST['m'], $data, $options);
 } else {
 	$data = $_POST;
@@ -56,16 +55,13 @@ if(isset($_REQUEST['m'])) {
 	if(!empty($_GET)) $data['__get'] = $_GET;
 	$data = FAjax::preprocessPost($data);
 	$user->kde();
+	if($user->itemVO) $user->itemVO->prepare(); //need to be done after user initialization
 }
-
 //---build page
-if($itemVO) $user->itemVO->prepare(); //need to be done after user initialization
-
 FBuildPage::process( $data );
 FProfiler::write('PAGE PROCESS DONE');
-
 //increment hit for items
-if($user->itemVO && empty($user->pageParam) && (!$user->idkontrol || $itemVO->userId != $user->userVO->userId)) $itemVO->hit();
+if($user->itemVO && empty($user->pageParam) && (!$user->idkontrol || $user->itemVO->userId != $user->userVO->userId)) $user->itemVO->hit();
 
 //---shows message that page is locked
 if($user->pageVO) {
