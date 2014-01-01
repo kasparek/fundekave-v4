@@ -254,8 +254,8 @@ class FSystem {
 		$dateListLen = count($dateList);
 		if($dateListLen>3) return null;
 		else if($dateListLen==3) $dateTest = $date;
-		else if($dateListLen==2) $dateTest = $data.'-01';
-		else if($dateListLen==1) $dateTest = $data.'-01-01';
+		else if($dateListLen==2) $dateTest = $date.'-01';
+		else if($dateListLen==1) $dateTest = $date.'-01-01';
 		if(strtotime($dateTest)===false) return null;
 		return $date;
 	}
