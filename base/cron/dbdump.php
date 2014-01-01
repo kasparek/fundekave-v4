@@ -1,6 +1,6 @@
 <?php
-//$cmd = 'mysqldump --help';
-//echo shell_exec($cmd);
+//unblock system
+session_write_close();
 
 $host = 'localhost';
 $user = 'awakecom_db';
