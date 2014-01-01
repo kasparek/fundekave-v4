@@ -93,7 +93,7 @@ class page_ItemsList implements iPage {
 			}
 			if(FRules::getCurrent(FConf::get('settings','perm_add_event'))) {
 				if(($user->pageVO->pageId=='event' || $user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') && $user->userVO->userId>0 && empty($user->pageParam) && empty($user->itemVO)){
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=item=0;t=event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i=0;t=event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 				}
 			}
 

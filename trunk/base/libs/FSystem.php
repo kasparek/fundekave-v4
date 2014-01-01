@@ -188,8 +188,8 @@ class FSystem {
 		if(!empty($otherParams)) {
 			$op = explode('&',$otherParams);
 			while($p = array_shift($op)) {
-				$parr = explode('=',$p);
-				$params[$parr[0]] =$parr[1];
+				$eqpos = strpos($p,'=');
+				$params[substr($p,0,$eqpos)] = substr($p,$eqpos+1);
 			}
 		}
 		$parStr = '';

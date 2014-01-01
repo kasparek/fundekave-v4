@@ -542,7 +542,7 @@ class page_PageEdit implements iPage {
 		if($data['__ajaxResponse']) {
 			FAjax::addResponse('pageedit','$html',$tpl->get());
 			FAjax::addResponse('call','jUIInit');
-			if($pageVO->typeId=='galery')FAjax::addResponse('call','galeryEditInit');
+			if($pageVO->typeId=='galery')FAjax::addResponse('call','GaleryEdit.init','');
 		} else {
 			FBuildPage::addTab(array("MAINID"=>'pageedit',"MAINHEAD"=>'',"MAINDATA"=>$tpl->get()));
 		}
