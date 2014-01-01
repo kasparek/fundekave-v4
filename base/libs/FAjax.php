@@ -71,8 +71,9 @@ class FAjax {
 		} else {
 			$arr = explode(';',$data);
 			foreach($arr as $row) {
-				list($k,$v) = explode('=',$row);
-				$dataProcessed[$k] = $v;
+				$pair = explode('=',$row);
+				if(!isset($pair[1])) $pair = explode(':',$row); //backward compatibility
+				$dataProcessed[$pair[0]] = $pair[1];
 			}
 		}
 		if($ajax == true) $dataProcessed['__ajaxResponse'] = true;

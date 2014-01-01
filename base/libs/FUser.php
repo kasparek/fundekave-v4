@@ -40,7 +40,7 @@ class FUser {
 		return self::$instance;
 	}
 	
-	function inDate($dateStr=null) {
+	function inDate($dateStr=null,$returnComplete=false) {
 		if($dateStr!==null) {
 			if($date = FSystem::checkDate($dateStr)) {
 				$date = explode('-',$date);
@@ -51,8 +51,16 @@ class FUser {
 				return null; //invalid date
 			}
 		}
-		if(!$this->year) return null;
-		return $this->year.($this->month?'-'.$this->month:'').($this->day?'-'.$this->day:'');
+		$year = $this->year;
+		if(!$this->year) {
+			if($returnComplete) $year = date("Y");
+			else return null;
+		}
+		$month = $this->month;
+		$day = $this->day;
+		if($returnComplete && empty($month)) $month = date("m");
+		if($returnComplete && empty($day)) $day = date("d");
+		return $this->year.($month?'-'.$month:'').($day?'-'.$day:'');
 	}
 	
 	function setRemoteAuthToken($v) {

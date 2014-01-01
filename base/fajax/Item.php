@@ -2,16 +2,18 @@
 class fajax_Item extends FAjaxPluginBase {
 
 	static function show($data) {
-		$itemId = isset($data['item']) ? $data['item'] : $data['i'];
+		if(isset($data['i'])) $itemId = (int)  ? $data['i'];
+		if(isset($data['item'])) $itemId = (int) $data['item'];
 		if(empty($itemId)) {
 			FError::write_log("FAjax_item::show - EMPTY ITEMID");
 			return;
 		}
 		if($data['__ajaxResponse']) {
 			$user = FUser::getInstance();
-			$user->itemVO = new ItemVO($itemId,true);
+			$user->itemVO = FactoryVO::get('ItemVO',$itemId,true);
+			if(!$user->itemVO) return;//not valid item
+			
 			page_ItemsList::build($data);
-
 			$breadcrumbs = FBuildPage::getBreadcrumbs();
 			$tpl = FSystem::tpl(TPL_MAIN);
 			foreach($breadcrumbs as $crumb) {
