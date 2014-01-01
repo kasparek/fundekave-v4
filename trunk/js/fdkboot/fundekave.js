@@ -97,7 +97,7 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 				Fajax.cancel('item-show');
 			}
 			ImgNext.start(State.data.i);
-			Fajax.action(State.data.action+'/item:'+State.data.i+'/0/'+State.data.eid);
+			Fajax.action(State.data.action+'/i='+State.data.i+'/0/'+State.data.eid);
 		}
 	});
 	listen('history', 'click', function(e){
