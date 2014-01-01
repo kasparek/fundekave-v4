@@ -150,6 +150,7 @@ class FSidebar extends FDBTool {
 			if($letext === false) {
 				$class = 'sidebar_' . $fnc;
 				if(class_exists($class)) {
+					$decData = null;
 					if(!empty($panel['data'])) {
 						$decData = json_decode($panel['data']);
 					}
