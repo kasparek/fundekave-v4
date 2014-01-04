@@ -2,6 +2,13 @@
 class FCalendarPlugins {
 
 	static function selectBase($dateCol='i.dateStart',$titleCol="i.addon",$id="i.itemId") { 
+		$user = FUser::getInstance();
+		if($user->pageVO->typeId=='blog' && empty($user->year)) $user->year = date("Y");
+		$dateFormat = empty($user->year) ? '%Y':'%Y-%m';
+		$dateFormatLocal = empty($user->year) ? '%Y':'%m.%Y';
+		
+		return "date_format(i.dateStart ,'".$dateFormat."') as id,count(1) as title,date_format(i.dateStart ,'".$dateFormat."') as date,date_format(i.dateStart ,'".$dateFormatLocal."') as dateLocal";
+	
 		return $id." as id, ".$titleCol." as title, date_format(".$dateCol." ,'%Y-%m-%d') as date, date_format(".$dateCol." ,'%d.%m.%Y') as dateLocal";
 	}
 
@@ -19,6 +26,7 @@ class FCalendarPlugins {
     $db = FDBConn::getInstance();
 	$q = "select ".self::selectBase().",'year' as rep from sys_pages_items as i ".self::whereBase('event',$userId,$pageId)
 	."and ((month(i.dateStart)=".($month*1)." and i.textLong = 'year') or (i.textLong = 'month'))";
+	
 	return $db->getAll($q);
   }
   static function events($year,$month,$userId,$pageId = '') {
@@ -30,8 +38,9 @@ class FCalendarPlugins {
   static function blogItems($year,$month,$userId,$pageId) {
   	$db = FDBConn::getInstance();
     $q = "select ".self::selectBase()." from sys_pages_items as i ".self::whereBase('blog',$userId,$pageId)
-	."and i.dateStart <= '".$year."-".$month."%' "
-	."order by i.dateStart desc limit 0,50";
+	."and year(i.dateStart) = '".$year."' "
+	." group by id";
+	
     $result = $db->getAll($q);
 	return $result;
   }
@@ -49,7 +58,6 @@ class FCalendarPlugins {
 	$db = FDBConn::getInstance();
 	
 	$user = FUser::getInstance();
-	
 	$dateFormat = empty($user->year) ? '%Y':'%Y-%m';
 	$dateFormatLocal = empty($user->year) ? '%Y':'%m.%Y';
 	

@@ -45,17 +45,21 @@ class fajax_Item extends FAjaxPluginBase {
 	
 	static function edit($data,$itemVO=null) {
 		if(!$data['__ajaxResponse']) return;
-		if(empty($itemVO) && !empty($data['i'])) $itemVO = new ItemVO($data['i'],true);
-		if(empty($itemVO)) {
-			$user = FUser::getInstance();
-			$itemVO = new ItemVO();
-			$itemVO->pageId = $user->pageVO->pageId; 
-			$itemVO->set('typeId', $data['t']);	
+		$user = FUser::getInstance();
+		if(FRules::getCurrent(2) || ($user->pageVO->pageId=='event' && FRules::getCurrent(FConf::get('settings','perm_add_event')))) {
+			if(empty($itemVO) && !empty($data['i'])) $itemVO = new ItemVO($data['i'],true);
+			if(empty($itemVO)) {
+				$itemVO = new ItemVO();
+				$itemVO->pageId = $user->pageVO->pageId; 
+				$itemVO->set('typeId', $data['t']);	
+			}
+			if(empty($itemVO->typeId) && isset($data['t'])) $itemVO->set('typeId', $data['t']);
+			$ret = FItemsForm::show($itemVO);
+			FAjax::addResponse('editForm', '$html', $ret);
+			FAjax::addResponse('call','jUIInit','');
+		} else {
+			FError::add(FLang::$ERROR_ACCESS_DENIED);
 		}
-		if(empty($itemVO->typeId) && isset($data['t'])) $itemVO->set('typeId', $data['t']);
-		$ret = FItemsForm::show($itemVO);
-		FAjax::addResponse('editForm', '$html', $ret);
-		FAjax::addResponse('call','jUIInit','');
 	}
 
 	static function submit($data) {
@@ -83,8 +87,7 @@ class fajax_Item extends FAjaxPluginBase {
 				} else {
 					Fajax_item::edit($data);
 					if(!empty($data['i'])) { 
-						$itemVO = new ItemVO((int) $data['i']);
-						if($itemVO->load()) {
+						if($itemVO = FactoryVO::get('ItemVO',(int) $data['i'])) {
 							page_ItemDetail::build($data);
 						}
 					}
@@ -95,8 +98,7 @@ class fajax_Item extends FAjaxPluginBase {
 
 	static function delete($data) {
 		$itemId = isset($data['i'])?$data['i']:$data['item'];
-		$itemVO = new ItemVO($itemId,true);
-		if(!$itemVO->loaded) return;
+		if(!$itemVO = FactoryVO::get('ItemVO',$itemId,true)) return;
 		if(!$itemVO->editable) return;
 		$type = $itemVO->typeId;
 		$itemVO->delete();
@@ -106,7 +108,6 @@ class fajax_Item extends FAjaxPluginBase {
 			$user = FUser::getInstance();
 			FAjax::redirect(FSystem::getUri('',$user->pageVO->pageId,'')); //deleted item
 		}
-
 	}
 	
 	static function image($data) {
@@ -136,14 +137,12 @@ class fajax_Item extends FAjaxPluginBase {
 	static function commentsForm($data) {
 		$user = FUser::getInstance();		
 		
-		if(!empty($data['ti'])) {
-			$user->itemVO = new ItemVO($data['ti']*1);
-			if(!$user->itemVO->load())
+		if(!empty($data['ti'])) 
+			if(!$user->itemVO = FactoryVO::get('ItemVO',(int) $data['ti']))
 				return; //ERROR invalid top id
-		}
 		
 		if(FItemsForm::canComment()) {
-			$formItemVO = new ItemVO();
+			$formItemVO = FactoryVO::get('ItemVO');
 			$formItemVO->typeId = 'forum';
 			$formItemVO->pageId = $user->pageVO->pageId;
 			$data['fajaxform']=true;

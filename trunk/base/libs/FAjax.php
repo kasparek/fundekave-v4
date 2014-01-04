@@ -103,6 +103,7 @@ class FAjax {
 		
 		//---dealing with ajax requests
 		$className = 'fajax_'.ucfirst($mod);
+		
 		if(class_exists($className)) {
 			if(call_user_func(array($className,'validate'), array_merge($fajax->data,array('function'=>$action)))) {
 				FProfiler::write('FAJAX MODULE VALIDATED '.$className.'::'.$action);
@@ -130,7 +131,8 @@ class FAjax {
 				FProfiler::write('FAJAX ERROR OUTPUT COMPLETE');
 			} else {
 				//redirect to same page because of user does not have permission to access this page
-				FAjax::redirect(FSystem::getUri());
+				if($user->pageParam) FAjax::redirect(FSystem::getUri('','',''));
+				else FAjax::redirect(FSystem::getUri('',HOME_PAGE,''));
 			}
 
 			//---send response
@@ -152,6 +154,14 @@ class FAjax {
 				}
 				FAjax::resetResponse();
 			}
+		} else {
+			header ("content-type: text/xml");
+			FAjax::addResponse('call','msg','danger,Illegal request');
+			FError::write_log("FAjax::prepare - non existent class module: ".$className);
+			$ret = FAjax::buildResponse();
+			echo  FSystem::superVars($ret);
+			FProfiler::write('FAJAX RESPONSE COMPLETE');
+			FSystem::fin();
 		}
 		FProfiler::write('FAJAX PROCESSING COMPLETE ajax='.($ajax?'true':'false'));
 	}

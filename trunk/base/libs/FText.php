@@ -257,16 +257,17 @@ class FText {
 				//try get title
 				$youtubeId=false;
 				$vimeoId=false;
-				if(preg_match("/http.*www.youtube.com.*v=([A-Za-z0-9-]+)/i",$url,$matches)) $youtubeId=$matches[1];
-				if(preg_match("/.*youtu.be\/([A-Za-z0-9-]+)/i",$url,$matches)) $youtubeId=$matches[1];
+				if(preg_match("/http.*www.youtube.com.*v=([A-Za-z0-9-_]+)/i",$url,$matches)) $youtubeId=$matches[1];
+				if(preg_match("/.*youtu.be\/([A-Za-z0-9-_]+)/i",$url,$matches)) $youtubeId=$matches[1];
 				if(preg_match("/.*vimeo.com\/([0-9]+)$/i",$url,$matches)) $vimeoId=$matches[1];
 				if($youtubeId || $vimeoId) {
+					//<iframe width="420" height="315" src="//www.youtube.com/embed/GHwXPDY_xhk" frameborder="0" allowfullscreen></iframe>
 				  $iframe = $dom->createElement("iframe");
 				  $iframe->setAttribute('allowfullscreen','allowfullscreen');
 				  $iframe->setAttribute('frameborder','0');
 				  $iframe->setAttribute('width','560');
 				  $iframe->setAttribute('height','315');
-				  $iframe->setAttribute('src',$vimeoId?'http://player.vimeo.com/video/'.$vimeoId.'?title=0&amp;byline=0&amp;portrait=0':'http://www.youtube.com/embed/'.$youtubeId);
+				  $iframe->setAttribute('src',$vimeoId?'http://player.vimeo.com/video/'.$vimeoId.'?title=0&amp;byline=0&amp;portrait=0':'//www.youtube.com/embed/'.$youtubeId);
 				  $tag->parentNode->replaceChild($iframe,$tag);
 				} else {
 				  //$pageContent = FSystem::curl_get_file_contents($url);

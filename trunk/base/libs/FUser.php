@@ -178,7 +178,7 @@ class FUser {
 						 $userVO->idlogin = $idloginInDb; 
 					}
 				}
-				if($vid[1] == 1) {
+				if(!empty($vid[1])) {
 					FRules::invalidate();
 					FactoryVO::invalidate();
 				}

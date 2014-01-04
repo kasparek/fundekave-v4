@@ -74,7 +74,6 @@ class FConf
 					define(strtoupper($k),$v);
 				}
 			}
-			unset($configParsed["phpdefined"]);
 			if(!empty($configParsed["include_path"])) {
 				$includePath = implode(PATH_SEPARATOR,$configParsed["include_path"]);
 				if(!empty($configParsed["settings"]["include_path_append"])) {
