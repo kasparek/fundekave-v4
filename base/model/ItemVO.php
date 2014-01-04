@@ -180,9 +180,6 @@ class ItemVO extends Fvob {
 				$this->{$k} = $v;
 			}
 		}
-		//$this->prepare();
-		//---save in cache
-		//$this->memStore();
 	}
 
 	function save() {

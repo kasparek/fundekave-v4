@@ -113,6 +113,7 @@ class page_PageEdit implements iPage {
 					}
 				}
 			}
+			
 			FProfiler::write('page_PageEdit::process - CHECKING FOR INPUT ERRORS');
 			if(!FError::is()) {
 
@@ -217,8 +218,35 @@ class page_PageEdit implements iPage {
 					//---permissions update
 					$rules = new FRules($pageVO->pageId,$pageVO->userIdOwner);
 					$rules->update( $data );
+					if(isset($data['permUpdateBlog'])) {
+						$fp = new FPages('blog',$user->userVO->userId,2);
+						$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+						$pageList = $fp->getContent();
+						foreach($pageList as $vo) {
+							$rules->page = $vo->pageId;
+							$rules->update($data);
+						}
+					}
+					if(isset($data['permUpdateGalery'])) {
+						$fp = new FPages('galery',$user->userVO->userId,2);
+						$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+						$pageList = $fp->getContent();
+						foreach($pageList as $vo) {
+							$rules->page = $vo->pageId;
+							$rules->update($data);
+						}
+					}
+					if(isset($data['permUpdateForum'])) {
+						$fp = new FPages('forum',$user->userVO->userId,2);
+						$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+						$pageList = $fp->getContent();
+						foreach($pageList as $vo) {
+							$rules->page = $vo->pageId;
+							$rules->update($data);
+						}
+					}
 					$rules->updateAdminByPages();
-
+					
 					//---relations update
 					/*
 					 $fRelations = new FPagesRelations($pageVO->pageId);
@@ -424,6 +452,14 @@ class page_PageEdit implements iPage {
 		} else {
 			$tpl->setVariable('T',$pageVO->typeId);
 		}
+		
+		if($pageVO->pageIdTop) {
+			if($pageVOTop = FactoryVO::get('PageVO',$pageVO->pageIdTop,true)) {
+				$tpl->setVariable('TOPPAGEURL',FSystem::getUri('',$pageVOTop->pageId));
+				$tpl->setVariable('TOPPAGENAME',$pageVOTop->name);
+			}
+		}
+		
 		if(!empty($pageData['userIdOwner'])) {
 			$tpl->setVariable('OWNERLINK',FSystem::getUri('who='.$pageVO->userIdOwner.'#tabs-profil','finfo'));
 			$tpl->setVariable('OWNERNAME',FUser::getgidname($pageVO->userIdOwner));
@@ -444,6 +480,21 @@ class page_PageEdit implements iPage {
 			$tpl->touchBlock('permissionstab');
 			$rules = new FRules($pageVO->pageId, $pageVO->userIdOwner);
 			$tpl->setVariable('PAGEPERMISIONSFORM',$rules->printEditForm());
+			
+			
+			$fp = new FPages('blog',$user->userVO->userId,2);
+			$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+			$num = $fp->getCount();
+			if($num>0) $tpl->setVariable('SUBBLOGNUM',$num);
+			$fp = new FPages('galery',$user->userVO->userId,2);
+			$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+			$num = $fp->getCount();
+			if($num>0) $tpl->setVariable('SUBGALERYNUM',$num);
+			$fp = new FPages('forum',$user->userVO->userId,2);
+			$fp->setWhere("pageIdTop='".$pageVO->pageId."'");
+			$num = $fp->getCount();
+			if($num>0) $tpl->setVariable('SUBFORUMNUM',$num);
+			
 
 			/*
 			 $tpl->touchBlock('relatedtab');

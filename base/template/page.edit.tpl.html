@@ -23,6 +23,16 @@
 		<div class="tab-pane fade in active" id="tabs-1">
 <fieldset>
 <legend>Nastavení</legend>
+<!-- BEGIN toppage -->
+<div class="form-group">
+	<label for="pageIdTop" class="col-sm-2 control-label">Top page</label>
+	<!-- BEGIN toppagesa --><div class="col-sm-4">
+		<input type="text" class="form-control" id="pageIdTop" name="pageIdTop" value="{PAGEIDTOP}">
+	</div><!-- END toppagesa -->
+	<label class="col-sm-6 control-label" style="text-align:left;">
+		<a href="{TOPPAGEURL}">{TOPPAGENAME}</a>
+	</label>
+</div><!-- END toppage -->
 <!-- BEGIN pageowner -->
 <div class="form-group">
 	<label class="col-sm-2 control-label">Majitel</label>
@@ -54,13 +64,6 @@
 	<label for="template" class="col-sm-2 control-label">Sablona</label>
 	<div class="col-sm-10">
 		<input type="text" class="form-control" id="template" name="template" value="{PAGETEMPLATE}">
-	</div>
-</div>
-
-<div class="form-group">
-	<label for="pageIdTop" class="col-sm-2 control-label">Top page</label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" id="pageIdTop" name="pageIdTop" value="{PAGEIDTOP}">
 	</div>
 </div>
 
@@ -185,7 +188,31 @@
 	</div>
 </div>
 </div><!-- END forumspecific -->
-<!-- BEGIN perm --><div class="tab-pane fade" id="tabs-2">{PAGEPERMISIONSFORM}</div><!-- END perm -->
+<!-- BEGIN perm --><div class="tab-pane fade" id="tabs-2">{PAGEPERMISIONSFORM}
+<!-- BEGIN subset --><fieldset><legend>Podstránky</legend>
+<div class="form-group">
+<label class="col-sm-12 control-label">Zaškrtnutím nastavíte stejná práva u všech podstránek</label>
+</div>
+<!-- BEGIN subsetblog --><div class="form-group">
+<label for="permUpdateBlog" class="col-sm-2 control-label">Blogy <label class="label label-info">{SUBBLOGNUM}</label></label>
+<div class="col-sm-1">
+	<input type="checkbox" id="permUpdateBlog" name="permUpdateBlog" class="form-control checkbox" />
+</div>
+</div><!-- END subsetblog -->
+<!-- BEGIN subsetgalery --><div class="form-group">
+<label for="permUpdateGalerie" class="col-sm-2 control-label">Galerie <label class="label label-info">{SUBGALERYNUM}</label></label>
+<div class="col-sm-1">
+	<input type="checkbox" id="permUpdateGalerie" name="permUpdateGalerie" class="form-control checkbox" />
+</div>
+</div><!-- END subsetgalery -->
+<!-- BEGIN subsetforum --><div class="form-group">
+<label for="permUpdateForum" class="col-sm-2 control-label">Diskuze <label class="label label-info">{SUBFORUMNUM}</label></label>
+<div class="col-sm-1">
+	<input type="checkbox" id="permUpdateForum" name="permUpdateForum" class="form-control checkbox" />
+</div>
+</div><!-- END subsetforum -->
+</fieldset><!-- END subset -->
+</div><!-- END perm -->
 <!-- BEGIN relations --><div class="tab-pane fade" id="tabs-3">{RELATIONSFORM}</div><!-- END relations -->
 <!-- BEGIN categoryedit --><div class="tab-pane fade" id="tabs-7">{PAGECATEGORYEDIT}</div><!-- END categoryedit -->
 <!-- BEGIN leftpaneledit --><div class="tab-pane fade" id="tabs-8">

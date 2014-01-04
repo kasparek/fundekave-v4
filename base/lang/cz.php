@@ -1,40 +1,25 @@
 <?php
 class FLang {
-
-static $TPL_SIDEBAR_POLL = 'sidebar.poll.tpl.html';
-static $TPL_SIDEBAR_CALENDAR = 'sidebar.calendar.tpl.html';
-static $TPL_SIDEBAR_USER_LOGGED = 'sidebar.user.logged.tpl.html';
-static $TPL_SIDEBAR_USER_LOGIN = 'sidebar.user.login.tpl.html';
-
-static $LABEL_PAGES_LIVE = 'Živě';
-static $LABEL_WEEK = 'Tyden';
-static $LABEL_TOP = 'Nej';
 static $LABEL_FORUMS = 'Kluby';
 static $LABEL_BLOGS = 'Blogy';
 static $LABEL_BOOKED = 'Oblíbené';
 static $LABEL_GALERIES = 'Galerie';
 static $LABEL_THUMBS = 'Palce';
-static $LABEL_CALENDAR = 'Kalendar';
+static $LABEL_CALENDAR = 'Kalendář';
 
-static $LABEL_POCKET_PUSH = 'Do kapsy';
-
-static $LABEL_POST = 'Posta';
-static $LABEL_INFO = 'Osobni info';
-static $LABEL_PERSONALSETTINGS = 'Osobni nastaveni';
+static $LABEL_POST = 'Pošta';
+static $LABEL_INFO = 'Profil';
+static $LABEL_PERSONALSETTINGS = 'Nastavení';
 static $LABEL_FILE = 'Soubor';
 
 static $LABEL_OWNER = 'Majitel';
 static $LABEL_YES = 'Ano';
 static $LABEL_NO = 'Ne';
-static $LABEL_NOTREGISTEREDUSERS = 'Neprihlaseni';
+static $LABEL_NOTREGISTEREDUSERS = 'Nepřihlášení';
 
 static $BUTTON_PAGE_SETTINGS = 'SA';
 static $BUTTON_PAGE_BACK = 'Zpět';
 static $BUTTON_PAGE_BACK_ALBUM = 'Zpět na album';
-static $BUTTON_PAGE_NEXT = 'Dalsi &gt;&gt;';
-static $BUTTON_PAGE_PREV = '&lt;&lt; Predchozi';
-static $BUTTON_PAGE_NEWER = 'Novější &gt;&gt;';
-static $BUTTON_PAGE_OLDER = '&lt;&lt; Starší';
 static $BUTTON_EDIT = 'Upravit';
 static $MESSAGE_PAGE_LOCKED = 'Stránka je zamčena administrátory. Připadné dotazy: <a href="?k=fl168">.:--<< FUN.de.KAVE >>--:. typy, rady, chyby</a>';
 
@@ -70,34 +55,30 @@ static $ERROR_FORM_TYPE = 'Neznamy typ formulare - kontaktujte administratora';
 
 static $LABEL_USER = 'Uživatel';
 static $LABEL_NOTEXISTS = 'neexistuje';
-static $LABEL_PAGE_FORUM_NEW = 'Založit diskuzi';
-static $LABEL_PAGE_BLOG_NEW = 'Založit blog';
-static $LABEL_PAGE_GALERY_NEW = 'Založit galerii';
-static $LABEL_ADD = 'Novy clanek';
+static $LABEL_PAGE_FORUM_NEW = 'Nová diskuze';
+static $LABEL_PAGE_BLOG_NEW = 'Nový blog';
+static $LABEL_PAGE_GALERY_NEW = 'Nová galerie';
+static $LABEL_ADD = 'Nový článek';
 static $LABEL_UPLOAD = 'Nahrát fotografie';
 static $LABEL_EDIT_PHOTO = 'Upravit popis';
-static $LABEL_EVENT_NEW = 'Nova udalost';
-static $LABEL_FORUM_NEW = 'Novy kratky komentar';
-static $LABEL_SETTINGS = 'Nastaveni';
-
-static $LABEL_POLL = 'Anketa';
-static $ERROR_POLL_QUESTION = 'Nezadali jste otazku';
+static $LABEL_EVENT_NEW = 'Nová událost';
+static $LABEL_FORUM_NEW = 'Nový krátký komentář';
+static $LABEL_SETTINGS = 'Nastavení';
 
 static $LABEL_STATS = 'Statistiky';
-static $LABEL_HOME = 'Nastenka';
+static $LABEL_HOME = 'Nástěnka';
 static $LABEL_DELETE = 'Smazat';
 
 static $LABEL_TAG_PAGE = 'Popisuj fotky';
-static $LABEL_RULES_ACCESS = 'Pristup';
-static $LABEL_RULES_HELP = 'Napoveda';
+static $LABEL_RULES_ACCESS = 'Přístup';
+static $LABEL_RULES_HELP = 'Napověda';
 static $LABEL_RULES_HELP_TEXT = 'Pokud je pristup nasteveny na Soukromy - pristup maji jen uzivatele uvedeni v poli Uzivatele a Administratori';
 static $LABEL_TAG_ALL = 'Zobraz všechny příspěvky';
 static $LABEL_TAG_CURRENT = '';
 static $LABEL_TAG_FILTER = 'Zobraz příspěvky pouze s tímto počtem palců nebo více: ';
 
-static $LABEL_DELETED_OK = 'Uspesne smazano';
+static $LABEL_DELETED_OK = 'Úspešně smazáno';
 static $LABEL_EVENTS_ARCHIV = 'Archiv';
-static $LABEL_LOGOUT = 'Odhlaseni';
 static $ERROR_DATE_FORMAT = 'Spatny format data';
 static $MESSAGE_SUCCESS_CREATE = 'Úspěšně založeno';
 static $MESSAGE_SUCCESS_SAVED = 'Úspěšně uloženo';

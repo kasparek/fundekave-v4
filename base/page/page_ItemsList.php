@@ -50,13 +50,16 @@ class page_ItemsList implements iPage {
 		//validate input parameters
 		$manualCurrentPage = 0;
 		if(!isset($data['onlyComments'])) $data['onlyComments']=false;
-        	
-		if(isset($data['__get']['date'])) {
-			$date = FSystem::checkDate($data['__get']['date']);
-		}
 
 		//var setup
 		$user = FUser::getInstance();
+		
+		if($user->pageVO->pageId=='event') {
+			if(empty($user->year)) $user->year = date("Y");
+			if(empty($user->month)) $user->month = date("m");
+		}
+		$date = $user->inDate();
+		
 		$selectedItemId = 0;
 		if($user->itemVO) {
 			if($user->itemVO->itemId > 0) {
@@ -84,14 +87,14 @@ class page_ItemsList implements iPage {
 					if(!$isDetail) {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-showupload',$user->pageVO->pageId,'u'), FLang::$LABEL_UPLOAD,array('class'=>'fajaxa'));
 					} else {
-					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i='.$user->itemVO->itemId,$user->pageVO->pageId,'u'), FLang::$LABEL_EDIT_PHOTO,array('class'=>'fajaxa'));
+					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i=$i',$user->pageVO->pageId,'u'), FLang::$LABEL_EDIT_PHOTO,array('class'=>'fajaxa'));
 					}
 				}
 				if(empty($user->pageParam) && empty($user->itemVO) && $pageVO->typeId=='blog') {
 					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i=0;t=blog',$user->pageVO->pageId), FLang::$LABEL_ADD,array('class'=>'fajaxa'));
 				}
 			}
-			if(FRules::getCurrent(FConf::get('settings','perm_add_event'))) {
+			if(FRules::getCurrent(2) || ($user->pageVO->pageId=='event' && FRules::getCurrent(FConf::get('settings','perm_add_event')))) {
 				if(($user->pageVO->pageId=='event' || $user->pageVO->typeId=='forum' || $user->pageVO->typeId=='blog') && $user->userVO->userId>0 && empty($user->pageParam) && empty($user->itemVO)){
 					FMenu::secondaryMenuAddItem(FSystem::getUri('m=item-edit&d=i=0;t=event',$user->pageVO->pageId), FLang::$LABEL_EVENT_NEW,array('class'=>'fajaxa'));
 				}
@@ -288,15 +291,24 @@ class page_ItemsList implements iPage {
 				
 		if(!empty($date)) {
 			//used for sorting
+			if($user->pageVO->pageId=='event') {
+				$fItems->addSelect("if(textLong='year',concat(date_format(now(), '%Y'),date_format(sys_pages_items.dateStart, '%m-%d')),dateStart) as dategen");
+				$fItems->setOrder('dateStart');
+			} else {
+				$fItems->setOrder('dateStart');
+			}
 			$fItems->addWhere("("
 			."(sys_pages_items.dateStart <= '".$date."%' and sys_pages_items.dateEnd >= '".$date."%')
 			or (sys_pages_items.dateStart like '".$date."%' and sys_pages_items.dateEnd is null)
-			or (sys_pages_items.textLong='year' and date_format(sys_pages_items.dateStart, '%m-%d')='".substr($date,5)."')"
-			.") or ("
-			."sys_pages_items.typeId in ('blog','galery','forum') and sys_pages_items.dateCreated like '".$date."%'"
+			or (sys_pages_items.textLong='year'".($user->month ? " and date_format(sys_pages_items.dateStart, '%m')='".substr($date,5)."'":"").")"
+			.") "
+			/*
+			."or ("
+			."sys_pages_items.typeId in ('event'".($user->pageVO->pageId!='event'?",'blog','galery','forum'":'').") "
+			."and sys_pages_items.dateCreated like '".$date."%' "
 			.")"
+			*/
 			);
-			$fItems->setOrder('dateStart desc');
 		} else {
 			//ORDER
 			if($pageVO->pageId=='event' && !$isDetail) {
@@ -379,7 +391,9 @@ class page_ItemsList implements iPage {
 		$data = $cache->getData($uid,$grpid);
 		
 		if($data===false) {
+		//$fItems->debug=1;
 			$fItems->getList($from, $perPage+1);
+			//die();
 			$numItems = count($fItems->data);
 			if($pager) {
 				$pager->totalItems = $numItems;

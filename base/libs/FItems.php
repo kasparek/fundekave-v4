@@ -1,7 +1,7 @@
 <?php
 class FItems extends FDBTool {
 
-	const TYPE_DEFAULT = 'forum';
+	private $typeStrict;
 
 	//---list of ItemVOs
 	public $data;
@@ -35,7 +35,15 @@ class FItems extends FDBTool {
 			$columnsAsed[]=$v;
 		}
 		$this->setSelect( $columnsAsed );
-
+		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
+		
+		$this->setup($typeId,$userId);
+	}
+	
+	function setup($typeId='',$userId=false) {
+		$this->typeStrict = $typeId;
+		$this->userIdForPageAccess = $userId;
+		//validate input types
 		if(!empty($typeId)) {
 			if(!is_array($typeId)) {
 				if(strpos($typeId,',')!==false) {
@@ -53,9 +61,6 @@ class FItems extends FDBTool {
 			$typeId=implode("','",$tValid);
 		}
 		
-		$this->userIdForPageAccess = $userId;
-		if($itemRenderer) $this->fItemsRenderer = $itemRenderer;
-
 		if($this->userIdForPageAccess!==false) {
 			$this->autojoinSet(true);
 			$typeWhere='';

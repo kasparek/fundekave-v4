@@ -64,6 +64,7 @@ class page_ItemDetail implements iPage {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
 				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->itemId.','.$nextVO->itemId.','.$itemPrev.','.$itemVO->detailUrl.','.$nextVO->detailUrl);
+				
 				FAjax::addResponse('backButt','href',$backUri);
 				FAjax::addResponse('prevButt','href',$nextUri);
 				FAjax::addResponse('nextButt','href',$prevUri);
@@ -72,6 +73,12 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
 				FAjax::addResponse('mapThumb','$html',$arrVars['GOOMAPTHUMB']);
 				FAjax::addResponse('map','$html',$arrVars['GOOMAP']);
+				FAjax::addResponse('editForm','$html','');
+				
+				//$tpl = FSystem::tpl('galery.detail.tpl.html');
+				//$tpl->setVariable($arrVars);
+				//$output = $tpl->get();
+				//FAjax::addResponse('itemDetail','$html',$output);
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);

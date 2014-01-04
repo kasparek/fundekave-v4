@@ -3,12 +3,14 @@ class FRules {
 	//public - 0-soukr,1-verejny,2-verejny pro registrovany,3-admin pages
 	var $_table='sys_users_perm';
 	var $_arrCols = array('userId','pageId','rules');
-	var $_rules = array(0=>'banan',1=>'user',2=>'adm');
+	//var $_rules = array(0=>'banan',1=>'user',2=>'adm');
+	var $_rules = array(1=>'user',2=>'adm');
 	var $ruleNames;
 	var $_err = '';
 	var $_pubTypes;
 	var $ruleList = array('0'=>array(),'1'=>array(),'2'=>array());
-	var $ruleText = array('0'=>'','1'=>'','2'=>'');
+	//var $ruleText = array('0'=>'','1'=>'','2'=>'');
+	var $ruleText = array('1'=>'','2'=>'');
 	var $public = 1;
 	var $page = '';
 	var $owner = 0;
@@ -43,7 +45,7 @@ class FRules {
 		if(!in_array($type,array_keys($this->_rules))) $this->_err='ins_badruletype';
 		if(empty($this->_err)) {
 			$db->query("delete from ".$this->_table." where ".$this->_arrCols[0]."='".$usr."' and ".$this->_arrCols[1]."='".$page."'");
-			$db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].")	values ('".$usr."','".$page."','".$type."')" ); 
+			$db->query("insert into ".$this->_table." (".$this->_arrCols[0].",".$this->_arrCols[1].",".$this->_arrCols[2].") values ('".$usr."','".$page."','".$type."')" ); 
 		}
 	}
 	
@@ -59,6 +61,7 @@ class FRules {
 	}
 
 	static function invalidate() {
+		self::staticInit();
 		while(self::$CACHE) array_pop(self::$CACHE);
 	}
 
@@ -142,8 +145,8 @@ class FRules {
 		$tpl = FSystem::tpl('pages.permissions.tpl.html');
 		$tpl->setVariable('HEADERLABEL',FLang::$TEXT_PERMISSIONS_SET);
 		$tpl->setVariable('SELECTLABEL',FLang::$LABEL_RULES_ACCESS);
-		$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);
-		$tpl->setVariable('HELPTEXT',FLang::$LABEL_RULES_HELP_TEXT);
+		//$tpl->setVariable('HELPLABEL',FLang::$LABEL_RULES_HELP);
+		//$tpl->setVariable('HELPTEXT',FLang::$LABEL_RULES_HELP_TEXT);
 
 		$selectOptions = '';
 		foreach($this->_pubTypes as $k=>$v) $selectOptions.=FText::options($k,$v,$this->public);
@@ -161,7 +164,7 @@ class FRules {
 
 		return $tpl->get();
 	}
-	function update($data=array()) {
+	function update($data=array(),$updateLocalStorage=true) {
 		if(!empty($data)) {
 			if(isset($data['public'])) {
 				$this->public = $data['public'];
@@ -173,10 +176,9 @@ class FRules {
 				}
 			}
 		}
-		
 		//---set rules
 		$this->clear(); //delete perm for page
-
+		//---insert new
 		foreach ($this->ruleText as $k=>$v){
 			if(!empty($v)) {
 				$arr=explode(",",$v);
@@ -184,27 +186,19 @@ class FRules {
 					$usrname=trim($usrname);
 					if(!empty($usrname)) {
 						$usrid = FUser::getUserIdByName($usrname);
-						if($usrid != $this->owner) {
-							if(!empty($usrid)) $this->set($usrid,$this->page,$k);
-							else FError::add(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
-						}
+						if(!empty($usrid)) $this->set($usrid,$this->page,$k);
+						else FError::add(LABEL_USER." ".$usrname." ".LABEL_NOTEXISTS);
 					}
 				}
 			}
 		}
-		
-		$this->set($this->owner,$this->page,2);
-		
+		//set public
 		if(count($this->ruleList['1']) != 0) $this->public = 0;
-
 		FDBTool::query("update `sys_pages` set public='".$this->public."' where pageId='".$this->page."'");
-		
 		//---invalidate active users
 		FDBTool::query("update `sys_users_logged` set invalidatePerm=1");
-		
 		//---public update
-		$this->getList(false);
-
+		if($updateLocalStorage)$this->getList(false);
 	}
 
 }

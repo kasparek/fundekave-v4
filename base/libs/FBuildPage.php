@@ -92,8 +92,10 @@ class FBuildPage {
 		
 				
 				if(!empty($user->year)) {
-					if($user->month) {
+					if($user->day) {
 						$dateStr = date(FConf::get('internationalization','date'),strtotime($user->year.'-'.$user->month.($user->day?'-'.$user->day:'')));
+					} else if($user->month) {
+						$dateStr = FLang::$MONTHS[$user->month].' '.$user->year;
 					} else {
 						$dateStr = $user->year;
 					}
@@ -539,15 +541,17 @@ class FBuildPage {
 			if($bsskinCached!==false) $bsskin = $bsskinCached;
 		}
 		
-		//http://netdna.bootstrapcdn.com/bootswatch/3.0.3/amelia/bootstrap.min.css
-		//[[URL_CSS]]bootstrap{BOOTSTRAP_SKIN}.css
-		if(empty($bsskin)) $bsskin = 'amelia';
-		else if($bsskin=='first') $bsskin = 'united';
-		
 		$bootswatch = FConf::get('settings','bootswatch');
-		if(strpos($bootswatch,$bsskin)!==false) $bsskin = '//netdna.bootstrapcdn.com/bootswatch/3.0.3/'.$bsskin.'/bootstrap.min.css';
-		elseif($bsskin=='default') $bsskin = FConf::get('settings','bootcsscdn');
-		else $bsskin = URL_CSS.'bootstrap.'.$bsskin.'.css';
+		$bootswatchcdn = FConf::get('settings','bootswatchcdn');
+		if($bootswatchcdn && strpos($bootswatch,$bsskin)!==false) {
+			if(empty($bsskin)) $bsskin = 'amelia';
+			else if($bsskin=='first') $bsskin = 'united';
+			$bsskin = str_replace('SWATCH_NAME',$bsskin,$bootswatchcdn);
+		} elseif($bsskin=='default') {
+			$bsskin = FConf::get('settings','bootcsscdn');
+		} else {
+			$bsskin = URL_CSS.'bootstrap'.($bsskin?'.'.$bsskin:'').'.css';
+		}
 		if(!empty($bsskin)) {
 			$tpl->setVariable('BOOTSTRAPSWATCH',$bsskin);
 		}

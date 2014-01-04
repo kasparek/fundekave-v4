@@ -116,13 +116,16 @@ class FSystem {
 	}
 	
 	static function superVars($data) {
-		$superVars = array(
-		'[[SKIN]]'=>SKIN,
-		'[[STATIC_DOMAIN]]'=>STATIC_DOMAIN,
-		'[[URL_CSS]]'=>(strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS,
-		'[[URL_JS]]'=>(strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS,
-		'[[ASSETS_URL]]'=>(strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS
-		);
+		$superVars = array();
+		$settings = FConf::get('settings');
+		foreach($settings as $k=>$v) $superVars['[['.strtoupper($k).']]'] = $v;
+		$defined = FConf::get('phpdefined');
+		foreach($defined as $k=>$v) $superVars['[['.strtoupper($k).']]'] = $v;
+		
+		$superVars['[[URL_CSS]]'] = (strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS;
+		$superVars['[[URL_JS]]'] = (strpos(URL_JS,'http://')===false)?STATIC_DOMAIN.URL_JS:URL_JS;
+		$superVars['[[ASSETS_URL]]'] = (strpos(URL_ASSETS,'http://')===false)?STATIC_DOMAIN.URL_ASSETS:URL_ASSETS;
+		
 		$superVars = array_merge($superVars,self::$superVars);
 		return str_replace(array_keys($superVars),$superVars,$data);
 	}
@@ -279,15 +282,11 @@ class FSystem {
 	}
 
 	static function getUserIp() {
-		$IPadresa=$_SERVER["REMOTE_ADDR"]."@";
-		if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])) $IPadresa.=$_SERVER["HTTP_X_FORWARDED_FOR"];
-		$IPadresa.="@";
-		if(isset($_SERVER["HTTP_FORWARDED"])) $IPadresa.=$_SERVER["HTTP_FORWARDED"];
-		$IPadresa.="@";
-		if(isset($_SERVER["HTTP_CLIENT_IP"])) $IPadresa.=$_SERVER["HTTP_CLIENT_IP"];
-		$IPadresa.="@";
-		if(isset($_SERVER["X_HTTP_FORWARDED_FOR"])) $IPadresa.=$_SERVER["X_HTTP_FORWARDED_FOR"];
-		return($IPadresa);
+		return $_SERVER["REMOTE_ADDR"]
+		."@" .(isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : '')
+		."@" .(isset($_SERVER["HTTP_FORWARDED"]) ? $_SERVER["HTTP_FORWARDED"] : '')
+		."@" .(isset($_SERVER["HTTP_CLIENT_IP"]) ? $_SERVER["HTTP_CLIENT_IP"] : '')
+		."@" .(isset($_SERVER["X_HTTP_FORWARDED_FOR"]) ? $_SERVER["X_HTTP_FORWARDED_FOR"] : '');
 	}
 
 	static function array_neighbor($key, $arr, $consecutively = false) {
