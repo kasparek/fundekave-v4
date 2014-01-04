@@ -196,7 +196,7 @@ var GooMapi = new function(){
 		return false;
 	};
 	o.staticSel = function(e){
-		var p = o.parsePos($(this).val()), id = $(this).attr('id'), w = $(this).width(), h = $(this).height();
+		var p = o.parsePos($(this).val()), id = $(this).attr('id'), w = Math.round($(this).width()), h = Math.round($(this).height());
 		if(!h || h<32) {
 			h=Math.round(w*0.75);
 			$(this).height(h);

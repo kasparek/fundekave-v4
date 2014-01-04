@@ -84,6 +84,7 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 	switchOpen();
 	
 	$(".thumbnail-xs a").each(function(){$(this).addClass('history');});
+	//TODO: fix galery detail ajax loading $("#galeryFeed a").each(function(){$(this).addClass('history');});
 
 	$(".mapThumbLink").bind('click', gooMapiThumbClick);
 	if($(".geoInput").length > 0 || $(".mapLarge").length > 0) gooMapiInit();
