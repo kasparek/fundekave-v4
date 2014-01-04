@@ -59,6 +59,7 @@ var Fajax = new function(){
 			l = d.split(';');
 			while(l.length > 0){
 				var row = l.shift().split('=');
+				if(row[1].indexOf('$')==0) row[1] = gup(row[1].substr(1),window.location.search);
 				o.add(row[0], row[1]);
 				if(row[0] == 'result')
 					res = true;
@@ -145,18 +146,18 @@ var Fajax = new function(){
 		var GET=[],l = decodeURIComponent(window.location.search.replace("?","" )).split('&');
 		while(l.length>0) {
 			var pair = l.pop(),key=pair.substr(0,pair.indexOf('='));
-			if(key!='k' && key!='i' && key!='p') {
+			if(key!='k' && key!='i' && key!='p' && key!='m' && key!='d') {
 				GET.push(pair);
 			}
 		}
 		o.xhrList[action] = $.ajax({
-			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')) + (GET.length>0?'&':'') + GET.join('&'),
+			url : "?m=" + action + "-x" + ((k) ? ("&k=" + k) : ('')) + (GET.length>0?'&'+ GET.join('&'):''),
 			type : data.length>0 ? 'POST' : 'GET',
 			data : data,
 			error : function(a, s, e){
 				console.log('Fajax::error '+s+' '+e);
 				if(a.readyState == 0 || a.status == 0) return;  // it's not really an error
-				if(!silent) msg('danger', _fdk.lng.ajax.error + ' ' + s + ' ' + e);
+				if(!silent) msg('danger', _fdk.lng.ajax.error + ' ' + s + ' ' + e.substr(0,e.indexOf('<')));
 			},
 			complete : function(a, s){
 				o.xhrList[action] = null;
