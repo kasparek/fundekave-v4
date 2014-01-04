@@ -79,7 +79,7 @@ div.notpublished { background: #ffe0c0; }
 	width: 30%;
 }
 .panel-body .img-thumbnail {
-	width: 48%;
+	width: 24%;
 }
 .delete-galery {
 	position: absolute;
@@ -143,7 +143,8 @@ margin-bottom: 10px;
 }
 
 #tempStore {
-	min-height: 50px;
+	min-height: 24px;
+	margin-top: 8px;
 }
 
 #personalfoto .img-thumbnail {
@@ -203,6 +204,11 @@ clear: both;
 .fitem .entry-content {
 	min-height: 40px;
 	padding-bottom: 1em;
+	white-space: pre-wrap; /* css-3 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 .list-group-item .header {
 	font-size: 80%;
@@ -233,6 +239,7 @@ img {max-width: none;max-height: none;}
 .geoInfoContent {padding:0;margin:0;}
 .geoselector {float:left;display:block;margin: 0px 10px;}
 .geoInput {width:150px;height:70px;padding:0;margin:0;}
+#messageForm .geoInput {height: 35px;}
 .geoForumBox {overflow:hidden;padding-left:5px;}
 .geoInputBox {margin-left: 32px;}
 .geoInputBox textarea{width:250px;height:150px;}
