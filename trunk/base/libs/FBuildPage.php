@@ -549,10 +549,13 @@ class FBuildPage {
 		
 		$bootswatch = FConf::get('settings','bootswatch');
 		$bootswatchcdn = FConf::get('settings','bootswatchcdn');
-		if($bootswatchcdn && strpos($bootswatch,$bsskin)!==false) {
-			if(empty($bsskin)) $bsskin = 'amelia';
-			else if($bsskin=='first') $bsskin = 'united';
-			$bsskin = str_replace('SWATCH_NAME',$bsskin,$bootswatchcdn);
+		if($bootswatchcdn) {
+			$cdnbsskin = $bsskin;
+			if(empty($bsskin)) $cdnbsskin = 'amelia';
+			else if($bsskin=='first') $cdnbsskin = 'united';
+		}
+		if($bootswatchcdn && $cdnbsskin && strpos($bootswatch,$cdnbsskin)!==false) {
+			$bsskin = str_replace('SWATCH_NAME',$cdnbsskin,$bootswatchcdn);
 		} elseif($bsskin=='default') {
 			$bsskin = FConf::get('settings','bootcsscdn');
 		} else {
