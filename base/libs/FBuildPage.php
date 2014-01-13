@@ -108,7 +108,7 @@ class FBuildPage {
 				if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 		
 			} else {
-				if(SITE_STRICT!=$user->pageVO->pageId) {
+				if($user->pageVO->typeId!='top' && SITE_STRICT!=$user->pageVO->pageId) {
 					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 				}
 			}
