@@ -59,6 +59,7 @@ class FBuildPage {
 				if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
 				$breadcrumbs[] = array('name'=>str_replace('http://','',$homesite),'url'=>$homesite);
 			}
+			
 			if($pageIdTop!=$user->pageVO->pageId) {
 				//typ
 				$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
@@ -106,26 +107,31 @@ class FBuildPage {
 				//stranka
 				if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 		
-				$itemCategory=0;
-				if($user->categoryVO && $user->pageVO->typeId!='top') $itemCategory=$user->categoryVO->categoryId;
-				if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
-				if($itemCategory>0) {
-					$categoryArr = FCategory::getCategory($itemCategory);
-					if(!empty($categoryArr))
-					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
+			} else {
+				if(SITE_STRICT!=$user->pageVO->pageId) {
+					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
 				}
-		
-				if($user->itemVO) {
-					$itemName = $user->itemVO->addon;
-					if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
-					if(!empty($itemName)) {
-						$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId,'',''));
-					}
+			}
+//CATEGORY
+			$itemCategory=0;
+			if($user->categoryVO && $user->pageVO->typeId!='top') $itemCategory=$user->categoryVO->categoryId;
+			if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
+			if($itemCategory>0) {
+				$categoryArr = FCategory::getCategory($itemCategory);
+				if(!empty($categoryArr))
+				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
+			}
+//ITEM
+			if($user->itemVO) {
+				$itemName = $user->itemVO->addon;
+				if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
+				if(!empty($itemName)) {
+					$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId,'',''));
 				}
-		
-				if($user->whoIs>0) {
-					$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
-				}
+			}
+	
+			if($user->whoIs>0) {
+				$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
 			}
 			
 			if(!empty($user->pageParam)) {
