@@ -187,6 +187,12 @@ class page_PageEdit implements iPage {
 					$pageVO->prop('thumbCut',$thumbCut);
 					$flush=true;
 				}
+				
+				if(isset($data['galeryincluded'])) $galeryincluded = (int) $data['galeryincluded'];
+				if($pageVO->prop('galeryincluded')!=$galeryincluded) {
+					$pageVO->prop('galeryincluded',$galeryincluded==0?false:1);
+					$flush=true;
+				}
 
 				//---if setting changed on edited galery delete thumbs
 				if($flush==true && $user->pageParam!='a') {
@@ -550,6 +556,10 @@ class page_PageEdit implements iPage {
 			$tpl->setVariable('GTHUMBWIDTH',$thumbSizeList[0]);
 			$tpl->setVariable('GTHUMBHEIGHT',$thumbSizeList[1]);
 			if($thumbPropList[1]=='crop') $tpl->touchBlock('galerythumbstyle2');
+			
+			$galeryincluded = $pageVO->getProperty('galeryincluded');
+			if($galeryincluded) $tpl->touchBlock('galeryincluded');
+			$tpl->touchBlock('galeryincludedblock');
 				
 			$tpl->setVariable('SIDEBAR',FText::textToTextarea($pageVO->prop('sidebar')));
 			$tpl->setVariable('TOPBANNER',FText::textToTextarea($pageVO->prop('topbanner')));

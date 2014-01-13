@@ -261,7 +261,7 @@ class page_ItemsList implements iPage {
 		}
 		
 		if($pageVO->typeId=='blog') {
-			if($pageVO->pageIdTop) {
+			if($pageVO->pageIdTop && $pageVO->inludeGaleries()) {
 				$fItems->addWhere("(sys_pages_items.pageId='".$pageVO->pageId."' or (sys_pages_items.typeId='galery' and sys_pages_items.pageIdTop='".$pageVO->pageIdTop."'))");
 			} else {
 				$fItems->setPage($pageVO->pageId);
@@ -341,7 +341,7 @@ class page_ItemsList implements iPage {
 			$pageVO->updateReaded($user->userVO->userId);
 		}
 
-		if($pageVO->typeId=='top' || $pageVO->typeId=='blog') {
+		if($pageVO->inludeGaleries()) {
 			$fItems->userIdForPageAccess=$user->userVO->userId;
 			$fItems->cacheResults = 'f';
 			$fItems->setTypeLimit('galery',3);
@@ -418,7 +418,7 @@ class page_ItemsList implements iPage {
 				$itemIdTopPrev=null;
 				$pageIdPrev=null;
 				
-				if($typeId=='top' || $typeId=='blog') {
+				if($typeId=='top' || $pageVO->inludeGaleries()) {
 					//sort by page
 					$newArr=array();
 					$fItems->data = array_reverse($fItems->data);

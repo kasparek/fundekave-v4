@@ -136,6 +136,13 @@ class PageVO extends Fvob {
 		FDBTool::query($q);
 		$this->unreaded = 0;
 	}
+	
+	function inludeGaleries() {
+		$typeId = $this->get('typeId');
+		if($typeId != 'top' && $typeId!='blog') return false;
+		if($this->getProperty('galeryincluded')==1) return true;
+		return false;
+	}
 
 	/**
 	 * refresh data for galery in db by files in folder
