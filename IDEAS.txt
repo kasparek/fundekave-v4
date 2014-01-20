@@ -1,23 +1,5 @@
-kalendar - diary - events
----sidebar kalendar - ?date=2010-10-10 - odkaz na zive s omezenim na urcity den - omezeni na den funguje
-diar -  predelat aby byly repetitivni akce videt zase?
-events - tipy -> udalosti
-soukromy - vidi pouze pratele
-osobni - vidim pouze ja a vybrani pratele
-repetitini - jako v diary 
-pro kazdou stranku
-kdo sleduje stranku vidi udalosti kalendare ve svym kalendari
-
-DB	optimizations - user ALTER TABLE...ORDER BY?
-  
 TIPS & TRICKS:
 handling time php/mysql - http://jokke.dk/blog/2007/07/timezones_in_mysql_and_php
 
 SQL
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
-
-microformat
-<!-- microformat Decimal Degrees = Degrees + minutes/60 + seconds/3600 <address id="geo{MAPITEMID}" class="geo"><abbr class="latitude" title="37.408183">N 37° 24.491</abbr><abbr class="longitude" title="-122.13855">W 122° 08.313</abbr></address> -->
-
-jquery selector example
-$('input[name="list[]"]:checked').pluck('value')

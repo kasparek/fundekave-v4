@@ -25,24 +25,24 @@
 		</div>
 		<div class="col-sm-3">
 			<select name="saction" id="saction" class="form-control">
-			<option value="delete">Smazat oznacene</option>
-			<option value="deletebetween">Smazat mezi oznacenymi vcetne</option>
+			<option value="delete">Smazat označené</option>
 			<option value="search">Hledat</option>
-			<option value="setpp">Pocet zprav na stranku</option>
+			<option value="setpp">Počet zobrazených zpráv</option>
 			</select> 
 		</div>
 		<div id="ppinput" class="col-sm-2">
-			<input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených přípěvků" class="form-control" />
+			<input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených zpráv" class="form-control" />
 		</div>
 	</div>
-
-
-
 
 <!-- BEGIN searchfilters --><h2>Výsledky hledání: {FILTERUSERNAME} {FILTERTEXT}</h2>
 <h3><a href="{FILTRCANCELLINK}">Zrušit filtr</a></h3><!-- END searchfilters -->
 <div class="row">
 <div id="itemlist" class="col-md-12">
+<div>
+<input type="checkbox" id="selectAllCheckbox"  name="selectAllCheckbox" class="selectAllCheckbox" title="Označit vše" />
+<label for="selectAllCheckbox">Označit vše</label>
+</div>
 <!-- BEGIN message -->
 <div id="mess{ITEMIDHTML}" class="fitem<!-- BEGIN unread --> unread<!-- END unread --><!-- BEGIN sentclass --> sent<!-- END sentclass -->">
 <div class="avatar pull-left">{AVATAR}</div>

@@ -131,7 +131,7 @@ class page_PagesList implements iPage {
 						$tplGal->setVariable("DATELOCAL",$gal->date($gal->dateContent,'date'));
 						$tplGal->setVariable("DATEISO",$gal->date($gal->dateContent,'iso'));
 						$tplGal->setVariable("GALERYTEXT",$gal->description);
-						if($gal->unreaded>0)$tplGal->setVariable("FOTONEW",$gal->unreaded);
+						if($gal->unreaded>0) $tplGal->setVariable("FOTONEW",$gal->unreaded);
 						$tplGal->setVariable("FOTONUM",$gal->cnt);
 						$tplGal->parse();
 					}
