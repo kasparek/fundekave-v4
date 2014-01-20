@@ -1,15 +1,4 @@
 TODO:
--iyobosa
-	-english flag
-
--ajax error 
-	- disable
-	- retry?
-	- show only at specific methods
-	
--navod u nahravani do galerie, opravit
-
--galerie detail - BACK - se nevrati k prvni fotce
-
-- 151261 - fotku smazat z google
-
+- text <br> dvojity
+- kalendar
+- chat

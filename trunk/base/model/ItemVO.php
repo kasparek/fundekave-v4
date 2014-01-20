@@ -204,12 +204,14 @@ class ItemVO extends Fvob {
 				}
 			}
 			$vo->save();
-			
+			$pageVO = FactoryVO::get('PageVO',$this->pageId);
 			if($this->itemIdTop > 0) {
 				$itemTop = new ItemVO( $this->itemIdTop );
 				$itemTop->setSaveOnlyChanged(true);
 				$itemTop->set('cnt',FDBTool::getOne("select count(1) from sys_pages_items where itemIdTop='".$this->itemIdTop."'"));
 				$itemTop->save();
+				FPages::cntSet( $this->pageId, 0 );
+			} else if($this->typeId!='galery' && $pageVO->get('typeId')=='galery') {
 				FPages::cntSet( $this->pageId, 0 );
 			} else {
 				FPages::cntSet( $this->pageId, 1 );
