@@ -131,6 +131,7 @@ class FAjax {
 				FProfiler::write('FAJAX ERROR OUTPUT COMPLETE');
 			} else {
 				//redirect to same page because of user does not have permission to access this page
+				$user = FUser::getInstance();
 				if($user->pageParam) FAjax::redirect(FSystem::getUri('','',''));
 				else FAjax::redirect(FSystem::getUri('',HOME_PAGE,''));
 			}
