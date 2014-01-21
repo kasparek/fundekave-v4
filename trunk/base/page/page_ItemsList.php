@@ -146,7 +146,7 @@ class page_ItemsList implements iPage {
 		$arrPagerExtraVars = array();
 		if($user->categoryVO) $arrPagerExtraVars['c'] = $user->categoryVO->categoryId;
 		$arrPagerExtraVars['k'] = $user->pageVO->pageId;
-		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $who;
+		if(!empty($user->whoIs)) $arrPagerExtraVars['who'] = $user->whoIs;
 		$pagerOptions = array('manualCurrentPage'=>$manualCurrentPage);
 		if($isDetail && $pageVO->typeId!='forum') {
 			$arrPagerExtraVars['k'] = $pageVO->pageId;
