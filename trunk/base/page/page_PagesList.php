@@ -84,22 +84,17 @@ class page_PagesList implements iPage {
 		$cache = FCache::getInstance('f');
 		$data = $cache->getData($uid,$grpid);
 		if($data===false) {
-		
-		$arr = $fPages->getContent();
-
-		$totalItems = count($arr);
-
-		$maybeMore = false;
-		if($totalItems > $perPage) {
-			$maybeMore = true;
-			unset($arr[(count($arr)-1)]);
-		}
-		if($from > 0) $totalItems += $from;
-
-		//---BUILD PAGE
-		$tpl = FSystem::tpl('pages.list.tpl.html');
-
-		//---show results if any
+			$arr = $fPages->getContent();
+			$totalItems = count($arr);
+			$maybeMore = false;
+			if($totalItems > $perPage) {
+				$maybeMore = true;
+				array_pop($arr);
+			}
+			if($from > 0) $totalItems += $from;
+			//---BUILD PAGE
+			$tpl = FSystem::tpl('pages.list.tpl.html');
+			//---show results if any
 			if($totalItems > 0) {
 				//--pagination
 				if($pager) {
@@ -110,7 +105,6 @@ class page_PagesList implements iPage {
 
 				//---results
 				if($typeId == 'galery') {
-
 					$fItems = new FItems('galery',$user->userVO->userId);
 					$fItems->thumbInSysRes = true;
 					$fItems->setOrder('hit desc');
