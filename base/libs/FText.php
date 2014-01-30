@@ -302,16 +302,14 @@ class FText {
 			  $regexBegin = "/^(<p|<div|<img)/i";
 			  $regexEnd = "/(\/p>|div>|<br>|<br \/>)$/i";
 			  if($nextWord!==false) {
-				if(preg_match($regexBegin,$nextWord)) {
-				  $addBr=false;
-				}
-					   
-				if($addBr) {
-				  if(preg_match($regexEnd,$thisWord)) {
+				if(empty($nextWord)) {
 					$addBr=false;
-				  }
+				} else if(preg_match($regexBegin,$nextWord)) {
+					$addBr=false;
 				}
-				  
+				if($addBr && preg_match($regexEnd,$thisWord)) {
+					$addBr=false;
+				}
 				if($addBr){
 				  $textArr[$i] .= "<br />";
 				}
