@@ -17,10 +17,8 @@ class sidebar_categories {
 		} else {
 			$tool->setWhere("c.typeId = '".$user->pageVO->pageId."'");
 		}
-		if(SITE_STRICT) {
-			$tool->addWhere("c.pageIdTop in ('".SITE_STRICT."','".$user->pageVO->pageId."')");
-		}
-    $tool->addWhere("c.public = '1'");
+		//if(SITE_STRICT) {$tool->addWhere("c.pageIdTop in ('".SITE_STRICT."','".$user->pageVO->pageId."')");}
+		$tool->addWhere("c.public = '1'");
 		$tool->setOrder('c.name');
 
 		$pageId='';
@@ -30,11 +28,14 @@ class sidebar_categories {
 
 		switch($pageId) {
 			case'eveac':
-				//$total ="select count(1) from sys_pages_items where dateStart < date_format(NOW(),'%Y-%m-%d') and categoryId=c.categoryId";
 				$total = "'0'";
 				break;
 			default:
-				$total ='c.num';
+				if(SITE_STRICT) {
+					$total ='c.num';
+				} else {
+					$total ="select count(1) from sys_pages where categoryId=c.categoryId and pageIdTop='".SITE_STRICT."'";
+				}
 		}
 
 		$tool->setSelect('c.categoryId,c.name, ( '.$total.' ) as total,c.typeId');
@@ -51,11 +52,13 @@ class sidebar_categories {
 					}
 				}
 			}
-			foreach ($arr as $category) {
-				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId,''));
-				$tpl->setVariable('TEXT', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
-				if($category[2]>0) $tpl->setVariable('BADGE', $category[2]);
-				$tpl->parse('item');
+			if($category[2]>0) {
+				foreach ($arr as $category) {
+					$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId,''));
+					$tpl->setVariable('TEXT', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
+					if($category[2]>0) $tpl->setVariable('BADGE', $category[2]);
+					$tpl->parse('item');
+				}
 			}
 			return $tpl->get();
 		}

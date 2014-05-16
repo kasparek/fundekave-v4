@@ -33,14 +33,13 @@ class fajax_Sail extends FAjaxPluginBase {
       $item->set('text',$message);
       $item->save();
       
-      FError::add(FLang::$MESSAGE_SENT,1);
-      
+      //FError::add(FLang::$MESSAGE_SENT,1);
+		FAjax::redirect(FSystem::getUri('message=message_sent',$user->pageId,'',array('short'=>1)));  
     } else {
-      $cache = FCache::getInstance('s',0);
-			$cache->setData($data, $user->pageId, 'form');
+		$cache = FCache::getInstance('s',0);
+		$cache->setData($data, $user->pageId, 'form');
+		FAjax::redirect(FSystem::getUri('',$user->pageId,'',array('short'=>1)));
     }
-    
-    FAjax::redirect(FSystem::getUri('',$user->pageId,'',array('short'=>1)));
     
   }
 }

@@ -1,4 +1,8 @@
 <p>{CONTENT}</p>
+<!-- BEGIN contactmessage -->
+<h2>{ACTIONMESSAGE}</h2>
+<!-- END contactmessage -->
+<!-- BEGIN contactform -->
 <form id="contactForm" action="{FORMACTION}" method="post" name="contact" role="form" class="form-horizontal">
 <input type="hidden" name="m" value="sail-contact"/>
 <fieldset>
@@ -28,9 +32,9 @@
 <div class="form-group">
 	<div class="col-sm-offset-2 col-sm-10">
 		<button type="submit" id="submitButtonSave" name="send" class="btn btn-success submit">Submit</button>
-		<!-- BEGIN delete --><button type="submit" id="submitButtonDelete" name="delete" class="btn btn-danger confirm" title="Opravdu chcete odstranit tento èlánek?">Smazat</button><!-- END delete -->
 	</div>
 </div>
 
 </fieldset>
 </form>
+<!-- END contactform -->

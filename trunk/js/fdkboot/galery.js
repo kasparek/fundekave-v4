@@ -103,7 +103,7 @@ var Slideshow = new function(){
 	o.s = 5;
 	o.f = function(){
 		if(o.on)
-			$("#nextButt").click();
+			$("#prevButt").click();
 	};
 	o.toggle = function(){
 		o.on = !o.on;
