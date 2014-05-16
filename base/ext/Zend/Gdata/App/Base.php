@@ -302,7 +302,7 @@ abstract class Zend_Gdata_App_Base
             @ini_set('track_errors', 1);
             $doc = new DOMDocument();
             $success = @$doc->loadXML($xml);
-            @ini_restore('track_errors');
+            //@ini_restore('track_errors');
             if (!$success) {
                 require_once 'Zend/Gdata/App/Exception.php';
                 throw new Zend_Gdata_App_Exception("DOMDocument cannot parse XML: $php_errormsg");

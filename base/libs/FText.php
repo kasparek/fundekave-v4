@@ -311,7 +311,9 @@ class FText {
 					$addBr=false;
 				}
 				if($addBr){
-				  $textArr[$i] .= "<br />";
+				  $textArr[$i] .= "<br>";
+				  //$textArr[$i] = "<p>".$textArr[$i].'</p>';
+				  //$textArr[$i] .= "\n";
 				}
 			  } 
 			}

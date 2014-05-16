@@ -172,6 +172,7 @@ static $LABEL_PAGES_DEFAULTFORALL = 'Default pro vsechny stranky';
 static $LABEL_PAGES_USEDON = 'Pouzito na strankach';
 
 static $ERROR_ANTISPAM = 'Anti spamova ochrana nepovolila tento prispevek, bude zkontrolovan pozdeji osobne a pokud to neni spam bude publikovan.';
+static $MESSAGE_SENT = 'Thanks for you message, we will contact you as soon as we can.';
 
 static $ARRPUBLIC = array("0"=>"Soukromé","1"=>"Veřejné","2"=>"Pro registrované");
 static $ARRPERMISSIONS = array(0=>'Nemá přístup',1=>'Uživatelé',2=>'Administrátoři');
