@@ -22,7 +22,7 @@ class fajax_Sail extends FAjaxPluginBase {
       'Reply-To: ' . $email . "\r\n" .
       'X-Mailer: PHP/' . phpversion();
       
-      mail( $to , 'sail.awake33.com - contact' , $message,$headers);
+      //mail( $to , 'sail.awake33.com - contact' , $message,$headers);
       
       //insert into forum
       $item = new ItemVO();
