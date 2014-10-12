@@ -84,6 +84,7 @@ static $MESSAGE_SUCCESS_CREATE = 'Úspěšně založeno';
 static $MESSAGE_SUCCESS_SAVED = 'Úspěšně uloženo';
 static $MESSAGE_FORUM_READONLY = 'Klub je zamčený pro zápis';
 static $MESSAGE_FORUM_REGISTEREDONLY = 'Vkládat příspěvky do diskuze mohou pouze <a href="?k=roger">zaregistrovaní</a> uživatelé.';
+static $MESSAGE_OLD_REGISTEREDONLY = 'Pro prohlizeni starsich prispevku se prosim prihlaste.';
 static $MESSAGE_TAG_REGISTEREDONLY = 'Zvednout palec muze jen registrovany uzivatel';
 static $MESSAGE_TAG_ONLYONE = 'Zvednout palec muzes jen jednou';
 static $MESSAGE_FORUM_HOME_EMPTY = 'Nastenka je praznda';
