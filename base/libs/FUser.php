@@ -241,6 +241,18 @@ class FUser {
 		}
 		$this->pageAccess = $pageAccess;
 		
+		//$pager = new FPager();
+		//$pageNum = $pager->getCurrentPageID();
+		//var_dump($pageNum);
+		//var_dump($pager->urlVar);
+		//var_dump($pager->currentPage);
+		if($_GET['p'] > 10) {
+			if($userId == 0) {
+				$this->pageAccess = $pageAccess = false;
+				FError::add(FLang::$MESSAGE_OLD_REGISTEREDONLY);
+			}
+		}
+		
 		if($pageAccess === true) { //---if page exists continue to test permissions
 			//---check if user sent data to login
 			if(isset($_POST['lgn']) && $this->idkontrol===false) FUser::login($_POST['fna'],$_POST['fpa'],$this->pageId);

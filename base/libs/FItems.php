@@ -131,6 +131,9 @@ class FItems extends FDBTool {
 
 		if($this->access===false) $this->data;
 
+		$arr = $this->getContent($from, $count);
+		
+/*		
 		if($this->userIdForPageAccess === false) {
 			$arr = $this->getContent($from, $count);
 		} else {
@@ -184,7 +187,7 @@ class FItems extends FDBTool {
 				if($count == 0) break;
 			}
 		}
-
+*/
 		if(!empty($arr)) {
 
 			$this->data = $arr;
