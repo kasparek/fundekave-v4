@@ -73,6 +73,19 @@ class FItems extends FDBTool {
 			} else {
 				$typeWhere=" ".$this->table.".typeId!='request' and ";
 			}
+			
+			if($userId>0) {
+				$pageIdQuery = " (select p.pageId from sys_pages as p left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=p.pageId 
+				where ((p.public>0 or up.rules>0) and p.locked<2)"
+				.(SITE_STRICT && (empty($userId) || $typeId=='top' || $typeId=='blog') ? " and p.pageIdTop='".SITE_STRICT."' " : " ")
+				.")";
+			} else {
+				$pageIdQuery = " (select p.pageId from sys_pages as p where p.public=1 and p.locked<2"
+				.(SITE_STRICT && (empty($userId) || $typeId=='top' || $typeId=='blog') ? " and p.pageIdTop='".SITE_STRICT."' " : " ")
+				.")";
+			}
+			
+			/*
 			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
 						." join sys_pages as p on p.pageId=".$this->table.".pageId "
 						.($userId>0?"left join sys_users_perm as up on up.userId='".$userId."' and up.pageId=".$this->table.".pageId ":' ')
@@ -83,6 +96,18 @@ class FItems extends FDBTool {
 				"(".$this->table.".public>0 or (".$this->table.".public=0 and ".$this->table.".userId='".$userId."')) and (p.public>0 or up.rules>0) and p.locked<2 "
 				:"p.locked<2 and p.public=1 and ".$this->table.".public = 1 ")
 			.') and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+			*/
+			
+			$queryBase = "select {SELECT} from ".$this->table." as ".$this->table
+			."{JOIN} where ("
+			.$typeWhere
+			.$this->table.".pageId in ".$pageIdQuery . " and "
+			.($userId>0?
+				"(".$this->table.".public>0 or (".$this->table.".public=0 and ".$this->table.".userId='".$userId."')) "
+				:" ".$this->table.".public = 1 ")
+			.') and ({WHERE}) {GROUP} {ORDER} {LIMIT}';
+			
+			
 			$this->setTemplate($queryBase);
 		}
 	}
