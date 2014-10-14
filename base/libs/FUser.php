@@ -246,7 +246,7 @@ class FUser {
 		//var_dump($pageNum);
 		//var_dump($pager->urlVar);
 		//var_dump($pager->currentPage);
-		if($_GET['p'] > 10) {
+		if(isset($_GET['p']) && $_GET['p'] > 10) {
 			if($userId == 0) {
 				$this->pageAccess = $pageAccess = false;
 				FError::add(FLang::$MESSAGE_OLD_REGISTEREDONLY);
