@@ -52,14 +52,14 @@ class sidebar_categories {
 					}
 				}
 			}
-			if($category[2]>0) {
-				foreach ($arr as $category) {
-					$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId,''));
-					$tpl->setVariable('TEXT', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
-					if($category[2]>0) $tpl->setVariable('BADGE', $category[2]);
-					$tpl->parse('item');
-				}
+			
+			foreach ($arr as $category) {
+				$tpl->setVariable('URL', FSystem::getUri('c='.$category[0],$multiType?'foall':$user->pageId,''));
+				$tpl->setVariable('TEXT', ($multiType ? FLang::$TYPEID[$category[3]].' ' : '') . $category[1]);
+				if($category[2]>0) $tpl->setVariable('BADGE', $category[2]);
+				$tpl->parse('item');
 			}
+			
 			return $tpl->get();
 		}
 	}
