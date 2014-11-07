@@ -74,6 +74,7 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('mapThumb','$html',$arrVars['GOOMAPTHUMB']);
 				FAjax::addResponse('map','$html',$arrVars['GOOMAP']);
 				FAjax::addResponse('editForm','$html','');
+				FAjax::addResponse('detailFotoSrc','href',$itemVO->detailUrl);
 				
 				//$tpl = FSystem::tpl('galery.detail.tpl.html');
 				//$tpl->setVariable($arrVars);

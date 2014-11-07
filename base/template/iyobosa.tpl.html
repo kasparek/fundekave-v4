@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="{CHARSET}"?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{DESCRIPTION}">
+    <meta name="author" content="Frantisek Kaspar">
+    <link rel="shortcut icon" href="{URL_FAVICON}">
+    <title>{TITLE}</title>
+    <!--<link href="{BOOTSTRAPSWATCH}" rel="stylesheet">
+    <link href="[[URL_CSS]]global.css" rel="stylesheet">-->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+	<link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
+	<link rel="stylesheet" href="{BOOTSTRAPSWATCH}" />
+	<link rel="stylesheet" href="[[URL_CSS]]global.css" />
+	<!-- BEGIN skincss --><style type="text/css">@import url("{URL_SKIN}/screen.css");</style><!-- END skincss -->
+  </head>
+  <body>
+    <!-- Static navbar -->
+	<!-- BEGIN topbanner -->
+	<div class="top-image" data-margin="{TOPBANMARGIN}" data-valign="{TOPBANVALIGN}" style="height:{TOPBANHEIGHT}px;">
+      <div class="top-container">
+		<a id="head-banner" href="{TOPBANURL}" title="{TOPBANTITLE}">
+		<img src="{TOPBANIMG}" />
+		</a>
+	  </div>
+	 </div>
+	 <!-- END topbanner -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+	<!-- BEGIN brand-logo --><div class="container"><a class="navbar-brand" href="{BRAND_LOGO_URL}"><img src="{BRAND_LOGO}" /></a>
+	<a href="http://africanmagic.cz" target="_blank" title="Prodej a výroba Bambuckého másla (Shea butter)"><img alt="AfricanMagic.cz - bio nerafinované bambucké máslo" src="/assets/africanmagic-t.png" style="float:right;margin-top:20px;" /></a>
+	</div><!-- END brand-logo -->
+      <div class="container">
+		
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <!-- BEGIN navbar-brand --><a class="navbar-brand" href="{BRAND_URL}">{BRAND_LABEL}</a><!-- END navbar-brand -->
+        </div>
+        <div class="navbar-collapse collapse">
+			  {CACHEDMENU}<!-- BEGIN menu -->
+			  <ul class="nav navbar-nav">
+			  <!-- BEGIN topmenuitem --><li><a href="{LINK}">{TEXT}</a></li><!-- END topmenuitem -->
+<!-- BEGIN secondarymenu -->
+<li class="dropdown">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">Menu <b class="caret"></b></a>
+<ul class="dropdown-menu">
+<!-- BEGIN smitem -->
+<li class="{LISTCLASS}"><a href="{LOLINK}" id="{LOID}" class="{CLASS}">{LOTEXT}</a></li>
+<!-- END smitem -->
+</ul>
+</li>
+<!-- END secondarymenu -->
+</ul><!-- END menu -->
+			  
+<ul class="nav navbar-nav navbar-right">
+<!-- BEGIN loginform -->
+<li>
+<form class="navbar-form form-inline login-form" role="form" action="{FORMACTION}" method="post">
+  <div class="form-group">
+    <label class="sr-only" for="inputUsername">Username</label>
+    <input type="text" class="form-control" name="fna" id="inputUsername" placeholder="Username">
+  </div>
+  <div class="form-group">
+    <label class="sr-only" for="inputPassword">Password</label>
+    <input type="password" class="form-control" name="fpa" id="inputPassword" placeholder="Password">
+  </div>
+  <button type="submit" name="lgn" class="btn btn-info btn-sm">Login</button>
+</form>
+</li>
+<li>
+	<a href="?k=roger">Registrace</a>
+</li>
+<!-- END loginform -->
+<!-- BEGIN onlineuserslist -->
+<li class="dropdown{ONLINEUSERSLISTHIDDEN}" id="onlineUsersDropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Online <span id="onlineUsersNum" class="label label-info">{NUMFRIENDSONLINE}</span><b class="caret"></b></a>
+  <ul class="dropdown-menu" id="onlineUsersList">
+	{ONLINEUSERSLIST}
+  </ul>
+</li>
+<!-- END onlineuserslist -->
+
+<!-- BEGIN signed -->
+	<li class="dropdown">
+	  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span
+                    class="glyphicon glyphicon-user"></span>{SIGNED_NAME} <span class="label label-info">{ACTIONSNUM}</span><b class="caret"></b></a>
+	  <ul class="dropdown-menu">
+		<!-- BEGIN requests --><li>
+		<a href="?k=finfo" title="Ceka na potvrzeni">Přidat přátele <span class="label label-info">{REQUESTSNUM}</span></a></li><!-- END requests -->
+		<li><a href="?k=fpost">Pošta<!-- BEGIN newmsgbadge --> <span class="label label-info">{MESSAGENUM}</span><!-- END newmsgbadge --></a></li>
+		<li><a href="?k=finfo">Přátelé</a></li>
+		<li><a href="?k=fedit">Upravit profil</a></li>
+		<li class="divider"></li>
+		<li><a href="?logout=1">Odhlásit se</a></li>
+	  </ul>
+	</li>
+	<li id="avatarBox" class="avatar">
+	{SIGNED_AVATAR}
+	</li>
+<!-- END signed -->
+                  </ul>
+<!-- BEGIN searchForm -->
+<div class="pull-right col-sm-3">
+<form class="navbar-form navbar-right search-form" action="{SEARCHACTION}" method="post">
+	<div class="input-group">
+		<input type="text" name="f" class="form-control" placeholder="Search">
+		<span class="input-group-btn">
+			<button class="btn btn-sm btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+		</span>
+	</div>
+</form>			  			  
+</div>
+<!-- END searchForm -->				  
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+	
+    <div class="container">
+	  <div class="row" id="top-row">
+		<div class="col-md-{NUMCOLMAIN}">
+			<!-- BEGIN breadcrumbs --><ol class="breadcrumb">
+				<!-- BEGIN breadcrumb --><li><a href="{BREADURL}">{BREADNAME}</a></li><!-- END breadcrumb -->
+				<li class="active">{BREADHARD}</li>
+			</ol><!-- END breadcrumbs -->
+
+<!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
+
+<div id="sysmsgBox">
+<!-- BEGIN sysmsg -->
+<div class="alert alert-{MSGPRIORITY} alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  {MSGTEXT}
+</div>
+<!-- END sysmsg -->
+</div>
+
+<!-- BEGIN content -->{MAINDATA}<!-- END content -->
+		</div>
+		<!-- BEGIN midcol -->
+		<div id="panelmidcol" class="midcol col-md-2 sidebar-content" data-src="midcol" data-delay="500">
+		{MIDCOL}
+		</div>
+		<!-- END midcol -->
+
+		<div class="col-md-3">
+			<!-- BEGIN sidebar --><div id="sidebar">
+			<!-- BEGIN sidebar-heading --><h3>{SIDEBARHEAD}</h3><!-- END sidebar-heading -->
+			<!-- BEGIN sidebar-block --><div id="panel{SIDEBARBLOCKIDBOX}" class="sidebar-content" data-src="{SIDEBARSOURCE}" data-delay="{SIDEBARDELAY}">
+			<!-- BEGIN sidebar-content --><div id="{SIDEBARBLOCKID}" class="well">{SIDEBARDATA}</div><!-- END sidebar-content -->
+			</div><!-- END sidebar-block -->
+			</div><!-- END sidebar -->
+		</div>
+	  </div>
+    </div> <!-- /container -->
+<!-- position absolute -->
+<div id="message-new" class="panel panel-danger<!-- BEGIN msgHidden --> hidden<!-- END msgHidden -->">
+	<div class="panel-heading">
+		<a href="#msgBodyPanel" class="pull-right" data-toggle="collapse"><span class="glyphicon glyphicon-collapse-up"></span></a>
+		<a href="?k=fpost"><strong>Nové zprávy:</strong></a> <label id="numMsg" class="label label-warning">{NEWPOST}</label> <a href="?k=fpost" id="recentSender">{NEWPOSTFROMNAME}</a>
+	</div>
+	<div id="msgBodyPanel" class="panel-collapse collapse in">
+	<div id="msgBody" class="panel-body">
+		<div id="msgList"></div>
+		<form action="?m=post-submit" id="msgForm" class="fajaxform hidden" method="post">
+		<input type="hidden" id="msgRecipient" name="recipient" value="" />
+		<input type="hidden" name="msgType" value="xs" />
+		<textarea id="msgText" name="text" class="msg-text expand"></textarea>
+		<button id="msgBtnSubmit" type="submit" name="send" class="btn btn-xs btn-primary submit pull-right"><span class="glyphicon glyphicon-send"></span></button>
+		</form>
+	</div>
+	</div>
+</div>
+<!-- start script -->
+<script type="text/javascript">
+var _fdk = {cssGlob:'[[URL_CSS]]global.css',cssBs:'{BOOTSTRAPSWATCH}',cfg:{page:'{PAGEID}',assUrl:'[[ASSETS_URL]]',jsUrl:'[[URL_JS]]',cssUrl:'[[URL_CSS]]',skinUrl:'{URL_SKIN}',msgTi:'{MSGPOLLTIME}',user:'{USER}',auth:'{AUTH}'}};
+<!-- BEGIN jscfgvar -->_fdk.cfg.{JSVAR}='{JSVALUE}';<!-- END jscfgvar -->
+var _gaq=[['_setAccount','{GOOGLEID}'],['_trackPageview']];
+(function(d, t) {
+    var g = d.createElement(t),s = d.getElementsByTagName(t)[0];
+    g.src = '[[URL_JS]][[BOOT_JS]]';
+    s.parentNode.insertBefore(g, s);
+}(document, 'script'));
+</script>
+  </body>
+</html>
