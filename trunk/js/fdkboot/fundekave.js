@@ -197,7 +197,7 @@ function gooMapiThumbClick(){
 function ckedInit() {
 	if($(".markitup").length == 0) return
 	if(!Lazy.load(_fdk.load.richta, ckedInit)) return;
-	$( '.markitup' ).ckeditor();
+	//$( '.markitup' ).ckeditor();
 }
 function calendarInit() {
 	if($("#calendar-inline").length == 0) return
