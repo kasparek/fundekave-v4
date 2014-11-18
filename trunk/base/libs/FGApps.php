@@ -11,8 +11,8 @@ Zend_Loader::loadClass('Zend_Gdata_App_Extension_Category');
 class FGApps {
 
   var $serviceName = Zend_Gdata_Photos::AUTH_SERVICE_NAME;
-  var $user = "kokokonec@gmail.com";
-  var $pass = "bnbnbnbn";
+  var $user = GAPS_USER;
+  var $pass = GAPS_PASS;
   
   private $gp;
 

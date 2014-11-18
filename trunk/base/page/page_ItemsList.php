@@ -293,6 +293,7 @@ class page_ItemsList implements iPage {
 			//used for sorting
 			if($user->pageVO->pageId=='event') {
 				$fItems->addSelect("if(textLong='year',concat(date_format(now(), '%Y'),date_format(sys_pages_items.dateStart, '%m-%d')),dateStart) as dategen");
+				$fItems->addWhere("typeId='event'");
 				$fItems->setOrder('dateStart');
 			} else {
 				$fItems->setOrder('dateStart');

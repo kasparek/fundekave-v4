@@ -44,9 +44,12 @@ foreach($itemIdList as $itemId) {
 	
 	if(file_exists($sourceUrl)) {
 		//check if album exists
+	
 		if($picasaAlbumId) {
 			$album = $fgapps->getAlbum($picasaAlbumId);
-			if(!$album) $picasaAlbumId = null;
+			if(!$album) {
+				$picasaAlbumId = null;
+			}
 		}
 	
 		if(!$picasaAlbumId) {
@@ -54,12 +57,14 @@ foreach($itemIdList as $itemId) {
 			$picasaAlbumId = $fgapps->createAlbum($pageVO->name,$pageVO->description);
 			if($picasaAlbumId) $pageVO->setProperty('picasaAlbum',$picasaAlbumId);
 		}
+	
 		if($picasaAlbumId) {
 			$picasaPhotoUrl = $fgapps->createPhoto($picasaAlbumId,$sourceUrl,$itemVO->text,$itemVO->enclosure);
 			$itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
 		} else {
 			echo 'Missing AlbumID';
 		}
+	
 		$done++;
 	}
   }
