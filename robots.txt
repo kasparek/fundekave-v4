@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /assets/
+Disallow: /obr/
+Disallow: /fonts/
+Disallow: /js_v01/
+Disallow: /image/
+Disallow: /kaspar/
+Disallow: /ruscha/
+Disallow: /wajbrou/
+Disallow: /tmp/
