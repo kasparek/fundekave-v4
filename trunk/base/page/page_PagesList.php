@@ -95,7 +95,7 @@ class page_PagesList implements iPage {
 			//---BUILD PAGE
 			$tpl = FSystem::tpl('pages.list.tpl.html');
 			//---show results if any
-			if($totalItems > 0) {
+			if(!empty($arr)) {
 				//--pagination
 				if($pager) {
 					$pager->totalItems = $totalItems;
