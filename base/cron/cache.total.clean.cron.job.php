@@ -1,5 +1,4 @@
 <?php
-
 //unblock system
 session_write_close();
 
@@ -10,9 +9,11 @@ $counter = 0;
 foreach($truncate as $dir) {
 $handle=opendir($dir);
 while (false!==($file = readdir($handle))) 
-	if($file!='.' && $file!='..' && !is_dir($dir.'/'.$file)) { 
-		unlink($dir.'/'.$file);
-		$counter++;
+	if($file!='.' && $file!='..') { 
+		if(!is_dir($dir.'/'.$file)) {
+			unlink($dir.'/'.$file);
+			$counter++;
+		}
 	}
 }
 echo "deleted files: ".$counter."<br>\n";
