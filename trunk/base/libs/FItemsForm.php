@@ -7,7 +7,9 @@ class FItemsForm {
 		if(!$itemVO && $itemVO!==false) $itemVO = $user->itemVO;
 		if($pageVO->typeId=='top') return false;
 		if($pageVO->typeId == 'forum' && $pageVO->locked > 0) return false;
-		if(($pageVO->typeId == 'forum' || $itemVO) && !FConf::get('settings','perm_forum_unsigned')) if(!$user->idkontrol) return false;
+		if(($pageVO->typeId == 'forum' || $pageVO->typeId == 'galery' || $itemVO) && !FConf::get('settings','perm_forum_unsigned')) {
+			if(!$user->idkontrol) return false;
+		}
 		if($pageVO->typeId == 'blog' || $pageVO->typeId == 'galery' || $pageVO->typeId == 'event') {
 			$writePerm = $pageVO->prop('forumSet');
 			if($writePerm==0) return false;
