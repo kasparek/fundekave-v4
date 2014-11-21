@@ -215,8 +215,9 @@ class page_ItemsList implements iPage {
 		 *FORUM FORM
 		 */
 		if($pageVO->typeId!='top') { //no show for live, main etc.
-			$forumFormTypeId = $pageVO->typeId=='galery'?'forum':$pageVO->typeId=='galery';
-			if(FItemsForm::canComment()) {
+			$forumFormTypeId = $pageVO->typeId=='galery' ? 'forum' : $pageVO->typeId=='galery';
+			$canComment = FItemsForm::canComment();
+			if($canComment) {
 				if(empty($data['__ajaxResponse'])) {
 					if($isDetail) $data['simple'] = true;
 					$formItemVO = new ItemVO();
