@@ -24,6 +24,7 @@ class FSidebar extends FDBTool {
 	 *        	- if 0 chage setting for a page
 	 */
 	static function processAction($pageId, $functionName, $action, $userId = 0) {}
+	
 	function load($allForPage = false) {
 		$this->panels = array();
 		$this->panelsUsed = array();
@@ -101,6 +102,7 @@ class FSidebar extends FDBTool {
 		$this->panels = $arrSidebar['arrFinal'];
 		$this->panelsUsed = $arrSidebar['arrUsed'];
 	}
+	
 	function getDynamicBlockContent($panel) {
 		$fnc = $panel['functionName'];
 		$letext = false;
@@ -166,22 +168,31 @@ class FSidebar extends FDBTool {
 		}
 		return $letext;
 	}
+	
 	function show() {
 		$hasData = false;
 		if(!empty($this->panels)) {
+			$rightcolStatic = FConf::get('settings','rightcol-static');
 			$delay = 1000;
 			foreach( $this->panels as $panel ) {
 				if($panel['visible'] == 1) {
 					$fnc = $panel['functionName'];
 					$letext = false;
+										
 					if(!empty($fnc)) {
-						//$letext = $this->getDynamicBlockContent($panel);
+						if($rightcolStatic) {
+							$letext = $this->getDynamicBlockContent($panel);
+						}
 					} else {
 						$letext = $panel['content'];
 					}
 					
 					if(!empty($letext) || !empty($fnc)) {
 						$TOPTPL = FBuildPage::getInstance();
+						
+						if($rightcolStatic) {
+							$TOPTPL->setVariable('RIGHTCOLSTATIC', '-static');
+						}
 						
 						if(!empty($fnc)) {
 							$TOPTPL->setVariable('SIDEBARBLOCKIDBOX', $fnc);
@@ -192,10 +203,11 @@ class FSidebar extends FDBTool {
 						$TOPTPL->setVariable('SIDEBARDELAY',$delay);
 						$delay += 500;
 						
-						if(empty($fnc)) {
+						if(!empty($letext)) {
 							if(!empty($panel['name'])) $TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
 							$TOPTPL->setVariable('SIDEBARDATA', $letext);
 						}
+						
 						$TOPTPL->parse('sidebar-block');
 						$hasData = true;
 					}

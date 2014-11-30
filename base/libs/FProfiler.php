@@ -38,7 +38,8 @@ class FProfiler {
 		}
 				
 		//write log entry
-		$fh = fopen(self::$logList[$handle].(!empty($_REQUEST['m'])?'.'.$_REQUEST['m'].'.log':''), "ab+" );
+		$postHash = '';
+		$fh = fopen(self::$logList[$handle].(!empty($_REQUEST['m'])?'.'.$_REQUEST['m']:'').$postHash.'.log', "ab+" );
 		if(!$fh) {
 			FError::write_log('FProfiler::write - CANNOT OPEN LOG TO WRITE - '.self::$logList[$handle]);
 			return;

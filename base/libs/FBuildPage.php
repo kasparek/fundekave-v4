@@ -287,12 +287,14 @@ class FBuildPage {
 				if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
 					$tpl->touchBlock('midcol');
 					$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
-					/* loaded later by ajax call
-					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
-					if(!empty($pageListOut)) {
-						$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
+					$midcolStatic = FConf::get('settings','midcol-static');
+					if($midcolStatic) {
+						$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
+						if(!empty($pageListOut)) {
+							$user->pageVO->tplVars['MIDCOLSTATIC'] = '-static';
+							$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
+						}
 					}
-					*/
 				}
 			}
 		}
@@ -496,8 +498,9 @@ class FBuildPage {
       $showSidebar = false;
     } else if($user->pageVO) {
 			$showSidebar = $user->pageVO->showSidebar;
-			if($showSidebar!==false) $showSidebar = !$user->pageVO->prop('hideSidebar');
-	
+			if($showSidebar!==false) {
+				$showSidebar = !$user->pageVO->prop('hideSidebar');
+			}
 			if($showSidebar) {
 				$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 				$fsidebar->load();
