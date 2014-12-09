@@ -111,6 +111,9 @@ div.notpublished { background: #ffe0c0; }
 .midcol {
 	padding: 0;
 }
+.midcol .thumbnail {
+	margin-bottom: 0;
+}
 .midcol .galeryPage {
 	width: auto;
 	float: left;
