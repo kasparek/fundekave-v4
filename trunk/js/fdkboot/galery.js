@@ -182,12 +182,12 @@ var Fullscreen = new function(){
 
 /** IMAGE RESIZE TO FIT */
 function imgResizeToFit(img, hw, hh, isFullscreen){
-	img.removeAttr('height').removeAttr('width').css('width', 'auto').css('height', 'auto').css('top','').css('left','').css('position','');
+	img.removeAttr('height').removeAttr('width').css('width', 'auto').css('height', 'auto').css('top','').css('left','').css('position','').css('margin-top','');
 	var iw = img.width(), ih = img.height(), th = hh;
 	if(iw < hw) hw=iw;
 	if(ih < hh) hh=ih;
 	var r = Math.min(hw / iw, hh / ih);
 	img.css('height', Math.round(ih * r)).css('width', Math.round(iw * r));
-	if(isFullscreen) img.css('margin-top', (th - ih) / 2);
+	if(isFullscreen && th>ih) img.css('margin-top', (th - ih) / 2);
 	//img.css('left',(hw - iw) / 2).css('top', (hh - ih) / 2).css('position','absolute');
 }
