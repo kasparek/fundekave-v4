@@ -187,7 +187,6 @@ function imgResizeToFit(img, hw, hh, isFullscreen){
 	if(iw < hw) hw=iw;
 	if(ih < hh) hh=ih;
 	var r = Math.min(hw / iw, hh / ih);
-	if(iw<1) return;
 	img.css('height', Math.round(ih * r)).css('width', Math.round(iw * r));
-	if(isFullscreen) img.css('left',(hw - img.width()) / 2).css('top', (hh - img.height()) / 2).css('position','absolute');
+	if(isFullscreen) img.css('left',(hw - iw) / 2).css('top', (hh - ih) / 2).css('position','absolute');
 }
