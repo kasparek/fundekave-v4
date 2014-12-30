@@ -3,3 +3,10 @@ handling time php/mysql - http://jokke.dk/blog/2007/07/timezones_in_mysql_and_ph
 
 SQL
 swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
+
+
+- blog post from email (title,position,text,?image?)
+- gallery from picasa gallery
+
+- rich text
+- line breaks
