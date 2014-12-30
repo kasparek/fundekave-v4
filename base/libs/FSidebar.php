@@ -204,7 +204,9 @@ class FSidebar extends FDBTool {
 						$delay += 500;
 						
 						if(!empty($letext)) {
-							if(!empty($panel['name'])) $TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
+							if(!empty($panel['name'])) {
+								$TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
+							}
 							$TOPTPL->setVariable('SIDEBARDATA', $letext);
 						}
 						

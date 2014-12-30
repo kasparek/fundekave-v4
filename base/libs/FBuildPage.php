@@ -281,13 +281,15 @@ class FBuildPage {
 			}
 		}
 		if($user->pageVO) {
-			$user->pageVO->tplVars['NUMCOLMAIN'] = 9;
+			$user->pageVO->tplVars['NUMCOLMAIN'] = FConf::get('settings','maincol-numcol');
 			
 			if(FConf::get('settings','mid_col')) {
 				if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
 					$tpl->touchBlock('midcol');
-					$user->pageVO->tplVars['NUMCOLMAIN'] -= 2;
+					$midcolNumCol = FConf::get('settings','midcol-numcol');
+					$user->pageVO->tplVars['NUMCOLMAIN'] -= $midcolNumCol;
 					$midcolStatic = FConf::get('settings','midcol-static');
+					$user->pageVO->tplVars['NUMCOLMID'] = $midcolNumCol;
 					if($midcolStatic) {
 						$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
 						if(!empty($pageListOut)) {
