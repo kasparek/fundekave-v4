@@ -1,0 +1,1 @@
+Community social server - hosting photo galleries, blogs, forums, user/permissions management, internal message system.
