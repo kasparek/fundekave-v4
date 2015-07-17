@@ -1,4 +1,24 @@
 TODO:
-- text <br> dvojity
+
+- rich text area
+
+!!!!! - text <br> dvojity - rozdil na Macovi a PC?
+
+
 - kalendar
 - chat
+
+- posta na androidu neodesila
+
+
+TIPS & TRICKS:
+handling time php/mysql - http://jokke.dk/blog/2007/07/timezones_in_mysql_and_php
+
+SQL
+swap columns - set itemId=userId,userId=@temp WHERE (@temp:=itemId) IS NOT NULL
+
+
+- blog post from email (title,position,text,?image?)
+- gallery from picasa gallery
+
+
