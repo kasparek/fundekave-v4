@@ -26,6 +26,8 @@ class sidebar_galeryRand {
 		$itemVO->options=array('showPage'=>true);
 		$itemVO->prepare();
 		$itemVO->editable = false;
-		return '<h3><a href="?k=gamas-foto-mix">Foto mix</a></h3>'.$itemVO->render().'';
+		return $itemVO->render()
+		.''
+		.'<div style="text-align: center;"><h3><a href="?k=gamas-foto-mix" title="Sto fotek z cele historie">100 fotek</a></h3></div>';
 	}
 }

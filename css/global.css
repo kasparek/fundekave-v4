@@ -222,7 +222,12 @@ clear: both;
 	-webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 	box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-#sidebar h3 {
+
+#sidebar, #panelmidcol {
+	margin-top: 26px;
+}
+
+#sidebar h3, #panelmidcol h3 {
 	margin: 5px 0;
 	font-size: 18px;
 }

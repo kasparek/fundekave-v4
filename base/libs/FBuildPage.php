@@ -291,7 +291,7 @@ class FBuildPage {
 					$midcolStatic = FConf::get('settings','midcol-static');
 					$user->pageVO->tplVars['NUMCOLMID'] = $midcolNumCol;
 					if($midcolStatic) {
-						$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true));
+						$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true,'sort'=>'dateCreated desc'));
 						if(!empty($pageListOut)) {
 							$user->pageVO->tplVars['MIDCOLSTATIC'] = '-static';
 							$user->pageVO->tplVars['MIDCOL'] = $pageListOut;

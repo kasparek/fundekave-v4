@@ -55,17 +55,31 @@ class page_PagesList implements iPage {
 			$fPages->addWhere("sys_pages.pageIdTop = '".SITE_STRICT."'");
 		}
 		$inDate = $user->inDate();
+		
+		$sort = false;
+		if(!empty($override['sort'])) {
+			$sort = $override['sort'];
+		}
+		
 		if($typeId == 'galery') {
 			if(!empty($user->pageVO->pageIdTop)) {
 				$fPages->addWhere("sys_pages.pageIdTop = '".$user->pageVO->pageIdTop."'");
 			}
 			if($inDate) $fPages->addWhere("sys_pages.dateContent like '".$inDate."%'");
-			$fPages->setOrder("dateContent desc");
+			if($sort) {
+				$fPages->setOrder($sort);
+			} else {
+				$fPages->setOrder("dateContent desc");
+			}
 			if(!$user->idkontrol) $fPages->addWhere('sys_pages.cnt>0');
 		} else {
 			$fPages->joinOnPropertie('itemIdLast');
 			if($inDate) $fPages->addWhere("sys_pages.dateUpdated like '".$inDate."%'");
-			$fPages->setOrder("dateUpdated desc");
+			if($sort) {
+				$fPages->setOrder($sort);
+			} else {
+				$fPages->setOrder("dateUpdated desc");
+			}
 		}
 
 		$perPage = $user->pageVO->perPage();

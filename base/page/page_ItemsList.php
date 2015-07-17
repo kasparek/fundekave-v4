@@ -274,6 +274,11 @@ class page_ItemsList implements iPage {
 				$fItems->setPage($pageVO->pageId);
 			}
 			$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
+		} else {
+			//DO NOT include galery items (photos) in top feed
+			if(!FConf::get('settings','top_feed_include_galery_items')) {
+				$fItems->addWhere("typeId!='galery'");
+			}
 		}
 
 		if($user->categoryVO) {

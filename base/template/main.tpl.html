@@ -130,9 +130,7 @@
 				<!-- BEGIN breadcrumb --><li><a href="{BREADURL}">{BREADNAME}</a></li><!-- END breadcrumb -->
 				<li class="active">{BREADHARD}</li>
 			</ol><!-- END breadcrumbs -->
-
 <!-- BEGIN pageheading --><h1 id="pageHead">{PAGEHEAD}</h1><!-- END pageheading -->
-
 <div id="sysmsgBox">
 <!-- BEGIN sysmsg -->
 <div class="alert alert-{MSGPRIORITY} alert-dismissable">
@@ -141,14 +139,14 @@
 </div>
 <!-- END sysmsg -->
 </div>
-
 <!-- BEGIN content -->{MAINDATA}<!-- END content -->
 		</div>
-		<!-- BEGIN midcol -->
-		<div id="panelmidcol" class="midcol col-md-{NUMCOLMID} sidebar-content{MIDCOLSTATIC}" data-src="midcol" data-delay="500">
-		{MIDCOL}
-		</div>
-		<!-- END midcol -->
+		<!-- BEGIN midcol --><div class="midcol col-md-{NUMCOLMID}">
+			<div id="panelmidcol" class="sidebar-content{MIDCOLSTATIC}" data-src="midcol" data-delay="500">
+			<h3>Galerie</h3>
+			{MIDCOL}
+			</div>
+		</div><!-- END midcol -->
 		<div class="col-md-3">
 			<!-- BEGIN sidebar --><div id="sidebar">
 			<!-- BEGIN sidebar-block --><!-- BEGIN sidebar-heading --><h3>{SIDEBARHEAD}</h3><!-- END sidebar-heading -->
