@@ -350,7 +350,6 @@ class page_ItemsList implements iPage {
 
 		if($pageVO->inludeGaleries()) {
 			$fItems->userIdForPageAccess=$user->userVO->userId;
-			$fItems->cacheResults = 'f';
 			$fItems->setTypeLimit('galery',3);
 		}
 		
@@ -394,8 +393,10 @@ class page_ItemsList implements iPage {
 
 		$uid = $fItems->getUID($from, $perPage+1);
 		$grpid = 'page/'.($typeId!='top'?$pageVO->pageId:'top').'/list';
-		$cache = FCache::getInstance('f');
-		$data = $cache->getData($uid,$grpid);
+		
+		$data = false;
+		//$cache = FCache::getInstance('f');
+		//$data = $cache->getData($uid,$grpid);
 		
 		if($data===false) {
 		//$fItems->debug=1;
@@ -552,7 +553,7 @@ class page_ItemsList implements iPage {
 			if(!empty($readed)) {
 				FCommand::run(ITEM_READED,$readed);
 			} else {
-				$cache->setData($data,$uid,$grpid);
+				//$cache->setData($data,$uid,$grpid);
 			}
 		}
 		return $data;

@@ -72,7 +72,15 @@ if($user->pageVO) {
 }
 
 //---generate page
-$html = FBuildPage::show( $data );
+//experimantal caching on page layer
+$ident = md5(serialize($_GET)).'user'.$user->userVO->userId;
+$cache = FCache::getInstance('f');
+$html = $cache->getData($ident);
+
+if(!$html) {
+	$html = FBuildPage::show( $data );
+	$cache->setData($html);
+}
 
 header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));
 if(!isset($_GET['nooutput'])) echo $html;

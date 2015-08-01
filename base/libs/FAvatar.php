@@ -37,7 +37,7 @@ class FAvatar {
 		$cacheId = $avatarUserId;
 		$cacheGrp = 'avatar';
 		
-		$cache = FCache::getInstance('f',0);
+		$cache = FCache::getInstance('l');
 		$ret = $cache->getData($cacheId,$cacheGrp);
 		if(false !== $ret) return $ret;
 

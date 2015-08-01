@@ -67,6 +67,10 @@ var ImgNext = new function(){
 		o.i.show();
 		o.next[o.i.data('i')] = o.i.attr('src');
 		Resize.force();
+		
+		if(!Fullscreen.isFullscreen)
+			$("html, body").animate({ scrollTop: o.i.offset().top - (($(window).height() - o.i.height()) / 2) }, 600);
+		
 		Slideshow.next();
 	};
 	o.hud = function() {
@@ -186,8 +190,7 @@ function imgResizeToFit(img, hw, hh, isFullscreen){
 	var iw = img.width(), ih = img.height(), th = hh;
 	if(iw < hw) hw=iw;
 	if(ih < hh) hh=ih;
-	var r = Math.min(hw / iw, hh / ih);
-	img.css('height', Math.round(ih * r)).css('width', Math.round(iw * r));
+	var r = Math.min(hw / iw, hh / ih), nh = Math.round(ih * r);
+	img.css('height', nh).css('width', Math.round(iw * r));
 	if(isFullscreen && th>ih) img.css('margin-top', (th - ih) / 2);
-	//img.css('left',(hw - iw) / 2).css('top', (hh - ih) / 2).css('position','absolute');
 }

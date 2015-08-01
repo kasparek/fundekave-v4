@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Authentication Required"
-AuthUserFile /data/www/vhosts/awake33.com/httpdocs/svn/.htpasswd
-Require valid-user

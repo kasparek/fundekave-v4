@@ -91,12 +91,13 @@ class page_PagesList implements iPage {
 		}
 		$fPages->setLimit( $from, $perPage+1 );
 		
-		$uid = $fPages->getUID($from, $perPage+1);
-		if(!empty($override['nopager'])) $uid.='nopager';
-		if(is_array($typeId)) $cachetype= count($typeId)>1 ? 'all' : $typeId[0]; else $cachetype = $typeId;
-		$grpid = 'pages/'.($cachetype?$cachetype:'all');
-		$cache = FCache::getInstance('f');
-		$data = $cache->getData($uid,$grpid);
+		//$uid = $fPages->getUID($from, $perPage+1);
+		//if(!empty($override['nopager'])) $uid.='nopager';
+		//if(is_array($typeId)) $cachetype= count($typeId)>1 ? 'all' : $typeId[0]; else $cachetype = $typeId;
+		//$grpid = 'pages/'.($cachetype?$cachetype:'all');
+		//$cache = FCache::getInstance('f');
+		//$data = $cache->getData($uid,$grpid);
+		$data = false;
 		if($data===false) {
 			$arr = $fPages->getContent();
 			$totalItems = count($arr);
@@ -160,7 +161,7 @@ class page_PagesList implements iPage {
 			}
 			$data = $tpl->get();
 		
-			$cache->setData($data,$uid,$grpid);
+			//$cache->setData($data,$uid,$grpid);
 		}
 		
 		if(!empty($override['return'])) return $data;

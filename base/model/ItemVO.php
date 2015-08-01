@@ -218,8 +218,8 @@ class ItemVO extends Fvob {
 			}
 				
 			$this->itemList = null;
-			$cache = FCache::getInstance('f');
-			$cache->invalidateData('itemsIdList', 'page/'.$this->pageId.'/data');
+			//$cache = FCache::getInstance('f');
+			//$cache->invalidateData('itemsIdList', 'page/'.$this->pageId.'/data');
 		}
 		//---update in cache
 		$this->memFlush();
@@ -360,14 +360,15 @@ class ItemVO extends Fvob {
 
 	function getPageItemsId() {
 		if(!empty($this->itemList)) return $this->itemList;
-		$cache = FCache::getInstance('f');
-		if(($arr = $cache->getData('itemsIdList', 'page/'.$this->pageId.'/data')) === false) {
-			$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) 
-			and pageId='".$this->pageId."' order by ".$this->pageVO->itemsOrder().",itemId desc";
-			$arr = FDBTool::getCol($q);
-			$cache->setData($arr,'itemsIdList', 'page/'.$this->pageId.'/data');
-			$this->itemList = $arr;
-		}
+		//cache disabled - cached on top level
+		//$cache = FCache::getInstance('f',3600);
+		//if(($arr = $cache->getData('itemsIdList', 'page/'.$this->pageId.'/data')) === false) {
+		$q = "select itemId from sys_pages_items where (itemIdTop is null or itemIdTop=0) 
+		and pageId='".$this->pageId."' order by ".$this->pageVO->itemsOrder().",itemId desc";
+		$arr = FDBTool::getCol($q);
+		//$cache->setData($arr,'itemsIdList', 'page/'.$this->pageId.'/data');
+		$this->itemList = $arr;
+		//}
 		return $arr;
 	}
 

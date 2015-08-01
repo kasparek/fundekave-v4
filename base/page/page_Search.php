@@ -56,7 +56,7 @@ class page_Search implements iPage {
 
 	static function invalidate() {
 		$user = FUser::getInstance();
-		$mainCache = FCache::getInstance('f',0);
+		$mainCache = FCache::getInstance('f');
 		$mainCache->invalidateGroup('search-'.$user->userVO->userId);
 	}
 
@@ -78,7 +78,7 @@ class page_Search implements iPage {
 		if(!empty($pageSearchCache['filtrPages'])) {
 			$p = 1;
 			if(isset($_GET['pp'])) $p = (int) $_GET['pp'];
-			$mainCache = FCache::getInstance('f',0);
+			$mainCache = FCache::getInstance('f',3600);
 			$cacheKey = $pageSearchCache['filtrPages'].'-p-'.(($p>1)?('-p-'.$p):(''));
 			$cacheGrp = 'search-'.$user->userVO->userId;
 			$PAGES = $mainCache->getData($cacheKey,$cacheGrp);
@@ -144,7 +144,7 @@ class page_Search implements iPage {
 		if(!empty($pageSearchCache['filtrItems'])) {
 			$p = 1;
 			if(isset($_GET['pi'])) $p = (int) $_GET['pi'];
-			$mainCache = FCache::getInstance('f',0);
+			$mainCache = FCache::getInstance('f',3600);
 			$cacheKey = $pageSearchCache['filtrItems'].'-i-'.(($p>1)?('-p-'.$p):(''));
 			$cacheGrp = 'search-'.$user->userVO->userId;
 			$ITEMS = $mainCache->getData($cacheKey,$cacheGrp);
@@ -173,7 +173,7 @@ class page_Search implements iPage {
 		if(!empty($pageSearchCache['filtrUsers'])) {
 			$p = 1;
 			if(isset($_GET['pu'])) $p = (int) $_GET['pu'];
-			$mainCache = FCache::getInstance('f',0);
+			$mainCache = FCache::getInstance('f',3600);
 			$cacheKey = $pageSearchCache['filtrUsers'].'-u-'.(($p>1)?('-p-'.$p):(''));
 			$cacheGrp = 'search-'.$user->userVO->userId;
 			$USERS = $mainCache->getData($cacheKey,$cacheGrp);

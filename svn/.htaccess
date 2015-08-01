@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Authentication Required"
-AuthUserFile D:\workspace\fdk5/svn/.htpasswd
-Require valid-user

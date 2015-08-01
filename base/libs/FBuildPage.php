@@ -39,123 +39,115 @@ class FBuildPage {
 	static function getBreadcrumbs() {
 		$user = FUser::getInstance();
 		
-		//$cacheid = 'breadcrumbs';
-		//$grpid = 'page/'.$user->pageId;
-		//$cache = FCache::getInstance('f');
-		//$breadcrumbs = $cache->getData($cacheid,$grpid);
-		$breadcrumbs=false;
+		$breadcrumbs = array();
+		//breadcrumbs
+		$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
+		if($pageIdTop!=$user->pageVO->pageId) {
+			$pageTop = FactoryVO::get('PageVO',$pageIdTop);
+		} else {
+			$pageTop = $user->pageVO;
+		}
+		if($pageTop->pageId) {
+			$homesite = $pageTop->prop('homesite');
+			if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
+			$breadcrumbs[] = array('name'=>str_replace('http://','',$homesite),'url'=>$homesite);
+		}
 		
-		if($breadcrumbs===false) {
-			$breadcrumbs = array();
-			//breadcrumbs
-			$pageIdTop = $user->pageVO->pageIdTop ? $user->pageVO->pageIdTop : HOME_PAGE;
-			if($pageIdTop!=$user->pageVO->pageId) {
-				$pageTop = FactoryVO::get('PageVO',$pageIdTop);
-			} else {
-				$pageTop = $user->pageVO;
-			}
-			if($pageTop->pageId) {
-				$homesite = $pageTop->prop('homesite');
-				if(strpos($pageTop->prop('homesite'),'http:')===false) $homesite = 'http://'.$homesite;
-				$breadcrumbs[] = array('name'=>str_replace('http://','',$homesite),'url'=>$homesite);
-			}
-			
-			if($pageIdTop!=$user->pageVO->pageId) {
+		if($pageIdTop!=$user->pageVO->pageId) {
+			//typ
+			$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
+			$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId;
+			$typeCrumb=false;
+			$pageCrumb=true;
+			$pageCategory=0;
+			if(!empty($typeId)) {
+				//prehled
+				$breadcrumbs[] = array('name'=>FDBTool::getOne("select name from sys_pages where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
 				//typ
-				$typeId = isset(FLang::$TYPEID[$user->pageVO->typeId]) ? $user->pageVO->typeId : '';
-				$typeId = isset(FLang::$TYPEID[$user->pageParam]) ? $user->pageParam : $typeId;
-				$typeCrumb=false;
-				$pageCrumb=true;
-				$pageCategory=0;
-				if(!empty($typeId)) {
-					//prehled
-					$breadcrumbs[] = array('name'=>FDBTool::getOne("select name from sys_pages where pageId='foall'"),'url'=>FSystem::getUri('','foall',''));
-					//typ
-					$typeCrumb=true;
+				$typeCrumb=true;
+				$pageCrumb=false;
+				$breadcrumbs[] = array('name'=>FLang::$TYPEID[$typeId],'url'=>FSystem::getUri('','foall',$typeId));
+					
+				if($user->pageVO->categoryId > 0) $pageCategory = $user->pageVO->categoryId;
+			}
+			if(empty($pageCategory)) {
+				if($user->categoryVO && $user->pageVO->typeId=='top') $pageCategory=$user->categoryVO->categoryId;
+			}
+	
+			//category
+			if($pageCategory>0) {
+				$categoryArr = FCategory::getCategory($pageCategory);
+				if(!empty($categoryArr)) {
 					$pageCrumb=false;
-					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$typeId],'url'=>FSystem::getUri('','foall',$typeId));
-						
-					if($user->pageVO->categoryId > 0) $pageCategory = $user->pageVO->categoryId;
-				}
-				if(empty($pageCategory)) {
-					if($user->categoryVO && $user->pageVO->typeId=='top') $pageCategory=$user->categoryVO->categoryId;
-				}
-		
-				//category
-				if($pageCategory>0) {
-					$categoryArr = FCategory::getCategory($pageCategory);
-					if(!empty($categoryArr)) {
-						$pageCrumb=false;
-						if($typeCrumb==false) $breadcrumbs[] = array('name'=>FLang::$TYPEID[$categoryArr[1]],'url'=>FSystem::getUri('','foall',$categoryArr[1]));
-						$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$pageCategory,'foall',$categoryArr[1]));
-					}
-				}
-		
-				
-				if(!empty($user->year)) {
-					if($user->day) {
-						$dateStr = date(FConf::get('internationalization','date'),strtotime($user->year.'-'.$user->month.($user->day?'-'.$user->day:'')));
-					} else if($user->month) {
-						$dateStr = FLang::$MONTHS[$user->month].' '.$user->year;
-					} else {
-						$dateStr = $user->year;
-					}
-					$breadcrumbs[] = array('name'=>$dateStr,'url'=>FSystem::getUri('date='.$user->inDate()));
-				}
-				
-				if(isset(FLang::$TYPEID[$user->pageVO->typeId])) $pageCrumb=true;
-				//stranka
-				if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
-		
-			} else {
-				if($user->pageVO->typeId!='top' && SITE_STRICT!=$user->pageVO->pageId) {
-					$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
-				}
-			}
-//CATEGORY
-			$itemCategory=0;
-			if($user->categoryVO && $user->pageVO->typeId!='top') $itemCategory=$user->categoryVO->categoryId;
-			if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
-			if($itemCategory>0) {
-				$categoryArr = FCategory::getCategory($itemCategory);
-				if(!empty($categoryArr))
-				$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
-			}
-//ITEM
-			if($user->itemVO) {
-				$itemName = $user->itemVO->addon;
-				if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
-				if(!empty($itemName)) {
-					$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId,'',''));
+					if($typeCrumb==false) $breadcrumbs[] = array('name'=>FLang::$TYPEID[$categoryArr[1]],'url'=>FSystem::getUri('','foall',$categoryArr[1]));
+					$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$pageCategory,'foall',$categoryArr[1]));
 				}
 			}
 	
-			if($user->whoIs>0) {
-				$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
+			
+			if(!empty($user->year)) {
+				if($user->day) {
+					$dateStr = date(FConf::get('internationalization','date'),strtotime($user->year.'-'.$user->month.($user->day?'-'.$user->day:'')));
+				} else if($user->month) {
+					$dateStr = FLang::$MONTHS[$user->month].' '.$user->year;
+				} else {
+					$dateStr = $user->year;
+				}
+				$breadcrumbs[] = array('name'=>$dateStr,'url'=>FSystem::getUri('date='.$user->inDate()));
 			}
 			
-			if(!empty($user->pageParam)) {
-					switch($user->pageParam) {
-						case 'e':
-						case 'sa':
-							$breadcrumbs[] = array('name'=>'Nastaveni');
-							break;
-						case 'u':
-							$breadcrumbs[] = array('name'=>'Upravit');
-							break;
-						case 'h':
-							$breadcrumbs[] = array('name'=>'Nastenka');
-							break;
-						case 'm':
-							$breadcrumbs[] = array('name'=>'Mapa');
-							break;
-						//TODO: use localization file
-					}
-				}
-			
-			unset($breadcrumbs[count($breadcrumbs)-1]['url']);
-			//$cache->setData($breadcrumbs,$cacheid,$grpid);
+			if(isset(FLang::$TYPEID[$user->pageVO->typeId])) $pageCrumb=true;
+			//stranka
+			if(!empty($user->pageVO->name) && $pageCrumb) $breadcrumbs[] = array('name'=>$user->pageVO->name,'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+	
+		} else {
+			if($user->pageVO->typeId!='top' && SITE_STRICT!=$user->pageVO->pageId) {
+				$breadcrumbs[] = array('name'=>FLang::$TYPEID[$user->pageVO->typeId],'url'=>FSystem::getUri('',$user->pageVO->pageId,''));
+			}
 		}
+//CATEGORY
+		$itemCategory=0;
+		if($user->categoryVO && $user->pageVO->typeId!='top') $itemCategory=$user->categoryVO->categoryId;
+		if($user->itemVO) $itemCategory = $user->itemVO->categoryId;
+		if($itemCategory>0) {
+			$categoryArr = FCategory::getCategory($itemCategory);
+			if(!empty($categoryArr))
+			$breadcrumbs[] = array('name'=>$categoryArr[2],'url'=>FSystem::getUri('c='.$itemCategory,$user->pageVO->pageId,''));
+		}
+//ITEM
+		if($user->itemVO) {
+			$itemName = $user->itemVO->addon;
+			if(!empty($user->itemVO->htmlName)) $itemName = $user->itemVO->htmlName;
+			if(!empty($itemName)) {
+				$breadcrumbs[] = array('name'=>$itemName,'url'=>FSystem::getUri('i='.$user->itemVO->itemId,'',''));
+			}
+		}
+
+		if($user->whoIs>0) {
+			$breadcrumbs[] = array('name'=>FUser::getgidname($user->whoIs),'url'=>FSystem::getUri('who='.$user->whoIs));
+		}
+		
+		if(!empty($user->pageParam)) {
+				switch($user->pageParam) {
+					case 'e':
+					case 'sa':
+						$breadcrumbs[] = array('name'=>'Nastaveni');
+						break;
+					case 'u':
+						$breadcrumbs[] = array('name'=>'Upravit');
+						break;
+					case 'h':
+						$breadcrumbs[] = array('name'=>'Nastenka');
+						break;
+					case 'm':
+						$breadcrumbs[] = array('name'=>'Mapa');
+						break;
+					//TODO: use localization file
+				}
+			}
+		
+		unset($breadcrumbs[count($breadcrumbs)-1]['url']);
+		
 		return $breadcrumbs;
 	}
 
@@ -389,45 +381,48 @@ class FBuildPage {
 			if(!empty($user->pageVO->description)) $tpl->setVariable("DESCRIPTION", str_replace('"','',$user->pageVO->description));
 			if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 			
-			$topbanner = $pageVOTop->prop('topbanner');
-			if(!empty($topbanner)) {
-				$topbannerData = array();
-				$topbanner = explode("\n",$topbanner);
-				if(strpos($topbanner[0],';')!==false) $firstBanner = explode(';',$topbanner[0]);
-				else $firstBanner = explode(',',$topbanner[0]);
-				if($firstBanner[4]>0) {
-					$cache = FCache::getInstance('d',$firstBanner[4]);
-					$topbannerCache = $cache->getData($pageVOTop->pageId,'topbanner');
-					if($topbannerCache!==false) $topbannerData = $topbannerCache;
-				}
-				if(empty($topbannerData)) {
-					$topbannerRow = array_shift($topbanner);
-					array_push($topbanner,$topbannerRow);
-					$pageVOTop->prop('topbanner',implode("\n",$topbanner));
-					$topbannerData['h'] = $firstBanner[1];
-					$topbannerData['v'] = $firstBanner[2];
-					$topbannerData['m'] = $firstBanner[3];
-					
-					if(strpos($firstBanner[0],'http')===0) $topbannerData['i'] = $firstBanner[0];
-					else {
-						$itemVO = new ItemVO($firstBanner[0],true);
-						if($itemVO->itemId) {
-							$topbannerData['i'] = $itemVO->getImageUrl(null,'1600x1600/prop',true);
-							$pageBanner = FactoryVO::get('PageVO',$itemVO->pageId);
-							$topbannerData['t'] = $pageBanner->get('name');
-							$topbannerData['u'] = FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'');
-						}
+			//do not do topbanner when item is gallery
+			if($user->pageVO->typeId!='galery' && empty($user->itemVO)) {
+				$topbanner = $pageVOTop->prop('topbanner');
+				if(!empty($topbanner)) {
+					$topbannerData = array();
+					$topbanner = explode("\n",$topbanner);
+					if(strpos($topbanner[0],';')!==false) $firstBanner = explode(';',$topbanner[0]);
+					else $firstBanner = explode(',',$topbanner[0]);
+					if($firstBanner[4]>0) {
+						$cache = FCache::getInstance('d',$firstBanner[4]);
+						$topbannerCache = $cache->getData($pageVOTop->pageId,'topbanner');
+						if($topbannerCache!==false) $topbannerData = $topbannerCache;
 					}
-					$cache->setData($topbannerData);
-				}
+					if(empty($topbannerData)) {
+						$topbannerRow = array_shift($topbanner);
+						array_push($topbanner,$topbannerRow);
+						$pageVOTop->prop('topbanner',implode("\n",$topbanner));
+						$topbannerData['h'] = $firstBanner[1];
+						$topbannerData['v'] = $firstBanner[2];
+						$topbannerData['m'] = $firstBanner[3];
+						
+						if(strpos($firstBanner[0],'http')===0) $topbannerData['i'] = $firstBanner[0];
+						else {
+							$itemVO = new ItemVO($firstBanner[0],true);
+							if($itemVO->itemId) {
+								$topbannerData['i'] = $itemVO->getImageUrl(null,'1600x1600/prop',true);
+								$pageBanner = FactoryVO::get('PageVO',$itemVO->pageId);
+								$topbannerData['t'] = $pageBanner->get('name');
+								$topbannerData['u'] = FSystem::getUri('i='.$itemVO->itemId,$itemVO->pageId,'');
+							}
+						}
+						$cache->setData($topbannerData);
+					}
 
-				if($topbannerData) {
-					$tpl->setVariable('TOPBANHEIGHT',$topbannerData['h']);
-					$tpl->setVariable('TOPBANMARGIN',$topbannerData['m']);
-					$tpl->setVariable('TOPBANVALIGN',$topbannerData['v']);
-					if(!empty($topbannerData['u'])) $tpl->setVariable('TOPBANURL',$topbannerData['u']);
-					if(!empty($topbannerData['t'])) $tpl->setVariable('TOPBANTITLE',$topbannerData['t']);
-					$tpl->setVariable('TOPBANIMG',$topbannerData['i']);
+					if($topbannerData) {
+						$tpl->setVariable('TOPBANHEIGHT',$topbannerData['h']);
+						$tpl->setVariable('TOPBANMARGIN',$topbannerData['m']);
+						$tpl->setVariable('TOPBANVALIGN',$topbannerData['v']);
+						if(!empty($topbannerData['u'])) $tpl->setVariable('TOPBANURL',$topbannerData['u']);
+						if(!empty($topbannerData['t'])) $tpl->setVariable('TOPBANTITLE',$topbannerData['t']);
+						$tpl->setVariable('TOPBANIMG',$topbannerData['i']);
+					}
 				}
 			}
 		}
@@ -435,24 +430,15 @@ class FBuildPage {
 		//---BODY PARTS
 		
 		//---MAIN MENU
-		$cache = FCache::getInstance($user->idkontrol?'s':'f',0);
-		$menu = $cache->getData('mainmenu');
-		//TODO:remove
-		$menu = false;
-		if($menu===false) {
-			$arrMenuItems = FMenu::topMenu();
-			while($arrMenuItems) {
-				$menuItem = array_shift($arrMenuItems);
-				$tpl->setVariable('LINK',$menuItem['LINK']);
-				$tpl->setVariable('TEXT',$menuItem['TEXT']);
-				$tpl->parse("topmenuitem");
-			}
-			$tpl->parse('menu');
-			$menu = $tpl->get('menu');
-			$cache->setData($menu);
-		} else {
-			$tpl->setVariable("CACHEDMENU", $menu);
+		$arrMenuItems = FMenu::topMenu();
+		while($arrMenuItems) {
+			$menuItem = array_shift($arrMenuItems);
+			$tpl->setVariable('LINK',$menuItem['LINK']);
+			$tpl->setVariable('TEXT',$menuItem['TEXT']);
+			$tpl->parse("topmenuitem");
 		}
+		$tpl->parse('menu');
+		$menu = $tpl->get('menu');
 		FProfiler::write('FBuildPage--FSystem::topMenu');
 		
     //---BREADCRUMBS & SECONDARY MENU
@@ -504,6 +490,9 @@ class FBuildPage {
 				$showSidebar = !$user->pageVO->prop('hideSidebar');
 			}
 			if($showSidebar) {
+				//TODO: cache sidebar here if needed
+				//$this->pageId . '-' . ($this->userId * 1), 'sidebar/set' - for sidebar set
+				//if($user->pageAccess === false) - do not show sidebar
 				$fsidebar = new FSidebar(($user->pageVO)?($user->pageVO->pageId):(''), $user->userVO->userId, ($user->pageVO)?( $user->pageVO->typeId ):(''));
 				$fsidebar->load();
 				$hasSidebarData = $fsidebar->show();

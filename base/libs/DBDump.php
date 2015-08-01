@@ -118,7 +118,7 @@ class DBDump {
 		if(file_exists($filename)) {
 			unlink($filename);
 		}
-		
+		echo 'Dumping '.$tableName.' into: '.$filename."<br>\n";
 		$countRes = mysql_query('select count(1) from '.$tableName);
 		$countRow = mysql_fetch_row($countRes);
 		$numRows = $countRow[0];
@@ -188,10 +188,10 @@ class DBDump {
 		return $ret;		
 	}
 	
-	function dumpAll() {
+	function dumpAll($isUpdateTables=true) {
 		$this->importing = false;
 		$this->connect();
-		$this->getTables();
+		if($isUpdateTables) $this->getTables();
 		foreach($this->tableList as $table) {
 			if($this->dumpTable($table)) {
 				echo 'Table done: '.$table."<br />\n";

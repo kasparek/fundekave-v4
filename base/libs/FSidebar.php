@@ -28,76 +28,74 @@ class FSidebar extends FDBTool {
 	function load($allForPage = false) {
 		$this->panels = array();
 		$this->panelsUsed = array();
-		$cache = FCache::getInstance('f');
-		if(false === ($arrSidebar = $cache->getData($this->pageId . '-' . ($this->userId * 1), 'sidebar/set'))) {
-			$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible,''");
-			$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup in ('default','" . $this->pageType . "'))");
-			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-			$arrTmp = $this->getContent();
-			
-			$this->queryReset();
-			$this->setSelect("f.functionName,if(fp.name is not null,fp.name,f.name) as name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible,fp.options");
-			$this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='" . $this->pageId . "'");
-			if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
-			$arr2 = $this->getContent();
-			
-			if(!empty($arr2)) $arrTmp = array_merge($arrTmp, $arr2);
-			
-			$arrGrouped = array();
-			// ---group
-			foreach( $arrTmp as $row ) {
-				$setByUser = false;
-				$setByPage = false;
-				$setByDefault = false;
-				if(!isset($arrGrouped[$row[0]])) {
-					$newRow = array();
-					$newRow['functionName'] = $row[0];
-					$newRow['name'] = $row[1];
-					$newRow['public'] = $row[2];
-					$newRow['userIdOwner'] = $row[3];
-					$newRow['pageIdOrigin'] = $row[4];
-					$newRow['content'] = $row[5];
-					$newRow['options'] = $row[6];
-					$newRow['data'] = $row[12];
-				} else {
-					$newRow = $arrGrouped[$row[0]];
-					$newRow['name'] = $row[1];
-					$setByUser = (!empty($newRow['userId'])) ? true : false;
-					$setByPage = (!empty($newRow['pageId'])) ? true : false;
-					$setByDefault = (!empty($newRow['group'])) ? true : false;
-					$newRow['data'] = $row[12];
-				}
-				if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[7];
-				if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[8];
-				// if(empty($newRow['userId']) && !empty($row[9])) $newRow['userId'] = $row[8];
-				if(!empty($newRow['group']) && $setByPage === false && $setByUser === false) {
-					// ---defaults
-					$newRow['ord'] = $row[10];
-					$newRow['visible'] = $row[11];
-					$newRow['origin'] = 'system';
-				}
-				if(!empty($newRow['pageId']) && $setByUser === false) {
-					// ---bigger priority
-					$newRow['ord'] = $row[10];
-					$newRow['visible'] = $row[11];
-					$newRow['origin'] = 'page';
-				}
-				$arrGrouped[$row[0]] = $newRow;
+		
+		$this->setSelect("f.functionName,f.name,f.public,f.userId,f.pageId,f.content,f.options,fd.leftpanelGroup,'','',fd.ord,fd.visible,''");
+		$this->addJoin("join sys_leftpanel_defaults as fd on fd.functionName = f.functionName and (fd.leftpanelGroup in ('default','" . $this->pageType . "'))");
+		if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
+		$arrTmp = $this->getContent();
+		
+		$this->queryReset();
+		$this->setSelect("f.functionName,if(fp.name is not null,fp.name,f.name) as name,f.public,f.userId,f.pageId,f.content,f.options,'',fp.pageId,'',fp.ord,fp.visible,fp.options");
+		$this->addJoin("join sys_leftpanel_pages as fp on fp.functionName = f.functionName and fp.pageId='" . $this->pageId . "'");
+		if(empty($this->userId) && $allForPage === false) $this->addWhere('f.public=1');
+		$arr2 = $this->getContent();
+		
+		if(!empty($arr2)) $arrTmp = array_merge($arrTmp, $arr2);
+		
+		$arrGrouped = array();
+		// ---group
+		foreach( $arrTmp as $row ) {
+			$setByUser = false;
+			$setByPage = false;
+			$setByDefault = false;
+			if(!isset($arrGrouped[$row[0]])) {
+				$newRow = array();
+				$newRow['functionName'] = $row[0];
+				$newRow['name'] = $row[1];
+				$newRow['public'] = $row[2];
+				$newRow['userIdOwner'] = $row[3];
+				$newRow['pageIdOrigin'] = $row[4];
+				$newRow['content'] = $row[5];
+				$newRow['options'] = $row[6];
+				$newRow['data'] = $row[12];
+			} else {
+				$newRow = $arrGrouped[$row[0]];
+				$newRow['name'] = $row[1];
+				$setByUser = (!empty($newRow['userId'])) ? true : false;
+				$setByPage = (!empty($newRow['pageId'])) ? true : false;
+				$setByDefault = (!empty($newRow['group'])) ? true : false;
+				$newRow['data'] = $row[12];
 			}
-			// ---sort
-			foreach( $arrGrouped as $k => $row ) {
-				$arrSorted[$k] = $row['ord'];
+			if(empty($newRow['group']) && !empty($row[7])) $newRow['group'] = $row[7];
+			if(empty($newRow['pageId']) && !empty($row[8])) $newRow['pageId'] = $row[8];
+			// if(empty($newRow['userId']) && !empty($row[9])) $newRow['userId'] = $row[8];
+			if(!empty($newRow['group']) && $setByPage === false && $setByUser === false) {
+				// ---defaults
+				$newRow['ord'] = $row[10];
+				$newRow['visible'] = $row[11];
+				$newRow['origin'] = 'system';
 			}
-			asort($arrSorted, SORT_NUMERIC);
-			$arrFunctions = array_keys($arrSorted);
-			// ---get panels sorted
-			foreach( $arrFunctions as $functionName ) {
-				$arrFinal[] = $arrGrouped[$functionName];
-				$arrUsed[] = $functionName;
+			if(!empty($newRow['pageId']) && $setByUser === false) {
+				// ---bigger priority
+				$newRow['ord'] = $row[10];
+				$newRow['visible'] = $row[11];
+				$newRow['origin'] = 'page';
 			}
-			$arrSidebar = array('arrFinal'=>$arrFinal,'arrUsed'=>$arrUsed);
-			$cache->setData($arrSidebar);
+			$arrGrouped[$row[0]] = $newRow;
 		}
+		// ---sort
+		foreach( $arrGrouped as $k => $row ) {
+			$arrSorted[$k] = $row['ord'];
+		}
+		asort($arrSorted, SORT_NUMERIC);
+		$arrFunctions = array_keys($arrSorted);
+		// ---get panels sorted
+		foreach( $arrFunctions as $functionName ) {
+			$arrFinal[] = $arrGrouped[$functionName];
+			$arrUsed[] = $functionName;
+		}
+		$arrSidebar = array('arrFinal'=>$arrFinal,'arrUsed'=>$arrUsed);
+		
 		// ---sorted visible panels for given page and user if logged in
 		$this->panels = $arrSidebar['arrFinal'];
 		$this->panelsUsed = $arrSidebar['arrUsed'];
@@ -107,9 +105,12 @@ class FSidebar extends FDBTool {
 		$fnc = $panel['functionName'];
 		$letext = false;
 		$showBlock = true;
+		
+		/*
+		Database defined caching per block
+		Now the whole sidebar is cached when page built
 		$cacheId = 'cache';
 		$cacheGrp = 'sidebar/' . $fnc;
-		
 		if(strpos($panel['options'], 'cache') !== false) {
 			// ---member/non-member dependant block
 			if($panel['public'] == 0 || strpos($panel['options'], 'member') !== false) {
@@ -147,7 +148,7 @@ class FSidebar extends FDBTool {
 				$letext = $cache->getData($cacheId, $cacheGrp);
 			}
 		}
-		
+		*/
 		if($showBlock === true) {
 			if($letext === false) {
 				$class = 'sidebar_' . $fnc;

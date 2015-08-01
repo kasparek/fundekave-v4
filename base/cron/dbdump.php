@@ -1,27 +1,37 @@
 <?php
 //unblock system
-session_write_close();
 
 $host = FConf::get('db','hostspec');
 $user = FConf::get('db','username');
 $pass = FConf::get('db','password');
 $dbname = FConf::get('db','database');
 
-$baseDir = 'tmp/dbdump/';
-$today = date('Y-m-d');
+$baseDir = 'tmp/dbdump';
+$today = '/'.date('Y-m-d');
 $dumpdir = $baseDir.$today;
+if(!is_dir($baseDir)) mkdir($baseDir);
 if(!is_dir($dumpdir)) mkdir($dumpdir);
+
 $dumpdir .= '/';
 
 //---PHP DUMP style - slower but no need of command line
+session_write_close();
+
 $dbdump = new DBDump();
 $dbdump->srcServer = $host;
 $dbdump->srcUser = $user;
 $dbdump->srcPass = $pass;
 $dbdump->srcDB = $dbname;
-$dbdump->srcDumbPath = $dumpdir;
+$dbdump->srcDumpPath = $dbdump->tgtDumpPath = $dumpdir;
+echo 'Current dir: '.getcwd()."<br>\n";
+echo 'Table are being dumped into: '.$dbdump->srcDumpPath."<br>\n";
+$dbdump->importing = false;
+$dbdump->connect();
+$dbdump->importing = true;
+$dbdump->getTables();
+$dbdump->importing = false;
+$dbdump->dumpAll(false);
 
-$dump->dumpAll();
 
 //---COMMAND LINE style - not working at the moment, no permissions
 /*

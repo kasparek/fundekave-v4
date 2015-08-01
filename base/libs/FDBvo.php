@@ -7,11 +7,7 @@ class FDBvo extends FDBTool {
 		$this->columns = $vo->getColumns();
 		parent::__construct($vo->getTable(), $vo->getPrimaryCol());
 		$this->fetchmode = 1;
-		if(!isset($vo->cacheResults)) {
-			$this->cacheResults = 'l';
-		} else {
-			$this->cacheResults = $vo->cacheResults;
-		}
+		$this->cacheResults = 'l';
 		$this->vo = $vo;
 	}
 	

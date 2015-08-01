@@ -15,6 +15,9 @@ if(isset($_GET['update'])) {
   exit; 
 }
 
+//not working at the moment - OAuth2 implementation pending
+exit;
+
 $done = 0;
 $numTodo=10;
 
@@ -63,6 +66,7 @@ foreach($itemIdList as $itemId) {
 			$itemVO->setProperty('picasaPhoto',$picasaPhotoUrl);
 		} else {
 			echo 'Missing AlbumID';
+			$itemVO->setProperty('picasaPhoto','TODO');
 		}
 	
 		$done++;

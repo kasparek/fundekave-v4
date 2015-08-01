@@ -1,7 +1,7 @@
 <?php
 class sidebar_galeryRand {
 	static function show() {
-		$cache = FCache::getInstance('f');
+		$cache = FCache::getInstance('f',3600*24); //cache photo list for a day
 		$itemIdList = $cache->getData('fotorand','sidebar/galeryRand');
 		if(empty($itemIdList)) {
 			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId desc");

@@ -12,8 +12,7 @@ class page_fotoMashup implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
-		$cache = FCache::getInstance('f');
-		$cache->setConf(180);
+		$cache = FCache::getInstance('f',180);
 		$data = $cache->getData('fotomashup');
 		if(!$data) {
 			$allList = FDBTool::getCol("select itemId from sys_pages_items where typeId='galery' and public='1'".(SITE_STRICT ? " and pageIdTop='".SITE_STRICT."'" : '')." order by itemId");
