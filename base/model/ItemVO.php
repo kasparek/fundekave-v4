@@ -295,9 +295,10 @@ class ItemVO extends Fvob {
 				$picasaAlbumId = $this->pageVO->getProperty('picasaAlbum',false,true);
 				if(!$picasaAlbumId) {
 					//create album
-					$fgapps = FGApps::getInstance();
-					$picasaAlbumId = $fgapps->createAlbum($this->pageVO->name,$this->pageVO->description);
-					if($picasaAlbumId) $this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
+					//TODO: google API fix
+					//$fgapps = FGApps::getInstance();
+					//$picasaAlbumId = $fgapps->createAlbum($this->pageVO->name,$this->pageVO->description);
+					//if($picasaAlbumId) $this->pageVO->setProperty('picasaAlbum',$picasaAlbumId);
 				}
 				$picasaPhotoUrl = $this->getProperty('picasaPhoto',false,true);
 				if(!$picasaPhotoUrl) $this->setProperty('picasaPhoto','TODO');

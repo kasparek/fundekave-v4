@@ -73,6 +73,7 @@ if($user->pageVO) {
 
 //---generate page
 //experimantal caching on page layer
+$html = null;
 if(!$user->idkontrol) {
 	$ident = md5(serialize($_GET)).'user'.$user->userVO->userId;
 	$cache = FCache::getInstance('f');
