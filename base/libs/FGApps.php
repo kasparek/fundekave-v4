@@ -1,13 +1,4 @@
 <?php
-require_once 'Zend/Loader.php';
-Zend_Loader::loadClass('Zend_Gdata');
-Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
-Zend_Loader::loadClass('Zend_Gdata_Photos');
-Zend_Loader::loadClass('Zend_Gdata_Photos_UserQuery');
-Zend_Loader::loadClass('Zend_Gdata_Photos_AlbumQuery');
-Zend_Loader::loadClass('Zend_Gdata_Photos_PhotoQuery');
-Zend_Loader::loadClass('Zend_Gdata_App_Extension_Category');
-
 class FGApps {
 
   var $serviceName = Zend_Gdata_Photos::AUTH_SERVICE_NAME;
