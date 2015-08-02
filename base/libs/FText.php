@@ -44,6 +44,7 @@ class FText {
 	* function implement before any text is inserted into textarea
 	**/
 	static function textToTextarea($text) {
+		if(strpos($text, '<p>')===false) $text = str_replace("\n", "<br />\n", $text);
 		return $text;
 	}
 	
@@ -190,6 +191,7 @@ class FText {
 					$itemVO=new ItemVO();
 					$itemVO->pageId=$matches[1];
 					$itemVO->enclosure=$matches[2];
+					//TODO: instead of lightbox link to gallery detail?
 					if($itemVO->load()) {
 					  $local=true;
 					  //item load suceess

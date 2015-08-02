@@ -88,6 +88,8 @@ class fajax_Item extends FAjaxPluginBase {
 					Fajax_item::edit($data);
 					if(!empty($data['i'])) { 
 						if($itemVO = FactoryVO::get('ItemVO',(int) $data['i'])) {
+							//reload updated item
+							$itemVO->load();
 							page_ItemDetail::build($data);
 						}
 					}

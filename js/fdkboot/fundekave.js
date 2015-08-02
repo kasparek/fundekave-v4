@@ -197,7 +197,19 @@ function gooMapiThumbClick(){
 function ckedInit() {
 	if($(".markitup").length == 0) return
 	if(!Lazy.load(_fdk.load.richta, ckedInit)) return;
-	//$( '.markitup' ).ckeditor();
+	//http://www.tinymce.com/wiki.php/Controls - complete list of controls
+	tinymce.remove();
+	tinymce.init({selector:".markitup"
+		,menubar: false
+		,toolbar: "save | undo redo | styleselect | bold italic | link unlink image | alignleft aligncenter alignright alignjustify bullist blockquote | visualblocks code fullscreen"
+		,mode:'textareas'
+		,toolbar_items_size: 'small'
+		,save_onsavecallback: function(a) { var form = $("#"+a.id)[0].form; console.log("TinyMCE Save"); Fajax.form(null,form); return false;}
+		,plugins:["autoresize",
+		"autosave save",
+		"advlist autolink lists link image anchor",
+        "searchreplace visualblocks code fullscreen",
+        "media contextmenu paste"]});
 }
 function calendarInit() {
 	if($("#calendar-inline").length == 0) return

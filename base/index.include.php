@@ -73,13 +73,14 @@ if($user->pageVO) {
 
 //---generate page
 //experimantal caching on page layer
-$ident = md5(serialize($_GET)).'user'.$user->userVO->userId;
-$cache = FCache::getInstance('f');
-$html = $cache->getData($ident);
-
+if(!$user->idkontrol) {
+	$ident = md5(serialize($_GET)).'user'.$user->userVO->userId;
+	$cache = FCache::getInstance('f');
+	$html = $cache->getData($ident);
+}
 if(!$html) {
 	$html = FBuildPage::show( $data );
-	$cache->setData($html);
+	if(isset($cache)) $cache->setData($html);
 }
 
 header("Content-Type: text/html; charset=".FConf::get('internationalization','charset'));

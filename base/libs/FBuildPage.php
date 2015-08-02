@@ -581,8 +581,12 @@ class FBuildPage {
 		//---GET PAGE DATA
 		$data = $tpl->get();
 		$data = FSystem::superVars($data);
-		$newSrc ='img src="'.URL_CSS.'images/bg.png" data-src';
-		$data = str_replace('img src',$newSrc,$data);
+
+		if(empty($user->pageParam)) {
+			//only when not editing
+			$newSrc ='img src="'.URL_CSS.'images/bg.png" data-src';
+			$data = str_replace('img src',$newSrc,$data);
+		}
 		$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
 		// src="[[URL_CSS]]images/bg.png"
 		FProfiler::write('FBuildPage--complete');

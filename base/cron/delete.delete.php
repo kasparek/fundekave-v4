@@ -2,7 +2,7 @@
 //unblock system
 session_write_close();
 
-$dir = WEBROOT.'tmp';
+$dir = WEBROOT . 'tmp';
 
 $counter = 0;
 $deleted = '';
@@ -11,13 +11,16 @@ $ff = new FFile();
 while (false!==($file = readdir($handle))) {
 	if($file!='.' && $file!='..') { 
 		if(is_dir($dir.'/'.$file)) {
+			echo $dir.'/'.$file." <br>\n";
 			if(strpos($file,'delete_')==0) {
 				$filename = $dir.'/'.$file;
-				$ff->rm_recursive($dir);	
-				$deleted .= $dir . "<br>/n";
+				echo 'Deleting';
+				$ff->rm_recursive($filename);	
+				$deleted .= $filename . "<br>/n";
 				$counter++;
 			}
 		}
 	}
 }
-echo "deleted files: ".$counter."<br>\n";
+echo $deleted;
+echo "Deleted files: ".$counter."<br>\n";

@@ -191,6 +191,7 @@ div.reaction {margin-left: 3em;padding-left:10px;border-left: 5px solid #eeeeee;
 }
 .fitem .entry-content img {
 	max-width:100%;
+	padding: 10px 0;
 }
 .fitem {
 clear: both;
@@ -207,11 +208,6 @@ clear: both;
 .fitem .entry-content {
 	min-height: 40px;
 	padding-bottom: 1em;
-	white-space: pre-wrap; /* css-3 */
-    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
-    white-space: -pre-wrap; /* Opera 4-6 */
-    white-space: -o-pre-wrap; /* Opera 7 */
-    word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 .list-group-item .header {
 	font-size: 80%;
@@ -269,6 +265,10 @@ img {max-width: none;max-height: none;}
 #photoToolbar #nextButt:hover {opacity:1;}
 #photoToolbar #prevButt {right: 0;background: transparent url(images/next.png) no-repeat 100% 40%;opacity:0.5;}
 #photoToolbar #prevButt:hover {opacity:1}
+
+.mce-fullscreen {
+	z-index: 10000 !important;
+}
 
 /*
     Colorbox Core Style:

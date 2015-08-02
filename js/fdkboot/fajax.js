@@ -76,20 +76,18 @@ var Fajax = new function(){
 		o.send(m, k);
 		return false;
 	};
-	o.form = function(e){
-		var t = e.currentTarget, jt = $(t);
-		if(!$(t.form).hasClass('fajaxform')) return;
-		if(jt.hasClass('noFajax'))
-			return;
-		e.preventDefault();
+	o.form = function(e, form){
+		var t = e ? e.currentTarget : null, jt = t ? $(t) : null;
+		if(tinymce) tinymce.triggerSave();
+		if((!e && !form) || (e && !$(t.form).hasClass('fajaxform'))) return;
+		if(jt && jt.hasClass('noFajax')) return;
+		if(e) e.preventDefault();
 		if(o.formStop == true){
 			o.formStop = false;
 			return false;
 		}
-		if(jt.hasClass('confirm'))
-			if(!confirm(jt.attr("title")))
-				return false;
-		o.formSent = t.form;
+		if(jt && jt.hasClass('confirm') && !confirm(jt.attr("title"))) return false;
+		o.formSent = form ? form : t.form;
 		var arr = $(o.formSent).serializeArray(), action, res = false, prop = false;
 		while(arr.length > 0){
 			var v = arr.shift();
@@ -106,7 +104,7 @@ var Fajax = new function(){
 			o.add('result', $(o.formSent).attr("id"));
 		if(!prop)
 			o.add('resultProperty', '$html');
-		o.add('action', t.name);
+		o.add('action', t ? t.name : 'save');
 		o.add('k', gup('k', o.formSent.action));
 		o.send(!action ? gup('m', o.formSent.action) : action, gup('k', o.formSent.action));
 		$('.btn').attr("disabled", "disabled");
