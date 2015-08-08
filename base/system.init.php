@@ -27,7 +27,7 @@ spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
-FConf::getInstance(array(WEBROOT.'conf_'.VERSION.'/global.conf.ini',WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini',WEBROOT.'conf_'.VERSION.'/localhost.conf.ini'));
+FConf::getInstance(array(WEBROOT.'conf_'.VERSION.'/global.conf.ini',WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini',WEBROOT.'conf_'.VERSION.'/localhost.conf.ini'),$host);
 require_once(WEBROOT.'conf_'.VERSION.'/image.conf.php');
 
 date_default_timezone_set(FConf::get('internationalization','timezone'));

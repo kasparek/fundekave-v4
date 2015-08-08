@@ -2,6 +2,9 @@
 //unblock system
 session_write_close();
 
+//cron job disabled for the moment, but keep it set
+die();
+
 $truncate = array( WEBROOT.'tmp/fuup_chunks' ,WEBROOT.'tmp' );
 $recursive = array( FConf::get('settings','cache_path') );
 

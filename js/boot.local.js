@@ -1,8 +1,9 @@
 _fdk.load = {'boot':[_fdk.cfg.jsUrl+'jquery-1.10.2.min.js',
 _fdk.cfg.jsUrl+'jquery.history.js',
 _fdk.cfg.jsUrl+'bootstrap.min.js'
+,_fdk.cfg.jsUrl+'flickity.pkgd.min.js'
 ,_fdk.cfg.jsUrl+'i18n/_fdk.lng.cs.js'
-,_fdk.cfg.jsUrl+'fdkboot.min.js']
+,_fdk.cfg.jsUrl+'fdkboot.js']
 ,'goomapi':[_fdk.cfg.jsUrl+'goomapi.min.js']
 ,'colorbox':[_fdk.cfg.jsUrl+'colorbox.min.js',_fdk.cfg.jsUrl+'i18n/jquery.colorbox-cs.js']
 ,'swf':['//cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min.js','//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js']

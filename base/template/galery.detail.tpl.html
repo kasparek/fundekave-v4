@@ -1,25 +1,41 @@
+<!-- gallery js-flickity" data-flickity-options='{ "lazyLoad": 1, "wrapAround": true }' -->
+<!-- 
+<div class="gallery-cell"
+<img class="gallery-cell-image" srca="{IMGURLTHUMB}" data-image="{IMGURLTHUMB}" id="{ITEMID}" data-flickity-lazyload="{IMGURL}" data-big="{IMGURLBIG}" title="{TEXT}" /> -->
 <div class="row">
 <div class="col-md-12">
 <div class="panel panel-default">
 <div class="panel-body">
 <a name="detail"></a>
 <div id="fullscreenBox" class="showProgress">
-<div id="photoToolbar">
-<div class="icon48bar">
-<div class="pull-right">
-<a href="#" id="aSlideshow"><img src="[[URL_CSS]]images/play.png" title="Start slideshow" alt="Play/Stop"/></a>
-<a href="#" class="aFullscreen"><img src="[[URL_CSS]]images/fullscreen.png" title="Go to fullscreen mode" alt="Fullscreen"/></a>
+	<div id="photoToolbar">
+		<div class="icon48bar">
+			<div class="pull-right">
+				<a href="#" id="aSlideshow"><img src="[[URL_CSS]]images/play.png" title="Start slideshow" alt="Play/Stop"/></a>
+				<a href="#" class="aFullscreen"><img src="[[URL_CSS]]images/fullscreen.png" title="Go to fullscreen mode" alt="Fullscreen"/></a>
+			</div>
+			<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a>
+		</div>
+	<!--<a href="{PREVBUTT}" class="history keepscroll" id="prevButt"></a>
+	<a href="{NEXTBUTT}" class="history keepscroll" id="nextButt"></a>-->
+	</div>
+	<div id="fullscreenHint" class="hidden">ESC - Zpět<br />Mezerník - Další</div>
+	
+	<div class="gallery js-flickity" data-flickity-options='{"lazyLoad": 2, "wrapAround": true }'>
+		<!-- BEGIN cell -->
+		<div class="gallery-cell">
+
+			<img class="gallery-cell-image" srca="{IMGURL}" id="{ITEMID}" data-flickity-lazyload="{IMGURL}" title="{TEXT}" />
+
+		</div>
+		<!-- END cell -->
+	</div>
+	<!--
+	<a href="{NEXTLINK}" class="history"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" title="{IMGTITLE}" /></a>
+	-->
 </div>
-<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a>
-</div>
-<a href="{PREVBUTT}" class="history keepscroll" id="prevButt"></a>
-<a href="{NEXTBUTT}" class="history keepscroll" id="nextButt"></a>
-</div>
-<div id="fullscreenHint" class="hidden">ESC - Zpět<br />Mezerník - Další</div>
-<a href="{NEXTLINK}" class="history"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" title="{IMGTITLE}" /></a></div>
 <div id="mapThumb" class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
 <p id="description" class="text-center">{TEXT}</p>
-<a id="detailFotoSrc" href="{IMGDIR}" target="_blank">src</a>
 <div id="map" class="goomap">{GOOMAP}</div>
 </div>
 </div>

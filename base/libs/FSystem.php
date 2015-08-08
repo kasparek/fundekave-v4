@@ -42,59 +42,14 @@ class FSystem {
 	}
 
 	static function superInvalidateFlush() {
-		FProfiler::write('FSystem::superInvalidateFlush start 1');
 		if(empty(self::$invalidate)) return;
-		$grpList = self::$invalidate;
-
-		//sort grpList
-		usort($grpList, "FSystem::strlenSort");
-		//remove all grps unnecessary to invalidate
-		$i=0;
-		while($i<count($grpList)){
-			$grpListNew = array();
-			foreach($grpList as $grp) if($grp==$grpList[$i] || strpos($grp,$grpList[$i])!==0)$grpListNew[]=$grp;
-			$grpList=$grpListNew;
-			$i++;
-		}
-		//remove duplicates
-		$grpListNew = array();
-		foreach($grpList as $grp) if(!in_array($grp,$grpListNew)) $grpListNew[]=$grp;
-		$grpList=$grpListNew;
-		FProfiler::write('FSystem::superInvalidateFlush start 2');	
-		$grps = implode(";",$grpList);
-		self::$invalidate = array();
-		$domains = array('fundekave.net','iyobosahelpinghand.com','awake33.com','eboinnaija.fundekave.net','upsidedown.fundekave.net','sail.awake33.com');
-		$domains[]='test.fundekave.net';
-		$mh = curl_multi_init();
-		$curlys=array();
-		//prepare curl
-		FProfiler::write('FSystem::superInvalidateFlush start 3');
-		foreach($domains as $dom) {
-			FProfiler::write('FSystem::superInvalidateFlush curl prepare');
-			$url = 'http://'.$dom.'/index.php?cron=invalidate&g='.$grps;
-			if($_SERVER['HTTP_HOST']==$dom) {
-				FSystem::superInvalidateHandle($grps);
-				FError::write_log("cron::invalidate - LOCAL COMPLETE - ".$grps);
-			} else {
-				$curl = curl_init();
-				curl_setopt($curl, CURLOPT_URL,            $url);
-				curl_setopt($curl, CURLOPT_HEADER,         1);
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
-				curl_multi_add_handle($mh, $curl);
-				$curly[] = $curl;
-				FProfiler::write('FSystem::superInvalidateFlush curl prepare complete');
-			}
-		}
-		//execute curl
-		$active = null;
-		do {
-			$mrc = curl_multi_exec($mh, $active);
-			FProfiler::write('FSystem::superInvalidateFlush curl executed');
-		} while ($mrc == CURLM_CALL_MULTI_PERFORM);
-		//remove handles
-		foreach($curly as $id => $c) curl_multi_remove_handle($mh, $c);
-		//close curl
-		curl_multi_close($mh);
+		FProfiler::write('FSystem::superInvalidateFlush start 1');
+		$cacheDir = FConf::get('settings','tmp') . FConf::get('settings','cache_path');
+		$cacheDir = rtrim($cacheDir, "/");
+		//remove trailing slash
+		$ff = new FFile();
+		$ff->rename($cacheDir, $cacheDir.'_'.date("U").'_delete_');
+		//$ff->rm_recursive($cacheDir);
 		FProfiler::write('FSystem::superInvalidateFlush complete');
 	}
 

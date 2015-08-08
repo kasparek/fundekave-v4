@@ -1,4 +1,5 @@
 /** GALERY NEXT WITH PRELOADING */
+//TODO: any image loaded - resize
 /** RESIZE HANDLER */
 var Resize = new function(){
 	var o = this;
@@ -7,6 +8,10 @@ var Resize = new function(){
 	o.ch = 0;
 	o.init = function(){
 		$(window).resize(o.on).resize();
+		$('.gallery img').load(function(){
+			var w = $(window), ww = w.width(), wh = w.height();
+			imgResizeToFit($(this), Fullscreen.isFullscreen ? ww : $('#fullscreenBox').width(), wh-(Fullscreen.isFullscreen ? 0 : 0), Fullscreen.isFullscreen);
+		});
 	};
 	o.force = function () {
 		o.cw = o.ch = 0;
@@ -17,9 +22,12 @@ var Resize = new function(){
 		if(ww != o.cw || wh != o.ch) {
 			o.cw = ww;
 			o.ch = wh;
-			imgResizeToFit($('#detailFoto'), Fullscreen.isFullscreen ? ww : $('#fullscreenBox').width(), wh-(Fullscreen.isFullscreen ? 0 : 0), Fullscreen.isFullscreen);
+			//imgResizeToFit($('#detailFoto'), Fullscreen.isFullscreen ? ww : $('#fullscreenBox').width(), wh-(Fullscreen.isFullscreen ? 0 : 0), Fullscreen.isFullscreen);
 			ImgNext.hud();
 		}
+		$('.gallery img').each(function(index) {
+			imgResizeToFit($(this), Fullscreen.isFullscreen ? ww : $('#fullscreenBox').width(), wh-(Fullscreen.isFullscreen ? 0 : 0), Fullscreen.isFullscreen);
+		});
 	}
 };
 
@@ -63,6 +71,8 @@ var ImgNext = new function(){
 		return false;
 	};
 	o.loaded = function(){
+		//TODO: do
+		return;
 		o.init();
 		o.i.show();
 		o.next[o.i.data('i')] = o.i.attr('src');
@@ -77,9 +87,14 @@ var ImgNext = new function(){
 		var $fb = $("#fullscreenBox");
 		$fb.css('height','').css('width','');
 		var w = $fb.width(), h = $fb.height();
-		$("#photoToolbar").width(w).height(h);
-		$("#nextButt").height(h-48);
-		$("#prevButt").height(h-48);
+
+		h = $(window).height();
+		$(".gallery").width(w).height(h);
+		//$("#photoToolbar").width(w).height(h);
+		//$("#nextButt").height(h-48);
+		//$("#prevButt").height(h-48);
+		$(".gallery").flickity('resize').flickity('reposition');
+		//
 		History.log('ImgNext.hud',w+'x'+h);
 	};
 	o.xhrHand = function(currentId, nextId, prevId, currentUrl, nextUrl){

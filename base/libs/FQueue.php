@@ -8,7 +8,7 @@ class FQueue {
 	function __construct() {
 		if(self::$allowInstantiation==true) {
 			if($this->cache) return $this->cache;
-			$cacheDir = FConf::get('settings','logs_path').'queue/';
+			$cacheDir = FConf::get('settings','tmp').'queue/';
 			if(!is_dir($cacheDir)) mkdir($cacheDir,0777,true);
 			$this->cache = new FCacheFile(array('cacheDir'=>$cacheDir));
 		}

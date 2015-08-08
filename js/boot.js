@@ -1,6 +1,7 @@
 _fdk.load = {'boot':['//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
 _fdk.cfg.jsUrl+'jquery.history.js',
 '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'
+,'//cdnjs.cloudflare.com/ajax/libs/flickity/1.1.0/flickity.pkgd.min.js'
 ,_fdk.cfg.jsUrl+'i18n/_fdk.lng.cs.js'
 ,_fdk.cfg.jsUrl+'fdkboot.min.js']
 ,'goomapi':[_fdk.cfg.jsUrl+'goomapi.min.js']

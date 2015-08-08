@@ -15,7 +15,11 @@ function array_replace_recursive($base, $replacements) {
 					$bref_stack[] = &$bref[$key]; 
 					$head_stack[] = $head[$key]; 
 				} else { 
-					$bref[$key] = $head[$key]; 
+					if(strpos($head[$key], '+=')===0) {
+						$bref[$key] .= substr($head[$key], 2);
+					} else {
+						$bref[$key] = $head[$key];
+					}
 				} 
 			} 
 		} while(count($head_stack)); 
@@ -31,18 +35,23 @@ class FConf
 	 * SINGLETON for main config file
 	 */
 	private static $instance;
-	static function &getInstance($filename = array()) {
+	static function &getInstance($filename = array(),$host=null) {
 		if (!isset(self::$instance)) {
 			self::$instance = new FConf();
 			if(!empty($filename)) {
 				self::$instance->loadConfigFile($filename);
+			}
+			if(!empty($host)) {
+				self::$instance->host = $host;
 			}
 		}
 		return self::$instance;
 	}
 
 	private $type;
-	
+
+	public $host;
+
 	public $a;
 
 	function loadConfigFile($filenameList) {
@@ -63,11 +72,11 @@ class FConf
 				$hasAtLeastOne=true;
 			}
 		}
-		
+
 		if(!$hasAtLeastOne) {
 			die('Error: unable to locate config file '.$filename);
 		}
-		
+
 		if(!empty($configParsed)) {
 			if(!empty($configParsed["phpdefined"])) {
 				foreach($configParsed["phpdefined"] as $k=>$v) {
@@ -115,5 +124,11 @@ class FConf
 			}
 		}
 		return false;
+	}
+
+	static function host($host=null) {
+		$conf = FConf::getInstance();
+		if(!empty($host)) $cong->host = $host;
+		return $conf->host;
 	}
 }

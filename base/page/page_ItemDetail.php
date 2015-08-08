@@ -83,6 +83,24 @@ class page_ItemDetail implements iPage {
 			} else {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
+
+				//get all the images
+				//TODO: set active based on item
+				$fItems = new FItems('galery',$user->userVO->userId);
+				$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
+				$fItems->setOrder($user->pageVO->itemsOrder());
+				$items = $fItems->getList();
+				$c=0;
+				foreach ($items as $key => $item) {
+					$tpl->setVariable('ITEMID',$item->itemId);
+					$tpl->setVariable('TEXT',$item->text);
+					$tpl->setVariable('IMGURL',$item->detailUrl);
+					//$tpl->setVariable('IMGURL',$item->thumbUrl);
+					$tpl->parse('cell');
+				}
+
+
+
 				$output = $tpl->get();
 			}
 		}
