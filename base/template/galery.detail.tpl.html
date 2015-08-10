@@ -16,23 +16,13 @@
 			</div>
 			<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a>
 		</div>
-	<!--<a href="{PREVBUTT}" class="history keepscroll" id="prevButt"></a>
-	<a href="{NEXTBUTT}" class="history keepscroll" id="nextButt"></a>-->
 	</div>
-	<div id="fullscreenHint" class="hidden">ESC - Zpět<br />Mezerník - Další</div>
-	
-	<div class="gallery js-flickity" data-flickity-options='{"lazyLoad": 2, "wrapAround": true }'>
-		<!-- BEGIN cell -->
-		<div class="gallery-cell">
 
-			<img class="gallery-cell-image" srca="{IMGURL}" id="{ITEMID}" data-flickity-lazyload="{IMGURL}" title="{TEXT}" />
-
-		</div>
-		<!-- END cell -->
+	<div class="gallery js-flickity" data-flickity-options='{"wrapAround": true,"imagesLoaded": true,"pageDots": false }'>
+		<!-- BEGIN cell --><div class="gallery-cell" data-itemid="{ITEMID}">
+			<img class="gallery-cell-image" src="{IMGURL}" data-lazy="{IMGURLLAZY}" id="{ITEMID}" title="{TEXT}" />
+		</div><!-- END cell -->
 	</div>
-	<!--
-	<a href="{NEXTLINK}" class="history"><img id="detailFoto" src="{IMGDIR}" alt="{IMGALT}" title="{IMGTITLE}" /></a>
-	-->
 </div>
 <div id="mapThumb" class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
 <p id="description" class="text-center">{TEXT}</p>

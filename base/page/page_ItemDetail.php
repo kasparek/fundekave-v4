@@ -81,6 +81,8 @@ class page_ItemDetail implements iPage {
 				//$output = $tpl->get();
 				//FAjax::addResponse('itemDetail','$html',$output);
 			} else {
+
+
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
 
@@ -90,22 +92,34 @@ class page_ItemDetail implements iPage {
 				$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
 				$fItems->setOrder($user->pageVO->itemsOrder());
 				$items = $fItems->getList();
-				$c=0;
-				foreach ($items as $key => $item) {
-					$tpl->setVariable('ITEMID',$item->itemId);
-					$tpl->setVariable('TEXT',$item->text);
-					$tpl->setVariable('IMGURL',$item->detailUrl);
-					//$tpl->setVariable('IMGURL',$item->thumbUrl);
-					$tpl->parse('cell');
+
+				if($items[0]->itemId != $itemVO->itemId) {
+					//sort out so detail is first
+					while($items[0]->itemId != $itemVO->itemId) {
+						array_push($items,array_shift($items));
+					}
 				}
 
-
-
+				$c=0;
+				$index = 0;
+				$isFirst = true;
+				foreach ($items as $key => $item) {
+					$isFirst = false;
+					if($item->itemId == $user->itemVO->itemId) {
+						$tpl->setVariable('IMGURL',$item->detailUrl);
+					} else {
+						$tpl->setVariable('IMGURL',URL_CSS.'images/bg.png');
+						$tpl->setVariable('IMGURLLAZY',$item->detailUrl);
+					}
+					$tpl->setVariable('ITEMID',$item->itemId);
+					$tpl->setVariable('TEXT',$item->text);
+					$tpl->parse('cell');
+					$index++;
+				}
 				$output = $tpl->get();
 			}
 		}
 		//---GALERY END
-		
 		if(!empty($output)) {
 			return $output;
 		} 	

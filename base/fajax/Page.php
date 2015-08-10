@@ -1,6 +1,16 @@
 <?php
 class fajax_Page extends FAjaxPluginBase {
 
+	static function thumbs() {
+		$user = FUser::getInstance();
+		$fItems = new FItems('galery',$user->userVO->userId);
+		$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
+		$fItems->setOrder($user->pageVO->itemsOrder());
+		$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('nopager'=>true));
+		FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
+		FAjax::addResponse('call','ImgNext.thumbsInit','');
+	}
+
 	static function fuup($data) {
 		$user = FUser::getInstance();
 		//---call galery refresh

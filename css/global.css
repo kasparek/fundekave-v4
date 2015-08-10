@@ -79,22 +79,27 @@ div.notpublished { background: #ffe0c0; }
 	margin: 0 auto;
 }
 
-.gallery {
-	height: 100%;
+.flickity-prev-next-button {
+  width: 100px;
+  height: 100px;
+  opacity: 0.2;
+  /*background: transparent;*/
 }
-
-.gallery-cell {
-	width: 100%;
-}
-
-.gallery-cell-image {
-  transition: opacity 0.4s;
+.flickity-prev-next-button:hover {
+  /*background: transparent;*/
   opacity: 0.4;
 }
-
-.gallery-cell-image.flickity-lazyloaded,
-.gallery-cell-image.flickity-lazyerror {
-  opacity: 1;
+.flickity-prev-next-button .arrow {
+  fill: #000;
+  opacity: 0.4;
+  box-shadow: 10px 10px 5px #888888;
+}
+.flickity-prev-next-button.no-svg {
+  color: #ddd;
+  opacity: 0.8;
+}
+.gallery-cell {
+	width: 100%;
 }
 
 .delete-galery {
@@ -268,7 +273,6 @@ img {max-width: none;max-height: none;}
 .mapLarge img {max-width: none;max-height:none;}
 .mapsData {display:none;}
 .fullscreen {display: block;position: fixed;top: 0;left: 0;width: 100%;height: 100% !important;z-index: 9999;margin: 0;padding: 0;overflow: hidden;background-color: #000000 !important;}
-#fullscreenHint {width:100%;position: absolute;left:0;z-index: 10007;text-align:center;font-size:1.66em;color:#000;background: #fff;padding:2em 0;margin:0;opacity:0.8;}
 /* GALLERY */
 .showProgress{background:url(images/loading.gif) no-repeat center center;}
 #fullscreenBox {min-height:200px;text-align:center;overflow:hidden; }

@@ -31,13 +31,13 @@ function boot(){
 		var delay = parseInt($(this).data('delay'));
 		if(delay>0) setTimeout(function(){loadSidebarPanel($panel);},delay);
 		else loadSidebarPanel(this);
-		
+
 	});
-	
+
 	if(window.location.pathname!='/') {
 		_fdk.fuup.fuga.service.url = window.location.pathname + _fdk.fuup.fuga.service.url;
 	}
-	
+
 	$("#head-banner").on('click',function(){
 		var imgh = $("#head-banner img").height();
 		if(topBannerHeight==0) { 
@@ -57,6 +57,9 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 		}
 		return false;
 	});
+
+	setTimeout(function(){if($("#galeryFeed").length>0) {Fajax.send('page-thumbs', _fdk.cfg.page);}},1000);
+
 	if($("#head-banner").length>0) {
 		$(window).resize(topBannerPosition).resize();
 		$(".top-image img").on('load',topBannerPosition);
@@ -84,7 +87,6 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 	switchOpen();
 	
 	$(".thumbnail-xs a").each(function(){$(this).addClass('history');});
-	//TODO: fix galery detail ajax loading $("#galeryFeed a").each(function(){$(this).addClass('history');});
 
 	$(".mapThumbLink").bind('click', gooMapiThumbClick);
 	if($(".geoInput").length > 0 || $(".mapLarge").length > 0) gooMapiInit();
@@ -97,8 +99,11 @@ $(".top-image").append('<div id="topImageLink" class="alert alert-info" style="t
 				History.log('cancel ajax:', 'item-show');
 				Fajax.cancel('item-show');
 			}
-			ImgNext.start(State.data.i);
+
+			$('.gallery').flickity('select',$("div[data-itemid='" + State.data.i + "']").index());
+			//ImgNext.start(State.data.i);
 			Fajax.action(State.data.action+'/i='+State.data.i+'/0/'+State.data.eid);
+			
 		}
 	});
 	listen('history', 'click', function(e){

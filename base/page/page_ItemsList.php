@@ -196,14 +196,16 @@ class page_ItemsList implements iPage {
 		if($pageVO->typeId=='galery') {
 			$vars['TOPFEEDID'] = 'galeryFeed';
 			if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
-			$fItems = new FItems('galery',$user->userVO->userId);
-			$fItems->addWhere("pageId = '". $pageVO->pageId ."'");
-			$fItems->setOrder($pageVO->itemsOrder());
-			$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
-			$listArr['vars']['TOPITEMS'] = $listArr['vars']['ITEMS'];
-			unset($listArr['vars']['ITEMS']);
-			$vars = array_merge($vars,$listArr['vars']);
-			if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
+			if(!$isDetail) {
+				$fItems = new FItems('galery',$user->userVO->userId);
+				$fItems->addWhere("pageId = '". $pageVO->pageId ."'");
+				$fItems->setOrder($pageVO->itemsOrder());
+				$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
+				$listArr['vars']['TOPITEMS'] = $listArr['vars']['ITEMS'];
+				unset($listArr['vars']['ITEMS']);
+				$vars = array_merge($vars,$listArr['vars']);
+				if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
+			}
 		}
 		
 		//continue only if empty $user->pageParam
