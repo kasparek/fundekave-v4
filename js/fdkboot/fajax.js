@@ -78,7 +78,6 @@ var Fajax = new function(){
 	};
 	o.form = function(e, form){
 		var t = e ? e.currentTarget : null, jt = t ? $(t) : null;
-		if(tinymce) tinymce.triggerSave();
 		if((!e && !form) || (e && !$(t.form).hasClass('fajaxform'))) return;
 		if(jt && jt.hasClass('noFajax')) return;
 		if(e) e.preventDefault();
@@ -87,6 +86,7 @@ var Fajax = new function(){
 			return false;
 		}
 		if(jt && jt.hasClass('confirm') && !confirm(jt.attr("title"))) return false;
+		if(tinymce) tinymce.triggerSave();
 		o.formSent = form ? form : t.form;
 		var arr = $(o.formSent).serializeArray(), action, res = false, prop = false;
 		while(arr.length > 0){
