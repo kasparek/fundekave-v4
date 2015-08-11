@@ -25,8 +25,9 @@
         attrib = retina? "data-lazy-retina" : "data-lazy",
         images = this,
         loaded;
-
-    $(this).height($w.height()).width('100%').addClass('funveil');
+		$(this).each(function(){
+    		if($(this).data('lazy')) $(this).height($w.height()).width('100%').addClass('funveil');
+		});
 
     this.one("unveil", function() {
       var source = this.getAttribute(attrib);

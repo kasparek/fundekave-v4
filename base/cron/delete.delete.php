@@ -12,10 +12,9 @@ while (false!==($file = readdir($handle))) {
 	if($file!='.' && $file!='..') { 
 		if(is_dir($dir.'/'.$file)) {
 			if(strpos($file,'delete_')!==false) {
-				$filename = $dir.'/'.$file;
-				echo 'Deleting: '.$dir.'/'.$file." <br>\n";
+				$filename = $dir.$file;
+				echo 'Deleting: '.$filename." <br>\n";
 				$ff->rm_recursive($filename);	
-				$deleted .= $filename . "<br>/n";
 				$counter++;
 			}
 		}
