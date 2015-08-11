@@ -48,8 +48,9 @@ class FSystem {
 		$cacheDir = rtrim($cacheDir, "/");
 		//remove trailing slash
 		$ff = new FFile();
-		$ff->rename($cacheDir, $cacheDir.'_'.date("U").'_delete_');
-		//$ff->rm_recursive($cacheDir);
+		if($ff->file_exists($cacheDir)) {
+			$ff->rename($cacheDir, $cacheDir.'_'.date("U").'_delete_');
+		}
 		FProfiler::write('FSystem::superInvalidateFlush complete');
 	}
 

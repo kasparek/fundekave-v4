@@ -584,7 +584,7 @@ class FBuildPage {
 			$newSrc ='img src="'.URL_CSS.'images/bg.png" data-src';
 			$data = str_replace('img src',$newSrc,$data);
 		}
-		//$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
+		$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
 		// src="[[URL_CSS]]images/bg.png"
 		FProfiler::write('FBuildPage--complete');
 		$user->updateTotalItemsNum();
