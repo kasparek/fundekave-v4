@@ -70,6 +70,7 @@ class PageVO extends Fvob {
 	public $htmlDescription;
 	public $htmlKeywords;
 	public $showSidebar = true;
+	public $showMidbar = true;
 	
 	public $tplVars = array();
 	

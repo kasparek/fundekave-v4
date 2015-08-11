@@ -13,12 +13,12 @@ class page_ItemDetail implements iPage {
 		if(!empty($user->itemVO)) $itemVO = $user->itemVO;
 		if(!empty($data['i']) && $data['i']!=$itemVO->itemId) $itemVO = FactoryVO::get('ItemVO',(int) $data['i'],true);
 		if(empty($itemVO)) return false;
-		
+
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
-		if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('i='.$itemNext,$itemVO->pageId);
-		if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('i='.$itemPrev,$itemVO->pageId);
-		
+		//if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('i='.$itemNext,$itemVO->pageId);
+		//if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('i='.$itemPrev,$itemVO->pageId);
+
 		//generic vars for all item details
 		/**
 		 *BLOG ITEM and EVENT ITEM
@@ -66,8 +66,8 @@ class page_ItemDetail implements iPage {
 				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->itemId.','.$nextVO->itemId.','.$itemPrev.','.$itemVO->detailUrl.','.$nextVO->detailUrl);
 				
 				FAjax::addResponse('backButt','href',$backUri);
-				FAjax::addResponse('prevButt','href',$nextUri);
-				FAjax::addResponse('nextButt','href',$prevUri);
+				//FAjax::addResponse('prevButt','href',$nextUri);
+				//FAjax::addResponse('nextButt','href',$prevUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('ti','value',(int) $user->itemVO->itemId);
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
@@ -87,7 +87,6 @@ class page_ItemDetail implements iPage {
 				$tpl->setVariable($arrVars);
 
 				//get all the images
-				//TODO: set active based on item
 				$fItems = new FItems('galery',$user->userVO->userId);
 				$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
 				$fItems->setOrder($user->pageVO->itemsOrder());
@@ -108,7 +107,7 @@ class page_ItemDetail implements iPage {
 					if($item->itemId == $user->itemVO->itemId) {
 						$tpl->setVariable('IMGURL',$item->detailUrl);
 					} else {
-						$tpl->setVariable('IMGURL',URL_CSS.'images/bg.png');
+						$tpl->setVariable('IMGURL',URL_CSS.'images/1px.png');
 						$tpl->setVariable('IMGURLLAZY',$item->detailUrl);
 					}
 					$tpl->setVariable('ITEMID',$item->itemId);
@@ -122,6 +121,6 @@ class page_ItemDetail implements iPage {
 		//---GALERY END
 		if(!empty($output)) {
 			return $output;
-		} 	
+		}
 	}
 }

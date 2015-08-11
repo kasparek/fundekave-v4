@@ -12,6 +12,11 @@ class page_fotoMashup implements iPage {
 	 * VIEW FUNCTION
 	 */
 	static function build($data=array()) {
+		$user = FUser::getInstance();
+		$user->pageVO->tplVars['NUMCOLMAIN'] = 12;
+		$user->pageVO->showSidebar = false;
+		$user->pageVO->showMidbar = false;
+
 		$cache = FCache::getInstance('f',180);
 		$data = $cache->getData('fotomashup');
 		if(!$data) {

@@ -18,10 +18,16 @@
 		</div>
 	</div>
 
-	<div class="gallery js-flickity" data-flickity-options='{"wrapAround": true,"imagesLoaded": true,"pageDots": false }'>
-		<!-- BEGIN cell --><div class="gallery-cell" data-itemid="{ITEMID}">
+	<div class="gallery" data-flickity-options='{"wrapAround": true,"imagesLoaded": true,"pageDots": false }'>
+		<!-- BEGIN cell --><div class="gallery-cell showProgress" data-itemid="{ITEMID}">
 			<img class="gallery-cell-image" src="{IMGURL}" data-lazy="{IMGURLLAZY}" id="{ITEMID}" title="{TEXT}" />
 		</div><!-- END cell -->
+	</div>
+	<div class="bottlef">
+		<button class="btn btn-default btn-lg" id="galleryPrev"><span class="glyphicon glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+	</div>
+	<div class="bottrig">
+		<button class="btn btn-default btn-lg" id="galleryNext"><span class="glyphicon glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
 	</div>
 </div>
 <div id="mapThumb" class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>

@@ -272,22 +272,19 @@ class FBuildPage {
 				$tpl->parseCurrentBlock();
 			}
 		}
-		if($user->pageVO) {
+		if(FConf::get('settings','mid_col') && $user->pageVO && $user->pageVO->showMidbar===true) {
 			$user->pageVO->tplVars['NUMCOLMAIN'] = FConf::get('settings','maincol-numcol');
-			
-			if(FConf::get('settings','mid_col')) {
-				if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
-					$tpl->touchBlock('midcol');
-					$midcolNumCol = FConf::get('settings','midcol-numcol');
-					$user->pageVO->tplVars['NUMCOLMAIN'] -= $midcolNumCol;
-					$midcolStatic = FConf::get('settings','midcol-static');
-					$user->pageVO->tplVars['NUMCOLMID'] = $midcolNumCol;
-					if($midcolStatic) {
-						$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true,'sort'=>'dateCreated desc'));
-						if(!empty($pageListOut)) {
-							$user->pageVO->tplVars['MIDCOLSTATIC'] = '-static';
-							$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
-						}
+			if(empty($user->pageParam) && ($user->pageVO->typeId=='top' || $user->pageVO->typeId=='blog') && $user->pageVO->typeIdChild != 'galery') {
+				$tpl->touchBlock('midcol');
+				$midcolNumCol = FConf::get('settings','midcol-numcol');
+				$user->pageVO->tplVars['NUMCOLMAIN'] -= $midcolNumCol;
+				$midcolStatic = FConf::get('settings','midcol-static');
+				$user->pageVO->tplVars['NUMCOLMID'] = $midcolNumCol;
+				if($midcolStatic) {
+					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true,'sort'=>'dateCreated desc'));
+					if(!empty($pageListOut)) {
+						$user->pageVO->tplVars['MIDCOLSTATIC'] = '-static';
+						$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
 					}
 				}
 			}

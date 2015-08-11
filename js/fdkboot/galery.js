@@ -30,7 +30,7 @@
 
     this.one("unveil", function() {
       var source = this.getAttribute(attrib);
-      source = source || this.getAttribute("data-src");
+      source = source || this.getAttribute("data-lazy");
       if (source) {
         this.setAttribute("src", source);
         if (typeof callback === "function") callback.call(this);
@@ -99,12 +99,17 @@ var Resize = new function(){
 	}
 	o.currentIndex = 0;
 	o.numCell = 0;
+	o.buttonTriggerScroll=false;
 	o.init = function(){
 		if(isMobile) {
 			$(window).on('scroll',function(){
 				clearTimeout($.data(this, 'scrollTimer'));
 			    $.data(this, 'scrollTimer', setTimeout(function() {
 			    	console.log('scroll stopped');
+			    	if(o.buttonTriggerScroll) {
+			    		o.buttonTriggerScroll=false;
+			    		return;
+			    	}
 			    	var index=0;
 			        $(".gallery-cell").each(function(){
 			        	$i = $(this), $w = $(window);
@@ -115,10 +120,8 @@ var Resize = new function(){
 						var elemTop = $i.offset().top;
 						var elemBottom = elemTop + $i.height();
 
-						//return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-						if(elemBottom >= docViewTop) {
+						if(elemTop >= docViewTop) {
 							o.currentIndex = index;
-							//if(o.currentIndex<0) o.currentIndex=0;
 							return false;
 						}
 						index++;
@@ -138,6 +141,7 @@ var Resize = new function(){
 					var ni = $($('div.gallery-cell')[o.currentIndex+1]);
 					if(ni) o.lazyLoad($('img',ni));
 				} else {
+					o.buttonTriggerScroll = true;
 					$("html, body").animate({ scrollTop: i.offset().top - (($(window).height() - i.height()) / 2) }, 600);
 				}
 				var itemId = i.data('itemid');
