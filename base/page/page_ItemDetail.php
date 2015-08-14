@@ -47,10 +47,10 @@ class page_ItemDetail implements iPage {
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
 				"ALBUMURL"=>$backUri,
-				"PREVBUTT"=>$nextUri,
-				"NEXTBUTT"=>$prevUri,
+				//"PREVBUTT"=>$nextUri,
+				//"NEXTBUTT"=>$prevUri,
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
-				"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
+				//"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
 				"GOOMAPTHUMB"=>$goomapThumb,
 				"GOOMAP"=>$goomap,
 			);

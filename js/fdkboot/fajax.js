@@ -81,12 +81,12 @@ var Fajax = new function(){
 		if((!e && !form) || (e && !$(t.form).hasClass('fajaxform'))) return;
 		if(jt && jt.hasClass('noFajax')) return;
 		if(e) e.preventDefault();
-		if(o.formStop == true){
+		if(o.formStop === true){
 			o.formStop = false;
 			return false;
 		}
 		if(jt && jt.hasClass('confirm') && !confirm(jt.attr("title"))) return false;
-		if(tinymce) tinymce.triggerSave();
+		if(window.tinymce) tinymce.triggerSave();
 		o.formSent = form ? form : t.form;
 		var arr = $(o.formSent).serializeArray(), action, res = false, prop = false;
 		while(arr.length > 0){

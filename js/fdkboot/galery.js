@@ -102,7 +102,11 @@ var Resize = new function(){
 	o.numCell = 0;
 	o.buttonTriggerScroll=false;
 	o.init = function(){
-		if(isMobile) {
+		if(!isMobile) {
+			$(".gallery").flickity({"wrapAround":true,"pageDots": false});
+			$(".bottlef").remove();
+			$(".bottrig").remove();
+		} else {
 			$(window).on('scroll',function(){
 				clearTimeout($.data(this, 'scrollTimer'));
 			    $.data(this, 'scrollTimer', setTimeout(function() {
