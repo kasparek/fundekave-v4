@@ -193,9 +193,10 @@ class page_ItemsList implements iPage {
 		}
 
 		//TOPLIST ITEMS
+		$galeryDetail = false;
 		if($pageVO->typeId=='galery') {
-			$vars['TOPFEEDID'] = 'galeryFeed';
-			if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
+			//$vars['TOPFEEDID'] = 'galeryFeed';
+			//if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
 			if(!$isDetail) {
 				$fItems = new FItems('galery',$user->userVO->userId);
 				$fItems->addWhere("pageId = '". $pageVO->pageId ."'");
@@ -205,175 +206,165 @@ class page_ItemsList implements iPage {
 				unset($listArr['vars']['ITEMS']);
 				$vars = array_merge($vars,$listArr['vars']);
 				if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
-			}
-		}
-		
-		//continue only if empty $user->pageParam
-		if(empty($user->pageParam) || $user->pageParam=='o') { //TODO: not great implementation
-		//filter-search
-		$cache = FCache::getInstance('s',0);
-		$searchStr = $cache->getData( $pageVO->pageId, 'filter');
-		/**
-		 *FORUM FORM
-		 */
-		if($pageVO->typeId!='top') { //no show for live, main etc.
-			$forumFormTypeId = $pageVO->typeId=='galery' ? 'forum' : $pageVO->typeId=='galery';
-			$canComment = FItemsForm::canComment();
-			if($canComment) {
-				if(empty($data['__ajaxResponse'])) {
-					if($isDetail) $data['simple'] = true;
-					$formItemVO = new ItemVO();
-					$formItemVO->typeId = 'forum';
-					$formItemVO->pageId = $pageVO->pageId;
-					$data['perpage'] = $pageVO->perPage();
-					if($searchStr!==false) $data['text'] = $searchStr;
-					$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
+			} else {
+				if(isset($data['__get']['do']) && $data['__get']['do']=='comment') {
+					$galeryDetail = false;
 				} else {
-					//TODO: set Lang
-					$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti='.$itemVO->itemId).'" class="fajaxa">Vlož komentář</a>';
+					$galeryDetail = true;
 				}
-			} else if($isDetail || $forumFormTypeId=='forum') {
-				$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
 			}
 		}
 
-		//HEADER
-		if(!$isDetail && !empty($pageVO->content)) {
-			$vars['CONTENT'] = FText::postProcess($pageVO->content);
-		}
-		
-		//LIST ITEMS
-		$type = 'item';
-		$typeWhere = $pageVO->prop('include');
-		if(!empty($data['__get']['type'])) {
-			$type = $data['__get']['type'];
-			$typeWhere = $type;
-		} else {
-			$type = $pageVO->typeId=='blog'?'top':$pageVO->typeId;
-		}
-		$typeWhere = $pageVO->typeId=='galery'?'forum':'';
-		$fItems = new FItems($typeWhere,$user->userVO->userId);
-		if(!empty($data['__get']['tag'])) {
-			$tag = (int) $data['__get']['tag'];
-			$fItems->addWhere("tag_weight >= '". $tag ."'");
-		}
-		
-		//TODO: update `sys_pages_items` as i join sys_pages as p on p.pageId=i.pageId set i.pageIdTop=p.pageIdTop WHERE length(p.pageIdTop)>0 and i.pageIdTop is null and i.typeId='galery'
-		if($pageVO->pageIdTop && $pageVO->typeId=='top') {
-			$fItems->addWhere("pageIdTop = '".$pageVO->pageIdTop."'");
-		}
-		
-		if($pageVO->typeId=='blog') {
-			if($pageVO->pageIdTop && $pageVO->inludeGaleries()) {
-				$fItems->addWhere("(sys_pages_items.pageId='".$pageVO->pageId."' or (sys_pages_items.typeId='galery' and sys_pages_items.pageIdTop='".$pageVO->pageIdTop."'))");
+		//continue only if empty $user->pageParam
+		if($galeryDetail===false && (empty($user->pageParam) || $user->pageParam=='o')) { //TODO: not great implementation
+			//filter-search
+			$cache = FCache::getInstance('s',0);
+			$searchStr = $cache->getData( $pageVO->pageId, 'filter');
+			/**
+			 *FORUM FORM
+			 */
+			if($pageVO->typeId!='top') { //no show for live, main etc.
+				$forumFormTypeId = $pageVO->typeId=='galery' ? 'forum' : $pageVO->typeId=='galery';
+				$canComment = FItemsForm::canComment();
+				if($canComment) {
+					if(empty($data['__ajaxResponse'])) {
+						if($isDetail) $data['simple'] = true;
+						$formItemVO = new ItemVO();
+						$formItemVO->typeId = 'forum';
+						$formItemVO->pageId = $pageVO->pageId;
+						$data['perpage'] = $pageVO->perPage();
+						if($searchStr!==false) $data['text'] = $searchStr;
+						$vars['MESSAGEFORM'] = FItemsForm::show($formItemVO,$data);
+					} else {
+						//TODO: set Lang
+						$vars['MESSAGEFORM'] = '<a href="'.FSystem::getUri('m=item-commentsForm&d=ti='.$itemVO->itemId).'" class="fajaxa">Vlož komentář</a>';
+					}
+				} else if($isDetail || $forumFormTypeId=='forum') {
+					$vars['MESSAGE'] = FLang::$MESSAGE_FORUM_REGISTEREDONLY;
+				}
+			}
+			//HEADER
+			if(!$isDetail && !empty($pageVO->content)) {
+				$vars['CONTENT'] = FText::postProcess($pageVO->content);
+			}
+			//LIST ITEMS
+			$type = 'item';
+			$typeWhere = $pageVO->prop('include');
+			if(!empty($data['__get']['type'])) {
+				$type = $data['__get']['type'];
+				$typeWhere = $type;
 			} else {
-				$fItems->setPage($pageVO->pageId);
+				$type = $pageVO->typeId=='blog'?'top':$pageVO->typeId;
 			}
-		}
-		
-		if($pageVO->typeId!='top') {
-			if($pageVO->pageId!='event' && $pageVO->typeId!='blog') {
-				$fItems->setPage($pageVO->pageId);
+			$typeWhere = $pageVO->typeId=='galery'?'forum':'';
+			$fItems = new FItems($typeWhere,$user->userVO->userId);
+			if(!empty($data['__get']['tag'])) {
+				$tag = (int) $data['__get']['tag'];
+				$fItems->addWhere("tag_weight >= '". $tag ."'");
 			}
-			$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
-		} else {
-			//DO NOT include galery items (photos) in top feed
-			if(!FConf::get('settings','top_feed_include_galery_items')) {
-				$fItems->addWhere("typeId!='galery'");
+			//TODO: update `sys_pages_items` as i join sys_pages as p on p.pageId=i.pageId set i.pageIdTop=p.pageIdTop WHERE length(p.pageIdTop)>0 and i.pageIdTop is null and i.typeId='galery'
+			if($pageVO->pageIdTop && $pageVO->typeId=='top') {
+				$fItems->addWhere("pageIdTop = '".$pageVO->pageIdTop."'");
 			}
-		}
-
-		if($user->categoryVO) {
-			$fItems->addWhere("categoryId='". $user->categoryVO->categoryId ."'");
-		}
-		if(!empty($searchStr)) {
-			$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
-		}
-		if($isDetail || $pageVO->typeId=='galery') {
-			$type = 'forum';
-		}
-		if($isDetail) {
-			$itemId = $itemVO->itemId;
-			$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
-		}
-				
-		if(!empty($date)) {
-			//used for sorting
-			if($user->pageVO->pageId=='event') {
-				$fItems->addSelect("if(textLong='year',concat(date_format(now(), '%Y'),date_format(sys_pages_items.dateStart, '%m-%d')),dateStart) as dategen");
-				$fItems->addWhere("typeId='event'");
-				$fItems->setOrder('dateStart');
-			} else {
-				$fItems->setOrder('dateStart');
-			}
-			$fItems->addWhere("("
-			."(sys_pages_items.dateStart <= '".$date."%' and sys_pages_items.dateEnd >= '".$date."%')
-			or (sys_pages_items.dateStart like '".$date."%' and sys_pages_items.dateEnd is null)
-			or (sys_pages_items.textLong='year'".($user->month ? " and date_format(sys_pages_items.dateStart, '%m')='".substr($date,5)."'":"").")"
-			.") "
-			/*
-			."or ("
-			."sys_pages_items.typeId in ('event'".($user->pageVO->pageId!='event'?",'blog','galery','forum'":'').") "
-			."and sys_pages_items.dateCreated like '".$date."%' "
-			.")"
-			*/
-			);
-		} else {
-			//ORDER
-			if($pageVO->pageId=='event' && !$isDetail) {
-				$fItems->addWhere("typeId='event'");
-				//add where for repetitive
-				if($user->pageParam=='o') {
-					//---archiv
-					FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
-					$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
-					$fItems->setOrder('dateStart desc');
+			if($pageVO->typeId=='blog') {
+				if($pageVO->pageIdTop && $pageVO->inludeGaleries()) {
+					$fItems->addWhere("(sys_pages_items.pageId='".$pageVO->pageId."' or (sys_pages_items.typeId='galery' and sys_pages_items.pageIdTop='".$pageVO->pageIdTop."'))");
 				} else {
-					//---future
-					FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
-					$fItems->addWhere("((textLong='year' and date_format(dateStart,'%m') >= date_format(NOW(),'%m')) or (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))))");
+					$fItems->setPage($pageVO->pageId);
+				}
+			}
+			if($pageVO->typeId!='top') {
+				if($pageVO->pageId!='event' && $pageVO->typeId!='blog') {
+					$fItems->setPage($pageVO->pageId);
+				}
+				$fItems->hasReactions($pageVO->typeId!='forum' && !$isDetail ? false : true);
+			} else {
+				//DO NOT include galery items (photos) in top feed
+				if(!FConf::get('settings','top_feed_include_galery_items')) {
+					$fItems->addWhere("typeId!='galery'");
+				}
+			}
+			if($user->categoryVO) {
+				$fItems->addWhere("categoryId='". $user->categoryVO->categoryId ."'");
+			}
+			if(!empty($searchStr)) {
+				$fItems->addWhereSearch(array('name','text','enclosure','dateCreated','location','addon'),$searchStr,'or');
+			}
+			if($isDetail || $pageVO->typeId=='galery') {
+				$type = 'forum';
+			}
+			if($isDetail) {
+				$itemId = $itemVO->itemId;
+				$fItems->addWhere("itemIdTop='".$itemVO->itemId."'"); //displaying reactions
+			}
+			if(!empty($date)) {
+				//used for sorting
+				if($user->pageVO->pageId=='event') {
+					$fItems->addSelect("if(textLong='year',concat(date_format(now(), '%Y'),date_format(sys_pages_items.dateStart, '%m-%d')),dateStart) as dategen");
+					$fItems->addWhere("typeId='event'");
+					$fItems->setOrder('dateStart');
+				} else {
 					$fItems->setOrder('dateStart');
 				}
+				$fItems->addWhere("("
+				."(sys_pages_items.dateStart <= '".$date."%' and sys_pages_items.dateEnd >= '".$date."%')
+				or (sys_pages_items.dateStart like '".$date."%' and sys_pages_items.dateEnd is null)
+				or (sys_pages_items.textLong='year'".($user->month ? " and date_format(sys_pages_items.dateStart, '%m')='".substr($date,5)."'":"").")"
+				.") "
+				/*
+				."or ("
+				."sys_pages_items.typeId in ('event'".($user->pageVO->pageId!='event'?",'blog','galery','forum'":'').") "
+				."and sys_pages_items.dateCreated like '".$date."%' "
+				.")"
+				*/
+				);
 			} else {
-				if($isDetail || $pageVO->typeId=='top') {
-					//reactions
-					$fItems->setOrder('dateCreated desc');
+				//ORDER
+				if($pageVO->pageId=='event' && !$isDetail) {
+					$fItems->addWhere("typeId='event'");
+					//add where for repetitive
+					if($user->pageParam=='o') {
+						//---archiv
+						FMenu::secondaryMenuAddItem(FSystem::getUri('','',''),FLang::$BUTTON_PAGE_BACK);
+						$fItems->addWhere("dateStart < date_format(NOW(),'%Y-%m-%d')");
+						$fItems->setOrder('dateStart desc');
+					} else {
+						//---future
+						FMenu::secondaryMenuAddItem(FSystem::getUri('','','o'),FLang::$LABEL_EVENTS_ARCHIV);
+						$fItems->addWhere("((textLong='year' and date_format(dateStart,'%m') >= date_format(NOW(),'%m')) or (dateStart >= date_format(NOW(),'%Y-%m-%d') or (dateEnd is not null and dateEnd >= date_format(NOW(),'%Y-%m-%d'))))");
+						$fItems->setOrder('dateStart');
+					}
 				} else {
-					$fItems->setOrder($pageVO->itemsOrder());
+					if($isDetail || $pageVO->typeId=='top') {
+						//reactions
+						$fItems->setOrder('dateCreated desc');
+					} else {
+						$fItems->setOrder($pageVO->itemsOrder());
+					}
 				}
 			}
+			if($isDetail) {
+				$itemVO->updateReaded($user->userVO->userId);
+			} else {
+				$pageVO->updateReaded($user->userVO->userId);
+			}
+			if($pageVO->inludeGaleries()) {
+				$fItems->userIdForPageAccess=$user->userVO->userId;
+				$fItems->setTypeLimit('galery',3);
+			}
+			$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions,$pageVO->typeId=='galery'?'forum':false);
+			$vars = array_merge($vars,$listArr['vars']);
+			if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
+			//based of type of items in feed
+			$vars['FEEDID'] = $type.'Feed';
 		}
 
-		if($isDetail) {
-			$itemVO->updateReaded($user->userVO->userId);
-		} else {
-			$pageVO->updateReaded($user->userVO->userId);
-		}
-
-		if($pageVO->inludeGaleries()) {
-			$fItems->userIdForPageAccess=$user->userVO->userId;
-			$fItems->setTypeLimit('galery',3);
-		}
-		
-		$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions,$pageVO->typeId=='galery'?'forum':false);
-		
-		$vars = array_merge($vars,$listArr['vars']);
-		if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
-		
-		//based of type of items in feed
-		$vars['FEEDID'] = $type.'Feed';
-
-		
-		}
-		
-		if(!$user->pageParam && ($isDetail || $pageVO->typeId=='galery')) {
+		if(!$user->pageParam && ($isDetail && !$galeryDetail)) {
 			$touchedBlocks[]='comm';
 		}
-		
 		$tpl = FSystem::tpl($template);
 		if(!empty($touchedBlocks)) $tpl->touchBlock( $touchedBlocks );
 		$tpl->setVariable($vars);
-		
 		return $tpl;
 	}
 
@@ -381,10 +372,10 @@ class page_ItemsList implements iPage {
 		$touchedBlocks = array();
 		$vars = array();
 		$pagerOptions['noAutoparse']=1;
-		
+
 		$typeId = $pageVO->typeId;
 		if($overrideTypeId!==false) $typeId=$overrideTypeId;
-		
+
 		$perPage = $pageVO->perPage(0,$typeId);
 		$from = 0;
 		$pager = null;

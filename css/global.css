@@ -101,10 +101,6 @@ div.notpublished { background: #ffe0c0; }
 .gallery-cell {
 	width: 100%;
 }
-.funveil {
-	margin-top: 5px;
-	margin-bottom: 5px;
-}
 
 .bottrig {
      position:fixed;
@@ -291,9 +287,24 @@ img {max-width: none;max-height: none;}
 /* GALLERY */
 .showProgress{background:url(images/loading.gif) no-repeat center center;}
 #fullscreenBox {min-height:200px;text-align:center;overflow:hidden; }
-#photoToolbar { position: fixed;width:100%;z-index:10000;height:48px;left:0;top:50px; }
-.icon48bar {opacity:0.7;text-align:left;}
-.icon48bar img { opacity:0.7; }
+#photoToolbar {opacity:0.7; }
+#photoToolbar div {
+	position: fixed;
+	top:50px;
+	left: 0;
+	z-index:10000;
+	text-align: left;
+	margin: 0 10px;
+}
+#photoToolbar div.icons-right {
+	left: inherit;
+	right: 0;
+}
+#commentLink {
+	font-size: 44px;
+}
+/*.icon48bar {opacity:0.7;text-align:left;}
+.icon48bar img { opacity:0.7; }*/
 #photoToolbar #nextButt, #photoToolbar  #prevButt { min-height:150px;margin-top:48px;display: block;position: absolute;top: 0;width: 20%;outline: none; }
 #photoToolbar #nextButt {left: 0;background: transparent url(images/prev.png) no-repeat 0 40%;opacity:0.5;}
 #photoToolbar #nextButt:hover {opacity:1;}

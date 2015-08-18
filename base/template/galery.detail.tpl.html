@@ -3,17 +3,7 @@
 <div class="panel panel-default">
 <div class="panel-body">
 <a name="detail"></a>
-<div id="fullscreenBox" class="showProgress">
-	<div id="photoToolbar">
-		<div class="icon48bar">
-			<div class="pull-right">
-				<a href="#" id="aSlideshow"><img src="[[URL_CSS]]images/play.png" title="Start slideshow" alt="Play/Stop"/></a>
-				<a href="#" class="aFullscreen"><img src="[[URL_CSS]]images/fullscreen.png" title="Go to fullscreen mode" alt="Fullscreen"/></a>
-			</div>
-			<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a>
-		</div>
-	</div>
-
+<div id="fullscreenBox">
 	<div class="gallery">
 		<!-- BEGIN cell --><div class="gallery-cell showProgress" data-itemid="{ITEMID}">
 			<img class="gallery-cell-image" src="{IMGURL}"<!-- BEGIN lazy --> data-lazy="{IMGURLLAZY}"<!-- END lazy --> id="{ITEMID}" title="{TEXT}" />
@@ -25,6 +15,17 @@
 	<div class="bottrig">
 		<button class="btn btn-default btn-lg" id="galleryNext"><span class="glyphicon glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
 	</div>
+	<div id="photoToolbar">
+		<div class="icons-right">
+			<a href="#" id="aSlideshow"><img src="[[URL_CSS]]images/play.png" title="Start slideshow" alt="Play/Stop"/></a>
+			<br>
+			<a href="#" class="aFullscreen"><img src="[[URL_CSS]]images/fullscreen.png" title="Go to fullscreen mode" alt="Fullscreen"/></a>
+		</div>
+		<div>
+			<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a><br>
+			<a href="#" id="commentLink"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span id="commentNum"></span></a>
+		</div>
+	</div>
 </div>
 <div id="mapThumb" class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
 <p id="description" class="text-center">{TEXT}</p>
@@ -33,3 +34,6 @@
 </div>
 </div>
 </div>
+<script type="text/javascript">
+	var galleryComments = {JSON_COMMENTS};
+</script>

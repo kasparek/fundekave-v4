@@ -379,7 +379,7 @@ class FBuildPage {
 			if(false!==($pageHeading=FBuildPage::getHeading())) if(!empty($pageHeading)) $tpl->setVariable('PAGEHEAD',$pageHeading);
 			
 			//do not do topbanner when item is gallery
-			if($user->pageVO->typeId!='galery' && empty($user->itemVO)) {
+			if($user->pageVO->showTopBanner && $user->pageVO->typeId!='galery' && empty($user->itemVO)) {
 				$topbanner = $pageVOTop->prop('topbanner');
 				if(!empty($topbanner)) {
 					$topbannerData = array();
@@ -578,14 +578,10 @@ class FBuildPage {
 		//---GET PAGE DATA
 		$data = $tpl->get();
 		$data = FSystem::superVars($data);
-
 		if(empty($user->pageParam)) {
-			//only when not editing
-			$newSrc ='img src="'.URL_CSS.'images/bg.png" data-src';
-			$data = str_replace('img src',$newSrc,$data);
+			$data = str_replace('img src','img src="'.URL_CSS.'images/bg.png" data-src',$data);
 		}
-		$data = preg_replace('/\s\s+/', ' ', $data); //strip whitespace
-		// src="[[URL_CSS]]images/bg.png"
+		$data = preg_replace('/\s\s+/', ' ', $data);
 		FProfiler::write('FBuildPage--complete');
 		$user->updateTotalItemsNum();
 		return $data;

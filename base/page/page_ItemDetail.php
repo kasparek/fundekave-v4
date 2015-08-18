@@ -13,11 +13,13 @@ class page_ItemDetail implements iPage {
 		if(!empty($user->itemVO)) $itemVO = $user->itemVO;
 		if(!empty($data['i']) && $data['i']!=$itemVO->itemId) $itemVO = FactoryVO::get('ItemVO',(int) $data['i'],true);
 		if(empty($itemVO)) return false;
+		$itemId = $itemVO->itemId;
+
+		$isComment = false;
+		if(isset($data['__get']['do']) && $data['__get']['do']=='comment') $isComment = true;
 
 		//generic links
 		$backUri = FSystem::getUri('', $itemVO->pageId,'');
-		//if(($itemNext = $itemVO->getNext(true,$itemVO->typeId=='galery'))!==false) $nextUri = FSystem::getUri('i='.$itemNext,$itemVO->pageId);
-		//if(($itemPrev = $itemVO->getPrev(true,$itemVO->typeId=='galery'))!==false) $prevUri = FSystem::getUri('i='.$itemPrev,$itemVO->pageId);
 
 		//generic vars for all item details
 		/**
@@ -63,8 +65,6 @@ class page_ItemDetail implements iPage {
 			if($data['__ajaxResponse']) {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
-				FAjax::addResponse('call','ImgNext.xhrHand',$itemVO->itemId.','.$nextVO->itemId.','.$itemPrev.','.$itemVO->detailUrl.','.$nextVO->detailUrl);
-				
 				FAjax::addResponse('backButt','href',$backUri);
 				//FAjax::addResponse('prevButt','href',$nextUri);
 				//FAjax::addResponse('nextButt','href',$prevUri);
@@ -92,12 +92,37 @@ class page_ItemDetail implements iPage {
 				$fItems->setOrder($user->pageVO->itemsOrder());
 				$items = $fItems->getList();
 
+				$itemIds = array();
+				foreach ($items as $item) {
+					$itemIds[] = $item->itemId;
+				}
 				if($items[0]->itemId != $itemVO->itemId) {
 					//sort out so detail is first
 					while($items[0]->itemId != $itemVO->itemId) {
 						array_push($items,array_shift($items));
 					}
 				}
+
+				//get comments
+				$fComments = new FItems('forum',$user->userVO->userId);
+				$fComments->addWhere("itemIdTop in ('".implode("','", $itemIds)."')");
+				$fComments->setOrder("dateCreated desc");
+				$comments = $fComments->getList();
+				$jsonObj = array();
+				foreach ($comments as $key => $item) {
+					$o = new stdClass();
+					$o->itemIdTop = $item->itemIdTop;
+					$o->itemId = $item->itemId;
+					$o->date = $item->dateCreated;
+					$o->text = $item->text;
+					$o->userId = $item->userId;
+					$o->name = $item->name;
+					$o->enclosure = $item->enclosure;
+					$o->properties = $item->properties;
+					$jsonObj[] = $o;
+				}
+				$json = json_encode($jsonObj,JSON_UNESCAPED_UNICODE);
+				$tpl->setVariable('JSON_COMMENTS',$json);
 
 				$c=0;
 				$index = 0;
@@ -114,6 +139,7 @@ class page_ItemDetail implements iPage {
 					$tpl->setVariable('TEXT',$item->text);
 					$tpl->parse('cell');
 					$index++;
+					if($isComment) break;
 				}
 				$output = $tpl->get();
 			}

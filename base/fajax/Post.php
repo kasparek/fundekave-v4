@@ -17,7 +17,6 @@ class fajax_Post extends FAjaxPluginBase {
 		$xs = false;
 		if(empty($data['msgType'])) $data['msgType'] = 'def';
 		if($data['msgType']=='xs') $xs = true;
-
 		$data = page_UserPost::process($data);
 
 		if($xs) {

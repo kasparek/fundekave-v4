@@ -19,19 +19,10 @@
 		<div class="col-sm-3">
 		<!-- BEGIN selectedfriend --><div id="recipientavatar">{SELECTEDFRIENDAVATAR}</div><!-- END selectedfriend -->
 		</div>
-		<div class="pull-left" style="margin-left:15px;">
+		<div class="col-sm-9">
 			<button type="submit" name="send" class="btn btn-primary submit">Odeslat</button>
-			<button type="submit" name="special" class="btn btn-warning submit">Provést</button>
-		</div>
-		<div class="col-sm-3">
-			<select name="saction" id="saction" class="form-control">
-			<option value="delete">Smazat označené</option>
-			<option value="search">Hledat</option>
-			<option value="setpp">Počet zobrazených zpráv</option>
-			</select> 
-		</div>
-		<div id="ppinput" class="col-sm-2">
-			<input type="text" name="perpage" value="{PERPAGE}" title="počet zobrazených zpráv" class="form-control" />
+			<button type="submit" name="search" class="btn btn-warning submit">Hledat</button>
+			<button type="submit" name="delete" class="btn btn-danger submit confirm" title="Smazat oznacene zpravy?">Smazat</button>
 		</div>
 	</div>
 

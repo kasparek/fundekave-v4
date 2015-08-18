@@ -15,7 +15,7 @@ include_once('iPage.php');
 class page_UserPost implements iPage {
 
 	static function process($data) {
-			
+
 		$redirect = false;
 		$redirParam = '';
 		$user = FUser::getInstance();
@@ -27,68 +27,51 @@ class page_UserPost implements iPage {
 				$cache->invalidateData($user->pageVO->pageId, 'filter');
 			}
 		}
-		if(!isset($data['action'])) $data['action'] = false;
+
+		if(empty($data['action'])) $data['action'] = false;
 		if(isset($data["send"])) $data['action']='send';
-    
-		//---SEND MESSAGE
-		if($data['action']=='send') {
-			$data["text"] = FText::preProcess($data["text"]);
-			$data["recipient"] = FText::preProcess($data["recipient"],array('plainText'=>1));
-			if(empty($data["text"])) FError::add(FLang::$MESSAGE_EMPTY);
-			if(!empty($data["recipient"])) {
-				$recipientList=explode(",",$data["recipient"]);
-				foreach ($recipientList as $usrname) {
-					$usrname = trim($usrname);
-					if($pro = FUser::getUserIdByName($usrname)) $arrto[] = $pro;
-					else $errjm[] = $usrname;
-				}
-				if(!empty($errjm)) FError::add(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
-			}
-			if(empty($arrto)) {
-				FError::add(FLang::$MESSAGE_RECIPIENT_EMPTY);
-			}
-			if(!Ferror::is()) {
-				foreach ($arrto as $userId){
-					FMessages::send($userId,$data["text"],$user->userVO->userId);
-				}
-				$redirect = true;
-				$cache->invalidateData($user->pageVO->pageId, 'filter');
-			}
-		}
+		if(isset($data["search"])) $data['action']='search';
+		if(isset($data["delete"])) $data['action']='delete';
 
-		if($data['action']=='special') $data['special'] = 'true';
-		
-		if(isset($data['special'])) {
-			switch($data['saction']) {
-				case 'setpp':
-					$user->pageVO->perPage($data["perpage"]);
-					break;
-				case 'search':
-					$searchData = array(FText::preProcess($data["recipient"],array('plainText'=>1)),FText::preProcess($data["text"],array('plainText'=>1)));
-					$cache->setData($searchData, $user->pageVO->pageId, 'filter');
-					$data['refreshPage'] = true;
-					break;
-				case 'delete':
-				case 'deletebetween':
-					if(empty($data["del"])) break;
-					if($data['saction']=='deletebetween' && count($data["del"]) > 1) {
-						$displayedMsgs = &$cache->getPointer('displayedMsgs');
-						$to = array_pop($data['del']);
-						$from = array_pop($data['del']);
-						if(empty($displayedMsgs)) break;
-						$firstIndex = array_search($from,$displayedMsgs);
-						$lastIndex = array_search($to,$displayedMsgs)+1;
-						$len = $lastIndex - $firstIndex;
-						$data["del"] = array_slice($displayedMsgs, $firstIndex, $len);
-						$displayedMsgs = null;
+		switch($data['action']) {
+			case 'send':
+				$data["text"] = FText::preProcess($data["text"]);
+				$data["recipient"] = FText::preProcess($data["recipient"],array('plainText'=>1));
+
+				if(empty($data["text"])) FError::add(FLang::$MESSAGE_EMPTY);
+				if(!empty($data["recipient"])) {
+					$recipientList=explode(",",$data["recipient"]);
+					foreach ($recipientList as $usrname) {
+						$usrname = trim($usrname);
+						if($pro = FUser::getUserIdByName($usrname)) $arrto[] = $pro;
+						else $errjm[] = $usrname;
 					}
-					FMessages::delete($data["del"]);
+					if(!empty($errjm)) FError::add(implode(", ",$errjm)." :: ".FLang::$MESSAGE_USERNAME_NOTEXISTS);
+				}
+				if(empty($arrto)) {
+					FError::add(FLang::$MESSAGE_RECIPIENT_EMPTY);
+				}
+
+				if(!Ferror::is()) {
+					foreach ($arrto as $userId){
+						FMessages::send($userId,$data["text"],$user->userVO->userId);
+					}
 					$redirect = true;
-					break;
-			}
+					$cache->invalidateData($user->pageVO->pageId, 'filter');
+				}
+			break;
+			case 'search':
+				$searchData = array(FText::preProcess($data["recipient"],array('plainText'=>1)),FText::preProcess($data["text"],array('plainText'=>1)));
+				$cache->setData($searchData, $user->pageVO->pageId, 'filter');
+				$data['refreshPage'] = true;
+				break;
+			case 'delete':
+				if(empty($data["del"])) break;
+				FMessages::delete($data["del"]);
+				$redirect = true;
+				break;
 		}
 
-    
 		//---redirect
 		if(empty($data['__ajaxResponse'])) {
 			if($redirect) FHTTP::redirect(FSystem::getUri($redirParam));
@@ -100,7 +83,13 @@ class page_UserPost implements iPage {
 
 	static function build($data=array()) {
 		$user = FUser::getInstance();
-		//$user->pageVO->showHeading = false;
+
+		$user->pageVO->tplVars['NUMCOLMAIN'] = 12;
+		$user->pageVO->showSidebar = false;
+		$user->pageVO->showMidbar = false;
+		$user->pageVO->showTopBanner = false;
+		$user->pageVO->showHeading = false;
+
 		$cache = FCache::getInstance('s');
 
 		$msgs = new FMessages($user->userVO->userId);
@@ -185,15 +174,10 @@ class page_UserPost implements iPage {
 
 		//---data printing
 		if(!empty($arrpost)) {
-			$cache = FCache::getInstance('s');
-			$displayedMsgs = &$cache->getPointer('displayedMsgs');
-			$displayedMsgs = array();
 			foreach ($arrpost as $post) {
-				$displayedMsgs[] = $post['postId'];
 				if($post["readed"]!=1) {
 					$tpl->touchBlock("unread");
 				}
-    
 				$tpl->setVariable("ITEMIDHTML", $post['postId']);
 				$tpl->setVariable("EDITID", $post['postId']);
 				$tpl->setVariable("DATELOCAL", $post["datumcz"]);
@@ -209,17 +193,14 @@ class page_UserPost implements iPage {
 					$mulink = FSystem::getUri("who=".$post["userIdTo"].'#tabs-profil','finfo');
 					$muname = $post['fromName'];
 				}
-    
 				$tpl->setVariable("MULINK", $mulink);
 				$tpl->setVariable("MUNAME", $muname);
 				$tpl->setVariable("TEXT", FText::postProcess($post["text"]));
 				$tpl->parse("message");
-
 				/*prectena*/
 				if ($post["userIdFrom"]!=$user->userVO->userId && $post["readed"]==0) {
 					FDBTool::query("update sys_users_post set readed='1' where postId='".$post["postId"]."' or postIdFrom='".$post["postId"]."'");
 				}
-    
 			}
 		}
 
