@@ -1,5 +1,5 @@
 <div class="row">
-<div class="col-md-12">
+<div class="col-md-{BS_COLS}">
 <div class="panel panel-default">
 <div class="panel-body">
 <a name="detail"></a>
@@ -9,21 +9,16 @@
 			<img class="gallery-cell-image" src="{IMGURL}"<!-- BEGIN lazy --> data-lazy="{IMGURLLAZY}"<!-- END lazy --> id="{ITEMID}" title="{TEXT}" />
 		</div><!-- END cell -->
 	</div>
-	<div class="bottlef">
-		<button class="btn btn-default btn-lg" id="galleryPrev"><span class="glyphicon glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
-	</div>
-	<div class="bottrig">
-		<button class="btn btn-default btn-lg" id="galleryNext"><span class="glyphicon glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
-	</div>
 	<div id="photoToolbar">
-		<div class="icons-right">
-			<a href="#" id="aSlideshow"><img src="[[URL_CSS]]images/play.png" title="Start slideshow" alt="Play/Stop"/></a>
-			<br>
-			<a href="#" class="aFullscreen"><img src="[[URL_CSS]]images/fullscreen.png" title="Go to fullscreen mode" alt="Fullscreen"/></a>
+		<a href="#" id="aSlideshow" title="Start/Stop slideshow"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+		<a href="#" class="aFullscreen" title="Toggle fullscreen"><span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span></a>
+		<a href="{ALBUMURL}" title="Back to album thumbnails"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></a><br>
+		<a href="#" id="commentLink"><span class="glyphicon glyphicon-comment" aria-hidden="true"><span id="commentNum"></span></span></a>
+		<div class="bottlef">
+			<a id="galleryPrev" title="Previous photo"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
 		</div>
-		<div>
-			<a href="{ALBUMURL}"><img src="[[URL_CSS]]images/thumbnails.png" title="Back to album" alt="Album"/></a><br>
-			<a href="#" id="commentLink"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span><span id="commentNum"></span></a>
+		<div class="bottrig">
+			<a id="galleryNext" title="Next photo"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
 		</div>
 	</div>
 </div>

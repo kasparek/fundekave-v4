@@ -1,4 +1,3 @@
-<files *ini>
-deny from all
-</files>
-deny from all
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Headers "origin, x-requested-with, content-type"
+Header set Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS"

@@ -13,6 +13,8 @@
 	};
 	o.update = function(itemId){
 		var commentNum = o.getNum(itemId);
+		if(commentNum) $("#commentLink span.glyphicon-comment").addClass('has-comments');
+		else $("#commentLink span.glyphicon-comment").removeClass('has-comments');
 		$("#commentNum").text(commentNum || "");
 		var href = $("#commentLink").attr('href');
 		$("#commentLink").attr('href','?i='+itemId+'&do=comment');

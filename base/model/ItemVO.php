@@ -167,9 +167,9 @@ class ItemVO extends Fvob {
 	//private
 	private $itemList;
 
-	function load() {
+	function load($prepare=true) {
 		if($ret = parent::load()) {
-			if(!$this->loadedCached) $this->prepare();
+			if(!$this->loadedCached && $prepare===true) $this->prepare();
 		}
 		return $ret;
 	}

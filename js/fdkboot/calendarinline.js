@@ -10,24 +10,27 @@ function calendarInit() {
 		date = getDate;
 	}
 	calendarDate = new Date(date);
-	$('#calendar-inline').on('show',function(){
-		$('th.datepicker-switch').on('click',calendarInlineInvalidate);
+	$('#calendar-inline')
+	.on('show',function() {
+		$('th.datepicker-switch').on('click',function(){
+			calendarInlineInvalidate();
+		});
 		$('th.next').on('click',calendarInlineInvalidate);
 		$('th.prev').on('click',calendarInlineInvalidate);
-		//$('span.year').tooltip({container: 'body',placement: 'left'});
-		//$('span.month').tooltip({container: 'body',placement: 'left'});
-		//$('td.day').tooltip({container: 'body',placement: 'left'});
 		calendarInlineInvalidate();
-	}).datepicker({ date:date, language: "cs", minViewMode: viewMode ? viewMode : 0, weekStart: 1})
-	.on('changeYear',calendarInlineInvalidate)
+	}).datepicker({ date:date, language: "cs", startView: viewMode ? viewMode : 0, weekStart: 1, multidate:true})
+	.on('changeYear',function(e){
+		selectedDate = {year:e.date.getFullYear()};
+		calendarInlineInvalidate(e);
+	})
 	.on('changeDate', function(e){
-		var viewMode = calendarViewMode();
-		var cat = gup('c',window.location.href);
-		var uri = "?k="+_fdk.cfg.page+(cat?'&c='+cat:'')+"&date="+e.date.getFullYear() 
-		+ (viewMode < 2 ? '-' + ('0' + (e.date.getMonth()+1)).slice(-2) : '' )
-		+ (viewMode < 1 ? '-' + ('0' + e.date.getDate()).slice(-2) : '' );
-		window.location.replace(uri);
-	}).on('changeMonth', calendarInlineInvalidate);
+		selectedDate = {year:e.date.getFullYear(),month:('0' + (e.date.getMonth()+1)).slice(-2),date:('0' + e.date.getDate()).slice(-2)};
+		calendarInlineInvalidate(e);
+	})
+	.on('changeMonth', function(e){
+		selectedDate = {year:e.date.getFullYear(),month:('0' + (e.date.getMonth()+1)).slice(-2)};
+		calendarInlineInvalidate(e);
+	});
 	if(date) {
 		var d=date.split('-'),da=new Date(parseInt(d[0]), parseInt(d[1])-1, parseInt(d[2]));
 		$('#calendar-inline').datepicker('update', da);
@@ -39,39 +42,98 @@ function calendarViewMode() {
 	if($(".datepicker-years",cal).css('display')=='block') return 2;
 	return 0;
 }
+var invalidateTimeout;
 function calendarInlineInvalidate(e){
 	if(e && e.date) calendarDate=e.date;
 	if(calendarIsInvalid) return;
 	calendarIsInvalid=true;
-	setTimeout(calendarInlineUpdate,10);
+	selectedDate.cat = gup('c',window.location.href);
+	if(invalidateTimeout) clearTimeout(invalidateTimeout);
+	invalidateTimeout = setTimeout(calendarInlineUpdate,100);
 }
+var selectedDate = {};
 var calendarDate;
 var calendarFirstInit=true;
 var calendarDataLoaded={};
+var galeryDateLoaded={};
 var calendarIsInvalid=false;
 function calendarInlineUpdate() {
-	var year,month;
+	var year,month,day,i;
 	calendarIsInvalid=false;
 	var $cal = $('#calendar-inline'), viewMode = calendarViewMode();
+	var galGrouped = null;
 	if(!calendarFirstInit && (viewMode==2 || calendarDate)) {
-		if(calendarDate) { 
+		if(calendarDate) {
 			year=calendarDate.getFullYear();
 			month=parseInt(calendarDate.getMonth())+1;
+			day=parseInt(calendarDate.getDate());
 		}
+		/* Disabled loading - hadrcode for galleries at the  moment not used anywhere else
 		var loading = viewMode+'-'+(viewMode<2?year+(viewMode<1?'-'+month:''):'');
-		if(!calendarDataLoaded[loading]) {
+		if(!galeryDateLoaded[selectedDate.year] && !calendarDataLoaded[loading]) {
 			Fajax.add('loading', loading);
 			if(viewMode) Fajax.add('viewmode', viewMode);
 			if(viewMode<1) Fajax.add('month', month);
 			if(viewMode<2) Fajax.add('year', year);
 			Fajax.send('calendar-show', '');
-		} else calendarLoading=null;
+		}*/
+		if(!galeryDateLoaded[selectedDate.year]) {
+			galeryDateLoaded[selectedDate.year] = true;
+			console.log('Updating galleries: ' + selectedDate.year);
+			Fajax.add('year', selectedDate.year);
+			Fajax.add('month', selectedDate.month||0);
+			Fajax.add('date', selectedDate.date||0);
+			Fajax.add('cat', selectedDate.cat||0);
+			Fajax.add('type', 'galery');
+			Fajax.send('page-listByDate', _fdk.cfg.page);
+		} else {
+			galGrouped = {};
+			console.log('Showing galleries from cache');
+			$("#pagesList").html('');
+			var sDate = selectedDate.date ? parseInt(selectedDate.date) || null : null, sMonth = selectedDate.month ? parseInt(selectedDate.month) || null : null;
+			for(i=0;i<galeryDateLoaded[selectedDate.year].length;i++) {
+				var page = galeryDateLoaded[selectedDate.year][i];
+				if(viewMode==1 || (sMonth===null || sMonth == parseInt($(page).data('month'))) && (sDate===null || sDate == parseInt($(page).data('date')))
+					//&& (!selectedDate.cat || selectedDate.car == $(page).data('category'))
+					) {
+					$("#pagesList").append(page);
+				}
+				//group to show in calendar
+				if(viewMode === 0) { //day view
+					if(selectedDate.month == $(page).data('month')) {
+						if(!galGrouped[$(page).data('date')]) galGrouped[$(page).data('date')]=0;
+						galGrouped[$(page).data('date')]++;
+					}
+				} else if(viewMode === 1) { //month view
+					if(!galGrouped[$(page).data('month')]) galGrouped[$(page).data('month')]=0;
+					galGrouped[$(page).data('month')]++;
+				}
+			}
+			$("#pagesList img").unveil();
+		}
 	}
 	calendarFirstInit=false;
-	var dayEvents = $(".event",$cal[0]);
+
+	//reset calendar
 	$("td.day",$cal[0]).each(function(){$(this).removeClass('active');});
 	$("span.month",$cal[0]).each(function(){$(this).removeClass('active');});
 	$("span.year",$cal[0]).each(function(){$(this).removeClass('active');});
+
+var el;
+if(galGrouped) {
+	for(var key in galGrouped) {
+		if(viewMode==1) {
+			el = $("span.month",$cal[0])[key-1];
+		} else {
+			el = $("td.day:not(.old):not(.new)",$cal[0])[key-1];
+		}
+		$(el).addClass('active');
+		$(el).attr('title',galGrouped[key]);
+	}
+}
+
+	//get all events
+	var dayEvents = $(".event",$cal[0]);
 	dayEvents.each(function(){
 		$("span",this).remove();
 		var ed = String($(this).data('date'));
@@ -120,7 +182,7 @@ function datePickerInit(){
 	$('.date').datepicker({todayBtn: true,weekStart: 1,autoclose: true,language: "cs",calendarWeeks: true,todayHighlight: true,format: 'dd.mm.yyyy'});
 }
 function calendarLoaded(loading) {
-calendarDataLoaded[loading]=true;
+	calendarDataLoaded[loading]=true;
 }
 function calendarUpdate(data) {
 	data = data.split("\n");
@@ -130,5 +192,10 @@ function calendarUpdate(data) {
 			$("#calendar-inline").append(data[i]);
 		}
 	}
+	calendarInlineInvalidate();
+}
+function calendarPagesLoaded(key) {
+	galeryDateLoaded[key] = $("#pagesList div.galeryPage").clone();
+	$("#pagesList img").unveil();
 	calendarInlineInvalidate();
 }

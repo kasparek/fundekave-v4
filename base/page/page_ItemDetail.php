@@ -86,20 +86,29 @@ class page_ItemDetail implements iPage {
 				$tpl = FSystem::tpl('galery.detail.tpl.html');
 				$tpl->setVariable($arrVars);
 
-				//get all the images
-				$fItems = new FItems('galery',$user->userVO->userId);
-				$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
-				$fItems->setOrder($user->pageVO->itemsOrder());
-				$items = $fItems->getList();
+				if($isComment === true) {
+					ImageConfig::$sideDefault = 600;
+					$tpl->setVariable('BS_COLS','12');//'6'); //TODO: adopt template to flow content
+					$user->itemVO->prepare();
+					$items = array($user->itemVO);
+					$itemIds = array($user->itemVO->itemId);
+				} else {
+					$tpl->setVariable('BS_COLS','12');
+					//get all the images
+					$fItems = new FItems('galery',$user->userVO->userId);
+					$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
+					$fItems->setOrder($user->pageVO->itemsOrder());
+					$items = $fItems->getList();
 
-				$itemIds = array();
-				foreach ($items as $item) {
-					$itemIds[] = $item->itemId;
-				}
-				if($items[0]->itemId != $itemVO->itemId) {
-					//sort out so detail is first
-					while($items[0]->itemId != $itemVO->itemId) {
-						array_push($items,array_shift($items));
+					$itemIds = array();
+					foreach ($items as $item) {
+						$itemIds[] = $item->itemId;
+					}
+					if($items[0]->itemId != $itemVO->itemId) {
+						//sort out so detail is first
+						while($items[0]->itemId != $itemVO->itemId) {
+							array_push($items,array_shift($items));
+						}
 					}
 				}
 

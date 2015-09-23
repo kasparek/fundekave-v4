@@ -179,7 +179,6 @@ class FSidebar extends FDBTool {
 				if($panel['visible'] == 1) {
 					$fnc = $panel['functionName'];
 					$letext = false;
-										
 					if(!empty($fnc)) {
 						if($rightcolStatic) {
 							$letext = $this->getDynamicBlockContent($panel);
@@ -187,32 +186,25 @@ class FSidebar extends FDBTool {
 					} else {
 						$letext = $panel['content'];
 					}
-					
 					if(!empty($letext) || !empty($fnc)) {
 						$TOPTPL = FBuildPage::getInstance();
-						
-						if($rightcolStatic) {
-							$TOPTPL->setVariable('RIGHTCOLSTATIC', '-static');
+						$parseBlock = false;
+						if(!$rightcolStatic && !empty($fnc)) {
+							$TOPTPL->setVariable('DYNAMICSIDEBARDATA', ' id="panel'.$fnc.'" class="sidebar-content" data-src="'.$fnc.'" data-delay="'.$delay.'"');
+							$delay += 500;
+							$parseBlock = true;
 						}
-						
-						if(!empty($fnc)) {
-							$TOPTPL->setVariable('SIDEBARBLOCKIDBOX', $fnc);
-							//$TOPTPL->setVariable('SIDEBARBLOCKID', $fnc);
-						}
-						
-						$TOPTPL->setVariable('SIDEBARSOURCE',$fnc);
-						$TOPTPL->setVariable('SIDEBARDELAY',$delay);
-						$delay += 500;
-						
 						if(!empty($letext)) {
 							if(!empty($panel['name'])) {
 								$TOPTPL->setVariable('SIDEBARHEAD', $panel['name']);
 							}
-							$TOPTPL->setVariable('SIDEBARDATA', $letext);
+							$TOPTPL->setVariable('SIDEBARDATA', '<div class="well">'.$letext.'</div>');
+							$parseBlock = true;
 						}
-						
-						$TOPTPL->parse('sidebar-block');
-						$hasData = true;
+						if($parseBlock) {
+							$TOPTPL->parse('sidebar-block');
+							$hasData = true;
+						}
 					}
 				}
 			}

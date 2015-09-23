@@ -1,6 +1,6 @@
 /** INITIALIZATION ON DOM */
 var isInit=false;
-var isMobile= _fdk.isMobile ? _fdk.isMobile : false;
+var isMobile = _fdk.isMobile ? _fdk.isMobile : false;
 var topBannerHeight = 0;
 var topBannerMargin = 0;
 function topBannerPosition() {

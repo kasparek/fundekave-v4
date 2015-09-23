@@ -14,10 +14,7 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
 	<link rel="alternate" type="application/rss+xml" title="{TITLE} - fundekave.net - RSS 2.0" href="http://{HOMESITE}/rss/<!-- BEGIN rsspageid -->?k={RSSPAGEID}<!-- END rsspageid -->" />
-	<link rel="stylesheet" href="{BOOTSTRAPSWATCH}" />
-	<link rel="stylesheet" href="[[URL_CSS]]flickity.css" />
-	<link rel="stylesheet" href="[[URL_CSS]]global.css" />
-	<!-- BEGIN skincss --><style type="text/css">@import url("{URL_SKIN}/screen.css");</style><!-- END skincss -->
+	{CSSBLOCK}
   </head>
   <body>
     <!-- Static navbar -->
@@ -149,9 +146,7 @@
 		<div class="col-md-3">
 			<!-- BEGIN sidebar --><div id="sidebar">
 			<!-- BEGIN sidebar-block --><!-- BEGIN sidebar-heading --><h3>{SIDEBARHEAD}</h3><!-- END sidebar-heading -->
-			<div id="panel{SIDEBARBLOCKIDBOX}" class="sidebar-content{RIGHTCOLSTATIC}" data-src="{SIDEBARSOURCE}" data-delay="{SIDEBARDELAY}">
-			<!-- BEGIN sidebar-content --><div id="{SIDEBARBLOCKID}" class="well">{SIDEBARDATA}</div><!-- END sidebar-content -->
-			</div><!-- END sidebar-block -->
+			<div{DYNAMICSIDEBARDATA}>{SIDEBARDATA}</div><!-- END sidebar-block -->
 			</div><!-- END sidebar -->
 		</div>
 	  </div>

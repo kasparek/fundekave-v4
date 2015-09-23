@@ -66,7 +66,7 @@ $itemId = 0;
 if(!empty($_REQUEST["i"])) $itemId = (int) $_REQUEST['i'];
 elseif(isset($_REQUEST['nid'])) $itemId = (int) $_REQUEST['nid']; //---backwards compatibility
 if($itemId > 0) {
-	$user->itemVO = FactoryVO::get('ItemVO',$itemId,true);
+	$user->itemVO = FactoryVO::get('ItemVO',$itemId,true,false);
 	if($user->itemVO) {
 		if(empty($pageId)) $pageId = $user->itemVO->pageId;
 		if($user->itemVO->itemIdTop > 0) $user->itemVO = FactoryVO::get('ItemVO', $user->itemVO->itemIdTop,true );

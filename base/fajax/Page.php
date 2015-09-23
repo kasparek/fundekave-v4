@@ -10,6 +10,16 @@ class fajax_Page extends FAjaxPluginBase {
 		FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
 	}
 
+	static function listByDate($data) {
+		$pageListOut = page_PagesList::build(array(),array('typeId'=>$date->type,'return'=>true,'nopager'=>true,'limit'=>0,
+			'inDate'=>$data['year'].(!empty($data['month'])?'-'.$data['month']:'').(!empty($date['date'])?'-'.$date['date']:''),
+			'categoryId'=>!empty($date['cat'])?$date['cat']:null));
+		$pageListOut = str_replace(' class="well" id="pagesList"','',$pageListOut);
+		$pageListOut = str_replace('img src','img src="'.URL_CSS.'images/bg.png" data-src',$pageListOut);
+		FAjax::addResponse('pagesList', '$html', $pageListOut);
+		FAjax::addResponse('call', 'calendarPagesLoaded', $data['year']);
+	}
+
 	static function fuup($data) {
 		$user = FUser::getInstance();
 		//---call galery refresh

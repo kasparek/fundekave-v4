@@ -17,6 +17,7 @@ class page_PagesList implements iPage {
 		if(!empty($user->pageVO->typeIdChild)) $typeId=$user->pageVO->typeIdChild;
 		
 		if(!empty($override['typeId'])) $typeId = $override['typeId'];
+		if(!empty($override['categoryId'])) $category = $override['categoryId'];
 		
 		if(!isset(FLang::$TYPEID[$typeId])) $typeId=array_keys(FLang::$TYPEID);
 
@@ -55,7 +56,7 @@ class page_PagesList implements iPage {
 			$fPages->addWhere("sys_pages.pageIdTop = '".SITE_STRICT."'");
 		}
 		$inDate = $user->inDate();
-		
+		if(!empty($override['inDate'])) $inDate = $override['inDate'];
 		$sort = false;
 		if(!empty($override['sort'])) {
 			$sort = $override['sort'];
@@ -89,7 +90,9 @@ class page_PagesList implements iPage {
 			$pager = new FPager(0,$perPage ,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $perPage;
 		}
-		$fPages->setLimit( $from, $perPage+1 );
+		if(empty($override['limit']) && $override['limit']>0) {
+			$fPages->setLimit( $from, $perPage+1 );
+		}
 		
 		//$uid = $fPages->getUID($from, $perPage+1);
 		//if(!empty($override['nopager'])) $uid.='nopager';
@@ -135,6 +138,12 @@ class page_PagesList implements iPage {
 							$tplGal->setVariable("IMGURLTHUMB",$fotoItemVO->thumbUrl);
 						}
 						$tplGal->setVariable("PAGEID",$gal->pageId);
+
+						$tplGal->setVariable("CATEGORY",$gal->categoryId);
+						$tplGal->setVariable("YEAR",substr($gal->date($gal->dateContent,'iso'), 0, 4));
+						$tplGal->setVariable("MONTH",substr($gal->date($gal->dateContent,'iso'), 5, 2)*1);
+						$tplGal->setVariable("DATE",substr($gal->date($gal->dateContent,'iso'), 8, 2)*1);
+
 						$tplGal->setVariable("PAGELINK",FSystem::getUri('',$gal->pageId,''));
 						$tplGal->setVariable("PAGENAME",$gal->name);
 						$tplGal->setVariable("DATELOCAL",$gal->date($gal->dateContent,'date'));

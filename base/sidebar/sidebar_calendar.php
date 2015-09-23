@@ -4,6 +4,8 @@ class sidebar_calendar {
 	static function show($options=null) {
 		if($options===null) $options = new stdClass();
 
+		//SELECT count(1),DATE_FORMAT(dateContent,"%Y-%m-%d") as date FROM `sys_pages` WHERE typeId='galery' group by date
+
 		$user = FUser::getInstance();
 
 		$drok = $user->year;

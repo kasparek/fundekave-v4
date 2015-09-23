@@ -100,6 +100,7 @@ div.notpublished { background: #ffe0c0; }
 }
 .gallery-cell {
 	width: 100%;
+	margin-bottom: 2em;
 }
 
 .bottrig {
@@ -288,33 +289,39 @@ img {max-width: none;max-height: none;}
 .showProgress{background:url(images/loading.gif) no-repeat center center;}
 #fullscreenBox {min-height:200px;text-align:center;overflow:hidden; }
 #photoToolbar {opacity:0.7; }
-#photoToolbar div {
+div#photoToolbar {
 	position: fixed;
 	top:50px;
 	left: 0;
 	z-index:10000;
 	text-align: left;
 	margin: 0 10px;
-}
-#photoToolbar div.icons-right {
-	left: inherit;
-	right: 0;
-}
-#commentLink {
 	font-size: 44px;
+	width: 44px;
+	opacity: 0.6;
 }
-/*.icon48bar {opacity:0.7;text-align:left;}
-.icon48bar img { opacity:0.7; }*/
-#photoToolbar #nextButt, #photoToolbar  #prevButt { min-height:150px;margin-top:48px;display: block;position: absolute;top: 0;width: 20%;outline: none; }
-#photoToolbar #nextButt {left: 0;background: transparent url(images/prev.png) no-repeat 0 40%;opacity:0.5;}
-#photoToolbar #nextButt:hover {opacity:1;}
-#photoToolbar #prevButt {right: 0;background: transparent url(images/next.png) no-repeat 100% 40%;opacity:0.5;}
-#photoToolbar #prevButt:hover {opacity:1}
+#photoToolbar a {
 
+}
+#galleryPrev,#galleryNext {
+	font-size: 6rem;
+}
+#commentLink span.glyphicon-comment {
+	position: relative;
+}
+#commentLink span.glyphicon-comment.has-comments {
+	font-weight: bold;
+}
+#commentLink span#commentNum {
+	position: absolute;
+    top: 3px;
+    left: 15px;
+    color: #fff;
+    font-size: 23px;
+}
 .mce-fullscreen {
 	z-index: 10000 !important;
 }
-
 /*
     Colorbox Core Style:
     The following CSS is consistent between example themes and should not be altered.

@@ -2,14 +2,15 @@
 	$.fn.unveil = function(data, threshold, defaultHeight, callback) {
 		var $w = $(window), attr = "data-"+(data || "src"),th = threshold || 0,images = this,loaded;
     	if(defaultHeight) {
-    		$(this).height($w.height());
+    		$(this).each(function(){
+    			if($(this).height() < 10) $(this).height($w.height());
+    		});
     	}
 		this.one("unveil", function() {
 			var source = this.getAttribute(attr);
 			if (source) {
 				$(this).data(attr.replace('data-',''),'');
 				this.setAttribute("src", source);
-				console.log("unveil::one: "+source);
 				if (typeof callback === "function") callback.call(this);
 			}
 		});

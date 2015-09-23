@@ -511,12 +511,7 @@ class FBuildPage {
 		$skinName = SKIN;
 		$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS);
 		$skinRestUrl = '';
-		if(!empty($skinName)) {
-			$skinRestUrl = 'skin/'.$skinName;
-			$tpl->setVariable('URL_SKIN',$cssUrl.$skinRestUrl);
-			$tpl->parse('skincss');
-			$tpl->setVariable('URL_SKIN',$cssUrl.$skinRestUrl);
-		}
+		
 		$tpl->setVariable('URL_FAVICON',$cssUrl.$skinRestUrl.'/images/favicon.ico');
 		
 		$brandLogo = FConf::get('settings','brand_logo');
@@ -528,34 +523,47 @@ class FBuildPage {
 		if($actionNum>0) {
 			$tpl->setVariable('ACTIONSNUM',$actionNum);
 		}
-		
-		$bsskin = FConf::get('settings','bssskin_default');
-		if($user->idkontrol) {
-			$bsskin = $user->userVO->prop('skin');
+		$useCssMin = FConf::get('settings','useMinCss');
+		if($useCssMin && $user->idkontrol === false) {
+			$tpl->setVariable('CSSBLOCK','<link rel="stylesheet" href="'.$cssUrl.'styles.min.css" />');
 		} else {
-			$cache = FCache::getInstance('s');
-			$bsskinCached = $cache->getData('bsskin');
-			if($bsskinCached!==false) $bsskin = $bsskinCached;
+			$bsskin = FConf::get('settings','bssskin_default');
+			if($user->idkontrol) {
+				$bsskin = $user->userVO->prop('skin');
+			} else {
+				$cache = FCache::getInstance('s');
+				$bsskinCached = $cache->getData('bsskin');
+				if($bsskinCached!==false) $bsskin = $bsskinCached;
+			}
+
+			$bootswatch = FConf::get('settings','bootswatch');
+			$bootswatchcdn = FConf::get('settings','bootswatchcdn');
+			if($bootswatchcdn) {
+				$cdnbsskin = $bsskin;
+				if(empty($bsskin)) $cdnbsskin = 'amelia';
+				else if($bsskin=='first') $cdnbsskin = 'united';
+			}
+			if($bootswatchcdn && $cdnbsskin && strpos($bootswatch,$cdnbsskin)!==false) {
+				$bsskin = str_replace('SWATCH_NAME',$cdnbsskin,$bootswatchcdn);
+			} elseif($bsskin=='default') {
+				$bsskin = FConf::get('settings','bootcsscdn');
+			} else {
+				$bsskin = URL_CSS.'bootstrap'.($bsskin?'.'.$bsskin:'').'.css';
+			}
+			$cssBlock = '';
+			if(!empty($bsskin)) {
+				$cssBlock .= '<link rel="stylesheet" href="'.$bsskin.'" />';
+			}
+
+			$cssBlock .= '<link rel="stylesheet" href="'.$cssUrl.'global.css" />';
+
+			if(!empty($skinName)) {
+				$skinRestUrl = 'skin/'.$skinName;
+				$cssBlock .= '<style type="text/css">@import url("'.$cssUrl.$skinRestUrl.'/screen.css");</style>';
+				$tpl->setVariable('URL_SKIN',$cssUrl.$skinRestUrl);
+			}
+			$tpl->setVariable('CSSBLOCK',$cssBlock);
 		}
-		
-		$bootswatch = FConf::get('settings','bootswatch');
-		$bootswatchcdn = FConf::get('settings','bootswatchcdn');
-		if($bootswatchcdn) {
-			$cdnbsskin = $bsskin;
-			if(empty($bsskin)) $cdnbsskin = 'amelia';
-			else if($bsskin=='first') $cdnbsskin = 'united';
-		}
-		if($bootswatchcdn && $cdnbsskin && strpos($bootswatch,$cdnbsskin)!==false) {
-			$bsskin = str_replace('SWATCH_NAME',$cdnbsskin,$bootswatchcdn);
-		} elseif($bsskin=='default') {
-			$bsskin = FConf::get('settings','bootcsscdn');
-		} else {
-			$bsskin = URL_CSS.'bootstrap'.($bsskin?'.'.$bsskin:'').'.css';
-		}
-		if(!empty($bsskin)) {
-			$tpl->setVariable('BOOTSTRAPSWATCH',$bsskin);
-		}
-		
 		//---custom code
 		$cClassname = 'page_'.HOME_PAGE;
 		try {

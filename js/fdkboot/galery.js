@@ -29,9 +29,17 @@
 			$(this).attr('src',url);
 			console.log('Error Loading Image '+url);
 		});
+		console.log('galery init ismobil = ' +isMobile);
+		if(isMobile) {
+			$("#galleryNext").remove();
+			$("#galleryPrev").remove();
+			$("#aSlideshow").remove();
+			$(".aFullscreen").remove();
+		}
 		if($('img.gallery-cell-image').length<2) {
 			$("#galleryNext").remove();
 			$("#galleryPrev").remove();
+			$(".aFullscreen").remove();
 			$("#aSlideshow").remove();
 			return;
 		}
@@ -119,7 +127,7 @@
 		else if(o.currentIndex < 0) o.currentIndex = o.numCell-1;
 		var i = $($('div.gallery-cell')[o.currentIndex]);
 		if(Fullscreen.isFullscreen) {
-			if(e || isAnimate) $('.gallery').animate({top:(-i.position().top)+'px'},600);
+			if(e || isAnimate) $('.gallery').animate({top:(-i.position().top)},600);
 			else $('.gallery').css('top',(-i.position().top)+'px');
 		} else {
 			if(e) o.buttonTriggerScroll = true;
@@ -188,9 +196,9 @@
 		if(o.el.length===0)return;
 		listen('aFullscreen', 'click', o.toggle);
 		$("#fullscreenLeave").click(o.toggle);
-		var fs = $("#aSlideshow img");
-		fs.click(function(){
-			fs.attr('src',fs.attr('src').replace(Slideshow.on?'stop':'play',Slideshow.on?'play':'stop'));
+		$("#aSlideshow").click(function(){
+			if(Slideshow.on) $("#aSlideshow span").addClass('glyphicon-play').removeClass('glyphicon-stop');
+			else $("#aSlideshow span").addClass('glyphicon-stop').removeClass('glyphicon-play');
 			Slideshow.toggle();
 			return false;
 		});
@@ -204,6 +212,7 @@
 		return false;
 	};
 	o.onEnter = function() {
+if(screenfull.enabled){screenfull.request();}
 		o.isFullscreen = true;
 		o.state = {
 			y : o.w.scrollTop()
