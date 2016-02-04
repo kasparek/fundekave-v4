@@ -8,7 +8,7 @@ class FItemsRenderer {
 	private $tpl = false;
 	private $tplType;
 	private $tplParsed = array();
-	private $customTemplateName = '';
+	private $customTemplateName = null;
 
 	//---custom settings
 	public $showDetail = false;
@@ -17,7 +17,9 @@ class FItemsRenderer {
 	private $initialized = false;
 
 	private $signedUserId;
-		
+
+	private $itemVO;
+
 	function init( $itemVO ) {
 		if($this->initialized===false) {
 			$this->initialized===true;
@@ -42,6 +44,9 @@ class FItemsRenderer {
 
 	function getTemplateName($typeId) {
 		if(!empty($this->customTemplateName)) return $this->customTemplateName;
+		if(empty($typeId)) {
+			FError::write_log('FItemsRenderer::render - missing typeId for template itemId:'.$this->itemVO->itemId.' pageId:'.$this->itemVO->pageId);
+		}
 		return 'item.'.$typeId.'.tpl.html';
 	}
 
@@ -72,11 +77,11 @@ class FItemsRenderer {
 	}
 
 	function render( $itemVO ) {
-		
-		if(!$itemVO->itemId) {
+		if(empty($itemVO->itemId)) {
 			FError::write_log('RENDERER - empty item');
 			return;
 		}
+		$this->itemVO = $itemVO;
 		//---get "local"
 		$isDefault = $this->init( $itemVO ); //if true it is safe to take cached rendered item
 
@@ -91,26 +96,25 @@ class FItemsRenderer {
 				return;
 			}
 		}
-		
 		if($itemVO->loaded!==true) $itemVO->load();
 		if($itemVO->prepared!==true) $itemVO->prepare();
+
+		if(empty($itemVO->itemId)) {
+			//item might not exist anymore, empty if not loaded
+			FError::write_log('RENDERER - empty item');
+			return;
+		}
 
 		$itemId = $itemVO->itemId;
 		$itemUserId = $itemVO->userId;
 		$pageId = $itemVO->pageId;
 		$typeId = $itemVO->typeId;
 
-    
-
 		//---INIT TEMPLATE
 		if($this->tpl !== false && $typeId != $this->tplType) {
 			$this->tpl = false;
 		}
 		if( $this->tpl === false ) {
-			if(empty($typeId)) {
-				FError::write_log('FItemsRenderer::render - missing typeId for template itemId:'.$itemId.' pageId:'.$pageId);
-			}
-			
 			$this->tpl = FSystem::tpl($this->getTemplateName($typeId));
 			$this->tplType = $typeId;
 		}

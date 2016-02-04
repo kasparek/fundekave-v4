@@ -61,7 +61,7 @@ class FItemTags {
 		}
 		$template = str_replace('{TYPE}',$typeId,$template);
 		
-		$tpl = file_get_contents(ROOT.ROOT_TEMPLATES.$template);
+		$tpl = file_get_contents(LIBS.ROOT_TEMPLATES.$template);
 		
 		if($isTagged !== true) {
 			$tpl = str_replace('{URLACCEPT}',FSystem::getUri('m=user-tag&d=item='.$itemId.';a:a'),$tpl);

@@ -73,14 +73,29 @@ if($crcTest != $crcReceived) {
 
 //try to get all chunks
 $fileList = glob($chunkDir.base64_encode($file['name']).'-*.chunk');
-list($filenameBase64,$crc32,$seq,$totalNum) = explode("-",substr($fileList[0],0,-6));
-if(empty($fileList)) FSystem::fin('1'); //no chunks ready
-if(count($fileList) != $totalNum) FSystem::fin('1'); //not all chunks ready
+$filenameParts = explode("-",substr($fileList[0],0,-6));
+$totalNum = array_pop($filenameParts);
+$seq = array_pop($filenameParts);
+$crc32 = array_pop($filenameParts);
+$filenameBase64 = array_pop($filenameParts);
+
+//FError::write_log('Files.upload.php - filename parts('.count($filenameParts).') - '.$filenameBase64.' - '.$seq.' - '.$totalNum);
+
+if(empty($fileList)) {
+	FSystem::fin('1');//,'FuupUploader 3: no chunks ready'); //no chunks ready
+}
+
+if(count($fileList) != $totalNum) {
+	FSystem::fin('1');//,'FuupUploader 4: not all chunks ready '.count($fileList) .'/'. $totalNum); //not all chunks ready
+}
 
 //prepare sequencial list of chunks
 $chunkList = array();
 foreach($fileList as $chunkFilename) {
-	list($filename,$crc32,$seq,$total) = explode("-",substr($chunkFilename,0,-6));
+	$filenameParts = explode("-",substr($chunkFilename,0,-6));
+	$totalNum = array_pop($filenameParts);
+	$seq = array_pop($filenameParts);
+	$crc32 = array_pop($filenameParts);
 	$chunkList[$seq] = array('file'=>$chunkFilename,'crc'=>$crc32);
 }
 
@@ -98,6 +113,7 @@ switch($f) {
 //check that directory exists
 $ff = new FFile(FConf::get("galery","ftpServer"));
 $ff->makeDir(substr($targetFile,0,strrpos($targetFile,'/')));
+
 //merge chunks
 $data='';
 for($i=0;$i<$totalNum;$i++) {
@@ -106,19 +122,24 @@ for($i=0;$i<$totalNum;$i++) {
 	$crcTest = md5($chunkData);
 	if($chunkList[$i]['crc'] != $crcTest) {
 		unlink($chunkList[$i]['file']);
-		FSystem::fin('bad chunk CRC','FuupUploader 2:CHUNK CRC FAIL - length('.strlen($chunkData).') '.$crcReceived.'='.$crcTest);
+		FSystem::fin('Bad chunk CRC','FuupUploader 2:CHUNK CRC FAIL - length('.strlen($chunkData).') '.$crcReceived.'='.$crcTest);
 	}
 	$data .= $chunkData;
 	fclose($handle);
 	unlink($chunkList[$i]['file']);
 }
+
 if($isMultipart===false) $data = base64_decode($data);
 
 //check CRC of complete file
-if(md5($data) != $_POST['crcTotal']) FSystem::fin('bar target file CRC');
+if(md5($data) != $_POST['crcTotal']) FSystem::fin('Bad target file CRC','FuupUploader 2: Data hash does not match.');
+
+FError::write_log('Files.upload.php - '.$targetFile.' - before file copy - data size: '.count($data));
 
 //write checked file
-$ff->file_put_contents($targetFile,$data);
+$result = $ff->file_put_contents($targetFile,$data);
+
+FError::write_log('Files.upload.php - after file copy - result: '.$result);
 
 //SUCCESS
 FSystem::fin('1');

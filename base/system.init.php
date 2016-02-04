@@ -4,6 +4,7 @@ if(strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false) {
 	ob_start("ob_gzhandler");
 	header('Content-Encoding: gzip');
 }
+
 $_REQUEST = array_merge($_GET, $_POST);
 //---host name
 if(empty($host)) {
@@ -14,11 +15,11 @@ if(empty($host)) {
 }
 //--------------------------------------------------------------class autoloader
 function class_autoloader($c) {
-	if(strpos($c,'page_')!==false) $c = ROOT . 'page/' . $c ;
-	elseif(strpos($c,'fajax_')!==false) $c = ROOT . 'fajax/' . ucfirst(str_replace('fajax_','',$c));
-	elseif(strpos($c,'sidebar_')!==false) $c = ROOT . 'sidebar/'.$c;
-	elseif(strpos($c,'VO')!==false) $c = ROOT . 'model/'.$c;
-	else $c = ROOT . 'libs/' . $c ;
+	if(strpos($c,'page_')!==false) $c = LIBS . 'page/' . $c ;
+	elseif(strpos($c,'fajax_')!==false) $c = LIBS . 'fajax/' . ucfirst(str_replace('fajax_','',$c));
+	elseif(strpos($c,'sidebar_')!==false) $c = LIBS . 'sidebar/'.$c;
+	elseif(strpos($c,'VO')!==false) $c = LIBS . 'model/'.$c;
+	else $c = LIBS . 'libs/' . $c ;
 	try {
 		include_once( $c . '.php' );
 	} catch (Exception $e) {;}
@@ -27,8 +28,9 @@ spl_autoload_register("class_autoloader");
 //--------------------------------------------------------error handler
 FError::init(PHPLOG_FILENAME);
 //--------------------------------------------------------config + constant init
-FConf::getInstance(array(WEBROOT.'conf_'.VERSION.'/global.conf.ini',WEBROOT.'conf_'.VERSION.'/'.$host.'.conf.ini',WEBROOT.'conf_'.VERSION.'/localhost.conf.ini'),$host);
-require_once(WEBROOT.'conf_'.VERSION.'/image.conf.php');
+$confDir = file_exists(WEBROOT.'conf') ? 'conf/' : HOST_ROOT.'fdk_conf_'.VERSION.'/';
+FConf::getInstance(array($confDir.'global.conf.ini',$confDir.$host.'.conf.ini',$confDir.'localhost.conf.ini'),$host);
+require_once($confDir.'/image.conf.php');
 
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
@@ -45,6 +47,7 @@ if(!is_dir(ROOT_SESSION)) {
 ini_set('session.save_path', ROOT_SESSION);
 session_start();
 FProfiler::write('START - session started');
+
 //startup user
 $user = FUser::getInstance();
 $user->init();

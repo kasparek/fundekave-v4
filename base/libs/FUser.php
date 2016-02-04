@@ -223,15 +223,17 @@ class FUser {
 	 * @return void
 	 */
 	function kde() {
+
 		$userId = $this->userVO->userId;
 		$pageAccess = true;
 		//---try load current page
+
 		if( !$this->pageVO = FactoryVO::get('PageVO',$this->pageId,true) ) {
 			$pageAccess = false;
 			$this->pageId = null;
 			FError::add(FLang::$ERROR_PAGE_NOTEXISTS);
 		}
-		
+
 		//---page not accessible because not correct host
 		if(SITE_STRICT && $userId==0) {
 			if($this->pageVO && $this->pageVO->typeId!='top' && $this->pageVO->pageIdTop != SITE_STRICT) {
@@ -254,11 +256,9 @@ class FUser {
 			//---check if user is logged
 			if($userId > 0 || !empty($this->userVO->idlogin)) 
 				$this->idkontrol = $this->check( $this->userVO ); 
-			else 
+			else
 				$this->idkontrol=false;
-				
-			
-			
+
 			//---check permissions needed for current page
 			$permissionNeeded = 1;
 			if( $this->pageParam ) {
@@ -266,7 +266,7 @@ class FUser {
 					$permissionNeeded = $this->pageParamNeededPermission[$this->pageParam];
 				}
 			}
-			
+
 			$permPage = $this->pageId;
 			if($permissionNeeded === 3) { //exception - superadmin group
 				$permPage = 'sadmi';

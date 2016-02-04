@@ -32,7 +32,7 @@ class fajax_Item extends FAjaxPluginBase {
 	}
 
 	static function showupload($data) {
-		if($data['__ajaxResponse']) {
+		if(!empty($data['__ajaxResponse'])) {
 			$user = FUser::getInstance();
 			if(FRules::getCurrent(2)) {
 				$utpl = FSystem::tpl('form.fuup.tpl.html');

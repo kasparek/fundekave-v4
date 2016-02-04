@@ -41,10 +41,10 @@ class FFile {
     $ret = ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
     ftp_pasv($this->ftpConn, true);
     if($ret) {
-      FError::write_log('FFile::construc - CONNECTED TO FTP');
+      FError::write_log('FFile::constructor - CONNECTED TO FTP');
       return true;
     } 
-    FError::write_log('FFile::construc - FTP FAIL');
+    FError::write_log('FFile::constructor - FTP FAIL');
     return false;
   }
 

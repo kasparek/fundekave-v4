@@ -2,14 +2,14 @@
 class FSystem {
 	
 	static function recaptchaGet($error) {
-		require_once(ROOT."ext/recaptchalib.php");
+		require_once(LIBS."ext/recaptchalib.php");
 		return recaptcha_get_html("6LexXNkSAAAAAE_BDWQHhapdx-XPHItdWgBvDTSm", $error);
 		return '';
 	}
 	
 	static function recaptchaCheck($data) {
 		if ($data["recaptcha_response_field"]) {
-			require_once(ROOT."ext/recaptchalib.php");
+			require_once(LIBS."ext/recaptchalib.php");
 			$resp = recaptcha_check_answer ("6LexXNkSAAAAAHke6ktw0hSwYha8x4N4Bn9M2vFm",$_SERVER["REMOTE_ADDR"],$data["recaptcha_challenge_field"],$data["recaptcha_response_field"]);
 			return $resp->is_valid ? true : $resp->error;
 		}
@@ -88,12 +88,12 @@ class FSystem {
 
 	//TEMPLATE HELPER
   static function isTpl($templatefile,$root='') {
-    if($root == '') $root = ROOT.ROOT_TEMPLATES;
+    if($root == '') $root = LIBS.ROOT_TEMPLATES;
     if(file_exists($root.$templatefile)) return true;
     return false;
   }
 	static function tpl($templatefile,$root = '', $removeUnknownVariables=true, $removeEmptyBlocks=true){
-		if($root == '') $root = ROOT.ROOT_TEMPLATES;
+		if($root == '') $root = LIBS.ROOT_TEMPLATES;
 		$tpl = new FHTMLTemplateIT($root);
     if(FSystem::isTpl(HOME_PAGE.'.'.$templatefile,$root)) {
       $templatefile = HOME_PAGE.'.'.$templatefile; 
@@ -103,7 +103,7 @@ class FSystem {
 	}
 
 	static function tplExist($template) {
-		return file_exists(ROOT.ROOT_TEMPLATES.$template);
+		return file_exists(LIBS.ROOT_TEMPLATES.$template);
 	}
 
 	/**

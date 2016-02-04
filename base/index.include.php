@@ -1,17 +1,17 @@
 <?php
-require(ROOT.'system.init.php');
+require(LIBS.'system.init.php');
 /*** CRON JOBS **/
 if(isset($_GET['cron'])) {
-	require_once(ROOT.'cron/'.$_GET['cron'].'.php');
+	require_once(LIBS.'cron/'.$_GET['cron'].'.php');
 	exit;
 }
 /*** HEADERS PROCESSING **/
 if(isset($_GET['header_handler'])) {
-	require(ROOT.'header.handler.php');
+	require(LIBS.'header.handler.php');
 }
 /*** FILES UPLOAD PROCESSING **/
 if(strpos($_SERVER['REQUEST_URI'],"/files/")===0 || strpos($_SERVER['REQUEST_URI'],"/files.php")!==false) {
-	require(ROOT.'files.upload.php');
+	require(LIBS.'files.upload.php');
 }
 
 /*** MAIN PAGE PROCESSING **/
@@ -57,6 +57,7 @@ if(isset($_REQUEST['m'])) {
 	$user->kde();
 	if($user->itemVO) $user->itemVO->prepare(); //need to be done after user initialization
 }
+
 //---build page
 FBuildPage::process( $data );
 FProfiler::write('PAGE PROCESS DONE');

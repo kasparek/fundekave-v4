@@ -202,8 +202,10 @@ class page_ItemsList implements iPage {
 				$fItems->addWhere("pageId = '". $pageVO->pageId ."'");
 				$fItems->setOrder($pageVO->itemsOrder());
 				$listArr = page_ItemsList::buildList($fItems,$pageVO,$pagerOptions);
-				$listArr['vars']['TOPITEMS'] = $listArr['vars']['ITEMS'];
-				unset($listArr['vars']['ITEMS']);
+				if(!empty($listArr['vars']['ITEMS'])) {
+					$listArr['vars']['TOPITEMS'] = $listArr['vars']['ITEMS'];
+					unset($listArr['vars']['ITEMS']);
+				}
 				$vars = array_merge($vars,$listArr['vars']);
 				if(!empty($listArr['blocks'])) $touchedBlocks = array_merge($touchedBlocks,$listArr['blocks']);
 			} else {

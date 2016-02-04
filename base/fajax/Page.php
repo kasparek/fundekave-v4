@@ -16,7 +16,7 @@ class fajax_Page extends FAjaxPluginBase {
 			'categoryId'=>!empty($date['cat'])?$date['cat']:null));
 		$pageListOut = str_replace(' class="well" id="pagesList"','',$pageListOut);
 		$pageListOut = str_replace('img src','img src="'.URL_CSS.'images/bg.png" data-src',$pageListOut);
-		FAjax::addResponse('pagesList', '$html', $pageListOut);
+		FAjax::addResponse('pagesList', '$html', str_replace(',', ' ', $pageListOut));
 		FAjax::addResponse('call', 'calendarPagesLoaded', $data['year']);
 	}
 
@@ -29,7 +29,7 @@ class fajax_Page extends FAjaxPluginBase {
 		$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
 		$fItems->setOrder($user->pageVO->itemsOrder());
 		$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('nopager'=>true));
-		FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
+		if(!empty($listArr['vars']['ITEMS'])) FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
 		FAjax::addResponse('call','GaleryEdit.init','');
 	}
 

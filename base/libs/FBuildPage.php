@@ -262,7 +262,7 @@ class FBuildPage {
 
 		$tpl = FBuildPage::getInstance();
 		$tabsArr = FBuildPage::getTabs();
-		
+
 		if($tabsArr) {
 			foreach($tabsArr as $tab) {
 				$tpl->setCurrentBlock('content');
@@ -279,9 +279,10 @@ class FBuildPage {
 				$midcolNumCol = FConf::get('settings','midcol-numcol');
 				$user->pageVO->tplVars['NUMCOLMAIN'] -= $midcolNumCol;
 				$midcolStatic = FConf::get('settings','midcol-static');
+				$midcolOrder = FConf::get('settings','midcol-order');
 				$user->pageVO->tplVars['NUMCOLMID'] = $midcolNumCol;
 				if($midcolStatic) {
-					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true,'sort'=>'dateCreated desc'));
+					$pageListOut = page_PagesList::build(array(),array('typeId'=>'galery','return'=>true,'nopager'=>true,'sort'=>!empty($midcolOrder)?$midcolOrder:'dateCreated desc'));
 					if(!empty($pageListOut)) {
 						$user->pageVO->tplVars['MIDCOLSTATIC'] = '-static';
 						$user->pageVO->tplVars['MIDCOL'] = $pageListOut;
@@ -289,7 +290,7 @@ class FBuildPage {
 				}
 			}
 		}
-				
+
 		if(empty($user->pageVO)) {
 			FError::write_log("FBuildPage::show - missing page - pageid'".$user->pageId."'");
 		}
