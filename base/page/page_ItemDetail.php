@@ -49,10 +49,7 @@ class page_ItemDetail implements iPage {
 				"IMGDIR"=>$itemVO->detailUrl,
 				"HITS"=>$itemVO->hit,
 				"ALBUMURL"=>$backUri,
-				//"PREVBUTT"=>$nextUri,
-				//"NEXTBUTT"=>$prevUri,
 				"TEXT"=>(!empty($itemVO->text) ? $itemVO->text : null),
-				//"NEXTLINK"=>isset($nextUri) ? $nextUri : $backUri,
 				"GOOMAPTHUMB"=>$goomapThumb,
 				"GOOMAP"=>$goomap,
 			);
@@ -66,8 +63,6 @@ class page_ItemDetail implements iPage {
 				//next image
 				$nextVO = new ItemVO($itemNext,true);
 				FAjax::addResponse('backButt','href',$backUri);
-				//FAjax::addResponse('prevButt','href',$nextUri);
-				//FAjax::addResponse('nextButt','href',$prevUri);
 				FAjax::addResponse('detailNext','href',isset($nextUri) ? $nextUri : $backUri);
 				FAjax::addResponse('ti','value',(int) $user->itemVO->itemId);
 				FAjax::addResponse('description','$html',isset($arrVars['TEXT'])?$arrVars['TEXT']:'');
@@ -87,7 +82,7 @@ class page_ItemDetail implements iPage {
 				$tpl->setVariable($arrVars);
 
 				if($isComment === true) {
-					ImageConfig::$sideDefault = 600;
+					ImageConfig::$sideDefault = 800;
 					$tpl->setVariable('BS_COLS','12');//'6'); //TODO: adopt template to flow content
 					$user->itemVO->prepare();
 					$items = array($user->itemVO);
@@ -113,38 +108,39 @@ class page_ItemDetail implements iPage {
 				}
 
 				//get comments
-				$fComments = new FItems('forum',$user->userVO->userId);
+				$fComments = new FDBTool('sys_pages_items','itemId');
+				$fComments->setSelect('itemIdTop,count(itemIdTop)');
 				$fComments->addWhere("itemIdTop in ('".implode("','", $itemIds)."')");
+				$fComments->setGroup("itemIdTop");
 				$fComments->setOrder("dateCreated desc");
-				$comments = $fComments->getList();
-				$jsonObj = array();
-				foreach ($comments as $key => $item) {
-					$o = new stdClass();
-					$o->itemIdTop = $item->itemIdTop;
-					$o->itemId = $item->itemId;
-					$o->date = $item->dateCreated;
-					$o->text = $item->text;
-					$o->userId = $item->userId;
-					$o->name = $item->name;
-					$o->enclosure = $item->enclosure;
-					$o->properties = $item->properties;
-					$jsonObj[] = $o;
+				$c = FDBTool::getAll($fComments->buildQuery());
+				$comments = array();
+				foreach ($c as $row) {
+					$comments[$row[0]] = $row[1];
 				}
-				$json = json_encode($jsonObj,JSON_UNESCAPED_UNICODE);
-				$tpl->setVariable('JSON_COMMENTS',$json);
 
 				$c=0;
 				$index = 0;
 				$isFirst = true;
 				foreach ($items as $key => $item) {
+					//var_dump($item);die();
 					$isFirst = false;
+					$tpl->setVariable('ITEMID',$item->itemId);
+					$tpl->setVariable('NUM_COMMENTS',isset($comments[$item->itemId])?$comments[$item->itemId]:0);
+					if(!empty($item->text)) {
+						$tpl->setVariable('IMGDESC',$item->text);
+						$tpl->setVariable('ITEMIDDESC',$item->itemId);
+					}
+					if(FRules::getCurrent(2)) {
+						$tpl->setVariable('ITEMIDDESC',$item->itemId);
+						$tpl->setVariable('ITEMIDEDIT',$item->itemId);
+					}
 					if($item->itemId == $user->itemVO->itemId) {
 						$tpl->setVariable('IMGURL',$item->detailUrl);
 					} else {
 						$tpl->setVariable('IMGURL',URL_CSS.'images/1px.png');
 						$tpl->setVariable('IMGURLLAZY',$item->detailUrl);
 					}
-					$tpl->setVariable('ITEMID',$item->itemId);
 					$tpl->setVariable('TEXT',$item->text);
 					$tpl->parse('cell');
 					$index++;

@@ -36,11 +36,11 @@ RewriteRule ^fuup.([a-zA-Z]*).([a-zA-Z0-9]{5,6}).xml index.php?k=$2&fuupconfig=$
 RewriteRule ^ca.php.* index.php [QSA,L]
 
 # Turn on Expires and set default to 0
-ExpiresActive On
-ExpiresDefault A0
+#ExpiresActive On
+#ExpiresDefault A0
 
 # Set up caching on media files for 1 year (forever?)
 <FilesMatch "\.(jpg|jpeg|png|gif|ico|pdf|avi|mov|ppt|doc|mp3|wmv|wav|swf)$">
-ExpiresDefault A29030400
+#ExpiresDefault A29030400
 Header append Cache-Control "public"
 </FilesMatch>

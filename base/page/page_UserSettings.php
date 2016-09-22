@@ -141,19 +141,18 @@ class page_UserSettings implements iPage {
 				$tpl->parse("foto");
 			}
 		}
-		
-		$bssskins = FConf::get('settings','bsskins');
-		if(!empty($bssskins)) {
-			$bssskins = explode(',',$bssskins);
-			$bssskinsNames = explode(',',FConf::get('settings','bsskins_names'));
-			for($i=0;$i<count($bssskins);$i++) {
-				$tpl->setVariable('BSSKIN_IMG',$cssUrl = ((strpos(URL_CSS,'http://')===false)?STATIC_DOMAIN.URL_CSS:URL_CSS).'skin-thumbs/'.$bssskins[$i].'bs.png');
-				$tpl->setVariable('BSSKIN_NAME',$bssskinsNames[$i]);
-				$tpl->setVariable('BSSKIN_URL',FSystem::getUri('m=user-setskin&d=name='.$bssskins[$i]));
+		try {
+			$json = file_get_contents(FConf::get('settings', 'bootswatchapi'));
+			$data = json_decode($json);
+		} catch (Exception $e){}
+		if(!empty($data->themes)) {
+			foreach ($data->themes as $theme) {
+				$tpl->setVariable('BSSKIN_IMG',$theme->thumbnail);
+				$tpl->setVariable('BSSKIN_NAME',$theme->name);
+				$tpl->setVariable('BSSKIN_URL',FSystem::getUri('m=user-setskin&d=name='.strtolower($theme->name)));
 				$tpl->parse('bsskin');
 			}
 		}
-		
 
 		FBuildPage::addTab(array("MAINDATA"=>$tpl->get()));
 	}

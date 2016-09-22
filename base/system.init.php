@@ -31,6 +31,7 @@ FError::init(PHPLOG_FILENAME);
 $confDir = file_exists(WEBROOT.'conf') ? 'conf/' : HOST_ROOT.'fdk_conf_'.VERSION.'/';
 FConf::getInstance(array($confDir.'global.conf.ini',$confDir.$host.'.conf.ini',$confDir.'localhost.conf.ini'),$host);
 require_once($confDir.'/image.conf.php');
+require_once('vendor/autoload.php');
 
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));

@@ -6,14 +6,22 @@
 <div id="fullscreenBox">
 	<div class="gallery">
 		<!-- BEGIN cell --><div class="gallery-cell showProgress" data-itemid="{ITEMID}">
-			<img class="gallery-cell-image" src="{IMGURL}"<!-- BEGIN lazy --> data-lazy="{IMGURLLAZY}"<!-- END lazy --> id="{ITEMID}" title="{TEXT}" />
+			<div style="position:relative;">
+				<div class="innerPhotoToolbar">
+				<a href="?i={ITEMID}&do=comment#messageForm" id="commentLink"><span class="glyphicon glyphicon-comment" aria-hidden="true"><span id="commentNum">{NUM_COMMENTS}</span></span></a><br>
+				<a href="?i={ITEMID}" title="Share"><span class="glyphicon glyphicon-share"></span></a>
+				</div>
+				<div class="image-box">
+				<img class="gallery-cell-image" src="{IMGURL}"<!-- BEGIN lazy --> data-lazy="{IMGURLLAZY}"<!-- END lazy --> id="{ITEMID}" title="{TEXT}" />
+				<!-- BEGIN desc --><div class="image-desc well"><span id="image-desc-{ITEMIDDESC}">{IMGDESC}</span><!-- BEGIN editdesc --><div id="editForm-{ITEMIDEDIT}"></div><a href="?m=item-edit&d=i={ITEMIDEDIT};t=galery;target=editForm-{ITEMIDEDIT}" class="fajaxa edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></a><!-- END editdesc --></div><!-- END desc -->
+				</div>
+			</div>
 		</div><!-- END cell -->
 	</div>
 	<div id="photoToolbar">
 		<a href="#" id="aSlideshow" title="Start/Stop slideshow"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
 		<a href="#" class="aFullscreen" title="Toggle fullscreen"><span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span></a>
 		<a href="{ALBUMURL}" title="Back to album thumbnails"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></a><br>
-		<a href="#" id="commentLink"><span class="glyphicon glyphicon-comment" aria-hidden="true"><span id="commentNum"></span></span></a>
 		<div class="bottlef">
 			<a id="galleryPrev" title="Previous photo"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></a>
 		</div>
@@ -23,12 +31,9 @@
 	</div>
 </div>
 <div id="mapThumb" class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
-<p id="description" class="text-center">{TEXT}</p>
-<div id="map" class="goomap">{GOOMAP}</div>
+<!-- BEGIN description --><p id="description" class="text-center">{TEXT}</p><!-- END description -->
+<!-- BEGIN goomap --><div id="map" class="goomap">{GOOMAP}</div><!-- END goomap -->
 </div>
 </div>
 </div>
 </div>
-<script type="text/javascript">
-	var galleryComments = {JSON_COMMENTS};
-</script>
