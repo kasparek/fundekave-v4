@@ -226,15 +226,33 @@ $safe->protocolFiltering = 'black';
                             if ($pageVO->typeId === 'galery') {
                                 $fItems = new FItems('galery');
                                 $fItems->addWhere("pageId = '" . $pageVO->pageId . "'");
+                                $fItems->addWhere("typeId = 'galery'");
                                 $items = $fItems->getList();
                                 $d     = $dom->createElement("div");
+                                $gs    = $dom->createElement("div");
+                                $gs->setAttribute('class', 'grid-sizer');
+                                $d->appendChild($gs);
+                                $first = true;
+                                $total = count($items);
+                                $i     = 0;
                                 foreach ($items as $itemVO) {
                                     $a = $dom->createElement("a");
                                     $a->setAttribute('href', '?i=' . $itemVO->itemId);
+                                    $a->setAttribute('class', 'grid-item');
                                     $img = $dom->createElement("img");
                                     $img->setAttribute('src', $itemVO->thumbUrl);
+                                    if ($i < $total - 6 && $i > 3) {
+                                        if (rand(1, 100) > 55) {
+                                            $a->setAttribute('style', 'width: 200px;');
+                                        }
+                                    }
+                                    if ($first) {
+                                        $a->setAttribute('style', 'width: 300px;');
+                                    }
+                                    $first = false;
                                     $a->appendChild($img);
                                     $d->appendChild($a);
+                                    $i++;
                                 }
                                 $d->setAttribute('class', 'blog-gallery-thumbs');
                                 $tag->parentNode->insertBefore($d, $tag->nextSibling);

@@ -757,8 +757,14 @@ div.innerPhotoToolbar {
 #cboxClose:hover {
     background-position: bottom center;
 }
+.grid-sizer, .blog-gallery-thumbs a {
+    display: block;
+    width: 100px;
+    max-width: 300px;
+    float: left;
+}
 .blog-gallery-thumbs img {
-    width: 25%;
-    margin: 0;
-    padding: 0 !important;
+    width: 100%;
+    padding: 1px !important;
+    /*padding: 0 !important;*/
 }

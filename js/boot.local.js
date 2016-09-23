@@ -1,5 +1,6 @@
 _fdk.load = {'boot':['//code.jquery.com/jquery-2.1.4.min.js',//_fdk.cfg.jsUrl+'jquery-1.10.2.min.js',
 _fdk.cfg.jsUrl+'jquery.history.js',
+'//unpkg.com/packery@2.1.1/dist/packery.pkgd.min.js',
 _fdk.cfg.jsUrl+'bootstrap.min.js'
 ,_fdk.cfg.jsUrl+'i18n/_fdk.lng.cs.js'
 ,_fdk.cfg.jsUrl+'fdkboot.js']
