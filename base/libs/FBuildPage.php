@@ -659,7 +659,7 @@ class FBuildPage
             if ($bootswatchcdn) {
                 $cdnbsskin = $bsskin;
                 if (empty($bsskin)) {
-                    $cdnbsskin = 'amelia';
+                    $cdnbsskin = null;
                 } else if ($bsskin == 'first') {
                     $cdnbsskin = 'united';
                 }

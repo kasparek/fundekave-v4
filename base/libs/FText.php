@@ -121,8 +121,7 @@ $safe->protocolFiltering = 'black';
 
     public static function replace_url($arr)
     {
-
-        if (strpos($arr[1], '</a>')) {
+        if (strpos($arr[1], '</a>')!==false || strpos($arr[1], '">')!==false) {
             return $arr[1] . $arr[2] . $arr[3];
         }
         if (false !== $pos = strpos($arr[1], '<')) {
