@@ -126,7 +126,7 @@ class page_ItemDetail implements iPage {
 					//var_dump($item);die();
 					$isFirst = false;
 					$tpl->setVariable('ITEMID',$item->itemId);
-					$tpl->setVariable('NUM_COMMENTS',isset($comments[$item->itemId])?$comments[$item->itemId]:0);
+					$tpl->setVariable('NUM_COMMENTS',isset($comments[$item->itemId])?$comments[$item->itemId]:'');
 					if(!empty($item->text)) {
 						$tpl->setVariable('IMGDESC',$item->text);
 						$tpl->setVariable('ITEMIDDESC',$item->itemId);

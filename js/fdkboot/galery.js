@@ -17,20 +17,25 @@
     o.init = function() {
         if (o.numCell === 0) o.numCell = $("div.gallery-cell").length;
         $(window).on('resize', o.on).trigger('resize');
-        $(window).on('keydown',function(e){
+        $('.image-box').on('click', function(e) {
+            if (Fullscreen.isFullscreen) {
+                $('a#galleryNext').trigger('click');
+            }
+        });
+        $(window).on('keydown', function(e) {
             switch (e.target.tagName.toLowerCase()) {
-        case 'input':
-        case 'textarea':
-        return true;
-    }
-            if([32,33,34].indexOf(e.keyCode) > -1) {
+                case 'input':
+                case 'textarea':
+                    return true;
+            }
+            if ([32, 33, 34].indexOf(e.keyCode) > -1) {
                 e.preventDefault();
                 return false;
             }
             return true;
         });
         $('.gallery img').load(function() {
-            imgResizeToFit($(this), $('#fullscreenBox').width(), $(window).height(), Fullscreen.isFullscreen);
+            imgResizeToFit($(this), $('#fullscreenBox').width(), $(window).height() * 0.9, Fullscreen.isFullscreen); //initial resize
         }).error(function() {
             var stamp = new Date().getTime();
             var url = $(this).attr('src') + '?' + stamp;
@@ -53,10 +58,10 @@
         }
         var keyupHandler = function(e) {
             switch (e.target.tagName.toLowerCase()) {
-        case 'input':
-        case 'textarea':
-        return true;
-    }
+                case 'input':
+                case 'textarea':
+                    return true;
+            }
             var i;
             switch (e.keyCode) {
                 case 39: //right arrow
@@ -176,17 +181,20 @@
         o.cw = o.ch = 0;
         o.on();
     };
-    o.on = function() {
+    o.on = function() { //resize event handler
         var w = $(window),
             ww = w.width(),
             wh = w.height();
         if (ww != o.cw || wh != o.ch) {
             o.cw = ww;
             o.ch = wh;
+            if (Fullscreen.isFullscreen) {
+                $(".image-desc").css('width', '100%').css('margin-left', '0');
+            }
             $('.gallery img').each(function(index) {
                 var lazy = $(this).data('lazy');
                 if (!lazy) {
-                    imgResizeToFit($(this), $('#fullscreenBox').width(), $(window).height(), Fullscreen.isFullscreen);
+                    imgResizeToFit($(this), $('#fullscreenBox').width(), $(window).height() * 0.9, Fullscreen.isFullscreen);
                 }
             });
         }
@@ -246,48 +254,50 @@
             screenfull.request();
         }
         o.isFullscreen = true;
-        o.state = {
-            y: o.w.scrollTop()
-        };
         o.d.bind('keyup', o.key);
         o.el.addClass('fullscreen');
-        o.w.scrollTop(0).scrollLeft(0);
         $('body').css('overflow', 'hidden');
         $('.gallery').css('position', 'absolute').css('width', '100%');
-        Resize.force();
-        setTimeout(function(){Resize.handleNextPrev();},200);
-        
+        $(window).trigger('resize');
+        setTimeout(function() {
+            Resize.handleNextPrev();
+        }, 100);
     };
     o.onExit = function() {
         o.isFullscreen = false;
         o.d.unbind('keyup', o.key);
         o.el.removeClass('fullscreen');
         $('body').css('overflow', 'auto');
-        if (o.state.y > 0) o.w.scrollTop(o.state.y);
         o.state = null;
-        Resize.force();
+        $(window).trigger('resize');
         $('.gallery').css('position', 'inherit');
-        Resize.handleNextPrev();
         screenfull.exit();
+        setTimeout(function() {
+            Resize.handleNextPrev();
+        }, 100);
     };
 }(window.Fullscreen = {}));
 /** IMAGE RESIZE TO FIT */
-function imgResizeToFit(img, hw, hh, isFullscreen, upScale) {
-    if (isFullscreen) upScale = true;
-    img.removeAttr('height').removeAttr('width').css('width', 'auto').css('height', 'auto').css('top', '').css('left', '').css('position', '').css('margin-top', '');
+function imgResizeToFit(img, hw, hh, isFullscreen) {
+    img.removeAttr('height').removeAttr('width').css('width', 'auto').css('height', 'auto').css('top', '').css('left', '').css('position', '').css('margin-top', '0');
     var iw = img.width(),
         ih = img.height(),
         r = Math.min(hw / iw, hh / ih),
         tw = Math.round(r * iw),
         th = Math.round(r * ih);
-    if (!upScale && (tw > iw || th > ih)) {
+    if (tw > iw || th > ih) {
         tw = iw;
         th = ih;
     }
-    if (!upScale && isFullscreen && hh > ih) img.css('margin-top', (hh - ih) / 2);
-    var w = Math.round(tw)+'px';
+    var w = Math.round(tw) + 'px';
     img.css('height', Math.round(th)).css('width', w);
+    if (isFullscreen) {
+        img.css('margin-top', -(th - $(window).height()) / 2);
+    }
+    //---
     var p = img[0].parentElement.parentElement;
-    var sel = $(".image-desc",p);
-    $(".image-desc",p).css('width', w).css('left',($(p).width()-tw)/2+'px');
+    var sel = $(".image-desc", p);
+    if (!isFullscreen) {
+        $(".image-desc", p).css('width', w).css('margin-left', ($(p).width() - tw) / 2 + 'px');
+    }
 }

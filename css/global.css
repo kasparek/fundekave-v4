@@ -168,24 +168,14 @@ div.notpublished {
     margin-bottom: 2em;
 }
 .gallery-cell .image-desc {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    opacity: 0.5;
-    margin-bottom: 0;
-    padding: 5px 20px;
-    min-height: 30px;
-}
-.gallery-cell .image-desc:hover {
-    opacity: 1;
+    padding: 5px 0;
 }
 .gallery-cell a.edit {
-    position: absolute;
-    bottom: 5px;
-    right: 0;
+    float: right;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
-
 .bottrig {
     position: fixed;
     bottom: 0;
@@ -483,20 +473,6 @@ img {
     display: none;
 }
 
-.fullscreen {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100% !important;
-    z-index: 9999;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #000000 !important;
-}
-
 
 /* GALLERY */
 
@@ -508,6 +484,22 @@ img {
     min-height: 200px;
     text-align: center;
     overflow: hidden;
+}
+#fullscreenBox.fullscreen {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100vh);
+    z-index: 9999;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000000 !important;
+}
+#fullscreenBox.fullscreen .gallery-cell {
+    height: calc(100vh);
 }
 
 #photoToolbar {
@@ -529,9 +521,16 @@ div#photoToolbar {
 div.innerPhotoToolbar {
 	font-size: 44px;
     position: absolute;
-    top: 10px;
+    top: 0;
     opacity: 0.6;
-    right: 10px;
+    text-align: right;
+    height: auto;
+}
+div.innerPhotoToolbar:hover {
+    opacity: 1;
+}
+div.innerPhotoToolbar a {
+    margin-right: 10px;
 }
 
 #photoToolbar a {}
@@ -540,18 +539,24 @@ div.innerPhotoToolbar {
     font-size: 6rem;
 }
 
-#commentLink span.glyphicon-comment {
+a.commentLink {
     position: relative;
+    text-align: center;
+    font-weight: bold;
+}
+a.commentLink .glyphicon {
+    margin: 0;
 }
 
-#commentLink span.glyphicon-comment.has-comments {
+a.commentLink.has-comments {
     font-weight: bold;
 }
 
-#commentLink span#commentNum {
+a.commentLink .commentNum {
     position: absolute;
     top: 3px;
-    left: 15px;
+    left: 0;
+    right: 0;
     color: #fff;
     font-size: 23px;
 }

@@ -487,7 +487,8 @@ class FItemsForm
                     FAjax::redirect(FSystem::getUri('', $user->pageVO->pageId, '', array('short' => 1)));
                 }
             } else {
-                FAjax::redirect(FSystem::getUri($redirectParam)); //non ajax processing
+                $uri = FSystem::getUri($redirectParam).(!empty($itemVOTop) && $itemVOTop->typeId==='galery'?'&do=comment':'');
+                FAjax::redirect($uri); //non ajax processing
             }
         }
     }
