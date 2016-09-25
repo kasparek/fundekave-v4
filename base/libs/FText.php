@@ -121,7 +121,7 @@ $safe->protocolFiltering = 'black';
 
     public static function replace_url($arr)
     {
-        if (strpos($arr[1], '</a>')!==false || strpos($arr[1], '">')!==false) {
+        if (strpos($arr[1], '</a>') !== false || strpos($arr[1], '">') !== false || strpos($arr[1], '>') !== false) {
             return $arr[1] . $arr[2] . $arr[3];
         }
         if (false !== $pos = strpos($arr[1], '<')) {
@@ -146,7 +146,6 @@ $safe->protocolFiltering = 'black';
         if (empty($text)) {
             return $text;
         }
-        $text = self::auto_link_text($text);
         //replace all plain text URLs with html
         libxml_use_internal_errors(true);
         $dom                     = new DOMDocument();
@@ -155,38 +154,15 @@ $safe->protocolFiltering = 'black';
         $dom->loadHTML('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div id="posttextprocessing">' . $text . '</div></body></html>');
 
         $x     = new DOMXPath($dom);
-        $nodes = $x->query("//text()[not(ancestor::a)]");
-
-        $linkSeen = array();
-        /*
-        foreach ($nodes as $node) {
-        $nodeText = $node->nodeValue;
-
-        if (preg_match_all("#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#i", $nodeText, $matches, PREG_OFFSET_CAPTURE)) {
-        //remove old node
-        $lastPos = 0;
-        foreach ($matches[0] as $url) {
-        if (!isset($linkSeen[$url[0]])) {
-        if ($url[1] > $lastPos) {
-        $pretext = $dom->createTextNode(mb_substr($nodeText, $lastPos, $url[1] - $lastPos));
-        $node->parentNode->insertBefore($pretext, $node);
+        $nodes = $x->query('//text()[not(ancestor::a) and (
+        contains(.,"http://") or
+        contains(.,"https://") or
+        contains(.,"ftp://") )]');
+        foreach ($nodes as $text) {
+            $fragment = $dom->createDocumentFragment();
+            $fragment->appendXML(preg_replace("~((?:http|https|ftp)://(?:\S*?\.\S*?))(?=\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)~i",'<a href="$1">$1</a>',$text->data));
+            $text->parentNode->replaceChild($fragment, $text);
         }
-        $a            = $dom->createElement("a");
-        $a->nodeValue = $url[0];
-        $a->setAttribute('href', $url[0]);
-        $node->parentNode->insertBefore($a, $node);
-        $lastPos           = $url[1] + mb_strlen($url[0]);
-        $linkSeen[$url[0]] = 1;
-        }
-        }
-        if ($lastPos < mb_strlen($nodeText)) {
-        $aftertext = $dom->createTextNode(mb_substr($nodeText, $lastPos));
-        $node->parentNode->insertBefore($aftertext, $node);
-        }
-        $node->parentNode->removeChild($node);
-        }
-        }
-         */
         $tags    = array();
         $results = $dom->getElementsByTagName('img');
         foreach ($results as $result) {
@@ -337,11 +313,11 @@ $safe->protocolFiltering = 'black';
                             }
                             if (strpos($url, 'norender') === false && !empty($domain) && strpos(DOMAINS_LOCAL, $domain) === false) {
                                 $urlEncoded = base64_encode($url);
-                                $imgSrc     = FConf::get("galery", "targetUrlBase") . FConf::get("galery", "forum_thumbCut") . '/remote/' . md5(ImageConfig::$salt . $urlEncoded) . $urlEncoded;
-
+                                //$imgSrc     = FConf::get("galery", "targetUrlBase") . FConf::get("galery", "forum_thumbCut") . '/remote/' . md5(ImageConfig::$salt . $urlEncoded) . $urlEncoded;
+                                $imgSrc = $url;
                                 $img = $dom->createElement("img");
                                 $img->setAttribute('src', $imgSrc);
-                                //$img->setAttribute('class','hentryimage');
+                                $img->setAttribute('class', 'img-remote');
                                 if ($tag->tagName == 'img') {
                                     $a = $dom->createElement("a");
                                     $tag->parentNode->replaceChild($a, $tag);

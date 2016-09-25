@@ -1,4 +1,4 @@
-iframe {
+    iframe {
     max-width: 100%;
 }
 
@@ -328,6 +328,10 @@ div.reaction {
 .fitem .media-object {
     padding: 0 5px 5px 0;
     float: left;
+}
+
+.img-remote {
+    max-width: 300px !important;
 }
 
 .fitem .entry-content img {
@@ -769,6 +773,7 @@ a.commentLink .commentNum {
     display: block;
     width: 100px;
     float: left;
+    max-width: 100%;
 }
 .blog-gallery-thumbs img {
     width: 100%;
