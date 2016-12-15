@@ -90,7 +90,7 @@ class page_PagesList implements iPage {
 			$pager = new FPager(0,$perPage ,array('noAutoparse'=>1));
 			$from = ($pager->getCurrentPageID()-1) * $perPage;
 		}
-		if((empty($override['limit']) && $override['limit']!==0) || $override['limit']>0) {
+		if(!isset($override['limit'])) {
 			$fPages->setLimit( $from, $perPage+1 );
 		}
 		
