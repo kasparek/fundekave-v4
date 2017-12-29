@@ -172,7 +172,7 @@ class FDBTool {
 		$len = count($this->_select);
 		if(!empty($selectColumnsArray)) {
 			foreach($selectColumnsArray as $col) {
-				$this->addSelect($table.'.'.$col);
+				$this->addSelect(strpos($col, ' as ')===false?$table.'.'.$col:$col);
 			}
 		}
 	}

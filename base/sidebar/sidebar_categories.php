@@ -3,23 +3,24 @@ class sidebar_categories {
 	static function show() {
 		$user = FUser::getInstance();
 		$multiType=false;
-		$tool = new FDBTool('sys_pages_category as c','c.categoryId');
+		$tool = new FDBTool('sys_pages_category','sys_pages_category.categoryId');
+
+		$site_based_prefix = 'sys_pages_category';
+		if(SITE_STRICT) $site_based_prefix='sys_pages';
+
 		if($user->pageVO->typeId=='top') {
 			$type='';
 			if(isset(FLang::$TYPEID[$user->pageVO->typeIdChild])) $type=$user->pageVO->typeIdChild;
 			if(isset(FLang::$TYPEID[$user->pageParam])) $type=$user->pageParam;
 			if($type!='') {
-				$tool->setWhere("c.typeId = '".$type."'");
+				$tool->setWhere($site_based_prefix.".typeId = '".$type."'");
 			} else {
-				$tool->setWhere("c.typeId in ('galery','forum','blog')");
+				$tool->setWhere($site_based_prefix.".typeId in ('galery','forum','blog')");
 				$multiType=true;
 			}
 		} else {
-			$tool->setWhere("c.typeId = '".$user->pageVO->pageId."'");
+			$tool->setWhere($site_based_prefix.".typeId = '".$user->pageVO->pageId."'");
 		}
-		//if(SITE_STRICT) {$tool->addWhere("c.pageIdTop in ('".SITE_STRICT."','".$user->pageVO->pageId."')");}
-		$tool->addWhere("c.public = '1'");
-		$tool->setOrder('c.name');
 
 		$pageId='';
 		if($user->pageVO) {
@@ -31,14 +32,19 @@ class sidebar_categories {
 				$total = "'0'";
 				break;
 			default:
-				if(SITE_STRICT) {
-					$total ='c.num';
-				} else {
-					$total ="select count(1) from sys_pages where categoryId=c.categoryId and pageIdTop='".SITE_STRICT."'";
-				}
+				$total ='count(sys_pages.pageId)';
 		}
 
-		$tool->setSelect('c.categoryId,c.name, ( '.$total.' ) as total,c.typeId');
+		$tool->setSelect('sys_pages_category.categoryId,sys_pages_category.name, ( '.$total.' ) as total,sys_pages_category.typeId');
+		if(SITE_STRICT) {
+			$tool->addWhere("sys_pages.pageIdTop in ('".SITE_STRICT."','".$user->pageVO->pageId."')");
+		}
+		$tool->addJoinAuto('sys_pages','categoryId',array(),'join');
+		$tool->setGroup('sys_pages.categoryId');
+
+		$tool->addWhere("sys_pages_category.public = '1'");
+		$tool->setOrder('sys_pages_category.name');
+
 		$arr = $tool->getContent();
 
 		if(!empty($arr)) {
