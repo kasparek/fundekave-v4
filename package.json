@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "filepond": "^2.2.0",
+    "filepond": "^2.3.1",
     "filepond-plugin-file-encode": "*",
     "filepond-plugin-file-rename": "*",
     "filepond-plugin-file-validate-size": "*",
@@ -13,8 +13,7 @@
     "filepond-plugin-image-exif-orientation": "*",
     "filepond-plugin-image-preview": "^2.0.1",
     "filepond-plugin-image-resize": "^2.0.1",
-    "filepond-plugin-image-transform": "^2.1.0",
-    "requirejs": "*"
+    "filepond-plugin-image-transform": "^2.1.0"
   },
   "devDependencies": {},
   "scripts": {
