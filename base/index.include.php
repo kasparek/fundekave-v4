@@ -14,6 +14,11 @@ if (strpos($_SERVER['REQUEST_URI'], "/files/") === 0 || strpos($_SERVER['REQUEST
     require LIBS . 'files.upload.php';
 }
 
+if (strpos($_SERVER['REQUEST_URI'], "fpapi") !== false) {
+    require LIBS . 'fpapi/endpoint.php';
+    exit;
+}
+
 /*** MAIN PAGE PROCESSING **/
 if (isset($_GET['authCheck'])) {
     $user->kde(); //---check user / load info / load page content / chechk page exist
@@ -112,7 +117,7 @@ if ($user->pageVO) {
 //---generate page
 //experimantal caching on page layer
 $html = null;
-if (!$user->idkontrol) {
+if (!$user->idkontrol && $_GET['k']!='roger') {
     $ident = md5(serialize($_GET)) . 'user' . $user->userVO->userId;
     $cache = FCache::getInstance('f');
     $html  = $cache->getData($ident);

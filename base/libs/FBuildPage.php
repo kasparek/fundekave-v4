@@ -368,6 +368,7 @@ class FBuildPage
         //---ERROR MESSAGES
         //priority bootstrap - success, info, warning, danger
         $arrMsg = FError::get();
+        //var_dump($arrMsg);die();
         $outmsg = array();
         if (!empty($arrMsg)) {
             foreach ($arrMsg as $k => $v) {

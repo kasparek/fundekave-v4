@@ -36,7 +36,8 @@
 <div class="form-group">
 	<label class="col-sm-2 control-label">Ansti-spam</label>
 	<div class="col-sm-10">
-		{CAPTCHA}
+		<input type="hidden" name="captcha_ref" value="{captcha_ref}">
+		Kolik je {captcha_x1} + {captcha_x2} = <input type="number" name="captcha_ver" value="" class="form-control" style="max-width: 50px;display: inline-block;">
 	</div>
 </div>
 

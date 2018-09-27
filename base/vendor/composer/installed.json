@@ -17,7 +17,7 @@
         "require": {
             "php": ">=5.2"
         },
-        "time": "2016-07-16 12:58:58",
+        "time": "2016-07-16T12:58:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -43,6 +43,62 @@
         "homepage": "http://htmlpurifier.org/",
         "keywords": [
             "html"
+        ]
+    },
+    {
+        "name": "machy8/google-closure-compiler",
+        "version": "v1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Machy8/google-closure-compiler.git",
+            "reference": "4c74d82c1d441a47f2a03d6773f191ea8d44342a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Machy8/google-closure-compiler/zipball/4c74d82c1d441a47f2a03d6773f191ea8d44342a",
+            "reference": "4c74d82c1d441a47f2a03d6773f191ea8d44342a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.0"
+        },
+        "require-dev": {
+            "nette/tester": "^1.7",
+            "tracy/tracy": "^2.4"
+        },
+        "time": "2017-10-28T20:50:59+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "src/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "New BSD License"
+        ],
+        "authors": [
+            {
+                "name": "Vladimír Macháček",
+                "email": "8machy@seznam.cz"
+            }
+        ],
+        "description": "PHP client for the Google Closure Compiler API in one file.",
+        "keywords": [
+            "api",
+            "closure",
+            "compress",
+            "google",
+            "javascript",
+            "minification",
+            "php"
         ]
     }
 ]

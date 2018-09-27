@@ -1,6 +1,8 @@
 <?php
 class sidebar_map {
 	static function show() {
+		return null;
+		
 		$user = FUser::getInstance();
 		
 		$list = array();

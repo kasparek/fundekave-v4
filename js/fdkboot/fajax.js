@@ -161,6 +161,7 @@ var Fajax = new function() {
     };
     o.response = new function() {
         var x = this;
+        var response = [];
         x.run = function(xml) {
             $(xml).find("Item").each(function() {
                 var item = $(this),
@@ -168,6 +169,7 @@ var Fajax = new function() {
                     target = item.attr('target'),
                     prop = item.attr('property'),
                     text = item.text();
+                response.push({target:target,prop:prop,text:text});
                 switch (target) {
                     case 'document':
                         window[target][prop] = text;
@@ -192,6 +194,9 @@ var Fajax = new function() {
                         }
                 }
             });
+            var event = jQuery.Event( "Fajax:complete" );
+            event.response = response;
+            $(document).trigger(event);
         };
     }();
 }();

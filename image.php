@@ -1,8 +1,5 @@
 <?php
-define('VERSION', 'v7');
-define('WEBROOT', $_SERVER['DOCUMENT_ROOT'].'/');
-define('ROOT', WEBROOT.'/fdk_'.VERSION.'/');
-define('PHPLOG_FILENAME', WEBROOT.'tmp/php.log');
+require_once('setup.php');
 
 /**
  * check size
@@ -47,11 +44,12 @@ if(isset($_GET['side'])) {
 $cutParam = isset($_GET['cut']) ? $_GET['cut'] : '';
 
 //CONFIGURATION
-require(WEBROOT.'conf_'.VERSION.'/image.conf.php');
+$confDir = file_exists(WEBROOT.'conf') ? 'conf/' : HOST_ROOT.'fdk_conf_'.VERSION.'/';
+require_once($confDir.'/image.conf.php');
 $contentType = ImageConfig::$contentType;
 
 if(PHPLOG_FILENAME) {
-	require_once(ROOT.'libs/FError.php');
+	require_once(LIBS.'libs/FError.php');
 	FError::init(PHPLOG_FILENAME);
 }
 
@@ -102,7 +100,7 @@ if(strpos($fileParam,'remote')===0) {
 $targetImage = ImageConfig::$targetBasePath.$widthParam.'x'.$heightParam.'/'.$cutParam.'/'.$fileParam;
 
 if($remote) {
-	require_once(ROOT.'libs/FFile.php');
+	require_once(LIBS.'libs/FFile.php');
 	if(!FFile::remoteFileExists($sourceImage)) {
 		echo 'file not found';
 		exit;
@@ -122,7 +120,7 @@ if(is_dir($sourceImage) && $cutParam != 'flush') {
  * $cutParam == 'flush' delete cached images
  */
 if($cutParam === 'flush') {
-	require_once(ROOT.'libs/FFile.php');
+	require_once(LIBS.'libs/FFile.php');
 	$ffile = new FFile();
 	//get list of all size folders
 	$sizeFolderList = $ffile->fileList(WEBROOT.ImageConfig::$targetBasePath);
@@ -141,7 +139,7 @@ if(file_exists($targetImage)) {
 	header('Location: /'.$targetImage);
 }
 
-require_once(ROOT.'libs/FImgProcess.php');
+require_once(LIBS.'libs/FImgProcess.php');
 $imageProps = FImgProcess::getimagesize($sourceImage);
 
 if(!isset($imageProps) || $imageProps===false) {
@@ -181,12 +179,12 @@ if($ratio < 0.3 && ImageConfig::$optimize===true) {
 
 if($cutParam=='prop' && $ratio <= ImageConfig::$maxNoScaleRatio && $ratio > ImageConfig::$minNoScaleRatio) {
 	//output original image if it is really close to current side size 
-	require_once(ROOT.'libs/FFile.php');
+	require_once(LIBS.'libs/FFile.php');
 	$file = new FFile();
 	$file->copy($sourceImage,$targetImage);
 } else if($cutParam=='crop' && $widthParam==$imageProps[0] && $heightParam==$imageProps[1]) {
 	//--- croping - output original image if size is exactly same - display original
-	require_once(ROOT.'libs/FFile.php');
+	require_once(LIBS.'libs/FFile.php');
 	$file = new FFile();
 	$file->copy($sourceImage,$targetImage);
 }
@@ -202,7 +200,7 @@ if(!file_exists($targetImage)) {
 	array_pop($dirArr);
 	$targetDir = implode('/',$dirArr);
 	if(!is_dir($targetDir)) {
-		require_once(ROOT.'libs/FFile.php');
+		require_once(LIBS.'libs/FFile.php');
 		$file = new FFile();
 		$file->makeDir($targetDir);
 	}

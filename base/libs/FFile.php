@@ -198,8 +198,13 @@ class FFile
 
     public function rename($source, $target)
     {
-        if (!$this->ftpConnect()) {
-            return rename($source, $target);
+        if (!$this->ftpConnect() && file_exists($source)) {
+            try {
+                $res = rename($source, $target);
+            } catch(Exception $e) {
+                //might fail if locked
+            }
+            return $res;
         }
 
         return ftp_rename($this->ftpConn, $source, $target);

@@ -535,6 +535,8 @@ class JSCompiler {
   }
 
   function _parseXml($data) {
+    var_dump($data);
+    var_dump('aaa');
     $xml = new SimpleXMLElement($data);
     return $this->_parseXmlHelper($xml);
   }

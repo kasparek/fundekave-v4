@@ -12,8 +12,8 @@ RewriteRule (.*) http://fundekave.net/$1 [R=301,QSA,L]
 RewriteCond %{HTTP_HOST} ^www.iyobosahelpinghand.com$
 RewriteRule (.*) http://iyobosahelpinghand.com/$1 [R=301,QSA,L]
 
-#live RewriteBase /
-RewriteBase /fundekave.net/
+RewriteBase /
+#RewriteBase /fundekave.net/
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^image/([0-9x]*)/([a-z]*)/(.*) image.php?side=$1&cut=$2&img=$3 [QSA,L]
@@ -31,6 +31,7 @@ RewriteRule ^cron-(.*)$ index.php?cron=$1 [QSA,L]
 
 RewriteRule ^pic/|pic.php.* index.php [QSA,L]
 RewriteRule ^files/|files.php.* index.php [QSA,L]
+RewriteRule ^fpapi|fpapi.php.* index.php [QSA,L]
 RewriteRule ^rss|frss.php.* index.php [QSA,L]
 RewriteRule ^fuup.([a-zA-Z]*).([a-zA-Z0-9]{5,6}).xml index.php?k=$2&fuupconfig=$1 [L]
 RewriteRule ^ca.php.* index.php [QSA,L]

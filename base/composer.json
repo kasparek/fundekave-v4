@@ -1,5 +1,6 @@
 {
     "require": {
-        "ezyang/htmlpurifier": "^4.8"
+        "ezyang/htmlpurifier": "^4.8",
+        "machy8/google-closure-compiler": "^1.0"
     }
 }

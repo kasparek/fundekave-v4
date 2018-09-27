@@ -3,36 +3,39 @@
 <form id="commentForm" class="form-horizontal<!-- BEGIN fajaxform --> fajaxform<!-- END fajaxform -->" role="form" action="{FORMACTION}" method="post" name="audit">
 <input type="hidden" name="m" value="{M}"/>
 <input type="hidden" name="t" value="{T}"/>
+<input type="hidden" id="attachement" name="attachement" value=""/>
 <!-- BEGIN edit --><input id="ti" name="ti" value="{ITEMID}" type="hidden"/><!-- END edit -->
 <fieldset>
-
-<!-- BEGIN usernotlogged --><div class="form-group">
-	<label for="inputName" class="col-sm-2 control-label">Jméno</label>
-	<div class="col-sm-10">
-	  <input type="text" name="name" class="form-control" id="inputName" value="{USERNAME}">
-	</div>
-</div><!-- END usernotlogged -->
-
-<div class="form-group">
-	<label for="{TEXTID}" class="col-sm-2 control-label">Text</label>
-	<div class="col-sm-8">
-		<textarea id="{TEXTID}" class="form-control expand" name="text" rows="3">{TEXT}</textarea>
-	</div>
+<!-- BEGIN usernotlogged -->
+<div class="padded_bottom">
+  <input type="text" name="name" class="form-control" id="inputName" value="{USERNAME}" placeholder="Jméno">
 </div>
+<!-- END usernotlogged -->
+<div class="row">
+<div class="col-sm-8">
+<div class="padded_top padded_bottom">
+	<textarea class="form-control expand" name="text" rows="3" required>{TEXT}</textarea>
+</div>
+</div>
+<!-- BEGIN usersigned -->
+<div class="col-sm-4">
+		<div id="tempStore" class="filepond">
+			<input type="file" name="filepond[]" multiple class="" data-submit-after-upload="1" data-filepond-max-files="1" accept="image/gif, image/jpeg, image/png">
+		</div>
+		<div id="imageHolder" class="row"></div>
+</div>
+<!-- END usersigned -->
+</div>
+
+<!--
 <div class="form-group">
 	<label for="position" class="col-sm-2 control-label">Na mapě</label>
 	<div class="col-sm-8">
 		<div class="geoForumBox"><textarea id="position" class="geoInput" name="position" title="Zadejte polohu">{POSITION}</textarea></div>
 	</div>
 </div>
-<!-- BEGIN usersigned -->
-<div class="form-group">
-	<label class="col-sm-2 control-label">Přidat obrázek</label>
-	<div class="col-sm-8">
-		<span id="tempStore" class="fuup"></span><div id="imageHolder" class="row"></div>
-	</div>
-</div>
-<!-- END usersigned -->
+-->
+
 <!-- BEGIN recap -->
 <div class="form-group">
 	<label class="col-sm-2 control-label">Anti-spam</label>
@@ -41,10 +44,8 @@
 	</div>
 </div>
 <!-- END recap -->
-<div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
-		<button type="submit" name="send" class="btn btn-info">Odeslat</button>
-	</div>
+<div class="">
+	<button type="submit" name="send" class="btn btn-info">Odeslat</button>
 </div>
 
 </fieldset>

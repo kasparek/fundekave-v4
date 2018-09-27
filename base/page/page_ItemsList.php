@@ -232,7 +232,7 @@ class page_ItemsList implements iPage
         //TOPLIST ITEMS
         $galeryDetail = false;
         if ($pageVO->typeId == 'galery') {
-            //$vars['TOPFEEDID'] = 'galeryFeed';
+            $vars['TOPFEEDID'] = 'galeryFeed';
             //if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
             if (!$isDetail) {
                 $fItems = new FItems('galery', $user->userVO->userId);

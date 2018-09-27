@@ -20,10 +20,19 @@ class ComposerStaticInitb16015cf6a9570408fd59883cb0cac51
         ),
     );
 
+    public static $classMap = array (
+        'GoogleClosureCompiler\\Bridges\\Nette\\GoogleClosureCompilerExtension' => __DIR__ . '/..' . '/machy8/google-closure-compiler/src/Bridges/Nette/GoogleClosureCompilerExtension.php',
+        'GoogleClosureCompiler\\CompileException' => __DIR__ . '/..' . '/machy8/google-closure-compiler/src/Compiler/exceptions.php',
+        'GoogleClosureCompiler\\Compiler' => __DIR__ . '/..' . '/machy8/google-closure-compiler/src/Compiler/Compiler.php',
+        'GoogleClosureCompiler\\Response' => __DIR__ . '/..' . '/machy8/google-closure-compiler/src/Compiler/Response.php',
+        'GoogleClosureCompiler\\SetupException' => __DIR__ . '/..' . '/machy8/google-closure-compiler/src/Compiler/exceptions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixesPsr0 = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$classMap;
 
         }, null, ClassLoader::class);
     }

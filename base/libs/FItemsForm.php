@@ -347,6 +347,15 @@ class FItemsForm
                         $itemVO->set('textLong', FText::safeText($data['repeat']));
                     }
 
+                    if (isset($data['attachement'])) {
+                        //check if file exists
+                        $target_dir = FConf::get('galery','sourceServerBase') . $user->pageVO->galeryDir;
+                        $ffile    = new FFile(FConf::get("galery", "ftpServer"));
+                        if($ffile->file_exists($target_dir.'/'.$data['attachement'])) { //TODO: check FTP
+                            $itemVO->set('enclosure', $data['attachement']);
+                        }
+                    }
+
                     //save items
                     if ($itemVO->save() > 0) {
                         if (!empty($categoryVO)) {

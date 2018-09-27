@@ -4,6 +4,26 @@ var isMobile = _fdk.isMobile ? _fdk.isMobile : false;
 var topBannerHeight = 0;
 var topBannerMargin = 0;
 
+// jQuery plugin to prevent double submission of forms
+jQuery.fn.preventDoubleSubmission = function() {
+  $(this).on('submit',function(e){
+    var $form = $(this);
+
+    $('.btn',this).attr('disabled','disabled');
+/*
+    if ($form.data('submitted') === true) {
+      // Previously submitted - don't submit again
+      e.preventDefault();
+    } else {
+      // Mark it so that the next submit can be ignored
+      $form.data('submitted', true);
+    }*/
+  });
+
+  // Keep chainability
+  return this;
+};
+
 function topBannerPosition() {
     if (topBannerHeight > 0) return;
     var valign = $(".top-image").data('valign'),
@@ -25,6 +45,7 @@ function loadSidebarPanel($panel) {
 }
 
 function boot() {
+    $('form:not(.fajaxform)').preventDoubleSubmission();
     //load language
     var defaultLang = 'cs';
     Lazy.load([_fdk.cfg.jsUrl + 'i18n/_fdk.lng.' + (_fdk.cfg.lang ? _fdk.cfg.lang : defaultLang) + '.js'], boot);
@@ -172,6 +193,19 @@ function boot() {
     Fullscreen.init();
     fuupInit();
     datePickerInit();
+
+    $("a[data-toggle=collapse]").on('click',function(){
+        var href = $($(this).attr('href'));
+        setTimeout(function(){
+            if($(href).length>0 && !$(href).hasClass('collapse')) {
+                var shown = $(href)[0];
+                $("input:text, textarea",shown).first().focus();
+
+            }
+        },500);
+        
+    });
+
     if (parseInt(_fdk.cfg.user) > 0) {
         ckedInit();
         $("#recipient").change(avatarfrominput);
@@ -187,7 +221,7 @@ function boot() {
             if (rec) $("#recipient").val(rec.join(',')).change();
             avatarfrominput();
         });
-        GaleryEdit.init(_fdk.cfg, _fdk.lng.galery);
+        GaleryEdit.init();
         if (parseInt(_fdk.cfg.msgTi) > 0) Msg.startPoll();
         var perm = $("#accessSel");
         if (perm.length > 0) perm.change(function() {
@@ -214,7 +248,7 @@ function jUIInit() {
     gooMapiInit();
     fuupInit();
     slimboxInit();
-    GaleryEdit.init(_fdk.cfg, _fdk.lng.galery);
+    GaleryEdit.init();
     $(".expand").autogrow();
 };
 
@@ -277,24 +311,8 @@ function slimboxInit() {
 }
 
 function fuupInit() {
-    if ($(".fuup").length === 0) return;
-    if (!Lazy.load(_fdk.load.swf, fuupInit)) return;
-    $(".fuup").each(function(i) {
-        var id = $(this).attr('id'),
-            fuupConf = $.base64.encode(JSON.stringify(_fdk.fuup[id]));
-        swfobject.embedSWF(_fdk.cfg.assUrl + "load.swf", id, "100", "25", "10.0.12", _fdk.cfg.assUrl + "expressInstall.swf", {
-            file: _fdk.cfg.assUrl + "Fuup.swf",
-            config: fuupConf,
-            containerId: id
-        }, {
-            menu: "false",
-            scale: "noScale",
-            allowFullscreen: "true",
-            allowScriptAccess: "always",
-            bgcolor: "",
-            wmode: "transparent"
-        });
-    });
+    if ($(".filepond").length === 0) return;
+    if (!Lazy.load(_fdk.load.filepond, fuupInit)) return;
 }
 /** request init */
 function friendRequestInit(text) {

@@ -22,15 +22,35 @@ class fajax_Page extends FAjaxPluginBase {
 
 	static function fuup($data) {
 		$user = FUser::getInstance();
-		//---call galery refresh
-		$user->pageVO->refreshImages();
-		//---get galery item list
-		$fItems = new FItems('galery',$user->userVO->userId);
-		$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
-		$fItems->setOrder($user->pageVO->itemsOrder());
-		$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('nopager'=>true));
-		if(!empty($listArr['vars']['ITEMS'])) FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
-		FAjax::addResponse('call','GaleryEdit.init','');
+		//-move file
+		require_once(LIBS.'fpapi/FilePond/RequestHandler.class.php');
+		$target_dir = FConf::get('galery','sourceServerBase') . $user->pageVO->galeryDir;
+		if($user->pageVO->typeId === 'galery') {
+			$res = FilePond\RequestHandler::save(array($data['file_id']), $target_dir);
+			//---call galery refresh
+			$user->pageVO->refreshImages();
+			//---get galery item list
+			$fItems = new FItems('galery',$user->userVO->userId);
+			$fItems->addWhere("pageId = '". $user->pageVO->pageId ."'");
+			$fItems->setOrder($user->pageVO->itemsOrder());
+			$listArr = page_ItemsList::buildList($fItems,$user->pageVO,array('nopager'=>true));
+			if(!empty($listArr['vars']['ITEMS'])) FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
+			FAjax::addResponse('call','GaleryEdit.init','');
+		}
+		if($user->pageVO->typeId === 'forum') {
+			$dir = $user->pageVO->get('galeryDir');
+	        if (empty($dir)) {
+	            $user->pageVO->set('galeryDir', 'page/' . $user->pageVO->pageId . '-' . FText::safeText($user->pageVO->get('name')));
+	            $user->pageVO->save();
+	        }
+
+			$file = FilePond\RequestHandler::getTempFile($data['file_id']);
+			$file_name_parts = explode('.',$file['name']);
+			$extension = strtolower(array_pop($file_name_parts));
+			$filename = $user->userVO->userId . '-' .date("Ymd").'-'.substr(FText::safeText(implode('.', $file_name_parts)), 0,32).'.'.$extension;
+			$res = FilePond\RequestHandler::moveFileById($data['file_id'], $target_dir, $filename);
+			FAjax::addResponse('attachement','value',$filename);
+		}
 	}
 
 	static function avatar($data) {

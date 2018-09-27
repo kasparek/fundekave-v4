@@ -134,7 +134,7 @@ static $ERROR_UPLOAD_NOTSAVED = 'Chyba při ukládání souboru [6]';
 static $MESSAGE_UPLOAD_SUCCESS = 'Uspesne nahrano';
 
 static $ERROR_RULES_CREATE = 'Nemate dostatecna prava pro pridavani';
-static $ERROR_CAPTCHA = 'Opiste spravne kontrolni kod';
+static $ERROR_CAPTCHA = 'Neprosli jste ochranou proti robotum. Zkuste to znovu ...';
 static $ERROR_GALERY_DIREMPTY = 'Nezadali jste adresar';
 static $ERROR_GALERY_DIRWRONG = 'Zadali jste neplatne jmeno adresar, jsou povolene znaky pouze / - _ 0-9 a-z A-Z';
 static $ERROR_GALERY_NOFOTO = 'Bohuzel galerie zatim neobsahuje fotografie';
