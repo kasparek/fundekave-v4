@@ -789,6 +789,24 @@ a.commentLink .commentNum {
 .padded {
     padding: 15px;
 }
-.filepond--image-preview-overlay-idle {
+.filepond--root .filepond--image-preview-overlay-idle {
     color: rgba(40, 40, 40, 0.45) !important;
+}
+.filepond--root .filepond--drop-label label {
+    font-size: 14px;
+}
+.filepond--root .filepond--file-info .filepond--file-info-main {
+    font-size: 14px;
+}
+.filepond--root .filepond--file-info .filepond--file-info-sub {
+    font-size: 12px;
+}
+.filepond--root .filepond--file-status .filepond--file-status-main {
+    font-size: 14px;
+}
+.filepond--root .filepond--file-status .filepond--file-status-sub {
+    font-size: 12px;
+}
+.filepond--root .filepond--file-action-button {
+    font-size: 12px;
 }

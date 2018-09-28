@@ -2,8 +2,7 @@
 
 namespace FilePond;
 
-
-require_once('Item.class.php');
+require_once 'Item.class.php';
 
 /**
  * FilePond RequestHandler helper class
@@ -16,7 +15,7 @@ require_once('Item.class.php');
 4. either client reverts upload or finalizes form
 5. call revert($server_id) to remove file from tmp/ directory
 6. call save() to save file to final directory
-*/
+ */
 class RequestHandler
 {
     // the default location to save tmp files to
@@ -29,7 +28,8 @@ class RequestHandler
      * @param $str
      * @return bool
      */
-    public static function isFileId($str) {
+    public static function isFileId($str)
+    {
         return preg_match(self::$file_id_format, $str);
     }
 
@@ -37,22 +37,25 @@ class RequestHandler
      * @param $str
      * @return bool
      */
-    public static function isURL($str) {
+    public static function isURL($str)
+    {
         return filter_var($str, FILTER_VALIDATE_URL);
     }
 
     /**
      * Catch all exceptions so we can return a 500 error when the server bugs out
      */
-    public static function catchExceptions() {
+    public static function catchExceptions()
+    {
         set_exception_handler('FilePond\RequestHandler::handleException');
     }
 
-    public static function handleException($ex) {
+    public static function handleException($ex)
+    {
 
         // write to error log so we can still find out what's up
         error_log('Uncaught exception in class="' . get_class($ex) . '" message="' . $ex->getMessage() . '" line="' . $ex->getLine() . '"');
-        
+
         // clean up buffer
         ob_end_clean();
 
@@ -60,7 +63,8 @@ class RequestHandler
         http_response_code(500);
     }
 
-    private static function createItem($file, $id = null) {
+    private static function createItem($file, $id = null)
+    {
         return new namespace\Item($file, $id);
     }
 
@@ -68,73 +72,75 @@ class RequestHandler
      * @param $fieldName
      * @return array
      */
-    public static function loadFilesByField($fieldName) {
+    public static function loadFilesByField($fieldName)
+    {
 
         // See if files are posted as JSON string (each file being base64 encoded)
         $base64Items = self::loadBase64FormattedFiles($fieldName);
-        
+
         // retrieves posted file objects
         $fileItems = self::loadFileObjects($fieldName);
-        
+
         // retrieves files already on server
         $tmpItems = self::loadFilesFromTemp($fieldName);
-        
+
         // save newly received files to temp files folder (tmp items already are in that folder)
         self::saveAsTempFiles(array_merge($base64Items, $fileItems));
-        
+
         // return items
         return array_merge($base64Items, $fileItems, $tmpItems);
     }
 
-    private static function loadFileObjects($fieldName) {
-        
+    private static function loadFileObjects($fieldName)
+    {
+
         $items = [];
 
-        if ( !isset($_FILES[$fieldName]) ) {
+        if (!isset($_FILES[$fieldName])) {
             return $items;
         }
-        
+
         $FILE = $_FILES[$fieldName];
 
         if (is_array($FILE['tmp_name'])) {
 
-            foreach( $FILE['tmp_name'] as $index => $tmpName ) {
+            foreach ($FILE['tmp_name'] as $index => $tmpName) {
 
-                array_push( $items, self::createItem( array(
+                array_push($items, self::createItem(array(
                     'tmp_name' => $FILE['tmp_name'][$index],
-                    'name' => $FILE['name'][$index],
-                    'size' => $FILE['size'][$index],
-                    'error' => $FILE['error'][$index],
-                    'type' => $FILE['type'][$index]
-                )) );
+                    'name'     => $FILE['name'][$index],
+                    'size'     => $FILE['size'][$index],
+                    'error'    => $FILE['error'][$index],
+                    'type'     => $FILE['type'][$index],
+                )));
 
             }
 
-        }
-        else {
-            array_push( $items, self::createItem($FILE) );
+        } else {
+            array_push($items, self::createItem($FILE));
         }
 
         return $items;
     }
 
-    private static function loadBase64FormattedFiles($fieldName) {
+    private static function loadBase64FormattedFiles($fieldName)
+    {
 
         /*
         // format:
         {
-            "id": "iuhv2cpsu",
-            "name": "picture.jpg",
-            "type": "image/jpeg",
-            "size": 20636,
-            "metadata" : {...}
-            "data": "/9j/4AAQSkZJRgABAQEASABIAA..."
+        "id": "iuhv2cpsu",
+        "name": "picture.jpg",
+        "type": "image/jpeg",
+        "size": 20636,
+        "metadata" : {...}
+        "data": "/9j/4AAQSkZJRgABAQEASABIAA..."
         }
-        */
+         */
 
         $items = [];
 
-        if ( !isset($_POST[$fieldName] ) ) {
+        if (!isset($_POST[$fieldName])) {
             return $items;
         }
 
@@ -162,21 +168,23 @@ class RequestHandler
                 continue;
             }
 
-            array_push($items, self::createItem( self::createTempFile($obj) ) );
+            array_push($items, self::createItem(self::createTempFile($obj)));
         }
-        
+
         return $items;
     }
 
-    private static function isEncodedFile($obj) {
+    private static function isEncodedFile($obj)
+    {
         return isset($obj->id) && isset($obj->data) && isset($obj->name) && isset($obj->type) && isset($obj->size);
     }
 
-    private static function loadFilesFromTemp($fieldName) {
-        
+    private static function loadFilesFromTemp($fieldName)
+    {
+
         $items = [];
 
-        if ( !isset($_POST[$fieldName] ) ) {
+        if (!isset($_POST[$fieldName])) {
             return $items;
         }
 
@@ -190,21 +198,22 @@ class RequestHandler
 
         // test if value is actually a file id
         foreach ($values as $value) {
-            if ( self::isFileId($value) ) {
+            if (self::isFileId($value)) {
                 array_push($items, self::createItem(self::getTempFile($value), $value));
             }
         }
-    
+
         return $items;
 
     }
 
-    public static function save($items, $path = 'uploads' . DIRECTORY_SEPARATOR) {
+    public static function save($items, $path = 'uploads' . DIRECTORY_SEPARATOR)
+    {
 
         // is list of files
-        if ( is_array($items) ) {
+        if (is_array($items)) {
             $results = [];
-            foreach($items as $item) {
+            foreach ($items as $item) {
                 array_push($results, self::saveFile($item, $path));
             }
             return $results;
@@ -218,7 +227,8 @@ class RequestHandler
      * @param $file_id
      * @return bool
      */
-    public static function deleteTempFile($file_id) {
+    public static function deleteTempFile($file_id)
+    {
         return self::deleteTempDirectory($file_id);
     }
 
@@ -234,39 +244,40 @@ class RequestHandler
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
             $content = curl_exec($ch);
-            if ($content === FALSE) {
+            if ($content === false) {
                 throw new Exception(curl_error($ch), curl_errno($ch));
             }
 
-            $type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $type   = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
             $length = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $code   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-            curl_close ($ch);
+            curl_close($ch);
 
             $success = $code >= 200 && $code < 300;
 
             return array(
-                'code' => $code,
+                'code'    => $code,
                 'content' => $content,
-                'type' => $type,
-                'length' => $length,
-                'success' => $success
+                'type'    => $type,
+                'length'  => $length,
+                'success' => $success,
             );
-            
-        }
-        catch(Exception $e) {
+
+        } catch (Exception $e) {
             return null;
         }
     }
 
-    private static function saveAsTempFiles($items) {
-        foreach($items as $item) {
+    private static function saveAsTempFiles($items)
+    {
+        foreach ($items as $item) {
             self::saveTempFile($item);
         }
     }
 
-    private static function saveTempFile($file) {
+    private static function saveTempFile($file)
+    {
 
         // make sure path name is safe
         $path = self::getSecureTempPath() . $file->getId() . DIRECTORY_SEPARATOR;
@@ -282,7 +293,7 @@ class RequestHandler
         $result = self::moveFile($source, $target);
 
         // Was not saved
-        if ($result !== true) { return $result; }
+        if ($result !== true) {return $result;}
 
         // Make sure file is secure
         self::setSecureFilePermissions($target);
@@ -291,26 +302,26 @@ class RequestHandler
         return true;
     }
 
-    public static function getTempFile($fileId) {
+    public static function getTempFile($fileId)
+    {
 
         // select all files in directory except .htaccess
-        foreach(glob(self::getSecureTempPath() . $fileId . DIRECTORY_SEPARATOR . '*.*') as $file) {
+        foreach (glob(self::getSecureTempPath() . $fileId . DIRECTORY_SEPARATOR . '*.*') as $file) {
 
             try {
-                
-                $handle = fopen($file, 'r');
+
+                $handle  = fopen($file, 'r');
                 $content = fread($handle, filesize($file));
                 fclose($handle);
-                
+
                 return array(
-                    'name' => basename($file),
+                    'name'    => basename($file),
                     'content' => $content,
-                    'type' => mime_content_type($file),
-                    'length' => filesize($file)
+                    'type'    => mime_content_type($file),
+                    'length'  => filesize($file),
                 );
 
-            }
-            catch(Exception $e) {
+            } catch (Exception $e) {
                 return null;
             }
         }
@@ -318,30 +329,31 @@ class RequestHandler
         return false;
     }
 
-    public static function getFile($file, $path) {
+    public static function getFile($file, $path)
+    {
 
         try {
-            
+
             $filename = $path . DIRECTORY_SEPARATOR . $file;
-            $handle = fopen($filename, 'r');
-            $content = fread($handle, filesize($filename));
+            $handle   = fopen($filename, 'r');
+            $content  = fread($handle, filesize($filename));
             fclose($handle);
-            
+
             return array(
-                'name' => basename($filename),
+                'name'    => basename($filename),
                 'content' => $content,
-                'type' => mime_content_type($filename),
-                'length' => filesize($filename)
+                'type'    => mime_content_type($filename),
+                'length'  => filesize($filename),
             );
 
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
 
     }
 
-    private static function saveFile($item, $path) {
+    private static function saveFile($item, $path)
+    {
 
         // nope
         if (!isset($item)) {
@@ -360,18 +372,22 @@ class RequestHandler
 
     }
 
-    public static function moveFileById($fileId, $path, $fileName = null) {
+    public static function moveFileById($fileId, $path, $fileName = null)
+    {
 
         // select all files in directory except .htaccess
-        foreach(glob(self::getSecureTempPath() . $fileId . DIRECTORY_SEPARATOR . '*.*') as $file) {
+        foreach (glob(self::getSecureTempPath() . $fileId . DIRECTORY_SEPARATOR . '*.*') as $file) {
 
             $source = $file;
             $target = self::getSecurePath($path);
 
-            self::createDirectory($target);
+            self::createRemoteDirectory($target);
 
-            $ffile    = new \FFile(\FConf::get("galery", "ftpServer"));
-            $ffile->rename($source, $target . (isset($fileName) ? basename($fileName) : basename($file)));
+            $ffile = new \FFile(\FConf::get("galery", "ftpServer"));
+            $dir = getcwd();
+            $source = $dir . '' . substr($source, 1);
+            $target = $target . (!empty($fileName) ? $fileName : basename($file));
+            $ffile->move_uploaded_file($source, $target);
         }
 
         // remove directory
@@ -381,66 +397,83 @@ class RequestHandler
         return true;
     }
 
-    private static function deleteTempDirectory($id) {
+    private static function deleteTempDirectory($id)
+    {
         $ffile = new \FFile();
         $ffile->rm_recursive(self::getSecureTempPath() . $id);
     }
 
-    private static function createTempFile($file) {
+    private static function createTempFile($file)
+    {
 
         $tmp = tmpfile();
         fwrite($tmp, base64_decode($file->data));
-        $meta = stream_get_meta_data($tmp);
+        $meta     = stream_get_meta_data($tmp);
         $filename = $meta['uri'];
 
         return array(
-            'error' => 0,
-            'size' => filesize($filename),
-            'type' => $file->type,
-            'name' => $file->name,
+            'error'    => 0,
+            'size'     => filesize($filename),
+            'type'     => $file->type,
+            'name'     => $file->name,
             'tmp_name' => $filename,
-            'tmp' => $tmp
+            'tmp'      => $tmp,
         );
 
     }
 
-    private static function moveFile($source, $target) {
+    private static function moveFile($source, $target)
+    {
 
         if (is_uploaded_file($source)) {
             return move_uploaded_file($source, $target);
-        }
-        else {
-            $tmp = fopen($source, 'r');
-            $result = file_put_contents( $target, fread($tmp, filesize($source) ) );
+        } else {
+            $tmp    = fopen($source, 'r');
+            $result = file_put_contents($target, fread($tmp, filesize($source)));
             fclose($tmp);
             return $result;
         }
 
     }
 
-    private static function getSecurePath($path) {
+    private static function getSecurePath($path)
+    {
         return pathinfo($path)['dirname'] . DIRECTORY_SEPARATOR . basename($path) . DIRECTORY_SEPARATOR;
     }
 
-    private static function getSecureTempPath() {
+    private static function getSecureTempPath()
+    {
         return self::getSecurePath(self::$tmp_dir);
     }
 
-    private static function setSecureFilePermissions($target) {
-        $stat  = stat( dirname($target) );
+    private static function setSecureFilePermissions($target)
+    {
+        $stat  = stat(dirname($target));
         $perms = $stat['mode'] & 0000666;
         @chmod($target, $perms);
     }
 
-    private static function createDirectory($path) {
+    private static function createDirectory($path)
+    {
         if (is_dir($path)) {
             return false;
         }
-        mkdir($path, 0755, true);
+        mkdir($path, 0777, true);
         return true;
     }
 
-    private static function createSecureDirectory($path) {
+    private static function createRemoteDirectory($path)
+    {
+        if (is_dir($path)) {
+            return false;
+        }
+        $ffile = new \FFile(\FConf::get("galery", "ftpServer"));
+        $ffile->mkdir($path, 0777, true);
+        return true;
+    }
+
+    private static function createSecureDirectory($path)
+    {
 
         // !! If directory already exists we assume security is handled !!
 
@@ -453,11 +486,10 @@ IndexIgnore *
 # Disable script execution
 AddHandler cgi-script .php .pl .jsp .asp .sh .cgi
 Options -ExecCGI -Indexes';
-            file_put_contents($path . '.htaccess', $content);
+            //file_put_contents($path . '.htaccess', $content);
 
         }
 
     }
 
 }
-

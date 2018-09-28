@@ -27,7 +27,7 @@ class FFile
     public function __destruct()
     {
         if ($this->isFtpMode) {
-            if (function_exists(ftp_close)) {
+            if (function_exists('ftp_close')) {
                 ftp_close($this->ftpConn);
             }
         }
@@ -51,7 +51,7 @@ class FFile
         $this->ftpPass   = $user[1];
         $ret             = false;
         try {
-            if (function_exists(ftp_connect)) {
+            if (function_exists('ftp_connect')) {
                 $this->ftpConn = ftp_connect($this->ftpServer);
                 $ret           = ftp_login($this->ftpConn, $this->ftpUser, $this->ftpPass);
                 ftp_pasv($this->ftpConn, true);
@@ -215,8 +215,7 @@ class FFile
         if (!$this->ftpConnect()) {
             return move_uploaded_file($source, $target);
         }
-
-        return ftp_put($this->ftpConn, $source, $target, FTP_BINARY);
+        return ftp_put($this->ftpConn, $target, $source, FTP_BINARY);
     }
 
     public function file_put_contents($filename, $content)
