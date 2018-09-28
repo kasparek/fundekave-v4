@@ -1,0 +1,5 @@
+{
+    "require": {
+        "machy8/google-closure-compiler": "^1.0"
+    }
+}
