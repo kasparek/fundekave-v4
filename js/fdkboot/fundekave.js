@@ -45,7 +45,7 @@ function loadSidebarPanel($panel) {
 }
 
 function boot() {
-    $('form:not(.fajaxform)').preventDoubleSubmission();
+    //$('form:not(.fajaxform)').preventDoubleSubmission();
     //load language
     var defaultLang = 'cs';
     Lazy.load([_fdk.cfg.jsUrl + 'i18n/_fdk.lng.' + (_fdk.cfg.lang ? _fdk.cfg.lang : defaultLang) + '.js'], boot);

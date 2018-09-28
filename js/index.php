@@ -1,4 +1,7 @@
 <?php
+
+$debug = 0;
+
 function get_m_time_dir($directory)
 {
     $last_modified_time = 0;
@@ -16,7 +19,7 @@ function get_m_time_dir($directory)
 
 $local = getcwd();
 
-require_once 'vendor/autoload.php';
+require_once $local . '/vendor/autoload.php';
 $compiler = new GoogleClosureCompiler\Compiler;
 
 //input directory
@@ -24,7 +27,7 @@ $baseDir = '';
 $dir     = $baseDir . str_replace(array($baseDir, '..', '.js'), '', $_GET['js']);
 $dir     = preg_replace('/[^0-9a-zA-Z._-]/', "", $dir);
 //checked for reserverd directories
-if(empty($dir)) {
+if (empty($dir)) {
     echo 'Empty Input';
     exit;
 }
@@ -62,13 +65,14 @@ while ($file = readdir($dh)) {
 }
 
 //for local testing
-$host    = $_SERVER['HTTP_HOST'];
-$hostArr = explode('.', $host);
-if (in_array('local', $hostArr) || in_array('localhost', $hostArr)) {
-    echo $code;
-    exit;
+if ($debug) {
+    $host    = $_SERVER['HTTP_HOST'];
+    $hostArr = explode('.', $host);
+    if (in_array('local', $hostArr) || in_array('localhost', $hostArr)) {
+        echo $code;
+        exit;
+    }
 }
-
 $response = $compiler->setJsCode($code)->compile();
 if ($response && $response->isWithoutErrors()) {
     $minified = $response->getCompiledCode();

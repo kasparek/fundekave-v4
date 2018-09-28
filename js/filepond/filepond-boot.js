@@ -33,7 +33,7 @@ $.createScript = function(url) {
    };
 
 $.filepondLoad = function(arr, minified) {
-    var path = 'node_modules/';
+    var path = _fdk.cfg.jsUrl + 'node_modules/';
     $.getCSS(path + 'filepond/dist/filepond.css');
     var src = 'filepond/dist/filepond.js';
     if (minified) {
