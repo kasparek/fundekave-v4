@@ -213,7 +213,7 @@ class FFile
     public function move_uploaded_file($source, $target)
     {
         if (!$this->ftpConnect()) {
-            return move_uploaded_file($source, $target);
+            return rename($source, $target);
         }
         return ftp_put($this->ftpConn, $target, $source, FTP_BINARY);
     }

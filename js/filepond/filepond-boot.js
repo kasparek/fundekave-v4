@@ -1,3 +1,4 @@
+var filepond_assets_loaded = false;
 $.getCSS = function(src) {
     $('<link>').appendTo('head').attr({
         type: 'text/css',
@@ -6,33 +7,35 @@ $.getCSS = function(src) {
     });
 }
 $.createScript = function(url) {
-      var head = document.getElementsByTagName("head")[0];
-      var script = document.createElement("script");
-      script.src = url;
-      var promise = $.Deferred();
-      // Handle Script loading
-      {
-         var done = false;
-
-         // Attach handlers for all browsers
-         script.onload = script.onreadystatechange = function(){
-            if ( !done && (!this.readyState ||
-                  this.readyState == "loaded" || this.readyState == "complete") ) {
-               done = true;
-              promise.resolve();
-               // Handle memory leak in IE
-               script.onload = script.onreadystatechange = null;
+    var head = document.getElementsByTagName("head")[0];
+    var script = document.createElement("script");
+    script.src = url;
+    var promise = $.Deferred();
+    // Handle Script loading
+    {
+        var done = false;
+        // Attach handlers for all browsers
+        script.onload = script.onreadystatechange = function() {
+            if (!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
+                done = true;
+                promise.resolve();
+                // Handle memory leak in IE
+                script.onload = script.onreadystatechange = null;
             }
-         };
-      }
-
-      head.appendChild(script);
-
-      // We handle everything using the script element injection
-      return promise;
-   };
-
+        };
+    }
+    head.appendChild(script);
+    // We handle everything using the script element injection
+    return promise;
+};
 $.filepondLoad = function(arr, minified) {
+    if (filepond_assets_loaded) {
+        setTimeout(function() {
+            $(document).trigger('filepond-ready');
+        }, 200);
+        return true;
+    }
+    filepond_assets_loaded = true;
     var path = _fdk.cfg.jsUrl + 'node_modules/';
     $.getCSS(path + 'filepond/dist/filepond.css');
     var src = 'filepond/dist/filepond.js';
@@ -46,7 +49,7 @@ $.filepondLoad = function(arr, minified) {
                 case 'image-preview':
                     $.getCSS(path + 'filepond-plugin-' + src + '/dist/filepond-plugin-' + src + '.css');
             }
-            register_plugin.push('FilePondPlugin'+src.replace(/-/gi,' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/\s/g, ''));
+            register_plugin.push('FilePondPlugin' + src.replace(/-/gi, ' ').replace(/\b\w/g, l => l.toUpperCase()).replace(/\s/g, ''));
             src = 'filepond-plugin-' + src + '/dist/filepond-plugin-' + src + '.js';
             if (minified) {
                 src = src.replace(/(.js)$/gi, '.min.js');
@@ -57,7 +60,7 @@ $.filepondLoad = function(arr, minified) {
             $(deferred.resolve);
         }));
         $.when.apply($, _arr).done(function() {
-            for(var key in register_plugin) {
+            for (var key in register_plugin) {
                 FilePond.registerPlugin(window[register_plugin[key]]);
             }
             $(document).trigger('filepond-ready');

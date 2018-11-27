@@ -349,9 +349,10 @@ class FItemsForm
 
                     if (isset($data['attachement'])) {
                         //check if file exists
-                        $target_dir = FConf::get('galery','sourceServerBase') . $user->pageVO->galeryDir;
-                        $ffile    = new FFile(FConf::get("galery", "ftpServer"));
-                        if($ffile->file_exists($target_dir.'/'.$data['attachement'])) { //TODO: check FTP
+                        $target_dir = FConf::get('galery', 'sourceServerBase') . $user->pageVO->galeryDir;
+                        $ffile      = new FFile(FConf::get("galery", "ftpServer"));
+                        if ($ffile->file_exists($target_dir . '/' . $data['attachement'])) {
+                            //TODO: check FTP
                             $itemVO->set('enclosure', $data['attachement']);
                         }
                     }
@@ -431,6 +432,32 @@ class FItemsForm
                                 }
 
                             }
+                        } elseif (!empty($data['imageFile'])) {
+                            //process filepond upload
+                            if (!is_array($data['imageFile'])) {
+                                $data['imageFile'] = array($data['imageFile']);
+                            }
+
+                            $target_dir = $itemVO->pageVO->get('galeryDir');
+                            if (empty($target_dir)) {
+                                $itemVO->pageVO->set('galeryDir', 'page/' . $itemVO->pageVO->pageId . '-' . FText::safeText($itemVO->pageVO->get('name')));
+                                $itemVO->pageVO->save();
+                                $target_dir = $user->pageVO->get('galeryDir');
+                            }
+                            $target_dir = FConf::get('galery','sourceServerBase') . $target_dir;
+
+                            require_once(LIBS.'fpapi/FilePond/RequestHandler.class.php');
+                            foreach ($data['imageFile'] as $serverId) {
+                                $file            = FilePond\RequestHandler::getTempFile($serverId);
+                                $file_name_parts = explode('.', $file['name']);
+                                $extension       = strtolower(array_pop($file_name_parts));
+                                $filename        = $user->userVO->userId . '-' . date("Ymd") . '-' . substr(FText::safeText(implode('.', $file_name_parts)), 0, 32) . '.' . $extension;
+                                $res             = FilePond\RequestHandler::moveFileById($serverId, $target_dir, $filename);
+                                $itemVO->enclosure = $filename;
+                                $itemVO->save();
+                                $itemVO->prepare();
+                            }
+
                         }
                         //properties
                         if (isset($data['position'])) {
@@ -496,7 +523,7 @@ class FItemsForm
                     FAjax::redirect(FSystem::getUri('', $user->pageVO->pageId, '', array('short' => 1)));
                 }
             } else {
-                $uri = FSystem::getUri($redirectParam).(!empty($itemVOTop) && $itemVOTop->typeId==='galery'?'&do=comment':'');
+                $uri = FSystem::getUri($redirectParam) . (!empty($itemVOTop) && $itemVOTop->typeId === 'galery' ? '&do=comment' : '');
                 FAjax::redirect($uri); //non ajax processing
             }
         }

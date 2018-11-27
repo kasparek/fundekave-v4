@@ -313,6 +313,7 @@ function slimboxInit() {
 function fuupInit() {
     if ($(".filepond").length === 0) return;
     if (!Lazy.load(_fdk.load.filepond, fuupInit)) return;
+    $.filepondLoad(['file-validate-size', 'file-validate-type', 'image-transform', 'image-resize','image-preview', 'file-encode', 'image-exif-orientation']);
 }
 /** request init */
 function friendRequestInit(text) {

@@ -1,6 +1,6 @@
 <?php
 
-$debug = 0;
+$debug = 1;
 
 function get_m_time_dir($directory)
 {

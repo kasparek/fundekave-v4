@@ -7,23 +7,22 @@
 
 <div id="{ITEMIDHTML}" class="fitem<!-- BEGIN notpublished --> notpublished<!-- END notpublished -->">
 	<!-- BEGIN edit --><a href="{EDITURL}" class="btn btn-primary active pull-right" role="button">Upravit</a><!-- END edit -->
-	<h2 class="media-heading"><a href="{TITLEURL}">{TITLE}</a></h2>
-	<!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page" class="pull-left">
-		<img class="media-object" src="{IMGURLTHUMB}" title="{IMGTITLE}" alt="{IMGALT}" />
-	</a><!-- END image -->
+	<h2 class="media-heading padded_bottom"><a href="{TITLEURL}">{TITLE}</a></h2>
+	<!-- BEGIN image --><div class="padded_bottom"><a href="{IMGURL}" rel="lightbox-page">
+		<img class="media-object" src="{IMGURL}" title="{IMGTITLE}" alt="{IMGALT}">
+	</a></div><!-- END image -->
 	<!-- BEGIN category --><h4><a href="{CATEGORYURL}">{CATEGORYNAME}</a></h4><!-- END category -->
-	<div class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
+	<!--<div class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>-->
 	<div class="entry-content">
 	{TEXT}
 	</div>
-	<div class="goomap">{GOOMAP}</div>
-	<!-- BEGIN detailLink --><div><strong><a href="{LONGURL}" title="{LONGTITLE}">celý článek</a></strong></div><!-- END detailLink -->
-	<div class="well well-sm">
-		<span class="author vcard"><a href="{AUTHORLINK}" class="author url">{AUTHOR}</a></span>
+	<!--<div class="goomap">{GOOMAP}</div>-->
+	<!-- BEGIN detailLink --><div class="padded_bottom pull-right"><a href="{LONGURL}" title="{LONGTITLE}" class="btn">Celý článek...</a></div><!-- END detailLink -->
+	<div class="item-blog-footer well well-sm">
+		<!--<span class="author vcard"><a href="{AUTHORLINK}" class="author url">{AUTHOR}</a></span>-->
 		<abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr>
 		<span class="stats pull-right">
 			<span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><span class="glyphicon glyphicon-comment"></span><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}</a></span> 
-			<span class="viewedTimes"><span class="glyphicon glyphicon-eye-open"></span>{HITS}</span> 
 		</span>
 	</div>
 </div>

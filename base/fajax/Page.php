@@ -37,13 +37,13 @@ class fajax_Page extends FAjaxPluginBase {
 			if(!empty($listArr['vars']['ITEMS'])) FAjax::addResponse('galeryFeed','$html',$listArr['vars']['ITEMS']);
 			FAjax::addResponse('call','GaleryEdit.init','');
 		}
-		if($user->pageVO->typeId === 'forum') {
-			$dir = $user->pageVO->get('galeryDir');
-	        if (empty($dir)) {
+		if($user->pageVO->typeId === 'forum' || $user->pageVO->typeId === 'blog') {
+			$target_dir = $user->pageVO->get('galeryDir');
+	        if (empty($target_dir)) {
 	            $user->pageVO->set('galeryDir', 'page/' . $user->pageVO->pageId . '-' . FText::safeText($user->pageVO->get('name')));
 	            $user->pageVO->save();
+	            $target_dir = $user->pageVO->get('galeryDir');
 	        }
-
 			$file = FilePond\RequestHandler::getTempFile($data['file_id']);
 			$file_name_parts = explode('.',$file['name']);
 			$extension = strtolower(array_pop($file_name_parts));

@@ -1,29 +1,27 @@
-<div id="{ITEMIDHTML}" class="fitem media">
-	<!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page" class="pull-left">
-		<img src="{IMGURLTHUMB}" class="media-object" title="{IMGTITLE}" alt="{IMGALT}" />
-	</a><!-- END image -->
-
+<div id="{ITEMIDHTML}" class="fitem<!-- BEGIN notpublished --> notpublished<!-- END notpublished -->">
 	<div class="media-body">
 		<!-- BEGIN edit --><a href="{EDITURL}" class="btn btn-primary active pull-right" role="button">Upravit</a><!-- END edit -->
-		<h2 class="media-heading"><a href="{TITLEURL}">{TITLE}</a></h2>
+		<h2 class="media-heading text-center"><a href="{TITLEURL}">{TITLE}</a></h2>
+		<!-- BEGIN image --><a href="{IMGURL}" rel="lightbox-page" class="pull-left padded_right">
+		<img src="{IMGURLTHUMB}" class="media-object" title="{IMGTITLE}" alt="{IMGALT}" />
+		</a><!-- END image -->
 		<!-- BEGIN category --><h4><a href="{CATEGORYURL}">{CATEGORYNAME}</a></h4><!-- END category -->
 		<div class="goomap-thumb pull-right">{GOOMAPTHUMB}</div>
-		<div>Kdy <abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr>
-		<!-- BEGIN eventend -->- <abbr class="dtend" title="{ENDDATETIMEISO}">{ENDDATETIMELOCAL}</abbr><!-- END eventend --></div>
-		<div class="location">Kde <strong>{LOCATION}</strong></div>
+		<div class="event-date" title="Kdy">
+			<abbr class="dtstart" title="{STARTDATETIMEISO}">{STARTDATETIMELOCAL}</abbr>
+			<!-- BEGIN eventend -->- <abbr class="dtend" title="{ENDDATETIMEISO}">{ENDDATETIMELOCAL}</abbr><!-- END eventend -->
+		</div>
+		<div class="location event-location padded_bottom" title="Kde">{LOCATION}</div>
 		<div class="entry-content">
 		{TEXT}
 		</div>
-		<div class="goomap">{GOOMAP}</div>
+		<!--<div class="goomap">{GOOMAP}</div>-->
 		<!-- BEGIN detailLink --><div><strong><a href="{LONGURL}" title="{LONGTITLE}">Celý článek</a></strong></div><!-- END detailLink -->
-		<div class="well well-sm">
-			<span class="author vcard"><a href="{AUTHORLINK}" class="author url">{AUTHOR}</a></span>
-			<abbr class="updated published" title="{DATEISO}">{DATELOCAL}</abbr>
+		<div class="item-blog-footer">
+			<!-- <span class="author vcard"><a href="{AUTHORLINK}" class="author url">{AUTHOR}</a></span> -->
 			<span class="stats pull-right">
 				<span class="commentsNum"><a href="{COMMENTLINK}" title="Pocet komentaru"><span class="glyphicon glyphicon-comment"></span><!-- BEGIN registered --><span class="postsNew">{ALLNEWCNT}</span>/<!-- END registered -->{CNTCOMMENTS}</a></span> 
-				<span class="viewedTimes"><span class="glyphicon glyphicon-eye-open"></span>{HITS}</span> 
 			</span>
 		</div>
-			
   </div>
 </div>

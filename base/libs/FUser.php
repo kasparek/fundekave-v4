@@ -1,7 +1,6 @@
 <?php
 class FUser
 {
-
     //---security salt
     const LO = 'fdk5.salt';
 
@@ -136,7 +135,7 @@ class FUser
                 FUser::invalidateUsers($gid);
                 //---db logon
                 FDBTool::query('insert into sys_users_logged (userId,loginId,dateCreated,dateUpdated,location,ip,sessId) values
-				("' . $gid . '","' . $userVO->idlogin . '",NOW(),NOW(),"' . $pageId . '","' . $userVO->ip . '","' . session_id() . '")');
+                ("' . $gid . '","' . $userVO->idlogin . '",NOW(),NOW(),"' . $pageId . '","' . $userVO->ip . '","' . session_id() . '")');
                 //user total item num
                 $userVO->itemsLastNum = (int) $userVO->prop('itemsNum');
                 //---session cache
@@ -452,8 +451,11 @@ class FUser
     public static function register($data)
     {
         $captcha_ref = null;
-        if(!empty($data['captcha_ver'])) $captcha_ref = md5(trim($data['captcha_ver']) . FUser::LO);
-        if(empty($data['captcha_ref']) || $captcha_ref !== $data['captcha_ref']) {
+        if (!empty($data['captcha_ver'])) {
+            $captcha_ref = md5(trim($data['captcha_ver']) . FUser::LO);
+        }
+
+        if (empty($data['captcha_ref']) || $captcha_ref !== $data['captcha_ref']) {
             FError::add(FLang::$ERROR_CAPTCHA);
         }
 

@@ -59,42 +59,12 @@
 		<input id="formDate" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date">
 	</div>
 </div>
-
-<div class="form-group">
-	<label for="{TEXTID}" class="col-sm-2 control-label">Úvod</label>
-	<div class="col-sm-10">
-		<textarea name="text" id="{TEXTID}" class="form-control markitup">{TEXT}</textarea>
-	</div>
-</div>
-
-<div class="form-group">
-	<label for="{TEXTLONGID}" class="col-sm-2 control-label">Text</label>
-	<div class="col-sm-10">
-		<textarea name="textLong" id="{TEXTLONGID}" class="form-control markitup" row="3">{TEXTLONG}</textarea>
-	</div>
-</div>
-
 </fieldset>
-</div>
-
-<div class="tab-pane fade" id="tabs-2">
 <fieldset>
 <legend>Obrázek</legend>
-<div class="form-group">
-	<label for="fileurlinput" class="col-sm-2 control-label">Vlož URL</label>
-	<div class="col-sm-10">
-		<input id="fileurlinput" type="text" name="imageUrl" class="form-control"/>
-	</div>
+<div id="tempStore" class="filepond">
+	<input type="file" name="imageFile" data-filepond-max-files="1" accept="image/gif, image/jpeg, image/png" data-filepond-instant-upload="true">
 </div>
-<div class="form-group">
-	<label for="fileuploadinput" class="col-sm-2 control-label">Nahraj</label>
-	<div class="col-sm-10">
-		<div id="tempStore" class="fuup">
-			<input id="fileuploadinput" type="file" name="imageFile" class="form-control"/>
-		</div>
-	</div>
-</div>
-
 <div class="form-group">
 <div id="imageHolder"  class="col-md-offset-2 col-sm-10">
 <!-- BEGIN image -->
@@ -104,7 +74,18 @@
 </div>
 </div>
 </fieldset>
+<fieldset>
+<legend>Úvod</legend>
+	<textarea name="text" id="{TEXTID}" class="form-control markitup">{TEXT}</textarea>
+</fieldset>
+<fieldset>
+<legend>Text</legend>
+	<textarea name="textLong" id="{TEXTLONGID}" class="form-control markitup" row="3">{TEXTLONG}</textarea>
+</fieldset>
+</div>
 
+<div class="tab-pane fade" id="tabs-2">
+<!-- //TODO: maps dis until new implementaion
 <fieldset>
 <legend>Mapy</legend>
 
@@ -115,7 +96,7 @@
 	</div>
 </div>
 </fieldset>
-
+-->
 <fieldset>
 <legend>Komentáře</legend>
 

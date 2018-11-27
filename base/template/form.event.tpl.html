@@ -71,9 +71,9 @@
 </div>
 
 <div class="form-group">
-	<label for="datestart" class="col-sm-2 control-label">Datum</label>
+	<label for="datestart" class="col-sm-2 control-label">Kdy</label>
 	<div class="col-sm-5">
-		<input id="datestart" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date">
+		<input id="datestart" name="dateStartLocal" value="{DATESTART}" type="text" class="form-control date" placeholder="Datum Od">
 	</div>
 	<label for="timestart" class="col-sm-2 control-label">Čas</label>
 	<div class="col-sm-3">
@@ -82,9 +82,9 @@
 </div>
 
 <div class="form-group">
-	<label for="dateend" class="col-sm-2 control-label">Datum do</label>
+	<label for="dateend" class="col-sm-2 control-label"></label>
 	<div class="col-sm-5">
-		<input id="dateend" name="dateEndLocal" value="{DATEEND}" type="text" class="form-control date">
+		<input id="dateend" name="dateEndLocal" value="{DATEEND}" type="text" class="form-control date" placeholder="Datum Do">
 	</div>
 	<label for="formDate" class="col-sm-2 control-label">Čas do</label>
 	<div class="col-sm-3">
@@ -92,34 +92,12 @@
 	</div>
 </div>
 
-<div class="form-group">
-	<label for="{TEXTID}" class="col-sm-2 control-label">Popis</label>
-	<div class="col-sm-10">
-		<textarea name="text" id="{TEXTID}" class="form-control markitup" rows="3">{TEXT}</textarea>
-	</div>
-</div>
-
 </fieldset>
-</div>
-
-<div class="tab-pane fade" id="tabs-2">
 <fieldset>
 <legend>Obrázek</legend>
-<div class="form-group">
-	<label for="fileurlinput" class="col-sm-2 control-label">Vlož URL</label>
-	<div class="col-sm-10">
-		<input id="fileurlinput" type="text" name="imageUrl" class="form-control"/>
-	</div>
+<div id="tempStore" class="filepond">
+	<input type="file" name="imageFile" data-filepond-max-files="1" accept="image/gif, image/jpeg, image/png" data-filepond-instant-upload="true">
 </div>
-<div class="form-group">
-	<label for="fileuploadinput" class="col-sm-2 control-label">Nahraj</label>
-	<div class="col-sm-10">
-		<div id="tempStore" class="fuup">
-			<input id="fileuploadinput" type="file" name="imageFile" class="form-control"/>
-		</div>
-	</div>
-</div>
-
 <div class="form-group">
 <div id="imageHolder"  class="col-md-offset-2 col-sm-10">
 <!-- BEGIN image -->
@@ -129,7 +107,14 @@
 </div>
 </div>
 </fieldset>
+<fieldset>
+<legend>Text</legend>
+	<textarea name="text" id="{TEXTID}" class="form-control markitup" row="3">{TEXT}</textarea>
+</fieldset>
+</div>
 
+<div class="tab-pane fade" id="tabs-2">
+<!--
 <fieldset>
 <legend>Mapy</legend>
 
@@ -140,7 +125,7 @@
 	</div>
 </div>
 </fieldset>
-
+-->
 <fieldset>
 <legend>Nastavení</legend>
 

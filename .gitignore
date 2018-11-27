@@ -1,6 +1,8 @@
 update.html
 info.php
 tmp/
+obr/*
+image/*
 conf_v02/
 js/_compiler/compiler.jar
 js/_compiler/yuicompressor-2.4.8.jar

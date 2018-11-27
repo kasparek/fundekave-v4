@@ -38,7 +38,7 @@
 }
 
 h2 {
-    font-size: 21px;
+    font-size: 3rem;
     font-weight: bold;
 }
 
@@ -327,8 +327,7 @@ div.reaction {
 }
 
 .fitem .media-object {
-    padding: 0 5px 5px 0;
-    float: left;
+    width: 100%;
 }
 
 .img-remote {
@@ -359,6 +358,7 @@ div.reaction {
 .fitem .entry-content {
     min-height: 40px;
     padding-bottom: 1em;
+    line-height: 1.6;
 }
 
 .list-group-item .header {
@@ -783,6 +783,9 @@ a.commentLink .commentNum {
 .padded_bottom {
     padding-bottom: 15px;
 }
+.padded_right {
+    padding-right: 15px;
+}
 .padded_top {
     padding-top: 15px;
 }
@@ -809,4 +812,15 @@ a.commentLink .commentNum {
 }
 .filepond--root .filepond--file-action-button {
     font-size: 12px;
+}
+.item-blog-footer {
+    clear: both;
+}
+.event-date, .event-location {
+    font-size: 2rem;
+}
+
+abbr.dtstart, abbr.updated {
+    text-decoration: none;
+    border-bottom: none;
 }
