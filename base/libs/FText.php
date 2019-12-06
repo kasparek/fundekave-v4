@@ -405,7 +405,7 @@ $safe->protocolFiltering = 'black';
                         $addBr = false;
                     }
                     if ($addBr) {
-                        $textArr[$i] .= "<br>";
+                        $textArr[$i] .= "<br><br>";
                         //$textArr[$i] = "<p>".$textArr[$i].'</p>';
                         //$textArr[$i] .= "\n";
                     }
