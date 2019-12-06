@@ -33,6 +33,15 @@ FConf::getInstance(array($confDir.'global.conf.ini',$confDir.$host.'.conf.ini',$
 require_once($confDir.'/image.conf.php');
 require_once('vendor/autoload.php');
 
+use \Rollbar\Rollbar;
+use \Rollbar\Payload\Level;
+Rollbar::init(
+    array(
+        'access_token' => '67f8fac727fb4042be2f53db8e23b506',
+        'environment' => 'production'
+    )
+);
+
 date_default_timezone_set(FConf::get('internationalization','timezone'));
 setlocale(LC_CTYPE, FConf::get('internationalization','setlocale'));
 setlocale(LC_COLLATE, FConf::get('internationalization','setlocale'));

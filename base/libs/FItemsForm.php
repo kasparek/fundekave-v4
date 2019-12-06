@@ -122,14 +122,7 @@ class FItemsForm
 
         $captchaCheck = true;
         if (!$user->idkontrol) {
-            $captchaCheck = FSystem::recaptchaCheck($data);
-            if ($captchaCheck !== true) {
-                if ($captchaCheck !== false) {
-                    $data['recaptchaError'] = $captchaCheck;
-                }
-
-                $captchaCheck = false;
-            }
+            //implement new captcha
         }
 
         if (false === $itemVO->set('typeId', $data['t'])) {
@@ -610,10 +603,6 @@ class FItemsForm
                         $tpl->setVariable('USERNAME', $itemVO->name);
                     }
                 }
-                if (empty($data['__ajaxResponse'])) {
-                    $tpl->setVariable('RECAPTCHA', FSystem::recaptchaGet($tempData['recaptchaError']));
-                }
-
             } else {
                 $tpl->touchBlock('usersigned');
             }

@@ -195,10 +195,6 @@ class fajax_Item extends FAjaxPluginBase
         FAjax::addResponse('messageForm', '$html', $output);
         FAjax::addResponse('call', 'gooMapiInit');
         FAjax::addResponse('call', 'fajaxInit');
-        if (!$user->idkontrol) {
-            FAjax::addResponse('call', 'recaptchaStart');
-        }
-
     }
 
     public static function comments($data)

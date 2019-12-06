@@ -116,8 +116,9 @@ if ($user->pageVO) {
 
 //---generate page
 //experimantal caching on page layer
+$k = isset($_GET['k']) ? $_GET['k']: null;
 $html = null;
-if (!$user->idkontrol && $_GET['k']!='roger') {
+if (!$user->idkontrol && $k != 'roger') {
     $ident = md5(serialize($_GET)) . 'user' . $user->userVO->userId;
     $cache = FCache::getInstance('f');
     $html  = $cache->getData($ident);
