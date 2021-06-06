@@ -269,8 +269,9 @@ function gooMapiThumbClick() {
 function ckedInit() {
     if ($(".markitup").length === 0) return;
     if (!Lazy.load(_fdk.load.richta, ckedInit)) return;
-    //http://www.tinymce.com/wiki.php/Controls - complete list of controls
+
     tinymce.remove();
+
     tinymce.init({
         selector: ".markitup",
         menubar: false,
