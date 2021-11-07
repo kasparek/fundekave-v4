@@ -96,7 +96,8 @@ class page_PagesBooked implements iPage
         $fPages->setOrder('sys_pages.dateCreated desc');
         $fPages->setLimit(0, 7);
         $arraudit = $fPages->getContent();
-        if (count($arraudit) > 0) {
+
+        if (!empty($arraudit)) {
             $tpl->setVariable('PAGELINKSNEW', $fPages->printPagelinkList($arraudit, array('noitem' => true)));
         }
         $data = $tpl->get();

@@ -83,7 +83,7 @@ class FError
     public static function shutDownFunction()
     {
         $e = error_get_last();
-        if ($e['message']) {
+        if (!empty($e['message'])) {
             FError::write_log($e['type'] . ':' . $e['message'] . ' in ' . $e['file'] . ' on line=' . $e['line']);
         }
 
@@ -93,7 +93,7 @@ class FError
     {
         switch ($errno) {
             case E_WARNING:
-                throw new RuntimeException($errstr, $errno);
+                //throw new RuntimeException($errstr, $errno);
                 break;
             default:
                 FError::write_log("$errstr in $errfile on line $errline");

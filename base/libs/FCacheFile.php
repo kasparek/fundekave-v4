@@ -50,7 +50,7 @@ class FCacheFile
 	 */
 	function __construct($options = array(NULL)) {
 		foreach($options as $key => $value) $this->setOption($key, $value);
-		if($this->_cacheDir{strlen($this->_cacheDir)-1}!='/') $this->_cacheDir.='/';
+		if(substr($this->_cacheDir,-1)!='/') $this->_cacheDir.='/';
 	}
 	/**
 	 * Generic way to set a Cache_Lite option
@@ -264,10 +264,9 @@ class FCacheFile
 		if ($fp) {
 			clearstatcache();
 			$length = @filesize($this->_file);
-			$mqr = get_magic_quotes_runtime();
-			if ($mqr) set_magic_quotes_runtime(0);
+
 			if ($length) $data = @fread($fp, $length); else $data = '';
-			if ($mqr) set_magic_quotes_runtime($mqr);
+
 			if ($this->_fileLocking) @flock($fp, LOCK_UN);
 			@fclose($fp);
 			return $data;
@@ -298,10 +297,10 @@ class FCacheFile
 		$fp = @fopen($this->_file, "wb");
 		if ($fp) {
 			if ($this->_fileLocking) @flock($fp, LOCK_EX);
-			$mqr = get_magic_quotes_runtime();
-			if ($mqr) set_magic_quotes_runtime(0);
+			
+			
 			@fwrite($fp, $data);
-			if ($mqr) set_magic_quotes_runtime($mqr);
+			
 			if ($this->_fileLocking) @flock($fp, LOCK_UN);
 			@fclose($fp);
 			chmod($this->_file,$this->_hashedDirectoryUmask);

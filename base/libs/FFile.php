@@ -292,7 +292,7 @@ class FFile
             }
             $list = ftp_rawlist($this->ftpConn, "-A");
             ftp_chdir($this->ftpConn, '/');
-            if ($dir{strlen($dir) - 1} != '/') {
+            if (substr($dir,-1) != '/') {
                 $dir .= '/';
             }
 
@@ -332,7 +332,7 @@ class FFile
     {
         if (!$this->file_exists($dir)) {
             $dirArr = explode('/', $dir);
-            if ($dir{0} == '/') {
+            if (substr($dir,0,1) == '/') {
                 array_shift($dirArr);
                 $dirArr[0] = '/' . $dirArr[0];
             }
@@ -349,7 +349,7 @@ class FFile
             }
 
             $dirArr = explode('/', $dir);
-            if ($dir{0} == '/') {
+            if (substr($dir,0,1) == '/') {
                 array_shift($dirArr);
                 $dirArr[0] = '/' . $dirArr[0];
             }
@@ -385,14 +385,14 @@ class FFile
             return;
         }
 
-        $localCurrentTargetFolder = $this->targetFolder . ($this->targetFolder{strlen($this->targetFolder) - 1} == '/' ? '' : '/') . $dir;
+        $localCurrentTargetFolder = $this->targetFolder . (substr($this->targetFolder,-1) == '/' ? '' : '/') . $dir;
         $filaArr                  = scandir($this->sourceFolder . $dir);
         foreach ($filaArr as $file) {
             if ($file != '.' && $file != '..') {
-                $ds = $this->sourceFolder . ($this->sourceFolder{strlen($this->sourceFolder) - 1} == '/' ? '' : '/') . $dir;
-                $fs = $ds . ($ds{strlen($ds) - 1} == '/' ? '' : '/') . $file;
-                $dt = $this->targetFolder . ($this->targetFolder{strlen($this->targetFolder) - 1} == '/' ? '' : '/') . $dir;
-                $ft = $dt . ($dt{strlen($dt) - 1} == '/' ? '' : '/') . $file;
+                $ds = $this->sourceFolder . (substr($this->sourceFolder,-1) == '/' ? '' : '/') . $dir;
+                $fs = $ds . (substr($ds,-1) == '/' ? '' : '/') . $file;
+                $dt = $this->targetFolder . (substr($this->targetFolder,-1) == '/' ? '' : '/') . $dir;
+                $ft = $dt . (substr($dt,-1) == '/' ? '' : '/') . $file;
                 if (!is_dir($fs)) {
                     // upload the file
                     if (ftp_size($this->ftpConn, $ft) > 0) {
@@ -409,7 +409,7 @@ class FFile
                     }
                 } elseif ($this->recursive === true) {
                     $this->makeDir($ft);
-                    $this->replicateToFtp($dir . ($dir{strlen($dir) - 1} == '/' ? '' : '/') . $file);
+                    $this->replicateToFtp($dir . (substr($dir,-1) == '/' ? '' : '/') . $file);
                 }
             }
         }

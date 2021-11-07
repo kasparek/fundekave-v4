@@ -274,7 +274,7 @@ class FHTMLTemplateIT
      * @see      setRoot()
      * @access   public
      */
-    function FHTMLTemplateIT($root = '', $options = null)
+    function __construct($root = '', $options = null)
     {
         if (!is_null($options)) {
             $this->setOptions($options);
@@ -846,7 +846,7 @@ class FHTMLTemplateIT
      */
     function getFile($filename)
     {
-        if ($filename{0} == '/' && substr($this->fileRoot, -1) == '/') {
+        if (substr($filename,0,1) == '/' && substr($this->fileRoot, -1) == '/') {
             $filename = substr($filename, 1);
         }
 

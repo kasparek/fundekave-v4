@@ -118,7 +118,7 @@ class FHTTP
                 $_SERVER['REQUEST_URI'] : $_SERVER['PHP_SELF'];
         }
         
-        if ($url{0} == '/') {
+        if (substr($url,0,1) == '/') {
             return $server . $url;
         }
         

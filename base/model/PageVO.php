@@ -207,7 +207,7 @@ class PageVO extends Fvob {
 				$this->itemVO->pageIdTop = $this->pageIdTop;
 				$this->itemVO->typeId = $this->typeId;
 				$this->itemVO->enclosure = $file;
-				$this->itemVO->filesize = $ffile->filesize($galdir.($galdir{strlen($galdir)-1}!='/'?'/':'').$file);
+				$this->itemVO->filesize = $ffile->filesize($galdir.(substr($galdir,-1)!='/'?'/':'').$file);
 				$this->itemVO->text = '';
 				$this->itemVO->hit = 0;
 				$this->itemVO->dateStart = $this->get('dateContent');
@@ -220,8 +220,8 @@ class PageVO extends Fvob {
 
 		//--- check if filesize changed so update thumb
 		foreach ($arrFotoDetail as $k=>$v) {
-			if(file_exists($galdir.($galdir{strlen($galdir)-1}!='/'?'/':'').$v)) {
-				$newFilesize = $ffile->filesize($galdir.($galdir{strlen($galdir)-1}!='/'?'/':'').$v);
+			if(file_exists($galdir.(substr($galdir,-1)!='/'?'/':'').$v)) {
+				$newFilesize = $ffile->filesize($galdir.(substr($galdir,-1)!='/'?'/':'').$v);
 				$oldFilesize = $arrFotoSize[$v];
 				if($newFilesize != $oldFilesize) {
 					//---delete thumb, update filesize
