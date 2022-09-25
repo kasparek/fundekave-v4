@@ -19,6 +19,10 @@ class ComposerStaticInitb16015cf6a9570408fd59883cb0cac51
         array (
             'Psr\\Log\\' => 8,
         ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -29,6 +33,10 @@ class ComposerStaticInitb16015cf6a9570408fd59883cb0cac51
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
     );
 
@@ -42,12 +50,17 @@ class ComposerStaticInitb16015cf6a9570408fd59883cb0cac51
         ),
     );
 
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitb16015cf6a9570408fd59883cb0cac51::$classMap;
 
         }, null, ClassLoader::class);
     }
