@@ -188,10 +188,12 @@ class page_PageEdit implements iPage {
 					$flush=true;
 				}
 				
-				if(isset($data['galeryincluded'])) $galeryincluded = (int) $data['galeryincluded'];
-				if($pageVO->prop('galeryincluded')!=$galeryincluded) {
-					$pageVO->prop('galeryincluded',$galeryincluded==0?false:1);
-					$flush=true;
+				if(isset($data['galeryincluded'])) {
+					$galeryincluded = (int) $data['galeryincluded'];
+					if($pageVO->prop('galeryincluded') != $galeryincluded) {
+						$pageVO->prop('galeryincluded',$galeryincluded==0?false:1);
+						$flush=true;
+					}
 				}
 
 				//---if setting changed on edited galery delete thumbs
