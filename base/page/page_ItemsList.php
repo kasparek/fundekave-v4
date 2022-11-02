@@ -231,6 +231,7 @@ class page_ItemsList implements iPage
 
         //TOPLIST ITEMS
         $galeryDetail = false;
+        
         if ($pageVO->typeId == 'galery') {
             $vars['TOPFEEDID'] = 'galeryFeed';
             //if($isDetail) $touchedBlocks[]='galery-detail-thumbs';
@@ -256,6 +257,7 @@ class page_ItemsList implements iPage
                 }
             }
         }
+
 
         //continue only if empty $user->pageParam
         if ($galeryDetail === false && (empty($user->pageParam) || $user->pageParam == 'o')) {
